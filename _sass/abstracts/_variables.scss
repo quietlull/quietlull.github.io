@@ -1,13 +1,22 @@
+$btn-border-width: 3px;
+$btn-mb: 0.5rem;
+
+/* topbar */
+$topbar-height: 260px !default; /* the basic width */
+$topbar-height-large: 300px !default; /* screen width: >= 1650px */
+$tb_btn-border-width: 3px;
+$tb_btn-mb: 0.5rem;
+
 /* sidebar */
 
-$sidebar-width: 260px !default; /* the basic width */
-$sidebar-width-large: 300px !default; /* screen width: >= 1650px */
+$sidebar-width: 0px !default; /* the basic width */
+$sidebar-width-large: 0px !default; /* screen width: >= 1650px */
 $sb-btn-gap: 0.8rem !default;
 $sb-btn-gap-lg: 1rem !default;
 
 /* other framework sizes */
 
-$topbar-height: 3rem !default;
+$searchbar-height: 3rem !default;
 $search-max-width: 200px !default;
 $footer-height: 5rem !default;
 $footer-height-large: 6rem !default; /* screen width: < 850px */

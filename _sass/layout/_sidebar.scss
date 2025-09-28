@@ -3,8 +3,6 @@
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/placeholders';
 
-$btn-border-width: 3px;
-$btn-mb: 0.5rem;
 $sidebar-display: 'sidebar-display'; /* the attribute for sidebar display */
 
 #sidebar {
@@ -189,7 +187,7 @@ $sidebar-display: 'sidebar-display'; /* the attribute for sidebar display */
     %button {
       width: $btn-size;
       height: $btn-size;
-      margin-bottom: $btn-mb; // multi line gap
+      margin-bottom: v.$btn-mb; // multi line gap
       border-radius: 50%;
       color: var(--sidebar-btn-color);
       background-color: var(--sidebar-btn-bg);
@@ -233,17 +231,17 @@ $sidebar-display: 'sidebar-display'; /* the attribute for sidebar display */
 
     .icon-border {
       @extend %no-cursor;
-      @include mx.ml-mr(calc((v.$sb-btn-gap - $btn-border-width) / 2));
+      @include mx.ml-mr(calc((v.$sb-btn-gap - v.$btn-border-width) / 2));
 
       background-color: var(--sidebar-btn-color);
       content: '';
-      width: $btn-border-width;
-      height: $btn-border-width;
+      width: v.$btn-border-width;
+      height: v.$btn-border-width;
       border-radius: 50%;
-      margin-bottom: $btn-mb;
+      margin-bottom: v.$btn-mb;
 
       @include bp.xxxl {
-        @include mx.ml-mr(calc((v.$sb-btn-gap-lg - $btn-border-width) / 2));
+        @include mx.ml-mr(calc((v.$sb-btn-gap-lg - v.$btn-border-width) / 2));
       }
     }
   } /* .sidebar-bottom */

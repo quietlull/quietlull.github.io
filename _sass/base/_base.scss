@@ -415,7 +415,6 @@ mjx-container {
 
 #main-wrapper {
   position: relative;
-
   @include mx.pl-pr(0);
 
   @include bp.lt(bp.get(lg)) {
