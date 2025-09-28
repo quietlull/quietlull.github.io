@@ -1,84 +1,131 @@
-<!-- markdownlint-disable-next-line -->
-<div align="center">
+[![CI](https://img.shields.io/badge/Github%20Pages-passing-gold.svg?logo=github)](ci)
+[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
+[![Jekyll](https://img.shields.io/badge/jekyll-%3E%3D%204.3.2-green.svg)](https://jekyllrb.com/)
+[![Jekyll](https://img.shields.io/badge/gem%20version-3.2.33-blue.svg)](gem)
+<a href="https://jekyll-themes.com/[GITHUB USER NAME]/[GITHUB REPOSITORY NAME]">
+  <img
+    src="https://img.shields.io/badge/featured%20on-JT-red.svg"
+    height="20"
+    alt="Jekyll Themes Shield"
+  />
+</a>
 
-  <!-- markdownlint-disable-next-line -->
-  # Chirpy Jekyll Theme
+# Satellite🛰️ - Jekyll blog theme
+An emotional and adorable blog theme powered by ***Jekyll***. 
 
-  A minimal, responsive, and feature-rich Jekyll theme for technical writing.
+Live demo is available [here](https://byanko55.github.io)
 
-  [![CI](https://img.shields.io/github/actions/workflow/status/cotes2020/jekyll-theme-chirpy/ci.yml?logo=github)][ci]&nbsp;
-  [![Codacy Badge](https://img.shields.io/codacy/grade/4e556876a3c54d5e8f2d2857c4f43894?logo=codacy)][codacy]&nbsp;
-  [![GitHub license](https://img.shields.io/github/license/cotes2020/jekyll-theme-chirpy?color=goldenrod)][license]&nbsp;
-  [![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy?&logo=RubyGems&logoColor=ghostwhite&label=gem&color=orange)][gem]&nbsp;
-  [![Open in Dev Containers](https://img.shields.io/badge/Dev_Containers-Open-deepskyblue?logo=linuxcontainers)][open-container]
+![Demo Page](https://i.ibb.co/h1QF06V/demo.webp)
 
-  [**Live Demo** →][demo]
+### Light Mode
+![Demo Page-light](https://i.ibb.co/PtTbM1V/image-4.webp)
 
-  [![Devices Mockup](https://chirpy-img.netlify.app/commons/devices-mockup.png)][demo]
+### Dark Mode
+![Demo Page-dark](https://i.ibb.co/cY6hwG4/image-5.webp)
 
-</div>
+### Fresh and Attractive Design
+<p>
+<img src="https://i.ibb.co/4NwrTyj/image-2.webp" height="400px" align="center"/>
+<img src="https://i.ibb.co/WvyBzkL/Animation.gif" height="400px" align="center"/>
+</p>
+
+<br></br>
 
 ## Features
 
-- Dark Theme
-- Localized UI language
-- Pinned Posts on Home Page
-- Hierarchical Categories
-- Trending Tags
-- Table of Contents
-- Last Modified Date
-- Syntax Highlighting
-- Mathematical Expressions
-- Mermaid Diagrams & Flowcharts
-- Dark Mode Images
-- Embed Media
-- Comment Systems
-- Built-in Search
-- Atom Feeds
-- PWA
-- Web Analytics
-- SEO & Performance Optimization
+* Comment System using *giscus*
+* Copy contents of Code Block
+* Dark/Light Theme
+* Google Analytics
+* Hierarchical Categorization
+* Mobile friendly design
+* Related Posts
+* RSS/Sitemap support
+* Search Post by Title or Tags
+* Syntax Highlighter (*highlight.js*)
+* Table of Contents
+* Visitor Counter (*goatcounter*)
 
-## Documentation
 
-To learn how to use, develop, and upgrade the project, please refer to the [Wiki][wiki].
+## Installation
 
-## Contributing
+There are two ways to setup this theme:
+<br></br>
 
-Contributions (_pull requests_, _issues_, and _discussions_) are what make the open-source community such an amazing place
-to learn, inspire, and create. Any contributions you make are greatly appreciated.
-For details, see the "[Contributing Guidelines][contribute-guide]".
+### Method 1: Build from source (Recommended)
+Fork [this repository](https://github.com/byanko55/jekyll-theme-satellite) or download the [source](https://github.com/byanko55/jekyll-theme-satellite/releases) as a zip. 
 
-## Credits
+If you use as destination a repository named USERNAME.github.io, then your url will be https://USERNAME.github.io/.
+<br></br>
 
-### Contributors
+### Method 2: Utilize Gem package
+Create a clean site directory (Follow the **Instruction 1~4** described [here](https://jekyllrb.com/docs/)).
 
-Thanks to [all the contributors][contributors] involved in the development of the project!
+The following materials are redundant, so remove them.
+* index.markdown
+* about.markdown
+<br></br>
 
-[![all-contributors](https://contrib.rocks/image?repo=cotes2020/jekyll-theme-chirpy&columns=16)][contributors]
-<sub> — Made with [contrib.rocks](https://contrib.rocks)</sub>
+Then, add this line to your Jekyll site's `Gemfile`:
 
-### Third-Party Assets
+```bash
+gem "jekyll-theme-satellite"
+```
 
-This project is built on the [Jekyll][jekyllrb] ecosystem and some [great libraries][lib], and is developed using [VS Code][vscode] as well as tools provided by [JetBrains][jetbrains] under a non-commercial open-source software license.
+You need to replace the initial `_config.yml` file with the [prepared one](https://github.com/byanko55/jekyll-theme-satellite/blob/master/docs/_config.yml).
+<br></br>
 
-The avatar and favicon for the project's website are from [ClipartMAX][clipartmax].
+### Modify your site setting
+
+Now fill in the **site variable** such as blog name, profile image, and social accounts in `_config.yml`.
+
+```yml
+title: Example.com
+description: "Satellite - jekyll blog theme"
+logo_img: "/assets/img/favicon.webp"
+profile_img: "/assets/img/profile.jpg"
+
+# Social Links
+email: example@gmail.com
+github_username: github
+twitter_username: twitter
+instagram_username: instagram
+linkedin_username: linkedin
+facebook_username: facebook
+```
+
+
+### Run site locally
+
+From the site root directory, install the dependencies:
+
+```
+bundle install
+```
+
+
+Start a Jekyll service.
+
+```
+bundle exec jekyll serve
+```
+
+Now open [http://localhost:4000](http://localhost:4000) in your browser.
+<br></br>
+
+## Customizing
+
+You can find useful manuals for customizing your site from the below table:
+
+|||
+|---|---|
+|Posting guidelines|[link](https://github.com/byanko55/jekyll-theme-satellite/blob/master/docs/Posting%20Guide.md)|
+|Enabling ***comment system***|[link](https://github.com/byanko55/jekyll-theme-satellite/blob/master/docs/Comment%20System.md)|
+|Enabling ***Visitor counter***|[link](https://github.com/byanko55/jekyll-theme-satellite/blob/master/docs/Visitor%20Counter.md)|
+
+## Contribution
+If you would like to report a bug or request a new feature, please open [an issue](https://github.com/byanko55/jekyll-theme-satellite/issues) We are open to any kind of feedback or collaboration.
+<br></br>
 
 ## License
-
-This project is published under [MIT License][license].
-
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[ci]: https://github.com/cotes2020/jekyll-theme-chirpy/actions/workflows/ci.yml?query=event%3Apush+branch%3Amaster
-[codacy]: https://app.codacy.com/gh/cotes2020/jekyll-theme-chirpy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
-[license]: https://github.com/cotes2020/jekyll-theme-chirpy/blob/master/LICENSE
-[open-container]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/cotes2020/jekyll-theme-chirpy
-[jekyllrb]: https://jekyllrb.com/
-[clipartmax]: https://www.clipartmax.com/middle/m2i8b1m2K9Z5m2K9_ant-clipart-childrens-ant-cute/
-[demo]: https://cotes2020.github.io/chirpy-demo/
-[wiki]: https://github.com/cotes2020/jekyll-theme-chirpy/wiki
-[contribute-guide]: https://github.com/cotes2020/jekyll-theme-chirpy/blob/master/docs/CONTRIBUTING.md
-[contributors]: https://github.com/cotes2020/jekyll-theme-chirpy/graphs/contributors
-[lib]: https://github.com/cotes2020/chirpy-static-assets
-[vscode]: https://code.visualstudio.com/
-[jetbrains]: https://www.jetbrains.com/?from=jekyll-theme-chirpy
+© 2024 *Yankos*. This theme is available as open source under the terms of the [MIT License](https://opensource.org/license/mit/).
