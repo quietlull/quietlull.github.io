@@ -1,5 +1,5 @@
 import { displaySearch } from '../components/search-display';
 
-export function initsearchbar() {
+export function initSearchbar() {
   displaySearch();
 }

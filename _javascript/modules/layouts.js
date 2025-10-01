@@ -1,3 +1,3 @@
 export { basic } from './layouts/basic';
 export { initSidebar } from './layouts/sidebar';
-export { initsearchbar } from './layouts/searchbar';
+export { initSearchbar } from './layouts/searchbar';
