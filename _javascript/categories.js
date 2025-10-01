@@ -1,7 +1,7 @@
-import { basic, initSidebar, initTopbar } from './modules/layouts';
+import { basic, initSidebar, initSearchbar } from './modules/layouts';
 import { categoryCollapse } from './modules/components';
 
 basic();
 initSidebar();
-initTopbar();
+initSearchbar();
 categoryCollapse();
