@@ -184,18 +184,6 @@ defaults:
       # DO NOT modify the following parameter unless you are confident enough
       # to update the code of all other post links in this project.
       permalink: /posts/:title/
-      
-  - scope:
-      path: ""
-      type: "blogs"
-    values:
-      layout: "post"  # or whatever layout you use for blog posts
-  
-  - scope:
-      path: ""
-      type: "projects"
-    values:
-      layout: "post"  # or a different layout if you prefer
   
   - scope:
       path: _drafts
