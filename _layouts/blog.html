@@ -4,9 +4,11 @@ refactor: true
 ---
 
 {% include lang.html %}
+{% assign all_blogs = site.posts |  where_exp: 'item', 'item.pin != true and item.hidden != true' 
+| where: 'tags', 'blog' %}
+{% assign all_pinned = site.posts | where: 'pin', 'true'  %}
+{% assign all_normal = site.posts | where: 'pin', 'false' %}
 
-{% assign all_pinned = site.posts | where: 'pin', 'true' | where: 'tags', 'blog' %}
-{% assign all_normal = site.posts | where_exp: 'item', 'item.pin != true and item.hidden != true' %}
 
 {% assign posts = '' | split: '' %}
 
@@ -31,7 +33,7 @@ refactor: true
 
 <!-- Get normal posts on current page -->
 
-{% assign normal_size = paginator.posts | size | minus: pinned_size %}
+normal_size = all_normal.size | minus: pinned_size
 
 {% if normal_size > 0 %}
   {% if pinned_size > 0 %}
@@ -43,6 +45,7 @@ refactor: true
   {% assign normal_end = normal_start | plus: normal_size | minus: 1 %}
 
   {% for i in (normal_start..normal_end) %}
+  
     {% assign posts = posts | push: all_normal[i] %}
   {% endfor %}
 {% endif %}
@@ -91,18 +94,6 @@ refactor: true
                 <i class="far fa-calendar fa-fw me-1"></i>
                 {% include datetime.html date=post.date lang=lang %}
 
-                <!-- categories -->
-                {% if post.categories.size > 0 %}
-                  <i class="far fa-folder-open fa-fw me-1"></i>
-                  <span class="categories">
-                    {% for category in post.categories %}
-                      {{ category }}
-                      {%- unless forloop.last -%},{%- endunless -%}
-                    {% endfor %}
-                  </span>
-                {% endif %}
-              </div>
-
               {% if post.pin %}
                 <div class="pin ms-1">
                   <i class="fas fa-thumbtack fa-fw"></i>
@@ -119,7 +110,3 @@ refactor: true
   {% endfor %}
 </div>
 <!-- #post-list -->
-
-{% if paginator.total_pages > 1 %}
-  {% include post-paginator.html %}
-{% endif %}

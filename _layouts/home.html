@@ -83,13 +83,6 @@ refactor: true
                       <i class="far fa-calendar-alt me-1"></i>
                       {{ post.date | date: "%b %d, %Y" }}
                     </small>
-                    
-                    {% if post.categories.size > 0 %}
-                      <small class="text-muted ms-2">
-                        <i class="far fa-folder me-1"></i>
-                        {{ post.categories | first }}
-                      </small>
-                    {% endif %}
                   </div>
                 </div>
               </div>
