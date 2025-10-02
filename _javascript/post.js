@@ -1,4 +1,4 @@
-import { basic, initTopbar, initSidebar } from './modules/layouts';
+import { basic, initSearchbar, initSidebar } from './modules/layouts';
 
 import {
   loadImg,
