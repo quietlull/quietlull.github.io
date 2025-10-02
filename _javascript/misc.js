@@ -1,4 +1,4 @@
-import { basic, initSidebar, initTopbar } from './modules/layouts';
+import { basic, initSidebar, initSearchbar } from './modules/layouts';
 import { initLocaleDatetime } from './modules/components';
 
 initSidebar();
