@@ -46,14 +46,18 @@ refactor: true
   </div>
 
   <!-- Pinned Posts Section -->
-  {% assign pinned_posts = site.posts | where: 'pin', 'true' %}
-  {% if pinned_posts.size > 0 %}
+{% assign all_projects = site.posts |  where_exp: 'item', 'item.hidden != true' 
+| where: 'tags', 'project' %}
+{% assign all_pinned = all_projects | where: 'pin', 'true'  %}
+
+  
+  {% if all_pinned.size > 0 %}
   <section class="pinned-section mb-5">
     <h2 class="section-title h4 mb-3">
       <i class="fas fa-thumbtack text-danger me-2"></i>Pinned Posts
     </h2>
     <div class="posts-grid row g-4 mb-4">
-      {% for post in pinned_posts %}
+      {% for post in all_pinned %}
         <div class="col-12 col-md-6 col-lg-4">
           <article class="post-card h-100 pinned">
             <a href="{{ post.url | relative_url }}" class="card-link">
@@ -109,8 +113,10 @@ refactor: true
   <!-- All Posts Grid -->
   <section class="all-posts-section">
     <div class="posts-grid row g-4" id="posts-container">
-      {% assign regular_posts = site.posts | where_exp: 'item', 'item.pin != true' %}
-      {% for post in regular_posts %}
+    {% assign all_projects = site.posts |  where_exp: 'item', 'item.hidden != true' 
+| where: 'tags', 'project' %}
+    {% assign all_normal = all_projects | where: 'pin', 'false' %}
+      {% for post in all_normal %}
         <div class="col-12 col-md-6 col-lg-4 post-item" 
              data-post-item 
              data-date="{{ post.date | date: '%s' }}"
@@ -157,10 +163,10 @@ refactor: true
       {% endfor %}
     </div>
 
-    {% if regular_posts.size == 0 %}
+    {% if all_normal.size == 0 %}
       <div class="no-posts text-center py-5">
         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-        <p class="text-muted">No posts found.</p>
+        <p class="text-muted">No unpinned posts found.</p>
       </div>
     {% endif %}
 

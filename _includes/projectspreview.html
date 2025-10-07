@@ -1,0 +1,90 @@
+<!-- Latest Projects Section -->
+  <section id="latest-posts" class="latest-posts-section">
+    <div class="section-header d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title">Latest Projects</h2>
+      <a href="{{ '/projects' | relative_url }}" class="btn btn-outline-primary btn-sm">
+        View All Projects <i class="fas fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    <div class="posts-grid row g-4">
+      {% assign posts_limit = page.posts_limit | default: 6 %}
+      {% assign all_projects = site.posts |  where_exp: 'item', 'item.hidden != true' | where: 'tags', 'project' %}
+      {% for post in all_projects limit: posts_limit %}
+        
+        <div class="col-12 col-md-6 col-lg-4">
+          <article class="post-card h-100">
+            <a href="{{ post.url | relative_url }}" class="card-link">
+              <div class="card h-100 shadow-sm">
+                {% if post.image %}
+                  <div class="card-img-wrapper">
+                    {% assign post_image = post.image.path | default: post.image %}
+                    <img src="{{ post_image | relative_url }}" 
+                         class="card-img-top" 
+                         alt="{{ post.image.alt | default: post.title }}"
+                         loading="lazy">
+                    {% if post.pin %}
+                      <span class="badge-pinned">
+                        <i class="fas fa-thumbtack"></i> Pinned
+                      </span>
+                    {% endif %}
+                  </div>
+                {% else %}
+                  <div class="card-img-wrapper placeholder-img">
+                    <div class="placeholder-content">
+                      <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+                    {% if post.pin %}
+                      <span class="badge-pinned">
+                        <i class="fas fa-thumbtack"></i> Pinned
+                      </span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                  <h3 class="card-title h5">{{ post.title }}</h3>
+                  
+                  {% if post.description %}
+                    <p class="card-text text-muted small">
+                      {{ post.description | truncate: 100 }}
+                    </p>
+                  {% endif %}
+                  
+                  <div class="card-meta mt-auto">
+                    <small class="text-muted">
+                      <i class="far fa-calendar-alt me-1"></i>
+                      {{ post.date | date: "%b %d, %Y" }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if site.posts.size == 0 %}
+      <div class="no-posts text-center py-5">
+        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+        <p class="text-muted">No posts yet. Stay tuned!</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- Additional Sections -->
+  {% if page.show_projects %}
+  <section id="featured-projects" class="projects-section mt-5">
+    <div class="section-header d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title">Featured Projects</h2>
+      <a href="{{ '/projects' | relative_url }}" class="btn btn-outline-primary btn-sm">
+        All Projects <i class="fas fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="projects-grid row g-4">
+      <!-- Projects will go here -->
+    </div>
+  </section>
+  {% endif %}
+</div>

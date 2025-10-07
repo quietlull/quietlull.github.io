@@ -1,0 +1,70 @@
+<!-- About Me Section -->
+<section id="landing-box" class="flex-grow-1 px-xl-1">
+    <h2 id="landing-title" class="landing-box-title">Welcome To My Page!</h2>
+    <div class="landing-content">
+        <div id="about-me-image" class="profile-container">
+            <img src="https://via.placeholder.com/300x400" alt="Your Name" class="profile-img">
+        </div>
+        <div class="about-text">
+            <h3>Hello, I'm [Your Name]</h3>
+            <p>Welcome to my personal website! I'm a passionate [your profession/field] with a love for creating meaningful digital experiences. With [X] years of experience in [your field], I've worked on diverse projects that blend creativity with technical expertise.</p>
+            
+            <p>My journey began when [brief personal story about how you got started]. Since then, I've been dedicated to [your mission or what drives you]. I believe in [your philosophy or approach to work].</p>
+        </div>
+    </div>
+    <div class="additional-content">
+        <h3>More About Me</h3>
+        <p>When I'm not working, you can find me [your hobbies or interests]. I'm always excited to [what you're looking forward to or currently learning].</p>
+        <p>Feel free to explore my site to learn more about my work, read my blog posts, or get in touch if you'd like to collaborate on a project!</p>
+    </div>
+</section>
+
+<style>
+/* Layout styles only - colors come from your theme */
+.landing-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 0px;
+    align-items: flex-start;
+}
+
+.profile-container {
+    flex: 0 0 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+}
+
+.about-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.additional-content {
+    padding: 0px;
+
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .landing-content {
+        flex-direction: column;
+    }
+    
+    .profile-container {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    
+    .profile-img {
+        max-width: 250px;
+    }
+}
+</style>
