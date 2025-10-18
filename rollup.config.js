@@ -82,5 +82,8 @@ export default [
   build('misc'),
   build('theme', { outputName: 'Theme' }),
   build('app', { src: SRC_PWA, jekyll: true }),
-  build('sw', { src: SRC_PWA, jekyll: true })
+  build('sw', { src: SRC_PWA, jekyll: true }),
+    // Add this new line:
+  build('three-background')  // This will process _javascript/three-background.js
+
 ];
