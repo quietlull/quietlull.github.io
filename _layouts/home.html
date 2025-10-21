@@ -5,6 +5,9 @@ refactor: true
 
 {% include lang.html %}
 
+  <!-- Conditionally load three-background.js -->
+<script src="{{ '/assets/js/dist/three-background.min.js' | relative_url }}"></script>
+
 <div id="home-page" class="home-content">
 
   <section>
@@ -16,7 +19,3 @@ refactor: true
 {% include blogspreview.html %}
   <!-- Latest Projects Section -->
 {% include projectspreview.html %}
-
-<style>
-
-</style>
