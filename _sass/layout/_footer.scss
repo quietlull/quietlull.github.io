@@ -4,7 +4,7 @@
 @use '../abstracts/placeholders';
 
 footer {
-  background-color: var(--main-bg);
+  background-color:hsla(218, 5%, 11%, 0);
   height: v.$footer-height;
   border-top: 1px solid var(--main-border-color);
 

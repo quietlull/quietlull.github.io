@@ -1,8 +1,12 @@
-import babel from '@rollup/plugin-babel';
-import terser from '@rollup/plugin-terser';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import fs from 'fs';
-import pkg from './package.json';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var babel = require('@rollup/plugin-babel');
+var terser = require('@rollup/plugin-terser');
+var pluginNodeResolve = require('@rollup/plugin-node-resolve');
+var fs = require('fs');
+var pkg = require('./package.json');
 
 const SRC_DEFAULT = '_javascript';
 const SRC_PWA = `${SRC_DEFAULT}/pwa`;
@@ -64,7 +68,7 @@ function build(
           '@babel/plugin-transform-private-methods'
         ]
       }),
-      nodeResolve(),
+      pluginNodeResolve.nodeResolve(),
       isProd && terser(),
       jekyll && insertFrontmatter()
     ]
@@ -73,7 +77,7 @@ function build(
 
 cleanup();
 
-export default [
+var rollup_config = [
   build('commons'),
   build('home'),
   build('categories'),
@@ -87,3 +91,5 @@ export default [
   build('performance-monitor'),
   build('lantern-controller')
 ];
+
+exports.default = rollup_config;
