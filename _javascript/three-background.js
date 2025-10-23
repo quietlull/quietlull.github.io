@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { PerformanceMonitor } from './performance-monitor.js';
 import { LanternController } from './lantern-controller.js';
-import { MirrorSuface } from './shader/mirroredSurface.js';
+import { MirroredSurface } from './shader/mirroredSurface.js';
 
 // === CONFIGURATION ===
 const CONFIG = {
@@ -40,6 +40,12 @@ const CONFIG = {
       rotationStrength: 0.005,
       knockCooldown: 0.1
     }
+  },
+  // Reflection appearance options
+  reflection: {
+    reflectionIntensity: 1, // 0-1, how bright the reflection is
+    reflectionSaturation: 1,// 0-1, how colorful (1=full color, 0=grayscale)
+    reflectionTint: 0x000000 // Color tint to apply
   }
 };
 
@@ -97,29 +103,26 @@ const perfMonitor = new PerformanceMonitor();
 const lanternController = new LanternController(CONFIG, camera);
 
 
-const waterMaterial = createWaterMaterial(scene, camera, renderer);
-waterMaterial.setBrightness(0.4);
-
-
 // Responsive lantern sizing //TO FIX DOESNT WORK
 function getResponsiveLanternScale() {
   // Calculate how wide the viewport is in world units
   const frustumHeight = 2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
   const frustumWidth = frustumHeight * camera.aspect;
-  
+
   // Reference frustum width (1920x1080 screen = aspect 1.778)
   const referenceFrustumWidth = frustumHeight * (1920 / 1080);
-  
+
   // Scale lanterns proportionally to frustum width
   // Narrower viewport = smaller lanterns (so they don't dominate the screen)
   const scaleFactor = frustumWidth / referenceFrustumWidth;
-  
+
   // Clamp between 0.4 and 1.0
   return Math.max(0.4, Math.min(1.0, scaleFactor));
 }
 
 
-const initialScale  = getResponsiveLanternScale();
+const initialScale = getResponsiveLanternScale();
+
 
 /*
 // Create test lanterns
@@ -172,24 +175,24 @@ function loadLanternsFBX(url) {
     url,
     (fbx) => {
       console.log('FBX loaded:', fbx);
-      
+
       const currentScale = getResponsiveLanternScale();
-      
+
       fbx.traverse((child) => {
         if (child.isMesh) {
           // Apply emissive material for bloom
           child.material = new THREE.MeshBasicMaterial({
             color: CONFIG.lanterns.glow.color,
           });
-          
+
           // Apply responsive scale
           child.scale.multiplyScalar(currentScale);
-          
+
           lanternController.addLantern(child);
           console.log('Added lantern mesh:', child.name, 'at position:', child.position);
         }
       });
-      
+
       scene.add(fbx);
       perfMonitor.setLanternCount(lanternController.getLanternCount());
       console.log(`Loaded ${lanternController.getLanternCount() - 3} lanterns from FBX (plus 3 test cubes)`);
@@ -213,22 +216,22 @@ function loadDockFBX(url, material = null) {
     url,
     (fbx) => {
       console.log('Dock FBX loaded:', fbx);
-      
+
       // Default unlit white material if none provided
-      const dockMaterial = material || new THREE.MeshBasicMaterial({ 
+      const dockMaterial = material || new THREE.MeshBasicMaterial({
         color: 0xffffff
       });
-      
+
       fbx.traverse((child) => {
         if (child.isMesh) {
           child.material = dockMaterial;
           console.log('Added dock mesh:', child.name);
         }
       });
-      
+
       // Position dock at bottom of scene
       fbx.position.y = CONFIG.camera.endPositionY - 100;
-      
+
       scene.add(fbx);
       console.log('Dock loaded at Y:', fbx.position.y);
     },
@@ -241,13 +244,37 @@ function loadDockFBX(url, material = null) {
   );
 }
 
-loadDockFBX('/assets/mesh/lantern-night/Dock.fbx', new THREE.MeshBasicMaterial({ 
-  color: 0x000000 
+loadDockFBX('/assets/mesh/lantern-night/Dock.fbx', new THREE.MeshBasicMaterial({
+  color: 0x000000
 }));
 
 
+let mirroredSurface = null;
 
-loadDockFBX('/assets/mesh/lantern-night/Water.fbx', waterMaterial);
+function loadWaterFBX(url) {
+  fbxLoader.load(url, (fbx) => {
+    let waterMesh = null;
+    fbx.traverse((child) => {
+      if (child.isMesh) waterMesh = child;
+    });
+
+    // Position water BEFORE creating MirroredSurface
+    fbx.position.y = CONFIG.camera.endPositionY - 100;
+    scene.add(fbx);
+
+    // Create with options from CONFIG
+    mirroredSurface = new MirroredSurface(scene, camera, renderer, waterMesh, {
+      reflectionIntensity: CONFIG.reflection.reflectionIntensity,
+      reflectionSaturation: CONFIG.reflection.reflectionSaturation,
+      reflectionTint: new THREE.Color(CONFIG.reflection.reflectionTint)
+    });
+
+    waterMesh.material = mirroredSurface.material;
+  });
+}
+
+loadWaterFBX('/assets/mesh/lantern-night/Water.fbx');
+
 
 // Generic FBX loader for other static objects
 function loadStaticFBX(url, options = {}) {
@@ -256,12 +283,12 @@ function loadStaticFBX(url, options = {}) {
     scale = 1,
     material = null
   } = options;
-  
+
   fbxLoader.load(
     url,
     (fbx) => {
       console.log('Static FBX loaded:', fbx);
-      
+
       if (material) {
         fbx.traverse((child) => {
           if (child.isMesh) {
@@ -269,10 +296,10 @@ function loadStaticFBX(url, options = {}) {
           }
         });
       }
-      
+
       fbx.position.set(position.x, position.y, position.z);
       fbx.scale.setScalar(scale);
-      
+
       scene.add(fbx);
       console.log('Static object loaded at:', fbx.position);
     },
@@ -293,13 +320,13 @@ function updateCameraFromScroll() {
   const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
   const scrolled = window.scrollY;
   scrollProgress = scrollHeight > 0 ? scrolled / scrollHeight : 0;
-  
+
   camera.rotation.x = THREE.MathUtils.lerp(
     CONFIG.camera.startRotationX,
     CONFIG.camera.endRotationX,
     scrollProgress
   );
-  
+
   camera.position.y = THREE.MathUtils.lerp(
     CONFIG.camera.startPositionY,
     CONFIG.camera.endPositionY,
@@ -316,14 +343,16 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
   composer.setSize(window.innerWidth, window.innerHeight);
-  
+
   // Recalculate bounds on resize
   lanternController.updateBounds();
 
   // Update lantern sizes for new screen width
   const newScale = getResponsiveLanternScale();
   lanternController.updateLanternSizes(newScale)
-  waterMaterial.onResize(window.innerWidth, window.innerHeight);
+  if (mirroredSurface) {
+    mirroredSurface.handleResize();
+  }
 });
 
 
@@ -336,15 +365,17 @@ function animate(currentTime) {
   // Calculate actual time elapsed since last frame
   const deltaTime = currentTime - lastTime;
   lastTime = currentTime;
-  
+
   // Normalize deltaTime to 60fps scale (so speeds stay consistent)
   // If running at 120fps, deltaTime will be ~8ms, normalized to ~0.5
   // If running at 60fps, deltaTime will be ~16ms, normalized to ~1.0
   const normalizedDelta = deltaTime / TARGET_FRAME_TIME;
-  
+
   perfMonitor.update();
   lanternController.update(normalizedDelta);
-  waterMaterial.updateMirror();
+  if (mirroredSurface) {
+    mirroredSurface.update();
+  }
   composer.render();
 }
 
