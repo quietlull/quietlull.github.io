@@ -21,10 +21,12 @@ const WaterShader = {
 	vertexShader: /* glsl */`
 
 		varying vec2 vUv;
-		
+    varying vec4 vPos;
+    
 		void main() {
 			vUv = uv;
 			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vPos = gl_Position;
 		}
 	`,
 
@@ -33,10 +35,11 @@ const WaterShader = {
 		uniform sampler2D tMirror;
 		uniform float brightness;
 		varying vec2 vUv;
-		
+		varying vec4 vPos;
+        
 		void main() {
 			// Flip the UV vertically to create mirror effect
-			vec2 mirrorUV = vec2(vUv.x, 1.0 - vUv.y);
+			vec4 mirrorUV = vec4(vPos.x, 1.0 - vPos.y, vPos.z, vPos.w);
 			
 			// Sample the mirrored scene
 			vec4 mirrorColor = texture2D(tMirror, mirrorUV);
