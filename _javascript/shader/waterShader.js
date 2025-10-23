@@ -42,7 +42,7 @@ const WaterShader = {
 			vec4 mirrorUV = vec4(vPos.x, 1.0 - vPos.y, vPos.z, vPos.w);
 			
 			// Sample the mirrored scene
-			vec4 mirrorColor = texture2D(tMirror, mirrorUV);
+			vec4 mirrorColor = texture2D(tMirror, mirrorUV.xy);
 			
 			// Dim it
 			mirrorColor.rgb *= brightness;
