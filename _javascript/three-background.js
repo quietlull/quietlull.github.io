@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { PerformanceMonitor } from './performance-monitor.js';
 import { LanternController } from './lantern-controller.js';
-
+import { WaterShader } from './waterShader.js';
 
 // === CONFIGURATION ===
 const CONFIG = {
@@ -32,11 +32,13 @@ const CONFIG = {
     },
     avoidance: {
       proximityRadius: 10000, // Increased - react from further away
-      avoidanceStrength: 2.5, // Reduced - gentler push
-      knockRadius: 50, // Added - distance for hard knock
+      avoidanceStrength: 1.5, // Reduced - gentler push
+      knockRadius: 40, // Added - distance for hard knock
       knockStrength: 40, // Increased knock power
       returnSpeed: 0.08, // Slower return
-      boundaryForce: 0.5 // Stronger boundary push
+      boundaryForce: 0.5, // Stronger boundary push
+      rotationStrength: 0.005,
+      knockCooldown: 0.1
     }
   }
 };
@@ -243,13 +245,8 @@ loadDockFBX('/assets/mesh/lantern-night/Dock.fbx', new THREE.MeshBasicMaterial({
 }));
 
 
-const waterMaterial = new THREE.MeshStandardMaterial({
-  color: 0x1e3a5f, //#1e3a5f
-  roughness: 0.1,
-  metalness: 0.8
-});
 
-loadDockFBX('/assets/mesh/lantern-night/Water.fbx', waterMaterial);
+loadDockFBX('/assets/mesh/lantern-night/Water.fbx');
 
 
 // Generic FBX loader for other static objects
@@ -329,10 +326,23 @@ window.addEventListener('resize', () => {
 });
 
 
-// Animation loop
-function animate() {
+// Frame-rate independent timing
+let lastTime = performance.now();
+const TARGET_FRAME_TIME = 1000 / 60; // 60 FPS in milliseconds
+
+// Animation loop with proper deltaTime
+function animate(currentTime) {
+  // Calculate actual time elapsed since last frame
+  const deltaTime = currentTime - lastTime;
+  lastTime = currentTime;
+  
+  // Normalize deltaTime to 60fps scale (so speeds stay consistent)
+  // If running at 120fps, deltaTime will be ~8ms, normalized to ~0.5
+  // If running at 60fps, deltaTime will be ~16ms, normalized to ~1.0
+  const normalizedDelta = deltaTime / TARGET_FRAME_TIME;
+  
   perfMonitor.update();
-  lanternController.update();
+  lanternController.update(normalizedDelta);
   composer.render();
 }
 

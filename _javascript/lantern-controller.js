@@ -35,7 +35,7 @@ export class LanternController {
     const viewportWidthWorld = viewportHeightWorld * this.camera.aspect;
     
     // Horizontal bounds with margin
-    const marginX = viewportWidthWorld * 0.8;
+    const marginX = viewportWidthWorld * 0.25;
     const left = -viewportWidthWorld / 2 - marginX;
     const right = viewportWidthWorld / 2 + marginX;
     
@@ -63,14 +63,15 @@ export class LanternController {
                                totalScrollWorldHeight +
                                (Math.tan(endRotationX) * distance);
     
-    // Add generous vertical margins
-    const marginY = viewportHeightWorld * 0.8;
+    // Add generous vertical margins - increased top margin
+    const marginYBottom = viewportHeightWorld * 0.3;
+    const marginYTop = viewportHeightWorld * 0.8; // Much larger top margin
     
     return {
       left: left,
       right: right,
-      top: topVisibleAtStart + marginY,
-      bottom: bottomVisibleAtEnd - marginY
+      top: topVisibleAtStart + marginYTop,
+      bottom: bottomVisibleAtEnd - marginYBottom
     };
   }
   
@@ -94,15 +95,17 @@ export class LanternController {
       this.isMouseOverCanvas = false;
     });
   }
-
-
+  
   addLantern(mesh) {
     // Initialize userData for interaction
     mesh.userData.basePosition = mesh.position.clone();
+    mesh.userData.baseRotation = mesh.rotation.clone(); // Store original rotation
     mesh.userData.floatOffset = Math.random() * Math.PI * 2;
     mesh.userData.avoidanceOffset = new THREE.Vector2(0, 0);
     mesh.userData.velocity = new THREE.Vector2(0, 0);
+    mesh.userData.rotationVelocity = new THREE.Vector3(0, 0, 0); // Track rotation velocity
     mesh.userData.baseScale = mesh.scale.clone(); // Store original scale
+    mesh.userData.lastKnockTime = 0; // Track when lantern was last knocked
     
     this.lanterns.push(mesh);
   }
@@ -114,8 +117,10 @@ export class LanternController {
     });
   }
   
-   update(deltaTime = 0.016) {
-    this.time += deltaTime;
+  update(normalizedDelta = 1.0) {
+    // normalizedDelta is 1.0 at 60fps, 0.5 at 120fps, 2.0 at 30fps, etc.
+    // This keeps all speeds consistent regardless of frame rate
+    this.time += 0.016 * normalizedDelta; // Increment time at 60fps rate
     
     const config = this.config.lanterns.avoidance;
     const floatConfig = this.config.lanterns.float;
@@ -144,13 +149,27 @@ export class LanternController {
             const avoidanceFactor = 1 - (distance / config.proximityRadius);
             
             if (distance < config.knockRadius) {
-              // Knock - add velocity
-              const knockDir = new THREE.Vector2(dx, dy);
-              if (knockDir.length() > 0.01) {
-                knockDir.normalize();
-                const knockForce = config.knockStrength * avoidanceFactor;
-                lantern.userData.velocity.x += knockDir.x * knockForce;
-                lantern.userData.velocity.y += knockDir.y * knockForce;
+              // Check knock cooldown (prevent rapid repeated knocks)
+              const timeSinceLastKnock = this.time - lantern.userData.lastKnockTime;
+              
+              if (timeSinceLastKnock > config.knockCooldown) {
+                // Knock - add velocity
+                const knockDir = new THREE.Vector2(dx, dy);
+                if (knockDir.length() > 0.01) {
+                  knockDir.normalize();
+                  const knockForce = config.knockStrength * avoidanceFactor;
+                  lantern.userData.velocity.x += knockDir.x * knockForce;
+                  lantern.userData.velocity.y += knockDir.y * knockForce;
+                  
+                  // Add rotation feedback - rotate around Z axis based on knock direction
+                  // Perpendicular to knock direction creates a swinging motion
+                  const rotationForce = config.knockStrength * avoidanceFactor * config.rotationStrength; // Adjust multiplier for rotation strength
+                  lantern.userData.rotationVelocity.z += knockDir.x * rotationForce;
+                  lantern.userData.rotationVelocity.x += -knockDir.y * rotationForce * 0.5; // Slight tilt forward/back
+                  
+                  // Update last knock time
+                  lantern.userData.lastKnockTime = this.time;
+                }
               }
             } else {
               // Gentle push
@@ -165,16 +184,31 @@ export class LanternController {
         }
       }
       
-      // Apply velocity
-      lantern.userData.avoidanceOffset.x += lantern.userData.velocity.x;
-      lantern.userData.avoidanceOffset.y += lantern.userData.velocity.y;
+      // Apply velocity (scaled by frame time)
+      lantern.userData.avoidanceOffset.x += lantern.userData.velocity.x * normalizedDelta;
+      lantern.userData.avoidanceOffset.y += lantern.userData.velocity.y * normalizedDelta;
       
-      // Dampen velocity
-      lantern.userData.velocity.multiplyScalar(0.92);
+      // Apply rotation velocity (scaled by frame time)
+      lantern.rotation.x += lantern.userData.rotationVelocity.x * normalizedDelta;
+      lantern.rotation.y += lantern.userData.rotationVelocity.y * normalizedDelta;
+      lantern.rotation.z += lantern.userData.rotationVelocity.z * normalizedDelta;
       
-      // Gradually return to base
-      lantern.userData.avoidanceOffset.x *= (1 - config.returnSpeed);
-      lantern.userData.avoidanceOffset.y *= (1 - config.returnSpeed);
+      // Dampen velocity and rotation (frame-rate independent damping)
+      const velocityDamping = Math.pow(0.92, normalizedDelta);
+      const rotationDamping = Math.pow(0.90, normalizedDelta);
+      lantern.userData.velocity.multiplyScalar(velocityDamping);
+      lantern.userData.rotationVelocity.multiplyScalar(rotationDamping);
+      
+      // Gradually return to base rotation (frame-rate independent)
+      const rotationReturnSpeed = 1 - Math.pow(1 - 0.05, normalizedDelta);
+      lantern.rotation.x += (lantern.userData.baseRotation.x - lantern.rotation.x) * rotationReturnSpeed;
+      lantern.rotation.y += (lantern.userData.baseRotation.y - lantern.rotation.y) * rotationReturnSpeed;
+      lantern.rotation.z += (lantern.userData.baseRotation.z - lantern.rotation.z) * rotationReturnSpeed;
+      
+      // Gradually return to base position (frame-rate independent)
+      const positionReturnSpeed = 1 - Math.pow(1 - config.returnSpeed, normalizedDelta);
+      lantern.userData.avoidanceOffset.x *= (1 - positionReturnSpeed);
+      lantern.userData.avoidanceOffset.y *= (1 - positionReturnSpeed);
       
       // Calculate target position
       let targetX = lantern.userData.basePosition.x + floatX + lantern.userData.avoidanceOffset.x;
