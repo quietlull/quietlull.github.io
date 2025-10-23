@@ -19,6 +19,7 @@ const WaterShader = {
 	},
 
 	vertexShader: /* glsl */`
+<<<<<<< HEAD
             varying vec4 vWorldPosition;
             varying vec3 vNormal;
             
@@ -72,6 +73,39 @@ const WaterShader = {
                 gl_FragColor = reflection;
             }
         `
+=======
+
+		varying vec2 vUv;
+    varying vec4 vPos;
+    
+		void main() {
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vPos = gl_Position;
+		}
+	`,
+
+	fragmentShader: /* glsl */`
+
+		uniform sampler2D tMirror;
+		uniform float brightness;
+		varying vec2 vUv;
+		varying vec4 vPos;
+        
+		void main() {
+			// Flip the UV vertically to create mirror effect
+			vec4 mirrorUV = vec4(vPos.x, 1.0 - vPos.y, vPos.z, vPos.w);
+			
+			// Sample the mirrored scene
+			vec4 mirrorColor = texture2D(tMirror, mirrorUV.xy);
+			
+			// Dim it
+			mirrorColor.rgb *= brightness;
+			
+			gl_FragColor = mirrorColor;
+		}
+	`
+>>>>>>> cf781fef5d40839370799f7581b355bedef9f943
 
 };
 

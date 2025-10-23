@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { WaterShader } from './shader/waterShader.js';
+import { WaterShader } from './waterShader.js';
 
 /**
  * Creates a water material that mirrors the scene
