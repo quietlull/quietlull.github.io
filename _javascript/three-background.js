@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { PerformanceMonitor } from './performance-monitor.js';
 import { LanternController } from './lantern-controller.js';
-import { createWaterMaterial } from './createWaterMaterial.js';
+import { MirrorSuface } from './shader/mirroredSurface.js';
 
 // === CONFIGURATION ===
 const CONFIG = {
