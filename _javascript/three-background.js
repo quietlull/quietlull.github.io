@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { PerformanceMonitor } from './performance-monitor.js';
 import { LanternController } from './lantern-controller.js';
-import { WaterShader } from './waterShader.js';
+import { createWaterMaterial } from './createWaterMaterial.js';
 
 // === CONFIGURATION ===
 const CONFIG = {
@@ -97,6 +97,9 @@ const perfMonitor = new PerformanceMonitor();
 const lanternController = new LanternController(CONFIG, camera);
 
 
+const waterMaterial = createWaterMaterial(scene, camera, renderer);
+waterMaterial.setBrightness(0.4);
+
 
 // Responsive lantern sizing //TO FIX DOESNT WORK
 function getResponsiveLanternScale() {
@@ -177,8 +180,6 @@ function loadLanternsFBX(url) {
           // Apply emissive material for bloom
           child.material = new THREE.MeshBasicMaterial({
             color: CONFIG.lanterns.glow.color,
-            emissive: CONFIG.lanterns.glow.color,
-            emissiveIntensity: CONFIG.lanterns.glow.intensity
           });
           
           // Apply responsive scale
@@ -246,8 +247,7 @@ loadDockFBX('/assets/mesh/lantern-night/Dock.fbx', new THREE.MeshBasicMaterial({
 
 
 
-loadDockFBX('/assets/mesh/lantern-night/Water.fbx');
-
+loadDockFBX('/assets/mesh/lantern-night/Water.fbx', waterMaterial);
 
 // Generic FBX loader for other static objects
 function loadStaticFBX(url, options = {}) {
@@ -323,6 +323,7 @@ window.addEventListener('resize', () => {
   // Update lantern sizes for new screen width
   const newScale = getResponsiveLanternScale();
   lanternController.updateLanternSizes(newScale)
+  waterMaterial.onResize(window.innerWidth, window.innerHeight);
 });
 
 
@@ -343,6 +344,7 @@ function animate(currentTime) {
   
   perfMonitor.update();
   lanternController.update(normalizedDelta);
+  waterMaterial.updateMirror();
   composer.render();
 }
 
