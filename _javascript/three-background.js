@@ -208,8 +208,18 @@ function loadLanternsFBX(url) {
 
 //Load Lanterns
 loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
-
-
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
+loadLanternsFBX('/assets/mesh/lantern-night/Lanterns.fbx');
 
 function loadDockFBX(url, material = null) {
   fbxLoader.load(
