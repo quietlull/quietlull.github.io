@@ -45,7 +45,7 @@ const CONFIG = {
   reflection: {
     reflectionIntensity: 1, // 0-1, how bright the reflection is
     reflectionSaturation: 1,// 0-1, how colorful (1=full color, 0=grayscale)
-    reflectionTint: 0x000000 // Color tint to apply
+    reflectionTint: 0xffffff // Color tint to apply
   }
 };
 
@@ -230,7 +230,7 @@ function loadDockFBX(url, material = null) {
       });
 
       // Position dock at bottom of scene
-      fbx.position.y = CONFIG.camera.endPositionY - 100;
+      //fbx.position.y = CONFIG.camera.endPositionY - 100;
 
       scene.add(fbx);
       console.log('Dock loaded at Y:', fbx.position.y);
@@ -259,7 +259,7 @@ function loadWaterFBX(url) {
     });
 
     // Position water BEFORE creating MirroredSurface
-    fbx.position.y = CONFIG.camera.endPositionY - 100;
+    //fbx.position.y = CONFIG.camera.endPositionY - 10;
     scene.add(fbx);
 
     // Create with options from CONFIG
@@ -382,6 +382,10 @@ function animate(currentTime) {
 renderer.setAnimationLoop(animate);
 
 // Expose for debugging
+window.scene = scene;  // ← ADD THIS
+window.camera = camera;  // ← ADD THIS TOO
+window.renderer = renderer;  // ← AND THIS
+window.mirroredSurface = mirroredSurface;  // ← AND THIS
 window.THREEJS_CONFIG = CONFIG;
 window.bloomPass = bloomPass;
 window.perfMonitor = perfMonitor;

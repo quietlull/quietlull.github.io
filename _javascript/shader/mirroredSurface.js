@@ -25,10 +25,11 @@ export class MirroredSurface {
 
     // Create the mirror camera
     this.mirrorCamera = new THREE.PerspectiveCamera(
-      camera.fov,
+      camera.fov * 2,
       camera.aspect,
-      camera.near,
+      0.001,
       camera.far
+
     );
 
     // Create render target for reflection
@@ -137,7 +138,6 @@ export class MirroredSurface {
     // Mirror Y position relative to the mirror plane
     const distanceFromPlane = this.camera.position.y - this.mirrorPlaneY;
     this.mirrorCamera.position.y = this.mirrorPlaneY - distanceFromPlane;
-
     // Mirror the camera rotation
     // For a horizontal mirror plane (mirroring across Y axis):
     // - X rotation (pitch) is negated: looking down becomes looking up
