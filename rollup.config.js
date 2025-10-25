@@ -83,7 +83,5 @@ export default [
   build('theme', { outputName: 'Theme' }),
   build('app', { src: SRC_PWA, jekyll: true }),
   build('sw', { src: SRC_PWA, jekyll: true }),
-  build('three-background'), 
-  build('performance-monitor'),
-  build('lantern-controller')
+  build('three-background'),
 ];

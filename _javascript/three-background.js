@@ -6,6 +6,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { PerformanceMonitor } from './performance-monitor.js';
 import { LanternController } from './lantern-controller.js';
 import { MirroredSurface } from './shader/mirroredSurface.js';
+import { LanternMaterialManager } from './shader/lanternShaderManager.js';
 
 // === CONFIGURATION ===
 const CONFIG = {
@@ -39,13 +40,31 @@ const CONFIG = {
       boundaryForce: 0.5, // Stronger boundary push
       rotationStrength: 0.005,
       knockCooldown: 0.1
-    }
+    },
+    shader: {
+      // Gradient settings
+      gradientStart: 1.0,     // Brightness at bottom (full bright)
+      gradientEnd: 0.3,       // Brightness at top (dim)
+
+      // Flicker settings
+      flickerSpeed: 1,      // How fast the flicker
+      flickerAmount: .25,    // How much brightness variation (0.0 - 1.0)
+      flickerColorShift: .5 // How much color shifts towards red/yellow
+    },
   },
-  // Reflection appearance options
-  reflection: {
-    reflectionIntensity: 1, // 0-1, how bright the reflection is
-    reflectionSaturation: 1,// 0-1, how colorful (1=full color, 0=grayscale)
-    reflectionTint: 0xffffff // Color tint to apply
+  water: {
+    // Reflection appearance options
+    reflection: {
+      reflectionIntensity: 1, // 0-1, how bright the reflection is
+      reflectionSaturation: 1,// 0-1, how colorful (1=full color, 0=grayscale)
+      reflectionTint: 0xffffff // Color tint to apply
+    },
+    waves: {
+      waveStrength: 10.5, // How much to distort (0 = no waves, 0.1 = extreme)
+      waveSpeed: 1.5,// Animation speed
+      waveScale: 11,// Size of waves (higher = smaller waves)
+      waveType: 1 // Which wave pattern to use (1-6)
+    }
   }
 };
 
@@ -101,7 +120,7 @@ document.body.appendChild(vignette);
 // Initialize controllers
 const perfMonitor = new PerformanceMonitor();
 const lanternController = new LanternController(CONFIG, camera);
-
+const lanternMaterialManager = new LanternMaterialManager(CONFIG);
 
 // Responsive lantern sizing //TO FIX DOESNT WORK
 function getResponsiveLanternScale() {
@@ -123,50 +142,6 @@ function getResponsiveLanternScale() {
 
 const initialScale = getResponsiveLanternScale();
 
-
-/*
-// Create test lanterns
-const lanternMaterial = new THREE.MeshBasicMaterial({ 
-  color: CONFIG.lanterns.glow.color,
-});
-
-// Top lantern
-const topLantern = new THREE.Mesh(
-  new THREE.BoxGeometry(50, 50, 50),
-  lanternMaterial.clone()
-);
-topLantern.position.set(0, 0, 0);
-scene.add(topLantern);
-lanternController.addLantern(topLantern);
-
-// Middle lantern
-const midLantern = new THREE.Mesh(
-  new THREE.BoxGeometry(50, 50, 50),
-  lanternMaterial.clone()
-);
-midLantern.position.set(0, 100, 0);
-scene.add(midLantern);
-lanternController.addLantern(midLantern);
-
-// Bottom lantern
-const bottomLantern = new THREE.Mesh(
-  new THREE.BoxGeometry(50, 50, 50),
-  lanternMaterial.clone()
-);
-bottomLantern.position.set(0, 700, 0);
-scene.add(bottomLantern);
-lanternController.addLantern(bottomLantern);
-perfMonitor.setLanternCount(lanternController.getLanternCount()); // Update count every frame
-*/
-
-
-
-
-
-
-
-
-
 // FBX Loader setup
 const fbxLoader = new FBXLoader();
 
@@ -180,14 +155,17 @@ function loadLanternsFBX(url) {
 
       fbx.traverse((child) => {
         if (child.isMesh) {
-          // Apply emissive material for bloom
-          child.material = new THREE.MeshBasicMaterial({
-            color: CONFIG.lanterns.glow.color,
+          // Apply custom shader material with gradient and flicker
+          child.material = lanternMaterialManager.createMaterialForMesh(child, {
+            gradientStart: CONFIG.lanterns.shader.gradientStart,
+            gradientEnd: CONFIG.lanterns.shader.gradientEnd,
+
+            flickerSpeed: CONFIG.lanterns.shader.flickerSpeed,
+            flickerAmount: CONFIG.lanterns.shader.flickerAmount,
+            flickerColorShift: CONFIG.lanterns.shader.flickerColorShift
           });
 
-          // Apply responsive scale
           child.scale.multiplyScalar(currentScale);
-
           lanternController.addLantern(child);
           console.log('Added lantern mesh:', child.name, 'at position:', child.position);
         }
@@ -195,7 +173,8 @@ function loadLanternsFBX(url) {
 
       scene.add(fbx);
       perfMonitor.setLanternCount(lanternController.getLanternCount());
-      console.log(`Loaded ${lanternController.getLanternCount() - 3} lanterns from FBX (plus 3 test cubes)`);
+      console.log(`Loaded ${lanternController.getLanternCount()} lanterns from FBX`);
+      console.log(`Created ${lanternMaterialManager.getMaterialCount()} shader materials`);
     },
     (progress) => {
       console.log((progress.loaded / progress.total * 100) + '% loaded');
@@ -264,9 +243,14 @@ function loadWaterFBX(url) {
 
     // Create with options from CONFIG
     mirroredSurface = new MirroredSurface(scene, camera, renderer, waterMesh, {
-      reflectionIntensity: CONFIG.reflection.reflectionIntensity,
-      reflectionSaturation: CONFIG.reflection.reflectionSaturation,
-      reflectionTint: new THREE.Color(CONFIG.reflection.reflectionTint)
+      reflectionIntensity: CONFIG.water.reflection.reflectionIntensity,
+      reflectionSaturation: CONFIG.water.reflection.reflectionSaturation,
+      reflectionTint: new THREE.Color(CONFIG.water.reflection.reflectionTint),
+      // Add wave options:
+      waveStrength: CONFIG.water.waves.waveStrength,
+      waveSpeed: CONFIG.water.waves.waveSpeed,
+      waveScale: CONFIG.water.waves.waveScale,
+      waveType: CONFIG.water.waves.waveType
     });
 
     waterMesh.material = mirroredSurface.material;
@@ -371,6 +355,9 @@ function animate(currentTime) {
   // If running at 60fps, deltaTime will be ~16ms, normalized to ~1.0
   const normalizedDelta = deltaTime / TARGET_FRAME_TIME;
 
+  // Update lantern flicker animation
+  lanternMaterialManager.update(normalizedDelta);
+
   perfMonitor.update();
   lanternController.update(normalizedDelta);
   if (mirroredSurface) {
@@ -382,14 +369,16 @@ function animate(currentTime) {
 renderer.setAnimationLoop(animate);
 
 // Expose for debugging
-window.scene = scene;  // ← ADD THIS
-window.camera = camera;  // ← ADD THIS TOO
-window.renderer = renderer;  // ← AND THIS
-window.mirroredSurface = mirroredSurface;  // ← AND THIS
+// Expose for debugging
+window.scene = scene;
+window.camera = camera;
+window.renderer = renderer;
+window.mirroredSurface = mirroredSurface;
 window.THREEJS_CONFIG = CONFIG;
 window.bloomPass = bloomPass;
 window.perfMonitor = perfMonitor;
 window.lanternController = lanternController;
+window.lanternMaterialManager = lanternMaterialManager;  // ← ADD THIS LINE
 window.loadLanternsFBX = loadLanternsFBX;
 
 console.log('Three.js scene ready!');
