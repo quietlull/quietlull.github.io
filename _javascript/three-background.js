@@ -23,8 +23,8 @@ const CONFIG = {
       threshold: 0.1
     },
     float: {
-      speed: 2,
-      amount: 30
+      speed: 1,
+      amount: 50
     },
     glow: {
       color: 0xffaa66,

@@ -11,7 +11,6 @@
   {% assign posts_limit = page.posts_limit | default: 6 %}
   {% assign all_blogs = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'blog' %}
   {% for post in all_blogs limit: posts_limit %}
-    <article class="post-vertical-bar border-start border-primary mb-3">
       <a href="{{ post.url | relative_url }}" class="vertical-bar-link text-decoration-none text-dark">
         <div class="vertical-bar-container d-flex align-items-stretch shadow-sm rounded-end">
           {% if post.image %}
@@ -56,6 +55,5 @@
           </div>
         </div>
       </a>
-    </article>
   {% endfor %}
 </div>
