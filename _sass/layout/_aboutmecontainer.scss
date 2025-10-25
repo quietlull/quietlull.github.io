@@ -1,0 +1,94 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/mixins' as mx;
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/placeholders';
+
+
+/* Transparent backing for text readability */
+.text-container {
+    background: rgba(8, 15, 27, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Remove default margins from first and last elements inside text containers */
+.text-container > *:first-child {
+    margin-top: 0;
+}
+
+.text-container > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Layout styles only - colors come from your theme */
+.landing-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+
+.profile-container {
+    flex: 0 0 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.about-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.additional-content {
+    width: 100%;
+}
+
+/* Add spacing between major sections */
+#landing-box > .text-container,
+#landing-box > .landing-content,
+#landing-box > .additional-content {
+    margin-bottom: 20px;
+}
+
+#landing-box > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Optional: Add slight transparency to title */
+#landing-title {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .landing-content {
+        flex-direction: column;
+    }
+    
+    .profile-container {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    
+    .profile-img {
+        max-width: 250px;
+    }
+    
+    .text-container {
+        padding: 20px;
+    }
+}

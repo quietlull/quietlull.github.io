@@ -32,7 +32,7 @@ const CONFIG = {
     },
     avoidance: {
       proximityRadius: 10000, // Increased - react from further away
-      avoidanceStrength: 1.5, // Reduced - gentler push
+      avoidanceStrength: .1, // Reduced - gentler push
       knockRadius: 40, // Added - distance for hard knock
       knockStrength: 40, // Increased knock power
       returnSpeed: 0.08, // Slower return

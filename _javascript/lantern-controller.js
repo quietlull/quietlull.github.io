@@ -7,95 +7,97 @@ export class LanternController {
     this.camera = camera;
     this.lanterns = [];
     this.time = 0;
-    
+
     // Mouse tracking
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
     this.mouseWorldPos = new THREE.Vector3();
     this.isMouseOverCanvas = false;
-    
+
     // Pre-calculate bounds once (updated on resize or scroll config change)
     this.bounds = this.calculateBounds();
-    
+
     this.setupMouseTracking();
   }
-  
+
   calculateBounds() {
+
+    /*
     // APPROACH: Find what world Y coordinates are visible at top and bottom of scrollable page
     // accounting for camera tilt
-    
+
     // Page dimensions
     const pageHeightPx = document.documentElement.scrollHeight;
     const viewportHeightPx = window.innerHeight;
-    
+
     // Calculate world space dimensions for horizontal bounds (these don't change with tilt)
     const distance = this.camera.position.z; // 500
     const vFov = (this.camera.fov * Math.PI) / 180;
     const viewportHeightWorld = 2 * Math.tan(vFov / 2) * distance;
     const viewportWidthWorld = viewportHeightWorld * this.camera.aspect;
-    
+
     // Horizontal bounds with margin
     const marginX = viewportWidthWorld * 0.25;
     const left = -viewportWidthWorld / 2 - marginX;
     const right = viewportWidthWorld / 2 + marginX;
-    
+
     // For vertical bounds, we need to find what Y coordinates are visible at:
     // 1. Top of page (scroll = 0, camera at startPositionY with startRotationX)
     // 2. Bottom of page (scroll = max, camera at endPositionY with endRotationX)
-    
+
     const startCameraY = this.config.camera.startPositionY; // 300
     const endCameraY = this.config.camera.endPositionY; // 100
     const startRotationX = this.config.camera.startRotationX; // 30 degrees (in radians)
     const endRotationX = this.config.camera.endRotationX; // 0 degrees
-    
+
     // Calculate the top edge of visible area when camera is at start position
     // When camera is tilted up, it's looking higher in world space
-    const topVisibleAtStart = startCameraY + viewportHeightWorld / 2 + 
-                              (Math.tan(startRotationX) * distance);
-    
+    const topVisibleAtStart = startCameraY + viewportHeightWorld / 2 +
+      (Math.tan(startRotationX) * distance);
+
     // Calculate the bottom edge of visible area when camera is at end position
     // Camera looking straight, at the bottom of the page
     const scrollRange = pageHeightPx - viewportHeightPx;
     const worldPerPixelY = viewportHeightWorld / viewportHeightPx;
     const totalScrollWorldHeight = scrollRange * worldPerPixelY;
-    
-    const bottomVisibleAtEnd = endCameraY - viewportHeightWorld / 2 - 
-                               totalScrollWorldHeight +
-                               (Math.tan(endRotationX) * distance);
-    
+
+    const bottomVisibleAtEnd = endCameraY - viewportHeightWorld / 2 -
+      totalScrollWorldHeight +
+      (Math.tan(endRotationX) * distance);
+
     // Add generous vertical margins - increased top margin
     const marginYBottom = viewportHeightWorld * 0.3;
     const marginYTop = viewportHeightWorld * 0.8; // Much larger top margin
-    
+
     return {
       left: left,
       right: right,
       top: topVisibleAtStart + marginYTop,
       bottom: bottomVisibleAtEnd - marginYBottom
-    };
+    };*/
   }
-  
+
   updateBounds() {
-    this.bounds = this.calculateBounds();
+    //this.bounds = this.calculateBounds();
   }
-  
+
   setupMouseTracking() {
     document.addEventListener('mousemove', (event) => {
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      
+
       this.raycaster.setFromCamera(this.mouse, this.camera);
-      
+
       // Store the raycaster for per-lantern intersection
       // We'll calculate distance to each lantern individually in the update loop
       this.isMouseOverCanvas = true;
     });
-    
+
     window.addEventListener('mouseleave', () => {
       this.isMouseOverCanvas = false;
     });
   }
-  
+
   addLantern(mesh) {
     // Initialize userData for interaction
     mesh.userData.basePosition = mesh.position.clone();
@@ -106,32 +108,32 @@ export class LanternController {
     mesh.userData.rotationVelocity = new THREE.Vector3(0, 0, 0); // Track rotation velocity
     mesh.userData.baseScale = mesh.scale.clone(); // Store original scale
     mesh.userData.lastKnockTime = 0; // Track when lantern was last knocked
-    
+
     this.lanterns.push(mesh);
   }
-  
+
   updateLanternSizes(scaleFactor) {
     this.lanterns.forEach(lantern => {
       // Scale based on original size
       lantern.scale.copy(lantern.userData.baseScale).multiplyScalar(scaleFactor);
     });
   }
-  
+
   update(normalizedDelta = 1.0) {
     // normalizedDelta is 1.0 at 60fps, 0.5 at 120fps, 2.0 at 30fps, etc.
     // This keeps all speeds consistent regardless of frame rate
     this.time += 0.016 * normalizedDelta; // Increment time at 60fps rate
-    
+
     const config = this.config.lanterns.avoidance;
     const floatConfig = this.config.lanterns.float;
-    
+
     this.lanterns.forEach(lantern => {
       const offset = lantern.userData.floatOffset;
-      
+
       // Base floating animation
       const floatX = Math.sin(this.time * floatConfig.speed + offset) * floatConfig.amount;
       const floatY = Math.cos(this.time * floatConfig.speed * 0.7 + offset) * floatConfig.amount * 0.5;
-      
+
       // Mouse avoidance
       if (this.isMouseOverCanvas) {
         // Calculate mouse position at THIS lantern's Z depth
@@ -139,19 +141,19 @@ export class LanternController {
         const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -lanternZ);
         const mouseAtLanternDepth = new THREE.Vector3();
         this.raycaster.ray.intersectPlane(plane, mouseAtLanternDepth);
-        
+
         if (mouseAtLanternDepth) {
           const dx = lantern.position.x - mouseAtLanternDepth.x;
           const dy = lantern.position.y - mouseAtLanternDepth.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < config.proximityRadius) {
             const avoidanceFactor = 1 - (distance / config.proximityRadius);
-            
+
             if (distance < config.knockRadius) {
               // Check knock cooldown (prevent rapid repeated knocks)
               const timeSinceLastKnock = this.time - lantern.userData.lastKnockTime;
-              
+
               if (timeSinceLastKnock > config.knockCooldown) {
                 // Knock - add velocity
                 const knockDir = new THREE.Vector2(dx, dy);
@@ -160,13 +162,13 @@ export class LanternController {
                   const knockForce = config.knockStrength * avoidanceFactor;
                   lantern.userData.velocity.x += knockDir.x * knockForce;
                   lantern.userData.velocity.y += knockDir.y * knockForce;
-                  
+
                   // Add rotation feedback - rotate around Z axis based on knock direction
                   // Perpendicular to knock direction creates a swinging motion
                   const rotationForce = config.knockStrength * avoidanceFactor * config.rotationStrength; // Adjust multiplier for rotation strength
                   lantern.userData.rotationVelocity.z += knockDir.x * rotationForce;
                   lantern.userData.rotationVelocity.x += -knockDir.y * rotationForce * 0.5; // Slight tilt forward/back
-                  
+
                   // Update last knock time
                   lantern.userData.lastKnockTime = this.time;
                 }
@@ -183,59 +185,42 @@ export class LanternController {
           }
         }
       }
-      
+
       // Apply velocity (scaled by frame time)
       lantern.userData.avoidanceOffset.x += lantern.userData.velocity.x * normalizedDelta;
       lantern.userData.avoidanceOffset.y += lantern.userData.velocity.y * normalizedDelta;
-      
+
       // Apply rotation velocity (scaled by frame time)
       lantern.rotation.x += lantern.userData.rotationVelocity.x * normalizedDelta;
       lantern.rotation.y += lantern.userData.rotationVelocity.y * normalizedDelta;
       lantern.rotation.z += lantern.userData.rotationVelocity.z * normalizedDelta;
-      
+
       // Dampen velocity and rotation (frame-rate independent damping)
       const velocityDamping = Math.pow(0.92, normalizedDelta);
       const rotationDamping = Math.pow(0.90, normalizedDelta);
       lantern.userData.velocity.multiplyScalar(velocityDamping);
       lantern.userData.rotationVelocity.multiplyScalar(rotationDamping);
-      
+
       // Gradually return to base rotation (frame-rate independent)
       const rotationReturnSpeed = 1 - Math.pow(1 - 0.05, normalizedDelta);
       lantern.rotation.x += (lantern.userData.baseRotation.x - lantern.rotation.x) * rotationReturnSpeed;
       lantern.rotation.y += (lantern.userData.baseRotation.y - lantern.rotation.y) * rotationReturnSpeed;
       lantern.rotation.z += (lantern.userData.baseRotation.z - lantern.rotation.z) * rotationReturnSpeed;
-      
+
       // Gradually return to base position (frame-rate independent)
       const positionReturnSpeed = 1 - Math.pow(1 - config.returnSpeed, normalizedDelta);
       lantern.userData.avoidanceOffset.x *= (1 - positionReturnSpeed);
       lantern.userData.avoidanceOffset.y *= (1 - positionReturnSpeed);
-      
+
       // Calculate target position
       let targetX = lantern.userData.basePosition.x + floatX + lantern.userData.avoidanceOffset.x;
       let targetY = lantern.userData.basePosition.y + floatY + lantern.userData.avoidanceOffset.y;
-      
-      // Boundary enforcement
-      if (targetX < this.bounds.left) {
-        lantern.userData.velocity.x += (this.bounds.left - targetX) * config.boundaryForce;
-        targetX = this.bounds.left;
-      } else if (targetX > this.bounds.right) {
-        lantern.userData.velocity.x += (this.bounds.right - targetX) * config.boundaryForce;
-        targetX = this.bounds.right;
-      }
-      
-      if (targetY < this.bounds.bottom) {
-        lantern.userData.velocity.y += (this.bounds.bottom - targetY) * config.boundaryForce;
-        targetY = this.bounds.bottom;
-      } else if (targetY > this.bounds.top) {
-        lantern.userData.velocity.y += (this.bounds.top - targetY) * config.boundaryForce;
-        targetY = this.bounds.top;
-      }
-      
+
       lantern.position.x = targetX;
       lantern.position.y = targetY;
     });
   }
-  
+
   getLanternCount() {
     return this.lanterns.length;
   }

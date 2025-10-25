@@ -13,7 +13,7 @@
   {% for post in all_blogs limit: posts_limit %}
     <article class="post-vertical-bar border-start border-primary mb-3">
       <a href="{{ post.url | relative_url }}" class="vertical-bar-link text-decoration-none text-dark">
-        <div class="vertical-bar-container d-flex align-items-stretch bg-body shadow-sm rounded-end">
+        <div class="vertical-bar-container d-flex align-items-stretch shadow-sm rounded-end">
           {% if post.image %}
             <div class="vertical-bar-img-wrapper flex-shrink-0">
               {% assign post_image = post.image.path | default: post.image %}
@@ -28,7 +28,7 @@
               {% endif %}
             </div>
           {% else %}
-            <div class="vertical-bar-img-wrapper flex-shrink-0 bg-light d-flex align-items-center justify-content-center border-end">
+            <div class="vertical-bar-img-wrapper vertical-bar-placeholder flex-shrink-0 d-flex align-items-center justify-content-center border-end">
               <div class="text-muted">
                 <i class="fas fa-image fa-lg"></i>
               </div>
