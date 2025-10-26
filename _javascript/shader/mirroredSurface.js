@@ -106,7 +106,7 @@ export class MirroredSurface {
     // Apply distortion to reflection UV
     vec2 distortedReflectionUV = reflectionUV + distortion;
     
-    // Sample reflection
+    // Sample distorted reflection 
     vec4 Dreflection = texture2D(tReflection, distortedReflectionUV);
     
     // Calculate distortion strength for highlighting
