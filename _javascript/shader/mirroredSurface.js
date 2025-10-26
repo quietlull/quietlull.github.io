@@ -74,56 +74,53 @@ export class MirroredSurface {
     `;
 
     const fragmentShader = `
-      uniform sampler2D tReflection;
-      uniform sampler2D tDudv;
-      uniform mat4 uMirrorViewMatrix;
-      uniform mat4 uMirrorProjectionMatrix;
-      uniform vec3 uCameraPosition;
-      uniform float uReflectionIntensity;
-      uniform vec3 uReflectionTint;
-      uniform float uTime;
-      uniform float uWaveStrength;
-      uniform float uWaveSpeed;
-      uniform float uWaveScale;
-      varying vec2 vUv;
-      varying vec4 vWorldPosition;
-      varying vec3 vNormal;
-      
-      void main() {
-        vec3 viewDir = normalize(vWorldPosition.xyz - uCameraPosition);
-        vec3 reflectDir = reflect(viewDir, vNormal);
-        vec3 reflectedPos = vWorldPosition.xyz + reflectDir * 0.01;
-        vec4 mirrorSpacePos = uMirrorProjectionMatrix * uMirrorViewMatrix * vec4(reflectedPos, 1.0);
+  uniform sampler2D tReflection;
+  uniform sampler2D tDudv;
+  uniform mat4 uMirrorViewMatrix;
+  uniform mat4 uMirrorProjectionMatrix;
+  uniform vec3 uCameraPosition;
+  uniform float uReflectionIntensity;
+  uniform vec3 uReflectionTint;
+  uniform float uTime;
+  uniform float uWaveStrength;
+  uniform float uWaveSpeed;
+  uniform float uWaveScale;
+  varying vec2 vUv;
+  varying vec4 vWorldPosition;
+  varying vec3 vNormal;
+  
+  void main() {
+    vec3 viewDir = normalize(vWorldPosition.xyz - uCameraPosition);
+    vec3 reflectDir = reflect(viewDir, vNormal);
+    vec3 reflectedPos = vWorldPosition.xyz + reflectDir * 0.01;
+    vec4 mirrorSpacePos = uMirrorProjectionMatrix * uMirrorViewMatrix * vec4(reflectedPos, 1.0);
 
-        //honestly im not quite sure 
-        vec3 ndc = mirrorSpacePos.xyz / mirrorSpacePos.w;
+    vec3 ndc = mirrorSpacePos.xyz / mirrorSpacePos.w;
+    vec2 reflectionUV = ndc.xy * 0.5 + 0.5;
 
-        //normalize reflection UV
-        vec2 reflectionUV = ndc.xy * 0.5 + 0.5;
-
-        
-        //Distortion time and scale
-        //  * vec2(.01 , 10) need to be replaced with a vec2 wavescale
-        vec2 dudvUV = vUv  * vec2(.01 , 10) + uTime * uWaveSpeed * 0.05;
-        vec2 distortion = texture2D(tDudv, dudvUV).rg;
-
-        // Remap from [0,1] to [-1,1] and apply wave strength
-        distortion = (distortion * 2.0 - 1.0) * uWaveStrength;
-        
-        // Apply distortion to reflection UV
-        vec2 distortedReflectionUV = reflectionUV + distortion;
-
-
-
-        //the the scene color reflection after processing
-        vec4 reflection = texture2D(tReflection, reflectionUV);
-        vec4 Dreflection = texture2D(tReflection, distortedReflectionUV);
-
-
-        gl_FragColor = vec4(Dreflection);
-        //gl_FragColor = vec4(distortedReflectionUV, 0, 0);
-      }
-    `;
+    // Sample distortion
+    vec2 dudvUV = vUv * vec2(.01, 10.0) + uTime * uWaveSpeed * 0.05;
+    vec2 distortion = texture2D(tDudv, dudvUV).rg;
+    distortion = (distortion * 2.0 - 1.0) * uWaveStrength;
+    
+    // Apply distortion to reflection UV
+    vec2 distortedReflectionUV = reflectionUV + distortion;
+    
+    // Sample reflection
+    vec4 Dreflection = texture2D(tReflection, distortedReflectionUV);
+    
+    // Calculate distortion strength for highlighting
+    float distortionStrength = length(distortion) * 1.0; // Amplify for visibility
+    
+    // Create wave highlights - brighten areas with distortion
+    vec3 waveHighlight = vec3(0.3, 0.5, 0.7) * distortionStrength; // Blue tint
+    
+    // Add the highlights to the reflection
+    vec3 finalColor = Dreflection.rgb + waveHighlight;
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+`;
 
     const mirrorMaterial = new THREE.ShaderMaterial({
       uniforms: {
