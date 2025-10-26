@@ -56,14 +56,13 @@ const CONFIG = {
     // Reflection appearance options
     reflection: {
       reflectionIntensity: 1, // 0-1, how bright the reflection is
-      reflectionSaturation: 1,// 0-1, how colorful (1=full color, 0=grayscale)
       reflectionTint: 0xffffff // Color tint to apply
     },
     waves: {
-      waveStrength: 10.5, // How much to distort (0 = no waves, 0.1 = extreme)
-      waveSpeed: 1.5,// Animation speed
-      waveScale: 11,// Size of waves (higher = smaller waves)
-      waveType: 1 // Which wave pattern to use (1-6)
+      waveStrength: 0.01, // How much to distort (0 = no waves, 0.1 = extreme)
+      waveSpeed: .1,// Animation speed
+      waveScale: 1,// Size of waves (higher = smaller waves)
+      waveType: 0 // Which wave pattern to use (1-6)
     }
   }
 };
@@ -244,7 +243,6 @@ function loadWaterFBX(url) {
     // Create with options from CONFIG
     mirroredSurface = new MirroredSurface(scene, camera, renderer, waterMesh, {
       reflectionIntensity: CONFIG.water.reflection.reflectionIntensity,
-      reflectionSaturation: CONFIG.water.reflection.reflectionSaturation,
       reflectionTint: new THREE.Color(CONFIG.water.reflection.reflectionTint),
       // Add wave options:
       waveStrength: CONFIG.water.waves.waveStrength,
