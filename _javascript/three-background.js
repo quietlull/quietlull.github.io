@@ -7,6 +7,7 @@ import { PerformanceMonitor } from './performance-monitor.js';
 import { LanternController } from './lantern-controller.js';
 import { MirroredSurface } from './shader/mirroredSurface.js';
 import { LanternMaterialManager } from './shader/lanternShaderManager.js';
+import { FireworkController } from './firework-controller.js';
 
 // === CONFIGURATION ===
 const CONFIG = {
@@ -124,6 +125,13 @@ document.body.appendChild(vignette);
 const perfMonitor = new PerformanceMonitor();
 const lanternController = new LanternController(CONFIG, camera);
 const lanternMaterialManager = new LanternMaterialManager(CONFIG);
+
+const fireworkController = new FireworkController(scene, camera, {
+  maxFireworks: 50,
+  minZ: 0,
+  maxZ: -500
+});
+
 
 // Responsive lantern sizing //TO FIX DOESNT WORK
 function getResponsiveLanternScale() {
@@ -363,6 +371,8 @@ function animate(currentTime) {
 
   // Update lantern flicker animation
   lanternMaterialManager.update(normalizedDelta);
+  // Firework Controller Update
+  fireworkController.update(normalizedDelta);
 
   perfMonitor.update();
   lanternController.update(normalizedDelta);
