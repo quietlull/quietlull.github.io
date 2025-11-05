@@ -10,6 +10,8 @@ import { LanternMaterialManager } from './shader/lanternShaderManager.js';
 
 // === CONFIGURATION ===
 const CONFIG = {
+  debugEnabled: false,
+
   camera: {
     startRotationX: 25 * Math.PI / 180,
     endRotationX: 0,
@@ -34,7 +36,7 @@ const CONFIG = {
     avoidance: {
       proximityRadius: 10000, // Increased - react from further away
       avoidanceStrength: .1, // Reduced - gentler push
-      knockRadius: 40, // Added - distance for hard knock
+      knockRadius: 45, // Added - distance for hard knock
       knockStrength: 40, // Increased knock power
       returnSpeed: 0.08, // Slower return
       boundaryForce: 0.5, // Stronger boundary push
@@ -44,10 +46,12 @@ const CONFIG = {
     shader: {
       // Gradient settings
       gradientStart: 1.0,     // Brightness at bottom (full bright)
-      gradientEnd: 0.3,       // Brightness at top (dim)
+      gradientEnd: .1,       // Brightness at top (dim)
+      gradientCenter: 1,
+      gradientRange: 1,
 
       // Flicker settings
-      flickerSpeed: 1,      // How fast the flicker
+      flickerSpeed: .5,      // How fast the flicker
       flickerAmount: .25,    // How much brightness variation (0.0 - 1.0)
       flickerColorShift: .5 // How much color shifts towards red/yellow
     },
@@ -158,6 +162,10 @@ function loadLanternsFBX(url) {
           child.material = lanternMaterialManager.createMaterialForMesh(child, {
             gradientStart: CONFIG.lanterns.shader.gradientStart,
             gradientEnd: CONFIG.lanterns.shader.gradientEnd,
+            gradientCenter: CONFIG.lanterns.shader.gradientCenter, // Y position of brightest point (world coords)
+            gradientRange: CONFIG.lanterns.shader.gradientRange,
+
+
 
             flickerSpeed: CONFIG.lanterns.shader.flickerSpeed,
             flickerAmount: CONFIG.lanterns.shader.flickerAmount,

@@ -40,24 +40,37 @@
     display: flex;
     align-items: center;
     margin-bottom: 1.5rem;
+    gap: 1rem;
     
-    #avatar {
-      display: block;
-      width: 5rem; // Adjust size as needed
-      height: 5rem;
-      //overflow: hidden;
-      box-shadow: var(--avatar-border-color) 0 0 0 2px;
+#avatar {
+  display: block;
+  width: 7.5rem;
+  height: 7.5rem;
+  padding: 0.5rem; // Adds margin/spacing inside
+  background-color: rgb(255, 255, 255);; // Makes it changeable!
+  border-radius: 0.75rem; // Rounded square (adjust to taste)
+  box-shadow: none; // Removes the border
 
-      img {
-        transition: transform 0.5s;
-        width: 100%;
-        min-height: 100%;
+img {
+  width: 100%;
+  min-height: 100%;
+  animation: chase-tail 3s linear infinite;
+  animation-play-state: paused; // Paused by default
 
-        &:hover {
-          transform: scale(1.2);
-        }
-      }
-    }
+  &:hover {
+    animation-play-state: running; // Spins when hovering
+  }
+}
+
+@keyframes chase-tail {
+  from { 
+    transform: rotate(0deg); 
+  }
+  to { 
+    transform: rotate(-360deg); // Counter-clockwise
+  }
+}
+}
 
     .site-titles {
       margin-left: 1rem;

@@ -70,7 +70,7 @@ export class LanternMaterialManager {
 
     // Set gradient center to bottom of lantern (where flame would be)
     const gradientCenter = bbox.min.y;
-    const gradientRange = (bbox.max.y - bbox.min.y) * 1.2; // Slightly larger than lantern height
+    const gradientRange = (bbox.max.y - bbox.min.y) * .8; // Slightly larger than lantern height
 
     return this.createMaterial({
       ...options,
