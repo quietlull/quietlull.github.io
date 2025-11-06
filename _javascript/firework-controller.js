@@ -14,18 +14,57 @@ export class FireworkController {
 
     // Configuration
     this.config = {
-      minZ: config.minZ || -1000,
-      maxZ: config.maxZ || -2500,
-      launchSpeed: config.launchSpeed || 0.6, // How fast rockets travel up
-      minDelay: config.minDelay || 0.3, // Min time before explosion
-      maxDelay: config.maxDelay || 0.8, // Max time before explosion
+      // Z-depth range
+      minZ: config.minZ || -10000,
+      maxZ: config.maxZ || -10500,
+
+      // Launch timing
+      launchSpeed: config.launchSpeed || 0.6,
+      minDelay: config.minDelay || 0.3,
+      maxDelay: config.maxDelay || 0.8,
+
+      // Height limits
+      maxHeight: config.maxHeight || 4000,
+      extraHeightMultiplier: config.extraHeightMultiplier || 8000,
+      extraHeightThreshold: config.extraHeightThreshold || 0.6,
+      sceneBottom: config.sceneBottom || -100,
+
+      // Explosion properties
       particleCount: config.particleCount || 400,
-      rainbowChance: config.rainbowChance || 0.6, // 30% chance for rainbow
-      autoFireworks: config.autoFireworks || false, // Auto-generate fireworks
-      autoChance: config.autoChance || 0.15 // Chance per frame to spawn auto firework
+      particleSize: config.particleSize || 20,
+      explosionScaleMin: config.explosionScaleMin || 5.0,
+      explosionScaleMax: config.explosionScaleMax || 10.0,
+      explosionSpread: config.explosionSpread || 80.0,
+      explosionDuration: config.explosionDuration || 1.2,
+
+      // Particle appearance
+      particleBrightness: config.particleBrightness || 0.6,
+
+      // Trail properties
+      trailRadius: config.trailRadius || 30,
+      trailBrightness: config.trailBrightness || 0.8,
+      trailGradientWidth: config.trailGradientWidth || 0.3,
+
+      // Colors
+      rainbowChance: config.rainbowChance || 0.5,
+
+      autoFireworks: config.autoFireworks || false,
+      autoDelay: config.autoDelay || 1.0,        // Seconds between bursts
+      autoDelayVariation: config.autoDelayVariation || 0.5,  // Random ±variation in seconds
+      autoAmount: config.autoAmount || 2,        // Number of fireworks per burst
+      autoAmountVariation: config.autoAmountVariation || 2  // Random ±variation
     };
 
+    // Auto firework timer
+    this.autoTimer = 0;
+    this.nextAutoDelay = this.getRandomDelay();  // Initialize with random delay
+
     this.setupClickHandler();
+  }
+
+  getRandomDelay() {
+    const variation = (Math.random() * 2 - 1) * this.config.autoDelayVariation;
+    return Math.max(0.5, this.config.autoDelay + variation);
   }
 
   setupClickHandler() {
@@ -62,25 +101,25 @@ export class FireworkController {
     const worldX = x * (width / 2);
     let worldY = y * (height / 2) + this.camera.position.y;
 
-    // Allow fireworks to go higher by extrapolating beyond screen bounds
-    // If clicking in top 20% of screen, allow extra height
-    if (y > 0.6) {
-      const extraHeight = (y - 0.6) * 1000; // Can add up to 400 extra units
+    // Allow fireworks to go MUCH higher by extrapolating beyond screen bounds
+    // If clicking in top 40% of screen, allow massive extra height
+    if (y > this.config.extraHeightThreshold) {
+      const extraHeight = (y - this.config.extraHeightThreshold) * this.config.extraHeightMultiplier;
       worldY += extraHeight;
     }
 
-    // Clamp max height to 1500
-    worldY = Math.min(worldY, 1500);
+    // Clamp max height to 2000
+    worldY = Math.min(worldY, this.config.maxHeight);
 
     // CLAMP: If clicked below -100, place firework above -100
-    const sceneBottom = -100;
+    const sceneBottom = this.config.sceneBottom;
     const clampedY = worldY < sceneBottom ? THREE.MathUtils.lerp(sceneBottom + 50, this.camera.position.y - 100, Math.random()) : worldY;
 
     // End point is where the click happened (or clamped position)
     const endPoint = new THREE.Vector3(worldX, clampedY, randomZ);
 
     // Start point is BELOW the scene bottom (-100)
-    const startPoint = new THREE.Vector3(worldX, sceneBottom - 200, randomZ);
+    const startPoint = new THREE.Vector3(worldX, this.config.sceneBottom - 200, randomZ);
 
     // Random delay before explosion
     const explosionDelay = THREE.MathUtils.lerp(
@@ -100,7 +139,7 @@ export class FireworkController {
       return;
     }
 
-    // Random position across the screen, but above scene bottom (-100)
+    // Random position across the screen, but above scene bottom
     const randomX = (Math.random() * 2 - 1) * 0.8; // Stay within 80% of screen
     const randomY = (Math.random() * 0.5 + 0.3); // Upper/middle portion of screen
 
@@ -109,6 +148,7 @@ export class FireworkController {
       (1 - randomY) * window.innerHeight
     );
   }
+
 
   createFirework(startPoint, endPoint, explosionDelay = 0.5, isRainbow = false) {
     // Random color
@@ -122,7 +162,7 @@ export class FireworkController {
     const rocketTrail = this.createRocketTrail(color, startPoint, endPoint);
 
     // More varied scale for explosion size (0.5 to 1.5x)
-    const scale = Math.random() * 1.0 + 0.5; // 0.5 - 1.5
+    const scale = Math.random() * (this.config.explosionScaleMax - this.config.explosionScaleMin) + this.config.explosionScaleMin;
 
     // Store data for explosion
     const firework = {
@@ -149,14 +189,14 @@ export class FireworkController {
     const midPoint = new THREE.Vector3().addVectors(startPoint, endPoint).multiplyScalar(0.5);
 
     // Cylinder geometry along Y axis by default, we'll rotate it
-    const geometry = new THREE.CylinderGeometry(3, 3, length, 8, 1);
+    const geometry = new THREE.CylinderGeometry(this.config.trailRadius, this.config.trailRadius, length, 8, 1, true);
 
     // Create custom shader material for animated gradient
     const material = new THREE.ShaderMaterial({
       uniforms: {
-        uColor: { value: new THREE.Color(color.r * 0.8, color.g * 0.8, color.b * 0.8) },
-        uProgress: { value: 0.0 }, // 0 to 1 as rocket travels
-        uGradientWidth: { value: 0.3 } // How wide the glowing section is
+        uColor: { value: new THREE.Color(color.r * this.config.trailBrightness, color.g * this.config.trailBrightness, color.b * this.config.trailBrightness) },
+        uProgress: { value: 0.0 },
+        uGradientWidth: { value: this.config.trailGradientWidth }
       },
       vertexShader: `
         varying vec2 vUv;
@@ -203,7 +243,7 @@ export class FireworkController {
         }
       `,
       transparent: true,
-      depthTest: false,
+      depthTest: true,
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide
     });
@@ -273,12 +313,12 @@ export class FireworkController {
 
   createMaterial(timeUniform, color, isRainbow) {
     const material = new THREE.PointsMaterial({
-      size: 50, // World space size
+      size: this.config.particleSize,
       color: isRainbow ? new THREE.Color(1, 1, 1) : color,
       transparent: true,
       alphaTest: 0.05,
       sizeAttenuation: true,
-      depthTest: false,
+      depthTest: true,
       vertexColors: isRainbow,
       blending: THREE.NormalBlending // CHANGED from AdditiveBlending
     });
@@ -316,7 +356,7 @@ export class FireworkController {
           float op = (0.9 - fract(uTime) * fract(uTime)) * 1.6;
           
           // With normal blending, we can use brighter colors
-          vec3 finalColor = diffuse * 0.6; // 60% brightness
+          vec3 finalColor = diffuse * ${this.config.particleBrightness.toFixed(2)};
           vec4 diffuseColor = vec4( finalColor, op * softEdge );
           
           #include <logdepthbuf_fragment>
@@ -399,7 +439,7 @@ export class FireworkController {
         float grav = 0.7;
         vec3 gravP = vec3(0., -1., 0.) * (t*t*grav*grav) * 1.2;
         
-        vec3 newP = (transformed.xyz * d1 * 80.0) + gravP * 80.0; // Scale up for world space
+        vec3 newP = (transformed.xyz * d1 * ${this.config.explosionSpread.toFixed(1)}) + gravP * ${this.config.explosionSpread.toFixed(1)};
         transformed.xyz = newP;
         
         #include <project_vertex>
@@ -418,9 +458,23 @@ export class FireworkController {
   }
 
   update(normalizedDelta = 1.0) {
-    // Auto-generate fireworks if enabled
-    if (this.config.autoFireworks && Math.random() < this.config.autoChance * normalizedDelta) {
-      this.createAutoFirework();
+    // Auto-generate fireworks with delay-based system
+    if (this.config.autoFireworks) {
+      this.autoTimer += 0.016 * normalizedDelta; // Increment timer (60fps baseline)
+
+      if (this.autoTimer >= this.nextAutoDelay) {
+        // Reset timer and get new random delay
+        this.autoTimer = 0;
+        this.nextAutoDelay = this.getRandomDelay();
+
+        // Fire burst of fireworks
+        const variation = Math.floor(Math.random() * this.config.autoAmountVariation * 2) - this.config.autoAmountVariation;
+        const amount = Math.max(1, this.config.autoAmount + variation);
+
+        for (let i = 0; i < amount; i++) {
+          this.createAutoFirework();
+        }
+      }
     }
 
     const removeGroup = [];
@@ -474,7 +528,7 @@ export class FireworkController {
       } else if (firework.phase === 'explode') {
         // EXPLOSION PHASE - particles spreading
         const explosionTime = firework.explosionClock.getElapsedTime();
-        const bloomTime = Math.min(explosionTime / 1.2, 1); // 1.2 second explosion duration
+        const bloomTime = Math.min(explosionTime / this.config.explosionDuration, 1);
 
         firework.explosion.userData.time.value = bloomTime;
 
