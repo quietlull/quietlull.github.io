@@ -1,77 +1,83 @@
 @mixin styles {
   color-scheme: dark;
 
-  /* Framework color */
-  --main-bg: hsla(218, 5%, 11%, 0.64);
+  // BACKGROUNDS
+  --bg-primary: hsla(218, 5%, 11%, 0.64);
+  --bg-secondary: hsl(218, 1%, 12%);
+  --bg-tertiary: hsl(218, 0%, 16%);
+  --bg-glass: rgba(8, 15, 27, 0.85);
   --mask-bg: hsla(218, 1%, 27%, 0.64);
-  --main-border-color: hsla(218, 1%, 17%, 0.64);
+  --img-bg: radial-gradient(circle, hsl(218, 4%, 9%) 0%, hsl(218, 0%, 13%) 100%);
 
-  /* Common color */
-  --text-color: hsl(218, 22%, 71%); //rgb(175 176 177);
-  --text-muted-color: hsl(218, 14%, 55%);//#868686;
+  // TEXT
+  --text-color: hsl(218, 22%, 71%);
+  --text-muted-color: hsl(218, 14%, 55%);
   --text-muted-highlight-color: hsl(218, 0%, 68%);
   --heading-color: hsl(218, 74%, 79%);
   --label-color: hsl(218, 0%, 65%);
-  --blockquote-border-color: hsl(218, 0%, 26%);
-  --blockquote-text-color: hsl(218, 0%, 53%);
+
+  // BORDERS
+  --main-border-color: hsla(218, 1%, 17%, 0.64);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  // LINKS
   --link-color: hsl(218, 89%, 76%);
   --link-underline-color: hsl(218, 29%, 45%);
+
+  // BUTTONS
   --button-bg: hsl(218, 0%, 12%);
-  --btn-border-color: hsl(218220, 3%, 19%);
+  --btn-border-color: hsl(218, 3%, 19%);
   --btn-backtotop-color: var(--text-color);
   --btn-backtotop-border-color: hsl(218, 1%, 13%);
-  --card-header-bg: hsl(218, 0%, 16%);
-  --checkbox-color: hsl(218, 1%, 47%);
-  --checkbox-checked-color: var(--link-color);
-  --img-bg: radial-gradient(circle, hsl(218, 4%, 9%) 0%, hsl(218, 0%, 13%) 100%);
-  --shimmer-bg: linear-gradient(
-    90deg,
-    hsla(218, 0%, 100%, 0) 0%,
-    hsla(218, 3%, 22%, 0.4) 50%,
-    hsla(218, 0%, 100%, 0) 100%
-  );
+  --btn-patinator-text-color: var(--text-color);
+  --btn-paginator-hover-color: hsl(218, 0%, 18%);
+  --btn-share-color: hsl(218, 7%, 46%);
+  --btn-share-hover-color: hsl(218, 9%, 77%);
 
-  /* Sidebar */
-  --site-title-color: hsl(218, 1%, 44%);
-  --site-subtitle-color: hsl(218, 1%, 53%);
-  --sidebar-bg: hsl(218, 1%, 12%);
+  // TOPBAR
+  --topbar-bg: var(--bg-glass);
+  --topbar-text-color: var(--text-color);
+  --topbar-border-color: var(--glass-border);
+  --topbar-hover-bg: hsl(218, 7%, 30%);
+  --topbar-active-color: hsla(218, 1%, 100%, 0.95);
+  --topbar-btn-bg: hsl(218, 7%, 15%);
+  --topbar-btn-color: hsl(218, 1%, 47%);
+
+  // SIDEBAR (legacy - maps to topbar)
+  --sidebar-bg: var(--bg-secondary);
   --sidebar-border-color: hsl(218, 1%, 16%);
   --sidebar-muted-color: hsl(218, 1%, 53%);
   --sidebar-active-color: hsla(218, 1%, 100%, 0.95);
   --sidebar-hover-bg: hsl(218, 1%, 15%);
   --sidebar-btn-bg: hsl(218, 7%, 15%);
   --sidebar-btn-color: hsl(218, 1%, 47%);
+  --site-title-color: hsl(218, 1%, 44%);
+  --site-subtitle-color: hsl(218, 1%, 53%);
   --avatar-border-color: hsla(218, 1%, 81%, 0.9);
 
-  /* Topbar */
-  --topbar-bg: hsla(218, 5%, 11%, 0.64);
-  --topbar-text-color: var(--text-color);
+  // SEARCH/INPUT
   --search-border-color: hsl(218, 0%, 22%);
   --search-icon-color: hsl(218, 2%, 40%);
+  --search-tag-bg: hsl(218, 1%, 16%);
   --input-focus-border-color: hsl(218, 1%, 45%);
 
-  /* Home page */
-  --post-list-text-color: hsl(218, 1%, 69%);
-  --btn-patinator-text-color: var(--text-color);
-  --btn-paginator-hover-color: hsl(218, 0%, 18%);
-
-  /* Posts */
-  --toc-highlight: hsl(218, 84%, 70%);
-  --toc-popup-border-color: hsl(218, 0%, 22%);
-  --tag-hover: hsl(218, 18%, 21%);
-  --tb-odd-bg: hsl(218, 1%, 15%); /* odd rows of the posts' table */
-  --tb-even-bg: hsl(218, 5%, 13%); /* even rows of the posts' table */
-  --tb-border-color: var(--tb-odd-bg);
-  --footnote-target-bg: hsl(218, 48%, 48%);
-  --btn-share-color: hsl(218, 7%, 46%);
-  --btn-share-hover-color: hsl(218, 9%, 77%);
+  // CARDS
   --card-bg: hsl(0, 0%, 12%);
   --card-hover-bg: hsl(218, 7%, 30%);
-  --card-shadow: hsla(0, 0%, 8%, 0.72) 0 6px 18px 0,
-    hsla(218, 1%, 53%, 0.24) 0 0 0 1px;
-  --kbd-wrap-color: hsl(0, 0%, 42%);
-  --kbd-text-color: hsl(0, 0%, 83%);
-  --kbd-bg-color: hsl(0, 0%, 14%);
+  --card-shadow: hsla(0, 0%, 8%, 0.72) 0 6px 18px 0, hsla(218, 1%, 53%, 0.24) 0 0 0 1px;
+  --card-header-bg: var(--bg-tertiary);
+
+  // TAGS
+  --tag-border: hsl(218, 20%, 29%);
+  --tag-shadow: hsl(218, 2%, 13%);
+  --tag-hover: hsl(218, 18%, 21%);
+
+  // BLOCKQUOTES
+  --blockquote-border-color: hsl(218, 0%, 26%);
+  --blockquote-text-color: hsl(218, 0%, 53%);
+
+  // PROMPTS
   --prompt-text-color: hsla(218, 5%, 84%, 0.75);
   --prompt-tip-bg: hsla(218, 46%, 16%, 0.64);
   --prompt-tip-icon-color: hsla(120, 83%, 35%, 0.81);
@@ -82,23 +88,7 @@
   --prompt-danger-bg: hsla(15, 83%, 18%, 0.8);
   --prompt-danger-icon-color: hsl(0, 98%, 41%);
 
-  /* Tags */
-  --tag-border: hsl(218, 20%, 29%);
-  --tag-shadow: hsl(218, 2%, 13%);
-  --dash-color: hsl(218, 4%, 26%);
-  --search-tag-bg: hsl(218, 1%, 16%);
-
-  /* Categories */
-  --categories-border: rgb(64 66 69 / 50%);
-  --categories-hover-bg: rgb(73 75 76);
-  --categories-icon-hover-color: white;
-
-  /* Archive */
-  --timeline-node-bg: rgb(150 152 156);
-  --timeline-color: rgb(63 65 68);
-  --timeline-year-dot-color: var(--timeline-color);
-
-  /* Code highlight colors */
+  // CODE
   --language-border-color: #2d2d2d;
   --highlight-bg-color: #151515;
   --highlighter-rouge-color: #c9def1;
@@ -111,193 +101,41 @@
   --clipboard-checked-color: #2bcc2b;
   --filepath-text-color: #cacaca;
 
-  .light {
-    display: none;
-  }
+  // TABLES
+  --tb-odd-bg: hsl(218, 1%, 15%);
+  --tb-even-bg: hsl(218, 5%, 13%);
+  --tb-border-color: var(--tb-odd-bg);
 
-  /* Categories */
-  .categories.card,
-  .list-group-item {
-    background-color: var(--card-bg);
-  }
+  // CATEGORIES/ARCHIVES
+  --categories-border: rgb(64 66 69 / 50%);
+  --categories-hover-bg: rgb(73 75 76);
+  --categories-icon-hover-color: white;
+  --timeline-color: rgb(63 65 68);
+  --timeline-node-bg: rgb(150 152 156);
+  --timeline-year-dot-color: var(--timeline-color);
+  --dash-color: hsl(218, 4%, 26%);
 
-  .categories {
-    .card-header {
-      background-color: var(--card-header-bg);
-    }
+  // TOC
+  --toc-highlight: hsl(218, 84%, 70%);
+  --toc-popup-border-color: hsl(218, 0%, 22%);
 
-    .list-group-item {
-      border-left: none;
-      border-right: none;
-      padding-left: 2rem;
-      border-color: var(--categories-border);
+  // MISC
+  --footnote-target-bg: hsl(218, 48%, 48%);
+  --kbd-wrap-color: hsl(0, 0%, 42%);
+  --kbd-text-color: hsl(0, 0%, 83%);
+  --kbd-bg-color: hsl(0, 0%, 14%);
+  --checkbox-color: hsl(218, 1%, 47%);
+  --checkbox-checked-color: var(--link-color);
+  --shimmer-bg: linear-gradient(90deg, hsla(218, 0%, 100%, 0) 0%, hsla(218, 3%, 22%, 0.4) 50%, hsla(218, 0%, 100%, 0) 100%);
 
-      &:last-child {
-        border-bottom-color: var(--card-bg);
-      }
-    }
-  }
+  .light { display: none; }
 
+  // OVERRIDES
+  .categories.card, .list-group-item { background-color: var(--card-bg); }
+  .categories .card-header { background-color: var(--card-header-bg); }
   #archives li:nth-child(odd) {
-    background-image: linear-gradient(
-      to left,
-      rgb(26 26 30),
-      rgb(39 39 45),
-      rgb(39 39 45),
-      rgb(39 39 45),
-      rgb(26 26 30)
-    );
+    background-image: linear-gradient(to left, rgb(26 26 30), rgb(39 39 45), rgb(39 39 45), rgb(39 39 45), rgb(26 26 30));
   }
 
-  /* stylelint-disable-next-line selector-id-pattern */
-  #disqus_thread {
-    color-scheme: none;
-  }
-
-  /* --- Syntax highlight theme from `rougify style base16.dark` --- */
-
-  .highlight .gp {
-    color: #87939d;
-  }
-
-  .highlight table td {
-    padding: 5px;
-  }
-
-  .highlight table pre {
-    margin: 0;
-  }
-
-  .highlight,
-  .highlight .w {
-    color: #d0d0d0;
-    background-color: #151515;
-  }
-
-  .highlight .err {
-    color: #151515;
-    background-color: #ac4142;
-  }
-
-  .highlight .c,
-  .highlight .ch,
-  .highlight .cd,
-  .highlight .cm,
-  .highlight .cpf,
-  .highlight .c1,
-  .highlight .cs {
-    color: #848484;
-  }
-
-  .highlight .cp {
-    color: #f4bf75;
-  }
-
-  .highlight .nt {
-    color: #f4bf75;
-  }
-
-  .highlight .o,
-  .highlight .ow {
-    color: #d0d0d0;
-  }
-
-  .highlight .p,
-  .highlight .pi {
-    color: #d0d0d0;
-  }
-
-  .highlight .gi {
-    color: #90a959;
-  }
-
-  .highlight .gd {
-    color: #f08a8b;
-    background-color: #320000;
-  }
-
-  .highlight .gh {
-    color: #6a9fb5;
-    background-color: #151515;
-    font-weight: bold;
-  }
-
-  .highlight .k,
-  .highlight .kn,
-  .highlight .kp,
-  .highlight .kr,
-  .highlight .kv {
-    color: #aa759f;
-  }
-
-  .highlight .kc {
-    color: #d28445;
-  }
-
-  .highlight .kt {
-    color: #d28445;
-  }
-
-  .highlight .kd {
-    color: #d28445;
-  }
-
-  .highlight .s,
-  .highlight .sb,
-  .highlight .sc,
-  .highlight .dl,
-  .highlight .sd,
-  .highlight .s2,
-  .highlight .sh,
-  .highlight .sx,
-  .highlight .s1 {
-    color: #90a959;
-  }
-
-  .highlight .sa {
-    color: #aa759f;
-  }
-
-  .highlight .sr {
-    color: #75b5aa;
-  }
-
-  .highlight .si {
-    color: #b76d45;
-  }
-
-  .highlight .se {
-    color: #b76d45;
-  }
-
-  .highlight .nn {
-    color: #f4bf75;
-  }
-
-  .highlight .nc {
-    color: #f4bf75;
-  }
-
-  .highlight .no {
-    color: #f4bf75;
-  }
-
-  .highlight .na {
-    color: #6a9fb5;
-  }
-
-  .highlight .m,
-  .highlight .mb,
-  .highlight .mf,
-  .highlight .mh,
-  .highlight .mi,
-  .highlight .il,
-  .highlight .mo,
-  .highlight .mx {
-    color: #90a959;
-  }
-
-  .highlight .ss {
-    color: #90a959;
-  }
+  // SYNTAX HIGHLIGHTING - Handled by base/_syntax.scss
 }

@@ -1,42 +1,23 @@
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/mixins' as mx;
-@use '../abstracts/placeholders';
 
 .access {
   top: 2rem;
-  transition: top 0.2s ease-in-out;
   margin-top: 2rem;
-
-  &:only-child {
-    position: -webkit-sticky;
-    position: static;
-  }
+  transition: top 0.2s;
 
   > section {
-    @extend %panel-border;
-
-    // Transparent backing (glass-morphism effect)
-    background: rgba(8, 15, 27, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    @include mx.glass;
     border-radius: 12px;
-    padding: 20px;
-    padding-left: 1rem;
+    border-left: 1px solid var(--main-border-color);
+    padding: 1.25rem;
 
     &:not(:first-child) {
       margin-top: 1rem;
     }
 
-    // Remove margins from first and last children inside panel
-    > *:first-child {
-      margin-top: 0;
-    }
-
-    > *:last-child {
-      margin-bottom: 0;
-    }
+    > *:first-child { margin-top: 0; }
+    > *:last-child { margin-bottom: 0; }
   }
 
   .content {
@@ -45,12 +26,10 @@
 }
 
 #panel-wrapper {
-  /* the headings */
   .panel-heading {
     font-family: inherit;
     line-height: inherit;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); // Better readability
-
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     @include mx.label(inherit);
   }
 
@@ -60,13 +39,13 @@
     border-radius: 0.8rem;
     padding: 0.3rem 0.5rem;
     margin: 0 0.35rem 0.5rem 0;
-    background: rgba(255, 255, 255, 0.1); // Subtle background
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    transition: all 0.3s ease-in;
+    @include mx.transition(all);
 
     &:hover {
-      background: rgba(255, 170, 102, 0.2); // Lantern glow on hover
+      background: rgba(255, 170, 102, 0.2);
       border-color: rgba(255, 170, 102, 0.3);
       transform: translateY(-2px);
     }
@@ -84,12 +63,11 @@
 #access-lastmod {
   a {
     color: inherit;
+    border-bottom: none;
 
     &:hover {
-      @extend %link-hover;
+      color: #d2603a !important;
+      border-bottom: 1px solid #d2603a;
     }
-
-    @extend %no-bottom-border;
   }
 }
-

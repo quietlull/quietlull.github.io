@@ -1,9 +1,24 @@
+// =============================================================================
+// MIXINS - Reusable style patterns
+// =============================================================================
+
+@use 'sass:list';
+
+// TEXT
 @mixin text-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+@mixin text-clip($lines: 2) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+}
+
+// SPACING
 @mixin mt-mb($value) {
   margin-top: $value;
   margin-bottom: $value;
@@ -29,18 +44,29 @@
   }
 }
 
-@mixin placeholder {
-  color: var(--text-muted-color) !important;
+// GLASS MORPHISM - Use this instead of repeating backdrop-filter code
+@mixin glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
-@mixin placeholder-focus {
-  opacity: 0.6;
+// TRANSITIONS
+@mixin transition($props...) {
+  $list: ();
+  @each $prop in $props {
+    $list: list.append($list, $prop 0.3s ease, comma);
+  }
+  transition: $list;
 }
 
-@mixin label($font-size: 1rem, $font-weight: 600, $color: var(--label-color)) {
-  color: $color;
-  font-size: $font-size;
-  font-weight: $font-weight;
+// LAYOUT
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @mixin align-center {
@@ -49,15 +75,35 @@
   transform: translateX(-50%);
 }
 
-@mixin prompt($type, $fa-content, $fa-style: 'solid', $rotate: 0) {
+@mixin max-w-100 {
+  max-width: 100%;
+}
+
+// FORMS
+@mixin placeholder {
+  color: var(--text-muted-color) !important;
+}
+
+@mixin placeholder-focus {
+  opacity: 0.6;
+}
+
+// TYPOGRAPHY
+@mixin label($size: 1rem, $weight: 600, $color: var(--label-color)) {
+  color: $color;
+  font-size: $size;
+  font-weight: $weight;
+}
+
+// PROMPTS
+@mixin prompt($type, $fa_content, $fa_style: 'solid', $rotate: 0) {
   &.prompt-#{$type} {
     background-color: var(--prompt-#{$type}-bg);
 
     &::before {
-      content: $fa-content;
+      content: $fa_content;
       color: var(--prompt-#{$type}-icon-color);
-      font: var(--fa-font-#{$fa-style});
-
+      font: var(--fa-font-#{$fa_style});
       @if $rotate != 0 {
         transform: rotate(#{$rotate}deg);
       }
@@ -65,16 +111,22 @@
   }
 }
 
+// ANIMATION
 @mixin slide($append: null) {
-  $basic: transform 0.4s ease;
-
   @if $append {
-    transition: $basic, $append;
+    transition: transform 0.4s ease, $append;
   } @else {
-    transition: $basic;
+    transition: transform 0.4s ease;
   }
 }
 
-@mixin max-w-100 {
-  max-width: 100%;
+// IMAGE
+@mixin img-caption {
+  + em {
+    display: block;
+    text-align: center;
+    font-style: normal;
+    font-size: 80%;
+    color: var(--text-muted-color);
+  }
 }
