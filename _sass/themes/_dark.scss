@@ -1,141 +1,146 @@
 @mixin styles {
   color-scheme: dark;
 
-  // BACKGROUNDS
-  --bg-primary: hsla(218, 5%, 11%, 0.64);
-  --bg-secondary: hsl(218, 1%, 12%);
-  --bg-tertiary: hsl(218, 0%, 16%);
-  --bg-glass: rgba(8, 15, 27, 0.85);
+  // BACKGROUNDS - Lantern aesthetic
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-glass: rgba(15, 23, 42, 0.85);
   --mask-bg: hsla(218, 1%, 27%, 0.64);
   --img-bg: radial-gradient(circle, hsl(218, 4%, 9%) 0%, hsl(218, 0%, 13%) 100%);
 
-  // TEXT
-  --text-color: hsl(218, 22%, 71%);
-  --text-muted-color: hsl(218, 14%, 55%);
-  --text-muted-highlight-color: hsl(218, 0%, 68%);
-  --heading-color: hsl(218, 74%, 79%);
-  --label-color: hsl(218, 0%, 65%);
+  // TEXT - Amber tinted
+  --text-color: rgba(251, 241, 227, 0.9);
+  --text-muted-color: rgba(251, 241, 227, 0.6);
+  --text-muted-highlight-color: rgba(251, 241, 227, 0.5);
+  --heading-color: rgba(251, 241, 227, 0.95);
+  --label-color: rgba(251, 241, 227, 0.7);
 
-  // BORDERS
-  --main-border-color: hsla(218, 1%, 17%, 0.64);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  // BORDERS - Amber glow
+  --main-border-color: rgba(245, 158, 11, 0.1);
+  --glass-border: rgba(245, 158, 11, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 60px rgba(251, 191, 36, 0.03);
 
-  // LINKS
-  --link-color: hsl(218, 89%, 76%);
-  --link-underline-color: hsl(218, 29%, 45%);
+  // LANTERN GLOWS
+  --lantern-glow-subtle: rgba(251, 191, 36, 0.03);
+  --lantern-glow-medium: rgba(251, 191, 36, 0.05);
+  --lantern-glow-strong: rgba(251, 191, 36, 0.1);
+
+  // LINKS - Amber accent
+  --link-color: #fbbf24;
+  --link-underline-color: rgba(251, 191, 36, 0.3);
 
   // BUTTONS
-  --button-bg: hsl(218, 0%, 12%);
-  --btn-border-color: hsl(218, 3%, 19%);
+  --button-bg: rgba(245, 158, 11, 0.1);
+  --btn-border-color: rgba(245, 158, 11, 0.2);
   --btn-backtotop-color: var(--text-color);
-  --btn-backtotop-border-color: hsl(218, 1%, 13%);
+  --btn-backtotop-border-color: rgba(245, 158, 11, 0.1);
   --btn-patinator-text-color: var(--text-color);
-  --btn-paginator-hover-color: hsl(218, 0%, 18%);
-  --btn-share-color: hsl(218, 7%, 46%);
-  --btn-share-hover-color: hsl(218, 9%, 77%);
+  --btn-paginator-hover-color: rgba(245, 158, 11, 0.15);
+  --btn-share-color: rgba(251, 241, 227, 0.6);
+  --btn-share-hover-color: rgba(251, 241, 227, 0.9);
 
   // TOPBAR
   --topbar-bg: var(--bg-glass);
-  --topbar-text-color: var(--text-color);
+  --topbar-text-color: rgba(251, 241, 227, 0.6);
   --topbar-border-color: var(--glass-border);
-  --topbar-hover-bg: hsl(218, 7%, 30%);
-  --topbar-active-color: hsla(218, 1%, 100%, 0.95);
-  --topbar-btn-bg: hsl(218, 7%, 15%);
-  --topbar-btn-color: hsl(218, 1%, 47%);
+  --topbar-hover-bg: rgba(245, 158, 11, 0.1);
+  --topbar-active-color: rgba(251, 241, 227, 0.95);
+  --topbar-btn-bg: rgba(245, 158, 11, 0.05);
+  --topbar-btn-color: rgba(251, 241, 227, 0.6);
+  --avatar-bg-color: rgba(255, 255, 255, 0.9); // Subtle amber glow in dark mode
 
-  // SIDEBAR (legacy - maps to topbar)
+  // SIDEBAR (legacy)
   --sidebar-bg: var(--bg-secondary);
-  --sidebar-border-color: hsl(218, 1%, 16%);
-  --sidebar-muted-color: hsl(218, 1%, 53%);
-  --sidebar-active-color: hsla(218, 1%, 100%, 0.95);
-  --sidebar-hover-bg: hsl(218, 1%, 15%);
-  --sidebar-btn-bg: hsl(218, 7%, 15%);
-  --sidebar-btn-color: hsl(218, 1%, 47%);
-  --site-title-color: hsl(218, 1%, 44%);
-  --site-subtitle-color: hsl(218, 1%, 53%);
-  --avatar-border-color: hsla(218, 1%, 81%, 0.9);
+  --sidebar-border-color: rgba(245, 158, 11, 0.1);
+  --sidebar-muted-color: rgba(251, 241, 227, 0.6);
+  --sidebar-active-color: rgba(251, 241, 227, 0.95);
+  --sidebar-hover-bg: rgba(245, 158, 11, 0.1);
+  --sidebar-btn-bg: rgba(245, 158, 11, 0.05);
+  --sidebar-btn-color: rgba(251, 241, 227, 0.6);
+  --site-title-color: rgba(251, 241, 227, 0.9);
+  --site-subtitle-color: rgba(251, 241, 227, 0.6);
+  --avatar-border-color: rgba(251, 191, 36, 0.3);
 
   // SEARCH/INPUT
-  --search-border-color: hsl(218, 0%, 22%);
-  --search-icon-color: hsl(218, 2%, 40%);
-  --search-tag-bg: hsl(218, 1%, 16%);
-  --input-focus-border-color: hsl(218, 1%, 45%);
+  --search-border-color: rgba(245, 158, 11, 0.1);
+  --search-icon-color: rgba(251, 241, 227, 0.5);
+  --search-tag-bg: rgba(245, 158, 11, 0.05);
+  --input-focus-border-color: rgba(251, 191, 36, 0.3);
 
   // CARDS
-  --card-bg: hsl(0, 0%, 12%);
-  --card-hover-bg: hsl(218, 7%, 30%);
-  --card-shadow: hsla(0, 0%, 8%, 0.72) 0 6px 18px 0, hsla(218, 1%, 53%, 0.24) 0 0 0 1px;
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --card-hover-bg: rgba(245, 158, 11, 0.1);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 60px rgba(251, 191, 36, 0.02);
   --card-header-bg: var(--bg-tertiary);
 
   // TAGS
-  --tag-border: hsl(218, 20%, 29%);
-  --tag-shadow: hsl(218, 2%, 13%);
-  --tag-hover: hsl(218, 18%, 21%);
+  --tag-border: rgba(245, 158, 11, 0.2);
+  --tag-shadow: rgba(0, 0, 0, 0.4);
+  --tag-hover: rgba(245, 158, 11, 0.15);
 
   // BLOCKQUOTES
-  --blockquote-border-color: hsl(218, 0%, 26%);
-  --blockquote-text-color: hsl(218, 0%, 53%);
+  --blockquote-border-color: rgba(251, 191, 36, 0.3);
+  --blockquote-text-color: rgba(251, 241, 227, 0.7);
 
   // PROMPTS
-  --prompt-text-color: hsla(218, 5%, 84%, 0.75);
-  --prompt-tip-bg: hsla(218, 46%, 16%, 0.64);
-  --prompt-tip-icon-color: hsla(120, 83%, 35%, 0.81);
-  --prompt-info-bg: hsla(208, 87%, 22%, 0.8);
-  --prompt-info-icon-color: hsl(206, 100%, 41%);
-  --prompt-warning-bg: hsla(46, 94%, 18%, 0.88);
-  --prompt-warning-icon-color: hsla(39, 100%, 50%, 0.8);
-  --prompt-danger-bg: hsla(15, 83%, 18%, 0.8);
-  --prompt-danger-icon-color: hsl(0, 98%, 41%);
+  --prompt-text-color: rgba(251, 241, 227, 0.75);
+  --prompt-tip-bg: rgba(134, 239, 172, 0.1);
+  --prompt-tip-icon-color: #86efac;
+  --prompt-info-bg: rgba(147, 197, 253, 0.1);
+  --prompt-info-icon-color: #93c5fd;
+  --prompt-warning-bg: rgba(251, 191, 36, 0.1);
+  --prompt-warning-icon-color: #fbbf24;
+  --prompt-danger-bg: rgba(252, 165, 165, 0.1);
+  --prompt-danger-icon-color: #fca5a5;
 
   // CODE
-  --language-border-color: #2d2d2d;
-  --highlight-bg-color: #151515;
-  --highlighter-rouge-color: #c9def1;
-  --highlight-lineno-color: #808080;
-  --inline-code-bg: rgb(255 255 255 / 5%);
-  --code-color: #b0b0b0;
-  --code-header-text-color: #6a6a6a;
-  --code-header-muted-color: #353535;
-  --code-header-icon-color: #565656;
-  --clipboard-checked-color: #2bcc2b;
-  --filepath-text-color: #cacaca;
+  --language-border-color: rgba(245, 158, 11, 0.1);
+  --highlight-bg-color: rgba(15, 23, 42, 0.8);
+  --highlighter-rouge-color: #fcd34d;
+  --highlight-lineno-color: rgba(251, 241, 227, 0.3);
+  --inline-code-bg: rgba(251, 191, 36, 0.05);
+  --code-color: rgba(251, 241, 227, 0.8);
+  --code-header-text-color: rgba(251, 241, 227, 0.6);
+  --code-header-muted-color: rgba(245, 158, 11, 0.1);
+  --code-header-icon-color: rgba(251, 241, 227, 0.5);
+  --clipboard-checked-color: #86efac;
+  --filepath-text-color: #fcd34d;
 
   // TABLES
-  --tb-odd-bg: hsl(218, 1%, 15%);
-  --tb-even-bg: hsl(218, 5%, 13%);
-  --tb-border-color: var(--tb-odd-bg);
+  --tb-odd-bg: rgba(15, 23, 42, 0.4);
+  --tb-even-bg: rgba(15, 23, 42, 0.6);
+  --tb-border-color: rgba(245, 158, 11, 0.1);
 
   // CATEGORIES/ARCHIVES
-  --categories-border: rgb(64 66 69 / 50%);
-  --categories-hover-bg: rgb(73 75 76);
-  --categories-icon-hover-color: white;
-  --timeline-color: rgb(63 65 68);
-  --timeline-node-bg: rgb(150 152 156);
-  --timeline-year-dot-color: var(--timeline-color);
-  --dash-color: hsl(218, 4%, 26%);
+  --categories-border: rgba(245, 158, 11, 0.1);
+  --categories-hover-bg: rgba(245, 158, 11, 0.1);
+  --categories-icon-hover-color: #fbbf24;
+  --timeline-color: rgba(245, 158, 11, 0.2);
+  --timeline-node-bg: rgba(251, 191, 36, 0.6);
+  --timeline-year-dot-color: #fbbf24;
+  --dash-color: rgba(245, 158, 11, 0.2);
 
   // TOC
-  --toc-highlight: hsl(218, 84%, 70%);
-  --toc-popup-border-color: hsl(218, 0%, 22%);
+  --toc-highlight: #fbbf24;
+  --toc-popup-border-color: rgba(245, 158, 11, 0.2);
 
   // MISC
-  --footnote-target-bg: hsl(218, 48%, 48%);
-  --kbd-wrap-color: hsl(0, 0%, 42%);
-  --kbd-text-color: hsl(0, 0%, 83%);
-  --kbd-bg-color: hsl(0, 0%, 14%);
-  --checkbox-color: hsl(218, 1%, 47%);
-  --checkbox-checked-color: var(--link-color);
-  --shimmer-bg: linear-gradient(90deg, hsla(218, 0%, 100%, 0) 0%, hsla(218, 3%, 22%, 0.4) 50%, hsla(218, 0%, 100%, 0) 100%);
+  --footnote-target-bg: rgba(251, 191, 36, 0.1);
+  --kbd-wrap-color: rgba(245, 158, 11, 0.3);
+  --kbd-text-color: rgba(251, 241, 227, 0.9);
+  --kbd-bg-color: rgba(15, 23, 42, 0.8);
+  --checkbox-color: rgba(251, 241, 227, 0.3);
+  --checkbox-checked-color: #fbbf24;
+  --shimmer-bg: linear-gradient(90deg, transparent 0%, rgba(251, 191, 36, 0.05) 50%, transparent 100%);
 
   .light { display: none; }
 
   // OVERRIDES
-  .categories.card, .list-group-item { background-color: var(--card-bg); }
-  .categories .card-header { background-color: var(--card-header-bg); }
-  #archives li:nth-child(odd) {
-    background-image: linear-gradient(to left, rgb(26 26 30), rgb(39 39 45), rgb(39 39 45), rgb(39 39 45), rgb(26 26 30));
+  .categories.card, .list-group-item { 
+    background-color: var(--card-bg); 
   }
-
-  // SYNTAX HIGHLIGHTING - Handled by base/_syntax.scss
+  .categories .card-header { 
+    background-color: var(--card-header-bg); 
+  }
 }

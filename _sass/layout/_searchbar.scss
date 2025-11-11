@@ -1,46 +1,36 @@
 @use '../abstracts/variables' as v;
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/breakpoints' as bp;
-@use '../abstracts/placeholders';
-
 
 #searchbar-wrapper {
+  @include mx.glass;
   position: sticky;
   top: 0;
-  left: 0;
   width: 100%;
-  height: auto; // Change from 100% to auto
-  background: var(--topbar-bg);
-  border-bottom: 1px solid var(--topbar-border-color); // Change from border-right
-  z-index: 1000; // Ensure it stays above other content
+  z-index: 999;
   padding: 1rem 2rem;
+  border-bottom: 1px solid var(--topbar-border-color);
 
   @include bp.lt(bp.get(lg)) {
     @include mx.slide(top 0.2s ease);
-
-    left: 0;
+    padding: 0.75rem 1rem;
   }
 }
 
 #searchbar {
-  @extend %btn-color;
-
   #breadcrumb {
     font-size: 1rem;
     color: var(--text-muted-color);
     padding-left: 0.5rem;
 
     a:hover {
-      @extend %link-hover;
+      color: #d2603a !important;
+      border-bottom: 1px solid #d2603a;
     }
 
-    span {
-      &:not(:last-child) {
-        &::after {
-          content: '›';
-          padding: 0 0.3rem;
-        }
-      }
+    span:not(:last-child)::after {
+      content: '›';
+      padding: 0 0.3rem;
     }
 
     @include bp.lt(bp.get(lg)) {
@@ -49,19 +39,12 @@
 
     @include bp.between(bp.get(lg), calc(#{bp.get(xl)} - 1px)) {
       width: 65%;
-      //overflow: hidden;
-      text-overflow: ellipsis;
-      word-break: keep-all;
-      white-space: nowrap;
+      @include mx.text-ellipsis;
     }
   }
 
   @include bp.lte(bp.get(md)) {
     @include mx.max-w-100;
-  }
-
-  @include bp.lt(bp.get(lg)) {
-    max-width: 100%;
   }
 }
 
@@ -73,3 +56,5 @@
     display: block;
   }
 }
+
+

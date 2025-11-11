@@ -1,6 +1,6 @@
 @use '../abstracts/variables' as v;
 @use '../abstracts/breakpoints' as bp;
-@use '../abstracts/placeholders';
+@use '../abstracts/mixins' as mx;
 
 #post-list {
   margin-top: 2rem;
@@ -23,19 +23,15 @@
     border: 0;
     background: none;
 
-    %img-radius {
-      border-radius: v.$radius-lg v.$radius-lg 0 0;
+    .preview-img {
+      border-radius: v.$radius-lg;
 
       @include bp.md {
         border-radius: 0 v.$radius-lg v.$radius-lg 0;
       }
-    }
-
-    .preview-img {
-      @extend %img-radius;
 
       img {
-        @extend %img-radius;
+        border-radius: inherit;
       }
     }
 
@@ -48,14 +44,9 @@
       }
 
       .card-title {
-        @extend %text-clip;
-
+        @include mx.text-clip;
         color: var(--heading-color) !important;
         font-size: 1.25rem;
-      }
-
-      %muted {
-        color: var(--text-muted-color) !important;
       }
 
       .card-text {
@@ -64,11 +55,10 @@
         }
 
         &.content {
-          @extend %muted;
+          color: var(--text-muted-color) !important;
 
           p {
-            @extend %text-clip;
-
+            @include mx.text-clip;
             line-height: 1.5;
             margin: 0;
           }
@@ -76,33 +66,29 @@
       }
 
       .post-meta {
-        @extend %muted;
+        color: var(--text-muted-color) !important;
 
-        i {
-          &:not(:first-child) {
-            margin-left: 1.5rem;
+        i:not(:first-child) {
+          margin-left: 1.5rem;
 
-            @include bp.md {
-              margin-left: 1.75rem;
-            }
+          @include bp.md {
+            margin-left: 1.75rem;
           }
         }
 
         em {
-          @extend %normal-font-style;
-
+          font-style: normal;
           color: inherit;
         }
 
         > div:first-child {
           display: block;
-
-          @extend %text-ellipsis;
+          @include mx.text-ellipsis;
         }
       }
     }
   }
-} /* #post-list */
+}
 
 .pagination {
   color: var(--text-color);
@@ -134,26 +120,20 @@
     .page-link {
       color: var(--btn-patinator-text-color);
       padding: 0 0.6rem;
-      display: -webkit-box;
-      -webkit-box-pack: center;
-      -webkit-box-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 0.5rem;
       border: 0;
       background-color: inherit;
     }
 
-    &.active {
-      .page-link {
-        background-color: var(--btn-paginator-hover-color);
-      }
+    &.active .page-link {
+      background-color: var(--btn-paginator-hover-color);
     }
 
-    &:not(.active) {
-      .page-link {
-        &:hover {
-          box-shadow: inset var(--btn-border-color) 0 0 0 1px;
-        }
-      }
+    &:not(.active) .page-link:hover {
+      box-shadow: inset var(--btn-border-color) 0 0 0 1px;
     }
 
     &.disabled {
@@ -163,7 +143,7 @@
         color: rgb(108 117 125 / 57%);
       }
     }
-  } /* .page-item */
+  }
 
   .page-index {
     @include bp.lg {
@@ -171,4 +151,3 @@
     }
   }
 }
-

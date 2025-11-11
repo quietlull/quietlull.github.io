@@ -1,23 +1,12 @@
 @use '../abstracts/variables' as v;
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/breakpoints' as bp;
-@use '../abstracts/placeholders';
-
 
 #topbar {
+  @include mx.glass-lantern;
+  @include mx.breathing(breathe-slow, 6s);
   position: static;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: auto;
-  
-  // Glass-morphism effect for topbar
-  background: rgba(8, 15, 27, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  
   z-index: 1000;
   padding: 1rem 2rem;
 
@@ -25,100 +14,96 @@
     padding: 0.75rem 1rem;
   }
 
-  %topbar-link-hover {
+  a {
+    color: var(--topbar-text-color);
+    user-select: none;
+    @include mx.transition(color);
+
     &:hover {
       color: var(--topbar-active-color);
     }
   }
 
-  a {
-    @extend %topbar-links ;
-  }
-
-  // Profile Section - Make larger
+  // Profile
   .profile-wrapper {
     display: flex;
     align-items: center;
     margin-bottom: 1.5rem;
-    gap: 1rem;
     
-#avatar {
-  display: block;
-  width: 7.5rem;
-  height: 7.5rem;
-  padding: 0.5rem; // Adds margin/spacing inside
-  background-color: rgb(255, 255, 255);; // Makes it changeable!
-  border-radius: 0.75rem; // Rounded square (adjust to taste)
-  box-shadow: none; // Removes the border
+    #avatar {
+      display: block;
+      width: 7.5rem;
+      height: 7.5rem;
+      padding: 0.5rem;
+      background-color: var(--avatar-bg-color);
+      border-radius: 0.75rem;
+      box-shadow: none;
 
-img {
-  width: 100%;
-  min-height: 100%;
-  animation: chase-tail 3s linear infinite;
-  animation-play-state: paused; // Paused by default
+      img {
+        width: 100%;
+        min-height: 100%;
+        animation: chase-tail 3s linear infinite;
+        animation-play-state: paused;
 
-  &:hover {
-    animation-play-state: running; // Spins when hovering
-  }
-}
+        &:hover {
+          animation-play-state: running;
+        }
+      }
 
-@keyframes chase-tail {
-  from { 
-    transform: rotate(0deg); 
-  }
-  to { 
-    transform: rotate(-360deg); // Counter-clockwise
-  }
-}
-}
+      @keyframes chase-tail {
+        from { 
+          transform: rotate(0deg); 
+        }
+        to { 
+          transform: rotate(-360deg);
+        }
+      }
+    }
 
     .site-titles {
       margin-left: 1rem;
       
       .site-title {
-        @extend %clickable-transition;
-        @extend %topbar-link-hover;
-
-        font-family: inherit;
-        font-weight: 900;
-        font-size: 1.5rem; // Adjust size
+        @include mx.label(1.5rem, 300, var(--site-title-color));
         line-height: 1.2;
         margin-bottom: 0.25rem;
-        color: var(--site-title-color);
+        letter-spacing: 0.05em;
       }
 
       .site-subtitle {
-        font-size: 0.95rem; // Adjust size
+        font-size: 0.95rem;
+        font-weight: 300;
         color: var(--site-subtitle-color);
-        margin: 0;
       }
     }
   }
 
-  // Navigation Section - Make larger and horizontal
+  // Navigation
   nav {
     margin-bottom: 1.5rem;
     
     ul {
+      @include mx.flex-center;
+      flex-wrap: wrap;
       margin: 0;
       padding: 0;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
+      gap: 2rem;
 
       li.nav-item {
-        margin: 0 0.5rem;
-        
         a.nav-link {
           display: flex;
           align-items: center;
-          padding: 0.75rem 1rem;
-          border-radius: 0.5rem;
-          font-weight: 600;
-          transition: all 0.3s ease;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.75rem;
+          font-weight: 300;
+          backdrop-filter: blur(4px);
+          background: rgba(245, 158, 11, 0.05);
+          border: 1px solid rgba(245, 158, 11, 0.1);
+          @include mx.transition(all);
 
           &:hover {
-            background-color: var(--topbar-hover-bg);
+            background: rgba(245, 158, 11, 0.15);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
           }
 
           i {
@@ -128,67 +113,76 @@ img {
 
           span {
             font-size: 0.9rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.02em;
           }
         }
 
-        &.active {
-          .nav-link {
-            color: var(--topbar-active-color);
-            background-color: var(--topbar-hover-bg);
-          }
+        &.active .nav-link {
+          color: var(--topbar-active-color);
+          background: rgba(245, 158, 11, 0.15);
+          box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
         }
       }
     }
   }
 
-  // Social Section - Make larger
+  // Bottom actions
   .topbar-bottom {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include mx.flex-center;
 
-    %button {
-      width: 2.5rem; // Larger buttons
+    %btn {
+      @include mx.flex-center;
+      width: 2.5rem;
       height: 2.5rem;
       border-radius: 50%;
+      backdrop-filter: blur(4px);
+      background: var(--topbar-btn-bg);
       color: var(--topbar-btn-color);
-      background-color: var(--topbar-btn-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border: 1px solid rgba(245, 158, 11, 0.15);
       margin: 0 0.25rem;
-      transition: all 0.3s ease;
+      @include mx.transition(all);
+      position: relative;
 
-      &:not(:focus-visible) {
-        box-shadow: var(--topbar-border-color) 0 0 0 1px;
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(251, 191, 36, 0.1), transparent);
+        opacity: 0;
+        @include mx.transition(opacity);
       }
 
       &:hover {
-        background-color: var(--topbar-hover-bg);
-        transform: scale(1.1);
+        background: rgba(245, 158, 11, 0.15);
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        
+        &::before {
+          opacity: 1;
+        }
       }
     }
 
     a {
-      @extend %button;
-      @extend %topbar-link-hover;
+      @extend %btn;
     }
 
     #mode-toggle {
-      @extend %button;
-      @extend %topbar-links;
-      @extend %topbar-link-hover;
+      @extend %btn;
       border: none;
       cursor: pointer;
     }
 
     .icon-border {
-      width: 2px;
-      height: 2rem; // Vertical separator
-      background-color: var(--topbar-btn-color);
+      width: 1px;
+      height: 2rem;
+      background: linear-gradient(to bottom, 
+        transparent, 
+        rgba(245, 158, 11, 0.3), 
+        transparent
+      );
       margin: 0 1rem;
     }
   }
 }
-

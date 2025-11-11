@@ -19,12 +19,12 @@ export class FireworkController {
       maxZ: config.maxZ || -10500,
 
       // Launch timing
-      launchSpeed: config.launchSpeed || 0.6,
-      minDelay: config.minDelay || 0.3,
-      maxDelay: config.maxDelay || 0.8,
+      launchSpeed: config.launchSpeed || 0.4,
+      minDelay: config.minDelay || 0.1,
+      maxDelay: config.maxDelay || 0.3,
 
       // Height limits
-      maxHeight: config.maxHeight || 4000,
+      maxHeight: config.maxHeight || 10000,
       extraHeightMultiplier: config.extraHeightMultiplier || 8000,
       extraHeightThreshold: config.extraHeightThreshold || 0.6,
       sceneBottom: config.sceneBottom || -100,
@@ -41,9 +41,9 @@ export class FireworkController {
       particleBrightness: config.particleBrightness || 0.6,
 
       // Trail properties
-      trailRadius: config.trailRadius || 30,
-      trailBrightness: config.trailBrightness || 0.8,
-      trailGradientWidth: config.trailGradientWidth || 0.3,
+      trailRadius: config.trailRadius || 15,
+      trailBrightness: config.trailBrightness || 0.2,
+      trailGradientWidth: config.trailGradientWidth || 0.2,
 
       // Colors
       rainbowChance: config.rainbowChance || 0.5,
@@ -189,7 +189,7 @@ export class FireworkController {
     const midPoint = new THREE.Vector3().addVectors(startPoint, endPoint).multiplyScalar(0.5);
 
     // Cylinder geometry along Y axis by default, we'll rotate it
-    const geometry = new THREE.CylinderGeometry(this.config.trailRadius, this.config.trailRadius, length, 8, 1, true);
+    const geometry = new THREE.PlaneGeometry(this.config.trailRadius, this.config.trailRadius, length, 8, 1, true);
 
     // Create custom shader material for animated gradient
     const material = new THREE.ShaderMaterial({

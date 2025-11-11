@@ -4,69 +4,52 @@ refactor: true
 ---
 
 {% include lang.html %}
-{% assign all_blogs = site.posts |  where_exp: 'item', 'item.hidden != true' 
-| where: 'tags', 'blog' %}
-{% assign all_pinned = all_blogs | where: 'pin', 'true'  %}
-{% assign all_normal = all_blogs | where: 'pin', 'false' %}
 
+{% assign all_blogs = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'blog' %}
+{% assign all_pinned = all_blogs | where: 'pin', true %}
+{% assign all_normal = all_blogs | where_exp: 'item', 'item.pin != true' %}
 
 {% assign posts = '' | split: '' %}
 
-<!-- Get pinned posts on current page -->
-
+<!-- Calculate pagination boundaries -->
 {% assign visible_start = paginator.page | minus: 1 | times: paginator.per_page %}
 {% assign visible_end = visible_start | plus: paginator.per_page %}
 
-{% if all_pinned.size > visible_start %}
-  {% if all_pinned.size > visible_end %}
-    {% assign pinned_size = paginator.per_page %}
-  {% else %}
-    {% assign pinned_size = all_pinned.size | minus: visible_start %}
-  {% endif %}
-
-  {% for i in (visible_start..all_pinned.size) limit: pinned_size %}
-    {% assign posts = posts | push: all_pinned[i] %}
+<!-- Add pinned posts first -->
+{% if all_pinned.size > 0 %}
+  {% for post in all_pinned limit: paginator.per_page offset: visible_start %}
+    {% assign posts = posts | push: post %}
   {% endfor %}
-{% else %}
-  {% assign pinned_size = 0 %}
 {% endif %}
 
-<!-- Get normal posts on current page -->
+<!-- Calculate remaining slots for normal posts -->
+{% assign remaining_slots = paginator.per_page | minus: posts.size %}
+{% assign normal_offset = 0 %}
 
-normal_size = all_normal.size | minus: pinned_size
-
-{% if normal_size > 0 %}
-  {% if pinned_size > 0 %}
-    {% assign normal_start = 0 %}
-  {% else %}
-    {% assign normal_start = visible_start | minus: all_pinned.size %}
+{% if posts.size == 0 %}
+  {% assign normal_offset = visible_start | minus: all_pinned.size %}
+  {% if normal_offset < 0 %}
+    {% assign normal_offset = 0 %}
   {% endif %}
+{% endif %}
 
-  {% assign normal_end = normal_start | plus: normal_size | minus: 1 %}
-
-  {% for i in (normal_start..normal_end) %}
-  
-    {% assign posts = posts | push: all_normal[i] %}
+<!-- Add normal posts to fill remaining slots -->
+{% if remaining_slots > 0 and all_normal.size > 0 %}
+  {% for post in all_normal limit: remaining_slots offset: normal_offset %}
+    {% assign posts = posts | push: post %}
   {% endfor %}
 {% endif %}
 
 <div id="post-list" class="flex-grow-1 px-xl-1">
   {% for post in posts %}
     <article class="card-wrapper card">
-     {% if post.url %}
       <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row-reverse">
-     {% else %}
-        <div class="post-preview row g-0 flex-md-row-reverse">
-      {% endif %}
         {% assign card_body_col = '12' %}
 
         {% if post.image %}
           {% assign src = post.image.path | default: post.image %}
           {% capture src %}{% include media-url.html src=src subpath=post.media_subpath %}{% endcapture %}
-
           {% assign alt = post.image.alt | xml_escape | default: 'Preview Image' %}
-
-          {% assign lqip = null %}
 
           {% if post.image.lqip %}
             {% capture lqip_url %}{% include media-url.html src=post.image.lqip subpath=post.media_subpath %}{% endcapture %}
@@ -74,7 +57,7 @@ normal_size = all_normal.size | minus: pinned_size
           {% endif %}
 
           <div class="col-md-5">
-            <img src="{{ src }}" alt="{{ alt }}" {{ lqip }}>
+            <img src="{{ src }}" alt="{{ alt }}" {{ lqip }} loading="lazy">
           </div>
 
           {% assign card_body_col = '7' %}
@@ -90,23 +73,20 @@ normal_size = all_normal.size | minus: pinned_size
 
             <div class="post-meta flex-grow-1 d-flex align-items-end">
               <div class="me-auto">
-                <!-- posted date -->
                 <i class="far fa-calendar fa-fw me-1"></i>
                 {% include datetime.html date=post.date lang=lang %}
 
-              {% if post.pin %}
-                <div class="pin ms-1">
-                  <i class="fas fa-thumbtack fa-fw"></i>
-                  <span>{{ site.data.locales[lang].post.pin_prompt }}</span>
-                </div>
-              {% endif %}
+                {% if post.pin %}
+                  <div class="pin ms-1">
+                    <i class="fas fa-thumbtack fa-fw"></i>
+                    <span>{{ site.data.locales[lang].post.pin_prompt }}</span>
+                  </div>
+                {% endif %}
+              </div>
             </div>
-            <!-- .post-meta -->
           </div>
-          <!-- .card-body -->
         </div>
       </a>
     </article>
   {% endfor %}
 </div>
-<!-- #post-list -->

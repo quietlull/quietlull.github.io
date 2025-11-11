@@ -94,6 +94,12 @@
   }
 }
 
+.vertical-bar-link {
+     text-decoration: none;
+     color: inherit;
+     display: block;
+   }
+
 @media (max-width: 768px) {
   .vertical-bar-img-wrapper {
     width: 120px;
@@ -119,3 +125,4 @@
     padding: 0.75rem !important;
   }
 }
+
