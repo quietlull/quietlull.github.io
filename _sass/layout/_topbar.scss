@@ -1,6 +1,7 @@
 @use '../abstracts/variables' as v;
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/breakpoints' as bp;
+@use '../abstracts/hover-effects' as he;
 
 #topbar {
   @include mx.glass-lantern;
@@ -38,6 +39,7 @@
       background-color: var(--avatar-bg-color);
       border-radius: 0.75rem;
       box-shadow: none;
+      
 
       img {
         width: 100%;
@@ -101,10 +103,14 @@
           border: 1px solid rgba(245, 158, 11, 0.1);
           @include mx.transition(all);
 
-          &:hover {
-            background: rgba(245, 158, 11, 0.15);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
-          }
+
+
+  &:hover {
+    // Keep existing hover styles
+    color: var(--topbar-active-color);
+    background: rgba(245, 158, 11, 0.15);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.1); // Add this
+  }
 
           i {
             font-size: 1rem;
@@ -121,6 +127,15 @@
           color: var(--topbar-active-color);
           background: rgba(245, 158, 11, 0.15);
           box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+
+            @include he.hover-glow-text;
+  
+  &:hover {
+    // Keep existing hover styles
+    color: var(--topbar-active-color);
+    background: rgba(245, 158, 11, 0.15);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.1); // Add this
+  }
         }
       }
     }

@@ -28,10 +28,10 @@
     position: relative;
     left: 2px;
     margin-left: -$timeline-width;
+    transition: all 0.3s ease;
 
     &::before {
       @extend %timeline;
-
       height: 72px;
       left: 79px;
       bottom: 16px;
@@ -39,12 +39,11 @@
 
     &:first-child::before {
       @extend %timeline;
-
       height: 32px;
       top: 24px;
     }
 
-    /* Year dot */
+    /* Year dot with glow */
     &::after {
       content: '';
       display: inline-block;
@@ -56,8 +55,17 @@
       border: 3px solid;
       background-color: var(--timeline-year-dot-color);
       border-color: var(--timeline-node-bg);
-      box-shadow: 0 0 2px 0 #c2c6cc;
+      box-shadow: 0 0 2px 0 #c2c6cc,
+                  0 0 8px rgba(251, 191, 36, 0.3);
       z-index: 1;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    &:hover::after {
+      box-shadow: 0 0 4px 0 #c2c6cc,
+                  0 0 16px rgba(251, 191, 36, 0.6),
+                  0 0 24px rgba(251, 191, 36, 0.3);
+      transform: scale(1.1);
     }
   }
 
@@ -65,24 +73,38 @@
     li {
       font-size: 1.1rem;
       line-height: 3rem;
+      transition: all 0.3s ease;
 
       @extend %text-ellipsis;
 
+      /* FIXED: Use CSS variables instead of hardcoded colors */
       &:nth-child(odd) {
-        background-color: var(--main-bg, #ffffff);
+        background-color: var(--main-bg);
         background-image: linear-gradient(
           to left,
-          #ffffff,
-          #fbfbfb,
-          #fbfbfb,
-          #fbfbfb,
-          #ffffff
+          var(--main-bg),
+          var(--bg-secondary),
+          var(--bg-secondary),
+          var(--bg-secondary),
+          var(--main-bg)
         );
+      }
+
+      /* Add subtle hover glow */
+      &:hover {
+        background-image: linear-gradient(
+          to left,
+          var(--main-bg),
+          var(--bg-tertiary),
+          var(--bg-tertiary),
+          var(--bg-tertiary),
+          var(--main-bg)
+        );
+        box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.03);
       }
 
       &::before {
         @extend %timeline;
-
         top: 0;
         left: 77px;
         height: 3.1rem;
@@ -112,17 +134,20 @@
   }
 
   a {
-    /* post title in Archvies */
+    /* post title in Archives */
     margin-left: 2.5rem;
     position: relative;
     top: 0.1rem;
+    transition: all 0.3s ease;
 
     &:hover {
       border-bottom: none;
+      color: var(--lantern-glow-strong, #fbbf24);
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
     }
 
     &::before {
-      /* the dot before post title */
+      /* the dot before post title with glow */
       content: '';
       display: inline-block;
       position: relative;
@@ -133,8 +158,17 @@
       top: 1.35rem;
       left: 71px;
       background-color: var(--timeline-node-bg);
-      box-shadow: 0 0 3px 0 #c2c6cc;
+      box-shadow: 0 0 3px 0 #c2c6cc,
+                  0 0 6px rgba(251, 191, 36, 0.2);
       z-index: 1;
+      transition: all 0.3s ease;
+    }
+
+    &:hover::before {
+      box-shadow: 0 0 6px 0 #c2c6cc,
+                  0 0 12px rgba(251, 191, 36, 0.5),
+                  0 0 18px rgba(251, 191, 36, 0.3);
+      transform: scale(1.2);
     }
   }
 } /* #archives */
