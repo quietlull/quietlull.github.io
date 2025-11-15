@@ -12,7 +12,7 @@
   border-bottom: 1px solid var(--topbar-border-color);
 
   @include bp.lt(bp.get(lg)) {
-    @include mx.slide(top 0.2s ease);
+    @include mx.slide(top var(--transition-fast) ease);
     padding: 0.75rem 1rem;
   }
 }
@@ -23,9 +23,15 @@
     color: var(--text-muted-color);
     padding-left: 0.5rem;
 
-    a:hover {
-      color: #d2603a !important;
-      border-bottom: 1px solid #d2603a;
+    a {
+      // ✨ ADDED: Smooth transition
+      @include mx.transition(color, border-color);
+      
+      &:hover {
+        // ✨ FIXED: Changed from random orange #d2603a to amber theme
+        color: var(--link-hover-color) !important;
+        border-bottom: 1px solid var(--link-hover-color);
+      }
     }
 
     span:not(:last-child)::after {
@@ -56,5 +62,3 @@
     display: block;
   }
 }
-
-

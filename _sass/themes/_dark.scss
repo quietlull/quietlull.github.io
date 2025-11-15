@@ -1,145 +1,383 @@
+
+
+// ============================================================================
+// DARK THEME - Lantern Aesthetic
+// ============================================================================
+// Based on the floating lantern design with warm amber glows
+// Matches React component styling from LanternGlowSite
+
 @mixin styles {
   color-scheme: dark;
 
-  // BACKGROUNDS - Lantern aesthetic
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-glass: rgba(15, 23, 42, 0.85);
-  --mask-bg: hsla(218, 1%, 27%, 0.64);
-  --img-bg: radial-gradient(circle, hsl(218, 4%, 9%) 0%, hsl(218, 0%, 13%) 100%);
+  // ==========================================================================
+  // CORE PALETTE
+  // ==========================================================================
+  --slate-950: #020617;         // rgb(2, 6, 23) - darkest bg
+  --slate-900: #0f172a;         // rgb(15, 23, 42) - main bg
+  --slate-800: #1e293b;         // rgb(30, 41, 59) - elevated surfaces
+  --slate-700: #334155;         // rgb(51, 65, 85) - borders/muted
+  
+  --amber-500: #f59e0b;         // rgb(245, 158, 11) - primary glow
+  --amber-400: #fbbf24;         // rgb(251, 191, 36) - bright accents
+  --amber-300: #fcd34d;         // rgb(252, 211, 77) - highlights
+  --amber-200: #fde68a;         // rgb(253, 230, 138) - subtle tints
+  --amber-100: #fef3c7;         // rgb(254, 243, 199) - text base
+  --amber-50: #fffbeb;          // rgb(255, 251, 235) - lightest
+  
+  --orange-500: #f97316;        // rgb(249, 115, 22) - warm accent
+  --orange-400: #fb923c;        // rgb(251, 146, 60) - secondary glow
 
-  // TEXT - Amber tinted
-  --text-color: rgba(251, 241, 227, 0.9);
-  --text-muted-color: rgba(251, 241, 227, 0.6);
-  --text-muted-highlight-color: rgba(251, 241, 227, 0.5);
-  --heading-color: rgba(251, 241, 227, 0.95);
-  --label-color: rgba(251, 241, 227, 0.7);
+  // ==========================================================================
+  // BACKGROUNDS - Layered depth with gradients
+  // ==========================================================================
+  --main-bg: var(--slate-950);
+  --bg-primary: var(--slate-950);
+  --bg-secondary: var(--slate-900);
+  --bg-tertiary: var(--slate-800);
+  
+  // Glass morphism
+  --bg-glass: rgba(15, 23, 42, 0.4);
+  --bg-glass-strong: rgba(15, 23, 42, 0.6);
+  --mask-bg: rgba(15, 23, 42, 0.8);
+  
+  // Gradients
+  --bg-gradient: linear-gradient(to bottom, 
+    var(--slate-950), 
+    var(--slate-900), 
+    var(--slate-950)
+  );
+  --img-bg: radial-gradient(circle, var(--slate-900) 0%, #1a1a1a 100%);
 
-  // BORDERS - Amber glow
+  // ==========================================================================
+  // TEXT - Amber tinted for warm aesthetic
+  // ==========================================================================
+  --text-color: rgba(254, 243, 199, 0.9);              // amber-100/90
+  --text-muted-color: rgba(254, 243, 199, 0.6);        // amber-100/60
+  --text-muted-highlight-color: rgba(254, 243, 199, 0.5);
+  --text-very-muted: rgba(254, 243, 199, 0.3);         // subtle hints
+  --heading-color: rgba(254, 243, 199, 0.95);          // amber-50/95 - crisp
+  --label-color: rgba(254, 243, 199, 0.7);
+
+  // ============================================================================
+  // ICON COLORS - Add after text colors section (~line 60)
+  // ============================================================================
+
+  --icon-muted-color: var(--text-muted-color);
+  --icon-hover-color: var(--link-hover-color);
+
+  // ==========================================================================
+  // BORDERS & GLASS EFFECTS - Subtle amber glow
+  // ==========================================================================
   --main-border-color: rgba(245, 158, 11, 0.1);
   --glass-border: rgba(245, 158, 11, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 60px rgba(251, 191, 36, 0.03);
+  --glass-border-strong: rgba(245, 158, 11, 0.2);
+  
+  // Triple-layer shadow for depth + glow + inner highlight
+  --glass-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),           // Deep shadow
+    0 0 60px rgba(251, 191, 36, 0.03),       // Ambient glow
+    inset 0 1px 0 rgba(251, 191, 36, 0.05);  // Top highlight
+  
+  --glass-shadow-strong: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(251, 191, 36, 0.05),
+    inset 0 1px 0 rgba(251, 191, 36, 0.08);
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
-  // LANTERN GLOWS
-  --lantern-glow-subtle: rgba(251, 191, 36, 0.03);
-  --lantern-glow-medium: rgba(251, 191, 36, 0.05);
-  --lantern-glow-strong: rgba(251, 191, 36, 0.1);
-
-  // LINKS - Amber accent
-  --link-color: #fbbf24;
+  // ==========================================================================
+  // LANTERN GLOWS - Core visual identity
+  // ==========================================================================
+  --glow-subtle: rgba(251, 191, 36, 0.03);
+  --glow-medium: rgba(251, 191, 36, 0.06);
+  --glow-strong: rgba(251, 191, 36, 0.1);
+  --glow-intense: rgba(251, 191, 36, 0.15);
+  
+  // Glow shadows for dot/orb elements
+  --glow-ring: 
+  0 0 20px 4px rgba(251, 191, 36, 0.6),
+  0 0 40px 8px rgba(251, 191, 36, 0.3);
+  
+  --glow-ring-small: 
+  0 0 10px 2px rgba(251, 191, 36, 0.5),
+  0 0 20px 4px rgba(251, 191, 36, 0.2);
+  
+  // Orange variants (matching amber structure)
+  --orange-glow-subtle: rgba(251, 146, 60, 0.02);
+  --orange-glow-medium: rgba(251, 146, 60, 0.05);
+  --orange-glow-strong: rgba(251, 146, 60, 0.08);
+  --orange-border: rgba(249, 115, 22, 0.1);
+  --orange-border-strong: rgba(249, 115, 22, 0.2);
+  
+  // Yellow variants
+  --yellow-glow-subtle: rgba(250, 204, 21, 0.02);
+  --yellow-glow-medium: rgba(250, 204, 21, 0.05);
+  --yellow-glow-strong: rgba(250, 204, 21, 0.08);
+  --yellow-border: rgba(250, 204, 21, 0.1);
+  
+  // ==========================================================================
+  // BLUR VALUES - Matching variables.scss
+  // ==========================================================================
+  --blur-sm: 4px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 48px;
+  --blur-3xl: 80px;
+  
+  // ==========================================================================
+  // TRANSITION TIMINGS
+  // ==========================================================================
+  --transition-fast: 300ms;
+  --transition-normal: 500ms;
+  --transition-slow: 1000ms;
+  
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  
+  // ==========================================================================
+  // ANIMATION DURATIONS
+  // ==========================================================================
+  --float-duration: 10s;
+  --float-gentle-duration: 8s;
+  --breathing-duration: 4s;
+  --pulse-duration: 2s;
+  --shimmer-duration: 1s;
+  
+  // ==========================================================================
+  // Z-INDEX LAYERS
+  // ==========================================================================
+  --z-background: -1;
+  --z-base: 0;
+  --z-content: 10;
+  --z-dropdown: 50;
+  --z-sticky: 100;
+  --z-header: 200;
+  --z-overlay: 500;
+  --z-modal: 1000;
+  --z-toast: 2000;
+  
+  // ==========================================================================
+  // SPACING SCALE
+  // ==========================================================================
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 6rem;
+  
+  // ==========================================================================
+  // LINKS - Amber with glow on hover
+  // ==========================================================================
+  --link-color: var(--amber-400);
+  --link-hover-color: var(--amber-300);
   --link-underline-color: rgba(251, 191, 36, 0.3);
-
-  // BUTTONS
+  --link-underline-glow: 0 0 8px rgba(251, 191, 36, 0.6);
+  
+  // ==========================================================================
+  // BUTTONS - Layered glass with glow states
+  // ==========================================================================
   --button-bg: rgba(245, 158, 11, 0.1);
+  --button-hover-bg: rgba(245, 158, 11, 0.15);
+  --button-active-bg: rgba(245, 158, 11, 0.2);
+  
   --btn-border-color: rgba(245, 158, 11, 0.2);
+  --btn-hover-glow: 0 0 20px rgba(251, 191, 36, 0.2);
+  
+  // Specific button types
   --btn-backtotop-color: var(--text-color);
-  --btn-backtotop-border-color: rgba(245, 158, 11, 0.1);
-  --btn-patinator-text-color: var(--text-color);
-  --btn-paginator-hover-color: rgba(245, 158, 11, 0.15);
-  --btn-share-color: rgba(251, 241, 227, 0.6);
-  --btn-share-hover-color: rgba(251, 241, 227, 0.9);
+  --btn-backtotop-border-color: var(--glass-border);
+  
+  // Pagination buttons
+  --btn-paginator-text-color: var(--text-color);
+  --btn-paginator-hover-color: var(--button-hover-bg);
+  
+  // Primary action buttons (optional - for future use)
+  --btn-primary-bg: var(--amber-500);
+  --btn-primary-hover-bg: var(--amber-600);
+  --btn-primary-text: var(--text-color);
 
-  // TOPBAR
+  // Badge colors (pinned posts, etc.)
+// NOTE: Badge stays RED for maximum visibility on any image background
+--badge-pinned-bg: rgba(220, 53, 69, 0.9);
+--badge-pinned-text: var(--color-white);
+  
+  // ==========================================================================
+  // TOPBAR - Navigation with lantern aesthetic
+  // ==========================================================================
   --topbar-bg: var(--bg-glass);
-  --topbar-text-color: rgba(251, 241, 227, 0.6);
+  --topbar-text-color: rgba(254, 243, 199, 0.6);
   --topbar-border-color: var(--glass-border);
-  --topbar-hover-bg: rgba(245, 158, 11, 0.1);
-  --topbar-active-color: rgba(251, 241, 227, 0.95);
+  --topbar-hover-bg: var(--button-hover-bg);
+  --topbar-active-color: rgba(254, 243, 199, 0.95);
   --topbar-btn-bg: rgba(245, 158, 11, 0.05);
-  --topbar-btn-color: rgba(251, 241, 227, 0.6);
-  --avatar-bg-color: rgba(255, 255, 255, 0.9); // Subtle amber glow in dark mode
-
-  // SIDEBAR (legacy)
-  --sidebar-bg: var(--bg-secondary);
-  --sidebar-border-color: rgba(245, 158, 11, 0.1);
-  --sidebar-muted-color: rgba(251, 241, 227, 0.6);
-  --sidebar-active-color: rgba(251, 241, 227, 0.95);
-  --sidebar-hover-bg: rgba(245, 158, 11, 0.1);
-  --sidebar-btn-bg: rgba(245, 158, 11, 0.05);
-  --sidebar-btn-color: rgba(251, 241, 227, 0.6);
-  --site-title-color: rgba(251, 241, 227, 0.9);
-  --site-subtitle-color: rgba(251, 241, 227, 0.6);
+  --topbar-btn-color: rgba(254, 243, 199, 0.6);
+  --topbar-glow: 0 0 15px rgba(251, 191, 36, 0.2);
+  
+  // Avatar
+  --avatar-bg-color: rgba(255, 255, 255, 0.9);
   --avatar-border-color: rgba(251, 191, 36, 0.3);
-
+  
+  // Site titles
+  --site-title-color: rgba(254, 243, 199, 0.9);
+  --site-subtitle-color: rgba(254, 243, 199, 0.6);
+  
+  // ==========================================================================
   // SEARCH/INPUT
-  --search-border-color: rgba(245, 158, 11, 0.1);
-  --search-icon-color: rgba(251, 241, 227, 0.5);
+  // ==========================================================================
+  --search-border-color: var(--glass-border);
+  --search-icon-color: rgba(254, 243, 199, 0.5);
   --search-tag-bg: rgba(245, 158, 11, 0.05);
   --input-focus-border-color: rgba(251, 191, 36, 0.3);
+  --input-focus-glow: 0 0 12px rgba(251, 191, 36, 0.3);
 
-  // CARDS
+  // ==========================================================================
+  // CARDS - Glass effect matching React component
+  // ==========================================================================
   --card-bg: rgba(15, 23, 42, 0.6);
-  --card-hover-bg: rgba(245, 158, 11, 0.1);
-  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 60px rgba(251, 191, 36, 0.02);
+  --card-hover-bg: rgba(245, 158, 11, 0.08);
+  --card-border: rgba(245, 158, 11, 0.1);
+  --card-hover-border: rgba(245, 158, 11, 0.2);
+  
+  --card-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6), 
+    0 0 60px rgba(251, 191, 36, 0.02);
+  
+  --card-hover-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(251, 191, 36, 0.05);
+  
   --card-header-bg: var(--bg-tertiary);
 
+  // Radial gradient for card hover (matching React)
+  --card-radial-glow: radial-gradient(
+    circle,
+    rgba(251, 191, 36, 0.1) 0%,
+    transparent 50%,
+    transparent 100%
+  );
+
+  // ==========================================================================
   // TAGS
+  // ==========================================================================
+  --tag-bg: rgba(255, 255, 255, 0.1);
   --tag-border: rgba(245, 158, 11, 0.2);
-  --tag-shadow: rgba(0, 0, 0, 0.4);
   --tag-hover: rgba(245, 158, 11, 0.15);
+  --tag-shadow: rgba(0, 0, 0, 0.4);
 
+  // ==========================================================================
   // BLOCKQUOTES
+  // ==========================================================================
   --blockquote-border-color: rgba(251, 191, 36, 0.3);
-  --blockquote-text-color: rgba(251, 241, 227, 0.7);
+  --blockquote-text-color: rgba(254, 243, 199, 0.7);
+  --blockquote-bg: rgba(251, 191, 36, 0.03);
 
-  // PROMPTS
-  --prompt-text-color: rgba(251, 241, 227, 0.75);
+  // ==========================================================================
+  // PROMPTS/ALERTS
+  // ==========================================================================
+  --prompt-text-color: rgba(254, 243, 199, 0.75);
   --prompt-tip-bg: rgba(134, 239, 172, 0.1);
   --prompt-tip-icon-color: #86efac;
   --prompt-info-bg: rgba(147, 197, 253, 0.1);
   --prompt-info-icon-color: #93c5fd;
   --prompt-warning-bg: rgba(251, 191, 36, 0.1);
-  --prompt-warning-icon-color: #fbbf24;
+  --prompt-warning-icon-color: var(--amber-400);
   --prompt-danger-bg: rgba(252, 165, 165, 0.1);
   --prompt-danger-icon-color: #fca5a5;
 
-  // CODE
-  --language-border-color: rgba(245, 158, 11, 0.1);
+  // ==========================================================================
+  // CODE BLOCKS
+  // ==========================================================================
+  --language-border-color: var(--glass-border);
   --highlight-bg-color: rgba(15, 23, 42, 0.8);
-  --highlighter-rouge-color: #fcd34d;
-  --highlight-lineno-color: rgba(251, 241, 227, 0.3);
+  --highlighter-rouge-color: var(--amber-300);
+  --highlight-lineno-color: rgba(254, 243, 199, 0.3);
   --inline-code-bg: rgba(251, 191, 36, 0.05);
-  --code-color: rgba(251, 241, 227, 0.8);
-  --code-header-text-color: rgba(251, 241, 227, 0.6);
-  --code-header-muted-color: rgba(245, 158, 11, 0.1);
-  --code-header-icon-color: rgba(251, 241, 227, 0.5);
+  --code-color: rgba(254, 243, 199, 0.8);
+  --code-header-text-color: rgba(254, 243, 199, 0.6);
+  --code-header-muted-color: var(--glass-border);
+  --code-header-icon-color: rgba(254, 243, 199, 0.5);
   --clipboard-checked-color: #86efac;
-  --filepath-text-color: #fcd34d;
+  --filepath-text-color: var(--amber-300);
 
+  // ==========================================================================
   // TABLES
+  // ==========================================================================
   --tb-odd-bg: rgba(15, 23, 42, 0.4);
   --tb-even-bg: rgba(15, 23, 42, 0.6);
-  --tb-border-color: rgba(245, 158, 11, 0.1);
+  --tb-border-color: var(--glass-border);
 
-  // CATEGORIES/ARCHIVES
-  --categories-border: rgba(245, 158, 11, 0.1);
-  --categories-hover-bg: rgba(245, 158, 11, 0.1);
-  --categories-icon-hover-color: #fbbf24;
+  // ==========================================================================
+  // CATEGORIES/ARCHIVES - Timeline effects
+  // ==========================================================================
+  --categories-border: var(--glass-border);
+  --categories-hover-bg: var(--button-hover-bg);
+  --categories-icon-hover-color: var(--amber-400);
   --timeline-color: rgba(245, 158, 11, 0.2);
   --timeline-node-bg: rgba(251, 191, 36, 0.6);
-  --timeline-year-dot-color: #fbbf24;
+  --timeline-year-dot-color: var(--amber-400);
   --dash-color: rgba(245, 158, 11, 0.2);
 
-  // TOC
-  --toc-highlight: #fbbf24;
+  // ==========================================================================
+  // TABLE OF CONTENTS
+  // ==========================================================================
+  --toc-highlight: var(--amber-400);
   --toc-popup-border-color: rgba(245, 158, 11, 0.2);
 
-  // MISC
+  // ==========================================================================
+  // MISC ELEMENTS
+  // ==========================================================================
   --footnote-target-bg: rgba(251, 191, 36, 0.1);
   --kbd-wrap-color: rgba(245, 158, 11, 0.3);
-  --kbd-text-color: rgba(251, 241, 227, 0.9);
+  --kbd-text-color: rgba(254, 243, 199, 0.9);
   --kbd-bg-color: rgba(15, 23, 42, 0.8);
-  --checkbox-color: rgba(251, 241, 227, 0.3);
-  --checkbox-checked-color: #fbbf24;
-  --shimmer-bg: linear-gradient(90deg, transparent 0%, rgba(251, 191, 36, 0.05) 50%, transparent 100%);
+  --checkbox-color: rgba(254, 243, 199, 0.3);
+  --checkbox-checked-color: var(--amber-400);
 
+  // ==========================================================================
+  // ANIMATIONS/EFFECTS
+  // ==========================================================================
+  // Shimmer effect for buttons (matching React)
+  --shimmer-bg: linear-gradient(
+    90deg, 
+    transparent 0%, 
+    rgba(251, 191, 36, 0.1) 50%, 
+    transparent 100%
+  );
+
+  // Floating animation for ambient glows
+  --float-y-offset: -30px;
+  --float-x-offset: 10px;
+
+  // ==========================================================================
+  // UTILITY COLORS - For avoiding hard-coding
+  // ==========================================================================
+  --color-gray: var(--text-muted-color);
+  --color-gray-light: rgba(254, 243, 199, 0.3);
+  --color-gray-dark: rgba(254, 243, 199, 0.1);
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  // ==========================================================================
+  // THEME-SPECIFIC VISIBILITY
+  // ==========================================================================
   .light { display: none; }
 
-  // OVERRIDES
-  .categories.card, .list-group-item { 
+  // ==========================================================================
+  // COMPONENT OVERRIDES
+  // ==========================================================================
+  .categories.card, 
+  .list-group-item { 
     background-color: var(--card-bg); 
   }
+  
   .categories .card-header { 
     background-color: var(--card-header-bg); 
   }

@@ -17,18 +17,19 @@
             <a href="{{ post.url | relative_url }}" class="card-link">
               <div class="card h-100 shadow-sm">
                 {% if post.image %}
+                  
                   <div class="card-img-wrapper">
                     {% assign post_image = post.image.path | default: post.image %}
                     <img src="{{ post_image | relative_url }}" 
                          class="card-img-top" 
                          alt="{{ post.image.alt | default: post.title }}"
                          loading="lazy">
+                         </div>
                     {% if post.pin %}
                       <span class="badge-pinned">
                         <i class="fas fa-thumbtack"></i> Pinned
                       </span>
                     {% endif %}
-                  </div>
                 {% else %}
                   <div class="card-img-wrapper placeholder-img">
                     <div class="placeholder-content">

@@ -1,0 +1,263 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/mixins' as mx;
+@use '../abstracts/breakpoints' as bp;
+
+// ============================================================================
+// BLOG/PROJECTS PAGE - Filter & Search Controls
+// ============================================================================
+
+#blog-page {
+  
+  // ============================================================================
+  // PAGE HEADER
+  // ============================================================================
+  .blog-header {
+    .page-title {
+      color: var(--heading-color);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-description {
+      color: var(--text-muted-color);
+      font-size: 1.1rem;
+    }
+  }
+
+  // ============================================================================
+  // FILTER & SEARCH CONTROLS
+  // ============================================================================
+  .blog-controls {
+    // ✨ Glass effect container
+    @include mx.glass;
+    padding: 1.25rem;
+    border-radius: v.$radius-lg;
+    margin-bottom: 2rem;
+
+    .row {
+      align-items: center;
+    }
+  }
+
+  // ============================================================================
+  // SEARCH BAR - Lantern styled
+  // ============================================================================
+  .search-wrapper {
+    .input-group {
+      // ✨ Glass effect on input group
+      backdrop-filter: blur(var(--blur-sm));
+      border-radius: v.$radius-lg;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      @include mx.transition(border-color, box-shadow);
+
+      &:focus-within {
+        border-color: var(--glass-border-strong);
+        box-shadow: var(--input-focus-glow);
+      }
+
+      .input-group-text {
+        background: var(--glow-subtle);
+        border: none;
+        color: var(--text-muted-color);
+        border-right: 1px solid var(--glass-border);
+        padding: 0.75rem 1rem;
+        @include mx.transition(color);
+      }
+
+      .form-control {
+        background: transparent;
+        border: none;
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        @include mx.transition(background-color);
+
+        &::placeholder {
+          color: var(--text-muted-color);
+          opacity: 0.7;
+        }
+
+        &:focus {
+          background: var(--glow-subtle);
+          box-shadow: none;
+          outline: none;
+          
+          ~ .input-group-text {
+            color: var(--link-hover-color);
+          }
+        }
+      }
+    }
+  }
+
+  // ============================================================================
+  // DROPDOWN BUTTON - Lantern styled
+  // ============================================================================
+  .dropdown {
+    .btn {
+      // ✨ Override Bootstrap button with lantern theme
+      @include mx.button-base;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      
+      // ✨ Remove Bootstrap outline styles
+      &.btn-outline-secondary {
+        border-color: var(--btn-border-color);
+        color: var(--text-color);
+        background: transparent;
+
+        &:hover,
+        &:focus,
+        &:active,
+        &.show {
+          background: var(--button-hover-bg);
+          border-color: var(--glass-border-strong);
+          box-shadow: var(--btn-hover-glow);
+          color: var(--text-color);
+        }
+      }
+
+      i {
+        color: var(--text-muted-color);
+        @include mx.transition(color);
+      }
+
+      &:hover i {
+        color: var(--link-hover-color);
+      }
+    }
+
+    // ✨ Dropdown menu with glass effect
+    .dropdown-menu {
+      @include mx.glass;
+      border: 1px solid var(--glass-border);
+      border-radius: v.$radius-lg;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      min-width: 100%;
+      
+      // ✨ Custom scrollbar for long lists
+      @include mx.custom-scrollbar;
+
+      .dropdown-item {
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        border-radius: v.$radius-sm;
+        @include mx.transition(background-color, color);
+
+        &:hover,
+        &:focus {
+          background: var(--glow-medium);
+          color: var(--link-hover-color);
+        }
+
+        &.active,
+        &:active {
+          background: var(--glow-strong);
+          color: var(--link-hover-color);
+          // ✨ Subtle glow for active item
+          box-shadow: var(--glow-ring-small);
+        }
+      }
+    }
+  }
+
+  // ============================================================================
+  // PINNED SECTION
+  // ============================================================================
+  .pinned-section {
+    .section-title {
+      color: var(--heading-color);
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+
+      i {
+        // Keep the thumbtack red for consistency with badge
+        color: rgba(220, 53, 69, 0.9);
+      }
+    }
+
+    hr {
+      border-color: var(--main-border-color);
+      opacity: 0.5;
+    }
+  }
+
+  // ============================================================================
+  // POSTS GRID - Already styled by _projectspreview.scss
+  // ============================================================================
+  .posts-grid {
+    // Card styling comes from _projectspreview.scss
+    // This ensures consistency
+  }
+
+  // ============================================================================
+  // NO POSTS MESSAGE
+  // ============================================================================
+  .no-posts {
+    padding: 3rem 0;
+    
+    i {
+      color: var(--text-muted-color);
+      opacity: 0.5;
+    }
+
+    p {
+      color: var(--text-muted-color);
+      font-size: 1.1rem;
+    }
+  }
+
+  // ============================================================================
+  // LOAD MORE BUTTON
+  // ============================================================================
+  .pagination-wrapper {
+    #load-more {
+
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      
+      i {
+        @include mx.transition(transform);
+      }
+
+      &:hover i {
+        transform: translateY(3px);
+      }
+    }
+  }
+
+  // ============================================================================
+  // RESPONSIVE ADJUSTMENTS
+  // ============================================================================
+  @include bp.lte(bp.get(md)) {
+    .blog-controls {
+      padding: 1rem;
+
+      .col-md-6 {
+        &:first-child {
+          margin-bottom: 1rem;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// POST ITEM ANIMATIONS
+// ============================================================================
+.post-item {
+  // ✨ Fade in animation on load
+  animation: fade-in-up 0.5s ease-out backwards;
+  
+  // Stagger animation for each item
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}

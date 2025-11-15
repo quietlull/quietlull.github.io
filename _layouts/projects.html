@@ -1,6 +1,6 @@
 ---
 layout: default
-refactor: true
+refactor: false
 ---
 
 {% include lang.html %}
@@ -59,20 +59,25 @@ refactor: true
     <div class="posts-grid row g-4 mb-4">
       {% for post in all_pinned %}
         <div class="col-12 col-md-6 col-lg-4">
+
           <article class="post-card h-100 pinned">
             <a href="{{ post.url | relative_url }}" class="card-link">
               <div class="card h-100 border-danger">
                 {% if post.image %}
                   <div class="card-img-wrapper">
+
                     {% assign post_image = post.image.path | default: post.image %}
                     <img src="{{ post_image | relative_url }}" 
                          class="card-img-top" 
                          alt="{{ post.image.alt | default: post.title }}"
                          loading="lazy">
+
                     <span class="badge-pinned">
                       <i class="fas fa-thumbtack"></i> Pinned
                     </span>
+
                   </div>
+                  
                 {% else %}
                   <div class="card-img-wrapper placeholder-img">
                     <div class="placeholder-content">

@@ -1,9 +1,12 @@
 @use '../abstracts/mixins' as mx;
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/variables' as v;
 
 .text-container {
   @include mx.glass;
+  @include mx.card-hover;
   padding: 25px;
-  border-radius: 12px;
+  border-radius: v.$radius-lg;
 
   > *:first-child { margin-top: 0; }
   > *:last-child { margin-bottom: 0; }
@@ -27,8 +30,18 @@
   width: 100%;
   max-width: 300px;
   height: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-radius: v.$radius-lg;
+  // ✨ FIXED: Using CSS variable for shadow
+  box-shadow: var(--shadow-lg);
+  // ✨ ADDED: Smooth transition and hover effect
+  @include mx.transition(transform, box-shadow);
+  
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 
+      var(--shadow-xl),
+      var(--btn-hover-glow);
+  }
 }
 
 .about-text {
@@ -53,11 +66,13 @@
 }
 
 #landing-title {
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  // ✨ ENHANCED: Subtle text shadow for depth
+  text-shadow: 0 2px 8px var(--shadow-sm);
   margin: 0;
 }
 
-@media (max-width: 768px) {
+// ✨ FIXED: Using proper breakpoint mixin
+@include bp.lte(bp.get(md)) {
   .landing-content {
     flex-direction: column;
   }

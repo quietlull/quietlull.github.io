@@ -28,7 +28,7 @@
     position: relative;
     left: 2px;
     margin-left: -$timeline-width;
-    transition: all 0.3s ease;
+    transition: all var(--transition-fast) ease;
 
     &::before {
       @extend %timeline;
@@ -43,7 +43,6 @@
       top: 24px;
     }
 
-    /* Year dot with glow */
     &::after {
       content: '';
       display: inline-block;
@@ -55,16 +54,20 @@
       border: 3px solid;
       background-color: var(--timeline-year-dot-color);
       border-color: var(--timeline-node-bg);
-      box-shadow: 0 0 2px 0 #c2c6cc,
-                  0 0 8px rgba(251, 191, 36, 0.3);
+
+      box-shadow: 
+        0 0 2px 0 var(--color-gray-light),
+        var(--glow-ring-small);
       z-index: 1;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      transition: 
+        box-shadow var(--transition-fast) ease, 
+        transform var(--transition-fast) ease;
     }
 
     &:hover::after {
-      box-shadow: 0 0 4px 0 #c2c6cc,
-                  0 0 16px rgba(251, 191, 36, 0.6),
-                  0 0 24px rgba(251, 191, 36, 0.3);
+      box-shadow: 
+        0 0 4px 0 var(--color-gray-light),
+        var(--glow-ring);
       transform: scale(1.1);
     }
   }
@@ -73,7 +76,7 @@
     li {
       font-size: 1.1rem;
       line-height: 3rem;
-      transition: all 0.3s ease;
+      transition: all var(--transition-fast) ease;
 
       @extend %text-ellipsis;
 
@@ -90,7 +93,6 @@
         );
       }
 
-      /* Add subtle hover glow */
       &:hover {
         background-image: linear-gradient(
           to left,
@@ -100,7 +102,7 @@
           var(--bg-tertiary),
           var(--main-bg)
         );
-        box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.03);
+        box-shadow: inset 0 0 20px var(--glow-subtle);
       }
 
       &::before {
@@ -138,16 +140,16 @@
     margin-left: 2.5rem;
     position: relative;
     top: 0.1rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-fast) ease;
 
     &:hover {
       border-bottom: none;
-      color: var(--lantern-glow-strong, #fbbf24);
-      text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+      color: var(--link-hover-color);
+      text-shadow: 0 0 8px var(--glow-subtle);
     }
 
     &::before {
-      /* the dot before post title with glow */
+
       content: '';
       display: inline-block;
       position: relative;
@@ -158,16 +160,19 @@
       top: 1.35rem;
       left: 71px;
       background-color: var(--timeline-node-bg);
-      box-shadow: 0 0 3px 0 #c2c6cc,
-                  0 0 6px rgba(251, 191, 36, 0.2);
+
+      box-shadow: 
+        0 0 3px 0 var(--color-gray-light),
+        var(--glow-ring-small);
       z-index: 1;
-      transition: all 0.3s ease;
+      transition: all var(--transition-fast) ease;
     }
 
     &:hover::before {
-      box-shadow: 0 0 6px 0 #c2c6cc,
-                  0 0 12px rgba(251, 191, 36, 0.5),
-                  0 0 18px rgba(251, 191, 36, 0.3);
+
+      box-shadow: 
+        0 0 4px 0 var(--color-gray-light),
+        var(--glow-ring);
       transform: scale(1.2);
     }
   }

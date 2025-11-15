@@ -105,7 +105,7 @@ main {
     position: absolute;
     background-color: var(--card-hover-bg);
     opacity: 0;
-    transition: opacity 0.35s ease-in-out;
+    transition: opacity var(--transition-normal) ease-in-out;
   }
 
   &:hover {
@@ -252,39 +252,10 @@ main {
 }
 
 .shimmer {
-  overflow: hidden;
-  position: relative;
+  @include mx.shimmer-effect;
   background: var(--img-bg);
+  
 
-  &::before {
-    content: '';
-    position: absolute;
-    background: var(--shimmer-bg);
-    height: 100%;
-    width: 100%;
-    -webkit-animation: shimmer 1.3s infinite;
-    animation: shimmer 1.3s infinite;
-  }
-
-  @-webkit-keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-
-    100% {
-      transform: translateX(100%);
-    }
-  }
-
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-
-    100% {
-      transform: translateX(100%);
-    }
-  }
 }
 
 .embed-video {
@@ -351,7 +322,7 @@ main {
 /* Overwrite bootstrap outline button */
 .btn.btn-outline-primary {
   &:not(.disabled):hover {
-    border-color: #007bff !important;
+    border-color: var(--link-hover-color) !important;//007bff
   }
 }
 
@@ -369,7 +340,8 @@ main {
   box-shadow: none;
   border-color: var(--input-focus-border-color) !important;
   background: center !important;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  transition: background-color var(--transition-fast) ease-in-out, 
+            border-color var(--transition-fast) ease-in-out;
 }
 
 .left {
@@ -397,15 +369,15 @@ mjx-container {
 
 @media (hover: hover) {
   #sidebar ul > li:last-child::after {
-    transition: top 0.5s ease;
+    transition: top var(--transition-normal) ease;
   }
 
   .nav-link {
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color var(--transition-fast) ease-in-out;
   }
 
   .post-preview {
-    transition: background-color 0.35s ease-in-out;
+    transition: background-color var(--transition-normal) ease-in-out;
   }
 }
 
@@ -420,7 +392,7 @@ mjx-container {
   @include bp.lt(bp.get(lg)) {
     @include mx.slide;
   }
-
+/*
   @include bp.lg {
     margin-left: v.$sidebar-width;
   }
@@ -428,7 +400,7 @@ mjx-container {
   @include bp.xxxl {
     margin-left: v.$sidebar-width-large;
   }
-
+*/
   > .container {
     min-height: 100vh;
 

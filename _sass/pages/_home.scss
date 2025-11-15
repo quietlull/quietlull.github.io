@@ -118,7 +118,7 @@
     }
 
     .page-link {
-      color: var(--btn-patinator-text-color);
+      color: var(--btn-paginator-text-color);
       padding: 0 0.6rem;
       display: flex;
       align-items: center;
@@ -126,21 +126,31 @@
       border-radius: 0.5rem;
       border: 0;
       background-color: inherit;
+      
+      // ✨ ADD: Glass effect on pagination buttons
+      @include mx.transition(background-color, box-shadow);
     }
 
     &.active .page-link {
       background-color: var(--btn-paginator-hover-color);
+      // ✨ ADD: Subtle glow on active page
+      box-shadow: 0 0 12px var(--glow-subtle);
     }
 
     &:not(.active) .page-link:hover {
-      box-shadow: inset var(--btn-border-color) 0 0 0 1px;
+      // ✨ ENHANCED: Glass effect instead of just border
+      background: var(--button-hover-bg);
+      box-shadow: 
+        inset var(--btn-border-color) 0 0 0 1px,
+        var(--btn-hover-glow);
     }
 
     &.disabled {
       cursor: not-allowed;
 
       .page-link {
-        color: rgb(108 117 125 / 57%);
+        color: var(--text-muted-color);
+        opacity: 0.5;
       }
     }
   }

@@ -1,135 +1,365 @@
+// ============================================================================
+// LIGHT THEME - Warm Lantern Aesthetic
+// ============================================================================
+// Light mode interpretation of the lantern theme
+// Warm, inviting palette with subtle amber accents
+
 @mixin styles {
   color-scheme: light;
 
-  // BACKGROUNDS
-  --bg-primary: white;
-  --bg-secondary: #f6f8fa;
-  --bg-tertiary: #e9ecef;
+  // ==========================================================================
+  // CORE PALETTE
+  // ==========================================================================
+  --slate-50: #f8fafc;          // rgb(248, 250, 252) - lightest bg
+  --slate-100: #f1f5f9;         // rgb(241, 245, 249) - elevated
+  --slate-200: #e2e8f0;         // rgb(226, 232, 240) - borders
+  --slate-300: #cbd5e1;         // rgb(203, 213, 225) - muted elements
+  --slate-600: #475569;         // rgb(71, 85, 105) - text
+  --slate-700: #334155;         // rgb(51, 65, 85) - headings
+  --slate-900: #0f172a;         // rgb(15, 23, 42) - darkest text
+  
+  --amber-50: #fffbeb;          // rgb(255, 251, 235) - warm bg tint
+  --amber-100: #fef3c7;         // rgb(254, 243, 199) - subtle accents
+  --amber-200: #fde68a;         // rgb(253, 230, 138) - light highlights
+  --amber-500: #f59e0b;         // rgb(245, 158, 11) - primary accent
+  --amber-600: #d97706;         // rgb(217, 119, 6) - hover states
+  --amber-700: #b45309;         // rgb(180, 83, 9) - active states
+  
+  --orange-500: #f97316;        // rgb(249, 115, 22) - warm accent
+  --orange-600: #ea580c;        // rgb(234, 88, 12) - secondary
+
+  // ==========================================================================
+  // BACKGROUNDS - Clean with warm undertones
+  // ==========================================================================
+  --main-bg: var(--amber-50);
+  --bg-primary: #ffffff;
+  --bg-secondary: var(--slate-50);
+  --bg-tertiary: var(--slate-100);
+  
+  // Glass morphism - lighter in light mode
   --bg-glass: rgba(255, 255, 255, 0.9);
-  --mask-bg: #c1c3c5;
-  --img-bg: radial-gradient(circle, rgb(255 255 255) 0%, rgb(239 239 239) 100%);
+  --bg-glass-strong: rgba(255, 255, 255, 0.95);
+  --mask-bg: rgba(193, 195, 197, 0.8);
+  
+  // Gradients
+  --bg-gradient: linear-gradient(to bottom, 
+    var(--amber-50), 
+    #ffffff, 
+    var(--amber-50)
+  );
+  --img-bg: radial-gradient(circle, #ffffff 0%, #f5f5f5 100%);
 
-  // TEXT
-  --text-color: #34343c;
-  --text-muted-color: #757575;
-  --text-muted-highlight-color: inherit;
-  --heading-color: #2a2a2a;
-  --label-color: #585858;
+  // ==========================================================================
+  // TEXT - Dark, readable with warm tones
+  // ==========================================================================
+  --text-color: #2c2c2c;
+  --text-muted-color: #6b7280;
+  --text-muted-highlight-color: var(--slate-600);
+  --text-very-muted: #9ca3af;
+  --heading-color: #1f2937;
+  --label-color: #4b5563;
 
-  // BORDERS
-  --main-border-color: #f3f3f3;
-  --glass-border: rgba(0, 0, 0, 0.15);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  // ==========================================================================
+  // BORDERS & GLASS EFFECTS - Subtle definition
+  // ==========================================================================
+  --main-border-color: var(--slate-200);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-border-strong: rgba(0, 0, 0, 0.15);
+  
+  // Softer shadows for light mode
+  --glass-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),          // Subtle depth
+    0 0 0 1px rgba(226, 232, 240, 0.5);      // Edge definition
+  
+  --glass-shadow-strong: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(226, 232, 240, 0.8);
 
-  // LINKS
-  --link-color: #0056b2;
-  --link-underline-color: #dee2e6;
 
-  // BUTTONS
+    --placeholder-gradient: linear-gradient(
+  135deg, 
+  var(--slate-50), 
+  var(--slate-200)
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+);
+  // ==========================================================================
+  // LANTERN GLOWS - Subtle amber warmth
+  // ==========================================================================
+  --glow-subtle: rgba(245, 158, 11, 0.02);
+  --glow-medium: rgba(245, 158, 11, 0.04);
+  --glow-strong: rgba(245, 158, 11, 0.08);
+  --glow-intense: rgba(245, 158, 11, 0.12);
+  
+  // Lighter glow shadows for light mode
+  --glow-ring: 
+    0 0 10px 2px rgba(245, 158, 11, 0.2),
+    0 0 20px 4px rgba(245, 158, 11, 0.1);
+  
+  --glow-ring-small: 
+    0 0 6px 1px rgba(245, 158, 11, 0.15),
+    0 0 12px 2px rgba(245, 158, 11, 0.08);
+
+    --orange-glow-subtle: rgba(249, 115, 22, 0.02);
+--orange-glow-medium: rgba(249, 115, 22, 0.04);
+--orange-glow-strong: rgba(249, 115, 22, 0.06);
+--orange-border: rgba(249, 115, 22, 0.15);
+--orange-border-strong: rgba(249, 115, 22, 0.25);
+
+// Yellow variants
+--yellow-glow-subtle: rgba(234, 179, 8, 0.02);
+--yellow-glow-medium: rgba(234, 179, 8, 0.04);
+--yellow-glow-strong: rgba(234, 179, 8, 0.06);
+--yellow-border: rgba(234, 179, 8, 0.15);
+
+// ==========================================================================
+// BLUR VALUES - Matching variables.scss
+// ==========================================================================
+--blur-sm: 4px;
+--blur-md: 12px;
+--blur-lg: 16px;
+--blur-xl: 24px;
+--blur-2xl: 48px;
+--blur-3xl: 80px;
+
+// ==========================================================================
+// TRANSITION TIMINGS
+// ==========================================================================
+--transition-fast: 300ms;
+--transition-normal: 500ms;
+--transition-slow: 1000ms;
+
+--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+--ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+--ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+// ==========================================================================
+// ANIMATION DURATIONS
+// ==========================================================================
+--float-duration: 10s;
+--float-gentle-duration: 8s;
+--breathing-duration: 4s;
+--pulse-duration: 2s;
+--shimmer-duration: 1s;
+
+// ==========================================================================
+// Z-INDEX LAYERS
+// ==========================================================================
+--z-background: -1;
+--z-base: 0;
+--z-content: 10;
+--z-dropdown: 50;
+--z-sticky: 100;
+--z-header: 200;
+--z-overlay: 500;
+--z-modal: 1000;
+--z-toast: 2000;
+
+// ==========================================================================
+// SPACING SCALE
+// ==========================================================================
+--spacing-xs: 0.5rem;
+--spacing-sm: 0.75rem;
+--spacing-md: 1rem;
+--spacing-lg: 1.5rem;
+--spacing-xl: 2rem;
+--spacing-2xl: 3rem;
+--spacing-3xl: 4rem;
+--spacing-4xl: 6rem;
+  // ==========================================================================
+  // LINKS - Professional with amber accent
+  // ==========================================================================
+  --link-color: #0369a1;                    // Blue for readability
+  --link-hover-color: var(--amber-600);     // Warm on hover
+  --link-underline-color: var(--slate-200);
+  --link-underline-glow: 0 0 4px rgba(245, 158, 11, 0.3);
+
+  // ==========================================================================
+  // BUTTONS - Clean with subtle warmth
+  // ==========================================================================
   --button-bg: #ffffff;
-  --btn-border-color: #e9ecef;
-  --btn-backtotop-color: #686868;
-  --btn-backtotop-border-color: #f1f1f1;
-  --btn-patinator-text-color: #555555;
-  --btn-paginator-hover-color: var(--bg-secondary);
-  --btn-share-color: gray;
-  --btn-share-hover-color: #0d6efd;
+  --button-hover-bg: var(--amber-50);
+  --button-active-bg: var(--amber-100);
+  
+  --btn-border-color: var(--slate-200);
+  --btn-hover-glow: 0 0 12px rgba(245, 158, 11, 0.15);
+  
+  // Specific button types
+  --btn-backtotop-color: #4b5563;
+  --btn-backtotop-border-color: var(--slate-200);
 
-  // TOPBAR
+  // Badge colors (pinned posts, etc.)
+// NOTE: Badge stays RED for maximum visibility on any image background
+--badge-pinned-bg: rgba(220, 53, 69, 0.9);
+--badge-pinned-text: var(--color-white);
+  // ==========================================================================
+  // TOPBAR - Navigation
+  // ==========================================================================
   --topbar-bg: var(--bg-glass);
-  --topbar-text-color: rgb(78 78 78);
+  --topbar-text-color: #4b5563;
   --topbar-border-color: var(--glass-border);
-  --topbar-hover-bg: rgb(223 233 241 / 64%);
-  --topbar-active-color: #1d1d1d;
-  --topbar-btn-bg: white;
-  --topbar-btn-color: #8e8e8e;
-  --avatar-bg-color: rgb(255, 255, 255); // White in light mode (your original)
+  --topbar-hover-bg: rgba(245, 158, 11, 0.08);
+  --topbar-active-color: #1f2937;
+  --topbar-btn-bg: #ffffff;
+  --topbar-btn-color: #6b7280;
+  --topbar-glow: 0 0 10px rgba(245, 158, 11, 0.1);
 
-  // SIDEBAR (legacy - maps to topbar)
-  --sidebar-bg: var(--bg-secondary);
-  --sidebar-border-color: #efefef;
-  --sidebar-muted-color: #545454;
-  --sidebar-active-color: #1d1d1d;
-  --sidebar-hover-bg: rgb(223 233 241 / 64%);
-  --sidebar-btn-bg: white;
-  --sidebar-btn-color: #8e8e8e;
-  --site-title-color: rgb(113 113 113);
-  --site-subtitle-color: #717171;
-  --avatar-border-color: white;
+  // Avatar
+  --avatar-bg-color: #ffffff;
+  --avatar-border-color: var(--slate-200);
 
+  // Site titles
+  --site-title-color: #4b5563;
+  --site-subtitle-color: #6b7280;
+
+  // ==========================================================================
   // SEARCH/INPUT
-  --search-border-color: rgb(240 240 240);
-  --search-icon-color: #c2c6cc;
-  --search-tag-bg: #f8f9fa;
-  --input-focus-border-color: #b8b8b8;
+  // ==========================================================================
+  --search-border-color: var(--slate-200);
+  --search-icon-color: #9ca3af;
+  --search-tag-bg: var(--slate-50);
+  --input-focus-border-color: #94a3b8;
+  --input-focus-glow: 0 0 8px rgba(148, 163, 184, 0.3);
 
-  // CARDS
-  --card-bg: white;
-  --card-hover-bg: #e2e2e2;
-  --card-shadow: rgb(104 104 104 / 5%) 0 2px 6px 0, rgb(211 209 209 / 15%) 0 0 0 1px;
+  // ==========================================================================
+  // CARDS - Clean elevation
+  // ==========================================================================
+  --card-bg: #ffffff;
+  --card-hover-bg: var(--slate-50);
+  --card-border: var(--slate-200);
+  --card-hover-border: var(--slate-300);
+  
+  --card-shadow: 
+    0 2px 6px 0 rgba(104, 104, 104, 0.05), 
+    0 0 0 1px rgba(211, 209, 209, 0.15);
+  
+  --card-hover-shadow: 
+    0 4px 12px 0 rgba(104, 104, 104, 0.08),
+    0 0 0 1px rgba(211, 209, 209, 0.2);
+  
   --card-header-bg: var(--bg-tertiary);
 
+  // Subtle radial effect for light mode
+  --card-radial-glow: radial-gradient(
+    circle,
+    rgba(245, 158, 11, 0.04) 0%,
+    transparent 50%,
+    transparent 100%
+  );
+
+  // ==========================================================================
   // TAGS
-  --tag-border: #dee2e6;
-  --tag-shadow: var(--btn-border-color);
-  --tag-hover: rgb(222 226 230);
+  // ==========================================================================
+  --tag-bg: var(--slate-50);
+  --tag-border: var(--slate-200);
+  --tag-hover: var(--slate-100);
+  --tag-shadow: rgba(0, 0, 0, 0.05);
 
+  // ==========================================================================
   // BLOCKQUOTES
-  --blockquote-border-color: #eeeeee;
-  --blockquote-text-color: #757575;
+  // ==========================================================================
+  --blockquote-border-color: var(--slate-200);
+  --blockquote-text-color: #6b7280;
+  --blockquote-bg: var(--slate-50);
 
-  // PROMPTS
-  --prompt-text-color: rgb(46 46 46 / 77%);
-  --prompt-tip-bg: rgb(123 247 144 / 20%);
-  --prompt-tip-icon-color: #03b303;
-  --prompt-info-bg: #e1f5fe;
-  --prompt-info-icon-color: #0070cb;
-  --prompt-warning-bg: rgb(255 243 205);
-  --prompt-warning-icon-color: #ef9c03;
-  --prompt-danger-bg: rgb(248 215 218 / 56%);
-  --prompt-danger-icon-color: #df3c30;
+  // ==========================================================================
+  // PROMPTS/ALERTS
+  // ==========================================================================
+  --prompt-text-color: rgba(46, 46, 46, 0.77);
+  --prompt-tip-bg: rgba(123, 247, 144, 0.2);
+  --prompt-tip-icon-color: #059669;
+  --prompt-info-bg: #e0f2fe;
+  --prompt-info-icon-color: #0284c7;
+  --prompt-warning-bg: #fef3c7;
+  --prompt-warning-icon-color: #d97706;
+  --prompt-danger-bg: rgba(248, 215, 218, 0.56);
+  --prompt-danger-icon-color: #dc2626;
 
-  // CODE
-  --language-border-color: #ececec;
-  --highlight-bg-color: #f6f8fa;
-  --highlighter-rouge-color: #3f596f;
-  --highlight-lineno-color: #9e9e9e;
-  --inline-code-bg: rgb(25 25 28 / 5%);
-  --code-color: #3a3a3a;
-  --code-header-text-color: #a3a3a3;
-  --code-header-muted-color: #e5e5e5;
-  --code-header-icon-color: #c9c8c8;
-  --clipboard-checked-color: #43c743;
+  // ==========================================================================
+  // CODE BLOCKS
+  // ==========================================================================
+  --language-border-color: var(--slate-200);
+  --highlight-bg-color: var(--slate-50);
+  --highlighter-rouge-color: #475569;
+  --highlight-lineno-color: #9ca3af;
+  --inline-code-bg: rgba(25, 25, 28, 0.05);
+  --code-color: #374151;
+  --code-header-text-color: #9ca3af;
+  --code-header-muted-color: var(--slate-200);
+  --code-header-icon-color: #cbd5e1;
+  --clipboard-checked-color: #10b981;
   --filepath-text-color: inherit;
 
+  // ==========================================================================
   // TABLES
-  --tb-odd-bg: #fbfcfd;
-  --tb-even-bg: white;
-  --tb-border-color: #eaeaea;
+  // ==========================================================================
+  --tb-odd-bg: var(--slate-50);
+  --tb-even-bg: #ffffff;
+  --tb-border-color: var(--slate-200);
 
+  // ==========================================================================
   // CATEGORIES/ARCHIVES
-  --categories-border: rgb(0 0 0 / 12.5%);
-  --categories-hover-bg: var(--btn-border-color);
-  --categories-icon-hover-color: darkslategray;
-  --timeline-color: rgb(0 0 0 / 7.5%);
-  --timeline-node-bg: #c2c6cc;
+  // ==========================================================================
+  --categories-border: rgba(0, 0, 0, 0.125);
+  --categories-hover-bg: var(--slate-100);
+  --categories-icon-hover-color: #475569;
+  --timeline-color: rgba(0, 0, 0, 0.075);
+  --timeline-node-bg: #cbd5e1;
   --timeline-year-dot-color: #ffffff;
-  --dash-color: silver;
+  --dash-color: #cbd5e1;
 
-  // TOC
-  --toc-highlight: #0550ae;
-  --toc-popup-border-color: lightgray;
+  // ==========================================================================
+  // TABLE OF CONTENTS
+  // ==========================================================================
+  --toc-highlight: #0369a1;
+  --toc-popup-border-color: var(--slate-200);
 
-  // MISC
-  --footnote-target-bg: lightcyan;
-  --kbd-wrap-color: #bdbdbd;
+  // ==========================================================================
+  // MISC ELEMENTS
+  // ==========================================================================
+  --footnote-target-bg: #cffafe;
+  --kbd-wrap-color: #cbd5e1;
   --kbd-text-color: var(--text-color);
-  --kbd-bg-color: white;
-  --checkbox-color: #c5c5c5;
-  --checkbox-checked-color: #07a8f7;
-  --shimmer-bg: linear-gradient(90deg, rgb(250 250 250 / 0%) 0%, rgb(232 230 230 / 100%) 50%, rgb(250 250 250 / 0%) 100%);
+  --kbd-bg-color: #ffffff;
+  --checkbox-color: #cbd5e1;
+  --checkbox-checked-color: #0ea5e9;
 
+  // ==========================================================================
+  // ANIMATIONS/EFFECTS
+  // ==========================================================================
+  // Shimmer effect for light mode
+  --shimmer-bg: linear-gradient(
+    90deg, 
+    rgba(250, 250, 250, 0) 0%, 
+    rgba(232, 230, 230, 1) 50%, 
+    rgba(250, 250, 250, 0) 100%
+  );
+
+  // Floating animation offsets
+  --float-y-offset: -20px;
+  --float-x-offset: 8px;
+
+  // ==========================================================================
+  // UTILITY COLORS
+  // ==========================================================================
+  --color-gray: var(--text-muted-color);
+  --color-gray-light: #e5e7eb;
+  --color-gray-dark: #4b5563;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  // ==========================================================================
+  // THEME-SPECIFIC VISIBILITY
+  // ==========================================================================
   .dark { display: none; }
 
-  [class^='prompt-'] { --link-underline-color: rgb(219 216 216); }
+  // ==========================================================================
+  // COMPONENT OVERRIDES
+  // ==========================================================================
+  [class^='prompt-'] { 
+    --link-underline-color: rgba(219, 216, 216, 0.8); 
+  }
 }

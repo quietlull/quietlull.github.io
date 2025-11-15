@@ -1,44 +1,251 @@
-// Breathing animations toggle
+// ============================================================================
+// VARIABLES - Static SCSS Variables
+// ============================================================================
+// Static values that don't change between themes
+// For theme-specific values, see themes/_dark.scss and themes/_light.scss
+
+@use 'sass:math';
+
+// ============================================================================
+// FEATURE TOGGLES
+// ============================================================================
+
 $enable-breathing: true !default;
 
-// Layout
-$btn-border-width: 3px;
-$btn-mb: 0.5rem;
+// ============================================================================
+// BLUR VALUES - Backdrop filters and effects
+// ============================================================================
 
-// Topbar
+$blur-sm: 4px !default;
+$blur-md: 12px !default;
+$blur-lg: 16px !default;
+$blur-xl: 24px !default;
+$blur-2xl: 48px !default;
+$blur-3xl: 80px !default;
+
+// ============================================================================
+// TRANSITION TIMINGS - Consistent animation durations
+// ============================================================================
+
+$transition-fast: 300ms !default;
+$transition-normal: 500ms !default;
+$transition-slow: 1000ms !default;
+
+// Easing functions
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$ease-out: cubic-bezier(0.0, 0, 0.2, 1) !default;
+$ease-in: cubic-bezier(0.4, 0, 1, 1) !default;
+
+// ============================================================================
+// ANIMATION DURATIONS - Keyframe animation timings
+// ============================================================================
+
+$float-duration: 10s !default;
+$float-gentle-duration: 8s !default;
+$breathing-duration: 4s !default;
+$pulse-duration: 2s !default;
+$shimmer-duration: 1s !default;
+$spin-duration: 1s !default;
+$spin-slow-duration: 3s !default;
+
+// ============================================================================
+// Z-INDEX LAYERS - Stacking context management
+// ============================================================================
+
+$z-background: -1 !default;
+$z-base: 0 !default;
+$z-content: 10 !default;
+$z-dropdown: 50 !default;
+$z-sticky: 100 !default;
+$z-header: 200 !default;
+$z-overlay: 500 !default;
+$z-modal: 1000 !default;
+$z-toast: 2000 !default;
+
+// ============================================================================
+// SPACING SCALE - Consistent spacing system
+// ============================================================================
+
+$spacing-xs: 0.5rem !default;    // 8px
+$spacing-sm: 0.75rem !default;   // 12px
+$spacing-md: 1rem !default;      // 16px
+$spacing-lg: 1.5rem !default;    // 24px
+$spacing-xl: 2rem !default;      // 32px
+$spacing-2xl: 3rem !default;     // 48px
+$spacing-3xl: 4rem !default;     // 64px
+$spacing-4xl: 6rem !default;     // 96px
+
+// ============================================================================
+// BORDER RADIUS - Consistent rounding
+// ============================================================================
+
+$radius-sm: 6px !default;
+$radius-md: 8px !default;
+$radius-lg: 10px !default;
+$radius-xl: 12px !default;
+$radius-2xl: 16px !default;
+$radius-3xl: 24px !default;
+$radius-full: 9999px !default;
+
+// ============================================================================
+// LAYOUT DIMENSIONS
+// ============================================================================
+
+$btn-border-width: 3px !default;
+$btn-mb: 0.5rem !default;
+
+// ============================================================================
+// TOPBAR - Navigation dimensions
+// ============================================================================
+
 $topbar-height: 260px !default;
 $topbar-height-large: 300px !default;
-$tb_btn-border-width: 3px;
-$tb_btn-mb: 0.5rem;
+$tb_btn-border-width: 3px !default;
+$tb_btn-mb: 0.5rem !default;
 
-// Sidebar (legacy - set to 0 since using topbar)
+// ============================================================================
+// SIDEBAR - Legacy (set to 0 since using topbar)
+// ============================================================================
+
 $sidebar-width: 0px !default;
 $sidebar-width-large: 0px !default;
 $sb-btn-gap: 0.8rem !default;
 $sb-btn-gap-lg: 1rem !default;
 
-// Other framework sizes
+// ============================================================================
+// FRAMEWORK SIZES
+// ============================================================================
+
 $searchbar-height: 3rem !default;
 $search-max-width: 200px !default;
 $footer-height: 5rem !default;
 $footer-height-large: 6rem !default;
 $main-content-max-width: 1250px !default;
-$radius-sm: 6px !default;
-$radius-lg: 10px !default;
 $back2top-size: 2.75rem !default;
 
-// Code
+// ============================================================================
+// CODE BLOCKS
+// ============================================================================
+
 $code-font-size: 0.85rem !default;
 $code-header-height: 2.25rem !default;
 $code-dot-size: 0.75rem !default;
 $code-dot-gap: 0.5rem !default;
 $code-icon-width: 1.75rem !default;
 
-// Fonts
+// ============================================================================
+// TYPOGRAPHY
+// ============================================================================
+
+// Font families
 $font-family-base: 'Source Sans Pro', 'Microsoft Yahei', sans-serif !default;
 $font-family-heading: Lato, 'Microsoft Yahei', sans-serif !default;
+$font-family-mono: 'Monaco', 'Courier New', monospace !default;
 
-// Lantern colors
-$lantern-amber-primary: #fbbf24;
-$lantern-amber-light: #fcd34d;
-$lantern-orange-primary: #fb923c;
+// Font weights (matching light/extralight from React)
+$font-weight-extralight: 200 !default;
+$font-weight-light: 300 !default;
+$font-weight-normal: 400 !default;
+$font-weight-medium: 500 !default;
+$font-weight-semibold: 600 !default;
+$font-weight-bold: 700 !default;
+
+// Font sizes
+$font-size-xs: 0.75rem !default;    // 12px
+$font-size-sm: 0.875rem !default;   // 14px
+$font-size-base: 1rem !default;     // 16px
+$font-size-lg: 1.125rem !default;   // 18px
+$font-size-xl: 1.25rem !default;    // 20px
+$font-size-2xl: 1.5rem !default;    // 24px
+$font-size-3xl: 1.875rem !default;  // 30px
+$font-size-4xl: 2.25rem !default;   // 36px
+$font-size-5xl: 3rem !default;      // 48px
+$font-size-6xl: 3.75rem !default;   // 60px
+$font-size-7xl: 4.5rem !default;    // 72px
+
+// Line heights
+$line-height-tight: 1.25 !default;
+$line-height-normal: 1.5 !default;
+$line-height-relaxed: 1.75 !default;
+$line-height-loose: 2 !default;
+
+// ============================================================================
+// LANTERN COLORS - Static color references
+// ============================================================================
+// Note: These are SCSS variables for calculations/functions
+// For actual theming, use CSS custom properties from themes/_dark.scss or _light.scss
+
+$lantern-amber-50: #fffbeb !default;
+$lantern-amber-100: #fef3c7 !default;
+$lantern-amber-200: #fde68a !default;
+$lantern-amber-300: #fcd34d !default;
+$lantern-amber-400: #fbbf24 !default;
+$lantern-amber-500: #f59e0b !default;
+$lantern-amber-600: #d97706 !default;
+
+$lantern-orange-400: #fb923c !default;
+$lantern-orange-500: #f97316 !default;
+$lantern-orange-600: #ea580c !default;
+
+$lantern-slate-50: #f8fafc !default;
+$lantern-slate-100: #f1f5f9 !default;
+$lantern-slate-200: #e2e8f0 !default;
+$lantern-slate-700: #334155 !default;
+$lantern-slate-800: #1e293b !default;
+$lantern-slate-900: #0f172a !default;
+$lantern-slate-950: #020617 !default;
+
+// ============================================================================
+// GLOW INTENSITIES - For calculations
+// ============================================================================
+
+$glow-intensity-subtle: 0.03 !default;
+$glow-intensity-medium: 0.06 !default;
+$glow-intensity-strong: 0.1 !default;
+$glow-intensity-intense: 0.15 !default;
+
+// ============================================================================
+// SHADOW DEPTHS - Box shadow layers
+// ============================================================================
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !default;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !default;
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !default;
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !default;
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !default;
+
+// ============================================================================
+// GLASS EFFECT VALUES
+// ============================================================================
+
+$glass-opacity: 0.9 !default;
+$glass-blur: $blur-md !default;
+$glass-blur-strong: $blur-lg !default;
+
+// ============================================================================
+// GRID SYSTEM
+// ============================================================================
+
+$grid-columns: 12 !default;
+$grid-gap: 1.5rem !default;
+$grid-gap-sm: 1rem !default;
+$grid-gap-lg: 2rem !default;
+
+// ============================================================================
+// CONTAINER WIDTHS
+// ============================================================================
+
+$container-sm: 640px !default;
+$container-md: 768px !default;
+$container-lg: 1024px !default;
+$container-xl: 1280px !default;
+$container-2xl: 1536px !default;
+
+// ============================================================================
+// ASPECT RATIOS
+// ============================================================================
+
+$aspect-square: math.div(1, 1) !default;
+$aspect-video: math.div(16, 9) !default;
+$aspect-photo: math.div(4, 3) !default;
+$aspect-portrait: math.div(3, 4) !default;

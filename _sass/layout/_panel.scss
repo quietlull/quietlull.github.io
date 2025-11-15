@@ -4,7 +4,7 @@
 .access {
   top: 2rem;
   margin-top: 2rem;
-  transition: top 0.2s;
+  transition: top var(--transition-fast);
 
   > section {
     @include mx.glass;
@@ -29,7 +29,8 @@
   .panel-heading {
     font-family: inherit;
     line-height: inherit;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    // ✨ ENHANCED: Subtle text shadow for depth
+    text-shadow: 0 2px 8px var(--shadow-sm);
     @include mx.label(inherit);
   }
 
@@ -39,15 +40,17 @@
     border-radius: 0.8rem;
     padding: 0.3rem 0.5rem;
     margin: 0 0.35rem 0.5rem 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    // ✨ FIXED: Using glass effect with theme colors
+    @include mx.glass;
     @include mx.transition(all);
 
     &:hover {
-      background: rgba(255, 170, 102, 0.2);
-      border-color: rgba(255, 170, 102, 0.3);
+      // ✨ FIXED: Changed from random orange to amber theme
+      background: var(--glow-medium);
+      border-color: var(--glass-border-strong);
       transform: translateY(-2px);
+      // ✨ ADDED: Subtle glow on hover
+      box-shadow: var(--btn-hover-glow);
     }
   }
 
@@ -64,10 +67,13 @@
   a {
     color: inherit;
     border-bottom: none;
+    // ✨ ADDED: Smooth transition
+    @include mx.transition(color, border-color);
 
     &:hover {
-      color: #d2603a !important;
-      border-bottom: 1px solid #d2603a;
+      // ✨ FIXED: Changed from random orange #d2603a to amber theme
+      color: var(--link-hover-color) !important;
+      border-bottom: 1px solid var(--link-hover-color);
     }
   }
 }

@@ -149,7 +149,7 @@ search {
   }
 
   @include bp.xl {
-    transition: all 0.3s ease-in-out;
+    transition: all var(--transition-fast) ease-in-out;
   }
 }
 

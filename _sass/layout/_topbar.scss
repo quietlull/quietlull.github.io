@@ -1,11 +1,15 @@
 @use '../abstracts/variables' as v;
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/breakpoints' as bp;
-@use '../abstracts/hover-effects' as he;
+
+// ============================================================================
+// TOPBAR - Lantern Navigation
+// ============================================================================
 
 #topbar {
   @include mx.glass-lantern;
   @include mx.breathing(breathe-slow, 6s);
+  
   position: static;
   width: 100%;
   z-index: 1000;
@@ -15,17 +19,21 @@
     padding: 0.75rem 1rem;
   }
 
+  // Base link styling
   a {
     color: var(--topbar-text-color);
     user-select: none;
-    @include mx.transition(color);
+    text-decoration: none;
+    @include mx.transition(color, transform);
 
     &:hover {
       color: var(--topbar-active-color);
     }
   }
 
-  // Profile
+  // ============================================================================
+  // PROFILE SECTION
+  // ============================================================================
   .profile-wrapper {
     display: flex;
     align-items: center;
@@ -38,26 +46,29 @@
       padding: 0.5rem;
       background-color: var(--avatar-bg-color);
       border-radius: 0.75rem;
-      box-shadow: none;
+      // ✨ ENHANCED: Using CSS variables for shadows
+      box-shadow: var(--shadow-md);
+      transition: 
+        transform var(--transition-fast) ease, 
+        box-shadow var(--transition-fast) ease;
       
+      &:hover {
+        transform: scale(1.02);
+        // ✨ ENHANCED: Amber glow on hover
+        box-shadow: 
+          var(--shadow-lg),
+          var(--btn-hover-glow);
+      }
 
       img {
         width: 100%;
         min-height: 100%;
+        border-radius: 0.5rem;
         animation: chase-tail 3s linear infinite;
         animation-play-state: paused;
 
         &:hover {
           animation-play-state: running;
-        }
-      }
-
-      @keyframes chase-tail {
-        from { 
-          transform: rotate(0deg); 
-        }
-        to { 
-          transform: rotate(-360deg);
         }
       }
     }
@@ -70,17 +81,21 @@
         line-height: 1.2;
         margin-bottom: 0.25rem;
         letter-spacing: 0.05em;
+        transition: color var(--transition-fast) ease;
       }
 
       .site-subtitle {
         font-size: 0.95rem;
         font-weight: 300;
         color: var(--site-subtitle-color);
+        transition: color var(--transition-fast) ease;
       }
     }
   }
 
-  // Navigation
+  // ============================================================================
+  // NAVIGATION MENU
+  // ============================================================================
   nav {
     margin-bottom: 1.5rem;
     
@@ -90,6 +105,11 @@
       margin: 0;
       padding: 0;
       gap: 2rem;
+      list-style: none;
+
+      @include bp.lt(bp.get(lg)) {
+        gap: 1rem;
+      }
 
       li.nav-item {
         a.nav-link {
@@ -98,19 +118,24 @@
           padding: 0.75rem 1.5rem;
           border-radius: 0.75rem;
           font-weight: 300;
-          backdrop-filter: blur(4px);
-          background: rgba(245, 158, 11, 0.05);
-          border: 1px solid rgba(245, 158, 11, 0.1);
+          // ✨ FIXED: Using CSS variables
+          backdrop-filter: blur(var(--blur-sm));
+          background: var(--glow-subtle);
+          border: 1px solid var(--glass-border);
+          position: relative;
+          overflow: hidden;
           @include mx.transition(all);
 
+          // ✨ ENHANCED: Radial glow effect using mixin
+          @include mx.radial-hover-glow;
 
-
-  &:hover {
-    // Keep existing hover styles
-    color: var(--topbar-active-color);
-    background: rgba(245, 158, 11, 0.15);
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.1); // Add this
-  }
+          &:hover {
+            color: var(--topbar-active-color);
+            // ✨ FIXED: Using CSS variables
+            background: var(--glow-strong);
+            box-shadow: var(--btn-hover-glow);
+            transform: translateY(-1px);
+          }
 
           i {
             font-size: 1rem;
@@ -123,59 +148,53 @@
           }
         }
 
+        // Active state
         &.active .nav-link {
           color: var(--topbar-active-color);
-          background: rgba(245, 158, 11, 0.15);
-          box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
-
-            @include he.hover-glow-text;
-  
-  &:hover {
-    // Keep existing hover styles
-    color: var(--topbar-active-color);
-    background: rgba(245, 158, 11, 0.15);
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.1); // Add this
-  }
+          // ✨ FIXED: Using CSS variables
+          background: var(--glow-medium);
+          box-shadow: var(--btn-hover-glow);
+          
+          &::before {
+            opacity: 0.5;
+          }
         }
       }
     }
   }
 
-  // Bottom actions
+  // ============================================================================
+  // BOTTOM ACTION BUTTONS
+  // ============================================================================
   .topbar-bottom {
     @include mx.flex-center;
+    gap: 0.5rem;
 
+    // ✨ ENHANCED: Shared button styling with consistent theme
     %btn {
       @include mx.flex-center;
       width: 2.5rem;
       height: 2.5rem;
       border-radius: 50%;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(var(--blur-sm));
       background: var(--topbar-btn-bg);
       color: var(--topbar-btn-color);
-      border: 1px solid rgba(245, 158, 11, 0.15);
-      margin: 0 0.25rem;
-      @include mx.transition(all);
+      border: 1px solid var(--glass-border-strong);
       position: relative;
+      @include mx.transition(all);
 
-      &::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(251, 191, 36, 0.1), transparent);
-        opacity: 0;
-        @include mx.transition(opacity);
-      }
+      // ✨ ENHANCED: Using radial hover glow mixin
+      @include mx.radial-hover-glow;
 
       &:hover {
-        background: rgba(245, 158, 11, 0.15);
+        // ✨ FIXED: Using CSS variables
+        background: var(--glow-medium);
         transform: scale(1.05);
-        box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
-        
-        &::before {
-          opacity: 1;
-        }
+        box-shadow: var(--btn-hover-glow);
+      }
+
+      &:active {
+        transform: scale(0.95);
       }
     }
 
@@ -189,14 +208,11 @@
       cursor: pointer;
     }
 
+    // ✨ ENHANCED: Visual separator with CSS variable
     .icon-border {
       width: 1px;
       height: 2rem;
-      background: linear-gradient(to bottom, 
-        transparent, 
-        rgba(245, 158, 11, 0.3), 
-        transparent
-      );
+      background: var(--separator-gradient);
       margin: 0 1rem;
     }
   }

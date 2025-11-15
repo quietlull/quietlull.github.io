@@ -1,7 +1,10 @@
 @use 'sass:list';
 @use 'variables' as v;
 
-// TEXT
+// ============================================================================
+// TEXT UTILITIES
+// ============================================================================
+
 @mixin text-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -15,7 +18,10 @@
   -webkit-box-orient: vertical;
 }
 
-// SPACING
+// ============================================================================
+// SPACING UTILITIES
+// ============================================================================
+
 @mixin mt-mb($value) {
   margin-top: $value;
   margin-bottom: $value;
@@ -41,26 +47,175 @@
   }
 }
 
-// GLASS MORPHISM
+// ============================================================================
+// GLASS MORPHISM - Core lantern aesthetic
+// ============================================================================
+
+// Standard glass effect - theme aware
 @mixin glass {
   background: var(--bg-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
 }
 
-// LANTERN GLASS - Darker with amber glow
-@mixin glass-lantern {
-  backdrop-filter: blur(12px);
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(245, 158, 11, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 
-              0 0 60px rgba(251, 191, 36, 0.03),
-              inset 0 1px 0 rgba(251, 191, 36, 0.05);
+// Stronger glass with more blur
+@mixin glass-strong {
+  background: var(--bg-glass-strong);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-strong);
 }
 
-// BREATHING ANIMATIONS
+// Dark mode specific lantern glass (for use in dark theme only)
+@mixin glass-lantern {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 60px rgba(251, 191, 36, 0.03),
+    inset 0 1px 0 rgba(251, 191, 36, 0.05);
+}
+
+// ============================================================================
+// LANTERN EFFECTS - Signature glow elements
+// ============================================================================
+
+// Glowing dot/orb - creates the lantern "light" effect
+@mixin glow-dot($size: 0.5rem, $ring-size: 2rem) {
+  position: relative;
+  width: $ring-size;
+  height: $ring-size;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: $size;
+    height: $size;
+    background: var(--amber-400);
+    border-radius: 50%;
+    box-shadow: var(--glow-ring);
+  }
+  
+  // Optional ring border
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 50%;
+}
+
+// Small glowing indicator dot
+@mixin glow-dot-small {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--amber-400);
+  border-radius: 50%;
+  box-shadow: var(--glow-ring-small);
+}
+
+// Radial gradient hover glow (matching React component)
+@mixin radial-hover-glow {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-radial-glow);
+    opacity: 0;
+    transition: opacity 500ms ease;
+    pointer-events: none;
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+// Icon with glow background
+@mixin icon-with-glow($size: 4rem, $icon-size: 1rem) {
+  position: relative;
+  width: $size;
+  height: $size;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--glow-medium);
+    border-radius: 1rem;
+    filter: blur(12px);
+    transition: all 0.3s ease;
+  }
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glow-subtle);
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  font-size: $icon-size;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    &::before {
+      background: var(--glow-strong);
+    }
+    background: var(--glow-medium);
+  }
+}
+
+// ============================================================================
+// ANIMATED EFFECTS
+// ============================================================================
+
+// Shimmer effect for buttons (matches React component)
+@mixin shimmer-effect {
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--shimmer-bg);
+    transform: translateX(-100%);
+    transition: transform 1s ease;
+  }
+  
+  &:hover::after {
+    transform: translateX(100%);
+  }
+}
+
+// Animated underline for links (matches React component)
+@mixin animated-underline($color: var(--link-color)) {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -0.25rem;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: $color;
+    box-shadow: var(--link-underline-glow);
+    transition: width 300ms ease;
+  }
+  
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+// Breathing animation for ambient elements
 @mixin breathing($animation, $duration, $delay: 0s) {
   @if v.$enable-breathing {
     animation: $animation $duration ease-in-out infinite;
@@ -68,7 +223,26 @@
   }
 }
 
+// Pulse animation for indicators
+@mixin pulse-glow($duration: 2s) {
+  animation: pulse-glow $duration ease-in-out infinite;
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: var(--glow-ring);
+    }
+    50% {
+      opacity: 0.7;
+      box-shadow: var(--glow-ring-small);
+    }
+  }
+}
+
+// ============================================================================
 // TRANSITIONS
+// ============================================================================
+
 @mixin transition($props...) {
   $list: ();
   @each $prop in $props {
@@ -77,7 +251,22 @@
   transition: $list;
 }
 
+@mixin smooth-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+@mixin slide($append: null) {
+  @if $append {
+    transition: transform 0.4s ease, $append;
+  } @else {
+    transition: transform 0.4s ease;
+  }
+}
+
+// ============================================================================
 // LAYOUT
+// ============================================================================
+
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -94,7 +283,10 @@
   max-width: 100%;
 }
 
+// ============================================================================
 // FORMS
+// ============================================================================
+
 @mixin placeholder {
   color: var(--text-muted-color) !important;
 }
@@ -103,14 +295,31 @@
   opacity: 0.6;
 }
 
+@mixin input-focus-glow {
+  outline: none;
+  border-color: var(--input-focus-border-color);
+  box-shadow: var(--input-focus-glow);
+}
+
+// ============================================================================
 // TYPOGRAPHY
+// ============================================================================
+
 @mixin label($size: 1rem, $weight: 600, $color: var(--label-color)) {
   color: $color;
   font-size: $size;
   font-weight: $weight;
 }
 
-// PROMPTS
+@mixin heading-glow {
+  color: var(--heading-color);
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+}
+
+// ============================================================================
+// PROMPTS/ALERTS
+// ============================================================================
+
 @mixin prompt($type, $fa_content, $fa_style: 'solid', $rotate: 0) {
   &.prompt-#{$type} {
     background-color: var(--prompt-#{$type}-bg);
@@ -126,16 +335,10 @@
   }
 }
 
-// ANIMATION
-@mixin slide($append: null) {
-  @if $append {
-    transition: transform 0.4s ease, $append;
-  } @else {
-    transition: transform 0.4s ease;
-  }
-}
+// ============================================================================
+// IMAGES
+// ============================================================================
 
-// IMAGE
 @mixin img-caption {
   + em {
     display: block;
@@ -146,3 +349,100 @@
   }
 }
 
+@mixin img-with-glow {
+  box-shadow: 0 0 40px rgba(251, 191, 36, 0.1);
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 0 60px rgba(251, 191, 36, 0.15);
+  }
+}
+
+// ============================================================================
+// CARDS & PANELS
+// ============================================================================
+
+@mixin card-base {
+  @include glass;
+  border-radius: v.$radius-lg;
+  padding: 1.5rem;
+}
+
+@mixin card-hover {
+  @include radial-hover-glow;
+  @include transition(transform, box-shadow, border-color);
+  
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--card-hover-border);
+    box-shadow: var(--card-hover-shadow);
+  }
+}
+
+// ============================================================================
+// BUTTONS
+// ============================================================================
+
+@mixin button-base {
+  padding: 0.75rem 1.5rem;
+  border-radius: v.$radius-lg;
+  background: var(--button-bg);
+  border: 1px solid var(--btn-border-color);
+  color: var(--text-color);
+  font-weight: 300;
+  cursor: pointer;
+  @include transition(all);
+  
+  &:hover {
+    background: var(--button-hover-bg);
+    box-shadow: var(--btn-hover-glow);
+  }
+  
+  &:active {
+    background: var(--button-active-bg);
+    transform: scale(0.98);
+  }
+}
+
+@mixin button-with-shimmer {
+  @include button-base;
+  @include shimmer-effect;
+}
+
+// ============================================================================
+// FLOATING ELEMENTS
+// ============================================================================
+
+@mixin floating-orb($size: 8rem, $blur: 48px, $color: var(--amber-400)) {
+  position: fixed;
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  background: rgba($color, 0.1);
+  filter: blur($blur);
+  pointer-events: none;
+  animation: float 10s ease-in-out infinite;
+}
+
+// ============================================================================
+// SCROLLBAR STYLING
+// ============================================================================
+
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--glow-medium);
+    border-radius: 4px;
+    
+    &:hover {
+      background: var(--glow-strong);
+    }
+  }
+}

@@ -4,7 +4,8 @@
 @use '../abstracts/placeholders';
 
 footer {
-  background-color:hsla(218, 5%, 11%, 0);
+  // ✨ FIXED: Using transparent instead of weird hsla
+  background-color: transparent;
   height: v.$footer-height;
   border-top: 1px solid var(--main-border-color);
 
@@ -19,6 +20,8 @@ footer {
 
   a {
     @extend %text-highlight;
+    // ✨ ADDED: Smooth transition
+    @include mx.transition(color, border-color);
 
     &:hover {
       @extend %link-hover;
