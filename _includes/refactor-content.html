@@ -129,11 +129,11 @@
     {% assign _lazyload = true %}
 
     {%- capture _img_url -%}
-{% if _class contains 'preview-img' %}
-{% include media-url.html src=_src %}
-{% else %}
-{% include media-url.html src=_src subpath=page.media_subpath %}
-{% endif %}
+{%- if _class contains 'preview-img' -%}
+{%- include media-url.html src=_src -%}
+{%- else -%}
+{%- include media-url.html src=_src subpath=page.media_subpath -%}
+{%- endif -%}
 {%- endcapture -%}
 
     {% assign _path_prefix = _img_url | remove: _src %}
