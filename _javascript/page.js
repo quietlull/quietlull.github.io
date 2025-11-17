@@ -1,4 +1,4 @@
-import { basic, initSidebar, initSearchbar } from './modules/layouts';
+import { basic, initSearchbar } from './modules/layouts';
 import {
   loadImg,
   imgPopup,
@@ -8,7 +8,6 @@ import {
 
 loadImg();
 imgPopup();
-initSidebar();
 initTopbar();
 initClipboard();
 loadMermaid();
