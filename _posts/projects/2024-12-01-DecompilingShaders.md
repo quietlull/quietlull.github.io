@@ -24,11 +24,7 @@ With that being said let's explore a game that has some stunning stylized anime 
 
 So as you can see in the image above once the shader has been decompiled we get two files: a fragment shader and a vertex shader. 
 
-
-
 To keep it simple ill only be explaining the fragment shader there isnt too much happening in the vertex shader other than the values that are getting passed over like vertex color, world normals, etc.  
-
-![alt text](CodeScroll.gif)
 
 We have quite a mess of numbers and inputs none of which are named. This is done more so to optimize the compiled shader rather than to thwart our attempts of understanding what it says. But with this mess of numbers how do we even figure anything out? After one variable is used it's often even instantly erased to store another different number and for now we don't know any of the values used above.
 

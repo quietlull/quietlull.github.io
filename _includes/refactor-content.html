@@ -165,36 +165,7 @@
       {% assign _left = _left | append: ' loading="lazy"' %}
     {% endif %}
 
-    {% if page.layout == 'home' %}
-      <!-- create the image wrapper -->
-      {% assign _wrapper_start = '<div class="preview-img ' | append: _class | append: '">' %}
 
-      {% assign _img_content = _img_content | append: _wrapper_start %}
-      {% assign _right = _right | prepend: '></div' %}
-
-
-      {% if _parent == '</a>' %}
-        <!-- add class to exist <a> tag -->
-        {% assign _size = _img_content | size | minus: 1 %}
-        {% capture _class %}
-          class="img-link{% unless _lqip %} shimmer{% endunless %}"
-        {% endcapture %}
-        {% assign _img_content = _img_content | slice: 0, _size | append: _class | append: '>' %}
-
-      {% else %}
-        <!-- create the image wrapper -->
-        {% assign _wrapper_start = _final_src
-          | default: _src
-          | prepend: '<a href="'
-          | append: '" class="popup img-link'
-          | append: _wrapper_class
-          | append: '">'
-        %}
-
-        {% assign _img_content = _img_content | append: _wrapper_start %}
-        {% assign _right = '></a' | append: _right %}
-      {% endif %}
-    {% endif %}
 
     <!-- combine -->
     {% assign _img_content = _img_content | append: IMG_TAG | append: _left | append: _right %}
