@@ -33,7 +33,11 @@ const LanternShader = {
     flickerColorShift: { value: 0.05 }, // How much color shifts (towards red/yellow)
 
     // Overall intensity
-    emissiveIntensity: { value: 2.0 }
+    emissiveIntensity: { value: 2.0 },
+
+    // Toon shading
+    posterizeSteps: { value: 4.0 }, // Number of discrete brightness bands
+    rimIntensity: { value: 0.35 }   // Edge glow strength
   },
 
   vertexShader: /* glsl */`
@@ -56,22 +60,24 @@ const LanternShader = {
 		uniform float gradientEnd;
 		uniform float gradientCenter;
 		uniform float gradientRange;
-		
+
 		uniform float time;
 		uniform float flickerSpeed;
 		uniform float flickerAmount;
 		uniform float flickerColorShift;
 		uniform float emissiveIntensity;
-		
+		uniform float posterizeSteps;
+		uniform float rimIntensity;
+
 		varying vec3 vPosition;
 		varying vec3 vNormal;
 		varying vec2 vUv;
-		
+
 		// Noise function for organic flicker
 		float noise(float t) {
 			return fract(sin(t * 12.9898) * 43758.5453);
 		}
-		
+
 		// Smooth noise
 		float smoothNoise(float t) {
 			float i = floor(t);
@@ -80,36 +86,45 @@ const LanternShader = {
 			float b = noise(i + 1.0);
 			return mix(a, b, smoothstep(0.0, 1.0, f));
 		}
-		
+
+		// Quantize a value into discrete steps (toon/posterize)
+		float posterize(float value, float steps) {
+			return floor(value * steps) / steps;
+		}
+
 		void main() {
 			// Calculate gradient based on Y position
-			// Distance from gradient center
 			float distanceFromCenter = abs(vPosition.y - gradientCenter);
-			
-			// Normalize distance (0 at center, 1 at gradientRange distance)
 			float gradientFactor = clamp(distanceFromCenter / gradientRange, 0.0, 1.0);
-			
-			// Apply gradient (bright at center/bottom, dim at top)
+
+			// Posterize the gradient into discrete bands for toon look
+			gradientFactor = posterize(gradientFactor, posterizeSteps);
 			float baseBrightness = mix(gradientStart, gradientEnd, gradientFactor);
-			
-			// Add flicker animation
-			// Use multiple octaves of noise for organic feel
+
+			// Flicker: multiple octaves of noise for organic feel
 			float flicker1 = smoothNoise(time * flickerSpeed);
 			float flicker2 = smoothNoise(time * flickerSpeed * 1.7 + 100.0) * 0.5;
 			float flicker3 = smoothNoise(time * flickerSpeed * 2.3 + 200.0) * 0.25;
 			float flickerValue = (flicker1 + flicker2 + flicker3) / 1.75;
-			
-			// Apply flicker to brightness
+
 			float brightness = baseBrightness * (1.0 - flickerAmount + flickerValue * flickerAmount);
-			
+
+			// Posterize final brightness for hard toon bands
+			brightness = posterize(brightness, posterizeSteps);
+
+			// Rim glow — edges catch more light (hallmark of cel shading)
+			// Uses the angle between the normal and view direction
+			float rim = 1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)));
+			rim = pow(rim, 2.5);
+			brightness = max(brightness, rim * rimIntensity * gradientStart);
+
 			// Color shift for flicker (slightly more yellow/red when brighter)
 			vec3 flickerColor = baseColor;
 			flickerColor.r += flickerValue * flickerColorShift;
 			flickerColor.g += flickerValue * flickerColorShift * 0.5;
-			
-			// Calculate final color
+
 			vec3 emissive = flickerColor * brightness * emissiveIntensity;
-			
+
 			gl_FragColor = vec4(emissive, 1.0);
 		}
 	`

@@ -3,7 +3,6 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { PerformanceMonitor } from './performance-monitor.js';
 import { LanternController } from './lantern-controller.js';
 import { MirroredSurface } from './shader/mirroredSurface.js';
 import { LanternMaterialManager } from './shader/lanternShaderManager.js';
@@ -22,9 +21,9 @@ const CONFIG = {
   },
   lanterns: {
     bloom: {
-      strength: 2,
-      radius: 0.4,
-      threshold: 0.1
+      strength: 0.8,
+      radius: 0.6,
+      threshold: 0.4
     },
     float: {
       speed: 1,
@@ -54,7 +53,11 @@ const CONFIG = {
       // Flicker settings
       flickerSpeed: .5,      // How fast the flicker
       flickerAmount: .25,    // How much brightness variation (0.0 - 1.0)
-      flickerColorShift: .5 // How much color shifts towards red/yellow
+      flickerColorShift: .5, // How much color shifts towards red/yellow
+
+      // Toon shading
+      posterizeSteps: 4.0,   // Discrete brightness bands (lower = more stylized)
+      rimIntensity: 0.35     // Edge glow strength
     },
   },
   water: {
@@ -74,7 +77,8 @@ const CONFIG = {
 
 // Scene setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x080f1b); // Night sky color#05090f #080f1b color from shinsekaiyori #121e36
+scene.background = new THREE.Color(0x080f1b); // Night sky color
+scene.fog = new THREE.FogExp2(0x080f1b, 0.0015); // Depth haze — distant lanterns fade into background
 
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 10000);
 camera.position.z = CONFIG.camera.positionZ;
@@ -122,7 +126,6 @@ document.body.appendChild(vignette);
 
 
 // Initialize controllers
-const perfMonitor = new PerformanceMonitor();
 const lanternController = new LanternController(CONFIG, camera);
 const lanternMaterialManager = new LanternMaterialManager(CONFIG);
 
@@ -133,7 +136,13 @@ const fireworkController = new FireworkController(scene, camera, {
 });
 
 
-// Responsive lantern sizing //TO FIX DOESNT WORK
+// Widen the FOV on portrait screens so the scene doesn't look cramped
+function updateCameraFOV() {
+  camera.fov = window.innerWidth < window.innerHeight ? 80 : 55;
+  camera.updateProjectionMatrix();
+}
+
+// Responsive lantern sizing
 function getResponsiveLanternScale() {
   // Calculate how wide the viewport is in world units
   const frustumHeight = 2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
@@ -151,6 +160,7 @@ function getResponsiveLanternScale() {
 }
 
 
+updateCameraFOV();
 const initialScale = getResponsiveLanternScale();
 
 // FBX Loader setup
@@ -160,21 +170,15 @@ function loadLanternsFBX(url) {
   fbxLoader.load(
     url,
     (fbx) => {
-      console.log('FBX loaded:', fbx);
-
       const currentScale = getResponsiveLanternScale();
 
       fbx.traverse((child) => {
         if (child.isMesh) {
-          // Apply custom shader material with gradient and flicker
           child.material = lanternMaterialManager.createMaterialForMesh(child, {
             gradientStart: CONFIG.lanterns.shader.gradientStart,
             gradientEnd: CONFIG.lanterns.shader.gradientEnd,
-            gradientCenter: CONFIG.lanterns.shader.gradientCenter, // Y position of brightest point (world coords)
+            gradientCenter: CONFIG.lanterns.shader.gradientCenter,
             gradientRange: CONFIG.lanterns.shader.gradientRange,
-
-
-
             flickerSpeed: CONFIG.lanterns.shader.flickerSpeed,
             flickerAmount: CONFIG.lanterns.shader.flickerAmount,
             flickerColorShift: CONFIG.lanterns.shader.flickerColorShift
@@ -182,20 +186,14 @@ function loadLanternsFBX(url) {
 
           child.scale.multiplyScalar(currentScale);
           lanternController.addLantern(child);
-          console.log('Added lantern mesh:', child.name, 'at position:', child.position);
         }
       });
 
       scene.add(fbx);
-      perfMonitor.setLanternCount(lanternController.getLanternCount());
-      console.log(`Loaded ${lanternController.getLanternCount()} lanterns from FBX`);
-      console.log(`Created ${lanternMaterialManager.getMaterialCount()} shader materials`);
     },
-    (progress) => {
-      console.log((progress.loaded / progress.total * 100) + '% loaded');
-    },
+    undefined,
     (error) => {
-      console.error('Error loading FBX:', error);
+      console.error('Error loading lanterns FBX:', error);
     }
   );
 }
@@ -209,29 +207,17 @@ function loadDockFBX(url, material = null) {
   fbxLoader.load(
     url,
     (fbx) => {
-      console.log('Dock FBX loaded:', fbx);
-
-      // Default unlit white material if none provided
-      const dockMaterial = material || new THREE.MeshBasicMaterial({
-        color: 0xffffff
-      });
+      const dockMaterial = material || new THREE.MeshBasicMaterial({ color: 0xffffff });
 
       fbx.traverse((child) => {
         if (child.isMesh) {
           child.material = dockMaterial;
-          console.log('Added dock mesh:', child.name);
         }
       });
 
-      // Position dock at bottom of scene
-      //fbx.position.y = CONFIG.camera.endPositionY - 100;
-
       scene.add(fbx);
-      console.log('Dock loaded at Y:', fbx.position.y);
     },
-    (progress) => {
-      console.log('Dock: ' + (progress.loaded / progress.total * 100) + '% loaded');
-    },
+    undefined,
     (error) => {
       console.error('Error loading dock FBX:', error);
     }
@@ -285,8 +271,6 @@ function loadStaticFBX(url, options = {}) {
   fbxLoader.load(
     url,
     (fbx) => {
-      console.log('Static FBX loaded:', fbx);
-
       if (material) {
         fbx.traverse((child) => {
           if (child.isMesh) {
@@ -297,13 +281,9 @@ function loadStaticFBX(url, options = {}) {
 
       fbx.position.set(position.x, position.y, position.z);
       fbx.scale.setScalar(scale);
-
       scene.add(fbx);
-      console.log('Static object loaded at:', fbx.position);
     },
-    (progress) => {
-      console.log((progress.loaded / progress.total * 100) + '% loaded');
-    },
+    undefined,
     (error) => {
       console.error('Error loading static FBX:', error);
     }
@@ -349,6 +329,7 @@ let resizeTimeout;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
+    updateCameraFOV();
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -377,12 +358,8 @@ function animate(currentTime) {
   // If running at 60fps, deltaTime will be ~16ms, normalized to ~1.0
   const normalizedDelta = deltaTime / TARGET_FRAME_TIME;
 
-  // Update lantern flicker animation
   lanternMaterialManager.update(normalizedDelta);
-  // Firework Controller Update
   fireworkController.update(normalizedDelta);
-
-  perfMonitor.update();
   lanternController.update(normalizedDelta);
   if (mirroredSurface) {
     mirroredSurface.update();
@@ -393,19 +370,12 @@ function animate(currentTime) {
 renderer.setAnimationLoop(animate);
 
 // Expose for debugging
-// Expose for debugging
 window.scene = scene;
 window.camera = camera;
 window.renderer = renderer;
 window.mirroredSurface = mirroredSurface;
 window.THREEJS_CONFIG = CONFIG;
 window.bloomPass = bloomPass;
-window.perfMonitor = perfMonitor;
 window.lanternController = lanternController;
-window.lanternMaterialManager = lanternMaterialManager;  // ← ADD THIS LINE
+window.lanternMaterialManager = lanternMaterialManager;
 window.loadLanternsFBX = loadLanternsFBX;
-
-console.log('Three.js scene ready!');
-console.log('Load lanterns: window.loadLanternsFBX("/path/to/lanterns.fbx")');
-
-console.log('Toggle performance: window.perfMonitor.remove()');
