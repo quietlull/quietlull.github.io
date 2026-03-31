@@ -8,7 +8,7 @@ tags: [blog, ludum-dare, ludum-dare-58]
 priority: 1
 pin: false
 image: 
-  path: assets/media/LudumDareWhatIF/Recettear_Shop.jpg
+  path: assets/media/LudumDareWhatIF/CSgo.jpg
 media_subpath: '/assets/media/LudumDareWhatIF'
 ---
 

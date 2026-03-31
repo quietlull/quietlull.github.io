@@ -5,7 +5,7 @@ date: 2024-12-01 20:55:00 +0800
 categories: [project]
 tags: [project]
 priority: 1
-pin: true
+pin: false
 image: 
     path: assets/media/ZZZProject/CodeScroll.gif
 media_subpath: '/assets/media/ZZZProject'
@@ -14,7 +14,7 @@ media_subpath: '/assets/media/ZZZProject'
 
 ## Decompiling shaders and learning from the pros
 
-At this point in time it's becoming increasingly easy to decompile shaders with tools like nvidia nsight, renderdoc, even without hex editors and resource dumping tools taking a peak behind the veil of the game engine has never been easier. I'm not going to go into too much detail on how to get these files but it's not too hard these days with a quick google search or searches.
+At this point in time it's becoming increasingly easy to decompile shaders with tools like nvidia nsight, renderdoc, or even community tools for modding. Even without hex editors and resource dumping tools taking a peak behind the veil of the game engine has never been easier. I'm not going to go into too much detail on how to get these files but it's not too hard these days with a quick google search or searches.
 
 With that being said let's explore a game that has some stunning stylized anime graphics, let's look at ZZZ and their toon shader implementation and see how we can implement their shader for ourselves. 
 
