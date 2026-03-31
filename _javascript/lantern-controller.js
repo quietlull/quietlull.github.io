@@ -15,7 +15,7 @@ export class LanternController {
     this.isMouseOverCanvas = false;
 
     // Debug visualization
-    this.debugEnabled = true; // Set to false to disable
+    this.debugEnabled = false; // Set to false to disable
     this.debugObjects = [];
 
     this.setupMouseTracking();
