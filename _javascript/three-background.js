@@ -332,25 +332,33 @@ function updateCameraFromScroll() {
   );
 }
 
-window.addEventListener('scroll', updateCameraFromScroll);
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(() => {
+      updateCameraFromScroll();
+      scrollTicking = false;
+    });
+    scrollTicking = true;
+  }
+});
 updateCameraFromScroll();
 
-// Handle window resize
+// Handle window resize (debounced — fires once after user stops resizing)
+let resizeTimeout;
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-
-  // Recalculate bounds on resize
-  lanternController.updateBounds();
-
-  // Update lantern sizes for new screen width
-  const newScale = getResponsiveLanternScale();
-  lanternController.updateLanternSizes(newScale)
-  if (mirroredSurface) {
-    mirroredSurface.handleResize();
-  }
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    const newScale = getResponsiveLanternScale();
+    lanternController.updateLanternSizes(newScale);
+    if (mirroredSurface) {
+      mirroredSurface.handleResize();
+    }
+  }, 100);
 });
 
 

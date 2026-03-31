@@ -14,6 +14,5 @@ initToc();
 imgPopup();
 initLocaleDatetime();
 initClipboard();
-initTopbar();
 loadMermaid();
 basic();

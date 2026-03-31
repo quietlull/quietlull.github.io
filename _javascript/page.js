@@ -8,7 +8,6 @@ import {
 
 loadImg();
 imgPopup();
-initTopbar();
 initClipboard();
 loadMermaid();
 basic();

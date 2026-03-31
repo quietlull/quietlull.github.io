@@ -5,11 +5,14 @@
 export function back2top() {
   const btn = document.getElementById('back-to-top');
 
+  let ticking = false;
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      btn.classList.add('show');
-    } else {
-      btn.classList.remove('show');
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        btn.classList.toggle('show', window.scrollY > 50);
+        ticking = false;
+      });
+      ticking = true;
     }
   });
 

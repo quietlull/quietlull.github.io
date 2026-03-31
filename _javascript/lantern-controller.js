@@ -21,21 +21,20 @@ export class LanternController {
     this.setupMouseTracking();
   }
 
-  calculateBounds() {
-    //TO DO: REMOVE
-  }
-
-  updateBounds() {
-    //TO DO: REMOVE
-  }
-
   setupMouseTracking() {
+    let mouseTicking = false;
     document.addEventListener('mousemove', (event) => {
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-      this.raycaster.setFromCamera(this.mouse, this.camera);
       this.isMouseOverCanvas = true;
+
+      if (!mouseTicking) {
+        requestAnimationFrame(() => {
+          this.raycaster.setFromCamera(this.mouse, this.camera);
+          mouseTicking = false;
+        });
+        mouseTicking = true;
+      }
     });
 
     window.addEventListener('mouseleave', () => {
@@ -135,7 +134,7 @@ export class LanternController {
 
         if (mouseAtLanternDepth) {
           // 🐛 DEBUG VISUALIZATION
-          if (config.debugEnabled) {
+          if (this.debugEnabled) {
             // Show mouse cursor at this depth
             const cursorSphere = this.createDebugSphere(5, 0xff00ff);
             cursorSphere.position.copy(mouseAtLanternDepth);
@@ -184,7 +183,7 @@ export class LanternController {
                   lantern.userData.lastKnockTime = this.time;
 
                   // 🐛 DEBUG: Log knock event
-                  if (config.debugEnabled) {
+                  if (this.debugEnabled) {
                     console.log(`🔴 KNOCK! Lantern ${index} at Z: ${lanternZ.toFixed(0)}`);
                   }
                 }
