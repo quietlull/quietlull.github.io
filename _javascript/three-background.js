@@ -53,11 +53,7 @@ const CONFIG = {
       // Flicker settings
       flickerSpeed: .5,      // How fast the flicker
       flickerAmount: .25,    // How much brightness variation (0.0 - 1.0)
-      flickerColorShift: .5, // How much color shifts towards red/yellow
-
-      // Toon shading
-      posterizeSteps: 4.0,   // Discrete brightness bands (lower = more stylized)
-      rimIntensity: 0.35     // Edge glow strength
+      flickerColorShift: .5  // How much color shifts towards red/yellow
     },
   },
   water: {
