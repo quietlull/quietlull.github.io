@@ -118,7 +118,9 @@
   box-shadow: var(--glow-ring-small);
 }
 
-// Radial gradient hover glow — drifting orb that intensifies on hover
+// Radial gradient hover glow — centered orb that drifts subtly, intensifies on hover.
+// Uses inset:0 so the element is always card-sized; gradient fades to transparent at 70%
+// so the drift never reveals a hard clipped edge.
 @mixin radial-hover-glow {
   position: relative;
   overflow: hidden;
@@ -126,27 +128,23 @@
   &::before {
     content: '';
     position: absolute;
-    width: 120%;
-    height: 120%;
-    top: -10%;
-    left: -10%;
+    inset: 0;
     background: radial-gradient(
       circle at 50% 50%,
-      rgba(251, 191, 36, 0.06) 0%,
-      transparent 65%
+      rgba(251, 191, 36, 0.05) 0%,
+      transparent 70%
     );
     pointer-events: none;
-    animation: orb-hover-drift 10s ease-in-out infinite;
-    transition: background 400ms ease, animation-duration 400ms;
+    animation: orb-hover-drift 12s ease-in-out infinite;
   }
 
   &:hover::before {
     background: radial-gradient(
       circle at 50% 50%,
-      rgba(251, 191, 36, 0.18) 0%,
-      transparent 65%
+      rgba(251, 191, 36, 0.14) 0%,
+      transparent 70%
     );
-    animation: orb-hover-drift 3s ease-in-out infinite;
+    animation: orb-hover-drift 5s ease-in-out infinite;
   }
 }
 
