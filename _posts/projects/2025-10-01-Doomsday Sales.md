@@ -8,7 +8,7 @@ tags: [project]
 priority: 1
 pin: true
 image: 
-    path: UnrealEditor_2dzGAmnox1.gif
+    path: assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.gif
 media_subpath: '/assets/media/DoomsdaySales'
 ---
 
