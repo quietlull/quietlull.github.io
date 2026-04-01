@@ -20,8 +20,7 @@ refactor: true
             {% if post.image %}
               <div class="vertical-bar-img-wrapper flex-shrink-0">
                 {% assign post_image = post.image.path | default: post.image %}
-                {% capture post_image_url %}{% include media-url.html src=post_image %}{% endcapture %}
-                <img src="{{ post_image_url }}"
+                <img src="/{{ post_image }}"
                      class="vertical-bar-img"
                      alt="{{ post.image.alt | default: post.title }}"
                      loading="lazy">

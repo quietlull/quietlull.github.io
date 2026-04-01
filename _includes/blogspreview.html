@@ -10,19 +10,18 @@
   <div class="posts-vertical">
     {% assign posts_limit = page.posts_limit | default: 6 %}
     {% assign all_blogs = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'blog' %}
-    
+
     {% for post in all_blogs limit: posts_limit %}
       {% if post.url and post.title %}
         <div class="post-vertical-bar">
           <a href="{{ post.url | relative_url }}" class="vertical-bar-link">
             <div class="vertical-bar-container d-flex align-items-stretch shadow-sm rounded-end">
-              
+
               {% if post.image %}
                 <div class="vertical-bar-img-wrapper flex-shrink-0">
                   {% assign post_image = post.image.path | default: post.image %}
-                  {% capture post_image_url %}{% include media-url.html src=post_image %}{% endcapture %}
-                  <img src="{{ post_image_url }}"
-                       class="vertical-bar-img" 
+                  <img src="/{{ post_image }}"
+                       class="vertical-bar-img"
                        alt="{{ post.image.alt | default: post.title }}"
                        loading="lazy">
                   {% if post.pin %}
@@ -43,16 +42,16 @@
                   {% endif %}
                 </div>
               {% endif %}
-              
+
               <div class="vertical-bar-content flex-grow-1 p-3 d-flex flex-column justify-content-center">
                 <h3 class="h5 mb-2">{{ post.title }}</h3>
-                
+
                 {% if post.description %}
                   <p class="text-muted small mb-2">
                     {{ post.description | truncate: 120 }}
                   </p>
                 {% endif %}
-                
+
                 <div class="text-muted small">
                   <i class="far fa-calendar-alt me-1"></i>
                   {{ post.date | date: "%b %d, %Y" }}

@@ -30,12 +30,21 @@
 
 .vertical-bar-container {
   min-height: 120px;
-  // ✨ ENHANCED: Using glass effect with card hover
   @include mx.glass;
   @include mx.card-hover;
   border-color: var(--main-border-color);
   border-radius: v.$radius-lg;
+  // Every blog bar breathes — staggered via parent nth-child
+  animation: breathe-slow 6s ease-in-out infinite;
 }
+
+// Stagger breathing across blog bars
+.post-vertical-bar:nth-child(1) .vertical-bar-container { animation-delay: 0s; }
+.post-vertical-bar:nth-child(2) .vertical-bar-container { animation-delay: 0.5s; }
+.post-vertical-bar:nth-child(3) .vertical-bar-container { animation-delay: 1.0s; }
+.post-vertical-bar:nth-child(4) .vertical-bar-container { animation-delay: 1.5s; }
+.post-vertical-bar:nth-child(5) .vertical-bar-container { animation-delay: 0.7s; }
+.post-vertical-bar:nth-child(6) .vertical-bar-container { animation-delay: 1.2s; }
 
 .vertical-bar-img-wrapper {
   position: relative;
