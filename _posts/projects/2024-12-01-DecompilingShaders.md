@@ -7,7 +7,7 @@ tags: [project]
 priority: 1
 pin: true
 image: 
-    path: assets/media/ZZZProject/CodeScroll.gif
+    path: CodeScroll.gif
 media_subpath: '/assets/media/ZZZProject'
 
 ---
