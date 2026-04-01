@@ -19,7 +19,8 @@
                 {% if post.image %}
                   <div class="card-img-wrapper">
                     {% assign post_image = post.image.path | default: post.image %}
-                    <img src="{{ post_image | relative_url }}"
+                    {% capture post_image_url %}{% include media-url.html src=post_image %}{% endcapture %}
+                    <img src="{{ post_image_url }}"
                          class="card-img-top"
                          alt="{{ post.image.alt | default: post.title }}"
                          loading="lazy">
@@ -94,7 +95,8 @@
                 {% if post.image %}
                   <div class="card-img-wrapper">
                     {% assign post_image = post.image.path | default: post.image %}
-                    <img src="{{ post_image | relative_url }}"
+                    {% capture post_image_url %}{% include media-url.html src=post_image %}{% endcapture %}
+                    <img src="{{ post_image_url }}"
                          class="card-img-top"
                          alt="{{ post.image.alt | default: post.title }}"
                          loading="lazy">
