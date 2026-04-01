@@ -357,6 +357,29 @@
   --float-x-offset: 10px;
 
   // ==========================================================================
+  // MISSING / SUPPLEMENTAL VARS
+  // ==========================================================================
+  --placeholder-gradient: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.6) 0%,
+    rgba(30, 41, 59, 0.8) 100%
+  );
+
+  --separator-gradient: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(245, 158, 11, 0.3),
+    transparent
+  );
+
+  // Section title accent line
+  --section-accent: rgba(251, 191, 36, 0.5);
+
+  // Ambient orb colors
+  --orb-amber: rgba(251, 191, 36, 0.07);
+  --orb-orange: rgba(251, 146, 60, 0.05);
+
+  // ==========================================================================
   // UTILITY COLORS - For avoiding hard-coding
   // ==========================================================================
   --color-gray: var(--text-muted-color);

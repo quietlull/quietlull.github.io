@@ -46,9 +46,8 @@ refactor: false
   </div>
 
   <!-- Pinned Posts Section -->
-{% assign all_projects = site.posts |  where_exp: 'item', 'item.hidden != true' 
-| where: 'tags', 'project' %}
-{% assign all_pinned = all_projects | where: 'pin', 'true'  %}
+{% assign all_projects = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'project' %}
+{% assign all_pinned = all_projects | where_exp: 'item', 'item.pin == true' %}
 
   
   {% if all_pinned.size > 0 %}
@@ -118,9 +117,7 @@ refactor: false
   <!-- All Posts Grid -->
   <section class="all-posts-section">
     <div class="posts-grid row g-4" id="posts-container">
-    {% assign all_projects = site.posts |  where_exp: 'item', 'item.hidden != true' 
-| where: 'tags', 'project' %}
-    {% assign all_normal = all_projects | where: 'pin', 'false' %}
+    {% assign all_normal = all_projects | where_exp: 'item', 'item.pin != true' %}
       {% for post in all_normal %}
         <div class="col-12 col-md-6 col-lg-4 post-item" 
              data-post-item 

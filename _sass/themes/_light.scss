@@ -342,6 +342,22 @@
   --float-y-offset: -20px;
   --float-x-offset: 8px;
 
+  // Gradient/glow utilities
+  --placeholder-gradient: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.6) 0%,
+    rgba(226, 232, 240, 0.8) 100%
+  );
+  --separator-gradient: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(245, 158, 11, 0.2),
+    transparent
+  );
+  --section-accent: rgba(245, 158, 11, 0.4);
+  --orb-amber: rgba(251, 191, 36, 0.05);
+  --orb-orange: rgba(251, 146, 60, 0.04);
+
   // ==========================================================================
   // UTILITY COLORS
   // ==========================================================================
