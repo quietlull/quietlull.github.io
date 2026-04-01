@@ -456,56 +456,6 @@ mjx-container {
 }
 
 // ============================================================================
-// AMBIENT ORBS — fixed breathing glows behind everything
-// ============================================================================
-
-.ambient-orbs {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -2;
-  overflow: hidden;
-}
-
-.ambient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  animation: pulse-slow 8s ease-in-out infinite;
-  will-change: transform, opacity;
-}
-
-.orb-1 {
-  width: 600px;
-  height: 600px;
-  top: -150px;
-  left: -150px;
-  background: var(--orb-amber);
-  animation-delay: 0s;
-  animation-duration: 10s;
-}
-
-.orb-2 {
-  width: 500px;
-  height: 500px;
-  top: 40%;
-  right: -120px;
-  background: var(--orb-orange);
-  animation-delay: -3s;
-  animation-duration: 13s;
-}
-
-.orb-3 {
-  width: 400px;
-  height: 400px;
-  bottom: -100px;
-  left: 30%;
-  background: var(--orb-amber);
-  animation-delay: -6s;
-  animation-duration: 9s;
-}
-
-// ============================================================================
 // SECTION SEPARATOR
 // ============================================================================
 
@@ -538,8 +488,8 @@ mjx-container {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--section-accent, rgba(251, 191, 36, 0.5));
-    box-shadow: 0 0 8px var(--section-accent, rgba(251, 191, 36, 0.5));
+    background: rgba(251, 191, 36, 1);
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.8), 0 0 20px rgba(251, 191, 36, 0.4);
     animation: heartbeat 2.5s ease-in-out infinite;
     flex-shrink: 0;
   }

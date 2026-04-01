@@ -48,10 +48,6 @@ export class LanternMaterialManager {
     // Set emission intensity
     material.uniforms.emissiveIntensity.value = options.emissiveIntensity ?? this.config.lanterns.glow.intensity;
 
-    // Toon shading properties
-    material.uniforms.posterizeSteps.value = options.posterizeSteps ?? this.config.lanterns.shader.posterizeSteps ?? 4.0;
-    material.uniforms.rimIntensity.value = options.rimIntensity ?? this.config.lanterns.shader.rimIntensity ?? 0.35;
-
     // Add random time offset so lanterns don't all flicker in sync
     material.userData.timeOffset = Math.random() * 100.0;
 

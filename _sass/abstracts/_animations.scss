@@ -236,18 +236,18 @@
 // Slow box-shadow breathe for glass panels
 @keyframes breathe-slow {
   0%, 100% {
-    transform: scale(1);
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 60px rgba(251, 191, 36, 0.03),
-      inset 0 1px 0 rgba(251, 191, 36, 0.05);
+      0 0 40px rgba(251, 191, 36, 0.0),
+      inset 0 1px 0 rgba(251, 191, 36, 0.06);
+    border-color: rgba(245, 158, 11, 0.1);
   }
   50% {
-    transform: scale(1.008);
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 90px rgba(251, 191, 36, 0.07),
-      inset 0 1px 0 rgba(251, 191, 36, 0.08);
+      0 12px 48px rgba(0, 0, 0, 0.5),
+      0 0 80px rgba(251, 191, 36, 0.18),
+      inset 0 1px 0 rgba(251, 191, 36, 0.15);
+    border-color: rgba(245, 158, 11, 0.35);
   }
 }
 
@@ -288,6 +288,13 @@
 @keyframes chase-tail {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+// Orb drift — slow wandering glow on card hover
+@keyframes orb-hover-drift {
+  0%, 100% { transform: translate(0%,    0%)   scale(1);    opacity: 1; }
+  33%       { transform: translate(12%,  -10%) scale(1.15); opacity: 0.8; }
+  66%       { transform: translate(-8%,  12%)  scale(0.9);  opacity: 1; }
 }
 
 // ============================================================================
@@ -412,13 +419,24 @@
   animation-play-state: running;
 }
 
-// Reduce motion for accessibility
+// Reduce motion for accessibility — only disable decorative infinite animations,
+// not hover transitions (which are functional feedback)
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .animate-float,
+  .animate-float-gentle,
+  .animate-breathing,
+  .animate-pulse,
+  .animate-pulse-scale,
+  .animate-pulse-glow,
+  .animate-scale-pulse,
+  .animate-spin,
+  .animate-spin-slow,
+  .animate-breathe-slow,
+  .animate-heartbeat,
+  .animate-breathe-ring,
+  .animate-pulse-slow,
+  .ambient-orb,
+  .section-title::before {
+    animation: none !important;
   }
 }

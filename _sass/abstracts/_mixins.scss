@@ -118,23 +118,35 @@
   box-shadow: var(--glow-ring-small);
 }
 
-// Radial gradient hover glow (matching React component)
+// Radial gradient hover glow — drifting orb that intensifies on hover
 @mixin radial-hover-glow {
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: var(--card-radial-glow);
-    opacity: 0;
-    transition: opacity 500ms ease;
+    width: 120%;
+    height: 120%;
+    top: -10%;
+    left: -10%;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(251, 191, 36, 0.06) 0%,
+      transparent 65%
+    );
     pointer-events: none;
+    animation: orb-hover-drift 10s ease-in-out infinite;
+    transition: background 400ms ease, animation-duration 400ms;
   }
-  
+
   &:hover::before {
-    opacity: 1;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(251, 191, 36, 0.18) 0%,
+      transparent 65%
+    );
+    animation: orb-hover-drift 3s ease-in-out infinite;
   }
 }
 

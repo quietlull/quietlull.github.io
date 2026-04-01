@@ -33,11 +33,7 @@ const LanternShader = {
     flickerColorShift: { value: 0.05 }, // How much color shifts (towards red/yellow)
 
     // Overall intensity
-    emissiveIntensity: { value: 2.0 },
-
-    // Toon shading
-    posterizeSteps: { value: 4.0 }, // Number of discrete brightness bands
-    rimIntensity: { value: 0.35 }   // Edge glow strength
+    emissiveIntensity: { value: 2.0 }
   },
 
   vertexShader: /* glsl */`
@@ -66,11 +62,8 @@ const LanternShader = {
 		uniform float flickerAmount;
 		uniform float flickerColorShift;
 		uniform float emissiveIntensity;
-		uniform float posterizeSteps;
-		uniform float rimIntensity;
 
 		varying vec3 vPosition;
-		varying vec3 vNormal;
 		varying vec2 vUv;
 
 		// Noise function for organic flicker
@@ -87,18 +80,10 @@ const LanternShader = {
 			return mix(a, b, smoothstep(0.0, 1.0, f));
 		}
 
-		// Quantize a value into discrete steps (toon/posterize)
-		float posterize(float value, float steps) {
-			return floor(value * steps) / steps;
-		}
-
 		void main() {
 			// Calculate gradient based on Y position
 			float distanceFromCenter = abs(vPosition.y - gradientCenter);
 			float gradientFactor = clamp(distanceFromCenter / gradientRange, 0.0, 1.0);
-
-			// Posterize the gradient into discrete bands for toon look
-			gradientFactor = posterize(gradientFactor, posterizeSteps);
 			float baseBrightness = mix(gradientStart, gradientEnd, gradientFactor);
 
 			// Flicker: multiple octaves of noise for organic feel
@@ -108,15 +93,6 @@ const LanternShader = {
 			float flickerValue = (flicker1 + flicker2 + flicker3) / 1.75;
 
 			float brightness = baseBrightness * (1.0 - flickerAmount + flickerValue * flickerAmount);
-
-			// Posterize final brightness for hard toon bands
-			brightness = posterize(brightness, posterizeSteps);
-
-			// Rim glow — edges catch more light (hallmark of cel shading)
-			// Uses the angle between the normal and view direction
-			float rim = 1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)));
-			rim = pow(rim, 2.5);
-			brightness = max(brightness, rim * rimIntensity * gradientStart);
 
 			// Color shift for flicker (slightly more yellow/red when brighter)
 			vec3 flickerColor = baseColor;
