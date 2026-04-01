@@ -290,6 +290,13 @@
   100% { transform: rotate(360deg); }
 }
 
+// Orb drift — slow wandering glow on card hover
+@keyframes orb-hover-drift {
+  0%, 100% { transform: translate(0%,    0%)   scale(1);    opacity: 1; }
+  33%       { transform: translate(12%,  -10%) scale(1.15); opacity: 0.8; }
+  66%       { transform: translate(-8%,  12%)  scale(0.9);  opacity: 1; }
+}
+
 // ============================================================================
 // UTILITY ANIMATION CLASSES - Apply animations easily
 // ============================================================================

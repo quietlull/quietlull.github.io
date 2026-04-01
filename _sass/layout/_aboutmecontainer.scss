@@ -54,9 +54,36 @@
 }
 
 #landing-box {
+  position: relative;
+  isolation: isolate;
+
+  // Amber orb sitting behind the glass panels — backdrop-filter blurs it through
+  &::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle,
+      rgba(251, 191, 36, 0.18) 0%,
+      rgba(251, 146, 60, 0.08) 40%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    filter: blur(30px);
+    z-index: 0;
+    pointer-events: none;
+    animation: orb-hover-drift 8s ease-in-out infinite;
+  }
+
   > .text-container,
   > .landing-content,
   > .additional-content {
+    position: relative;
+    z-index: 1;
     margin-bottom: 20px;
   }
 
@@ -65,7 +92,7 @@
   }
 }
 
-// Main landing glass panel — subtle ambient breathing
+// Main landing glass panel — breathes in sync with the orb behind it
 #landing-box > .text-container:first-of-type {
   animation: breathe-slow 7s ease-in-out infinite;
 }
