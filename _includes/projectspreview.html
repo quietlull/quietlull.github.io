@@ -19,7 +19,7 @@
                 {% if post.image %}
                   <div class="card-img-wrapper">
                     {% assign post_image = post.image.path | default: post.image %}
-                    <img src="/{{ post_image }}"
+                    <img src="{{ post_image | prepend: '/' | replace: '//', '/' }}"
                          class="card-img-top"
                          alt="{{ post.image.alt | default: post.title }}"
                          loading="lazy">
@@ -72,4 +72,3 @@
       </div>
     {% endif %}
   </section>
-</content>
