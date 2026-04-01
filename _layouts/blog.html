@@ -20,7 +20,7 @@ refactor: true
             {% if post.image %}
               <div class="vertical-bar-img-wrapper flex-shrink-0">
                 {% assign post_image = post.image.path | default: post.image %}
-                <img src="{{ post_image | prepend: '/' | replace: '//', '/' }}"
+                <img src="{{ post_image }}"
                      class="vertical-bar-img"
                      alt="{{ post.image.alt | default: post.title }}"
                      loading="lazy">
