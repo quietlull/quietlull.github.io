@@ -74,14 +74,20 @@ function isMobileView() {
 }
 
 export function displaySearch() {
-  btnSearchTrigger.addEventListener('click', () => {
-    MobileSearchBar.on();
-    ResultSwitch.on();
-    input.focus();
-  });
+  // These elements only exist when the old sidebar searchbar HTML is present.
+  // Guard against null so the rest of the JS bundle can still run.
+  if (!input || !search || !btnCancel || !resultWrapper) return;
+
+  if (btnSearchTrigger) {
+    btnSearchTrigger.addEventListener('click', () => {
+      MobileSearchBar.on();
+      ResultSwitch.on();
+      input.focus();
+    });
+  }
 
   btnCancel.addEventListener('click', () => {
-    MobileSearchBar.off();
+    if (btnSbTrigger) MobileSearchBar.off();
     ResultSwitch.off();
   });
 
@@ -96,14 +102,14 @@ export function displaySearch() {
   input.addEventListener('input', () => {
     if (input.value === '') {
       if (isMobileView()) {
-        hints.classList.remove(UNLOADED);
+        if (hints) hints.classList.remove(UNLOADED);
       } else {
         ResultSwitch.off();
       }
     } else {
       ResultSwitch.on();
       if (isMobileView()) {
-        hints.classList.add(UNLOADED);
+        if (hints) hints.classList.add(UNLOADED);
       }
     }
   });

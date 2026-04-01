@@ -6,39 +6,9 @@ refactor: true
 {% include lang.html %}
 
 {% assign all_blogs = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'blog' %}
-{% assign all_pinned = all_blogs | where: 'pin', true %}
+{% assign all_pinned = all_blogs | where_exp: 'item', 'item.pin == true' %}
 {% assign all_normal = all_blogs | where_exp: 'item', 'item.pin != true' %}
-
-{% assign posts = '' | split: '' %}
-
-<!-- Calculate pagination boundaries -->
-{% assign visible_start = paginator.page | minus: 1 | times: paginator.per_page %}
-{% assign visible_end = visible_start | plus: paginator.per_page %}
-
-<!-- Add pinned posts first -->
-{% if all_pinned.size > 0 %}
-  {% for post in all_pinned limit: paginator.per_page offset: visible_start %}
-    {% assign posts = posts | push: post %}
-  {% endfor %}
-{% endif %}
-
-<!-- Calculate remaining slots for normal posts -->
-{% assign remaining_slots = paginator.per_page | minus: posts.size %}
-{% assign normal_offset = 0 %}
-
-{% if posts.size == 0 %}
-  {% assign normal_offset = visible_start | minus: all_pinned.size %}
-  {% if normal_offset < 0 %}
-    {% assign normal_offset = 0 %}
-  {% endif %}
-{% endif %}
-
-<!-- Add normal posts to fill remaining slots -->
-{% if remaining_slots > 0 and all_normal.size > 0 %}
-  {% for post in all_normal limit: remaining_slots offset: normal_offset %}
-    {% assign posts = posts | push: post %}
-  {% endfor %}
-{% endif %}
+{% assign posts = all_pinned | concat: all_normal %}
 
 <div id="post-list" class="flex-grow-1 px-xl-1">
   {% for post in posts %}

@@ -321,8 +321,10 @@ main {
 
 /* Overwrite bootstrap outline button */
 .btn.btn-outline-primary {
+  @include mx.shimmer-effect;
+
   &:not(.disabled):hover {
-    border-color: var(--link-hover-color) !important;//007bff
+    border-color: var(--link-hover-color) !important;
   }
 }
 
@@ -450,5 +452,95 @@ mjx-container {
 
   > :not(script) {
     margin-top: 3rem;
+  }
+}
+
+// ============================================================================
+// AMBIENT ORBS — fixed breathing glows behind everything
+// ============================================================================
+
+.ambient-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  overflow: hidden;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: pulse-slow 8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  top: -150px;
+  left: -150px;
+  background: var(--orb-amber);
+  animation-delay: 0s;
+  animation-duration: 10s;
+}
+
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  top: 40%;
+  right: -120px;
+  background: var(--orb-orange);
+  animation-delay: -3s;
+  animation-duration: 13s;
+}
+
+.orb-3 {
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  left: 30%;
+  background: var(--orb-amber);
+  animation-delay: -6s;
+  animation-duration: 9s;
+}
+
+// ============================================================================
+// SECTION SEPARATOR
+// ============================================================================
+
+.home-content > section + section {
+  position: relative;
+  padding-top: 2rem;
+
+  &::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background: var(--separator-gradient);
+    margin-bottom: 2rem;
+  }
+}
+
+// ============================================================================
+// SECTION HEADER ACCENT DOT
+// ============================================================================
+
+.section-title {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--section-accent, rgba(251, 191, 36, 0.5));
+    box-shadow: 0 0 8px var(--section-accent, rgba(251, 191, 36, 0.5));
+    animation: heartbeat 2.5s ease-in-out infinite;
+    flex-shrink: 0;
   }
 }

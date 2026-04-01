@@ -65,9 +65,13 @@
   }
 }
 
+// Main landing glass panel — subtle ambient breathing
+#landing-box > .text-container:first-of-type {
+  animation: breathe-slow 7s ease-in-out infinite;
+}
+
 #landing-title {
-  // ✨ ENHANCED: Subtle text shadow for depth
-  text-shadow: 0 2px 8px var(--shadow-sm);
+  text-shadow: 0 2px 12px rgba(251, 191, 36, 0.15);
   margin: 0;
 }
 

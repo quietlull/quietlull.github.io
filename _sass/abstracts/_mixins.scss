@@ -370,12 +370,15 @@
 
 @mixin card-hover {
   @include radial-hover-glow;
-  @include transition(transform, box-shadow, border-color);
-  
+  transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 500ms ease,
+              border-color 300ms ease;
+
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     border-color: var(--card-hover-border);
-    box-shadow: var(--card-hover-shadow);
+    box-shadow: var(--card-hover-shadow),
+                0 0 30px rgba(251, 191, 36, 0.1);
   }
 }
 
