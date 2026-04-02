@@ -48,6 +48,18 @@
   }
 }
 
+// Icon box breathe — scale + opacity, matches LanternGlowBreathing reference
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
 // ============================================================================
 // GLOW ANIMATIONS - Pulsing light effects
 // ============================================================================
@@ -233,21 +245,21 @@
 // BREATHING ANIMATIONS - Organic living feel (from reference component)
 // ============================================================================
 
-// Slow box-shadow breathe for glass panels — glow-only, no scale (avoids text jitter)
+// Slow box-shadow breathe — amber tones, glow-only, no scale (avoids text jitter)
 @keyframes breathe-slow {
   0%, 100% {
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 60px rgba(251, 191, 36, 0.03),
-      inset 0 1px 0 rgba(251, 191, 36, 0.05);
-    border-color: rgba(245, 158, 11, 0.1);
+      0 0 60px rgba(251, 191, 36, 0.06),
+      inset 0 1px 0 rgba(251, 191, 36, 0.06);
+    border-color: rgba(245, 158, 11, 0.12);
   }
   50% {
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 80px rgba(251, 191, 36, 0.08),
-      inset 0 1px 0 rgba(251, 191, 36, 0.1);
-    border-color: rgba(245, 158, 11, 0.18);
+      0 0 90px rgba(251, 191, 36, 0.14),
+      inset 0 1px 0 rgba(251, 191, 36, 0.12);
+    border-color: rgba(245, 158, 11, 0.25);
   }
 }
 
@@ -256,36 +268,21 @@
   0%, 100% {
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 60px rgba(249, 115, 22, 0.03),
-      inset 0 1px 0 rgba(249, 115, 22, 0.05);
-    border-color: rgba(234, 88, 12, 0.1);
+      0 0 60px rgba(249, 115, 22, 0.06),
+      inset 0 1px 0 rgba(249, 115, 22, 0.06);
+    border-color: rgba(234, 88, 12, 0.12);
   }
   50% {
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 80px rgba(249, 115, 22, 0.08),
-      inset 0 1px 0 rgba(249, 115, 22, 0.1);
-    border-color: rgba(234, 88, 12, 0.18);
+      0 0 90px rgba(249, 115, 22, 0.14),
+      inset 0 1px 0 rgba(249, 115, 22, 0.12);
+    border-color: rgba(234, 88, 12, 0.25);
   }
 }
 
-// Golden yellow variant
-@keyframes breathe-gold {
-  0%, 100% {
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 60px rgba(234, 179, 8, 0.03),
-      inset 0 1px 0 rgba(234, 179, 8, 0.05);
-    border-color: rgba(202, 138, 4, 0.1);
-  }
-  50% {
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 80px rgba(234, 179, 8, 0.08),
-      inset 0 1px 0 rgba(234, 179, 8, 0.1);
-    border-color: rgba(202, 138, 4, 0.18);
-  }
-}
+// Keep breathe-red defined but unused for now (available if needed)
+
 
 // Disabled breathing — applied by .no-breathe on <html>
 html.no-breathe {
@@ -320,19 +317,17 @@ html.no-breathe {
 // Slow ambient orb pulse (background glows) — matches reference exactly
 @keyframes pulse-slow {
   0%, 100% {
-    transform: scale(1);
-    opacity: 0.5;
+    opacity: 0.35;
   }
   50% {
-    transform: scale(1.2);
-    opacity: 0.8;
+    opacity: 0.5;
   }
 }
 
 // chase-tail for avatar image
 @keyframes chase-tail {
   0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  100% { transform: rotate(-360deg); }
 }
 
 
@@ -460,23 +455,29 @@ html.no-breathe {
 
 // Reduce motion for accessibility — only disable decorative infinite animations,
 // not hover transitions (which are functional feedback)
+// prefers-reduced-motion: only apply when user hasn't explicitly enabled breathing
+// The .no-breathe class handles the manual toggle; this handles the OS-level default.
+// If the user has never toggled (no localStorage key), respect the OS preference.
+// Once the user toggles breathing on, the JS removes .no-breathe and animations run.
 @media (prefers-reduced-motion: reduce) {
-  .animate-float,
-  .animate-float-gentle,
-  .animate-breathing,
-  .animate-pulse,
-  .animate-pulse-scale,
-  .animate-pulse-glow,
-  .animate-scale-pulse,
-  .animate-spin,
-  .animate-spin-slow,
-  .animate-breathe-slow,
-  .animate-heartbeat,
-  .animate-breathe-ring,
-  .animate-pulse-slow,
-  .ambient-orb,
-  .section-icon-box,
-  .section-icon-box .icon-dot {
-    animation: none !important;
+  html:not(.breathe-override) {
+    .animate-float,
+    .animate-float-gentle,
+    .animate-breathing,
+    .animate-pulse,
+    .animate-pulse-scale,
+    .animate-pulse-glow,
+    .animate-scale-pulse,
+    .animate-spin,
+    .animate-spin-slow,
+    .animate-breathe-slow,
+    .animate-heartbeat,
+    .animate-breathe-ring,
+    .animate-pulse-slow,
+    .ambient-orb,
+    .section-icon-box,
+    .section-icon-box .icon-dot {
+      animation: none !important;
+    }
   }
 }

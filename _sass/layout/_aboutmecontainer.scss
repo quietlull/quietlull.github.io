@@ -114,18 +114,40 @@
   }
 }
 
-// Vary rhythm + color per text container for organic feel
-#landing-box > .text-container:nth-of-type(1) {
+// Vary rhythm, color, and orb position per text container for organic feel
+// First panel is a direct child; others are nested inside .about-text / .additional-content
+#landing-box > .text-container {
   animation: breathe-slow 6.5s ease-in-out infinite;
   animation-delay: 0s;
+  --glow-color: rgba(251, 191, 36, 0.22);
+  --glow-color-hover: rgba(251, 191, 36, 0.50);
+  --glow-border: rgba(245, 158, 11, 0.25);
+  --orb-x: 48%;
+  --orb-y: 48%;
+  --orb-speed: 5.5s;
+  --orb-delay: 0s;
 }
-#landing-box > .text-container:nth-of-type(2) {
+.about-text .text-container {
   animation: breathe-warm 5.5s ease-in-out infinite;
   animation-delay: 0.8s;
+  --glow-color: rgba(249, 115, 22, 0.22);
+  --glow-color-hover: rgba(249, 115, 22, 0.50);
+  --glow-border: rgba(234, 88, 12, 0.25);
+  --orb-x: 55%;
+  --orb-y: 50%;
+  --orb-speed: 6s;
+  --orb-delay: 1.2s;
 }
-#landing-box > .text-container:nth-of-type(3) {
-  animation: breathe-gold 7s ease-in-out infinite;
+.additional-content .text-container {
+  animation: breathe-slow 7s ease-in-out infinite;
   animation-delay: 1.5s;
+  --glow-color: rgba(251, 191, 36, 0.22);
+  --glow-color-hover: rgba(251, 191, 36, 0.50);
+  --glow-border: rgba(245, 158, 11, 0.25);
+  --orb-x: 45%;
+  --orb-y: 52%;
+  --orb-speed: 7s;
+  --orb-delay: 0.5s;
 }
 
 #landing-title {

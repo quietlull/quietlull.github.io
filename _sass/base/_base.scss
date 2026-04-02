@@ -482,35 +482,120 @@ mjx-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.10));
+  border: 1px solid rgba(251, 191, 36, 0.20);
+  flex-shrink: 0;
+  // Reference: whole box breathes (scale + opacity)
+  animation: breathe 4s ease-in-out infinite;
+
+  // Blurred glow behind the box
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: rgba(251, 191, 36, 0.20);
+    border-radius: 16px;
+    filter: blur(12px);
+    z-index: -1;
+  }
+
+  // Heartbeat dot — centered, strong glow (matches reference)
+  .icon-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(251, 191, 36, 0.8);
+    box-shadow:
+      0 0 15px rgba(251, 191, 36, 0.6);
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+}
+
+// ============================================================================
+// CARD ICON BOX — animated rounded square inside each card (from reference)
+// ============================================================================
+
+.card-icon-box {
+  position: relative;
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(251, 191, 36, 0.03);
-  animation: breathe-slow 6s ease-in-out infinite;
+  margin-bottom: 0.75rem;
   flex-shrink: 0;
+  animation: breathe 4s ease-in-out infinite;
 
-  i {
-    font-size: 1.1rem;
-    color: rgba(251, 191, 36, 0.9);
-    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.4));
+  // Blurred glow behind the box
+  .card-icon-glow {
+    position: absolute;
+    inset: -4px;
+    background: var(--icon-glow-color, rgba(251, 191, 36, 0.2));
+    border-radius: 16px;
+    filter: blur(12px);
+    transition: background 300ms ease;
   }
 
-  // Breathing dot — top-right corner
-  .icon-dot {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    width: 8px;
-    height: 8px;
+  // The visible rounded square
+  .card-icon-inner {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    background: var(--icon-bg-gradient, linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.15)));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--icon-border-color, rgba(251, 191, 36, 0.2));
+  }
+
+  // Heartbeat dot in center
+  .card-icon-dot {
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: rgba(251, 191, 36, 1);
-    box-shadow: 0 0 8px rgba(251, 191, 36, 0.6), 0 0 16px rgba(251, 191, 36, 0.3);
+    background: var(--icon-dot-color, rgba(251, 191, 36, 0.8));
+    box-shadow: 0 0 12px var(--icon-dot-glow, rgba(251, 191, 36, 0.6));
     animation: heartbeat 2.5s ease-in-out infinite;
   }
+}
+
+// Hover: glow brightens
+.post-card:hover .card-icon-glow,
+.post-vertical-bar:hover .card-icon-glow {
+  background: var(--icon-glow-color-hover, rgba(251, 191, 36, 0.35));
+}
+
+// ============================================================================
+// CARD COLOR PALETTES — warm tone variance per nth-child
+// ============================================================================
+
+// Amber (default)
+.card-palette-amber {
+  --icon-glow-color: rgba(251, 191, 36, 0.2);
+  --icon-glow-color-hover: rgba(251, 191, 36, 0.35);
+  --icon-bg-gradient: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.15));
+  --icon-border-color: rgba(251, 191, 36, 0.2);
+  --icon-dot-color: rgba(251, 191, 36, 0.8);
+  --icon-dot-glow: rgba(251, 191, 36, 0.6);
+}
+
+// Orange
+.card-palette-orange {
+  --icon-glow-color: rgba(249, 115, 22, 0.2);
+  --icon-glow-color-hover: rgba(249, 115, 22, 0.35);
+  --icon-bg-gradient: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(239, 68, 68, 0.1));
+  --icon-border-color: rgba(249, 115, 22, 0.2);
+  --icon-dot-color: rgba(249, 115, 22, 0.8);
+  --icon-dot-glow: rgba(249, 115, 22, 0.6);
+}
+
+// Yellow / Gold
+.card-palette-gold {
+  --icon-glow-color: rgba(250, 204, 21, 0.2);
+  --icon-glow-color-hover: rgba(250, 204, 21, 0.35);
+  --icon-bg-gradient: linear-gradient(135deg, rgba(250, 204, 21, 0.15), rgba(251, 191, 36, 0.15));
+  --icon-border-color: rgba(250, 204, 21, 0.2);
+  --icon-dot-color: rgba(250, 204, 21, 0.8);
+  --icon-dot-glow: rgba(250, 204, 21, 0.6);
 }
