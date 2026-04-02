@@ -233,21 +233,66 @@
 // BREATHING ANIMATIONS - Organic living feel (from reference component)
 // ============================================================================
 
-// Slow box-shadow breathe for glass panels — matches reference (scale 1→1.01, subtle glow)
+// Slow box-shadow breathe for glass panels — glow-only, no scale (avoids text jitter)
 @keyframes breathe-slow {
   0%, 100% {
-    transform: scale(1);
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.6),
       0 0 60px rgba(251, 191, 36, 0.03),
       inset 0 1px 0 rgba(251, 191, 36, 0.05);
+    border-color: rgba(245, 158, 11, 0.1);
   }
   50% {
-    transform: scale(1.01);
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.6),
-      0 0 80px rgba(251, 191, 36, 0.06),
-      inset 0 1px 0 rgba(251, 191, 36, 0.08);
+      0 0 80px rgba(251, 191, 36, 0.08),
+      inset 0 1px 0 rgba(251, 191, 36, 0.1);
+    border-color: rgba(245, 158, 11, 0.18);
+  }
+}
+
+// Warm orange variant
+@keyframes breathe-warm {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      0 0 60px rgba(249, 115, 22, 0.03),
+      inset 0 1px 0 rgba(249, 115, 22, 0.05);
+    border-color: rgba(234, 88, 12, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      0 0 80px rgba(249, 115, 22, 0.08),
+      inset 0 1px 0 rgba(249, 115, 22, 0.1);
+    border-color: rgba(234, 88, 12, 0.18);
+  }
+}
+
+// Golden yellow variant
+@keyframes breathe-gold {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      0 0 60px rgba(234, 179, 8, 0.03),
+      inset 0 1px 0 rgba(234, 179, 8, 0.05);
+    border-color: rgba(202, 138, 4, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      0 0 80px rgba(234, 179, 8, 0.08),
+      inset 0 1px 0 rgba(234, 179, 8, 0.1);
+    border-color: rgba(202, 138, 4, 0.18);
+  }
+}
+
+// Disabled breathing — applied by .no-breathe on <html>
+html.no-breathe {
+  *,
+  *::before,
+  *::after {
+    animation-name: none !important;
   }
 }
 
@@ -430,7 +475,8 @@
   .animate-breathe-ring,
   .animate-pulse-slow,
   .ambient-orb,
-  .section-title::before {
+  .section-icon-box,
+  .section-icon-box .icon-dot {
     animation: none !important;
   }
 }
