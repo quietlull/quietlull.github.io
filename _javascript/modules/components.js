@@ -6,6 +6,7 @@ export { initLocaleDatetime } from './components/locale-datetime';
 export { initToc } from './components/toc';
 export { loadMermaid } from './components/mermaid';
 export { modeWatcher } from './components/mode-toggle';
+export { breatheToggle } from './components/breathe-toggle';
 export { back2top } from './components/back-to-top';
 export { loadTooptip } from './components/tooltip-loader';
 export { initPostFilter } from './components/post-filter';

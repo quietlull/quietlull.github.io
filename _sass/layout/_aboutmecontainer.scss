@@ -7,8 +7,8 @@
   @include mx.card-hover;
   padding: 25px;
   border-radius: v.$radius-lg;
-  // All glass text panels breathe
-  animation: breathe-slow 6s ease-in-out infinite;
+  // Default breathe — overridden per nth-of-type below
+  animation: breathe-slow 6.5s ease-in-out infinite;
 
   > *:first-child { margin-top: 0; }
   > *:last-child { margin-bottom: 0; }
@@ -114,10 +114,19 @@
   }
 }
 
-// Stagger the landing text containers so they don't all pulse in sync
-#landing-box > .text-container:nth-of-type(1) { animation-delay: 0s; }
-#landing-box > .text-container:nth-of-type(2) { animation-delay: 0.5s; }
-#landing-box > .text-container:nth-of-type(3) { animation-delay: 1.0s; }
+// Vary rhythm + color per text container for organic feel
+#landing-box > .text-container:nth-of-type(1) {
+  animation: breathe-slow 6.5s ease-in-out infinite;
+  animation-delay: 0s;
+}
+#landing-box > .text-container:nth-of-type(2) {
+  animation: breathe-warm 5.5s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+#landing-box > .text-container:nth-of-type(3) {
+  animation: breathe-gold 7s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
 
 #landing-title {
   text-shadow: 0 2px 12px rgba(251, 191, 36, 0.15);

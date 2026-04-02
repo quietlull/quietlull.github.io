@@ -42,21 +42,55 @@
   @include mx.radial-hover-glow;
   border-radius: v.$radius-lg;
   height: 100%;
-  animation: breathe-slow 6s ease-in-out infinite;
   transition: border-color 500ms ease;
-
-  &:hover {
-    border-color: rgba(245, 158, 11, 0.2);
-  }
 }
 
-// Stagger breathing across cards — each one slightly out of phase
-.post-card:nth-child(1) .card { animation-delay: 0s; }
-.post-card:nth-child(2) .card { animation-delay: 0.7s; }
-.post-card:nth-child(3) .card { animation-delay: 1.4s; }
-.post-card:nth-child(4) .card { animation-delay: 0.3s; }
-.post-card:nth-child(5) .card { animation-delay: 1.0s; }
-.post-card:nth-child(6) .card { animation-delay: 1.7s; }
+// Color + timing variance — each card breathes at its own rhythm and color
+.post-card:nth-child(6n+1) .card {
+  animation: breathe-slow 5.5s ease-in-out infinite;
+  animation-delay: 0s;
+  --glow-color: rgba(251, 191, 36, 0.10);
+  --glow-border: rgba(245, 158, 11, 0.2);
+}
+
+.post-card:nth-child(6n+2) .card {
+  animation: breathe-warm 7s ease-in-out infinite;
+  animation-delay: 1.2s;
+  --glow-color: rgba(249, 115, 22, 0.10);
+  --glow-border: rgba(234, 88, 12, 0.2);
+}
+
+.post-card:nth-child(6n+3) .card {
+  animation: breathe-gold 6s ease-in-out infinite;
+  animation-delay: 0.4s;
+  --glow-color: rgba(234, 179, 8, 0.10);
+  --glow-border: rgba(202, 138, 4, 0.2);
+}
+
+.post-card:nth-child(6n+4) .card {
+  animation: breathe-warm 5s ease-in-out infinite;
+  animation-delay: 1.8s;
+  --glow-color: rgba(249, 115, 22, 0.10);
+  --glow-border: rgba(234, 88, 12, 0.2);
+}
+
+.post-card:nth-child(6n+5) .card {
+  animation: breathe-gold 7.5s ease-in-out infinite;
+  animation-delay: 0.6s;
+  --glow-color: rgba(234, 179, 8, 0.10);
+  --glow-border: rgba(202, 138, 4, 0.2);
+}
+
+.post-card:nth-child(6n+6) .card {
+  animation: breathe-slow 6.5s ease-in-out infinite;
+  animation-delay: 2.1s;
+  --glow-color: rgba(251, 191, 36, 0.10);
+  --glow-border: rgba(245, 158, 11, 0.2);
+}
+
+.post-card .card:hover {
+  border-color: var(--glow-border, rgba(245, 158, 11, 0.2));
+}
 
 .card-link {
       width: 100%;
