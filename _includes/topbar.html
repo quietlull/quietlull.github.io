@@ -49,9 +49,12 @@
       </button>
     {% endunless %}
 
-    <button type="button" class="btn btn-link nav-link" aria-label="Toggle Breathing Animations" id="breathe-toggle" title="Toggle breathing animations">
-      <i class="fas fa-wind"></i>
-    </button>
+    <label class="breathe-switch" id="breathe-toggle" title="Toggle breathing animations">
+      <input type="checkbox" checked aria-label="Toggle Breathing Animations">
+      <span class="breathe-switch-track">
+        <span class="breathe-switch-thumb"></span>
+      </span>
+    </label>
 
     {% if site.data.contact.size > 0 %}
       <span class="icon-border mx-2"></span>

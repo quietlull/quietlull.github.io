@@ -127,20 +127,22 @@
   &::before {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: -30%;
     background: radial-gradient(
-      circle at 50% 50%,
-      var(--glow-color, rgba(251, 191, 36, 0.10)) 0%,
-      transparent 70%
+      ellipse at var(--orb-x, 50%) var(--orb-y, 55%),
+      var(--glow-color, rgba(251, 191, 36, 0.20)) 0%,
+      transparent 60%
     );
     pointer-events: none;
-    opacity: 0.3;
-    transition: opacity 700ms ease;
-    animation: pulse-slow 5s ease-in-out infinite;
+    opacity: 0.35;
+    transition: opacity 400ms ease;
+    animation: pulse-slow var(--orb-speed, 5s) ease-in-out infinite;
+    animation-delay: var(--orb-delay, 0s);
   }
 
   &:hover::before {
-    opacity: 1;
+    animation: none;
+    opacity: 0.8;
   }
 }
 

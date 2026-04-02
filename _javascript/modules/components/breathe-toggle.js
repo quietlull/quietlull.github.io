@@ -1,6 +1,8 @@
 /**
  * Toggle breathing animations on/off via html.no-breathe class.
- * Persists preference in localStorage.
+ * Uses a switch checkbox. Persists preference in localStorage.
+ * Also handles prefers-reduced-motion: if user explicitly enables breathing,
+ * adds .breathe-override to bypass the reduced-motion media query.
  */
 
 const STORAGE_KEY = 'breathe-disabled';
@@ -9,23 +11,36 @@ const $toggle = document.getElementById('breathe-toggle');
 export function breatheToggle() {
   if (!$toggle) return;
 
-  // Restore saved preference
-  if (localStorage.getItem(STORAGE_KEY) === 'true') {
-    document.documentElement.classList.add('no-breathe');
-    $toggle.querySelector('i').classList.replace('fa-wind', 'fa-ban');
+  const checkbox = $toggle.querySelector('input[type="checkbox"]');
+  if (!checkbox) return;
+
+  const html = document.documentElement;
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Determine initial state:
+  // - If user has explicitly saved a preference, use that
+  // - If no saved preference and OS prefers reduced motion, default to off
+  if (saved === 'true' || (saved === null && prefersReduced)) {
+    html.classList.add('no-breathe');
+    html.classList.remove('breathe-override');
+    checkbox.checked = false;
+  } else {
+    // User wants breathing on — override reduced motion if needed
+    html.classList.remove('no-breathe');
+    if (prefersReduced) html.classList.add('breathe-override');
+    checkbox.checked = true;
   }
 
-  $toggle.addEventListener('click', () => {
-    const html = document.documentElement;
-    const disabled = html.classList.toggle('no-breathe');
-    const icon = $toggle.querySelector('i');
-
-    if (disabled) {
-      icon.classList.replace('fa-wind', 'fa-ban');
-      localStorage.setItem(STORAGE_KEY, 'true');
-    } else {
-      icon.classList.replace('fa-ban', 'fa-wind');
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      html.classList.remove('no-breathe');
+      if (prefersReduced) html.classList.add('breathe-override');
       localStorage.setItem(STORAGE_KEY, 'false');
+    } else {
+      html.classList.add('no-breathe');
+      html.classList.remove('breathe-override');
+      localStorage.setItem(STORAGE_KEY, 'true');
     }
   });
 }
