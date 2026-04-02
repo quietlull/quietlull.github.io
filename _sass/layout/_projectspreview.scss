@@ -42,7 +42,11 @@
   @include mx.radial-hover-glow;
   border-radius: v.$radius-lg;
   height: 100%;
-  transition: border-color 500ms ease;
+  transition: border-color 500ms ease, transform 400ms ease;
+
+  &:hover {
+    transform: scale(1.015);
+  }
 }
 
 // Color + timing variance — each card breathes at its own rhythm and color

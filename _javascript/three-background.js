@@ -21,9 +21,9 @@ const CONFIG = {
   },
   lanterns: {
     bloom: {
-      strength: 0.8,
-      radius: 0.6,
-      threshold: 0.4
+      strength: 1.4,
+      radius: 0.3,
+      threshold: 0.45
     },
     float: {
       speed: 1,
@@ -44,16 +44,16 @@ const CONFIG = {
       knockCooldown: 0.1
     },
     shader: {
-      // Gradient settings
-      gradientStart: 1.0,     // Brightness at bottom (full bright)
-      gradientEnd: .1,       // Brightness at top (dim)
+      // Gradient settings (object-space)
+      gradientStart: 1.0,     // Brightness at center (full bright)
+      gradientEnd: 0.35,      // Brightness at top — visible glow, not pitch dark
       gradientCenter: 1,
       gradientRange: 1,
 
       // Flicker settings
-      flickerSpeed: .5,      // How fast the flicker
-      flickerAmount: .25,    // How much brightness variation (0.0 - 1.0)
-      flickerColorShift: .5  // How much color shifts towards red/yellow
+      flickerSpeed: .5,
+      flickerAmount: .25,
+      flickerColorShift: .5
     },
   },
   water: {
@@ -140,19 +140,16 @@ function updateCameraFOV() {
 
 // Responsive lantern sizing
 function getResponsiveLanternScale() {
-  // Calculate how wide the viewport is in world units
-  const frustumHeight = 2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
-  const frustumWidth = frustumHeight * camera.aspect;
+  const aspect = window.innerWidth / window.innerHeight;
+  // Reference aspect ratio (16:9 desktop)
+  const referenceAspect = 16 / 9;
 
-  // Reference frustum width (1920x1080 screen = aspect 1.778)
-  const referenceFrustumWidth = frustumHeight * (1920 / 1080);
+  // Gentle scaling: use square root so narrow screens don't shrink lanterns too much
+  // At 16:9 → 1.0, at 9:16 (portrait) → ~0.75 instead of ~0.4
+  const scaleFactor = Math.sqrt(Math.min(aspect / referenceAspect, 1.0));
 
-  // Scale lanterns proportionally to frustum width
-  // Narrower viewport = smaller lanterns (so they don't dominate the screen)
-  const scaleFactor = frustumWidth / referenceFrustumWidth;
-
-  // Clamp between 0.4 and 1.0
-  return Math.max(0.4, Math.min(1.0, scaleFactor));
+  // Clamp — never smaller than 0.7, never larger than 1.0
+  return Math.max(0.7, Math.min(1.0, scaleFactor));
 }
 
 

@@ -35,7 +35,7 @@ export class LanternMaterialManager {
 
     // Set gradient properties
     material.uniforms.gradientStart.value = options.gradientStart ?? 1.0;
-    material.uniforms.gradientEnd.value = options.gradientEnd ?? 0.3;
+    material.uniforms.gradientEnd.value = options.gradientEnd ?? 0.35;
     material.uniforms.gradientCenter.value = options.gradientCenter ?? 0.0;
     material.uniforms.gradientRange.value = options.gradientRange ?? 100.0;
 

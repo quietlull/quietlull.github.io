@@ -5,7 +5,7 @@
 
 /**
  * Lantern shader that simulates flame-based lighting with:
- * - Vertical gradient (bright at bottom/center, dim at top)
+ * - Vertical gradient (bright at bottom/center, still glowing at top)
  * - Animated color flicker for flame effect
  * - Emission for bloom post-processing
  *
@@ -21,16 +21,16 @@ const LanternShader = {
     baseColor: { value: null }, // THREE.Color
 
     // Gradient controls
-    gradientStart: { value: 1.0 }, // Brightness at bottom (1.0 = full bright)
-    gradientEnd: { value: 0.3 },   // Brightness at top (0.3 = dim)
+    gradientStart: { value: 1.0 }, // Brightness at center (1.0 = full bright)
+    gradientEnd: { value: 0.35 },  // Brightness at edges (still glows at top)
     gradientCenter: { value: 0.0 }, // Y position of brightest point (world coords)
     gradientRange: { value: 100.0 }, // Height range for gradient falloff
 
     // Flicker animation
     time: { value: 0.0 },
-    flickerSpeed: { value: 3.0 },    // How fast the flicker
-    flickerAmount: { value: 0.15 },  // How much brightness variation (0.0 - 1.0)
-    flickerColorShift: { value: 0.05 }, // How much color shifts (towards red/yellow)
+    flickerSpeed: { value: 3.0 },
+    flickerAmount: { value: 0.15 },
+    flickerColorShift: { value: 0.05 },
 
     // Overall intensity
     emissiveIntensity: { value: 2.0 }
@@ -40,12 +40,12 @@ const LanternShader = {
 		varying vec3 vPosition;
 		varying vec3 vNormal;
 		varying vec2 vUv;
-		
+
 		void main() {
 			vPosition = position;
 			vNormal = normalize(normalMatrix * normal);
 			vUv = uv;
-			
+
 			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 		}
 	`,

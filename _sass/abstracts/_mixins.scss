@@ -376,10 +376,11 @@
 
 @mixin card-hover {
   @include radial-hover-glow;
-  transition: border-color 500ms ease;
+  transition: border-color 500ms ease, transform 400ms ease;
 
   &:hover {
     border-color: rgba(245, 158, 11, 0.2);
+    transform: scale(1.015);
   }
 }
 
