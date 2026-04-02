@@ -74,7 +74,7 @@ const CONFIG = {
 // Scene setup
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x080f1b); // Night sky color
-scene.fog = new THREE.FogExp2(0x080f1b, 0.0015); // Depth haze — distant lanterns fade into background
+//scene.fog = new THREE.FogExp2(0x080f1b, 0.0015); // Depth haze — distant lanterns fade into background
 
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 10000);
 camera.position.z = CONFIG.camera.positionZ;
@@ -128,7 +128,7 @@ const lanternMaterialManager = new LanternMaterialManager(CONFIG);
 const fireworkController = new FireworkController(scene, camera, {
   maxFireworks: 50,
   minZ: 0,
-  maxZ: -500
+  maxZ: -200
 });
 
 
