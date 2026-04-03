@@ -247,6 +247,14 @@ function loadWaterFBX(url) {
     });
 
     waterMesh.material = mirroredSurface.material;
+
+    // Pre-warm: force one reflection render so the shader compiles now
+    // instead of causing a lag spike when the water first scrolls into view
+    mirroredSurface.mirrorPlane.visible = false;
+    renderer.setRenderTarget(mirroredSurface.renderTarget);
+    renderer.render(scene, mirroredSurface.mirrorCamera);
+    renderer.setRenderTarget(null);
+    mirroredSurface.mirrorPlane.visible = true;
   });
 }
 
@@ -305,16 +313,8 @@ function updateCameraFromScroll() {
   );
 }
 
-let scrollTicking = false;
-window.addEventListener('scroll', () => {
-  if (!scrollTicking) {
-    requestAnimationFrame(() => {
-      updateCameraFromScroll();
-      scrollTicking = false;
-    });
-    scrollTicking = true;
-  }
-});
+// Update camera immediately on scroll (no RAF debounce — avoids frame lag)
+window.addEventListener('scroll', updateCameraFromScroll, { passive: true });
 updateCameraFromScroll();
 
 // Handle window resize (debounced — fires once after user stops resizing)

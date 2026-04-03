@@ -14,6 +14,11 @@ export class LanternController {
     this.mouseWorldPos = new THREE.Vector3();
     this.isMouseOverCanvas = false;
 
+    // Reusable math objects (avoid per-frame allocations)
+    this._plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    this._intersectTarget = new THREE.Vector3();
+    this._tempVec2 = new THREE.Vector2();
+
     // Debug visualization
     this.debugEnabled = false; // Set to false to disable
     this.debugObjects = [];
@@ -128,9 +133,8 @@ export class LanternController {
       // Mouse avoidance
       if (this.isMouseOverCanvas) {
         const lanternZ = lantern.position.z;
-        const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -lanternZ);
-        const mouseAtLanternDepth = new THREE.Vector3();
-        this.raycaster.ray.intersectPlane(plane, mouseAtLanternDepth);
+        this._plane.constant = -lanternZ;
+        const mouseAtLanternDepth = this.raycaster.ray.intersectPlane(this._plane, this._intersectTarget);
 
         if (mouseAtLanternDepth) {
           // 🐛 DEBUG VISUALIZATION
@@ -169,9 +173,10 @@ export class LanternController {
               const timeSinceLastKnock = this.time - lantern.userData.lastKnockTime;
 
               if (timeSinceLastKnock > config.knockCooldown) {
-                const knockDir = new THREE.Vector2(dx, dy);
-                if (knockDir.length() > 0.01) {
-                  knockDir.normalize();
+                this._tempVec2.set(dx, dy);
+                if (this._tempVec2.length() > 0.01) {
+                  this._tempVec2.normalize();
+                  const knockDir = this._tempVec2;
                   const knockForce = config.knockStrength * avoidanceFactor;
                   lantern.userData.velocity.x += knockDir.x * knockForce;
                   lantern.userData.velocity.y += knockDir.y * knockForce;
@@ -189,9 +194,10 @@ export class LanternController {
                 }
               }
             } else {
-              const pushDir = new THREE.Vector2(dx, dy);
-              if (pushDir.length() > 0.01) {
-                pushDir.normalize();
+              this._tempVec2.set(dx, dy);
+              if (this._tempVec2.length() > 0.01) {
+                this._tempVec2.normalize();
+                const pushDir = this._tempVec2;
                 lantern.userData.avoidanceOffset.x += pushDir.x * config.avoidanceStrength * avoidanceFactor;
                 lantern.userData.avoidanceOffset.y += pushDir.y * config.avoidanceStrength * avoidanceFactor;
               }

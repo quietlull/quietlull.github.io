@@ -86,11 +86,10 @@ const LanternShader = {
 			float gradientFactor = clamp(distanceFromCenter / gradientRange, 0.0, 1.0);
 			float baseBrightness = mix(gradientStart, gradientEnd, gradientFactor);
 
-			// Flicker: multiple octaves of noise for organic feel
+			// Flicker: two octaves of noise for organic feel (third octave removed for perf)
 			float flicker1 = smoothNoise(time * flickerSpeed);
 			float flicker2 = smoothNoise(time * flickerSpeed * 1.7 + 100.0) * 0.5;
-			float flicker3 = smoothNoise(time * flickerSpeed * 2.3 + 200.0) * 0.25;
-			float flickerValue = (flicker1 + flicker2 + flicker3) / 1.75;
+			float flickerValue = (flicker1 + flicker2) / 1.5;
 
 			float brightness = baseBrightness * (1.0 - flickerAmount + flickerValue * flickerAmount);
 

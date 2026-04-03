@@ -58,6 +58,8 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
+  will-change: transform;
+  contain: layout style paint;
 }
 
 // Stronger glass with more blur
@@ -67,6 +69,8 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border-strong);
   box-shadow: var(--glass-shadow-strong);
+  will-change: transform;
+  contain: layout style paint;
 }
 
 // Dark mode specific lantern glass (for use in dark theme only)
@@ -75,10 +79,12 @@
   -webkit-backdrop-filter: blur(12px);
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(245, 158, 11, 0.1);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.6),
     0 0 60px rgba(251, 191, 36, 0.03),
     inset 0 1px 0 rgba(251, 191, 36, 0.05);
+  will-change: transform;
+  contain: layout style paint;
 }
 
 // ============================================================================

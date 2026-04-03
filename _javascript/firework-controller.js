@@ -59,6 +59,16 @@ export class FireworkController {
     this.autoTimer = 0;
     this.nextAutoDelay = this.getRandomDelay();  // Initialize with random delay
 
+    // Shared trail geometry (reused across all rockets)
+    this._sharedTrailGeometry = new THREE.PlaneGeometry(
+      this.config.trailRadius, this.config.trailRadius, 1, 8, 1, true
+    );
+
+    // Reusable math objects (avoid per-call allocations)
+    this._direction = new THREE.Vector3();
+    this._midPoint = new THREE.Vector3();
+    this._upVec = new THREE.Vector3(0, 1, 0);
+
     this.setupClickHandler();
   }
 
@@ -183,13 +193,12 @@ export class FireworkController {
   }
 
   createRocketTrail(color, startPoint, endPoint) {
-    // Create a single cylinder stretched from start to end point
-    const direction = new THREE.Vector3().subVectors(endPoint, startPoint);
-    const length = direction.length();
-    const midPoint = new THREE.Vector3().addVectors(startPoint, endPoint).multiplyScalar(0.5);
+    // Reuse shared geometry and temp vectors
+    this._direction.subVectors(endPoint, startPoint);
+    const length = this._direction.length();
+    this._midPoint.addVectors(startPoint, endPoint).multiplyScalar(0.5);
 
-    // Cylinder geometry along Y axis by default, we'll rotate it
-    const geometry = new THREE.PlaneGeometry(this.config.trailRadius, this.config.trailRadius, length, 8, 1, true);
+    const geometry = this._sharedTrailGeometry;
 
     // Create custom shader material for animated gradient
     const material = new THREE.ShaderMaterial({
@@ -251,12 +260,12 @@ export class FireworkController {
     const trail = new THREE.Mesh(geometry, material);
 
     // Position the cylinder at midpoint
-    trail.position.copy(midPoint);
+    trail.position.copy(this._midPoint);
 
     // Rotate cylinder to point from start to end
     trail.quaternion.setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0),
-      direction.normalize()
+      this._upVec,
+      this._direction.normalize()
     );
 
     return trail;
@@ -503,9 +512,8 @@ export class FireworkController {
           // Reached target - EXPLODE!
           firework.phase = 'explode';
 
-          // Remove rocket trail
+          // Remove rocket trail (geometry is shared, only dispose material)
           this.scene.remove(firework.rocket);
-          if (firework.rocket.geometry) firework.rocket.geometry.dispose();
           if (firework.rocket.material && firework.rocket.material.dispose) {
             firework.rocket.material.dispose();
           }
@@ -556,7 +564,6 @@ export class FireworkController {
         }
         if (firework.rocket && firework.rocket.parent) {
           this.scene.remove(firework.rocket);
-          if (firework.rocket.geometry) firework.rocket.geometry.dispose();
           if (firework.rocket.material && firework.rocket.material.dispose) {
             firework.rocket.material.dispose();
           }
@@ -575,9 +582,8 @@ export class FireworkController {
     for (let firework of this.fireWorkGroup) {
       if (firework.rocket && firework.rocket.parent) {
         this.scene.remove(firework.rocket);
-        if (firework.rocket.geometry) firework.rocket.geometry.dispose();
-        if (firework.rocket.material) {
-          if (firework.rocket.material.dispose) firework.rocket.material.dispose();
+        if (firework.rocket.material && firework.rocket.material.dispose) {
+          firework.rocket.material.dispose();
         }
       }
       if (firework.explosion && firework.explosion.parent) {

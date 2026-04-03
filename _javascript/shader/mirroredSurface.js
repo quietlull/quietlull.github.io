@@ -150,6 +150,21 @@ export class MirroredSurface {
     this.time += normalizedDelta * 0.016;
     this.material.uniforms.uTime.value = this.time;
 
+    // Frustum check — skip the expensive reflection render if water is off-screen
+    if (!this._frustum) {
+      this._frustum = new THREE.Frustum();
+      this._projScreenMatrix = new THREE.Matrix4();
+    }
+    this._projScreenMatrix.multiplyMatrices(
+      this.camera.projectionMatrix,
+      this.camera.matrixWorldInverse
+    );
+    this._frustum.setFromProjectionMatrix(this._projScreenMatrix);
+
+    if (!this._frustum.intersectsObject(this.mirrorPlane)) {
+      return; // Water not visible — skip reflection pass entirely
+    }
+
     this.mirrorCamera.position.copy(this.camera.position);
     const distanceFromPlane = this.camera.position.y - this.mirrorPlaneY;
     this.mirrorCamera.position.y = this.mirrorPlaneY - distanceFromPlane;
