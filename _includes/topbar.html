@@ -57,6 +57,7 @@
       </span>
     </label>
 
+    {% if page.layout == 'home' %}
     <label class="fireworks-switch" id="fireworks-toggle" title="Toggle auto fireworks">
       <input type="checkbox" aria-label="Toggle Auto Fireworks">
       <span class="fireworks-switch-icon"><i class="fas fa-meteor"></i></span>
@@ -64,6 +65,7 @@
         <span class="fireworks-switch-thumb"></span>
       </span>
     </label>
+    {% endif %}
 
     {% if site.data.contact.size > 0 %}
       <span class="icon-border mx-2"></span>
