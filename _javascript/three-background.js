@@ -372,3 +372,4 @@ window.bloomPass = bloomPass;
 window.lanternController = lanternController;
 window.lanternMaterialManager = lanternMaterialManager;
 window.loadLanternsFBX = loadLanternsFBX;
+window.fireworkController = fireworkController;
