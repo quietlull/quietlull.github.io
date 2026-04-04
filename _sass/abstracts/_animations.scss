@@ -291,6 +291,11 @@ html.no-breathe {
   *::after {
     animation-name: none !important;
   }
+
+  // Re-enable avatar spin (interactive hover, not decorative breathing)
+  #avatar img {
+    animation-name: chase-tail !important;
+  }
 }
 
 // Heartbeat — double-beat pulse for glow dots — matches reference

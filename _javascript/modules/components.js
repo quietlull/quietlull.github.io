@@ -11,3 +11,4 @@ export { fireworksToggle } from './components/fireworks-toggle';
 export { back2top } from './components/back-to-top';
 export { loadTooptip } from './components/tooltip-loader';
 export { initPostFilter } from './components/post-filter';
+export { initPostEnhance } from './components/post-enhance';

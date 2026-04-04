@@ -15,6 +15,34 @@
   padding-right: $pr;
 }
 
+// Glass container for post body content
+.post-content-container {
+  @include mx.glass;
+  border-radius: v.$radius-xl;
+  padding: 2.5rem 3rem;
+  margin-top: 1rem;
+
+  @include bp.lte(bp.get(md)) {
+    padding: 1.5rem 1.25rem;
+    border-radius: v.$radius-lg;
+  }
+
+  // Constrain line length for readability
+  .content {
+    max-width: 70ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  // Image treatment — match glass aesthetic
+  .content img:not(.emoji) {
+    border-radius: v.$radius-lg;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    margin: 1rem 0;
+  }
+}
+
 header {
   .post-desc {
     @extend %heading;
@@ -318,15 +346,17 @@ header {
 
 /* --- TOC button, bar and popup in mobile/tablet --- */
 
+$toc-bar-height: 3rem;
+
 #toc-bar {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 1;
   margin: 0 -1rem;
-  height: v.$topbar-height;
-  background: var(--main-bg);
-  border-bottom: 1px solid var(--main-border-color);
+  height: $toc-bar-height;
+  @include mx.glass;
+  border-bottom: none;
   transition: all var(--transition-fast) ease-in-out;
 
   @extend %btn-color;
@@ -344,7 +374,7 @@ header {
   }
 
   &.invisible {
-    top: -#{v.$topbar-height};
+    top: -#{$toc-bar-height};
     transition: none;
   }
 }
@@ -353,6 +383,8 @@ header {
   color: var(--text-muted-color);
   border-color: var(--btn-border-color);
   border-radius: v.$radius-lg;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 
   @include bp.xl {
     display: none !important;
@@ -372,7 +404,7 @@ header {
 @mixin slide-in {
   from {
     opacity: 0.7;
-    transform: translateY(-#{v.$topbar-height});
+    transform: translateY(-#{$toc-bar-height});
   }
 
   to {
@@ -388,7 +420,7 @@ header {
   }
 
   100% {
-    transform: translateY(-#{v.$topbar-height});
+    transform: translateY(-#{$toc-bar-height});
     opacity: 0;
   }
 }
@@ -535,4 +567,112 @@ h4 {
   @include bp.xl {
     scroll-margin-top: 2rem;
   }
+}
+
+// ============================================================================
+// POST ENHANCEMENTS - Sections, scroll reveal, progress bar, hero header
+// ============================================================================
+
+// --- Post hero header ---
+article > header {
+  @include mx.glass;
+  border-radius: v.$radius-xl;
+  padding: 2rem 2.5rem;
+  margin-bottom: 0.5rem;
+
+  @include bp.lte(bp.get(md)) {
+    padding: 1.5rem 1.25rem;
+    border-radius: v.$radius-lg;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+
+    @include bp.lte(bp.get(md)) {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+// --- Section cards split at h2 boundaries ---
+.post-section {
+  @include mx.glass;
+  border-radius: v.$radius-lg;
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
+
+  // Entrance animation
+  animation: fade-in-up 0.5s ease-out both;
+
+  @include bp.lte(bp.get(md)) {
+    padding: 1.25rem 1rem;
+    border-radius: v.$radius-md;
+    margin-bottom: 1rem;
+  }
+
+  // First section gets no top margin for its heading
+  &:first-child > h2:first-child {
+    margin-top: 0;
+  }
+
+  // Give h2s inside sections a nice top accent
+  > h2:first-child {
+    margin-top: 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 1.25rem;
+  }
+}
+
+// When sections exist, the outer container doesn't need its own glass
+.post-content-container:has(.post-section) {
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+// --- Scroll-triggered reveal animation ---
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+// --- Reading progress bar ---
+.reading-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(
+    90deg,
+    var(--accent-color, rgba(251, 191, 36, 0.8)),
+    var(--accent-warm, rgba(249, 115, 22, 0.9))
+  );
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+  z-index: 9999;
+  pointer-events: none;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+// --- Images break out of content column for visual impact ---
+.post-content-container .content img:not(.emoji) {
+  max-width: min(100%, 85ch);
+  width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
