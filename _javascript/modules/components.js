@@ -12,3 +12,5 @@ export { back2top } from './components/back-to-top';
 export { loadTooptip } from './components/tooltip-loader';
 export { initPostFilter } from './components/post-filter';
 export { initPostEnhance } from './components/post-enhance';
+export { initPageTransition } from './components/page-transition';
+export { initAchievements } from './components/achievements';

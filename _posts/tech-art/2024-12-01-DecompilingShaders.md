@@ -1,15 +1,21 @@
 ---
 title: Decompliling The Shaders Of ZZZ! (Part1)
 description: Reverse engineering shaders and why that can be valuable to do.
+author: Rod
 date: 2024-12-01 20:55:00 +0800
 categories: [project]
-tags: [project]
+tags: [project, shader, study, 3d]
+section: tech-art
+engine: Unity
+role: Research
+team_size: Solo
+duration: 2 weeks
 priority: 1
 pin: false
-image: 
-    path: assets/media/ZZZProject/CodeScroll.gif
+takeaway: The key insight from reverse engineering compiled shaders is that you can deduce texture purposes from how they're used in math, not just from looking at the textures themselves. Following the isFrontFace variable was the thread that unraveled everything.
+image:
+  path: assets/media/ZZZProject/CodeScroll.gif
 media_subpath: '/assets/media/ZZZProject'
-
 ---
 
 ## Decompiling shaders and learning from the pros

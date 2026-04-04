@@ -154,7 +154,8 @@
           // ✨ FIXED: Using CSS variables
           background: var(--glow-medium);
           box-shadow: var(--btn-hover-glow);
-          
+          animation: breathe-slow 6s ease-in-out infinite;
+
           &::before {
             opacity: 0.5;
           }
@@ -250,21 +251,29 @@
         transition: transform 300ms ease, background 300ms ease, box-shadow 300ms ease;
       }
 
-      // Checked (breathing ON) — thumb right, amber glow
+      // Checked (breathing ON) — thumb right, amber glow + breathing track
       input:checked ~ .breathe-switch-track {
-        background: rgba(251, 191, 36, 0.15);
-        border-color: rgba(251, 191, 36, 0.3);
+        background: rgba(251, 191, 36, 0.2);
+        border-color: rgba(251, 191, 36, 0.45);
+        box-shadow:
+          0 0 12px rgba(251, 191, 36, 0.25),
+          0 0 24px rgba(251, 191, 36, 0.1);
+        animation: breathe-toggle-glow 4s ease-in-out infinite;
 
         .breathe-switch-thumb {
           transform: translateX(18px);
-          background: rgba(251, 191, 36, 0.9);
-          box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+          background: rgba(251, 191, 36, 0.95);
+          box-shadow:
+            0 0 10px rgba(251, 191, 36, 0.7),
+            0 0 20px rgba(251, 191, 36, 0.3);
         }
       }
 
       &:hover .breathe-switch-track {
-        border-color: rgba(251, 191, 36, 0.4);
-        box-shadow: 0 0 12px rgba(251, 191, 36, 0.1);
+        border-color: rgba(251, 191, 36, 0.5);
+        box-shadow:
+          0 0 16px rgba(251, 191, 36, 0.2),
+          0 0 32px rgba(251, 191, 36, 0.08);
       }
     }
 
@@ -334,4 +343,20 @@
       margin: 0 1rem;
     }
   }
+}
+
+// ============================================================================
+// F1 - Avatar click bounce
+// ============================================================================
+@keyframes avatar-bounce {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-360deg) scale(1.1); }
+  50% { transform: rotate(-360deg) scale(0.95); }
+  75% { transform: rotate(-360deg) scale(1.03); }
+  100% { transform: rotate(-360deg) scale(1); }
+}
+
+#avatar img.clicked {
+  animation: avatar-bounce 0.8s ease-out !important;
+  animation-play-state: running !important;
 }

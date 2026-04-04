@@ -14,12 +14,12 @@ timezone: America/Vancouver
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: AQuietLull's Blog # the main title
+title: Rodney Fan # the main title
 
-tagline: A blog about CG Art and Games # it will display as the subtitle
+tagline: Technical Artist & Game Designer # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
-  A blog about games and art
+  Portfolio of Rodney Fan — Technical Artist and Game Designer
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
@@ -201,7 +201,14 @@ defaults:
       path: "_posts/blogs"
       type: posts
     values:
+      section: game-design
+
+  - scope:
+      path: "_posts/personal"
+      type: posts
+    values:
       section: ""
+      permalink: /ramblings/:title/
 
   - scope:
       path: _drafts

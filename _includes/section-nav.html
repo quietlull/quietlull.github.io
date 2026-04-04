@@ -27,3 +27,11 @@
     <span>ABOUT</span>
   </a>
 </li>
+{% if section == 'game-design' %}
+<li class="nav-item{% if current_path == '/game-design/blogs/' %} active{% endif %}">
+  <a href="{{ '/game-design/blogs/' | relative_url }}" class="nav-link">
+    <i class="fa-fw fas fa-pen-nib"></i>
+    <span>BLOGS</span>
+  </a>
+</li>
+{% endif %}

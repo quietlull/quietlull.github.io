@@ -1,18 +1,20 @@
 ---
-title: LudumDare58-What-Could-Have-Been
-description: talking about Ludumdare58 and what other game ideas we had other doomsday sales. 
+title: "Ludum Dare 58: What Could Have Been"
+description: talking about Ludumdare58 and what other game ideas we had other doomsday sales.
 author: Rod
 date: 2025-10-01 20:55:00 +0800
 categories: [blog]
-tags: [blog, ludum-dare, ludum-dare-58] 
+tags: [blog, ludum-dare, ludum-dare-58]
+section: game-design
+takeaway: Game jams force you to kill your darlings fast. The best ideas are the ones you can actually finish, not the ones that sound the coolest on paper.
 priority: 1
 pin: false
-image: 
+image:
   path: assets/media/LudumDareWhatIF/CSgo.jpg
 media_subpath: '/assets/media/LudumDareWhatIF'
 ---
 
-# LudumDare-What-Could-Have-Been
+# Ludum Dare 58: What Could Have Been
 
 Following the reveal of the theme we began the concepts for a couple of games we wanted to do before settling on the one we ended up on now that the Ludum dare is over i wanted to briefly revisit the other ideas for what i imagined they could have been.
 

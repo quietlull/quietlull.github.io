@@ -4,11 +4,17 @@ description: Talking about Doomsday Sales the game i took part in making in.
 author: Rod
 date: 2025-10-01 20:55:00 +0800
 categories: [project]
-tags: [project]
+tags: [project, unreal, 3d, vfx, shader]
+section: tech-art
+engine: Unreal Engine 5
+role: Technical Artist
+team_size: 4
+duration: 3 days (Game Jam)
 priority: 1
 pin: true
-image: 
-    path: assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.gif
+takeaway: Learning shaders in a new engine under time pressure forced me to actually understand the fundamentals rather than relying on muscle memory. The post process pipeline in Unreal is more like ShaderToy than Unity — which was a fun surprise.
+image:
+  path: assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.gif
 media_subpath: '/assets/media/DoomsdaySales'
 ---
 

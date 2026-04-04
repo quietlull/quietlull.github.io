@@ -13,12 +13,71 @@ refactor: true
 
 <div id="section-landing" class="section-{{ section }}">
 
-  <header class="landing-hero text-center mb-5">
+  <header class="landing-hero text-center mb-3">
     <h1 class="landing-title">{{ page.heading | default: page.title }}</h1>
     {% if page.tagline %}
-      <p class="landing-tagline">{{ page.tagline }}</p>
+      <p class="landing-tagline">
+{{ page.tagline }}
+      </p>
+    {% endif %}
+
+    {% if page.tools_strip %}
+    <div class="tools-strip mt-4"-stagger>
+      {% for tool in page.tools_strip %}
+        {% assign t = tool | downcase %}
+        {% if t == 'unity' %}
+          <span class="tool-icon" title="Unity" data-tool-desc="Real-time VFX & shader dev"><img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="Unity"></span>
+        {% elsif t == 'unreal' %}
+          <span class="tool-icon" title="Unreal Engine" data-tool-desc="Materials & Niagara VFX"><img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="Unreal Engine"></span>
+        {% elsif t == 'maya' %}
+          <span class="tool-icon" title="Maya" data-tool-desc="Character rigs & animation"><i class="fas fa-vector-square" style="color: #37a5cc;"></i></span>
+        {% elsif t == 'blender' %}
+          <span class="tool-icon" title="Blender" data-tool-desc="3D modeling & tool scripting"><i class="fas fa-cube" style="color: #f5792a;"></i></span>
+        {% elsif t == 'python' %}
+          <span class="tool-icon" title="Python" data-tool-desc="Pipeline tools & automation"><i class="fab fa-python" style="color: #3776ab;"></i></span>
+        {% elsif t == 'hlsl' %}
+          <span class="tool-icon" title="HLSL" data-tool-desc="Custom toon shaders & post-FX"><i class="fas fa-code" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
+        {% elsif t == 'glsl' %}
+          <span class="tool-icon" title="GLSL" data-tool-desc="Fragment & vertex shaders"><i class="fas fa-terminal" style="background: linear-gradient(135deg, #4d96ff, #6bcb77, #ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
+        {% elsif t == 'compute' %}
+          <span class="tool-icon" title="Compute Shaders" data-tool-desc="GPU particle systems & sim"><i class="fas fa-microchip" style="color: #a78bfa;"></i></span>
+        {% elsif t == 'shader graphs' %}
+          <span class="tool-icon" title="Shader Graphs" data-tool-desc="Visual shader authoring"><i class="fas fa-diagram-project" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
+        {% elsif t == 'rigging' %}
+          <span class="tool-icon" title="Rigging" data-tool-desc="Character rigs & blend trees"><i class="fas fa-bone" style="color: #9b59b6;"></i></span>
+        {% elsif t == 'substance' %}
+          <span class="tool-icon" title="Substance" data-tool-desc="Procedural textures"><i class="fas fa-fill-drip" style="color: #1a8c3c;"></i></span>
+        {% elsif t == 'houdini' %}
+          <span class="tool-icon" title="Houdini" data-tool-desc="Procedural FX & sim"><i class="fas fa-fire" style="color: #ff6b35;"></i></span>
+        {% endif %}
+      {% endfor %}
+    </div>
     {% endif %}
   </header>
+
+  <!-- Demo Reel (opt-in via page.show_reel) — compact square, centered -->
+  {% if page.show_reel %}
+  <section class="demo-reel mb-4">
+    <div class="demo-reel-embed">
+      {% if page.demo_reel %}
+        <div class="ratio ratio-1x1">
+          <iframe src="https://www.youtube.com/embed/{{ page.demo_reel }}"
+                  title="Demo Reel"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"></iframe>
+        </div>
+      {% else %}
+        <div class="demo-reel-placeholder ratio ratio-1x1">
+          <div class="d-flex flex-column align-items-center justify-content-center">
+            <i class="fas fa-play-circle fa-3x mb-2"></i>
+            <p class="mb-0">Demo reel coming soon</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
 
   <section class="landing-projects">
     <div class="section-header d-flex justify-content-between align-items-center mb-4">
@@ -33,11 +92,15 @@ refactor: true
       </a>
     </div>
 
-    <div class="posts-grid row g-4">
+    <div class="posts-grid row g-4"-stagger>
       {% for post in projects limit: 6 %}
         <div class="col-12 col-md-6 col-lg-4">
-          <article class="post-card h-100">
-            <a href="{{ post.url | relative_url }}" class="card-link">
+          <article class="post-card h-100{% if post.pin %} pinned{% endif %}">
+            {% if post.wip %}
+              <a href="{{ '/under-construction/?section=' | append: section | relative_url }}" class="card-link">
+            {% else %}
+              <a href="{{ post.url | relative_url }}" class="card-link">
+            {% endif %}
               <div class="card h-100 shadow-sm">
                 {% if post.image %}
                   <div class="card-img-wrapper">
@@ -51,6 +114,9 @@ refactor: true
                         <i class="fas fa-thumbtack"></i> Pinned
                       </span>
                     {% endif %}
+                    {% if post.wip %}
+                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
+                    {% endif %}
                   </div>
                 {% else %}
                   <div class="card-img-wrapper placeholder-img">
@@ -62,6 +128,9 @@ refactor: true
                         <i class="fas fa-thumbtack"></i> Pinned
                       </span>
                     {% endif %}
+                    {% if post.wip %}
+                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
+                    {% endif %}
                   </div>
                 {% endif %}
 
@@ -72,12 +141,32 @@ refactor: true
                       {{ post.description | truncate: 100 }}
                     </p>
                   {% endif %}
+                  {% if post.role or post.engine %}
+                    <p class="card-role small mb-2">
+                      {% if post.role %}{{ post.role }}{% endif %}
+                      {% if post.role and post.engine %} · {% endif %}
+                      {% if post.engine %}{{ post.engine }}{% endif %}
+                    </p>
+                  {% endif %}
                   <div class="card-meta mt-auto">
-                    <small class="text-muted">
-                      <i class="far fa-calendar-alt me-1"></i>
-                      {{ post.date | date: "%b %d, %Y" }}
-                    </small>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        {{ post.date | date: "%b %d, %Y" }}
+                        {% assign words = post.content | number_of_words %}
+                        {% assign minutes = words | divided_by: 200 | plus: 1 %}
+                        <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>{{ minutes }} min</span>
+                      </small>
+                      {% include tag-badges.html tags=post.tags %}
+                    </div>
                   </div>
+                  {% if post.takeaway %}
+                    <div class="card-takeaway-overlay">
+                      <p class="takeaway-text">
+                        <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
+                      </p>
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             </a>

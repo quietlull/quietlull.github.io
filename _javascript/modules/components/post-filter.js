@@ -1,76 +1,125 @@
 /**
- * Client-side search and sort for blog/projects pages.
- * Expects #post-search input, [data-sort] dropdown items,
- * and .post-item elements with data-date and data-title attributes.
+ * Client-side search and tag filtering for blog/projects pages.
+ * Expects #post-search input, .filter-pill buttons with data-tag,
+ * and .post-item elements with data-title and data-tags attributes.
  */
 export function initPostFilter() {
   const searchInput = document.getElementById('post-search');
-  const sortItems = document.querySelectorAll('[data-sort]');
-  const container = document.getElementById('posts-container');
+  const pillContainer = document.getElementById('filter-pills');
+  const pills = pillContainer
+    ? Array.from(pillContainer.querySelectorAll('.filter-pill'))
+    : [];
 
-  if (!container) return;
-
-  const allItems = Array.from(container.querySelectorAll('.post-item'));
+  // Collect ALL .post-item elements on the page (pinned + normal)
+  const allItems = Array.from(document.querySelectorAll('[data-post-item]'));
   if (allItems.length === 0) return;
 
-  let currentSort = 'newest';
+  const totalCount = allItems.length;
+  const activeTags = new Set();
 
   function getTitle(el) {
     return (el.dataset.title || '').toLowerCase();
   }
 
-  function getDate(el) {
-    return parseInt(el.dataset.date, 10) || 0;
+  function getTags(el) {
+    return (el.dataset.tags || '').toLowerCase().split(',').filter(Boolean);
   }
 
   function applyFilter() {
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-    // Collect matching items preserving sort order
-    const sorted = allItems.slice().sort((a, b) => {
-      if (currentSort === 'oldest') return getDate(a) - getDate(b);
-      if (currentSort === 'title')  return getTitle(a).localeCompare(getTitle(b));
-      return getDate(b) - getDate(a); // newest (default)
-    });
-
     let visibleCount = 0;
-    sorted.forEach(item => {
+    allItems.forEach(item => {
       const title = getTitle(item);
-      const visible = !query || title.includes(query);
+      const tags = getTags(item);
+
+      // Text search matches title or tags
+      const matchesSearch = !query || title.includes(query)
+        || tags.some(t => t.includes(query));
+
+      // Tag filter — item must have ALL active tags
+      const matchesTags = activeTags.size === 0
+        || [...activeTags].every(tag => tags.includes(tag));
+
+      const visible = matchesSearch && matchesTags;
       item.style.display = visible ? '' : 'none';
       if (visible) visibleCount++;
-      // Re-append in sorted order
-      container.appendChild(item);
     });
 
-    // Show/hide empty state
-    let emptyState = container.parentElement.querySelector('.no-posts');
-    if (visibleCount === 0) {
+    // Show/hide empty state and results count
+    const container = document.getElementById('posts-container');
+    if (container) {
+      // --- Search results count (G4) ---
+      let resultsCount = container.parentElement.querySelector('.search-results-count');
+      if (!resultsCount) {
+        resultsCount = document.createElement('div');
+        resultsCount.className = 'search-results-count';
+        container.parentElement.insertBefore(resultsCount, container);
+      }
+      if (visibleCount > 0 && visibleCount < totalCount) {
+        resultsCount.textContent = `Showing ${visibleCount} of ${totalCount} projects`;
+        resultsCount.style.display = '';
+      } else {
+        resultsCount.style.display = 'none';
+      }
+
+      // --- Contextual empty state (G5) ---
+      let emptyState = container.parentElement.querySelector('.no-results-message');
+      // Remove old generic empty state if present
+      const oldEmpty = container.parentElement.querySelector('.no-posts-filter');
+      if (oldEmpty) oldEmpty.style.display = 'none';
+
       if (!emptyState) {
         emptyState = document.createElement('div');
-        emptyState.className = 'no-posts text-center py-5';
-        emptyState.innerHTML = '<i class="fas fa-search fa-3x text-muted mb-3"></i><p class="text-muted">No posts match your search.</p>';
-        container.parentElement.insertBefore(emptyState, container.nextSibling);
+        emptyState.className = 'no-results-message no-posts text-center py-5';
+        container.parentElement.appendChild(emptyState);
       }
-      emptyState.style.display = '';
-    } else if (emptyState) {
-      emptyState.style.display = 'none';
+
+      if (visibleCount === 0) {
+        const activeTagList = [...activeTags];
+        let icon = '';
+        let message = '';
+
+        if (activeTagList.length > 0 && query) {
+          icon = '<i class="fas fa-filter fa-3x text-muted mb-3"></i>';
+          message = `<p class="text-muted">No ${activeTagList.join(', ')} projects matching "${query}"</p>`;
+        } else if (activeTagList.length > 0) {
+          icon = '<i class="fas fa-filter fa-3x text-muted mb-3"></i>';
+          message = `<p class="text-muted">No ${activeTagList.join(', ')} projects yet — more coming soon!</p>`;
+        } else if (query) {
+          icon = '<i class="fas fa-search fa-3x text-muted mb-3"></i>';
+          message = `<p class="text-muted">No projects matching "${query}"</p>`;
+        } else {
+          icon = '<i class="fas fa-search fa-3x text-muted mb-3"></i>';
+          message = '<p class="text-muted">No projects match your filters.</p>';
+        }
+
+        emptyState.innerHTML = icon + message;
+        emptyState.style.display = '';
+      } else {
+        emptyState.style.display = 'none';
+      }
     }
   }
 
-  // Search
+  // Search input
   if (searchInput) {
     searchInput.addEventListener('input', applyFilter);
   }
 
-  // Sort
-  sortItems.forEach(item => {
-    item.addEventListener('click', e => {
-      e.preventDefault();
-      currentSort = item.dataset.sort;
-      // Update active state
-      sortItems.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
+  // Tag pill toggles
+  pills.forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      const tag = pill.dataset.tag.toLowerCase();
+
+      if (activeTags.has(tag)) {
+        activeTags.delete(tag);
+        pill.classList.remove('active');
+      } else {
+        activeTags.add(tag);
+        pill.classList.add('active');
+      }
+
       applyFilter();
     });
   });

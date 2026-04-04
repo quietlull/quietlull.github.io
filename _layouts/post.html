@@ -21,6 +21,43 @@ script_includes:
       <p class="post-desc fw-light mb-4">{{ page.description }}</p>
     {% endif %}
 
+    {% if page.engine or page.role %}
+    <div class="post-project-meta mb-4">
+      {% if page.engine %}
+        <span class="meta-chip">
+          {% assign eng = page.engine | downcase %}
+          {% if eng contains 'unity' %}
+            <img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="" class="meta-chip-icon">
+          {% elsif eng contains 'unreal' %}
+            <img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="" class="meta-chip-icon">
+          {% elsif eng contains 'godot' %}
+            <img src="{{ '/assets/img/icons/godot.svg' | relative_url }}" alt="" class="meta-chip-icon">
+          {% elsif eng contains 'blender' %}
+            <i class="fas fa-cube" style="color: #f5792a;"></i>
+          {% else %}
+            <i class="fas fa-gamepad"></i>
+          {% endif %}
+          {{ page.engine }}
+        </span>
+      {% endif %}
+      {% if page.role %}
+        <span class="meta-chip">
+          <i class="fas fa-user-tag"></i>
+          {{ page.role }}
+        </span>
+      {% endif %}
+      {% include tag-badges.html tags=page.tags %}
+    </div>
+    {% endif %}
+
+    <div class="post-tech-strip mt-2">
+      {% for tag in page.tags %}
+        {% unless tag == 'project' or tag == 'blog' or tag == 'personal' %}
+          <span class="post-tech-badge">{{ tag }}</span>
+        {% endunless %}
+      {% endfor %}
+    </div>
+
     <div class="post-meta text-muted">
       <!-- published date -->
       <span>
@@ -125,11 +162,25 @@ script_includes:
     </dialog>
   {% endif %}
 
+  {% if page.description and page.tags contains 'project' %}
+  <div class="post-tldr">
+    <div class="tldr-label"><i class="fas fa-bolt me-2"></i>TL;DR</div>
+    <p>{{ page.description }}</p>
+  </div>
+  {% endif %}
+
   <div class="post-content-container">
     <div class="content">
       {{ content }}
     </div>
   </div>
+
+  {% if page.takeaway %}
+  <div class="post-takeaway">
+    <div class="takeaway-label"><i class="fas fa-lightbulb me-2"></i>What I Learned</div>
+    <p>{{ page.takeaway }}</p>
+  </div>
+  {% endif %}
 
     <!-- tags -->
     {% if page.tags.size > 0 %}

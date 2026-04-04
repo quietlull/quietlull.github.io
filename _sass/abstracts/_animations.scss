@@ -329,6 +329,22 @@ html.no-breathe {
   }
 }
 
+// Breathing toggle glow — pulses the switch track when breathing is on
+@keyframes breathe-toggle-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(251, 191, 36, 0.25),
+      0 0 24px rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(251, 191, 36, 0.4),
+      0 0 36px rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.6);
+  }
+}
+
 // chase-tail for avatar image
 @keyframes chase-tail {
   0%   { transform: rotate(0deg); }
@@ -458,6 +474,121 @@ html.no-breathe {
   animation-play-state: running;
 }
 
+
+// Page-level fade-in on load, fade-out on navigate
+#main-wrapper {
+  animation: fade-in 0.35s ease-out;
+
+  &.page-exit {
+    animation: page-fade-out 0.3s ease-in forwards;
+    pointer-events: none;
+  }
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+
+// ============================================================================
+// Achievement toast styling
+// ============================================================================
+.achievement-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  max-width: 280px;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(251, 191, 36, 0.1);
+  animation: toast-slide-in 0.4s ease-out;
+
+  &.toast-exit {
+    animation: toast-slide-out 0.3s ease-in forwards;
+  }
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.toast-content {
+  min-width: 0;
+}
+
+.toast-title {
+  color: var(--link-hover-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.toast-desc {
+  color: var(--text-muted-color);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+@keyframes toast-slide-in {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toast-slide-out {
+  to { transform: translateX(120%); opacity: 0; }
+}
+
+
+// ============================================================================
+// Under construction page
+// ============================================================================
+.under-construction {
+  text-align: center;
+  padding: 4rem 1rem;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .construction-icon {
+    font-size: 4rem;
+    animation: float-gentle 4s ease-in-out infinite;
+    margin-bottom: 1.5rem;
+  }
+
+  .construction-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+
+  .construction-subtitle {
+    color: var(--text-muted-color);
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+}
+
 // Reduce motion for accessibility — only disable decorative infinite animations,
 // not hover transitions (which are functional feedback)
 // prefers-reduced-motion: only apply when user hasn't explicitly enabled breathing
@@ -481,7 +612,19 @@ html.no-breathe {
     .animate-pulse-slow,
     .ambient-orb,
     .section-icon-box,
-    .section-icon-box .icon-dot {
+    .section-icon-box .icon-dot,
+    .post-card .card,
+    .text-container,
+    #section-landing::before {
+      animation: none !important;
+    }
+
+    #main-wrapper,
+    #main-wrapper.page-exit {
+      animation: none !important;
+    }
+
+    .card-img-wrapper::after {
       animation: none !important;
     }
   }

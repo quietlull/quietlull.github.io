@@ -3,17 +3,66 @@
 @use '../abstracts/mixins' as mx;
 
 #section-landing {
-  padding: 1rem 0;
+  padding: 0 0 1rem;
+  position: relative;
+  isolation: isolate;
+
+  // Ambient orb — warm amber, slow pulse
+  &::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(
+      circle,
+      rgba(251, 191, 36, 0.06) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: 0;
+    pointer-events: none;
+    animation: pulse-slow 6s ease-in-out infinite;
+  }
+
+  // Bokeh — distant lantern lights, reinforces the festival aesthetic
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(251, 191, 36, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 85% 35%, rgba(249, 115, 22, 0.03) 0%, transparent 35%),
+      radial-gradient(circle at 40% 80%, rgba(251, 191, 36, 0.035) 0%, transparent 30%),
+      radial-gradient(circle at 70% 65%, rgba(249, 115, 22, 0.025) 0%, transparent 45%),
+      radial-gradient(circle at 25% 55%, rgba(251, 191, 36, 0.02) 0%, transparent 35%);
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse-slow 8s ease-in-out infinite;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .landing-hero {
-  padding: 2rem 0 1rem;
+  padding: 0.5rem 0 0.5rem;
 
   .landing-title {
     font-size: 2.5rem;
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 0.5rem;
+    text-shadow: 0 2px 12px rgba(251, 191, 36, 0.12);
+    background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 
     @include bp.lte(bp.get(md)) {
       font-size: 2rem;
@@ -25,5 +74,146 @@
     color: var(--text-muted-color);
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  .tools-strip {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+
+    .tool-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.75rem;
+      background: var(--glow-subtle);
+      border: 1px solid var(--glass-border);
+      opacity: 0.6;
+      position: relative;
+      @include mx.transition(opacity, transform, border-color, box-shadow);
+
+      img {
+        width: 1.35rem;
+        height: 1.35rem;
+      }
+
+      i {
+        font-size: 1.25rem;
+      }
+
+      // CSS tooltip from data-tool-desc
+      &[data-tool-desc]::after {
+        content: attr(data-tool-desc);
+        position: absolute;
+        bottom: -2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        white-space: nowrap;
+        font-size: 0.7rem;
+        color: var(--text-muted-color);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      &:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+        border-color: var(--glass-border-strong);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
+          0 0 8px var(--glow-color, rgba(251, 191, 36, 0.15));
+
+        &[data-tool-desc]::after {
+          opacity: 0.8;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+    }
+  }
+}
+
+// Dot grid — evokes shader graph / node editor aesthetic
+.landing-projects {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      circle,
+      rgba(251, 191, 36, 0.08) 1px,
+      transparent 1px
+    );
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.section-icon-box {
+  .icon-dot {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--link-hover-color);
+    box-shadow: 0 0 8px var(--glow-color, rgba(251, 191, 36, 0.4));
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+}
+
+.demo-reel {
+  // Centered square — small enough that projects are visible on load
+  max-width: 240px;
+  margin: 0 auto;
+
+  @include bp.lte(bp.get(md)) {
+    max-width: 200px;
+  }
+
+  .demo-reel-embed {
+    @include mx.glass;
+    border-radius: v.$radius-lg;
+    overflow: hidden;
+
+    iframe {
+      border: none;
+    }
+  }
+
+  .demo-reel-placeholder {
+    @include mx.glass;
+    border-radius: v.$radius-lg;
+    color: var(--text-muted-color);
+    @include mx.transition(box-shadow);
+
+    i {
+      opacity: 0.4;
+      animation: pulse-slow 4s ease-in-out infinite;
+    }
+
+    p {
+      font-size: 0.95rem;
+      opacity: 0.6;
+    }
+
+    &:hover {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+
+      i {
+        opacity: 0.7;
+      }
+    }
   }
 }

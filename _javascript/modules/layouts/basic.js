@@ -1,4 +1,7 @@
-import { back2top, breatheToggle, fireworksToggle, loadTooptip, modeWatcher } from '../components';
+import {
+  back2top, breatheToggle, fireworksToggle,
+  initAchievements, initPageTransition, loadTooptip, modeWatcher
+} from '../components';
 
 export function basic() {
   modeWatcher();
@@ -6,4 +9,6 @@ export function basic() {
   fireworksToggle();
   back2top();
   loadTooptip();
+  initPageTransition();
+  initAchievements();
 }

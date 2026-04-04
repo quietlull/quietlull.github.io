@@ -18,36 +18,21 @@ refactor: false
     {% endif %}
   </header>
 
-  <!-- Filter and Search Bar -->
+  <!-- Search and Filter -->
   <div class="blog-controls mb-4">
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="search-wrapper">
-          <div class="input-group">
-            <span class="input-group-text"><i class="fas fa-search"></i></span>
-            <input type="text"
-                   class="form-control"
-                   id="post-search"
-                   placeholder="Search projects...">
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="dropdown">
-          <button class="btn btn-outline-secondary dropdown-toggle"
-                  type="button"
-                  id="sortFilter"
-                  data-bs-toggle="dropdown">
-            <i class="fas fa-sort me-1"></i> Sort
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="sortFilter">
-            <li><a class="dropdown-item active" href="#" data-sort="newest">Newest First</a></li>
-            <li><a class="dropdown-item" href="#" data-sort="oldest">Oldest First</a></li>
-            <li><a class="dropdown-item" href="#" data-sort="title">Title (A-Z)</a></li>
-          </ul>
-        </div>
+    <div class="search-wrapper mb-3">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text"
+               class="form-control"
+               id="post-search"
+               placeholder="Search projects...">
       </div>
     </div>
+
+    {% if section == 'tech-art' %}
+      {% include filter-pills.html %}
+    {% endif %}
   </div>
 
   <!-- Pinned Posts Section -->
@@ -58,20 +43,31 @@ refactor: false
     </h2>
     <div class="posts-grid row g-4 mb-4">
       {% for post in all_pinned %}
-        <div class="col-12 col-md-6 col-lg-4">
+        {% assign post_tags = post.tags | where_exp: 't', 't != "project"' | join: ',' %}
+        <div class="col-12 col-md-6 col-lg-4 post-item"
+             data-post-item             data-date="{{ post.date | date: '%s' }}"
+             data-title="{{ post.title }}"
+             data-tags="{{ post_tags }}">
           <article class="post-card h-100 pinned">
-            <a href="{{ post.url | relative_url }}" class="card-link">
+            {% if post.wip %}
+              <a href="{{ '/under-construction/?section=' | append: section | relative_url }}" class="card-link">
+            {% else %}
+              <a href="{{ post.url | relative_url }}" class="card-link">
+            {% endif %}
               <div class="card h-100 border-danger">
                 {% if post.image %}
                   <div class="card-img-wrapper">
                     {% assign post_image = post.image.path | default: post.image %}
-                    <img src="{{ post_image | relative_url }}"
+                    <img src="{{ post_image }}"
                          class="card-img-top"
                          alt="{{ post.image.alt | default: post.title }}"
                          loading="lazy">
                     <span class="badge-pinned">
                       <i class="fas fa-thumbtack"></i> Pinned
                     </span>
+                    {% if post.wip %}
+                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
+                    {% endif %}
                   </div>
                 {% else %}
                   <div class="card-img-wrapper placeholder-img">
@@ -81,6 +77,9 @@ refactor: false
                     <span class="badge-pinned">
                       <i class="fas fa-thumbtack"></i> Pinned
                     </span>
+                    {% if post.wip %}
+                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
+                    {% endif %}
                   </div>
                 {% endif %}
 
@@ -91,12 +90,32 @@ refactor: false
                       {{ post.description | truncate: 120 }}
                     </p>
                   {% endif %}
+                  {% if post.role or post.engine %}
+                    <p class="card-role small mb-2">
+                      {% if post.role %}{{ post.role }}{% endif %}
+                      {% if post.role and post.engine %} · {% endif %}
+                      {% if post.engine %}{{ post.engine }}{% endif %}
+                    </p>
+                  {% endif %}
                   <div class="card-meta mt-auto">
-                    <small class="text-muted">
-                      <i class="far fa-calendar-alt me-1"></i>
-                      {{ post.date | date: "%b %d, %Y" }}
-                    </small>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        {{ post.date | date: "%b %d, %Y" }}
+                        {% assign words = post.content | number_of_words %}
+                        {% assign minutes = words | divided_by: 200 | plus: 1 %}
+                        <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>{{ minutes }} min</span>
+                      </small>
+                      {% include tag-badges.html tags=post.tags %}
+                    </div>
                   </div>
+                  {% if post.takeaway %}
+                    <div class="card-takeaway-overlay">
+                      <p class="takeaway-text">
+                        <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
+                      </p>
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             </a>
@@ -112,26 +131,37 @@ refactor: false
   <section class="all-posts-section">
     <div class="posts-grid row g-4" id="posts-container">
       {% for post in all_normal %}
+        {% assign post_tags = post.tags | where_exp: 't', 't != "project"' | join: ',' %}
         <div class="col-12 col-md-6 col-lg-4 post-item"
-             data-post-item
-             data-date="{{ post.date | date: '%s' }}"
-             data-title="{{ post.title }}">
+             data-post-item             data-date="{{ post.date | date: '%s' }}"
+             data-title="{{ post.title }}"
+             data-tags="{{ post_tags }}">
           <article class="post-card h-100">
-            <a href="{{ post.url | relative_url }}" class="card-link">
+            {% if post.wip %}
+              <a href="{{ '/under-construction/?section=' | append: section | relative_url }}" class="card-link">
+            {% else %}
+              <a href="{{ post.url | relative_url }}" class="card-link">
+            {% endif %}
               <div class="card h-100">
                 {% if post.image %}
                   <div class="card-img-wrapper">
                     {% assign post_image = post.image.path | default: post.image %}
-                    <img src="{{ post_image | relative_url }}"
+                    <img src="{{ post_image }}"
                          class="card-img-top"
                          alt="{{ post.image.alt | default: post.title }}"
                          loading="lazy">
+                    {% if post.wip %}
+                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
+                    {% endif %}
                   </div>
                 {% else %}
                   <div class="card-img-wrapper placeholder-img">
                     <div class="placeholder-content">
                       <i class="fas fa-image fa-3x text-muted"></i>
                     </div>
+                    {% if post.wip %}
+                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
+                    {% endif %}
                   </div>
                 {% endif %}
 
@@ -142,12 +172,32 @@ refactor: false
                       {{ post.description | truncate: 120 }}
                     </p>
                   {% endif %}
+                  {% if post.role or post.engine %}
+                    <p class="card-role small mb-2">
+                      {% if post.role %}{{ post.role }}{% endif %}
+                      {% if post.role and post.engine %} · {% endif %}
+                      {% if post.engine %}{{ post.engine }}{% endif %}
+                    </p>
+                  {% endif %}
                   <div class="card-meta mt-auto">
-                    <small class="text-muted">
-                      <i class="far fa-calendar-alt me-1"></i>
-                      {{ post.date | date: "%b %d, %Y" }}
-                    </small>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        {{ post.date | date: "%b %d, %Y" }}
+                        {% assign words = post.content | number_of_words %}
+                        {% assign minutes = words | divided_by: 200 | plus: 1 %}
+                        <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>{{ minutes }} min</span>
+                      </small>
+                      {% include tag-badges.html tags=post.tags %}
+                    </div>
                   </div>
+                  {% if post.takeaway %}
+                    <div class="card-takeaway-overlay">
+                      <p class="takeaway-text">
+                        <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
+                      </p>
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             </a>

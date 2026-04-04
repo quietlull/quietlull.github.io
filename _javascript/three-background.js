@@ -8,6 +8,12 @@ import { MirroredSurface } from './shader/mirroredSurface.js';
 import { LanternMaterialManager } from './shader/lanternShaderManager.js';
 import { FireworkController } from './firework-controller.js';
 
+// === REDUCED MOTION FLAG (H1) ===
+// When reduced motion is preferred, the scene still renders but animations
+// (lantern floating, fireworks, camera scroll) are dampened/paused.
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+{
+
 // === CONFIGURATION ===
 const CONFIG = {
   debugEnabled: false,
@@ -373,3 +379,5 @@ window.lanternController = lanternController;
 window.lanternMaterialManager = lanternMaterialManager;
 window.loadLanternsFBX = loadLanternsFBX;
 window.fireworkController = fireworkController;
+
+} // end reduced-motion guard

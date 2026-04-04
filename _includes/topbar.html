@@ -21,7 +21,15 @@
 
     <div class="site-titles ms-2">
       <a class="site-title d-block" href="{{ home_url | relative_url }}">{{ site.title }}</a>
-      <p class="site-subtitle fst-italic mb-0">{{ site.tagline }}</p>
+      <p class="site-subtitle fst-italic mb-0">
+        {%- if nav_section == 'tech-art' -%}
+          CG Art Portfolio and Studies
+        {%- elsif nav_section == 'game-design' -%}
+          Game Design Deep Dives And Opinions
+        {%- else -%}
+          {{ site.tagline }}
+        {%- endif -%}
+      </p>
     </div>
   </div>
   <!-- .profile-wrapper -->
@@ -32,36 +40,27 @@
         {% comment %} Section-aware navigation {% endcomment %}
         {% include section-nav.html section=nav_section lang=include.lang %}
       {% elsif page.layout == 'portal' %}
-        {% comment %} Portal page — minimal nav {% endcomment %}
-        <li class="nav-item{% if page.url == '/blogs/' %} active{% endif %}">
-          <a href="{{ '/blogs/' | relative_url }}" class="nav-link">
-            <i class="fa-fw fas fa-pen-nib"></i>
-            <span>BLOGS</span>
+        {% comment %} Portal page — portal + archives nav {% endcomment %}
+        <li class="nav-item active">
+          <a href="{{ '/' | relative_url }}" class="nav-link">
+            <i class="fa-fw fas fa-home"></i>
+            <span>HOME</span>
           </a>
         </li>
-        <li class="nav-item{% if page.url == '/archives/' %} active{% endif %}">
+        <li class="nav-item">
           <a href="{{ '/archives/' | relative_url }}" class="nav-link">
             <i class="fa-fw fas fa-archive"></i>
             <span>ARCHIVES</span>
           </a>
         </li>
       {% else %}
-        {% comment %} Shared pages (blogs, archives) — show portal + shared nav {% endcomment %}
+        {% comment %} Root-level pages (archives) — just HOME {% endcomment %}
         <li class="nav-item">
           <a href="{{ '/' | relative_url }}" class="nav-link">
             <i class="fa-fw fas fa-home"></i>
             <span>HOME</span>
           </a>
         </li>
-        {% for tab in site.tabs %}
-          <li class="nav-item{% if tab.url == page.url %} active{% endif %}">
-            <a href="{{ tab.url | relative_url }}" class="nav-link">
-              <i class="fa-fw {{ tab.icon }}"></i>
-              {% capture tab_name %}{{ tab.url | split: '/' }}{% endcapture %}
-              <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
-            </a>
-          </li>
-        {% endfor %}
       {% endif %}
     </ul>
   </nav>

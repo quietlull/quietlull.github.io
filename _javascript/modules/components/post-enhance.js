@@ -10,7 +10,6 @@ export function initPostEnhance() {
   if (!article) return;
 
   splitSections();
-  initScrollReveal();
   initReadingProgress();
 }
 
@@ -54,39 +53,6 @@ function splitSections() {
     group.forEach(el => section.appendChild(el));
     content.appendChild(section);
   });
-}
-
-/**
- * Fade-in elements as they scroll into view.
- * Targets: .post-section, .post-content-container, article > header
- */
-function initScrollReveal() {
-  const targets = document.querySelectorAll(
-    '.post-section, .post-content-container, article > header'
-  );
-
-  if (targets.length === 0 || !('IntersectionObserver' in window)) return;
-
-  // Add the hidden class initially
-  targets.forEach(el => el.classList.add('scroll-hidden'));
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('scroll-reveal');
-          entry.target.classList.remove('scroll-hidden');
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.08,
-      rootMargin: '0px 0px -40px 0px'
-    }
-  );
-
-  targets.forEach(el => observer.observe(el));
 }
 
 /**

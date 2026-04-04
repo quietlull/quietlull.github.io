@@ -15,23 +15,82 @@
   padding-right: $pr;
 }
 
+// TL;DR callout — hooks the reader before the content
+.post-tldr {
+  @include mx.glass;
+  border-radius: v.$radius-lg;
+  padding: 1.25rem 1.5rem;
+  margin-top: 1rem;
+  border-left: 3px solid rgba(251, 191, 36, 0.5);
+  animation: breathe-warm 6s ease-in-out infinite;
+
+  .tldr-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(251, 191, 36, 0.8);
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-muted-color);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-style: italic;
+  }
+}
+
+// What I Learned — takeaway at the bottom
+.post-takeaway {
+  @include mx.glass;
+  border-radius: v.$radius-lg;
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+  border-left: 3px solid rgba(249, 115, 22, 0.5);
+  animation: breathe-slow 7s ease-in-out infinite;
+
+  .takeaway-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(249, 115, 22, 0.8);
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
+
 // Glass container for post body content
 .post-content-container {
   @include mx.glass;
   border-radius: v.$radius-xl;
-  padding: 2.5rem 3rem;
-  margin-top: 1rem;
+  padding: 0.75rem 3rem 2.5rem;
+  margin-top: 0.25rem;
+  animation: breathe-slow 8s ease-in-out infinite;
 
   @include bp.lte(bp.get(md)) {
-    padding: 1.5rem 1.25rem;
+    padding: 0.5rem 1.25rem 1.5rem;
     border-radius: v.$radius-lg;
   }
 
   // Constrain line length for readability — wide enough for desktop
   .content {
     max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+
+    > h2:first-child,
+    > h3:first-child,
+    > h4:first-child {
+      margin-top: 0;
+    }
   }
 
   // Image treatment — match glass aesthetic
@@ -49,6 +108,56 @@ header {
 
     font-size: 1.125rem;
     line-height: 1.6;
+  }
+
+  .post-project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      background: var(--glow-subtle);
+      border: 1px solid var(--glass-border);
+      color: var(--text-color);
+
+      .meta-chip-icon {
+        width: 1.1rem;
+        height: 1.1rem;
+      }
+
+      i {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+    }
+
+    .tag-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: 0.25rem;
+
+      .tag-badge {
+        opacity: 0.75;
+
+        .badge-icon {
+          width: 1.1rem;
+          height: 1.1rem;
+        }
+
+        i {
+          font-size: 0.95rem;
+        }
+      }
+    }
   }
 
   .post-meta {
@@ -177,68 +286,71 @@ header {
 }
 
 .post-navigation {
-  @include bp.lt(bp.get(lg)) {
-    @include mx.pl-pr(0);
-    @include mx.ml-mr(-0.5rem);
+  margin-top: 3rem;
+
+  .post-nav-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @include bp.lte(bp.get(md)) {
+      grid-template-columns: 1fr;
+    }
   }
 
-  .btn {
-    @extend %-btn-post-nav;
+  .post-nav-card {
+    @include mx.glass;
+    border-radius: v.$radius-lg;
+    padding: 1.25rem 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    animation: breathe-slow 6s ease-in-out infinite;
+    @include mx.transition(border-color, transform, box-shadow);
 
-    &:not(:hover) {
-      color: var(--link-color);
+    &.post-nav-next {
+      animation-delay: 1s;
     }
 
-    &:hover {
-      &:not(.disabled)::before {
-        color: var(--heading-color);
-      }
+    &:hover:not(.disabled) {
+      border-color: var(--glass-border-strong);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15),
+        0 0 12px var(--glow-color, rgba(251, 191, 36, 0.1));
+      color: inherit;
+      text-decoration: none;
     }
 
     &.disabled {
-      @extend %-btn-post-nav;
-
-      pointer-events: auto;
-      cursor: not-allowed;
-      background: none;
-      color: var(--text-muted-color);
+      opacity: 0.4;
+      cursor: default;
     }
 
-    &.btn-outline-primary.disabled:focus {
-      box-shadow: none;
-    }
-
-    &::before {
-      color: var(--text-muted-color);
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      content: attr(aria-label);
-    }
-
-    &:first-child {
-      border-radius: v.$radius-lg 0 0 v.$radius-lg;
-      left: 0.5px;
-    }
-
-    &:last-child {
-      border-radius: 0 v.$radius-lg v.$radius-lg 0;
-      right: 0.5px;
+    &.post-nav-next {
+      text-align: right;
     }
   }
 
-  p {
-    font-size: 1.1rem;
-    line-height: 1.5rem;
-    margin-top: 0.3rem;
-    white-space: normal;
+  .post-nav-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted-color);
+    font-weight: 500;
   }
-} /* .post-navigation */
 
-@media (hover: hover) {
-  .post-navigation {
-    .btn,
-    .btn::before {
-      transition: all var(--transition-normal) ease-in-out;
+  .post-nav-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--heading-color);
+    line-height: 1.4;
+  }
+
+  .post-nav-back {
+    .btn {
+      @include mx.transition(background-color, border-color, box-shadow);
     }
   }
 }
@@ -375,6 +487,8 @@ $toc-bar-height: 3rem;
 
   &.invisible {
     top: -#{$toc-bar-height};
+    height: 0;
+    overflow: hidden;
     transition: none;
   }
 }
@@ -383,8 +497,8 @@ $toc-bar-height: 3rem;
   color: var(--text-muted-color);
   border-color: var(--btn-border-color);
   border-radius: v.$radius-lg;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
 
   @include bp.xl {
     display: none !important;
@@ -577,22 +691,31 @@ h4 {
 article > header {
   @include mx.glass;
   border-radius: v.$radius-xl;
-  padding: 2rem 2.5rem;
+  padding: 1.25rem 2.5rem 2rem;
   margin-bottom: 0.5rem;
 
   @include bp.lte(bp.get(md)) {
-    padding: 1.5rem 1.25rem;
+    padding: 1rem 1.25rem 1.5rem;
     border-radius: v.$radius-lg;
   }
 
   h1 {
     font-size: 2.25rem;
     line-height: 1.2;
+    margin-top: 0;
     margin-bottom: 0.75rem;
 
     @include bp.lte(bp.get(md)) {
       font-size: 1.75rem;
     }
+  }
+
+  .preview-img {
+    max-height: 280px;
+    width: auto;
+    max-width: 100%;
+    margin: 0.5rem auto;
+    display: block;
   }
 }
 
@@ -638,20 +761,7 @@ article > header {
   -webkit-backdrop-filter: none;
   border: none;
   box-shadow: none;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-// --- Scroll-triggered reveal animation ---
-.scroll-hidden {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.scroll-reveal {
-  opacity: 1;
-  transform: translateY(0);
+  padding: 0;
 }
 
 // --- Reading progress bar ---
@@ -671,6 +781,28 @@ article > header {
   pointer-events: none;
   transition: width 0.1s linear;
   border-radius: 0 2px 2px 0;
+}
+
+
+// --- Post tech strip styling ---
+.post-tech-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+
+  .tag-badge {
+    opacity: 0.8;
+
+    .badge-icon {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
 }
 
 // --- Images break out of content column for visual impact ---
