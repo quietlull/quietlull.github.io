@@ -1,0 +1,110 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/mixins' as mx;
+
+#portal-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem 0;
+}
+
+.portal-header {
+  .portal-title {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+
+    @include bp.lte(bp.get(md)) {
+      font-size: 2.25rem;
+    }
+  }
+
+  .portal-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-muted-color);
+    margin-bottom: 0;
+  }
+}
+
+.portal-doors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 900px;
+
+  @include bp.lte(bp.get(md)) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.portal-door {
+  @include mx.glass;
+  border-radius: v.$radius-xl;
+  padding: 3rem 2.5rem;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  @include mx.transition(transform, border-color, box-shadow);
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--glass-border-strong);
+    box-shadow: var(--glass-shadow), 0 8px 32px rgba(0, 0, 0, 0.3);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @include bp.lte(bp.get(md)) {
+    padding: 2rem 1.5rem;
+  }
+}
+
+.door-content {
+  text-align: center;
+}
+
+.door-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+
+  .portal-door-tech-art & {
+    color: var(--accent-color, rgba(251, 191, 36, 0.9));
+  }
+
+  .portal-door-game-design & {
+    color: var(--accent-warm, rgba(249, 115, 22, 0.9));
+  }
+}
+
+.door-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.door-description {
+  color: var(--text-muted-color);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.door-cta {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--link-color);
+  @include mx.transition(color);
+
+  .portal-door:hover & {
+    color: var(--link-hover-color);
+  }
+}

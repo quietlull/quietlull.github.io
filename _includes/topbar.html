@@ -1,8 +1,16 @@
 <!-- The Top Bar -->
 
 <header aria-label="Top Bar" id="topbar" class="d-flex flex-column align-items-center px-3 py-2">
+  {% comment %} Determine section context for navigation {% endcomment %}
+  {% assign nav_section = page.section | default: "" %}
+  {% if nav_section != "" %}
+    {% assign home_url = '/' | append: nav_section | append: '/' %}
+  {% else %}
+    {% assign home_url = '/' %}
+  {% endif %}
+
   <div class="profile-wrapper d-flex align-items-center mb-3">
-    <a href="{{ '/' | relative_url }}" id="avatar">
+    <a href="{{ home_url | relative_url }}" id="avatar">
       {%- if site.avatar != empty and site.avatar -%}
         {%- capture avatar_url -%}
           {% include media-url.html src=site.avatar %}
@@ -12,7 +20,7 @@
     </a>
 
     <div class="site-titles ms-2">
-      <a class="site-title d-block" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      <a class="site-title d-block" href="{{ home_url | relative_url }}">{{ site.title }}</a>
       <p class="site-subtitle fst-italic mb-0">{{ site.tagline }}</p>
     </div>
   </div>
@@ -20,25 +28,41 @@
 
   <nav class="w-100 mb-3">
     <ul class="nav justify-content-center">
-      <!-- landing -->
-      <li class="nav-item{% if page.layout == 'home' %}{{ " active" }}{% endif %}">
-        <a href="{{ '/' | relative_url }}" class="nav-link">
-          <i class="fa-fw fas fa-home"></i>
-          <span>{{ site.data.locales[include.lang].tabs.home | upcase }}</span>
-        </a>
-      </li>
-      <!-- the real tabs -->
-      {% for tab in site.tabs %}
-        <li class="nav-item{% if tab.url == page.url %}{{ " active" }}{% endif %}">
-          <a href="{{ tab.url | relative_url }}" class="nav-link">
-            <i class="fa-fw {{ tab.icon }}"></i>
-            {% capture tab_name %}{{ tab.url | split: '/' }}{% endcapture %}
-
-            <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
+      {% if nav_section != "" %}
+        {% comment %} Section-aware navigation {% endcomment %}
+        {% include section-nav.html section=nav_section lang=include.lang %}
+      {% elsif page.layout == 'portal' %}
+        {% comment %} Portal page — minimal nav {% endcomment %}
+        <li class="nav-item{% if page.url == '/blogs/' %} active{% endif %}">
+          <a href="{{ '/blogs/' | relative_url }}" class="nav-link">
+            <i class="fa-fw fas fa-pen-nib"></i>
+            <span>BLOGS</span>
           </a>
         </li>
-        <!-- .nav-item -->
-      {% endfor %}
+        <li class="nav-item{% if page.url == '/archives/' %} active{% endif %}">
+          <a href="{{ '/archives/' | relative_url }}" class="nav-link">
+            <i class="fa-fw fas fa-archive"></i>
+            <span>ARCHIVES</span>
+          </a>
+        </li>
+      {% else %}
+        {% comment %} Shared pages (blogs, archives) — show portal + shared nav {% endcomment %}
+        <li class="nav-item">
+          <a href="{{ '/' | relative_url }}" class="nav-link">
+            <i class="fa-fw fas fa-home"></i>
+            <span>HOME</span>
+          </a>
+        </li>
+        {% for tab in site.tabs %}
+          <li class="nav-item{% if tab.url == page.url %} active{% endif %}">
+            <a href="{{ tab.url | relative_url }}" class="nav-link">
+              <i class="fa-fw {{ tab.icon }}"></i>
+              {% capture tab_name %}{{ tab.url | split: '/' }}{% endcapture %}
+              <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      {% endif %}
     </ul>
   </nav>
 
@@ -57,7 +81,7 @@
       </span>
     </label>
 
-    {% if page.layout == 'home' %}
+    {% if page.layout == 'home' or page.layout == 'section-about' %}
     <label class="fireworks-switch" id="fireworks-toggle" title="Toggle auto fireworks">
       <input type="checkbox" aria-label="Toggle Auto Fireworks">
       <span class="fireworks-switch-icon"><i class="fas fa-meteor"></i></span>

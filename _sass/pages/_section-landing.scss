@@ -1,0 +1,29 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/mixins' as mx;
+
+#section-landing {
+  padding: 1rem 0;
+}
+
+.landing-hero {
+  padding: 2rem 0 1rem;
+
+  .landing-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+
+    @include bp.lte(bp.get(md)) {
+      font-size: 2rem;
+    }
+  }
+
+  .landing-tagline {
+    font-size: 1.1rem;
+    color: var(--text-muted-color);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

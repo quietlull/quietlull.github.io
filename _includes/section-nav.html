@@ -1,0 +1,29 @@
+{% comment %}
+  Section-aware navigation. Renders nav items based on the current section context.
+  Parameters: section (string), lang (string)
+{% endcomment %}
+
+{% assign section = include.section %}
+{% assign section_root = '/' | append: section | append: '/' %}
+{% assign projects_path = section_root | append: 'projects/' %}
+{% assign about_path = section_root | append: 'about/' %}
+{% assign current_path = page.url %}
+
+<li class="nav-item{% if current_path == section_root %} active{% endif %}">
+  <a href="{{ section_root | relative_url }}" class="nav-link">
+    <i class="fa-fw fas fa-home"></i>
+    <span>HOME</span>
+  </a>
+</li>
+<li class="nav-item{% if current_path == projects_path or current_path contains '/posts/' %} active{% endif %}">
+  <a href="{{ projects_path | relative_url }}" class="nav-link">
+    <i class="fa-fw fas fa-stream"></i>
+    <span>PROJECTS</span>
+  </a>
+</li>
+<li class="nav-item{% if current_path == about_path %} active{% endif %}">
+  <a href="{{ about_path | relative_url }}" class="nav-link">
+    <i class="fa-fw fas fa-info-circle"></i>
+    <span>ABOUT</span>
+  </a>
+</li>
