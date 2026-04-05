@@ -118,12 +118,14 @@
           padding: 0.75rem 1.5rem;
           border-radius: 0.75rem;
           font-weight: 300;
-          // ✨ FIXED: Using CSS variables
           backdrop-filter: blur(var(--blur-sm));
+          -webkit-backdrop-filter: blur(var(--blur-sm));
           background: var(--glow-subtle);
           border: 1px solid var(--glass-border);
           position: relative;
           overflow: hidden;
+          will-change: transform;
+          contain: layout style paint;
           @include mx.transition(all);
 
           // ✨ ENHANCED: Radial glow effect using mixin
@@ -178,10 +180,13 @@
       height: 2.5rem;
       border-radius: 50%;
       backdrop-filter: blur(var(--blur-sm));
+      -webkit-backdrop-filter: blur(var(--blur-sm));
       background: var(--topbar-btn-bg);
       color: var(--topbar-btn-color);
       border: 1px solid var(--glass-border-strong);
       position: relative;
+      will-change: transform;
+      contain: layout style paint;
       @include mx.transition(all);
 
       // ✨ ENHANCED: Using radial hover glow mixin
@@ -221,13 +226,13 @@
 
       .breathe-switch-icon {
         font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--white-a40);
         transition: color 300ms ease;
       }
 
       input:checked ~ .breathe-switch-icon,
       &:has(input:checked) .breathe-switch-icon {
-        color: rgba(251, 191, 36, 0.8);
+        color: var(--gold-80);
       }
 
       .breathe-switch-track {
@@ -235,7 +240,7 @@
         width: 38px;
         height: 20px;
         border-radius: 10px;
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--white-a08);
         border: 1px solid var(--glass-border-strong);
         @include mx.transition(background, border-color, box-shadow);
       }
@@ -247,33 +252,33 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.35);
+        background: var(--white-a35);
         transition: transform 300ms ease, background 300ms ease, box-shadow 300ms ease;
       }
 
       // Checked (breathing ON) — thumb right, amber glow + breathing track
       input:checked ~ .breathe-switch-track {
-        background: rgba(251, 191, 36, 0.2);
-        border-color: rgba(251, 191, 36, 0.45);
+        background: var(--gold-20);
+        border-color: var(--gold-45);
         box-shadow:
-          0 0 12px rgba(251, 191, 36, 0.25),
-          0 0 24px rgba(251, 191, 36, 0.1);
+          0 0 12px var(--gold-25),
+          0 0 24px var(--gold-10);
         animation: breathe-toggle-glow 4s ease-in-out infinite;
 
         .breathe-switch-thumb {
           transform: translateX(18px);
-          background: rgba(251, 191, 36, 0.95);
+          background: var(--gold-95);
           box-shadow:
-            0 0 10px rgba(251, 191, 36, 0.7),
-            0 0 20px rgba(251, 191, 36, 0.3);
+            0 0 10px var(--gold-70),
+            0 0 20px var(--gold-30);
         }
       }
 
       &:hover .breathe-switch-track {
-        border-color: rgba(251, 191, 36, 0.5);
+        border-color: var(--gold-50);
         box-shadow:
-          0 0 16px rgba(251, 191, 36, 0.2),
-          0 0 32px rgba(251, 191, 36, 0.08);
+          0 0 16px var(--gold-20),
+          0 0 32px var(--gold-08);
       }
     }
 
@@ -289,12 +294,12 @@
 
       .fireworks-switch-icon {
         font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--white-a40);
         transition: color 300ms ease;
       }
 
       input:checked ~ .fireworks-switch-icon {
-        color: rgba(249, 115, 22, 0.9);
+        color: var(--orange-a90);
       }
 
       .fireworks-switch-track {
@@ -302,7 +307,7 @@
         width: 38px;
         height: 20px;
         border-radius: 10px;
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--white-a08);
         border: 1px solid var(--glass-border-strong);
         @include mx.transition(background, border-color, box-shadow);
       }
@@ -314,24 +319,24 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.35);
+        background: var(--white-a35);
         transition: transform 300ms ease, background 300ms ease, box-shadow 300ms ease;
       }
 
       input:checked ~ .fireworks-switch-track {
-        background: rgba(249, 115, 22, 0.15);
-        border-color: rgba(249, 115, 22, 0.3);
+        background: var(--orange-a15);
+        border-color: var(--orange-a30);
 
         .fireworks-switch-thumb {
           transform: translateX(18px);
-          background: rgba(249, 115, 22, 0.9);
-          box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+          background: var(--orange-a90);
+          box-shadow: 0 0 8px var(--orange-a50);
         }
       }
 
       &:hover .fireworks-switch-track {
-        border-color: rgba(249, 115, 22, 0.4);
-        box-shadow: 0 0 12px rgba(249, 115, 22, 0.1);
+        border-color: var(--orange-a40);
+        box-shadow: 0 0 12px var(--orange-a10);
       }
     }
 

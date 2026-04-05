@@ -66,6 +66,8 @@ function initReadingProgress() {
   bar.className = 'reading-progress-bar';
   document.body.appendChild(bar);
 
+  let ticking = false;
+
   function updateProgress() {
     const rect = article.getBoundingClientRect();
     const articleTop = rect.top + window.scrollY;
@@ -82,8 +84,14 @@ function initReadingProgress() {
 
     const progress = Math.max(0, Math.min(1, scrolled / total));
     bar.style.width = `${progress * 100}%`;
+    ticking = false;
   }
 
-  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(updateProgress);
+    }
+  }, { passive: true });
   updateProgress();
 }

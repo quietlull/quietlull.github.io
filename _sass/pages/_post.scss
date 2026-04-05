@@ -21,7 +21,7 @@
   border-radius: v.$radius-lg;
   padding: 1.25rem 1.5rem;
   margin-top: 1rem;
-  border-left: 3px solid rgba(251, 191, 36, 0.5);
+  border-left: 3px solid var(--gold-50);
   animation: breathe-warm 6s ease-in-out infinite;
 
   .tldr-label {
@@ -29,7 +29,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: rgba(251, 191, 36, 0.8);
+    color: var(--gold-80);
     margin-bottom: 0.4rem;
   }
 
@@ -48,7 +48,7 @@
   border-radius: v.$radius-lg;
   padding: 1.25rem 1.5rem;
   margin-top: 1.5rem;
-  border-left: 3px solid rgba(249, 115, 22, 0.5);
+  border-left: 3px solid var(--orange-a50);
   animation: breathe-slow 7s ease-in-out infinite;
 
   .takeaway-label {
@@ -56,7 +56,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: rgba(249, 115, 22, 0.8);
+    color: var(--orange-a80);
     margin-bottom: 0.4rem;
   }
 
@@ -317,8 +317,8 @@ header {
     &:hover:not(.disabled) {
       border-color: var(--glass-border-strong);
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15),
-        0 0 12px var(--glow-color, rgba(251, 191, 36, 0.1));
+      box-shadow: 0 4px 16px var(--shadow-a15),
+        0 0 12px var(--glow-color, var(--gold-10));
       color: inherit;
       text-decoration: none;
     }
@@ -773,10 +773,10 @@ article > header {
   width: 0%;
   background: linear-gradient(
     90deg,
-    var(--accent-color, rgba(251, 191, 36, 0.8)),
-    var(--accent-warm, rgba(249, 115, 22, 0.9))
+    var(--accent-color, var(--gold-80)),
+    var(--accent-warm, var(--orange-a90))
   );
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 8px var(--gold-40);
   z-index: 9999;
   pointer-events: none;
   transition: width 0.1s linear;

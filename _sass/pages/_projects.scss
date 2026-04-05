@@ -48,9 +48,12 @@
     .input-group {
       // ✨ Glass effect on input group
       backdrop-filter: blur(var(--blur-sm));
+      -webkit-backdrop-filter: blur(var(--blur-sm));
       border-radius: v.$radius-lg;
       overflow: hidden;
       border: 1px solid var(--glass-border);
+      will-change: transform;
+      contain: layout style paint;
       @include mx.transition(border-color, box-shadow);
 
       &:focus-within {

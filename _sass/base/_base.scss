@@ -2,7 +2,6 @@
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/placeholders';
-@use '../themes/light';
 @use '../themes/dark';
 
 :root {
@@ -10,27 +9,7 @@
 }
 
 html {
-  @media (prefers-color-scheme: light) {
-    &:not([data-mode]),
-    &[data-mode='light'] {
-      @include light.styles;
-    }
-
-    &[data-mode='dark'] {
-      @include dark.styles;
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:not([data-mode]),
-    &[data-mode='dark'] {
-      @include dark.styles;
-    }
-
-    &[data-mode='light'] {
-      @include light.styles;
-    }
-  }
+  @include dark.styles;
 
   @include bp.lg {
     overflow-y: scroll;
@@ -45,6 +24,43 @@ body {
   -webkit-font-smoothing: antialiased;
   font-family: v.$font-family-base;
   overflow-x: hidden;
+}
+
+// F3: Custom amber scrollbar — global
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--gold-20);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--gold-35);
+  }
+}
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-20) transparent;
+}
+
+// F4: Amber text selection
+::selection {
+  background: var(--gold-30);
+  color: var(--heading-color);
+}
+
+// F5: Amber focus outlines
+:focus-visible {
+  outline: 2px solid var(--gold-50);
+  outline-offset: 2px;
 }
 
 h1.dynamic-title {
@@ -320,12 +336,26 @@ main {
   text-align: left;
 }
 
-/* Overwrite bootstrap outline button */
+/* Overwrite bootstrap outline button — amber theme */
 .btn.btn-outline-primary {
+  color: var(--amber-400);
+  border-color: var(--btn-border-color);
+  background: var(--button-bg);
   @include mx.shimmer-effect;
 
   &:not(.disabled):hover {
-    border-color: var(--link-hover-color) !important;
+    color: var(--amber-300);
+    background: var(--button-hover-bg);
+    border-color: var(--amber-400) !important;
+    box-shadow: var(--btn-hover-glow);
+  }
+
+  &:not(.disabled):active,
+  &:not(.disabled):focus {
+    color: var(--amber-300);
+    background: var(--button-active-bg);
+    border-color: var(--amber-400);
+    box-shadow: none;
   }
 }
 
@@ -485,8 +515,8 @@ mjx-container {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.10));
-  border: 1px solid rgba(251, 191, 36, 0.20);
+  background: linear-gradient(135deg, var(--gold-15), var(--orange-a10));
+  border: 1px solid var(--gold-20);
   flex-shrink: 0;
   // Reference: whole box breathes (scale + opacity)
   animation: breathe 4s ease-in-out infinite;
@@ -496,7 +526,7 @@ mjx-container {
     content: '';
     position: absolute;
     inset: -4px;
-    background: rgba(251, 191, 36, 0.20);
+    background: var(--gold-20);
     border-radius: 16px;
     filter: blur(12px);
     z-index: -1;
@@ -507,9 +537,9 @@ mjx-container {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: rgba(251, 191, 36, 0.8);
+    background: var(--gold-80);
     box-shadow:
-      0 0 15px rgba(251, 191, 36, 0.6);
+      0 0 15px var(--gold-60);
     animation: heartbeat 2s ease-in-out infinite;
   }
 }
@@ -530,7 +560,7 @@ mjx-container {
   .card-icon-glow {
     position: absolute;
     inset: -4px;
-    background: var(--icon-glow-color, rgba(251, 191, 36, 0.2));
+    background: var(--icon-glow-color, var(--gold-20));
     border-radius: 16px;
     filter: blur(12px);
     transition: background 300ms ease;
@@ -541,12 +571,12 @@ mjx-container {
     position: relative;
     width: 48px;
     height: 48px;
-    background: var(--icon-bg-gradient, linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.15)));
+    background: var(--icon-bg-gradient, linear-gradient(135deg, var(--gold-15), var(--orange-a15)));
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--icon-border-color, rgba(251, 191, 36, 0.2));
+    border: 1px solid var(--icon-border-color, var(--gold-20));
   }
 
   // Heartbeat dot in center
@@ -554,8 +584,8 @@ mjx-container {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--icon-dot-color, rgba(251, 191, 36, 0.8));
-    box-shadow: 0 0 12px var(--icon-dot-glow, rgba(251, 191, 36, 0.6));
+    background: var(--icon-dot-color, var(--gold-80));
+    box-shadow: 0 0 12px var(--icon-dot-glow, var(--gold-60));
     animation: heartbeat 2.5s ease-in-out infinite;
   }
 }
@@ -563,7 +593,7 @@ mjx-container {
 // Hover: glow brightens
 .post-card:hover .card-icon-glow,
 .post-vertical-bar:hover .card-icon-glow {
-  background: var(--icon-glow-color-hover, rgba(251, 191, 36, 0.35));
+  background: var(--icon-glow-color-hover, var(--gold-35));
 }
 
 // ============================================================================
@@ -572,30 +602,30 @@ mjx-container {
 
 // Amber (default)
 .card-palette-amber {
-  --icon-glow-color: rgba(251, 191, 36, 0.2);
-  --icon-glow-color-hover: rgba(251, 191, 36, 0.35);
-  --icon-bg-gradient: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.15));
-  --icon-border-color: rgba(251, 191, 36, 0.2);
-  --icon-dot-color: rgba(251, 191, 36, 0.8);
-  --icon-dot-glow: rgba(251, 191, 36, 0.6);
+  --icon-glow-color: var(--gold-20);
+  --icon-glow-color-hover: var(--gold-35);
+  --icon-bg-gradient: linear-gradient(135deg, var(--gold-15), var(--orange-a15));
+  --icon-border-color: var(--gold-20);
+  --icon-dot-color: var(--gold-80);
+  --icon-dot-glow: var(--gold-60);
 }
 
 // Orange
 .card-palette-orange {
-  --icon-glow-color: rgba(249, 115, 22, 0.2);
-  --icon-glow-color-hover: rgba(249, 115, 22, 0.35);
-  --icon-bg-gradient: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(239, 68, 68, 0.1));
-  --icon-border-color: rgba(249, 115, 22, 0.2);
-  --icon-dot-color: rgba(249, 115, 22, 0.8);
-  --icon-dot-glow: rgba(249, 115, 22, 0.6);
+  --icon-glow-color: var(--orange-a20);
+  --icon-glow-color-hover: var(--orange-a35);
+  --icon-bg-gradient: linear-gradient(135deg, var(--orange-a15), var(--red-a10));
+  --icon-border-color: var(--orange-a20);
+  --icon-dot-color: var(--orange-a80);
+  --icon-dot-glow: var(--orange-a60);
 }
 
 // Yellow / Gold
 .card-palette-gold {
-  --icon-glow-color: rgba(250, 204, 21, 0.2);
-  --icon-glow-color-hover: rgba(250, 204, 21, 0.35);
-  --icon-bg-gradient: linear-gradient(135deg, rgba(250, 204, 21, 0.15), rgba(251, 191, 36, 0.15));
-  --icon-border-color: rgba(250, 204, 21, 0.2);
-  --icon-dot-color: rgba(250, 204, 21, 0.8);
-  --icon-dot-glow: rgba(250, 204, 21, 0.6);
+  --icon-glow-color: var(--yellow-a20);
+  --icon-glow-color-hover: var(--yellow-a35);
+  --icon-bg-gradient: linear-gradient(135deg, var(--yellow-a15), var(--gold-15));
+  --icon-border-color: var(--yellow-a20);
+  --icon-dot-color: var(--yellow-a80);
+  --icon-dot-glow: var(--yellow-a60);
 }

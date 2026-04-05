@@ -36,7 +36,7 @@
   border-radius: v.$radius-lg;
 
   &:hover {
-    border-color: var(--glow-border, rgba(245, 158, 11, 0.2));
+    border-color: var(--glow-border, var(--amber-a20));
   }
 }
 
@@ -44,9 +44,9 @@
 .post-vertical-bar:nth-child(6n+1) .vertical-bar-container {
   animation: breathe-slow 6s ease-in-out infinite;
   animation-delay: 0s;
-  --glow-color: rgba(251, 191, 36, 0.22);
-  --glow-color-hover: rgba(251, 191, 36, 0.50);
-  --glow-border: rgba(245, 158, 11, 0.25);
+  --glow-color: var(--gold-22);
+  --glow-color-hover: var(--gold-50);
+  --glow-border: var(--amber-a25);
   --orb-x: 45%;
   --orb-y: 50%;
   --orb-speed: 5.5s;
@@ -56,9 +56,9 @@
 .post-vertical-bar:nth-child(6n+2) .vertical-bar-container {
   animation: breathe-warm 5s ease-in-out infinite;
   animation-delay: 0.8s;
-  --glow-color: rgba(249, 115, 22, 0.22);
-  --glow-color-hover: rgba(249, 115, 22, 0.50);
-  --glow-border: rgba(234, 88, 12, 0.25);
+  --glow-color: var(--orange-a22);
+  --glow-color-hover: var(--orange-a50);
+  --glow-border: var(--orange-red-a25);
   --orb-x: 55%;
   --orb-y: 48%;
   --orb-speed: 6.5s;
@@ -68,9 +68,9 @@
 .post-vertical-bar:nth-child(6n+3) .vertical-bar-container {
   animation: breathe-slow 7s ease-in-out infinite;
   animation-delay: 1.5s;
-  --glow-color: rgba(251, 191, 36, 0.22);
-  --glow-color-hover: rgba(251, 191, 36, 0.50);
-  --glow-border: rgba(245, 158, 11, 0.25);
+  --glow-color: var(--gold-22);
+  --glow-color-hover: var(--gold-50);
+  --glow-border: var(--amber-a25);
   --orb-x: 50%;
   --orb-y: 52%;
   --orb-speed: 7s;
@@ -80,9 +80,9 @@
 .post-vertical-bar:nth-child(6n+4) .vertical-bar-container {
   animation: breathe-warm 7.5s ease-in-out infinite;
   animation-delay: 0.3s;
-  --glow-color: rgba(249, 115, 22, 0.22);
-  --glow-color-hover: rgba(249, 115, 22, 0.50);
-  --glow-border: rgba(234, 88, 12, 0.25);
+  --glow-color: var(--orange-a22);
+  --glow-color-hover: var(--orange-a50);
+  --glow-border: var(--orange-red-a25);
   --orb-x: 48%;
   --orb-y: 53%;
   --orb-speed: 5s;
@@ -92,9 +92,9 @@
 .post-vertical-bar:nth-child(6n+5) .vertical-bar-container {
   animation: breathe-slow 6.5s ease-in-out infinite;
   animation-delay: 2.0s;
-  --glow-color: rgba(251, 191, 36, 0.22);
-  --glow-color-hover: rgba(251, 191, 36, 0.50);
-  --glow-border: rgba(245, 158, 11, 0.25);
+  --glow-color: var(--gold-22);
+  --glow-color-hover: var(--gold-50);
+  --glow-border: var(--amber-a25);
   --orb-x: 53%;
   --orb-y: 47%;
   --orb-speed: 6s;
@@ -104,9 +104,9 @@
 .post-vertical-bar:nth-child(6n+6) .vertical-bar-container {
   animation: breathe-warm 5.5s ease-in-out infinite;
   animation-delay: 1.0s;
-  --glow-color: rgba(249, 115, 22, 0.22);
-  --glow-color-hover: rgba(249, 115, 22, 0.50);
-  --glow-border: rgba(234, 88, 12, 0.25);
+  --glow-color: var(--orange-a22);
+  --glow-color-hover: var(--orange-a50);
+  --glow-border: var(--orange-red-a25);
   --orb-x: 47%;
   --orb-y: 50%;
   --orb-speed: 7s;
@@ -167,7 +167,7 @@
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;
   // ✨ ADDED: Strong shadow for visibility
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px var(--shadow-a30);
 }
 
 

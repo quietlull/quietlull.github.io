@@ -56,7 +56,7 @@
   &:hover {
     transform: translateY(-4px);
     border-color: var(--glass-border-strong);
-    box-shadow: var(--glass-shadow), 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--glass-shadow), 0 8px 32px var(--shadow-a30);
     color: inherit;
     text-decoration: none;
   }
@@ -76,11 +76,11 @@
   opacity: 0.9;
 
   .portal-door-tech-art & {
-    color: var(--accent-color, rgba(251, 191, 36, 0.9));
+    color: var(--accent-color, var(--gold-90));
   }
 
   .portal-door-game-design & {
-    color: var(--accent-warm, rgba(249, 115, 22, 0.9));
+    color: var(--accent-warm, var(--orange-a90));
   }
 }
 

@@ -53,7 +53,7 @@
   // ==========================================================================
   --text-color: rgba(254, 243, 199, 0.9);              // amber-100/90
   --text-muted-color: rgba(254, 243, 199, 0.6);        // amber-100/60
-  --text-muted-highlight-color: rgba(254, 243, 199, 0.5);
+  --text-muted-highlight-color: rgba(254, 243, 199, 0.7);
   --text-very-muted: rgba(254, 243, 199, 0.3);         // subtle hints
   --heading-color: rgba(254, 243, 199, 0.95);          // amber-50/95 - crisp
   --label-color: rgba(254, 243, 199, 0.7);
@@ -117,6 +117,95 @@
   --yellow-glow-medium: rgba(250, 204, 21, 0.05);
   --yellow-glow-strong: rgba(250, 204, 21, 0.08);
   --yellow-border: rgba(250, 204, 21, 0.1);
+
+  // ==========================================================================
+  // CONSOLIDATED COLOR PALETTE — single source of truth for theme tuning
+  // ==========================================================================
+  // To adjust the entire site's color feel, modify these values.
+  // All component files reference these instead of hardcoding rgba().
+
+  // -- Gold (251, 191, 36) — primary glow/accent family --
+  --gold-03: rgba(251, 191, 36, 0.03);
+  --gold-05: rgba(251, 191, 36, 0.05);
+  --gold-06: rgba(251, 191, 36, 0.06);
+  --gold-08: rgba(251, 191, 36, 0.08);
+  --gold-10: rgba(251, 191, 36, 0.1);
+  --gold-12: rgba(251, 191, 36, 0.12);
+  --gold-14: rgba(251, 191, 36, 0.14);
+  --gold-15: rgba(251, 191, 36, 0.15);
+  --gold-20: rgba(251, 191, 36, 0.2);
+  --gold-22: rgba(251, 191, 36, 0.22);
+  --gold-25: rgba(251, 191, 36, 0.25);
+  --gold-30: rgba(251, 191, 36, 0.3);
+  --gold-35: rgba(251, 191, 36, 0.35);
+  --gold-40: rgba(251, 191, 36, 0.4);
+  --gold-45: rgba(251, 191, 36, 0.45);
+  --gold-50: rgba(251, 191, 36, 0.50);
+  --gold-60: rgba(251, 191, 36, 0.6);
+  --gold-70: rgba(251, 191, 36, 0.7);
+  --gold-80: rgba(251, 191, 36, 0.8);
+  --gold-90: rgba(251, 191, 36, 0.9);
+  --gold-95: rgba(251, 191, 36, 0.95);
+
+  // -- Amber (245, 158, 11) — border/accent family --
+  --amber-a10: rgba(245, 158, 11, 0.1);
+  --amber-a12: rgba(245, 158, 11, 0.12);
+  --amber-a15: rgba(245, 158, 11, 0.15);
+  --amber-a16: rgba(245, 158, 11, 0.16);
+  --amber-a20: rgba(245, 158, 11, 0.2);
+  --amber-a25: rgba(245, 158, 11, 0.25);
+  --amber-a30: rgba(245, 158, 11, 0.3);
+  --amber-a45: rgba(245, 158, 11, 0.45);
+
+  // -- Orange (249, 115, 22) — warm secondary accent --
+  --orange-a06: rgba(249, 115, 22, 0.06);
+  --orange-a10: rgba(249, 115, 22, 0.10);
+  --orange-a12: rgba(249, 115, 22, 0.12);
+  --orange-a14: rgba(249, 115, 22, 0.14);
+  --orange-a15: rgba(249, 115, 22, 0.15);
+  --orange-a20: rgba(249, 115, 22, 0.2);
+  --orange-a22: rgba(249, 115, 22, 0.22);
+  --orange-a30: rgba(249, 115, 22, 0.3);
+  --orange-a35: rgba(249, 115, 22, 0.35);
+  --orange-a40: rgba(249, 115, 22, 0.4);
+  --orange-a50: rgba(249, 115, 22, 0.50);
+  --orange-a60: rgba(249, 115, 22, 0.6);
+  --orange-a80: rgba(249, 115, 22, 0.8);
+  --orange-a90: rgba(249, 115, 22, 0.9);
+
+  // -- Yellow (250, 204, 21) — warm highlight accent --
+  --yellow-a15: rgba(250, 204, 21, 0.15);
+  --yellow-a20: rgba(250, 204, 21, 0.2);
+  --yellow-a35: rgba(250, 204, 21, 0.35);
+  --yellow-a60: rgba(250, 204, 21, 0.6);
+  --yellow-a80: rgba(250, 204, 21, 0.8);
+
+  // -- Red (239, 68, 68) — warm danger accent --
+  --red-a10: rgba(239, 68, 68, 0.1);
+
+  // -- White highlights --
+  --white-a04: rgba(255, 255, 255, 0.04);
+  --white-a08: rgba(255, 255, 255, 0.08);
+  --white-a35: rgba(255, 255, 255, 0.35);
+  --white-a40: rgba(255, 255, 255, 0.4);
+
+  // -- Orange-red (234, 88, 12) — warm deep accent --
+  --orange-red-a12: rgba(234, 88, 12, 0.12);
+  --orange-red-a25: rgba(234, 88, 12, 0.25);
+
+  // -- Shadow/depth (0, 0, 0) --
+  --shadow-a10: rgba(0, 0, 0, 0.1);
+  --shadow-a15: rgba(0, 0, 0, 0.15);
+  --shadow-a25: rgba(0, 0, 0, 0.25);
+  --shadow-a30: rgba(0, 0, 0, 0.3);
+  --shadow-a40: rgba(0, 0, 0, 0.4);
+  --shadow-a60: rgba(0, 0, 0, 0.6);
+
+  // -- Slate backgrounds (15, 23, 42) --
+  --slate-a40: rgba(15, 23, 42, 0.4);
+  --slate-a60: rgba(15, 23, 42, 0.6);
+  --slate-a80: rgba(15, 23, 42, 0.8);
+  --slate-a95: rgba(15, 23, 42, 0.95);
   
   // ==========================================================================
   // BLUR VALUES - Matching variables.scss

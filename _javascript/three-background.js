@@ -300,11 +300,11 @@ function loadStaticFBX(url, options = {}) {
 
 // Scroll-based camera movement
 let scrollProgress = 0;
+let cachedScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
 
 function updateCameraFromScroll() {
-  const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
   const scrolled = window.scrollY;
-  scrollProgress = scrollHeight > 0 ? scrolled / scrollHeight : 0;
+  scrollProgress = cachedScrollHeight > 0 ? scrolled / cachedScrollHeight : 0;
 
   camera.rotation.x = THREE.MathUtils.lerp(
     CONFIG.camera.startRotationX,
@@ -328,6 +328,7 @@ let resizeTimeout;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
+    cachedScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
     updateCameraFOV();
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();

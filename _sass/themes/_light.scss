@@ -76,16 +76,10 @@
     0 0 0 1px rgba(226, 232, 240, 0.8);
 
 
-    --placeholder-gradient: linear-gradient(
-  135deg, 
-  var(--slate-50), 
-  var(--slate-200)
-
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
---shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
---shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
---shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   // ==========================================================================
   // LANTERN GLOWS - Subtle amber warmth
   // ==========================================================================
@@ -103,76 +97,76 @@
     0 0 6px 1px rgba(245, 158, 11, 0.15),
     0 0 12px 2px rgba(245, 158, 11, 0.08);
 
-    --orange-glow-subtle: rgba(249, 115, 22, 0.02);
---orange-glow-medium: rgba(249, 115, 22, 0.04);
---orange-glow-strong: rgba(249, 115, 22, 0.06);
---orange-border: rgba(249, 115, 22, 0.15);
---orange-border-strong: rgba(249, 115, 22, 0.25);
+  --orange-glow-subtle: rgba(249, 115, 22, 0.02);
+  --orange-glow-medium: rgba(249, 115, 22, 0.04);
+  --orange-glow-strong: rgba(249, 115, 22, 0.06);
+  --orange-border: rgba(249, 115, 22, 0.15);
+  --orange-border-strong: rgba(249, 115, 22, 0.25);
 
-// Yellow variants
---yellow-glow-subtle: rgba(234, 179, 8, 0.02);
---yellow-glow-medium: rgba(234, 179, 8, 0.04);
---yellow-glow-strong: rgba(234, 179, 8, 0.06);
---yellow-border: rgba(234, 179, 8, 0.15);
+  // Yellow variants
+  --yellow-glow-subtle: rgba(234, 179, 8, 0.02);
+  --yellow-glow-medium: rgba(234, 179, 8, 0.04);
+  --yellow-glow-strong: rgba(234, 179, 8, 0.06);
+  --yellow-border: rgba(234, 179, 8, 0.15);
 
-// ==========================================================================
-// BLUR VALUES - Matching variables.scss
-// ==========================================================================
---blur-sm: 4px;
---blur-md: 12px;
---blur-lg: 16px;
---blur-xl: 24px;
---blur-2xl: 48px;
---blur-3xl: 80px;
+  // ==========================================================================
+  // BLUR VALUES - Matching variables.scss
+  // ==========================================================================
+  --blur-sm: 4px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 48px;
+  --blur-3xl: 80px;
 
-// ==========================================================================
-// TRANSITION TIMINGS
-// ==========================================================================
---transition-fast: 300ms;
---transition-normal: 500ms;
---transition-slow: 1000ms;
+  // ==========================================================================
+  // TRANSITION TIMINGS
+  // ==========================================================================
+  --transition-fast: 300ms;
+  --transition-normal: 500ms;
+  --transition-slow: 1000ms;
 
---ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
---ease-out: cubic-bezier(0.0, 0, 0.2, 1);
---ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
 
-// ==========================================================================
-// ANIMATION DURATIONS
-// ==========================================================================
---float-duration: 10s;
---float-gentle-duration: 8s;
---breathing-duration: 4s;
---pulse-duration: 2s;
---shimmer-duration: 1s;
+  // ==========================================================================
+  // ANIMATION DURATIONS
+  // ==========================================================================
+  --float-duration: 10s;
+  --float-gentle-duration: 8s;
+  --breathing-duration: 4s;
+  --pulse-duration: 2s;
+  --shimmer-duration: 1s;
 
-// ==========================================================================
-// Z-INDEX LAYERS
-// ==========================================================================
---z-background: -1;
---z-base: 0;
---z-content: 10;
---z-dropdown: 50;
---z-sticky: 100;
---z-header: 200;
---z-overlay: 500;
---z-modal: 1000;
---z-toast: 2000;
+  // ==========================================================================
+  // Z-INDEX LAYERS
+  // ==========================================================================
+  --z-background: -1;
+  --z-base: 0;
+  --z-content: 10;
+  --z-dropdown: 50;
+  --z-sticky: 100;
+  --z-header: 200;
+  --z-overlay: 500;
+  --z-modal: 1000;
+  --z-toast: 2000;
 
-// ==========================================================================
-// SPACING SCALE
-// ==========================================================================
---spacing-xs: 0.5rem;
---spacing-sm: 0.75rem;
---spacing-md: 1rem;
---spacing-lg: 1.5rem;
---spacing-xl: 2rem;
---spacing-2xl: 3rem;
---spacing-3xl: 4rem;
---spacing-4xl: 6rem;
+  // ==========================================================================
+  // SPACING SCALE
+  // ==========================================================================
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 6rem;
   // ==========================================================================
   // LINKS - Professional with amber accent
   // ==========================================================================
-  --link-color: #0369a1;                    // Blue for readability
+  --link-color: var(--amber-700);             // Warm amber for consistency
   --link-hover-color: var(--amber-600);     // Warm on hover
   --link-underline-color: var(--slate-200);
   --link-underline-glow: 0 0 4px rgba(245, 158, 11, 0.3);
@@ -221,8 +215,8 @@
   --search-border-color: var(--slate-200);
   --search-icon-color: #9ca3af;
   --search-tag-bg: var(--slate-50);
-  --input-focus-border-color: #94a3b8;
-  --input-focus-glow: 0 0 8px rgba(148, 163, 184, 0.3);
+  --input-focus-border-color: var(--amber-500);
+  --input-focus-glow: 0 0 8px rgba(245, 158, 11, 0.3);
 
   // ==========================================================================
   // CARDS - Clean elevation
@@ -314,7 +308,7 @@
   // ==========================================================================
   // TABLE OF CONTENTS
   // ==========================================================================
-  --toc-highlight: #0369a1;
+  --toc-highlight: var(--amber-600);
   --toc-popup-border-color: var(--slate-200);
 
   // ==========================================================================
@@ -325,7 +319,7 @@
   --kbd-text-color: var(--text-color);
   --kbd-bg-color: #ffffff;
   --checkbox-color: #cbd5e1;
-  --checkbox-checked-color: #0ea5e9;
+  --checkbox-checked-color: var(--amber-500);
 
   // ==========================================================================
   // ANIMATIONS/EFFECTS
