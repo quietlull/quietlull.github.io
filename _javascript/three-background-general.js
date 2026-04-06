@@ -1,8 +1,8 @@
 // Three.js General — Landing pages, Projects
 // Ambient background that adds liveliness. Lanterns, fireworks, mouse avoidance.
-// No water, no dock, static camera. The scene supports the page, not the focus.
+// No water, no dock, no FBX loading. Camera scrolls with page (Y only, no rotation).
+// Lanterns placed procedurally, avoiding important DOM elements.
 
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { LanternController } from './lantern-controller.js';
 import { LanternMaterialManager } from './shader/lanternShaderManager.js';
 import { FireworkController } from './firework-controller.js';
@@ -10,8 +10,8 @@ import {
   CONFIG,
   createBaseScene,
   updateCameraFOV,
-  loadLanternsFBX,
-  setupStaticCamera,
+  spawnDOMAvoidingLanterns,
+  setupScrollLockedCamera,
   setupResizeHandler,
   startAnimationLoop,
 } from './three-shared.js';
@@ -23,15 +23,22 @@ const { scene, camera, renderer, composer, bloomPass } = createBaseScene();
 const lanternController = new LanternController(CONFIG, camera);
 const lanternMaterialManager = new LanternMaterialManager(CONFIG);
 const fireworkController = new FireworkController(scene, camera, CONFIG.fireworks);
-const fbxLoader = new FBXLoader();
 
 updateCameraFOV(camera);
 
-// Lanterns only — no dock, no water
-loadLanternsFBX(fbxLoader, scene, lanternController, lanternMaterialManager);
+// Scroll-locked camera (Y movement only, no rotation)
+const scrollCamera = setupScrollLockedCamera(camera);
 
-// Static camera
-setupStaticCamera(camera);
+// Spawn lanterns after DOM is ready, avoiding important elements
+function initLanterns() {
+  spawnDOMAvoidingLanterns(scene, camera, lanternController, lanternMaterialManager, 30);
+}
+
+if (document.readyState === 'complete') {
+  initLanterns();
+} else {
+  window.addEventListener('load', initLanterns);
+}
 
 // Resize
 setupResizeHandler(camera, renderer, composer, lanternController);

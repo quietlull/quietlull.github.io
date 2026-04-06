@@ -23,7 +23,7 @@ import {
 
 const { scene, camera, renderer, composer, bloomPass } = createBaseScene();
 
-const lanternController = new LanternController(CONFIG, camera);
+const lanternController = new LanternController(CONFIG, camera, { displacementScale: 3 });
 const lanternMaterialManager = new LanternMaterialManager(CONFIG);
 const fireworkController = new FireworkController(scene, camera, CONFIG.fireworks);
 const fbxLoader = new FBXLoader();

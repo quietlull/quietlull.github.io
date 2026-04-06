@@ -503,6 +503,12 @@ mjx-container {
   }
 }
 
+// Scene spacer — one full viewport of empty space at the bottom.
+// Lets the user scroll past content to see just the dock/lake scene.
+.scene-spacer {
+  height: 100vh;
+}
+
 // ============================================================================
 // SECTION ICON BOX — glass box with icon + breathing dot
 // ============================================================================

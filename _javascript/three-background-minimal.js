@@ -1,16 +1,14 @@
 // Three.js Minimal — Lightest ambient background
-// Lanterns only. No fireworks, no mouse avoidance, static camera.
+// Lanterns only. No fireworks, no mouse avoidance, flat camera.
 // Pure visual decoration with minimal performance cost.
 
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { LanternController } from './lantern-controller.js';
 import { LanternMaterialManager } from './shader/lanternShaderManager.js';
 import {
   CONFIG,
   createBaseScene,
   updateCameraFOV,
-  loadLanternsFBX,
-  setupStaticCamera,
+  spawnProceduralLanterns,
   setupResizeHandler,
   startAnimationLoop,
 } from './three-shared.js';
@@ -19,17 +17,13 @@ import {
 
 const { scene, camera, renderer, composer, bloomPass } = createBaseScene();
 
-const lanternController = new LanternController(CONFIG, camera);
+const lanternController = new LanternController(CONFIG, camera, { avoidance: false });
 const lanternMaterialManager = new LanternMaterialManager(CONFIG);
-const fbxLoader = new FBXLoader();
 
 updateCameraFOV(camera);
 
-// Lanterns only
-loadLanternsFBX(fbxLoader, scene, lanternController, lanternMaterialManager);
-
-// Static camera
-setupStaticCamera(camera);
+// Procedural box lanterns — no FBX needed
+spawnProceduralLanterns(scene, lanternController, lanternMaterialManager, 15);
 
 // Resize
 setupResizeHandler(camera, renderer, composer, lanternController);

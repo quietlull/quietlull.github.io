@@ -2,28 +2,33 @@ import * as THREE from 'three';
 
 // Lantern behavior controller
 export class LanternController {
-  constructor(config, camera) {
+  constructor(config, camera, options = {}) {
     this.config = config;
     this.camera = camera;
     this.lanterns = [];
     this.time = 0;
+    this.avoidanceEnabled = options.avoidance !== false;
+    this.displacementScale = options.displacementScale || 1;
 
-    // Mouse tracking
-    this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
-    this.mouseWorldPos = new THREE.Vector3();
-    this.isMouseOverCanvas = false;
+    if (this.avoidanceEnabled) {
+      // Mouse tracking
+      this.raycaster = new THREE.Raycaster();
+      this.mouse = new THREE.Vector2();
+      this.mouseWorldPos = new THREE.Vector3();
+      this.isMouseOverCanvas = false;
 
-    // Reusable math objects (avoid per-frame allocations)
-    this._plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-    this._intersectTarget = new THREE.Vector3();
-    this._tempVec2 = new THREE.Vector2();
+      // Reusable math objects (avoid per-frame allocations)
+      this._plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+      this._intersectTarget = new THREE.Vector3();
+      this._worldPos = new THREE.Vector3();
+      this._tempVec2 = new THREE.Vector2();
 
-    // Debug visualization
-    this.debugEnabled = false; // Set to false to disable
-    this.debugObjects = [];
+      // Debug visualization
+      this.debugEnabled = false;
+      this.debugObjects = [];
 
-    this.setupMouseTracking();
+      this.setupMouseTracking();
+    }
   }
 
   setupMouseTracking() {
@@ -115,11 +120,10 @@ export class LanternController {
   update(normalizedDelta = 1.0) {
     this.time += 0.016 * normalizedDelta;
 
-    const config = this.config.lanterns.avoidance;
     const floatConfig = this.config.lanterns.float;
 
     // Clear old debug objects
-    if (this.debugEnabled) {
+    if (this.avoidanceEnabled && this.debugEnabled) {
       this.clearDebug();
     }
 
@@ -130,9 +134,11 @@ export class LanternController {
       const floatX = Math.sin(this.time * floatConfig.speed + offset) * floatConfig.amount;
       const floatY = Math.cos(this.time * floatConfig.speed * 0.7 + offset) * floatConfig.amount * 0.5;
 
-      // Mouse avoidance
-      if (this.isMouseOverCanvas) {
-        const lanternZ = lantern.position.z;
+      // Mouse avoidance (skipped when avoidance disabled)
+      if (this.avoidanceEnabled && this.isMouseOverCanvas) {
+        const config = this.config.lanterns.avoidance;
+        lantern.getWorldPosition(this._worldPos);
+        const lanternZ = this._worldPos.z;
         this._plane.constant = -lanternZ;
         const mouseAtLanternDepth = this.raycaster.ray.intersectPlane(this._plane, this._intersectTarget);
 
@@ -147,23 +153,23 @@ export class LanternController {
 
             // Show proximity radius circle
             const proximityCircle = this.createDebugCircle(config.proximityRadius, 0x00ff00, lanternZ);
-            proximityCircle.position.x = lantern.position.x;
-            proximityCircle.position.y = lantern.position.y;
+            proximityCircle.position.x = this._worldPos.x;
+            proximityCircle.position.y = this._worldPos.y;
             lantern.parent.add(proximityCircle);
             this.debugObjects.push(proximityCircle);
 
             // Show knock radius circle
             const knockCircle = this.createDebugCircle(config.knockRadius, 0xff0000, lanternZ);
-            knockCircle.position.x = lantern.position.x;
-            knockCircle.position.y = lantern.position.y;
+            knockCircle.position.x = this._worldPos.x;
+            knockCircle.position.y = this._worldPos.y;
             lantern.parent.add(knockCircle);
             this.debugObjects.push(knockCircle);
 
 
           }
 
-          const dx = lantern.position.x - mouseAtLanternDepth.x;
-          const dy = lantern.position.y - mouseAtLanternDepth.y;
+          const dx = this._worldPos.x - mouseAtLanternDepth.x;
+          const dy = this._worldPos.y - mouseAtLanternDepth.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < config.proximityRadius) {
@@ -198,46 +204,49 @@ export class LanternController {
               if (this._tempVec2.length() > 0.01) {
                 this._tempVec2.normalize();
                 const pushDir = this._tempVec2;
-                lantern.userData.avoidanceOffset.x += pushDir.x * config.avoidanceStrength * avoidanceFactor;
-                lantern.userData.avoidanceOffset.y += pushDir.y * config.avoidanceStrength * avoidanceFactor;
+                lantern.userData.avoidanceOffset.x += pushDir.x * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
+                lantern.userData.avoidanceOffset.y += pushDir.y * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
               }
             }
           }
         }
       }
 
-      // Apply velocity
-      lantern.userData.avoidanceOffset.x += lantern.userData.velocity.x * normalizedDelta;
-      lantern.userData.avoidanceOffset.y += lantern.userData.velocity.y * normalizedDelta;
+      if (this.avoidanceEnabled) {
+        // Apply velocity from knock/push
+        lantern.userData.avoidanceOffset.x += lantern.userData.velocity.x * normalizedDelta;
+        lantern.userData.avoidanceOffset.y += lantern.userData.velocity.y * normalizedDelta;
 
-      // Apply rotation velocity
-      lantern.rotation.x += lantern.userData.rotationVelocity.x * normalizedDelta;
-      lantern.rotation.y += lantern.userData.rotationVelocity.y * normalizedDelta;
-      lantern.rotation.z += lantern.userData.rotationVelocity.z * normalizedDelta;
+        // Apply rotation velocity
+        lantern.rotation.x += lantern.userData.rotationVelocity.x * normalizedDelta;
+        lantern.rotation.y += lantern.userData.rotationVelocity.y * normalizedDelta;
+        lantern.rotation.z += lantern.userData.rotationVelocity.z * normalizedDelta;
 
-      // Dampen velocity and rotation
-      const velocityDamping = Math.pow(0.92, normalizedDelta);
-      const rotationDamping = Math.pow(0.90, normalizedDelta);
-      lantern.userData.velocity.multiplyScalar(velocityDamping);
-      lantern.userData.rotationVelocity.multiplyScalar(rotationDamping);
+        // Dampen velocity and rotation
+        const velocityDamping = Math.pow(0.92, normalizedDelta);
+        const rotationDamping = Math.pow(0.90, normalizedDelta);
+        lantern.userData.velocity.multiplyScalar(velocityDamping);
+        lantern.userData.rotationVelocity.multiplyScalar(rotationDamping);
 
-      // Gradually return to base rotation
-      const rotationReturnSpeed = 1 - Math.pow(1 - 0.05, normalizedDelta);
-      lantern.rotation.x += (lantern.userData.baseRotation.x - lantern.rotation.x) * rotationReturnSpeed;
-      lantern.rotation.y += (lantern.userData.baseRotation.y - lantern.rotation.y) * rotationReturnSpeed;
-      lantern.rotation.z += (lantern.userData.baseRotation.z - lantern.rotation.z) * rotationReturnSpeed;
+        // Gradually return to base rotation
+        const rotationReturnSpeed = 1 - Math.pow(1 - 0.05, normalizedDelta);
+        lantern.rotation.x += (lantern.userData.baseRotation.x - lantern.rotation.x) * rotationReturnSpeed;
+        lantern.rotation.y += (lantern.userData.baseRotation.y - lantern.rotation.y) * rotationReturnSpeed;
+        lantern.rotation.z += (lantern.userData.baseRotation.z - lantern.rotation.z) * rotationReturnSpeed;
 
-      // Gradually return to base position
-      const positionReturnSpeed = 1 - Math.pow(1 - config.returnSpeed, normalizedDelta);
-      lantern.userData.avoidanceOffset.x *= (1 - positionReturnSpeed);
-      lantern.userData.avoidanceOffset.y *= (1 - positionReturnSpeed);
+        // Gradually return to base position
+        const config = this.config.lanterns.avoidance;
+        const positionReturnSpeed = 1 - Math.pow(1 - config.returnSpeed, normalizedDelta);
+        lantern.userData.avoidanceOffset.x *= (1 - positionReturnSpeed);
+        lantern.userData.avoidanceOffset.y *= (1 - positionReturnSpeed);
 
-      // Calculate target position
-      let targetX = lantern.userData.basePosition.x + floatX + lantern.userData.avoidanceOffset.x;
-      let targetY = lantern.userData.basePosition.y + floatY + lantern.userData.avoidanceOffset.y;
-
-      lantern.position.x = targetX;
-      lantern.position.y = targetY;
+        lantern.position.x = lantern.userData.basePosition.x + floatX + lantern.userData.avoidanceOffset.x;
+        lantern.position.y = lantern.userData.basePosition.y + floatY + lantern.userData.avoidanceOffset.y;
+      } else {
+        // Float only — no avoidance physics
+        lantern.position.x = lantern.userData.basePosition.x + floatX;
+        lantern.position.y = lantern.userData.basePosition.y + floatY;
+      }
     });
   }
 

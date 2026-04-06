@@ -134,27 +134,37 @@ export function loadDockFBX(fbxLoader, scene) {
 // ---------------------------------------------------------------------------
 
 export function setupScrollCamera(camera) {
-  let scrollProgress = 0;
-  let cachedScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  let cachedScrollHeight = 0;
+
+  function recalc() {
+    cachedScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  }
 
   function updateCameraFromScroll() {
-    const scrolled = window.scrollY;
-    scrollProgress = cachedScrollHeight > 0 ? scrolled / cachedScrollHeight : 0;
+    if (cachedScrollHeight <= 0) {
+      camera.rotation.x = CONFIG.camera.endRotationX;
+      camera.position.y = CONFIG.camera.endPositionY;
+      return;
+    }
+    const progress = Math.min(1, window.scrollY / cachedScrollHeight);
     camera.rotation.x = THREE.MathUtils.lerp(
-      CONFIG.camera.startRotationX, CONFIG.camera.endRotationX, scrollProgress
+      CONFIG.camera.startRotationX, CONFIG.camera.endRotationX, progress
     );
     camera.position.y = THREE.MathUtils.lerp(
-      CONFIG.camera.startPositionY, CONFIG.camera.endPositionY, scrollProgress
+      CONFIG.camera.startPositionY, CONFIG.camera.endPositionY, progress
     );
   }
 
+  // ResizeObserver handles all timing: fonts, images, reflow, page transitions
+  requestAnimationFrame(() => {
+    const container = document.querySelector('#home-page') || document.body;
+    new ResizeObserver(() => { recalc(); updateCameraFromScroll(); }).observe(container);
+  });
+
   window.addEventListener('scroll', updateCameraFromScroll, { passive: true });
-  updateCameraFromScroll();
 
   return {
-    updateScrollHeight() {
-      cachedScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    },
+    updateScrollHeight() { recalc(); },
   };
 }
 
@@ -187,6 +197,201 @@ export function setupResizeHandler(
       }
     }, 100);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Procedural lantern spawning (general/minimal — no FBX needed)
+// ---------------------------------------------------------------------------
+
+export function spawnProceduralLanterns(
+  scene, lanternController, lanternMaterialManager, count = 25
+) {
+  const geometry = new THREE.BoxGeometry(25, 35, 25);
+  geometry.computeBoundingBox();
+
+  for (let i = 0; i < count; i++) {
+    const mesh = new THREE.Mesh(geometry);
+
+    mesh.material = lanternMaterialManager.createMaterialForMesh(mesh, {
+      gradientStart: CONFIG.lanterns.shader.gradientStart,
+      gradientEnd: CONFIG.lanterns.shader.gradientEnd,
+      flickerSpeed: CONFIG.lanterns.shader.flickerSpeed,
+      flickerAmount: CONFIG.lanterns.shader.flickerAmount,
+      flickerColorShift: CONFIG.lanterns.shader.flickerColorShift,
+    });
+
+    // Distribute: 80% in far side margins, 20% deep behind content
+    let x, y, z;
+    if (Math.random() > 0.2) {
+      // Side margins — far outside the content column
+      const side = Math.random() > 0.5 ? 1 : -1;
+      x = side * (400 + Math.random() * 350);
+      y = (Math.random() - 0.5) * 700;
+      z = -100 - Math.random() * 400;
+    } else {
+      // Behind content — very deep, dim from distance
+      x = (Math.random() - 0.5) * 500;
+      y = (Math.random() - 0.5) * 700;
+      z = -500 - Math.random() * 300;
+    }
+
+    mesh.position.set(x, y, z);
+    mesh.rotation.y = Math.random() * Math.PI * 2;
+
+    lanternController.addLantern(mesh);
+    scene.add(mesh);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen-to-world coordinate conversion
+// ---------------------------------------------------------------------------
+
+/**
+ * Convert a pixel value to world units at a given Z depth for a perspective camera.
+ * Returns { worldPerPixelX, worldPerPixelY, screenToWorldX(px), screenToWorldY(px) }
+ */
+export function screenToWorldMapper(camera) {
+  const vFov = camera.fov * Math.PI / 180;
+  const z = camera.position.z; // distance from camera to z=0 plane
+  const visibleH = 2 * z * Math.tan(vFov / 2);
+  const visibleW = visibleH * camera.aspect;
+  const wppX = visibleW / window.innerWidth;
+  const wppY = visibleH / window.innerHeight;
+
+  return {
+    worldPerPixelX: wppX,
+    worldPerPixelY: wppY,
+    // Screen pixel (client coords) → world XY at z=0
+    screenToWorldX(px) { return (px - window.innerWidth / 2) * wppX; },
+    screenToWorldY(px) { return -(px - window.innerHeight / 2) * wppY; },
+  };
+}
+
+/**
+ * Query all important DOM elements and return world-space exclusion rects.
+ * Excludes #topbar. Adds padding in world units around each element.
+ */
+export function getExclusionZones(camera, padding = 20) {
+  const mapper = screenToWorldMapper(camera);
+  const scrollY = window.scrollY;
+
+  // Everything except topbar
+  const selectors = [
+    '.landing-hero', '.demo-reel', '.section-header',
+    '.post-card', 'footer',
+  ];
+
+  const zones = [];
+  selectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => {
+      const r = el.getBoundingClientRect();
+      // Convert client rect (viewport-relative) to absolute page position
+      const pageTop = r.top + scrollY;
+      const pageBottom = r.bottom + scrollY;
+
+      // Convert to world coords (Y is inverted: page top = positive world Y)
+      const worldLeft = mapper.screenToWorldX(r.left) - padding;
+      const worldRight = mapper.screenToWorldX(r.right) + padding;
+      const worldTop = mapper.screenToWorldY(pageTop) + padding;
+      const worldBottom = mapper.screenToWorldY(pageBottom) - padding;
+
+      zones.push({
+        left: worldLeft,
+        right: worldRight,
+        top: worldTop,     // higher Y
+        bottom: worldBottom, // lower Y
+      });
+    });
+  });
+
+  return zones;
+}
+
+/**
+ * Spawn procedural lanterns avoiding DOM exclusion zones.
+ * Lanterns placed at z=0 plane so they scroll 1:1 with the page.
+ */
+export function spawnDOMAvoidingLanterns(
+  scene, camera, lanternController, lanternMaterialManager, count = 25
+) {
+  const mapper = screenToWorldMapper(camera);
+  const scrollY = window.scrollY;
+  const zones = getExclusionZones(camera);
+
+  // World-space bounds for the full page
+  const pageH = document.documentElement.scrollHeight;
+  const worldPageTop = mapper.screenToWorldY(0);
+  const worldPageBottom = mapper.screenToWorldY(pageH);
+  const worldLeft = mapper.screenToWorldX(0);
+  const worldRight = mapper.screenToWorldX(window.innerWidth);
+  // Add side margins beyond the viewport
+  const marginX = (worldRight - worldLeft) * 0.4;
+
+  const geometry = new THREE.BoxGeometry(25, 35, 25);
+  geometry.computeBoundingBox();
+
+  let placed = 0;
+  let attempts = 0;
+  const maxAttempts = count * 20;
+
+  while (placed < count && attempts < maxAttempts) {
+    attempts++;
+
+    const x = (worldLeft - marginX) + Math.random() * (worldRight - worldLeft + marginX * 2);
+    const y = worldPageBottom + Math.random() * (worldPageTop - worldPageBottom);
+    const z = -30 - Math.random() * 200;
+
+    // Check against exclusion zones
+    let blocked = false;
+    for (const zone of zones) {
+      if (x > zone.left && x < zone.right && y < zone.top && y > zone.bottom) {
+        blocked = true;
+        break;
+      }
+    }
+    if (blocked) continue;
+
+    const mesh = new THREE.Mesh(geometry);
+    mesh.material = lanternMaterialManager.createMaterialForMesh(mesh, {
+      gradientStart: CONFIG.lanterns.shader.gradientStart,
+      gradientEnd: CONFIG.lanterns.shader.gradientEnd,
+      flickerSpeed: CONFIG.lanterns.shader.flickerSpeed,
+      flickerAmount: CONFIG.lanterns.shader.flickerAmount,
+      flickerColorShift: CONFIG.lanterns.shader.flickerColorShift,
+    });
+    mesh.position.set(x, y, z);
+    mesh.rotation.y = Math.random() * Math.PI * 2;
+
+    lanternController.addLantern(mesh);
+    scene.add(mesh);
+    placed++;
+  }
+
+  return placed;
+}
+
+// ---------------------------------------------------------------------------
+// Scroll-locked camera (Y only, no rotation)
+// ---------------------------------------------------------------------------
+
+export function setupScrollLockedCamera(camera) {
+  const mapper = screenToWorldMapper(camera);
+  const startY = camera.position.y;
+
+  function onScroll() {
+    camera.position.y = startY - window.scrollY * mapper.worldPerPixelY;
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  return {
+    updateMapper() {
+      const newMapper = screenToWorldMapper(camera);
+      mapper.worldPerPixelY = newMapper.worldPerPixelY;
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------

@@ -29,7 +29,7 @@ export const CONFIG = {
     },
     avoidance: {
       proximityRadius: 10000,
-      avoidanceStrength: 0.1,
+      avoidanceStrength: 0.2,
       knockRadius: 45,
       knockStrength: 40,
       returnSpeed: 0.08,
