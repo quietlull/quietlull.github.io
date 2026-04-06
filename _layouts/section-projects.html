@@ -5,6 +5,9 @@ refactor: false
 
 {% include lang.html %}
 
+<!-- Three.js ambient background — lanterns + fireworks, no water/dock -->
+<script src="{{ '/assets/js/dist/three-background-general.min.js' | relative_url }}"></script>
+
 {% assign section = page.section %}
 {% assign all_projects = site.posts | where: 'section', section | where: 'tags', 'project' %}
 {% assign all_pinned = all_projects | where_exp: 'item', 'item.pin == true' %}
