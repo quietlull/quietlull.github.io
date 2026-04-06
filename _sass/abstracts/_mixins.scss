@@ -140,7 +140,7 @@
       transparent 60%
     );
     pointer-events: none;
-    opacity: 0.35;
+    opacity: 0.55;
     transition: opacity 400ms ease;
     animation: pulse-slow var(--orb-speed, 5s) ease-in-out infinite;
     animation-delay: var(--orb-delay, 0s);
@@ -148,7 +148,7 @@
 
   &:hover::before {
     animation: none;
-    opacity: 0.8;
+    opacity: 0.75;
   }
 }
 
@@ -384,11 +384,13 @@
 
 @mixin card-hover {
   @include radial-hover-glow;
-  transition: border-color 500ms ease, transform 400ms ease;
+  transition: border-color 500ms ease, transform 400ms ease, box-shadow 400ms ease;
 
   &:hover {
+    animation-play-state: paused;
     border-color: var(--amber-a20);
     transform: scale(1.015);
+    box-shadow: var(--glow-tier2-hover);
   }
 }
 

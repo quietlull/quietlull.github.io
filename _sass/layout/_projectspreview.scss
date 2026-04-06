@@ -146,13 +146,11 @@
   animation: pinned-glow 4s ease-in-out infinite;
 
   &:hover {
-    animation: none;
+    animation-play-state: paused;
     border-color: var(--gold-60);
     box-shadow:
       0 8px 24px var(--shadow-a25),
-      0 0 12px var(--gold-20),
-      0 0 24px var(--orange-a15),
-      0 0 36px var(--amber-a15);
+      var(--glow-tier3-hover);
   }
 }
 

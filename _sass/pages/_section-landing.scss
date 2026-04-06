@@ -80,7 +80,7 @@
         transform: translateY(-2px);
         border-color: var(--glass-border-strong);
         box-shadow: 0 4px 12px var(--shadow-a15),
-          0 0 8px var(--glow-color, var(--gold-15));
+          0 0 12px var(--glow-color, var(--gold-22));
 
         &[data-tool-desc]::after {
           opacity: 0.8;
@@ -165,7 +165,7 @@
     }
 
     &:hover {
-      box-shadow: 0 0 20px var(--gold-10);
+      box-shadow: 0 0 20px var(--gold-20);
 
       i {
         opacity: 0.7;

@@ -119,6 +119,22 @@
   --yellow-border: rgba(250, 204, 21, 0.1);
 
   // ==========================================================================
+  // GLOW TIER SYSTEM — ember / candle / lantern / bonfire / star
+  // ==========================================================================
+  // Tier 0 (Ember):  background atmosphere, 0.02-0.06, 40-80px, 1 layer
+  // Tier 1 (Candle): resting interactive, 0.10-0.20, 8-20px, 1 layer
+  // Tier 2 (Lantern): hover/focus feedback, 0.20-0.35, 12-24px, 1-2 layers
+  // Tier 3 (Bonfire): emphasized/pinned, 0.30-0.50, 12-36px, 2-3 layers
+  // Tier 4 (Star):   indicator dots/orbs, 0.40-0.70, 8-20px, dual ring
+
+  --glow-tier0: 0 0 60px var(--gold-06);
+  --glow-tier1: 0 0 12px var(--gold-30);
+  --glow-tier2: 0 0 18px var(--gold-50);
+  --glow-tier2-hover: 0 0 24px var(--gold-70);
+  --glow-tier3: 0 0 18px var(--gold-60), 0 0 36px var(--gold-30);
+  --glow-tier3-hover: 0 0 24px var(--gold-80), 0 0 36px var(--gold-40);
+
+  // ==========================================================================
   // CONSOLIDATED COLOR PALETTE — single source of truth for theme tuning
   // ==========================================================================
   // To adjust the entire site's color feel, modify these values.

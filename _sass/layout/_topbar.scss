@@ -277,8 +277,8 @@
       &:hover .breathe-switch-track {
         border-color: var(--gold-50);
         box-shadow:
-          0 0 16px var(--gold-20),
-          0 0 32px var(--gold-08);
+          0 0 12px var(--gold-20),
+          0 0 24px var(--gold-12);
       }
     }
 
@@ -336,7 +336,7 @@
 
       &:hover .fireworks-switch-track {
         border-color: var(--orange-a40);
-        box-shadow: 0 0 12px var(--orange-a10);
+        box-shadow: 0 0 12px var(--orange-a20);
       }
     }
 
