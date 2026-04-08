@@ -10,6 +10,7 @@ export { breatheToggle } from './components/breathe-toggle';
 export { fireworksToggle } from './components/fireworks-toggle';
 export { back2top } from './components/back-to-top';
 export { initCardTilt } from './components/card-tilt';
+export { initToolTaglines } from './components/tool-taglines';
 export { loadTooptip } from './components/tooltip-loader';
 export { initPostFilter } from './components/post-filter';
 export { initPostEnhance } from './components/post-enhance';
