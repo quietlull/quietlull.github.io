@@ -47,6 +47,11 @@ export function initPageTransition() {
       return;
     }
 
+    // Sparkler burst at click point
+    if (typeof window.sparklerBurst === 'function') {
+      window.sparklerBurst(e.clientX, e.clientY);
+    }
+
     wrapper.classList.add('page-exit');
 
     setTimeout(() => {

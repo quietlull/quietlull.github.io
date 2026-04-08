@@ -327,4 +327,9 @@ export function initMouseTrail() {
     const touch = e.touches[0];
     emit(touch.clientX, touch.clientY, TOUCH_BURST, 1.5);
   }, { passive: true });
+
+  // Expose burst for page transitions
+  window.sparklerBurst = (x, y) => {
+    emit(x, y, 30, 2.0);
+  };
 }
