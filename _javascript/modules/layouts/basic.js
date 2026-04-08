@@ -1,7 +1,7 @@
 import {
   back2top, breatheToggle, fireworksToggle,
-  initAchievements, initCardTilt, initPageTransition, initToolTaglines,
-  loadTooptip, modeWatcher
+  initAchievements, initCardTilt, initMouseTrail, initPageTransition,
+  initToolTaglines, loadTooptip, modeWatcher
 } from '../components';
 
 export function basic() {
@@ -14,4 +14,5 @@ export function basic() {
   initAchievements();
   initCardTilt();
   initToolTaglines();
+  initMouseTrail();
 }
