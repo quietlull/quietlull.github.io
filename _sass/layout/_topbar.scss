@@ -9,7 +9,14 @@
 #topbar {
   @include mx.glass-lantern;
   @include mx.breathing(breathe-slow, 6s);
-  
+  transition: backdrop-filter 0.15s ease-out, -webkit-backdrop-filter 0.15s ease-out;
+
+  // Reduce backdrop-filter cost during active scroll
+  .is-scrolling & {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
   position: static;
   width: 100%;
   z-index: 1000;
@@ -120,6 +127,12 @@
           font-weight: 300;
           backdrop-filter: blur(var(--blur-sm));
           -webkit-backdrop-filter: blur(var(--blur-sm));
+          transition: backdrop-filter 0.15s ease-out, -webkit-backdrop-filter 0.15s ease-out;
+
+          .is-scrolling & {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+          }
           background: var(--glow-subtle);
           border: 1px solid var(--glass-border);
           position: relative;

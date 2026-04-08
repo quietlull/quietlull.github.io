@@ -43,20 +43,15 @@
   display: block;
   position: relative;
   @include mx.glass;
-  @include mx.radial-hover-glow;
+  @include mx.card-hover;
   border-radius: v.$radius-lg;
   height: 100%;
-  transition: border-color 500ms ease, transform 400ms ease, box-shadow 400ms ease;
 
   &:hover {
     // transform is applied by JS card-tilt when available;
-    // this fallback only fires when JS hasn't set an inline style
+    // this CSS fallback fires when JS hasn't set an inline style
     transform: translateY(-4px) scale(1.01);
-    box-shadow:
-      0 8px 24px var(--shadow-a15),
-      0 0 20px var(--glow-color, var(--gold-15));
   }
-
 }
 
 // Color + timing + orb position variance — alternating amber and orange
@@ -292,8 +287,8 @@
   align-items: center;
   justify-content: center;
   padding: 1.25rem;
-  background: var(--slate-900);
-  border-radius: 0 0 v.$radius-lg v.$radius-lg;
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: v.$radius-lg;
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;

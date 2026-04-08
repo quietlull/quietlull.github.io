@@ -127,6 +127,13 @@ export class LanternController {
       this.clearDebug();
     }
 
+    // Compute mouse world position once before the loop (approximate at z=0)
+    let mouseWorld = null;
+    if (this.avoidanceEnabled && this.isMouseOverCanvas) {
+      this._plane.constant = 0;
+      mouseWorld = this.raycaster.ray.intersectPlane(this._plane, this._intersectTarget);
+    }
+
     this.lanterns.forEach((lantern, index) => {
       const offset = lantern.userData.floatOffset;
 
@@ -135,78 +142,71 @@ export class LanternController {
       const floatY = Math.cos(this.time * floatConfig.speed * 0.7 + offset) * floatConfig.amount * 0.5;
 
       // Mouse avoidance (skipped when avoidance disabled)
-      if (this.avoidanceEnabled && this.isMouseOverCanvas) {
+      if (mouseWorld) {
         const config = this.config.lanterns.avoidance;
         lantern.getWorldPosition(this._worldPos);
-        const lanternZ = this._worldPos.z;
-        this._plane.constant = -lanternZ;
-        const mouseAtLanternDepth = this.raycaster.ray.intersectPlane(this._plane, this._intersectTarget);
 
-        if (mouseAtLanternDepth) {
-          // 🐛 DEBUG VISUALIZATION
-          if (this.debugEnabled) {
-            // Show mouse cursor at this depth
-            const cursorSphere = this.createDebugSphere(5, 0xff00ff);
-            cursorSphere.position.copy(mouseAtLanternDepth);
-            lantern.parent.add(cursorSphere);
-            this.debugObjects.push(cursorSphere);
+        if (this.debugEnabled) {
+          const lanternZ = this._worldPos.z;
+          // Show mouse cursor position
+          const cursorSphere = this.createDebugSphere(5, 0xff00ff);
+          cursorSphere.position.copy(mouseWorld);
+          lantern.parent.add(cursorSphere);
+          this.debugObjects.push(cursorSphere);
 
-            // Show proximity radius circle
-            const proximityCircle = this.createDebugCircle(config.proximityRadius, 0x00ff00, lanternZ);
-            proximityCircle.position.x = this._worldPos.x;
-            proximityCircle.position.y = this._worldPos.y;
-            lantern.parent.add(proximityCircle);
-            this.debugObjects.push(proximityCircle);
+          // Show proximity radius circle
+          const proximityCircle = this.createDebugCircle(config.proximityRadius, 0x00ff00, lanternZ);
+          proximityCircle.position.x = this._worldPos.x;
+          proximityCircle.position.y = this._worldPos.y;
+          lantern.parent.add(proximityCircle);
+          this.debugObjects.push(proximityCircle);
 
-            // Show knock radius circle
-            const knockCircle = this.createDebugCircle(config.knockRadius, 0xff0000, lanternZ);
-            knockCircle.position.x = this._worldPos.x;
-            knockCircle.position.y = this._worldPos.y;
-            lantern.parent.add(knockCircle);
-            this.debugObjects.push(knockCircle);
+          // Show knock radius circle
+          const knockCircle = this.createDebugCircle(config.knockRadius, 0xff0000, lanternZ);
+          knockCircle.position.x = this._worldPos.x;
+          knockCircle.position.y = this._worldPos.y;
+          lantern.parent.add(knockCircle);
+          this.debugObjects.push(knockCircle);
+        }
 
+        const dx = this._worldPos.x - mouseWorld.x;
+        const dy = this._worldPos.y - mouseWorld.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-          }
+        if (distance < config.proximityRadius) {
+          const avoidanceFactor = 1 - (distance / config.proximityRadius);
 
-          const dx = this._worldPos.x - mouseAtLanternDepth.x;
-          const dy = this._worldPos.y - mouseAtLanternDepth.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < config.knockRadius) {
+            const timeSinceLastKnock = this.time - lantern.userData.lastKnockTime;
 
-          if (distance < config.proximityRadius) {
-            const avoidanceFactor = 1 - (distance / config.proximityRadius);
-
-            if (distance < config.knockRadius) {
-              const timeSinceLastKnock = this.time - lantern.userData.lastKnockTime;
-
-              if (timeSinceLastKnock > config.knockCooldown) {
-                this._tempVec2.set(dx, dy);
-                if (this._tempVec2.length() > 0.01) {
-                  this._tempVec2.normalize();
-                  const knockDir = this._tempVec2;
-                  const knockForce = config.knockStrength * avoidanceFactor;
-                  lantern.userData.velocity.x += knockDir.x * knockForce;
-                  lantern.userData.velocity.y += knockDir.y * knockForce;
-
-                  const rotationForce = config.knockStrength * avoidanceFactor * config.rotationStrength;
-                  lantern.userData.rotationVelocity.z += knockDir.x * rotationForce;
-                  lantern.userData.rotationVelocity.x += -knockDir.y * rotationForce * 0.5;
-
-                  lantern.userData.lastKnockTime = this.time;
-
-                  // 🐛 DEBUG: Log knock event
-                  if (this.debugEnabled) {
-                    console.log(`🔴 KNOCK! Lantern ${index} at Z: ${lanternZ.toFixed(0)}`);
-                  }
-                }
-              }
-            } else {
+            if (timeSinceLastKnock > config.knockCooldown) {
               this._tempVec2.set(dx, dy);
               if (this._tempVec2.length() > 0.01) {
                 this._tempVec2.normalize();
-                const pushDir = this._tempVec2;
-                lantern.userData.avoidanceOffset.x += pushDir.x * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
-                lantern.userData.avoidanceOffset.y += pushDir.y * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
+                const knockDir = this._tempVec2;
+                const knockForce = config.knockStrength * avoidanceFactor;
+                lantern.userData.velocity.x += knockDir.x * knockForce;
+                lantern.userData.velocity.y += knockDir.y * knockForce;
+
+                const rotationForce = config.knockStrength * avoidanceFactor * config.rotationStrength;
+                lantern.userData.rotationVelocity.z += knockDir.x * rotationForce;
+                lantern.userData.rotationVelocity.x += -knockDir.y * rotationForce * 0.5;
+
+                lantern.userData.lastKnockTime = this.time;
+
+                // 🐛 DEBUG: Log knock event
+                if (this.debugEnabled) {
+                  console.log(`🔴 KNOCK! Lantern ${index}`);
+                }
               }
+            }
+          } else {
+            this._tempVec2.set(dx, dy);
+            if (this._tempVec2.length() > 0.01) {
+              this._tempVec2.normalize();
+              const pushDir = this._tempVec2;
+              lantern.userData.avoidanceOffset.x += pushDir.x * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
+              lantern.userData.avoidanceOffset.y += pushDir.y * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
             }
           }
         }

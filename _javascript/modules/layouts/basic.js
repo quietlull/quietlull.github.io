@@ -1,6 +1,6 @@
 import {
   back2top, breatheToggle, fireworksToggle,
-  initAchievements, initPageTransition, loadTooptip, modeWatcher
+  initAchievements, initCardTilt, initPageTransition, loadTooptip, modeWatcher
 } from '../components';
 
 export function basic() {
@@ -11,4 +11,5 @@ export function basic() {
   loadTooptip();
   initPageTransition();
   initAchievements();
+  initCardTilt();
 }

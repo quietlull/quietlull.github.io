@@ -163,14 +163,14 @@ refactor: true
                       {% include tag-badges.html tags=post.tags %}
                     </div>
                   </div>
-                  {% if post.takeaway %}
-                    <div class="card-takeaway-overlay">
-                      <p class="takeaway-text">
-                        <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
-                      </p>
-                    </div>
-                  {% endif %}
                 </div>
+                {% if post.takeaway %}
+                  <div class="card-takeaway-overlay">
+                    <p class="takeaway-text">
+                      <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
+                    </p>
+                  </div>
+                {% endif %}
               </div>
             </a>
           </article>

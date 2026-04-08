@@ -23,6 +23,7 @@ export function createBaseScene() {
   camera.position.z = CONFIG.camera.positionZ;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   // Post-processing bloom (identical on all pages)

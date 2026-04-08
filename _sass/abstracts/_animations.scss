@@ -425,6 +425,8 @@ html.no-breathe {
 // Living / breathing classes
 .animate-breathe-slow {
   animation: breathe-slow 6s ease-in-out infinite;
+  will-change: box-shadow, border-color;
+  contain: layout style paint;
 }
 
 .animate-heartbeat {

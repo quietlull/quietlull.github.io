@@ -58,7 +58,7 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  will-change: transform;
+  will-change: transform, box-shadow;
   contain: layout style paint;
 }
 
@@ -69,7 +69,7 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border-strong);
   box-shadow: var(--glass-shadow-strong);
-  will-change: transform;
+  will-change: transform, box-shadow;
   contain: layout style paint;
 }
 
@@ -83,7 +83,7 @@
     0 8px 32px var(--shadow-a60),
     0 0 60px var(--gold-03),
     inset 0 1px 0 var(--gold-05);
-  will-change: transform;
+  will-change: transform, box-shadow;
   contain: layout style paint;
 }
 
@@ -234,6 +234,7 @@
   @if v.$enable-breathing {
     animation: $animation $duration ease-in-out infinite;
     animation-delay: $delay;
+    will-change: box-shadow, border-color;
   }
 }
 
