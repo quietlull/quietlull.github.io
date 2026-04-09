@@ -208,22 +208,23 @@
   }
 }
 
-// Animated underline for links (matches React component)
+// Animated underline for links — grows from center outward with amber glow
 @mixin animated-underline($color: var(--link-color)) {
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
     bottom: -0.25rem;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 0;
     height: 1px;
     background: $color;
     box-shadow: var(--link-underline-glow);
     transition: width 300ms ease;
   }
-  
+
   &:hover::after {
     width: 100%;
   }

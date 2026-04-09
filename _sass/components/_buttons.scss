@@ -49,3 +49,16 @@
     visibility: visible;
   }
 }
+
+/* Tactile press feedback on all clickable elements */
+.btn,
+.post-tag,
+.tool-icon,
+.breathe-switch,
+.fireworks-switch,
+.sparkler-switch {
+  &:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}
