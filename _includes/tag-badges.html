@@ -11,11 +11,11 @@
   {% for tag in badge_tags %}
     {% assign t = tag | downcase %}
     {% if t == 'unity' %}
-      <span class="tag-badge" title="Unity"><img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="" class="badge-icon"></span>
+      <span class="tag-badge" title="Unity"><img src="{{ '/assets/img/icons/unity.svg' | absolute_url }}" alt="" class="badge-icon"></span>
     {% elsif t == 'unreal' %}
-      <span class="tag-badge" title="Unreal Engine"><img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="" class="badge-icon"></span>
+      <span class="tag-badge" title="Unreal Engine"><img src="{{ '/assets/img/icons/unreal.svg' | absolute_url }}" alt="" class="badge-icon"></span>
     {% elsif t == 'godot' %}
-      <span class="tag-badge" title="Godot"><img src="{{ '/assets/img/icons/godot.svg' | relative_url }}" alt="" class="badge-icon"></span>
+      <span class="tag-badge" title="Godot"><img src="{{ '/assets/img/icons/godot.svg' | absolute_url }}" alt="" class="badge-icon"></span>
     {% elsif t == 'shader' %}
       <span class="tag-badge" title="Shader"><i class="fas fa-brush" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
     {% elsif t == 'tool' %}
