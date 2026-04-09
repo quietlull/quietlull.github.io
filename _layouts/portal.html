@@ -5,8 +5,25 @@ refactor: true
 
 {% include lang.html %}
 
+<!-- P1: Three.js ambient background — lanterns + fireworks + mouse avoidance -->
+<script src="{{ '/assets/js/dist/three-background-general.min.js' | relative_url }}"></script>
+
 <div id="portal-page">
   <div class="portal-header text-center mb-5">
+    <!-- P7: Time-of-day greeting -->
+    <p class="portal-greeting" id="portal-greeting"></p>
+    <script>
+      /* P7: Set greeting based on time of day */
+      (function() {
+        var h = new Date().getHours();
+        var g = '';
+        if (h >= 5 && h < 12) g = 'Good morning — welcome to my page.';
+        else if (h >= 12 && h < 17) g = 'Good afternoon — welcome to my page.';
+        else if (h >= 17 && h < 21) g = 'Good evening — welcome to my page.';
+        else g = 'Welcome to my page.';
+        document.getElementById('portal-greeting').textContent = g;
+      })();
+    </script>
     <h1 class="portal-title">Rodney Fan</h1>
     <p class="portal-subtitle">Technical Artist &amp; Game Designer</p>
   </div>
@@ -37,7 +54,14 @@ refactor: true
 
   <div class="portal-extras text-center mt-5">
     <a href="{{ '/ramblings/' | relative_url }}" class="portal-side-link">
-      <i class="fas fa-coffee me-2"></i>Ramblings &amp; Personal Work
+      <span class="coffee-steam-wrap me-2">
+        <i class="fas fa-coffee"></i>
+        <svg class="coffee-steam" aria-hidden="true" viewBox="0 0 20 20" fill="none">
+          <path d="M4 20 Q1 15 4 10 Q7 5 4 0" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <path d="M10 20 Q7 15 10 10 Q13 5 10 0" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <path d="M16 20 Q13 15 16 10 Q19 5 16 0" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+      </span>Ramblings &amp; Personal Work
       <i class="fas fa-arrow-right ms-2"></i>
     </a>
   </div>

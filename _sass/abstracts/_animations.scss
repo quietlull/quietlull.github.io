@@ -285,16 +285,51 @@
 
 
 // Disabled breathing — applied by .no-breathe on <html>
+// Scoped to breathing-type animations only.
+// Preserves: shimmer, pinned-glow, entrance (fade-in-*), page transitions,
+//            avatar spin (chase-tail), float, and hover/interactive effects.
 html.no-breathe {
-  *,
-  *::before,
-  *::after {
-    animation-name: none !important;
-  }
+  // ── Topbar & navigation ──
+  #topbar,
+  .nav-item.active .nav-link,
 
-  // Re-enable avatar spin (interactive hover, not decorative breathing)
-  #avatar img {
-    animation-name: chase-tail !important;
+  // ── About me / landing-box containers ──
+  .text-container,
+  #landing-box::before,
+  #landing-box::after,
+
+  // ── Blog preview vertical bars ──
+  .post-vertical-bar .vertical-bar-container,
+
+  // ── Portal page ──
+  .portal-door,
+
+  // ── Project / post cards ──
+  .posts-grid .card,
+  .post-nav-card,
+
+  // ── Blog controls bar ──
+  .blog-controls,
+
+  // ── Section & card icon boxes ──
+  .section-icon-box,
+  .section-icon-box .icon-dot,
+  .card-icon-box,
+  .card-icon-box .card-icon-dot,
+
+  // ── Section landing elements ──
+  .demo-reel-placeholder i,
+
+  // ── Breathing toggle track glow ──
+  .breathe-switch input:checked ~ .breathe-switch-track,
+
+  // ── Utility classes ──
+  .animate-breathing,
+  .animate-breathe-slow,
+  .animate-heartbeat,
+  .animate-breathe-ring,
+  .animate-pulse-slow {
+    animation: none !important;
   }
 }
 
@@ -686,7 +721,8 @@ html.no-breathe {
     .section-icon-box .icon-dot,
     .post-card .card,
     .text-container,
-    #section-landing::before {
+    #section-landing::before,
+    .portal-door {
       animation: none !important;
     }
 

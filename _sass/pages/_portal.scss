@@ -2,20 +2,42 @@
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/mixins' as mx;
 
+// ============================================================================
+// PORTAL PAGE
+// ============================================================================
+
 #portal-page {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 60vh;
   padding: 2rem 0;
+
 }
 
+// ============================================================================
+// PORTAL HEADER — title, subtitle, greeting
+// ============================================================================
+
 .portal-header {
+  // P7: Time-of-day greeting
+  .portal-greeting {
+    font-size: 0.85rem;
+    color: var(--text-muted-color);
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    margin-bottom: 0.75rem;
+    font-family: v.$font-family-mono;
+    animation: fade-in-up 0.6s ease-out 0.1s both;
+  }
+
   .portal-title {
     font-size: 3rem;
     font-weight: 700;
+    font-family: v.$font-family-heading;
     letter-spacing: -0.02em;
     margin-bottom: 0.5rem;
+    animation: fade-in-up 0.6s ease-out 0.25s both;
 
     @include bp.lte(bp.get(md)) {
       font-size: 2.25rem;
@@ -26,8 +48,13 @@
     font-size: 1.25rem;
     color: var(--text-muted-color);
     margin-bottom: 0;
+    animation: fade-in-up 0.6s ease-out 0.45s both;
   }
 }
+
+// ============================================================================
+// PORTAL DOORS — two glass cards
+// ============================================================================
 
 .portal-doors {
   display: grid;
@@ -52,6 +79,21 @@
   position: relative;
   overflow: hidden;
   @include mx.transition(transform, border-color, box-shadow);
+
+  // P5: Entrance stagger — doors appear after header
+  animation: fade-in-up 0.6s ease-out 0.7s both;
+
+  // P3: Breathing — tech-art door
+  &.portal-door-tech-art {
+    animation: fade-in-up 0.6s ease-out 0.7s both,
+               breathe-slow 6s ease-in-out 1.3s infinite;
+  }
+
+  // P3: Breathing — game-design door (warm variant, offset rhythm)
+  &.portal-door-game-design {
+    animation: fade-in-up 0.6s ease-out 0.9s both,
+               breathe-warm 6.5s ease-in-out 1.5s infinite;
+  }
 
   &:hover {
     transform: translateY(-4px);
@@ -109,7 +151,14 @@
   }
 }
 
+// ============================================================================
+// PORTAL EXTRAS — ramblings link
+// ============================================================================
+
 .portal-extras {
+  // P5: Entrance stagger — ramblings link last
+  animation: fade-in-up 0.6s ease-out 1.1s both;
+
   .portal-side-link {
     display: inline-flex;
     align-items: center;
@@ -121,11 +170,58 @@
     border: 1px solid var(--glass-border);
     @include mx.transition(color, border-color, background-color);
 
+    // P6: Coffee steam wrap — holds icon + SVG steam
+    .coffee-steam-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+
+      .coffee-steam {
+        position: absolute;
+        bottom: 85%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 14px;
+        height: 14px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+    }
+
     &:hover {
       color: var(--text-color);
       border-color: var(--glass-border-strong);
       background: var(--glow-subtle);
       text-decoration: none;
+
+      .coffee-steam {
+        animation: steam-rise 2s ease-in-out infinite;
+      }
     }
+  }
+}
+
+// P6: Steam SVG — fade in, rise gently, wiggle, fade out
+@keyframes steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0);
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(calc(-50% + 1px)) translateY(-2px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(calc(-50% - 1px)) translateY(-5px);
+  }
+  85% {
+    opacity: 0.3;
+    transform: translateX(calc(-50% + 1px)) translateY(-9px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px);
   }
 }

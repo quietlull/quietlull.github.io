@@ -25,7 +25,7 @@ refactor: true
     {% endif %}
 
     {% if page.tools_strip %}
-    <div class="tools-strip mt-4"-stagger>
+    <div class="tools-strip mt-4">
       {% for tool in page.tools_strip %}
         {% assign t = tool | downcase %}
         {% if t == 'unity' %}
@@ -95,7 +95,7 @@ refactor: true
       </a>
     </div>
 
-    <div class="posts-grid row g-4"-stagger>
+    <div class="posts-grid row g-4">
       {% for post in projects limit: 6 %}
         <div class="col-12 col-md-6 col-lg-4">
           <article class="post-card h-100{% if post.pin %} pinned{% endif %}">
