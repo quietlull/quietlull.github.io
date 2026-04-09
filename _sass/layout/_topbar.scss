@@ -84,10 +84,11 @@
       margin-left: 1rem;
       
       .site-title {
-        @include mx.label(1.5rem, 300, var(--site-title-color));
+        @include mx.label(1.5rem, 400, var(--site-title-color));
+        font-family: v.$font-family-heading;
         line-height: 1.2;
         margin-bottom: 0.25rem;
-        letter-spacing: 0.05em;
+        letter-spacing: -0.02em;
         transition: color var(--transition-fast) ease;
       }
 
