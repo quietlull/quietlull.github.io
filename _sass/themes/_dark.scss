@@ -49,14 +49,14 @@
   --img-bg: radial-gradient(circle, var(--slate-900) 0%, #1a1a1a 100%);
 
   // ==========================================================================
-  // TEXT - Amber tinted for warm aesthetic
+  // TEXT - Warm stone palette for readability on dark backgrounds
   // ==========================================================================
-  --text-color: rgba(254, 243, 199, 0.9);              // amber-100/90
-  --text-muted-color: rgba(254, 243, 199, 0.6);        // amber-100/60
-  --text-muted-highlight-color: rgba(254, 243, 199, 0.7);
-  --text-very-muted: rgba(254, 243, 199, 0.3);         // subtle hints
-  --heading-color: rgba(254, 243, 199, 0.95);          // amber-50/95 - crisp
-  --label-color: rgba(254, 243, 199, 0.7);
+  --text-color: #E8E0D4;                                // warm stone - less saturated for long reading
+  --text-muted-color: rgba(232, 224, 212, 0.6);        // warm stone/60
+  --text-muted-highlight-color: rgba(232, 224, 212, 0.7);
+  --text-very-muted: rgba(232, 224, 212, 0.3);         // subtle hints
+  --heading-color: #FFF9F0;                             // lantern paper off-white - crisp
+  --label-color: rgba(232, 224, 212, 0.7);
 
   // ============================================================================
   // ICON COLORS - Add after text colors section (~line 60)
