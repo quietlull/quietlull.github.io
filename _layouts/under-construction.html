@@ -19,7 +19,7 @@ layout: default
 <script>
   (function() {
     var params = new URLSearchParams(window.location.search);
-    // Derive section from URL path: /tech-art/under-construction/ → tech-art
+    /* Derive section from URL path: /tech-art/under-construction/ → tech-art */
     var pathParts = window.location.pathname.split('/').filter(Boolean);
     var section = pathParts.length > 1 ? pathParts[0] : null;
     var title = params.get('title');
@@ -56,7 +56,7 @@ layout: default
       scored.sort(function(a, b) { return b.score - a.score; });
       var top = scored.slice(0, 3);
 
-      // Fallback: if no tag matches, show most recent posts from same section
+      /* Fallback: if no tag matches, show most recent posts from same section */
       if (top.length === 0) {
         var sectionPosts = allPosts.filter(function(p) { return p.section === section; });
         top = sectionPosts.slice(0, 3).map(function(p) { return { title: p.title, url: p.url, score: 0 }; });
@@ -76,7 +76,7 @@ layout: default
       }
     }
 
-    // Fallback: no tags param at all — show recent posts from section
+    /* Fallback: no tags param at all — show recent posts from section */
     if (!tags && section) {
       var allPosts = [
         {% for post in site.posts %}{% unless post.wip %}
