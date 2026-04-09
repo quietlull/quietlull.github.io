@@ -56,13 +56,42 @@ layout: default
       scored.sort(function(a, b) { return b.score - a.score; });
       var top = scored.slice(0, 3);
 
+      // Fallback: if no tag matches, show most recent posts from same section
+      if (top.length === 0) {
+        var sectionPosts = allPosts.filter(function(p) { return p.section === section; });
+        top = sectionPosts.slice(0, 3).map(function(p) { return { title: p.title, url: p.url, score: 0 }; });
+      }
+
       if (top.length > 0) {
         var container = document.getElementById('recommendations-list');
         top.forEach(function(rec) {
           var a = document.createElement('a');
           a.href = rec.url;
           a.className = 'recommendation-card';
-          a.innerHTML = '<span class="rec-label"><i class="fas fa-fire"></i> Related Project</span><span class="rec-title">' + rec.title + '</span>';
+          var label = rec.score > 0 ? '<i class="fas fa-fire"></i> Related Project' : '<i class="fas fa-compass"></i> Explore';
+          a.innerHTML = '<span class="rec-label">' + label + '</span><span class="rec-title">' + rec.title + '</span>';
+          container.appendChild(a);
+        });
+        document.getElementById('recommendations').style.display = '';
+      }
+    }
+
+    // Fallback: no tags param at all — show recent posts from section
+    if (!tags && section) {
+      var allPosts = [
+        {% for post in site.posts %}{% unless post.wip %}
+        { "title": {{ post.title | jsonify }}, "url": {{ post.url | jsonify }}, "section": {{ post.section | jsonify }}, "tags": {{ post.tags | jsonify }} },
+        {% endunless %}{% endfor %}
+      ];
+      var sectionPosts = allPosts.filter(function(p) { return p.section === section; });
+      var top = sectionPosts.slice(0, 3);
+      if (top.length > 0) {
+        var container = document.getElementById('recommendations-list');
+        top.forEach(function(rec) {
+          var a = document.createElement('a');
+          a.href = rec.url;
+          a.className = 'recommendation-card';
+          a.innerHTML = '<span class="rec-label"><i class="fas fa-compass"></i> Explore</span><span class="rec-title">' + rec.title + '</span>';
           container.appendChild(a);
         });
         document.getElementById('recommendations').style.display = '';
