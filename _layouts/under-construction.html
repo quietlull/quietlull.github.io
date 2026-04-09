@@ -3,19 +3,70 @@ layout: default
 ---
 <div class="under-construction">
   <div class="construction-icon">🏮</div>
-  <h1 class="construction-title">Under Construction</h1>
+  <h1 class="construction-title" id="construction-title">Under Construction</h1>
   <p class="construction-subtitle">This project is still being crafted. Like a lantern waiting for its flame — check back soon!</p>
   <a id="back-link" href="{{ '/tech-art/projects/' | relative_url }}" class="btn btn-outline-primary mt-3">
     <i class="fas fa-arrow-left me-1"></i>Back to Projects
   </a>
+
+  <div id="recommendations" class="recommendations" style="display:none;">
+    <p class="recommendations-title">Pages you might like</p>
+    <div id="recommendations-list" class="recommendations-grid"></div>
+  </div>
 </div>
+
+{% comment %}Build lean JSON of non-WIP posts for recommendations{% endcomment %}
 <script>
   (function() {
     var params = new URLSearchParams(window.location.search);
-    var section = params.get('section');
+    // Derive section from URL path: /tech-art/under-construction/ → tech-art
+    var pathParts = window.location.pathname.split('/').filter(Boolean);
+    var section = pathParts.length > 1 ? pathParts[0] : null;
+    var title = params.get('title');
+    var tags = params.get('tags');
     var link = document.getElementById('back-link');
+
     if (section && link) {
       link.href = '/' + section + '/projects/';
+    }
+
+    if (title) {
+      document.getElementById('construction-title').textContent = title;
+    }
+
+    if (tags && section) {
+      var tagList = tags.split(',').map(function(t) { return t.trim().toLowerCase(); }).filter(Boolean);
+
+      var allPosts = [
+        {% for post in site.posts %}{% unless post.wip %}
+        { "title": {{ post.title | jsonify }}, "url": {{ post.url | jsonify }}, "section": {{ post.section | jsonify }}, "tags": {{ post.tags | jsonify }} },
+        {% endunless %}{% endfor %}
+      ];
+
+      var scored = [];
+      allPosts.forEach(function(post) {
+        if (!post.section || post.section !== section) return;
+        var postTags = (post.tags || []).map(function(t) { return t.toLowerCase(); });
+        var shared = tagList.filter(function(t) { return postTags.indexOf(t) !== -1; });
+        if (shared.length > 0) {
+          scored.push({ title: post.title, url: post.url, score: shared.length });
+        }
+      });
+
+      scored.sort(function(a, b) { return b.score - a.score; });
+      var top = scored.slice(0, 3);
+
+      if (top.length > 0) {
+        var container = document.getElementById('recommendations-list');
+        top.forEach(function(rec) {
+          var a = document.createElement('a');
+          a.href = rec.url;
+          a.className = 'recommendation-card';
+          a.innerHTML = '<span class="rec-label"><i class="fas fa-fire"></i> Related Project</span><span class="rec-title">' + rec.title + '</span>';
+          container.appendChild(a);
+        });
+        document.getElementById('recommendations').style.display = '';
+      }
     }
   })();
 </script>

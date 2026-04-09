@@ -17,6 +17,23 @@ export function initPostFilter() {
   const totalCount = allItems.length;
   const activeTags = new Set();
 
+  // Clear filters button
+  let clearBtn = null;
+  if (pillContainer) {
+    clearBtn = document.createElement('button');
+    clearBtn.className = 'btn btn-sm filter-pill filter-clear';
+    clearBtn.innerHTML = '<i class="fas fa-times"></i> Clear';
+    clearBtn.style.display = 'none';
+    pillContainer.appendChild(clearBtn);
+
+    clearBtn.addEventListener('click', () => {
+      activeTags.clear();
+      pills.forEach(p => p.classList.remove('active'));
+      if (searchInput) searchInput.value = '';
+      applyFilter();
+    });
+  }
+
   function getTitle(el) {
     return (el.dataset.title || '').toLowerCase();
   }
@@ -75,6 +92,35 @@ export function initPostFilter() {
         container.parentElement.appendChild(emptyState);
       }
 
+      // Update pill match counts
+      pills.forEach(pill => {
+        const tag = pill.dataset.tag.toLowerCase();
+        let count = 0;
+        allItems.forEach(item => {
+          const tags = getTags(item);
+          if (!tags.includes(tag)) return;
+          // Check if item would be visible with current search + other active tags
+          const matchesSearch = !query || getTitle(item).includes(query)
+            || tags.some(t => t.includes(query));
+          const otherTags = [...activeTags].filter(t => t !== tag);
+          const matchesOther = otherTags.length === 0
+            || otherTags.every(t => tags.includes(t));
+          if (matchesSearch && matchesOther) count++;
+        });
+        let countSpan = pill.querySelector('.pill-count');
+        if (!countSpan) {
+          countSpan = document.createElement('span');
+          countSpan.className = 'pill-count';
+          pill.appendChild(countSpan);
+        }
+        countSpan.textContent = count;
+        pill.classList.toggle('pill-empty', count === 0);
+      });
+
+      // Show/hide clear button
+      const hasFilters = activeTags.size > 0 || query.length > 0;
+      if (clearBtn) clearBtn.style.display = hasFilters ? '' : 'none';
+
       if (visibleCount === 0) {
         const activeTagList = [...activeTags];
         let icon = '';
@@ -123,4 +169,7 @@ export function initPostFilter() {
       applyFilter();
     });
   });
+
+  // Initial count update
+  applyFilter();
 }

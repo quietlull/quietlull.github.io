@@ -13,6 +13,6 @@ duration: Ongoing
 pin: false
 wip: true
 image:
-  path: /assets/img/placeholder-wip.png
+  path: assets/img/placeholder-wip.svg
 ---
 Coming soon.

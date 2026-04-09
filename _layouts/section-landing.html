@@ -99,8 +99,10 @@ refactor: true
       {% for post in projects limit: 6 %}
         <div class="col-12 col-md-6 col-lg-4">
           <article class="post-card h-100{% if post.pin %} pinned{% endif %}">
+            {% assign wip_tags = post.tags | where_exp: 't', 't != "project"' | join: ',' %}
             {% if post.wip %}
-              <a href="{{ '/under-construction/?section=' | append: section | relative_url }}" class="card-link">
+              {% assign uc_url = '/' | append: section | append: '/under-construction/?title=' | append: post.title | append: '&tags=' | append: wip_tags %}
+              <a href="{{ uc_url | relative_url }}" class="card-link">
             {% else %}
               <a href="{{ post.url | relative_url }}" class="card-link">
             {% endif %}

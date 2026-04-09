@@ -146,6 +146,27 @@
           opacity: 1;
         }
       }
+
+      &.pill-empty {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .pill-count {
+        font-size: 0.7rem;
+        opacity: 0.6;
+        margin-left: -0.15rem;
+      }
+
+      &.filter-clear {
+        border-color: var(--glass-border-strong);
+        color: var(--text-muted-color);
+
+        &:hover {
+          color: var(--amber-400);
+          border-color: var(--amber-400);
+        }
+      }
     }
   }
 
