@@ -27,11 +27,11 @@ script_includes:
         <span class="meta-chip">
           {% assign eng = page.engine | downcase %}
           {% if eng contains 'unity' %}
-            <img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="" class="meta-chip-icon">
+            <img src="{{ '/assets/img/icons/unity.svg' | absolute_url }}" alt="" class="meta-chip-icon">
           {% elsif eng contains 'unreal' %}
-            <img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="" class="meta-chip-icon">
+            <img src="{{ '/assets/img/icons/unreal.svg' | absolute_url }}" alt="" class="meta-chip-icon">
           {% elsif eng contains 'godot' %}
-            <img src="{{ '/assets/img/icons/godot.svg' | relative_url }}" alt="" class="meta-chip-icon">
+            <img src="{{ '/assets/img/icons/godot.svg' | absolute_url }}" alt="" class="meta-chip-icon">
           {% elsif eng contains 'blender' %}
             <i class="fas fa-cube" style="color: #f5792a;"></i>
           {% else %}
