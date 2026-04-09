@@ -252,6 +252,8 @@ main {
   border: 1px solid var(--btn-border-color);
   padding: 0 0.4rem;
   color: var(--text-muted-color);
+  font-family: v.$font-family-mono;
+  font-size: 0.85em;
   line-height: 1.3rem;
 
   &:not(:last-child) {

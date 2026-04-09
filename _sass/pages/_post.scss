@@ -22,9 +22,8 @@
   padding: 1.25rem 1.5rem;
   margin-top: 1rem;
   border-left: 3px solid var(--gold-50);
-  animation: breathe-warm 6s ease-in-out infinite;
-
   .tldr-label {
+    font-family: v.$font-family-mono;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -49,9 +48,8 @@
   padding: 1.25rem 1.5rem;
   margin-top: 1.5rem;
   border-left: 3px solid var(--orange-a50);
-  animation: breathe-slow 7s ease-in-out infinite;
-
   .takeaway-label {
+    font-family: v.$font-family-mono;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -68,22 +66,25 @@
   }
 }
 
-// Glass container for post body content
+// Reading well — nearly opaque, calm reading environment
 .post-content-container {
-  @include mx.glass;
+  background: rgba(8, 15, 27, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
   border-radius: v.$radius-xl;
   padding: 0.75rem 3rem 2.5rem;
   margin-top: 0.25rem;
-  animation: breathe-slow 8s ease-in-out infinite;
 
   @include bp.lte(bp.get(md)) {
     padding: 0.5rem 1.25rem 1.5rem;
     border-radius: v.$radius-lg;
   }
 
-  // Constrain line length for readability — wide enough for desktop
+  // Constrain line length for optimal readability
   .content {
-    max-width: 100%;
+    max-width: 75ch;
     margin: 0 auto;
 
     > h2:first-child,
@@ -91,14 +92,27 @@
     > h4:first-child {
       margin-top: 0;
     }
+
+    /* Typographic rhythm — more breathing room around sections */
+    h2 {
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+    }
   }
 
-  // Image treatment — match glass aesthetic
+  // Image treatment — framed and grounded
   .content img:not(.emoji) {
     border-radius: v.$radius-lg;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    margin: 1rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.2);
+    margin: 2rem 0;
   }
 }
 
@@ -122,6 +136,7 @@ header {
       gap: 0.45rem;
       padding: 0.35rem 0.85rem;
       border-radius: 2rem;
+      font-family: v.$font-family-mono;
       font-size: 0.85rem;
       font-weight: 500;
       background: var(--glow-subtle);
@@ -721,7 +736,11 @@ article > header {
 
 // --- Section cards split at h2 boundaries ---
 .post-section {
-  @include mx.glass;
+  background: rgba(8, 15, 27, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
   border-radius: v.$radius-lg;
   padding: 2rem 2.5rem;
   margin-bottom: 1.5rem;
@@ -735,9 +754,9 @@ article > header {
     margin-bottom: 1rem;
   }
 
-  // Let section content breathe on desktop
+  // Constrain line length within sections
   > p, > ul, > ol, > blockquote {
-    max-width: 80ch;
+    max-width: 75ch;
   }
 
   // First section gets no top margin for its heading
@@ -745,12 +764,26 @@ article > header {
     margin-top: 0;
   }
 
-  // Give h2s inside sections a nice top accent
+  // Section heading accent
   > h2:first-child {
     margin-top: 0;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     margin-bottom: 1.25rem;
+  }
+
+  // Image framing within sections
+  img:not(.emoji) {
+    border-radius: v.$radius-lg;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.2);
+    margin: 2rem 0;
+  }
+
+  // Paragraph rhythm
+  p {
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -805,9 +838,9 @@ article > header {
   }
 }
 
-// --- Images break out of content column for visual impact ---
+// --- Images centered within reading column ---
 .post-content-container .content img:not(.emoji) {
-  max-width: min(100%, 85ch);
+  max-width: 100%;
   width: 100%;
   display: block;
   margin-left: auto;
