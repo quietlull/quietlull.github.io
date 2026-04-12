@@ -156,6 +156,128 @@
   margin: 0;
 }
 
+// ── Trophy Case ──────────────────────────────────────────────
+.trophy-case {
+  width: 100%;
+
+  .text-container {
+    animation: breathe-slow 7.5s ease-in-out infinite;
+    animation-delay: 2s;
+    --glow-color: var(--gold-22);
+    --glow-color-hover: var(--gold-50);
+    --glow-border: var(--amber-a25);
+    --orb-x: 50%;
+    --orb-y: 45%;
+    --orb-speed: 8s;
+    --orb-delay: 2s;
+  }
+}
+
+.trophy-title {
+  margin: 0 0 12px;
+  text-shadow: 0 2px 10px var(--gold-15);
+}
+
+.trophy-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.trophy-count {
+  font-family: var(--ff-mono);
+  font-size: 0.85rem;
+  color: var(--gold-80, #d4a);
+  white-space: nowrap;
+}
+
+.trophy-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.trophy-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-50, #f59e0b), var(--amber-60, #d97706));
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.trophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 10px;
+}
+
+.trophy-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14px 8px 10px;
+  border-radius: v.$radius-lg;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(var(--breathe-border-hue), 0.25);
+    box-shadow: 0 4px 16px rgba(var(--breathe-hue), 0.12);
+  }
+
+  .badge-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    margin-bottom: 6px;
+    transition: filter 0.3s ease;
+  }
+
+  .badge-name {
+    font-family: var(--ff-heading);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--heading-color);
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+
+  .badge-desc {
+    font-size: 0.65rem;
+    color: var(--meta-color);
+    line-height: 1.3;
+    opacity: 0.7;
+  }
+
+  // ── Unlocked ──
+  &.unlocked {
+    border-color: rgba(var(--breathe-border-hue), 0.18);
+    background: rgba(var(--breathe-hue), 0.05);
+
+    .badge-icon { filter: none; }
+  }
+
+  // ── Locked ──
+  &.locked {
+    opacity: 0.45;
+
+    .badge-icon { filter: grayscale(1) brightness(0.6); }
+    .badge-name { color: var(--meta-color); }
+  }
+
+  // ── Secret (locked) ──
+  &.secret {
+    opacity: 0.3;
+
+    .badge-icon { filter: grayscale(1) brightness(0.4); }
+    .badge-name { font-style: italic; }
+  }
+}
+
 // ✨ FIXED: Using proper breakpoint mixin
 @include bp.lte(bp.get(md)) {
   .landing-content {
@@ -173,5 +295,18 @@
   
   .text-container {
     padding: 20px;
+  }
+
+  .trophy-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+  }
+
+  .trophy-badge {
+    padding: 10px 6px 8px;
+
+    .badge-icon { font-size: 1.3rem; }
+    .badge-name { font-size: 0.7rem; }
+    .badge-desc { font-size: 0.6rem; }
   }
 }

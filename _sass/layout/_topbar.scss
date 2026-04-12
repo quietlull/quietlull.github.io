@@ -175,6 +175,24 @@
         &:nth-child(2) .nav-link { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; animation-duration: 7.1s; animation-delay: 1.2s; }
         &:nth-child(3) .nav-link { animation-duration: 9.7s; animation-delay: 2.5s; }
 
+        // Reward sash — small diagonal "NEW" folded into top-right corner
+        .nav-ribbon {
+          position: absolute;
+          top: 2px;
+          right: -8px;
+          background: linear-gradient(135deg, var(--gold-80, #d4a017), var(--amber-60, #d97706));
+          color: #1a1a2e;
+          font-family: var(--ff-mono);
+          font-size: 0.28rem;
+          font-weight: 800;
+          letter-spacing: 0.3px;
+          padding: 0 9px;
+          line-height: 1.4;
+          transform: rotate(45deg);
+          pointer-events: none;
+          z-index: 3;
+        }
+
         // Active state
         &.active .nav-link {
           color: var(--topbar-active-color);
@@ -460,6 +478,15 @@
       margin: 0 1rem;
     }
   }
+}
+
+// ============================================================================
+// Reward system
+// ============================================================================
+
+// Hidden until achievement unlocks the feature
+.reward-locked {
+  display: none !important;
 }
 
 // ============================================================================

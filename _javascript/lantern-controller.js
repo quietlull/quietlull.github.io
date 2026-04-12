@@ -83,13 +83,11 @@ export class LanternController {
         const isEmber = hit.geometry.type === 'SphereGeometry';
 
         if (isEmber) {
-          document.dispatchEvent(new Event('achievement:fireflytouched'));
           // Visual feedback: brief flash + scatter
           const origScale = hit.scale.clone();
           hit.scale.multiplyScalar(2);
           setTimeout(() => { hit.scale.copy(origScale); }, 300);
         } else {
-          document.dispatchEvent(new Event('achievement:lanternknock'));
           // Visual feedback: wobble kick
           const kick = (Math.random() - 0.5) * 0.3;
           hit.userData.rotationVelocity.x += kick;
@@ -111,6 +109,7 @@ export class LanternController {
     mesh.userData.rotationVelocity = new THREE.Vector3(0, 0, 0);
     mesh.userData.baseScale = mesh.scale.clone();
     mesh.userData.lastKnockTime = 0;
+    mesh.userData.lastAchievementDispatch = 0;
 
     this.lanterns.push(mesh);
   }
@@ -228,6 +227,16 @@ export class LanternController {
                   lantern.userData.rotationVelocity.x += -knockDir.y * rotationForce * 0.5;
 
                   lantern.userData.lastKnockTime = this.time;
+
+                  // Achievement dispatch (per-object 1s cooldown)
+                  if (this.time - lantern.userData.lastAchievementDispatch > 1.0) {
+                    lantern.userData.lastAchievementDispatch = this.time;
+                    if (lantern.geometry.type === 'SphereGeometry') {
+                      document.dispatchEvent(new Event('achievement:fireflytouched'));
+                    } else {
+                      document.dispatchEvent(new Event('achievement:lanternknock'));
+                    }
+                  }
 
                   if (this.debugEnabled) {
                     console.log(`🔴 KNOCK! Lantern ${index}`);

@@ -111,6 +111,7 @@ const DEFAULT_STATE = {
   earlyBird: false,
   breathingEnabled: false,  // kept for backwards compat
   toolsHoveredSet: [],      // which tools have been hovered on current page
+  rewardsSeen: [],          // reward IDs the user has "seen" (visited About page)
 };
 
 function loadState() {
@@ -121,6 +122,18 @@ function loadState() {
     // Merge saved state over defaults (old boolean scrolledToEnd is ignored —
     // pagesScrolledToEnd array must be earned fresh)
     const state = { ...DEFAULT_STATE, ...parsed };
+
+    // Migration: if rewardsSeen didn't exist before, seed it with all currently
+    // earned rewards so old unlocks don't trigger "NEW" ribbon
+    if (!parsed.rewardsSeen) {
+      state.rewardsSeen = [];
+      for (const a of ACHIEVEMENTS) {
+        if (a.reward && state.unlocked.includes(a.id)) {
+          state.rewardsSeen.push(a.reward);
+        }
+      }
+    }
+
     return state;
   } catch (_) {
     return { ...DEFAULT_STATE };
@@ -196,6 +209,101 @@ function checkAchievements(state) {
         showToast(a);
       }
     }
+  }
+  // Update trophy case + reward unlocks
+  renderTrophyCase(state);
+  applyRewards(state);
+}
+
+// ── Trophy case (About page) ──────────────────────────────────
+function renderTrophyCase(state) {
+  const grid = document.getElementById('trophy-grid');
+  if (!grid) return;
+
+  const total = ACHIEVEMENTS.length;
+  const count = state.unlocked.length;
+  const pct = total > 0 ? (count / total * 100).toFixed(0) : 0;
+
+  let html = '<div class="trophy-summary">' +
+    '<span class="trophy-count">' + count + ' / ' + total + '</span>' +
+    '<div class="trophy-bar"><div class="trophy-bar-fill" style="width:' + pct + '%"></div></div>' +
+  '</div>';
+
+  // ACHIEVEMENTS array is already ordered by category — render flat
+  for (const a of ACHIEVEMENTS) {
+    const unlocked = state.unlocked.includes(a.id);
+    const isSecret = a.cat === 'secret';
+    const progress = a.progress ? a.progress(state) : null;
+
+    let cls = 'trophy-badge';
+    if (unlocked) cls += ' unlocked';
+    else if (isSecret) cls += ' secret';
+    else cls += ' locked';
+
+    const icon = unlocked || !isSecret ? a.icon : '\u2753';
+    const name = unlocked || !isSecret ? a.title : '???';
+    const desc = unlocked || !isSecret ? a.desc : '???';
+    const progText = progress && !unlocked
+      ? ' (' + progress[0] + '/' + progress[1] + ')'
+      : '';
+
+    html += '<div class="' + cls + '">' +
+      '<span class="badge-icon">' + icon + '</span>' +
+      '<span class="badge-name">' + name + '</span>' +
+      '<span class="badge-desc">' + desc + progText + '</span>' +
+    '</div>';
+  }
+
+  grid.innerHTML = html;
+}
+
+// ── Reward unlock system ──────────────────────────────────────
+function applyRewards(state) {
+  // Gather all earned rewards
+  const earnedRewards = [];
+  for (const a of ACHIEVEMENTS) {
+    if (a.reward && state.unlocked.includes(a.id)) {
+      earnedRewards.push(a.reward);
+    }
+  }
+
+  // --- Apply specific feature unlocks ---
+
+  // Pyrotechnician → show auto-fireworks toggle
+  if (earnedRewards.includes('auto-fireworks')) {
+    const toggle = document.getElementById('fireworks-toggle');
+    if (toggle) toggle.classList.remove('reward-locked');
+  }
+
+  // Lantern shape/color/panel — tracked but deferred until meshes are added
+
+  // --- "NEW" ribbon on About nav ---
+  const isAboutPage = window.location.pathname.includes('/about');
+  const unseenRewards = earnedRewards.filter(r => !state.rewardsSeen.includes(r));
+
+  // On About page: auto-mark rewards as seen
+  if (isAboutPage && unseenRewards.length > 0) {
+    unseenRewards.forEach(r => {
+      if (!state.rewardsSeen.includes(r)) state.rewardsSeen.push(r);
+    });
+    saveState(state);
+    return; // No ribbon needed — user is already here
+  }
+
+  // On other pages: show/hide ribbon
+  const aboutNav = document.querySelector('[data-nav="about"]');
+  if (!aboutNav) return;
+
+  if (unseenRewards.length > 0 && !aboutNav.querySelector('.nav-ribbon')) {
+    aboutNav.classList.add('has-new-reward');
+    const ribbon = document.createElement('span');
+    ribbon.className = 'nav-ribbon';
+    ribbon.textContent = 'NEW';
+    aboutNav.querySelector('.nav-link').appendChild(ribbon);
+  } else if (unseenRewards.length === 0) {
+    aboutNav.classList.remove('has-new-reward');
+    const existing = aboutNav.querySelector('.nav-ribbon');
+    if (existing) existing.remove();
   }
 }
 
@@ -448,6 +556,8 @@ export function initAchievements() {
 
   setupTrackers(state);
   checkAchievements(state);
+  renderTrophyCase(state);
+  applyRewards(state);
 
   // Debug panel: Ctrl+Shift+A
   document.addEventListener('keydown', (e) => {

@@ -1,6 +1,6 @@
 # Project Status — Living Document
 
-**Last updated:** 2026-04-11
+**Last updated:** 2026-04-12
 **Purpose:** Single source of truth for AI sessions. Read this FIRST after context compaction. Run `/sync-docs` after making changes.
 
 ---
@@ -54,7 +54,7 @@
 ### System & Polish
 | Feature | What it does | Key Files | Status |
 |---------|-------------|-----------|--------|
-| **Achievements** | 27 achievements across 5 categories, debug panel (Ctrl+Shift+A), event-driven tracking | `achievements.js` | Complete |
+| **Achievements** | 29 achievements across 5 categories, debug panel (Ctrl+Shift+A), event-driven tracking | `achievements.js` | Complete |
 | **Breathing Toggle** | Enable/disable all breathing animations, respects prefers-reduced-motion | `breathe-toggle.js`, `_animations.scss` | Complete |
 | **Sparkler Toggle** | Enable/disable cursor sparkler effect | `fireworks-toggle.js` (shared pattern) | Complete |
 | **Fireworks Toggle** | Enable/disable auto-fireworks | `fireworks-toggle.js` | Complete |
@@ -103,18 +103,50 @@ Single shared `$breathe-selectors` Sass list in `_animations.scss`. Used by both
 `mouse-trail.js` auto-detects breathing elements by checking `animationName` for `breathe`/`throb` patterns. It walks up the DOM from the hovered element and samples `borderColor` from the first breathing ancestor. No separate selector list to maintain — any element with a breathing animation automatically works with the sparkler.
 
 ### JS Module System
-- `config/storage-keys.js` — single source for localStorage keys
-- `utils/color-utils.js` — shared parseRGB, rgbToHSL, isWarmColor
-- Rollup builds separate bundles per page type; Three.js included in each (~500KB each)
+48 JS source files (~6,800 lines), 7 Rollup entry points.
+
+**Entry points** (each pulled into a separate bundle):
+| Entry | Page type | Key components loaded |
+|-------|-----------|----------------------|
+| `home.js` | Home / section landing | layout, searchbar, locale |
+| `commons.js` | Blog/project lists | layout, post-filter |
+| `page.js` | General pages | images, popups, clipboard, mermaid, TOC |
+| `post.js` | Post pages | page.js components + post-enhance (sections, progress, confetti, fireflies) |
+| `categories.js` | Category page | category-collapse, searchbar |
+| `misc.js` | Misc pages | layout, locale |
+| `pwa/app.js` | All pages (async) | service worker registration |
+
+**Shared modules:**
+- `layouts/basic.js` — initializes mode watcher, breathe/fireworks/sparkler toggles, back-to-top, achievements, card-tilt, tool-taglines, mouse-trail, page-transition
+- `config/storage-keys.js` — single source for all localStorage keys
+- `utils/color-utils.js` — parseRGB, rgbToHSL, isWarmColor
+
+**Three.js (loaded as separate scripts, not Rollup bundles):**
+| Script | Used on | Features |
+|--------|---------|----------|
+| `three-background-general.js` | Landing, portal, projects | Procedural lanterns + fireworks + mouse avoidance |
+| `three-background-scene.js` | About page | FBX lanterns, dock, water reflection, embers, scroll camera |
+| `three-background-minimal.js` | Post pages | Embers only, scroll-locked camera, mouse avoidance |
+
+Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup, camera, FBX loader, lantern spawning, animation loop), `lantern-controller.js` (physics + avoidance + click raycast), `firework-controller.js` (particle system), shaders (`lanternShader.js`, `lanternShaderManager.js`, `mirroredSurface.js`)
 
 ### Sass Organization
-- **abstracts/** — variables, mixins, placeholders, animations (7,535 total SCSS lines)
+38 SCSS files (~7,658 lines, excluding vendor).
+
+- **abstracts/** — variables, mixins, placeholders, animations (core foundation)
 - **base/** — reset, typography, base element styles
 - **components/** — buttons, popups
-- **layout/** — topbar, about container, blog/project previews
-- **pages/** — per-page styles (post, portal, section-landing, projects, etc.)
+- **layout/** — topbar, about container, blog/project previews, panel, sidebar
+- **pages/** — per-page styles (post, portal, section-landing, projects, archives, tags, categories)
 - **themes/** — dark.scss (270 vars), light.scss (185 vars)
 - Stagger loops use Sass `@for` with data lists (blog/project previews)
+
+### Unused / Superseded Files
+| File | Status | Notes |
+|------|--------|-------|
+| `_includes/projectfilterandsearch.html` | Unused | Superseded by `filter-pills.html` + inline search in layouts |
+| `_layouts/projects.html` | Unused | Superseded by `_layouts/section-projects.html` — no pages use `layout: projects` |
+| `@keyframes breathing` in `_animations.scss` | Unused | Zero references anywhere. The `breathe` keyframe (no -ing) IS used by `.card-icon-box` |
 
 ---
 
@@ -276,6 +308,8 @@ Single shared `$breathe-selectors` Sass list in `_animations.scss`. Used by both
 | — | Fan Club fixed: flush hover time on click + beforeunload (avatar is a link) |
 | — | Scholar fixed: requires actual 200px+ scroll on post pages only, removed legacy migration |
 | — | Meta achievements: Section Clear, Golden God, 1001% tiers with scope-based checks |
+| A1/A2 | Trophy case on About page — flat badge grid, progress bar, locked/secret states, glass morphism, responsive |
+| — | Achievement knock triggers moved from click to mouse avoidance (knock proximity), 1s per-object cooldown |
 
 ### Phase 0: Foundation
 | # | Task | Status | Notes |
@@ -329,7 +363,7 @@ Single shared `$breathe-selectors` Sass list in `_animations.scss`. Used by both
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | A3 | Ember burst on unlock | ✅ Done | `sparklerBurst()` on every toast |
-| A4 | Expand to 27 achievements | ✅ Done | 5 categories: Explorer(8), Reader(6), Interactor(8), Secret(3), Meta(3) |
+| A4 | Expand to 29 achievements | ✅ Done | 5 categories: Explorer(8), Reader(6), Interactor(8), Secret(2), Meta(5) |
 | A5 | Firework counter + unlock | ✅ Done | Tracks launches, `achievement:firework` event, Pyrotechnician at 50 |
 | A7 | Page-bottom tracker | ✅ Done | `pagesScrolledToEnd[]` array, also collects tags for reader achievements |
 | A8 | Tool icon interaction tracker | ✅ Done | Toolsmith: tracks hover on each `.tool-icon`, unlocks when all hovered |
@@ -341,8 +375,8 @@ Single shared `$breathe-selectors` Sass list in `_animations.scss`. Used by both
 | — | Lantern progression | ✅ Done | Tapper(25), Painter(50), Master(100) — tracking ready, rewards deferred until meshes added |
 | — | Meta achievements | ✅ Done | Getting Started(5), Collector(15), Achievement Hunter(all) |
 | A6 | Lantern knock raycast | ✅ Done | Click handler in `lantern-controller.js`, BoxGeometry = lantern knock, SphereGeometry = firefly touch |
-| A1 | Trophy case on About page | Not started | Grid of badges, locked silhouettes, glass cards |
-| A2 | Achievement categories UI | Not started | Progress bars per category on trophy case |
+| A1 | Trophy case on About page | ✅ Done | Flat grid of badges ordered by category, progress bar, locked/secret states. On both tech-art and game-design about pages |
+| A2 | Achievement categories UI | ✅ Done | Ordered by category internally, no visible headers (per user preference) |
 | A9 | Feature unlock system | Not started | Hide toggles until earned (Pyrotechnician → auto-fireworks) |
 
 ### Phase 7: Polish & Optional
@@ -352,6 +386,7 @@ Single shared `$breathe-selectors` Sass list in `_animations.scss`. Used by both
 | O7 | Custom tool tagline quips | ✅ Done | Personal `data-tool-desc` on each icon in `section-landing.html` |
 | O2 | Custom 404 page | Not started | "This lantern has drifted away..." |
 | O5 | Upgrade Three.js models | Not started | Replace box lanterns with FBX/GLTF. High effort |
+| O8 | Personalize achievement names | Not started | Reference TV shows, movies, games, anime Rod likes. Rework names/descriptions/icons |
 
 ### Easter Eggs (Backburner)
 | # | Task | Notes |
