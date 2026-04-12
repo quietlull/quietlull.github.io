@@ -62,6 +62,42 @@ export class LanternController {
         }
       }
     });
+
+    // Click handler — raycast against lanterns + embers for achievements
+    window.addEventListener('click', (event) => {
+      if (!this.lanterns.length) return;
+      // Skip UI element clicks
+      const tag = event.target.tagName;
+      if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'LABEL') return;
+
+      const clickMouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1
+      );
+      this.raycaster.setFromCamera(clickMouse, this.camera);
+      const intersects = this.raycaster.intersectObjects(this.lanterns, false);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        // Embers (fireflies) use SphereGeometry; lanterns use BoxGeometry
+        const isEmber = hit.geometry.type === 'SphereGeometry';
+
+        if (isEmber) {
+          document.dispatchEvent(new Event('achievement:fireflytouched'));
+          // Visual feedback: brief flash + scatter
+          const origScale = hit.scale.clone();
+          hit.scale.multiplyScalar(2);
+          setTimeout(() => { hit.scale.copy(origScale); }, 300);
+        } else {
+          document.dispatchEvent(new Event('achievement:lanternknock'));
+          // Visual feedback: wobble kick
+          const kick = (Math.random() - 0.5) * 0.3;
+          hit.userData.rotationVelocity.x += kick;
+          hit.userData.rotationVelocity.z += kick * 0.5;
+          hit.userData.lastKnockTime = this.time;
+        }
+      }
+    });
   }
 
   addLantern(mesh) {

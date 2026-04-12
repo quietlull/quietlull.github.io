@@ -249,7 +249,7 @@ $breathe-selectors:
   '.breathe-switch input:checked ~ .breathe-switch-track',
   '.sparkler-switch input:checked ~ .sparkler-switch-track',
   '.fireworks-switch input:checked ~ .fireworks-switch-track',
-  '.meta-chip', '#toc-solo-trigger';
+  '.meta-chip', '#toc-solo-trigger', '.post-firefly';
 
 html.no-breathe {
   @each $sel in $breathe-selectors {
@@ -318,6 +318,98 @@ $reduced-motion-extras:
 
 @keyframes toast-slide-out {
   to { transform: translateX(120%); opacity: 0; }
+}
+
+// --- Achievement debug panel ---
+#achievement-debug {
+  position: fixed;
+  top: 60px;
+  right: 16px;
+  width: 360px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  background: var(--slate-a95);
+  border: 1px solid var(--gold-30);
+  border-radius: 12px;
+  padding: 1rem;
+  z-index: 10001;
+  font-size: 0.75rem;
+  box-shadow: 0 8px 32px var(--shadow-a40);
+  backdrop-filter: blur(12px);
+
+  .achv-debug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    h3 { font-size: 0.9rem; margin: 0; color: var(--link-hover-color); }
+  }
+
+  .achv-debug-actions {
+    display: flex;
+    gap: 0.35rem;
+    button {
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--gold-20);
+      background: transparent;
+      color: var(--text-muted-color);
+      cursor: pointer;
+      font-size: 0.65rem;
+      &:hover { border-color: var(--gold-40); color: var(--heading-color); }
+    }
+  }
+
+  .achv-debug-counters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 0.75rem;
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.2);
+    color: var(--text-muted-color);
+    b { color: var(--link-hover-color); }
+    .achv-debug-small { font-size: 0.6rem; opacity: 0.6; }
+    > div:last-child { grid-column: 1 / -1; }
+  }
+
+  .achv-debug-cat {
+    margin-bottom: 0.5rem;
+    h4 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted-color);
+      margin: 0 0 0.35rem;
+      padding-bottom: 0.2rem;
+      border-bottom: 1px solid var(--gold-10);
+    }
+  }
+
+  .achv-debug-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.35rem;
+    border-radius: 6px;
+    &:hover { background: rgba(255,255,255,0.03); }
+    &.unlocked .achv-debug-name { color: var(--link-hover-color); }
+  }
+
+  .achv-debug-icon { font-size: 1rem; width: 1.25rem; text-align: center; flex-shrink: 0; }
+  .achv-debug-name { flex: 1; color: var(--text-muted-color); }
+  .achv-debug-prog { color: var(--gold-50); font-size: 0.65rem; }
+  .achv-debug-toggle {
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    border: 1px solid var(--gold-15);
+    background: transparent;
+    color: var(--text-muted-color);
+    cursor: pointer;
+    font-size: 0.6rem;
+    &:hover { border-color: var(--gold-30); }
+  }
 }
 
 // --- Under construction page ---

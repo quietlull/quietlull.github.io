@@ -16,6 +16,7 @@ export function initPostEnhance() {
   initSectionSparks();
   initBottomConfetti(article);
   initImagePopups();
+  initFireflies(article);
 }
 
 /**
@@ -107,7 +108,52 @@ function initReadingProgress() {
       requestAnimationFrame(updateProgress);
     }
   }, { passive: true });
+
+  // Click-to-jump: click position on bar maps to article scroll position
+  bar.addEventListener('click', (e) => {
+    const ratio = e.clientX / window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const total = articleHeight - viewportHeight;
+    if (total <= 0) return;
+    const targetY = articleTop + ratio * total;
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+  });
+
   updateProgress();
+}
+
+/**
+ * Ambient fireflies — tiny gold dots that slowly drift behind post content.
+ */
+function initFireflies(article) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const container = article.querySelector('.post-content-container') || article;
+  // Ensure positioning context
+  if (getComputedStyle(container).position === 'static') {
+    container.style.position = 'relative';
+  }
+
+  const count = 8;
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'post-firefly';
+    const dur = 10 + Math.random() * 10;           // 10–20s
+    const delay = Math.random() * dur;               // stagger within cycle
+    const dx = (Math.random() - 0.5) * 60;          // ±30px horizontal
+    const dy = -20 - Math.random() * 40;             // -20 to -60px upward
+    const opacity = 0.06 + Math.random() * 0.08;    // 0.06–0.14
+    dot.style.cssText = `
+      left: ${5 + Math.random() * 90}%;
+      top: ${10 + Math.random() * 80}%;
+      --fly-dur: ${dur.toFixed(1)}s;
+      --fly-delay: ${delay.toFixed(1)}s;
+      --fly-dx: ${dx.toFixed(0)}px;
+      --fly-dy: ${dy.toFixed(0)}px;
+      --fly-opacity: ${opacity.toFixed(2)};
+    `;
+    container.appendChild(dot);
+  }
 }
 
 /**
@@ -184,6 +230,7 @@ function initImagePopups() {
   }));
 
   const lightbox = GLightbox({ elements: slides });
+  lightbox.on('open', () => { document.dispatchEvent(new Event('achievement:imageenlarge')); });
 
   images.forEach((img, index) => {
     img.style.cursor = 'zoom-in';

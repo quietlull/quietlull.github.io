@@ -142,6 +142,7 @@ export class FireworkController {
     const isRainbow = Math.random() < this.config.rainbowChance;
 
     this.createFirework(startPoint, endPoint, explosionDelay, isRainbow);
+    document.dispatchEvent(new Event('achievement:firework'));
   }
 
   createAutoFirework() {

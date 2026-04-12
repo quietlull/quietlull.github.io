@@ -37,6 +37,7 @@ export function imgPopup() {
   }
 
   let current = GLightbox({ selector: `${selector}` });
+  current.on('open', () => { document.dispatchEvent(new Event('achievement:imageenlarge')); });
 
   if (hasDualImages && Theme.switchable) {
     let reverse = null;

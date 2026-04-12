@@ -54,7 +54,7 @@
 ### System & Polish
 | Feature | What it does | Key Files | Status |
 |---------|-------------|-----------|--------|
-| **Achievements** | 5 visitor milestones with toast notifications, localStorage persistence | `achievements.js` | Complete (basic) |
+| **Achievements** | 27 achievements across 5 categories, debug panel (Ctrl+Shift+A), event-driven tracking | `achievements.js` | Complete |
 | **Breathing Toggle** | Enable/disable all breathing animations, respects prefers-reduced-motion | `breathe-toggle.js`, `_animations.scss` | Complete |
 | **Sparkler Toggle** | Enable/disable cursor sparkler effect | `fireworks-toggle.js` (shared pattern) | Complete |
 | **Fireworks Toggle** | Enable/disable auto-fireworks | `fireworks-toggle.js` | Complete |
@@ -252,76 +252,106 @@ Single shared `$breathe-selectors` Sass list in `_animations.scss`. Used by both
 | — | `/sync-docs` skill + `PROJECT-STATUS.md` + `CLEANUP-LOG.md` created |
 | — | Sparkler auto-detects breathing elements — removed `GLASS_SELECTOR`, uses `animationName` pattern match instead |
 | — | `breathe-toggle-glow` upgraded to CSS variable system with wider spread for small elements |
+| L-FIX | Broken HTML stagger attributes already removed in prior session |
+| L1 | Hero entrance: `fade-in-up` stagger on title (0.15s) → tagline (0.4s) → tools (0.7s) |
+| L4 | "View All" shimmer via `shimmer-effect` mixin on `.btn-outline-primary` |
+| L5 | Section header heartbeat: `throb-dot 2s` scale+glow on `.icon-dot` |
+| P1 | Three.js general background added to `portal.html` |
+| B9 | Recommendation cards: `breathe-slow` with stagger on `#related-posts` |
+| I4 | Back-to-top ember burst: `sparklerBurst()` in `back-to-top.js` |
+| R3 | Heading anchor hover glow in `_placeholders.scss` |
+| R4 | Glass-morphism GLightbox overlay (`backdrop-filter: blur(12px)`) |
+| R5 | Related post cards breathing with stagger delays |
+| A3 | Ember burst on achievement unlock via `sparklerBurst()` |
+| O6 | Card tilt polished: `TILT_MAX = 8` conservative angle |
+| O7 | Custom tool tagline quips: personal `data-tool-desc` attributes |
+| R6 | Reading progress bar clickable — click-to-jump + hover widen |
+| R1 | Post ambient fireflies — 8 dots with `firefly-drift`, added to kill-switch |
+| A4 | Achievements expanded from 5 → 27 across 5 categories (Explorer, Reader, Interactor, Secret, Meta) |
+| A3/A5/A7/A8/A10 | Event-driven achievement tracking: fireworks, code copy, image enlarge, firefly touch, tool hover, avatar hover, tag reading, page-bottom, time-of-day |
+| — | Achievement debug panel: Ctrl+Shift+A, shows all counters + progress + lock/unlock per achievement |
+| — | Firefly touch + lantern knock via Three.js raycast click handler in `lantern-controller.js` |
+| — | Pyrotechnician fixed: only counts actual firework launches (not blocked clicks) |
+| — | Zoom Enhance fixed: GLightbox `.on('open')` in both `img-popup.js` and `post-enhance.js` |
+| — | Fan Club fixed: flush hover time on click + beforeunload (avatar is a link) |
+| — | Scholar fixed: requires actual 200px+ scroll on post pages only, removed legacy migration |
+| — | Meta achievements: Section Clear, Golden God, 1001% tiers with scope-based checks |
 
 ### Phase 0: Foundation
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| L-FIX | Fix broken HTML stagger attributes | Not started | Lines 28/98 of `section-landing.html` — invalid `"-stagger` attributes |
+| L-FIX | Fix broken HTML stagger attributes | ✅ Done | Already removed in a prior session |
 
 ### Phase 1: Landing Page — "Blow Them Away"
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| L1 | Hero entrance animation | Not started | Staggered fade-in: title -> tagline -> tool strip. Pure CSS delay. |
-| L2 | Tool strip entrance stagger | Not started | Each icon fades in 80ms apart, JS-driven delay. |
-| L3 | Scroll-triggered card reveal | Not started | Cards fade-in-up via IntersectionObserver. New `scroll-reveal.js`. |
-| L7 | Scroll indicator | Not started | "Scroll to explore" chevron below hero, fades on first scroll. |
-| L9 | Hero title glow pulse | Not started | `text-shadow` breathing on gradient title. |
-| L6 | Demo reel sizing | Not started | 240px -> 560px, 1:1 -> 16:9 for YouTube embed. |
-| L4 | "View All" shimmer | Not started | Shimmer pseudo-element sweep on hover. |
-| L5 | Section header heartbeat | Not started | Warmer, slower heartbeat on `.icon-dot`. |
-| L8 | Bottom CTA | Not started | "See all projects" or "Want to work together?" after card grid. |
+| L1 | Hero entrance animation | ✅ Done | `fade-in-up` stagger: title 0.15s → tagline 0.4s → tools 0.7s |
+| L4 | "View All" shimmer | ✅ Done | `shimmer-effect` mixin applied to `.btn-outline-primary` |
+| L5 | Section header heartbeat | ✅ Done | `throb-dot 2s` on `.icon-dot` — scale 1→1.5 + glow |
+| L9 | Hero title glow pulse | Partial | Static `text-shadow` exists, no breathing animation yet |
+| L2 | Tool strip entrance stagger | Not started | Each icon fades in 80ms apart, JS-driven delay |
+| L3 | Scroll-triggered card reveal | Not started | Cards fade-in-up via IntersectionObserver |
+| L6 | Demo reel sizing | Not started | 240px → 560px, 1:1 → 16:9 for YouTube embed |
+| L7 | Scroll indicator | Not started | "Scroll to explore" chevron below hero, fades on first scroll |
+| L8 | Bottom CTA | Not started | "See all projects" or "Want to work together?" after card grid |
 
 ### Phase 2: Portal Page
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| P1 | Add Three.js general background | Not started | Add script tag to `portal.html`. |
-| P4 | Ambient background orbs | Not started | Pulsing radial-gradient pseudo-elements. |
-| P2 | Lantern gateway animation | Not started | CSS/SVG lanterns above door cards. Higher effort. |
-| P6 | Ramblings link personality | Not started | Coffee cup steam animation. |
+| P1 | Add Three.js general background | ✅ Done | Script tag in `portal.html` line 9 |
+| P4 | Ambient background orbs | Not started | Pulsing radial-gradient pseudo-elements |
+| P2 | Lantern gateway animation | Not started | CSS/SVG lanterns above door cards. Higher effort |
+| P6 | Ramblings link personality | Not started | Coffee icon exists, needs steam animation |
 
 ### Phase 3: Breathing Expansion
 | # | Task | Status | Notes |
 |---|------|--------|-------|
+| B9 | Recommendation cards | ✅ Done | `breathe-slow` on `#related-posts a.post-preview` with stagger |
 | B4 | View All / CTA button breathing | Not started | `breathe-slow 8s` subtle |
 | B5 | Sidebar panel sections | Not started | `breathe-slow 7s` staggered |
 | B6 | Archive timeline year dots | Not started | `pulse-slow 4s` |
-| B9 | Recommendation cards | Not started | warm hue override + `breathe-slow` |
 
 ### Phase 4: Interaction Polish
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| I4 | Back-to-top ember burst | Not started | `sparklerBurst()` at button position on click. 3 lines. |
+| I4 | Back-to-top ember burst | ✅ Done | `sparklerBurst()` in `back-to-top.js` lines 29-33 |
 
 ### Phase 5: Posts/Reading
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| R3 | Heading anchor hover glow | Not started | `text-shadow` + color on `.anchor` hover |
-| R5 | Related post cards breathing | Not started | = B8, already done? Verify. |
-| R6 | Scroll progress bar clickable | Not started | `pointer-events: auto`, click to jump. Widen on hover. |
-| R4 | Image zoom glass overlay | Not started | Glass-morphism GLightbox overlay. |
-| R1 | Post ambient fireflies | Not started | Tiny gold dots floating behind content at very low opacity. |
+| R3 | Heading anchor hover glow | ✅ Done | `text-shadow` + opacity in `_placeholders.scss` lines 171-191 |
+| R4 | Image zoom glass overlay | ✅ Done | `backdrop-filter: blur(12px)` on `.goverlay` in `_post.scss` |
+| R5 | Related post cards breathing | ✅ Done | `breathe-slow` with stagger on `#related-posts` cards |
+| R6 | Scroll progress bar clickable | ✅ Done | `pointer-events: auto`, click-to-jump, hover widens to 6px |
+| R1 | Post ambient fireflies | ✅ Done | 8 dots, `firefly-drift` keyframe, 0.06-0.14 opacity, 10-20s cycle |
 
 ### Phase 6: Achievements — "The Game Experience"
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| A1 | Trophy case on About page | Not started | Grid of badges, locked silhouettes, glass cards. |
-| A2 | Achievement categories | Not started | Explorer, Reader, Interactor, Secret. Progress bars. |
-| A3 | Ember burst on unlock | Not started | `sparklerBurst()` at toast position. 2 lines. |
-| A4 | Expand to 15+ achievements | Not started | See plan file for full proposed list. |
-| A5 | Firework counter + unlock | Not started | Track launches, unlock auto-toggle at 50. |
-| A6 | Lantern knock counter | Not started | Click handler + raycast in lantern controller. |
-| A7 | Page-bottom tracker | Not started | Track unique pages scrolled to bottom. |
-| A8 | Tool icon interaction tracker | Not started | "Tried every tool" achievement. |
-| A9 | Feature unlock system | Not started | Hide toggles until earned. |
-| A10 | Secret achievements | Not started | Konami code, Night Owl, avatar clicks. |
+| A3 | Ember burst on unlock | ✅ Done | `sparklerBurst()` on every toast |
+| A4 | Expand to 27 achievements | ✅ Done | 5 categories: Explorer(8), Reader(6), Interactor(8), Secret(3), Meta(3) |
+| A5 | Firework counter + unlock | ✅ Done | Tracks launches, `achievement:firework` event, Pyrotechnician at 50 |
+| A7 | Page-bottom tracker | ✅ Done | `pagesScrolledToEnd[]` array, also collects tags for reader achievements |
+| A8 | Tool icon interaction tracker | ✅ Done | Toolsmith: tracks hover on each `.tool-icon`, unlocks when all hovered |
+| A10 | Secret achievements | ✅ Done | Night Owl (midnight-4am), Early Bird (5-7am), Down the Rabbit Hole (ramblings) |
+| — | Achievement debug panel | ✅ Done | Ctrl+Shift+A or `window.__achievements.panel()`, shows all counters + lock/unlock |
+| — | Event-driven tracking | ✅ Done | Custom events: firework, codecopy, imageenlarge, fireflytouched, lanternknock, toolhover |
+| — | Tag diversity reader achievements | ✅ Done | Well-Rounded (5), Connoisseur (10), Completionist (15 = all tags) |
+| — | "Hey, You Touched My Fly!" | ✅ Done | Fireflies are clickable with expanded hit area |
+| — | Lantern progression | ✅ Done | Tapper(25), Painter(50), Master(100) — tracking ready, rewards deferred until meshes added |
+| — | Meta achievements | ✅ Done | Getting Started(5), Collector(15), Achievement Hunter(all) |
+| A6 | Lantern knock raycast | ✅ Done | Click handler in `lantern-controller.js`, BoxGeometry = lantern knock, SphereGeometry = firefly touch |
+| A1 | Trophy case on About page | Not started | Grid of badges, locked silhouettes, glass cards |
+| A2 | Achievement categories UI | Not started | Progress bars per category on trophy case |
+| A9 | Feature unlock system | Not started | Hide toggles until earned (Pyrotechnician → auto-fireworks) |
 
 ### Phase 7: Polish & Optional
 | # | Task | Status | Notes |
 |---|------|--------|-------|
+| O6 | Polish card tilt | ✅ Done | `TILT_MAX = 8` — conservative, polished angle |
+| O7 | Custom tool tagline quips | ✅ Done | Personal `data-tool-desc` on each icon in `section-landing.html` |
 | O2 | Custom 404 page | Not started | "This lantern has drifted away..." |
-| O5 | Upgrade Three.js models | Not started | Replace box lanterns with FBX/GLTF. High effort. |
-| O6 | Polish card tilt | Not started | Reduce max angle, smoother reset. |
-| O7 | Custom tool tagline quips | Not started | Personal witty taglines. |
+| O5 | Upgrade Three.js models | Not started | Replace box lanterns with FBX/GLTF. High effort |
 
 ### Easter Eggs (Backburner)
 | # | Task | Notes |

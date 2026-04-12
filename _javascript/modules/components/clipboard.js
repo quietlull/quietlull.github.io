@@ -91,6 +91,7 @@ function setCodeClipboard() {
     setSuccessIcon(trigger);
     showTooltip(trigger);
     lock(trigger);
+    document.dispatchEvent(new Event('achievement:codecopy'));
 
     if (typeof window.sparklerBurst === 'function') {
       const rect = trigger.getBoundingClientRect();
