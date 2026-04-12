@@ -184,6 +184,8 @@
         visibility: visible;
         opacity: 1;
         transition: opacity 0.25s ease-in, visibility 0s ease-in 0s;
+        color: var(--link-hover-color);
+        text-shadow: 0 0 8px var(--gold-40);
       }
     }
   }

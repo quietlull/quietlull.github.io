@@ -140,8 +140,13 @@
   // To adjust the entire site's color feel, modify these values.
   // All component files reference these instead of hardcoding rgba().
 
+  // -- Breathing hue channels (override per-element for colored breathing) --
+  --breathe-hue: 251, 191, 36;          // gold (default)
+  --breathe-border-hue: 245, 158, 11;   // amber (default)
+
   // -- Gold (251, 191, 36) — primary glow/accent family --
   --gold-03: rgba(251, 191, 36, 0.03);
+  --gold-04: rgba(251, 191, 36, 0.04);
   --gold-05: rgba(251, 191, 36, 0.05);
   --gold-06: rgba(251, 191, 36, 0.06);
   --gold-08: rgba(251, 191, 36, 0.08);
@@ -171,16 +176,20 @@
   --amber-a20: rgba(245, 158, 11, 0.2);
   --amber-a25: rgba(245, 158, 11, 0.25);
   --amber-a30: rgba(245, 158, 11, 0.3);
+  --amber-a35: rgba(245, 158, 11, 0.35);
   --amber-a45: rgba(245, 158, 11, 0.45);
 
   // -- Orange (249, 115, 22) — warm secondary accent --
+  --orange-a04: rgba(249, 115, 22, 0.04);
   --orange-a06: rgba(249, 115, 22, 0.06);
+  --orange-a08: rgba(249, 115, 22, 0.08);
   --orange-a10: rgba(249, 115, 22, 0.10);
   --orange-a12: rgba(249, 115, 22, 0.12);
   --orange-a14: rgba(249, 115, 22, 0.14);
   --orange-a15: rgba(249, 115, 22, 0.15);
   --orange-a20: rgba(249, 115, 22, 0.2);
   --orange-a22: rgba(249, 115, 22, 0.22);
+  --orange-a25: rgba(249, 115, 22, 0.25);
   --orange-a30: rgba(249, 115, 22, 0.3);
   --orange-a35: rgba(249, 115, 22, 0.35);
   --orange-a40: rgba(249, 115, 22, 0.4);
@@ -207,7 +216,11 @@
 
   // -- Orange-red (234, 88, 12) — warm deep accent --
   --orange-red-a12: rgba(234, 88, 12, 0.12);
+  --orange-red-a15: rgba(234, 88, 12, 0.15);
+  --orange-red-a20: rgba(234, 88, 12, 0.20);
   --orange-red-a25: rgba(234, 88, 12, 0.25);
+  --orange-red-a30: rgba(234, 88, 12, 0.30);
+  --orange-red-a35: rgba(234, 88, 12, 0.35);
 
   // -- Shadow/depth (0, 0, 0) --
   --shadow-a10: rgba(0, 0, 0, 0.1);

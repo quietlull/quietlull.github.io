@@ -3,6 +3,8 @@
  * - Splits content at h2 boundaries into glass section cards
  * - Adds scroll-triggered fade-in animations via IntersectionObserver
  * - Adds a reading progress bar
+ * - Section completion sparks
+ * - Bottom-of-article confetti burst
  */
 
 export function initPostEnhance() {
@@ -11,6 +13,9 @@ export function initPostEnhance() {
 
   splitSections();
   initReadingProgress();
+  initSectionSparks();
+  initBottomConfetti(article);
+  initImagePopups();
 }
 
 /**
@@ -68,17 +73,26 @@ function initReadingProgress() {
 
   let ticking = false;
 
-  function updateProgress() {
-    const rect = article.getBoundingClientRect();
-    const articleTop = rect.top + window.scrollY;
-    const articleHeight = rect.height;
-    const viewportHeight = window.innerHeight;
+  // Cache article dimensions — only recalculate on resize
+  let articleTop = 0;
+  let articleHeight = 0;
 
+  function cacheRect() {
+    const rect = article.getBoundingClientRect();
+    articleTop = rect.top + window.scrollY;
+    articleHeight = rect.height;
+  }
+  cacheRect();
+  window.addEventListener('resize', cacheRect, { passive: true });
+
+  function updateProgress() {
+    const viewportHeight = window.innerHeight;
     const scrolled = window.scrollY - articleTop;
     const total = articleHeight - viewportHeight;
 
     if (total <= 0) {
       bar.style.width = '0%';
+      ticking = false;
       return;
     }
 
@@ -94,4 +108,169 @@ function initReadingProgress() {
     }
   }, { passive: true });
   updateProgress();
+}
+
+/**
+ * Spark burst when a section scrolls fully out of the viewport (read completion).
+ * Fires once per section at the h2 heading position.
+ */
+function initSectionSparks() {
+  const sections = document.querySelectorAll('.post-section');
+  if (!sections.length) return;
+
+  const fired = new Set();
+
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      /* Fire when section leaves viewport going upward (user scrolled past it) */
+      if (!entry.isIntersecting
+          && entry.boundingClientRect.top < 0
+          && !fired.has(entry.target)) {
+        fired.add(entry.target);
+
+        const h2 = entry.target.querySelector('h2');
+        if (h2 && typeof window.sparklerBurst === 'function') {
+          const rect = h2.getBoundingClientRect();
+          window.sparklerBurst(rect.left + rect.width / 2, rect.bottom);
+        }
+      }
+    }
+  }, { threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+}
+
+/**
+ * Confetti burst when the reader reaches the bottom of the article.
+ * Colorful strips/ribbons that burst upward and flutter down.
+ */
+function initBottomConfetti(article) {
+  let fired = false;
+
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting && !fired) {
+        fired = true;
+        observer.disconnect();
+        fireConfetti();
+      }
+    }
+  }, { threshold: 0.1 });
+
+  const lastChild = article.lastElementChild;
+  if (lastChild) observer.observe(lastChild);
+}
+
+/**
+ * Wrap post content images in <a class="popup"> so GLightbox handles zoom.
+ * Skips emoji, images already inside links, and images already with .popup.
+ */
+function initImagePopups() {
+  if (typeof GLightbox !== 'function') return;
+
+  const content = document.querySelector('.post-content-container .content');
+  if (!content) return;
+
+  const images = Array.from(content.querySelectorAll('img:not(.emoji)'))
+    .filter((img) => !img.closest('a'));
+
+  if (images.length === 0) return;
+
+  /* Build GLightbox slide elements from images */
+  const slides = images.map((img) => ({
+    href: img.src,
+    type: 'image',
+    alt: img.alt || ''
+  }));
+
+  const lightbox = GLightbox({ elements: slides });
+
+  images.forEach((img, index) => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', () => {
+      lightbox.openAt(index);
+    });
+  });
+}
+
+function fireConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  const colors = [
+    '#fbbf24', '#f59e0b', '#f97316', '#ef4444',
+    '#ec4899', '#a855f7', '#3b82f6', '#22d3ee',
+    '#10b981', '#84cc16', '#FFF9F0', '#fcd34d'
+  ];
+
+  const pieces = [];
+  const count = 80;
+  const cx = canvas.width / 2;
+  const cy = canvas.height * 0.7;
+
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.random() * Math.PI * 0.8) + Math.PI * 0.1;
+    const speed = 8 + Math.random() * 10;
+    pieces.push({
+      x: cx + (Math.random() - 0.5) * canvas.width * 0.5,
+      y: cy,
+      vx: Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1),
+      vy: -Math.sin(angle) * speed,
+      w: 3 + Math.random() * 5,
+      h: 8 + Math.random() * 12,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.3,
+      opacity: 1,
+      gravity: 0.15 + Math.random() * 0.1,
+      drag: 0.98 + Math.random() * 0.015,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.05 + Math.random() * 0.05
+    });
+  }
+
+  let frame;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+
+    for (const p of pieces) {
+      p.vy += p.gravity;
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+      p.x += p.vx + Math.sin(p.wobble) * 0.8;
+      p.y += p.vy;
+      p.rotation += p.spin;
+      p.wobble += p.wobbleSpeed;
+
+      /* Fade out once below viewport or after a while */
+      if (p.y > canvas.height * 0.85) {
+        p.opacity -= 0.02;
+      }
+
+      if (p.opacity <= 0) continue;
+      alive = true;
+
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+
+    if (alive) {
+      frame = requestAnimationFrame(animate);
+    } else {
+      cancelAnimationFrame(frame);
+      canvas.remove();
+    }
+  }
+
+  frame = requestAnimationFrame(animate);
 }

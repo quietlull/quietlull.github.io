@@ -4,7 +4,8 @@
  * Relies on window.fireworkController being exposed by three-background.js.
  */
 
-const STORAGE_KEY = 'auto-fireworks';
+import { STORAGE_KEYS } from '../config/storage-keys';
+const STORAGE_KEY = STORAGE_KEYS.FIREWORKS;
 const $toggle = document.getElementById('fireworks-toggle');
 
 export function fireworksToggle() {

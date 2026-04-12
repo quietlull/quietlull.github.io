@@ -136,7 +136,7 @@
     inset: -30%;
     background: radial-gradient(
       ellipse at var(--orb-x, 50%) var(--orb-y, 55%),
-      var(--glow-color, var(--gold-20)) 0%,
+      var(--glow-color, rgba(var(--breathe-hue), 0.20)) 0%,
       transparent 60%
     );
     pointer-events: none;
@@ -389,10 +389,9 @@
   transition: border-color 500ms ease, transform 400ms ease, box-shadow 400ms ease;
 
   &:hover {
-    animation-play-state: paused;
-    border-color: var(--amber-a20);
+    border-color: rgba(var(--breathe-border-hue), 0.45) !important;
     transform: scale(1.015);
-    box-shadow: var(--glow-tier2-hover);
+    box-shadow: 0 0 24px rgba(var(--breathe-hue), 0.40) !important;
   }
 }
 

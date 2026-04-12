@@ -128,7 +128,8 @@
   --orb-delay: 0s;
 }
 .about-text .text-container {
-  animation: breathe-warm 5.5s ease-in-out infinite;
+  --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
+  animation: breathe-slow 5.5s ease-in-out infinite;
   animation-delay: 0.8s;
   --glow-color: var(--orange-a22);
   --glow-color-hover: var(--orange-a50);

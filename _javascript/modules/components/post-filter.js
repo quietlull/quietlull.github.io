@@ -34,21 +34,21 @@ export function initPostFilter() {
     });
   }
 
-  function getTitle(el) {
-    return (el.dataset.title || '').toLowerCase();
-  }
-
-  function getTags(el) {
-    return (el.dataset.tags || '').toLowerCase().split(',').filter(Boolean);
-  }
+  // Cache parsed tag/title data once — avoids repeated toLowerCase + split per filter
+  const itemCache = new Map();
+  allItems.forEach(item => {
+    itemCache.set(item, {
+      title: (item.dataset.title || '').toLowerCase(),
+      tags:  (item.dataset.tags || '').toLowerCase().split(',').filter(Boolean),
+    });
+  });
 
   function applyFilter() {
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
     let visibleCount = 0;
     allItems.forEach(item => {
-      const title = getTitle(item);
-      const tags = getTags(item);
+      const { title, tags } = itemCache.get(item);
 
       // Text search matches title or tags
       const matchesSearch = !query || title.includes(query)
@@ -97,10 +97,9 @@ export function initPostFilter() {
         const tag = pill.dataset.tag.toLowerCase();
         let count = 0;
         allItems.forEach(item => {
-          const tags = getTags(item);
+          const { title, tags } = itemCache.get(item);
           if (!tags.includes(tag)) return;
-          // Check if item would be visible with current search + other active tags
-          const matchesSearch = !query || getTitle(item).includes(query)
+          const matchesSearch = !query || title.includes(query)
             || tags.some(t => t.includes(query));
           const otherTags = [...activeTags].filter(t => t !== tag);
           const matchesOther = otherTags.length === 0

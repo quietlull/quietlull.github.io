@@ -26,6 +26,11 @@ export function back2top() {
   }, { passive: true });
 
   btn.addEventListener('click', () => {
+    /* I4: Ember burst at button position */
+    if (typeof window.sparklerBurst === 'function') {
+      const rect = btn.getBoundingClientRect();
+      window.sparklerBurst(rect.left + rect.width / 2, rect.top);
+    }
     window.scrollTo({ top: 0 });
   });
 }

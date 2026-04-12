@@ -2,12 +2,14 @@
  * Achievement system: tracks visitor progress and shows toast
  * notifications when milestones are unlocked.
  */
+import { STORAGE_KEYS } from '../config/storage-keys';
+
 export function initAchievements() {
   const reducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
   ).matches;
 
-  const STORAGE_KEY = 'rod-achievements';
+  const STORAGE_KEY = STORAGE_KEYS.ACHIEVEMENTS;
 
   const ACHIEVEMENTS = [
     {

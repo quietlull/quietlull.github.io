@@ -21,7 +21,8 @@
   border-radius: v.$radius-lg;
   padding: 1.25rem 1.5rem;
   margin-top: 1rem;
-  border-left: 3px solid var(--gold-50);
+  --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
+  animation: breathe-slow 6.7s ease-in-out 0.3s infinite;
   .tldr-label {
     font-family: v.$font-family-mono;
     font-size: 0.75rem;
@@ -48,6 +49,8 @@
   padding: 1.25rem 1.5rem;
   margin-top: 1.5rem;
   border-left: 3px solid var(--orange-a50);
+  --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
+  animation: breathe-slow 8.1s ease-in-out 1.2s infinite;
   .takeaway-label {
     font-family: v.$font-family-mono;
     font-size: 0.75rem;
@@ -71,11 +74,12 @@
   background: rgba(8, 15, 27, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  box-shadow: var(--glass-shadow), 0 4px 40px rgba(0, 0, 0, 0.4);
   border-radius: v.$radius-xl;
   padding: 0.75rem 3rem 2.5rem;
   margin-top: 0.25rem;
+  animation: breathe-slow 9.3s ease-in-out infinite;
 
   @include bp.lte(bp.get(md)) {
     padding: 0.5rem 1.25rem 1.5rem;
@@ -142,6 +146,9 @@ header {
       background: var(--glow-subtle);
       border: 1px solid var(--glass-border);
       color: var(--text-color);
+      animation: breathe-ember 6.3s ease-in-out 1s infinite;
+
+      &:nth-child(2) { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; animation-duration: 8.9s; animation-delay: 2s; }
 
       .meta-chip-icon {
         width: 1.1rem;
@@ -151,6 +158,13 @@ header {
       i {
         font-size: 0.9rem;
         opacity: 0.8;
+      }
+
+      &:hover {
+        border-color: rgba(var(--breathe-border-hue), 0.45) !important;
+        box-shadow:
+          0 0 14px rgba(var(--breathe-hue), 0.20),
+          inset 0 0 10px rgba(var(--breathe-hue), 0.08) !important;
       }
     }
 
@@ -322,18 +336,21 @@ header {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    animation: breathe-slow 6s ease-in-out infinite;
+    animation: breathe-glow 7.9s ease-in-out 0.5s infinite;
     @include mx.transition(border-color, transform, box-shadow);
 
     &.post-nav-next {
-      animation-delay: 1s;
+      --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
+      animation-duration: 6.3s;
+      animation-delay: 1.8s;
     }
 
     &:hover:not(.disabled) {
-      border-color: var(--glass-border-strong);
+      border-color: rgba(var(--breathe-border-hue), 0.45) !important;
       transform: translateY(-2px);
       box-shadow: 0 4px 16px var(--shadow-a15),
-        0 0 12px var(--glow-color, var(--gold-10));
+        0 0 18px rgba(var(--breathe-hue), 0.22),
+        inset 0 0 12px rgba(var(--breathe-hue), 0.08) !important;
       color: inherit;
       text-decoration: none;
     }
@@ -514,6 +531,7 @@ $toc-bar-height: 3rem;
   border-radius: v.$radius-lg;
   margin-top: 0.5rem;
   margin-bottom: 0.25rem;
+  animation: breathe-glow 8.3s ease-in-out 1.5s infinite;
 
   @include bp.xl {
     display: none !important;
@@ -582,9 +600,7 @@ $toc-bar-height: 3rem;
     margin: 0;
   }
 
-  // Override Bootstrap grid to make cards full width
   article.col {
-    // Full width cards stacked vertically
     flex: 0 0 100%;
     max-width: 100%;
     padding: 0;
@@ -594,23 +610,31 @@ $toc-bar-height: 3rem;
       margin-bottom: 0;
     }
   }
-  
+
   a.post-preview {
     text-decoration: none;
     color: inherit;
     display: flex;
-    min-height: 140px;
+    flex-direction: column;
     position: relative;
-    
-    // ✨ ENHANCED: Use glass effect + card hover mixins
+
     @include mx.glass;
     @include mx.card-hover;
     border-radius: 12px;
-    overflow: visible;
+    overflow: hidden;
+    animation: breathe-slow 6.7s ease-in-out infinite;
 
-    // Override the ::before overlay from base styles - not needed with radial-hover-glow
+    &:nth-child(2) { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; animation-duration: 8.3s; animation-delay: 1.1s; }
+    &:nth-child(3) { animation-duration: 7.1s; animation-delay: 0.6s; }
+
     &::before {
       display: none !important;
+    }
+
+    .related-thumb {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
     }
   }
 
@@ -708,6 +732,8 @@ article > header {
   border-radius: v.$radius-xl;
   padding: 1.25rem 2.5rem 2rem;
   margin-bottom: 0.5rem;
+  --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
+  animation: breathe-slow 7.9s ease-in-out 0.8s infinite;
 
   @include bp.lte(bp.get(md)) {
     padding: 1rem 1.25rem 1.5rem;
@@ -732,6 +758,18 @@ article > header {
     margin: 0.5rem auto;
     display: block;
   }
+
+  // Consolidated metadata row — dates + read time on one line
+  .post-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .post-meta-sep {
+    opacity: 0.4;
+  }
 }
 
 // --- Section cards split at h2 boundaries ---
@@ -745,8 +783,17 @@ article > header {
   padding: 2rem 2.5rem;
   margin-bottom: 1.5rem;
 
-  // Entrance animation
-  animation: fade-in-up 0.5s ease-out both;
+  // Entrance + breathing composed
+  // Color: odd = gold, even = orange
+  // Timing: irregular durations so neighbors never sync
+  animation: fade-in-up 0.5s ease-out both,
+             breathe-slow 7.3s ease-in-out 0.5s infinite;
+
+  &:nth-child(even) { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; }
+
+  &:nth-child(3n+1) { animation-duration: 0.5s, 7.3s; animation-delay: 0s, 0.4s; }
+  &:nth-child(3n+2) { animation-duration: 0.5s, 6.1s; animation-delay: 0s, 1.7s; }
+  &:nth-child(3n)   { animation-duration: 0.5s, 8.7s; animation-delay: 0s, 2.3s; }
 
   @include bp.lte(bp.get(md)) {
     padding: 1.25rem 1rem;
@@ -809,7 +856,7 @@ article > header {
     var(--accent-color, var(--gold-80)),
     var(--accent-warm, var(--orange-a90))
   );
-  box-shadow: 0 0 8px var(--gold-40);
+  box-shadow: 0 0 8px rgba(var(--breathe-hue), 0.40);
   z-index: 9999;
   pointer-events: none;
   transition: width 0.1s linear;
@@ -839,10 +886,62 @@ article > header {
 }
 
 // --- Images centered within reading column ---
-.post-content-container .content img:not(.emoji) {
-  max-width: 100%;
-  width: 100%;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+.post-content-container .content {
+  p:has(> img:not(.emoji)) {
+    text-align: center;
+  }
+
+  img:not(.emoji) {
+    max-width: 100%;
+    max-height: 500px;
+    display: inline-block;
+    object-fit: contain;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    cursor: zoom-in;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: rgba(245, 158, 11, 0.25);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 15px var(--gold-10);
+    }
+  }
+}
+
+// ============================================================================
+// R4: GLightbox glass overlay — amber themed image zoom
+// ============================================================================
+.goverlay {
+  background: rgba(8, 15, 27, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glightbox-clean .gslide-media {
+  background: rgb(128, 128, 128);
+
+  img {
+    image-rendering: pixelated;
+  }
+  box-shadow:
+    0 0 0 1px rgba(var(--breathe-hue), 0.20),
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(var(--breathe-hue), 0.08);
+  border-radius: v.$radius-lg;
+  overflow: hidden;
+}
+
+.glightbox-clean .gclose,
+.glightbox-clean .gnext,
+.glightbox-clean .gprev {
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 50%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: rgba(var(--breathe-hue), 0.40);
+    box-shadow: 0 0 12px rgba(var(--breathe-hue), 0.15);
+  }
 }

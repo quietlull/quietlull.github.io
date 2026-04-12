@@ -13,8 +13,11 @@ const TRANSITION_OUT = 'transform 0.4s ease-out';
 const SELECTORS = [
   '.post-card .card',
   '.vertical-bar-container',
-  '.text-container'
 ];
+
+// Global gate: require real mouse movement before enabling tilt.
+// Prevents cards from starting tilted when cursor is already over them at load.
+let tiltEnabled = false;
 
 export function initCardTilt() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -22,16 +25,33 @@ export function initCardTilt() {
   const cards = document.querySelectorAll(SELECTORS.join(', '));
   if (!cards.length) return;
 
+  let startPos = null;
+  const onMove = (e) => {
+    if (!startPos) { startPos = { x: e.clientX, y: e.clientY }; return; }
+    const dx = e.clientX - startPos.x;
+    const dy = e.clientY - startPos.y;
+    if (dx * dx + dy * dy > 16) { // 4px movement threshold
+      tiltEnabled = true;
+      document.removeEventListener('mousemove', onMove);
+    }
+  };
+  document.addEventListener('mousemove', onMove);
+
   cards.forEach(card => setupMouseTilt(card));
   setupGyroTilt(cards);
 }
 
 function setupMouseTilt(card) {
+  let active = false;
+
   card.addEventListener('mouseenter', () => {
+    if (!tiltEnabled) return;
+    active = true;
     card.style.transition = TRANSITION_IN;
   });
 
   card.addEventListener('mousemove', (e) => {
+    if (!active) return;
     const rect = card.getBoundingClientRect();
     // Normalise cursor position to -1..1 from card center
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
@@ -47,6 +67,7 @@ function setupMouseTilt(card) {
   });
 
   card.addEventListener('mouseleave', () => {
+    active = false;
     card.style.transition = TRANSITION_OUT;
     card.style.transform = '';
   });

@@ -4,7 +4,7 @@ description: Reverse engineering shaders and why that can be valuable to do.
 author: Rod
 date: 2024-12-01 20:55:00 +0800
 categories: [project]
-tags: [project, shader, study, 3d]
+tags: [project, shader, study, 3D]
 section: tech-art
 engine: Unity
 role: Research

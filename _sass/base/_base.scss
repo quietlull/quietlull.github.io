@@ -526,29 +526,42 @@ mjx-container {
   background: linear-gradient(135deg, var(--gold-15), var(--orange-a10));
   border: 1px solid var(--gold-20);
   flex-shrink: 0;
-  // Reference: whole box breathes (scale + opacity)
-  animation: breathe 4s ease-in-out infinite;
+  cursor: pointer;
+  @include mx.transition(transform, border-color, box-shadow);
+  // Tier 4 (Beacon) — strongest breathing with scale pulse
+  animation: breathe-beacon 4.5s ease-in-out infinite;
 
-  // Blurred glow behind the box
+  // Blurred orb behind the box — Tier 4 (largest)
   &::before {
     content: '';
     position: absolute;
-    inset: -4px;
-    background: var(--gold-20);
-    border-radius: 16px;
-    filter: blur(12px);
+    inset: -10px;
+    background: rgba(var(--breathe-hue), 0.50);
+    border-radius: 22px;
+    filter: blur(20px);
     z-index: -1;
+    transition: filter 0.3s ease, background 0.3s ease;
   }
 
-  // Heartbeat dot — centered, strong glow (matches reference)
+  &:hover {
+    transform: scale(1.12);
+    border-color: rgba(var(--breathe-border-hue), 0.60) !important;
+    box-shadow: 0 0 28px rgba(var(--breathe-hue), 0.40) !important;
+
+    &::before {
+      background: rgba(var(--breathe-hue), 0.70);
+      filter: blur(24px);
+    }
+  }
+
+  // Heartbeat dot — double-beat throb with glow
   .icon-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     background: var(--gold-80);
-    box-shadow:
-      0 0 15px var(--gold-60);
-    animation: heartbeat 2s ease-in-out infinite;
+    box-shadow: 0 0 15px var(--gold-60);
+    animation: throb-dot 2s ease-in-out infinite;
   }
 }
 
@@ -608,7 +621,7 @@ mjx-container {
 // CARD COLOR PALETTES — warm tone variance per nth-child
 // ============================================================================
 
-// Amber (default)
+// Amber (default) — breathing uses default gold hue
 .card-palette-amber {
   --icon-glow-color: var(--gold-20);
   --icon-glow-color-hover: var(--gold-35);
@@ -618,8 +631,10 @@ mjx-container {
   --icon-dot-glow: var(--gold-60);
 }
 
-// Orange
+// Orange — breathing matches orange icon color
 .card-palette-orange {
+  --breathe-hue: 249, 115, 22;
+  --breathe-border-hue: 234, 88, 12;
   --icon-glow-color: var(--orange-a20);
   --icon-glow-color-hover: var(--orange-a35);
   --icon-bg-gradient: linear-gradient(135deg, var(--orange-a15), var(--red-a10));
@@ -628,8 +643,10 @@ mjx-container {
   --icon-dot-glow: var(--orange-a60);
 }
 
-// Yellow / Gold
+// Yellow / Gold — breathing matches yellow icon color
 .card-palette-gold {
+  --breathe-hue: 234, 179, 8;
+  --breathe-border-hue: 202, 138, 4;
   --icon-glow-color: var(--yellow-a20);
   --icon-glow-color-hover: var(--yellow-a35);
   --icon-bg-gradient: linear-gradient(135deg, var(--yellow-a15), var(--gold-15));

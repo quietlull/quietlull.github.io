@@ -86,7 +86,15 @@
       border: 1px solid var(--glass-border);
       opacity: 0.6;
       position: relative;
-      @include mx.transition(opacity, transform, border-color, box-shadow);
+      overflow: visible;
+      animation: breathe-ember 8.7s ease-in-out infinite;
+      @include mx.transition(opacity, transform, border-color, box-shadow, filter);
+
+      // Firefly stagger — color alternation + irregular timing
+      &:nth-child(even) { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; }
+      &:nth-child(3n+1) { animation-duration: 8.7s; animation-delay: 0.3s; }
+      &:nth-child(3n+2) { animation-duration: 6.9s; animation-delay: 1.5s; }
+      &:nth-child(3n)   { animation-duration: 7.7s; animation-delay: 2.1s; }
 
       img {
         width: 1.35rem;
@@ -114,10 +122,13 @@
 
       &:hover {
         opacity: 1;
-        transform: translateY(-2px);
-        border-color: var(--glass-border-strong);
-        box-shadow: 0 4px 12px var(--shadow-a15),
-          0 0 12px var(--glow-color, var(--gold-22));
+        transform: translateY(-2px) scale(1.15);
+        border-color: rgba(var(--breathe-border-hue), 0.45) !important;
+        filter: drop-shadow(0 0 16px rgba(var(--breathe-hue), 0.30));
+        box-shadow:
+          0 4px 12px var(--shadow-a15),
+          0 0 20px rgba(var(--breathe-hue), 0.30),
+          inset 0 0 10px rgba(var(--breathe-hue), 0.10) !important;
 
         &[data-tool-desc]::after {
           opacity: 0.8;
@@ -162,7 +173,7 @@
     border-radius: 50%;
     background: var(--link-hover-color);
     box-shadow: 0 0 8px var(--glow-color, var(--gold-40));
-    animation: pulse-slow 3s ease-in-out infinite;
+    animation: throb-dot 2s ease-in-out infinite;
   }
 }
 
@@ -179,6 +190,7 @@
     @include mx.glass;
     border-radius: v.$radius-lg;
     overflow: hidden;
+    animation: breathe-glow 7.3s ease-in-out infinite;
 
     iframe {
       border: none;
@@ -189,6 +201,8 @@
     @include mx.glass;
     border-radius: v.$radius-lg;
     color: var(--text-muted-color);
+    --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
+    animation: breathe-glow 8.1s ease-in-out 0.5s infinite;
     @include mx.transition(box-shadow);
 
     i {
@@ -202,7 +216,10 @@
     }
 
     &:hover {
-      box-shadow: 0 0 20px var(--gold-20);
+      box-shadow:
+        0 0 20px rgba(var(--breathe-hue), 0.22),
+        inset 0 0 12px rgba(var(--breathe-hue), 0.08) !important;
+      border-color: rgba(var(--breathe-border-hue), 0.45) !important;
 
       i {
         opacity: 0.7;

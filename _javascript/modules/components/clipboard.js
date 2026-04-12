@@ -92,6 +92,11 @@ function setCodeClipboard() {
     showTooltip(trigger);
     lock(trigger);
 
+    if (typeof window.sparklerBurst === 'function') {
+      const rect = trigger.getBoundingClientRect();
+      window.sparklerBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
+
     setTimeout(() => {
       hideTooltip(trigger);
       resumeIcon(trigger);

@@ -40,77 +40,36 @@
   }
 }
 
-// Color + timing + orb position variance — alternating amber and orange
-.post-vertical-bar:nth-child(6n+1) .vertical-bar-container {
-  animation: breathe-slow 6s ease-in-out infinite;
-  animation-delay: 0s;
-  --glow-color: var(--gold-22);
-  --glow-color-hover: var(--gold-50);
-  --glow-border: var(--amber-a25);
-  --orb-x: 45%;
-  --orb-y: 50%;
-  --orb-speed: 5.5s;
-  --orb-delay: 0s;
-}
+// Firefly stagger — alternating amber/orange with irregular timing
+// Data lists: duration, delay, orb-x, orb-y, orb-speed, orb-delay
+$blog-durations:  6s,    5s,    7s,    7.5s,  6.5s,  5.5s;
+$blog-delays:     0s,    0.8s,  1.5s,  0.3s,  2.0s,  1.0s;
+$blog-orb-x:      45%,   55%,   50%,   48%,   53%,   47%;
+$blog-orb-y:      50%,   48%,   52%,   53%,   47%,   50%;
+$blog-orb-speed:  5.5s,  6.5s,  7s,    5s,    6s,    7s;
+$blog-orb-delay:  0s,    1s,    0.5s,  1.5s,  0.8s,  2s;
 
-.post-vertical-bar:nth-child(6n+2) .vertical-bar-container {
-  animation: breathe-warm 5s ease-in-out infinite;
-  animation-delay: 0.8s;
-  --glow-color: var(--orange-a22);
-  --glow-color-hover: var(--orange-a50);
-  --glow-border: var(--orange-red-a25);
-  --orb-x: 55%;
-  --orb-y: 48%;
-  --orb-speed: 6.5s;
-  --orb-delay: 1s;
-}
+@for $i from 1 through 6 {
+  .post-vertical-bar:nth-child(6n+#{$i}) .vertical-bar-container {
+    animation: breathe-slow nth($blog-durations, $i) ease-in-out infinite;
+    animation-delay: nth($blog-delays, $i);
+    --orb-x: #{nth($blog-orb-x, $i)};
+    --orb-y: #{nth($blog-orb-y, $i)};
+    --orb-speed: #{nth($blog-orb-speed, $i)};
+    --orb-delay: #{nth($blog-orb-delay, $i)};
 
-.post-vertical-bar:nth-child(6n+3) .vertical-bar-container {
-  animation: breathe-slow 7s ease-in-out infinite;
-  animation-delay: 1.5s;
-  --glow-color: var(--gold-22);
-  --glow-color-hover: var(--gold-50);
-  --glow-border: var(--amber-a25);
-  --orb-x: 50%;
-  --orb-y: 52%;
-  --orb-speed: 7s;
-  --orb-delay: 0.5s;
-}
-
-.post-vertical-bar:nth-child(6n+4) .vertical-bar-container {
-  animation: breathe-warm 7.5s ease-in-out infinite;
-  animation-delay: 0.3s;
-  --glow-color: var(--orange-a22);
-  --glow-color-hover: var(--orange-a50);
-  --glow-border: var(--orange-red-a25);
-  --orb-x: 48%;
-  --orb-y: 53%;
-  --orb-speed: 5s;
-  --orb-delay: 1.5s;
-}
-
-.post-vertical-bar:nth-child(6n+5) .vertical-bar-container {
-  animation: breathe-slow 6.5s ease-in-out infinite;
-  animation-delay: 2.0s;
-  --glow-color: var(--gold-22);
-  --glow-color-hover: var(--gold-50);
-  --glow-border: var(--amber-a25);
-  --orb-x: 53%;
-  --orb-y: 47%;
-  --orb-speed: 6s;
-  --orb-delay: 0.8s;
-}
-
-.post-vertical-bar:nth-child(6n+6) .vertical-bar-container {
-  animation: breathe-warm 5.5s ease-in-out infinite;
-  animation-delay: 1.0s;
-  --glow-color: var(--orange-a22);
-  --glow-color-hover: var(--orange-a50);
-  --glow-border: var(--orange-red-a25);
-  --orb-x: 47%;
-  --orb-y: 50%;
-  --orb-speed: 7s;
-  --orb-delay: 2s;
+    @if $i % 2 == 0 {
+      --breathe-hue: 249, 115, 22;
+      --breathe-border-hue: 234, 88, 12;
+      --glow-color: var(--orange-a22);
+      --glow-color-hover: var(--orange-a50);
+      --glow-border: var(--orange-red-a25);
+    } @else {
+      --glow-color: var(--gold-22);
+      --glow-color-hover: var(--gold-50);
+      --glow-border: var(--amber-a25);
+    }
+  }
 }
 
 .vertical-bar-img-wrapper {

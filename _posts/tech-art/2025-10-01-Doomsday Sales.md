@@ -4,7 +4,7 @@ description: Talking about Doomsday Sales the game i took part in making in.
 author: Rod
 date: 2025-10-01 20:55:00 +0800
 categories: [project]
-tags: [project, unreal, 3d, vfx, shader]
+tags: [project, unreal, 3D, vfx, shader]
 section: tech-art
 engine: Unreal Engine 5
 role: Technical Artist

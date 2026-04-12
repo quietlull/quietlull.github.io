@@ -5,7 +5,8 @@
  * adds .breathe-override to bypass the reduced-motion media query.
  */
 
-const STORAGE_KEY = 'breathe-disabled';
+import { STORAGE_KEYS } from '../config/storage-keys';
+const STORAGE_KEY = STORAGE_KEYS.BREATHING;
 const $toggle = document.getElementById('breathe-toggle');
 
 export function breatheToggle() {

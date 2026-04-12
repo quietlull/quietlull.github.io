@@ -36,6 +36,10 @@
   &:hover {
     transform: translate3d(0, -5px, 0);
     -webkit-transform: translate3d(0, -5px, 0);
+    border-color: rgba(var(--breathe-border-hue), 0.45) !important;
+    box-shadow:
+      0 0 16px rgba(var(--breathe-hue), 0.20),
+      inset 0 0 10px rgba(var(--breathe-hue), 0.08) !important;
   }
 
   i {
@@ -47,6 +51,7 @@
   &.show {
     opacity: 1;
     visibility: visible;
+    animation: breathe-ember 8.3s ease-in-out infinite;
   }
 }
 

@@ -8,7 +8,8 @@
  * Mobile: touch burst. Respects prefers-reduced-motion.
  */
 
-const STORAGE_KEY = 'sparkler-disabled';
+import { STORAGE_KEYS } from '../config/storage-keys';
+const STORAGE_KEY = STORAGE_KEYS.SPARKLER;
 const MAX_PARTICLES = 200;
 const MAX_EMIT_PER_FRAME = 12;
 const PARTICLE_LIFE = 30;
@@ -25,53 +26,45 @@ const THEME_DEFAULT = {
   tipColor: [255, 210, 100],
 };
 
-// ── Color sampling utilities ──
+// Breathing animation names — used to auto-detect breathing elements for sparkler color
+const BREATHE_PATTERN = /breathe|throb/;
 
-function parseRGB(str) {
-  if (!str || str === 'transparent') return null;
-  const m = str.match(/rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/);
-  return m ? [+m[1], +m[2], +m[3]] : null;
-}
-
-function rgbToHSL(r, g, b) {
-  r /= 255; g /= 255; b /= 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  const l = (max + min) / 2;
-  if (max === min) return [0, 0, l];
-  const d = max - min;
-  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  let h;
-  if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-  else if (max === g) h = ((b - r) / d + 2) / 6;
-  else h = ((r - g) / d + 4) / 6;
-  return [h * 360, s, l];
-}
-
-function isWarmColor(rgb) {
-  const [r, g, b] = rgb;
-  const [h, s, l] = rgbToHSL(r, g, b);
-  if (l < 0.15 || l > 0.95) return false;  // too dark or too bright
-  if (s < 0.2) return false;               // too gray
-  return (h >= 0 && h <= 70) || (h >= 320 && h <= 360);  // red–yellow range
-}
+// ── Color sampling utilities (shared via utils/color-utils) ──
+import { parseRGB, isWarmColor } from '../utils/color-utils';
 
 function findWarmColor(el) {
   if (!el) return null;
 
-  // Check the element itself and walk up to interactive parent
-  const targets = [el];
+  // 1. Walk up the DOM looking for any breathing element — its animated
+  //    borderColor is the strongest color signal. This auto-detects ALL
+  //    breathing elements (current + future) without maintaining a list.
+  let current = el;
+  while (current && current !== document.documentElement) {
+    const style = getComputedStyle(current);
+    if (BREATHE_PATTERN.test(style.animationName)) {
+      const rgb = parseRGB(style.borderColor);
+      if (rgb && isWarmColor(rgb)) return rgb;
+    }
+    current = current.parentElement;
+  }
+
+  // 2. Fallback: check interactive ancestors (buttons, links, cards)
   const interactive = el.closest(INTERACTIVE_SELECTOR);
-  if (interactive && interactive !== el) targets.push(interactive);
-
-  const props = ['color', 'backgroundColor', 'borderColor', 'borderTopColor'];
-
-  for (const target of targets) {
-    const style = getComputedStyle(target);
-    for (const prop of props) {
+  if (interactive) {
+    const style = getComputedStyle(interactive);
+    for (const prop of ['borderColor', 'backgroundColor', 'color']) {
       const rgb = parseRGB(style[prop]);
       if (rgb && isWarmColor(rgb)) return rgb;
     }
   }
+
+  // 3. Finally check the element itself
+  const style = getComputedStyle(el);
+  for (const prop of ['borderColor', 'backgroundColor', 'color']) {
+    const rgb = parseRGB(style[prop]);
+    if (rgb && isWarmColor(rgb)) return rgb;
+  }
+
   return null;
 }
 

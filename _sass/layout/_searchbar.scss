@@ -10,6 +10,7 @@
   z-index: 999;
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--topbar-border-color);
+  animation: breathe-ember 9.1s ease-in-out infinite;
 
   @include bp.lt(bp.get(lg)) {
     @include mx.slide(top var(--transition-fast) ease);

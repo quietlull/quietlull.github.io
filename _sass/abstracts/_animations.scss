@@ -1,518 +1,277 @@
-// ============================================================================
-// ANIMATIONS - Lantern Theme Keyframes
-// ============================================================================
-// All animation keyframes used throughout the site
-// Referenced by mixins and utility classes
+// Animations — all keyframes for the lantern theme
+// Removed items logged in CLEANUP-LOG.md
 
 @use 'sass:math';
 
-// ============================================================================
-// FLOATING ANIMATIONS - Ambient background elements
-// ============================================================================
+// --- Floating ---
 
-// Main float animation for background orbs (matches React component)
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px) translateX(0px);
-  }
-  25% {
-    transform: translateY(-30px) translateX(10px);
-  }
-  50% {
-    transform: translateY(-15px) translateX(-10px);
-  }
-  75% {
-    transform: translateY(-40px) translateX(5px);
-  }
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  25% { transform: translateY(-30px) translateX(10px); }
+  50% { transform: translateY(-15px) translateX(-10px); }
+  75% { transform: translateY(-40px) translateX(5px); }
 }
 
-// Gentler float for smaller elements
 @keyframes float-gentle {
-  0%, 100% {
-    transform: translateY(0px) translateX(0px);
-  }
-  50% {
-    transform: translateY(-20px) translateX(5px);
-  }
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-20px) translateX(5px); }
 }
 
-// Subtle breathing effect for ambient elements
+// --- Ambient opacity/scale ---
+
 @keyframes breathing {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
 }
 
-// Icon box breathe — scale + opacity, matches LanternGlowBreathing reference
 @keyframes breathe {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
 }
 
-// ============================================================================
-// GLOW ANIMATIONS - Pulsing light effects
-// ============================================================================
-
-// Pulse animation for indicator dots (defined inline in mixin but extracted here)
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-// Pulse with scale for more dramatic effect
 @keyframes pulse-scale {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
 }
 
-// Glow intensity pulse (for box-shadow effects)
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-    box-shadow: var(--glow-ring);
-  }
-  50% {
-    opacity: 0.7;
-    box-shadow: var(--glow-ring-small);
-  }
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.5; }
 }
 
-// ============================================================================
-// SHIMMER EFFECTS - Sweeping light animations
-// ============================================================================
+// --- Shimmer ---
 
-// Shimmer sweep for buttons (matches React component)
 @keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
-// Slower shimmer for larger surfaces
-@keyframes shimmer-slow {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(200%);
-  }
-}
-
-// ============================================================================
-// FADE ANIMATIONS - Entrance/exit effects
-// ============================================================================
+// --- Fades ---
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fade-in-down {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Fade-up animation (matches _post.scss usage)
 @keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(4rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4rem); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-// ============================================================================
-// SCALE ANIMATIONS - Growing/shrinking effects
-// ============================================================================
-
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes scale-pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-// ============================================================================
-// SLIDE ANIMATIONS - Directional entrances
-// ============================================================================
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-// ============================================================================
-// ROTATION ANIMATIONS - Spinning effects
-// ============================================================================
+// --- Rotation ---
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-// ============================================================================
-// BREATHING ANIMATIONS - Organic living feel (from reference component)
-// ============================================================================
-
-// Slow box-shadow breathe — amber tones, glow-only, no scale (avoids text jitter)
-@keyframes breathe-slow {
-  0%, 100% {
-    box-shadow:
-      0 8px 32px var(--shadow-a60),
-      0 0 60px var(--gold-06),
-      inset 0 1px 0 var(--gold-06);
-    border-color: var(--amber-a12);
-  }
-  50% {
-    box-shadow:
-      0 8px 32px var(--shadow-a60),
-      0 0 90px var(--gold-14),
-      inset 0 1px 0 var(--gold-12);
-    border-color: var(--amber-a25);
-  }
-}
-
-// Warm orange variant
-@keyframes breathe-warm {
-  0%, 100% {
-    box-shadow:
-      0 8px 32px var(--shadow-a60),
-      0 0 60px var(--orange-a06),
-      inset 0 1px 0 var(--orange-a06);
-    border-color: var(--orange-red-a12);
-  }
-  50% {
-    box-shadow:
-      0 8px 32px var(--shadow-a60),
-      0 0 90px var(--orange-a14),
-      inset 0 1px 0 var(--orange-a12);
-    border-color: var(--orange-red-a25);
-  }
-}
-
-// Keep breathe-red defined but unused for now (available if needed)
-
-
-// Disabled breathing — applied by .no-breathe on <html>
-// Scoped to breathing-type animations only.
-// Preserves: shimmer, pinned-glow, entrance (fade-in-*), page transitions,
-//            avatar spin (chase-tail), float, and hover/interactive effects.
-html.no-breathe {
-  // ── Topbar & navigation ──
-  #topbar,
-  .nav-item.active .nav-link,
-
-  // ── About me / landing-box containers ──
-  .text-container,
-  #landing-box::before,
-  #landing-box::after,
-
-  // ── Blog preview vertical bars ──
-  .post-vertical-bar .vertical-bar-container,
-
-  // ── Portal page ──
-  .portal-door,
-
-  // ── Project / post cards ──
-  .posts-grid .card,
-  .post-nav-card,
-
-  // ── Blog controls bar ──
-  .blog-controls,
-
-  // ── Section & card icon boxes ──
-  .section-icon-box,
-  .section-icon-box .icon-dot,
-  .card-icon-box,
-  .card-icon-box .card-icon-dot,
-
-  // ── Section landing elements ──
-  .demo-reel-placeholder i,
-
-  // ── Breathing toggle track glow ──
-  .breathe-switch input:checked ~ .breathe-switch-track,
-
-  // ── Utility classes ──
-  .animate-breathing,
-  .animate-breathe-slow,
-  .animate-heartbeat,
-  .animate-breathe-ring,
-  .animate-pulse-slow {
-    animation: none !important;
-  }
-}
-
-// Heartbeat — double-beat pulse for glow dots — matches reference
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  10%       { transform: scale(1.2); }
-  20%       { transform: scale(1); }
-  30%       { transform: scale(1.15); }
-  40%       { transform: scale(1); }
-}
-
-// Expanding ring around a glow dot — matches reference
-@keyframes breathe-ring {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.5;
-  }
-}
-
-// Slow ambient orb pulse (background glows) — matches reference exactly
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-// Breathing toggle glow — pulses the switch track when breathing is on
-@keyframes breathe-toggle-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 12px var(--gold-25),
-      0 0 24px var(--gold-10);
-    border-color: var(--gold-45);
-  }
-  50% {
-    box-shadow:
-      0 0 18px var(--gold-40),
-      0 0 36px var(--gold-15);
-    border-color: var(--gold-60);
-  }
-}
-
-// chase-tail for avatar image
 @keyframes chase-tail {
-  0%   { transform: rotate(0deg); }
+  0% { transform: rotate(0deg); }
   100% { transform: rotate(-360deg); }
 }
 
+// ==========================================================================
+// BREATHING TIERS — color-adaptive via --breathe-hue / --breathe-border-hue
+// Default hue: gold (251,191,36) / amber (245,158,11).
+// Override per-element for warm/orange/any color.
+//
+// STACKING BANDS — each tier's resting glow ≥ the tier below's peak,
+// so the visual hierarchy holds at every frame of the cycle.
+//   T1 Ember:   outer 0.06→0.20 | inner 0.04→0.12 | border 0.10→0.20
+//   T2 Glow:    outer 0.18→0.35 | inner 0.10→0.25 | border 0.18→0.28
+//   T3 Lantern: outer 0.30→0.50 | inner 0.22→0.40 | border 0.25→0.35
+//   T4 Beacon:  outer 0.45→0.70 | inner 0.35→0.55 | border 0.30→0.40
+// ==========================================================================
 
-// ============================================================================
-// UTILITY ANIMATION CLASSES - Apply animations easily
-// ============================================================================
-
-// Float variations
-.animate-float {
-  animation: float 10s ease-in-out infinite;
+// T1 EMBER
+@keyframes breathe-ember {
+  0%, 100% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 6px rgba(var(--breathe-hue), 0.06),
+      inset 0 0 4px rgba(var(--breathe-hue), 0.04);
+    border-color: rgba(var(--breathe-border-hue), 0.10);
+  }
+  50% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 12px rgba(var(--breathe-hue), 0.20),
+      inset 0 0 8px rgba(var(--breathe-hue), 0.12);
+    border-color: rgba(var(--breathe-border-hue), 0.20);
+  }
 }
 
-.animate-float-gentle {
-  animation: float-gentle 8s ease-in-out infinite;
+// T2 GLOW
+@keyframes breathe-glow {
+  0%, 100% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 10px rgba(var(--breathe-hue), 0.18),
+      inset 0 0 8px rgba(var(--breathe-hue), 0.10);
+    border-color: rgba(var(--breathe-border-hue), 0.18);
+  }
+  50% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 16px rgba(var(--breathe-hue), 0.35),
+      inset 0 0 16px rgba(var(--breathe-hue), 0.25);
+    border-color: rgba(var(--breathe-border-hue), 0.28);
+  }
 }
 
-.animate-breathing {
-  animation: breathing 4s ease-in-out infinite;
+// T3 LANTERN
+@keyframes breathe-slow {
+  0%, 100% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 14px rgba(var(--breathe-hue), 0.30),
+      inset 0 0 14px rgba(var(--breathe-hue), 0.22);
+    border-color: rgba(var(--breathe-border-hue), 0.25);
+  }
+  50% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 22px rgba(var(--breathe-hue), 0.50),
+      inset 0 0 24px rgba(var(--breathe-hue), 0.40);
+    border-color: rgba(var(--breathe-border-hue), 0.35);
+  }
 }
 
-// Pulse variations
-.animate-pulse {
-  animation: pulse 2s ease-in-out infinite;
+// T4 BEACON
+@keyframes breathe-beacon {
+  0%, 100% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 18px rgba(var(--breathe-hue), 0.45),
+      inset 0 0 18px rgba(var(--breathe-hue), 0.35);
+    border-color: rgba(var(--breathe-border-hue), 0.30);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 28px rgba(var(--breathe-hue), 0.70),
+      inset 0 0 30px rgba(var(--breathe-hue), 0.55);
+    border-color: rgba(var(--breathe-border-hue), 0.40);
+    transform: scale(1.03);
+  }
 }
 
-.animate-pulse-scale {
-  animation: pulse-scale 2s ease-in-out infinite;
+// --- Throb / heartbeat variants ---
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  10% { transform: scale(1.2); }
+  20% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  40% { transform: scale(1); }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+@keyframes throb-dot {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(var(--breathe-hue), 0.30);
+    background: rgba(var(--breathe-hue), 0.40);
+  }
+  50% {
+    transform: scale(1.5);
+    box-shadow: 0 0 30px rgba(var(--breathe-hue), 0.90), 0 0 55px rgba(var(--breathe-hue), 0.40);
+    background: rgba(var(--breathe-hue), 0.95);
+  }
 }
 
-// Fade ins
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
+// Throb glow — T4-level pulse for active nav, breathing toggle
+@keyframes throb-glow {
+  0%, 100% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 18px rgba(var(--breathe-hue), 0.45),
+      inset 0 0 18px rgba(var(--breathe-hue), 0.35);
+    border-color: rgba(var(--breathe-border-hue), 0.30);
+  }
+  50% {
+    box-shadow:
+      0 4px 16px var(--shadow-a40),
+      0 0 28px rgba(var(--breathe-hue), 0.70),
+      inset 0 0 30px rgba(var(--breathe-hue), 0.55);
+    border-color: rgba(var(--breathe-border-hue), 0.40);
+  }
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out;
+// Toggle glow — wide spread, no base shadow, designed for small elements
+@keyframes breathe-toggle-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(var(--breathe-hue), 0.30),
+      0 0 24px rgba(var(--breathe-hue), 0.12);
+    border-color: rgba(var(--breathe-border-hue), 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(var(--breathe-hue), 0.55),
+      0 0 40px rgba(var(--breathe-hue), 0.25);
+    border-color: rgba(var(--breathe-border-hue), 0.65);
+  }
 }
 
-.animate-fade-in-down {
-  animation: fade-in-down 0.6s ease-out;
+// ==========================================================================
+// BREATHING KILL SWITCH — shared between no-breathe toggle and reduced-motion
+// ==========================================================================
+
+$breathe-selectors:
+  '#topbar', '#avatar', '.nav-item .nav-link', '.topbar-bottom a',
+  '.text-container', '#landing-box::before', '#landing-box::after',
+  '.post-vertical-bar .vertical-bar-container',
+  '.portal-door', '.portal-side-link', '#searchbar-wrapper',
+  '.posts-grid .card', '.post-card .card', '.post-nav-card',
+  '#related-posts a.post-preview', 'article > header',
+  '.post-content-container', '.post-section', '.post-tldr', '.post-takeaway',
+  '.blog-controls',
+  '.section-icon-box', '.section-icon-box .icon-dot',
+  '.card-icon-box', '.card-icon-box .card-icon-dot',
+  '.tool-icon', '.demo-reel-embed', '.demo-reel-placeholder', '.demo-reel-placeholder i',
+  '#back-to-top.show',
+  '.breathe-switch input:checked ~ .breathe-switch-track',
+  '.sparkler-switch input:checked ~ .sparkler-switch-track',
+  '.fireworks-switch input:checked ~ .fireworks-switch-track',
+  '.meta-chip', '#toc-solo-trigger';
+
+html.no-breathe {
+  @each $sel in $breathe-selectors {
+    #{$sel} { animation: none !important; }
+  }
 }
 
-// Scale
-.animate-scale-in {
-  animation: scale-in 0.4s ease-out;
+// Extra selectors killed only by reduced-motion (not the breathing toggle)
+$reduced-motion-extras:
+  '.ambient-orb', '#section-landing::before',
+  '#main-wrapper', '#main-wrapper.page-exit', '.card-img-wrapper::after';
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.breathe-override) {
+    @each $sel in join($breathe-selectors, $reduced-motion-extras) {
+      #{$sel} { animation: none !important; }
+    }
+  }
 }
 
-.animate-scale-pulse {
-  animation: scale-pulse 2s ease-in-out infinite;
-}
+// --- Page transitions ---
 
-// Slides
-.animate-slide-in-right {
-  animation: slide-in-right 0.5s ease-out;
-}
-
-.animate-slide-in-left {
-  animation: slide-in-left 0.5s ease-out;
-}
-
-// Spin
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
-}
-
-// Living / breathing classes
-.animate-breathe-slow {
-  animation: breathe-slow 6s ease-in-out infinite;
-  will-change: box-shadow, border-color;
-  contain: layout style paint;
-}
-
-.animate-heartbeat {
-  animation: heartbeat 2s ease-in-out infinite;
-}
-
-.animate-breathe-ring {
-  animation: breathe-ring 4s ease-in-out infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 5s ease-in-out infinite;
-}
-
-// ============================================================================
-// ANIMATION DELAY UTILITIES - Stagger effects
-// ============================================================================
-
-.delay-0 { animation-delay: 0s; }
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-1000 { animation-delay: 1s; }
-.delay-2000 { animation-delay: 2s; }
-.delay-4000 { animation-delay: 4s; }
-
-// ============================================================================
-// ANIMATION DURATION UTILITIES - Control speed
-// ============================================================================
-
-.duration-fast { animation-duration: 0.3s; }
-.duration-normal { animation-duration: 0.5s; }
-.duration-slow { animation-duration: 1s; }
-.duration-slower { animation-duration: 2s; }
-.duration-slowest { animation-duration: 4s; }
-
-// ============================================================================
-// ANIMATION CONTROL - Pause/play states
-// ============================================================================
-
-.animation-paused {
-  animation-play-state: paused;
-}
-
-.animation-running {
-  animation-play-state: running;
-}
-
-
-// Page-level fade-in on load, fade-out on navigate
 #main-wrapper {
   animation: fade-in 0.35s ease-out;
 
@@ -523,16 +282,11 @@ html.no-breathe {
 }
 
 @keyframes page-fade-out {
-  to {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
+  to { opacity: 0; transform: translateY(-12px); }
 }
 
+// --- Achievement toast ---
 
-// ============================================================================
-// Achievement toast styling
-// ============================================================================
 .achievement-toast {
   position: fixed;
   bottom: 24px;
@@ -546,38 +300,16 @@ html.no-breathe {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  box-shadow:
-    0 8px 32px var(--shadow-a40),
-    0 0 20px var(--gold-10);
+  box-shadow: 0 8px 32px var(--shadow-a40), 0 0 20px var(--gold-10);
   animation: toast-slide-in 0.4s ease-out;
 
-  &.toast-exit {
-    animation: toast-slide-out 0.3s ease-in forwards;
-  }
+  &.toast-exit { animation: toast-slide-out 0.3s ease-in forwards; }
 }
 
-.toast-icon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.toast-content {
-  min-width: 0;
-}
-
-.toast-title {
-  color: var(--link-hover-color);
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 0.15rem;
-}
-
-.toast-desc {
-  color: var(--text-muted-color);
-  font-size: 0.75rem;
-  line-height: 1.4;
-}
+.toast-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1; }
+.toast-content { min-width: 0; }
+.toast-title { color: var(--link-hover-color); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.15rem; }
+.toast-desc { color: var(--text-muted-color); font-size: 0.75rem; line-height: 1.4; }
 
 @keyframes toast-slide-in {
   from { transform: translateX(120%); opacity: 0; }
@@ -588,10 +320,8 @@ html.no-breathe {
   to { transform: translateX(120%); opacity: 0; }
 }
 
+// --- Under construction page ---
 
-// ============================================================================
-// Under construction page
-// ============================================================================
 .under-construction {
   text-align: center;
   padding: 4rem 1rem;
@@ -601,11 +331,7 @@ html.no-breathe {
   align-items: center;
   justify-content: center;
 
-  .construction-icon {
-    font-size: 4rem;
-    animation: float-gentle 4s ease-in-out infinite;
-    margin-bottom: 1.5rem;
-  }
+  .construction-icon { font-size: 4rem; animation: float-gentle 4s ease-in-out infinite; margin-bottom: 1.5rem; }
 
   .construction-title {
     font-size: 2rem;
@@ -625,11 +351,7 @@ html.no-breathe {
     line-height: 1.6;
   }
 
-  .recommendations {
-    margin-top: 3rem;
-    width: 100%;
-    max-width: 700px;
-  }
+  .recommendations { margin-top: 3rem; width: 100%; max-width: 700px; }
 
   .recommendations-title {
     font-size: 0.75rem;
@@ -644,10 +366,7 @@ html.no-breathe {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
-
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
+    @media (max-width: 768px) { grid-template-columns: 1fr; }
   }
 
   .recommendation-card {
@@ -657,7 +376,7 @@ html.no-breathe {
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
     border-radius: 0.75rem;
-    padding: 1.25rem 1.25rem;
+    padding: 1.25rem;
     text-decoration: none;
     color: inherit;
     display: flex;
@@ -670,69 +389,17 @@ html.no-breathe {
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--text-muted-color);
-
-      i {
-        color: var(--amber-400);
-        margin-right: 0.25rem;
-      }
+      i { color: var(--amber-400); margin-right: 0.25rem; }
     }
 
-    .rec-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--heading-color);
-      line-height: 1.3;
-    }
+    .rec-title { font-size: 0.9rem; font-weight: 600; color: var(--heading-color); line-height: 1.3; }
 
     &:hover {
       border-color: var(--glass-border-strong);
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px var(--shadow-a15),
-        0 0 12px var(--gold-10);
+      box-shadow: 0 4px 16px var(--shadow-a15), 0 0 12px var(--gold-10);
       color: inherit;
       text-decoration: none;
-    }
-  }
-}
-
-// Reduce motion for accessibility — only disable decorative infinite animations,
-// not hover transitions (which are functional feedback)
-// prefers-reduced-motion: only apply when user hasn't explicitly enabled breathing
-// The .no-breathe class handles the manual toggle; this handles the OS-level default.
-// If the user has never toggled (no localStorage key), respect the OS preference.
-// Once the user toggles breathing on, the JS removes .no-breathe and animations run.
-@media (prefers-reduced-motion: reduce) {
-  html:not(.breathe-override) {
-    .animate-float,
-    .animate-float-gentle,
-    .animate-breathing,
-    .animate-pulse,
-    .animate-pulse-scale,
-    .animate-pulse-glow,
-    .animate-scale-pulse,
-    .animate-spin,
-    .animate-spin-slow,
-    .animate-breathe-slow,
-    .animate-heartbeat,
-    .animate-breathe-ring,
-    .animate-pulse-slow,
-    .ambient-orb,
-    .section-icon-box,
-    .section-icon-box .icon-dot,
-    .post-card .card,
-    .text-container,
-    #section-landing::before,
-    .portal-door {
-      animation: none !important;
-    }
-
-    #main-wrapper,
-    #main-wrapper.page-exit {
-      animation: none !important;
-    }
-
-    .card-img-wrapper::after {
-      animation: none !important;
     }
   }
 }

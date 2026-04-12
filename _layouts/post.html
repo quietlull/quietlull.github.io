@@ -12,6 +12,9 @@ script_includes:
 
 {% include lang.html %}
 
+<!-- Three.js ambient background — tiny floating embers, scroll-locked -->
+<script src="{{ '/assets/js/dist/three-background-minimal.min.js' | relative_url }}"></script>
+
 {% include toc-status.html %}
 
 <article class="px-1" data-toc="{{ enable_toc }}">
@@ -50,92 +53,56 @@ script_includes:
     </div>
     {% endif %}
 
-    <div class="post-tech-strip mt-2">
-      {% for tag in page.tags %}
-        {% unless tag == 'project' or tag == 'blog' or tag == 'personal' %}
-          <span class="post-tech-badge">{{ tag }}</span>
-        {% endunless %}
-      {% endfor %}
+    <div class="post-meta text-muted">
+      <div class="post-meta-row">
+        <!-- published date -->
+        <span>
+          {{ site.data.locales[lang].post.posted }}
+          {% include datetime.html date=page.date tooltip=true lang=lang %}
+        </span>
+
+        <!-- lastmod date -->
+        {% if page.last_modified_at and page.last_modified_at != page.date %}
+          <span class="post-meta-sep">&middot;</span>
+          <span>
+            {{ site.data.locales[lang].post.updated }}
+            {% include datetime.html date=page.last_modified_at tooltip=true lang=lang %}
+          </span>
+        {% endif %}
+
+        <span class="post-meta-sep">&middot;</span>
+
+        <!-- read time -->
+        {% include read-time.html content=content prompt=true lang=lang %}
+
+        <!-- pageviews -->
+        {% if site.pageviews.provider and site.analytics[site.pageviews.provider].id %}
+          <span class="post-meta-sep">&middot;</span>
+          <span>
+            <em id="pageviews">
+              <i class="fas fa-spinner fa-spin small"></i>
+            </em>
+            {{ site.data.locales[lang].post.pageview_measure }}
+          </span>
+        {% endif %}
+      </div>
     </div>
 
-    <div class="post-meta text-muted">
-      <!-- published date -->
-      <span>
-        {{ site.data.locales[lang].post.posted }}
-        {% include datetime.html date=page.date tooltip=true lang=lang %}
-      </span>
-
-      <!-- lastmod date -->
-      {% if page.last_modified_at and page.last_modified_at != page.date %}
-        <span>
-          {{ site.data.locales[lang].post.updated }}
-          {% include datetime.html date=page.last_modified_at tooltip=true lang=lang %}
-        </span>
-      {% endif %}
-
-      {% if page.image %}
+    {% if page.image %}
       {% assign img_path = page.image.path | default: page.image %}
-  
-      <!-- Only apply relative_url, NOT media_subpath, to preview images -->
       {% capture src %}src="{{ img_path | relative_url }}"{% endcapture %}
       {% capture class %}class="preview-img{% if page.image.no_bg %}{{ ' no-bg' }}{% endif %}"{% endcapture %}
       {% capture alt %}alt="{{ page.image.alt | xml_escape | default: "Preview Image" }}"{% endcapture %}
-
       {% if page.image.lqip %}
-      {%- capture lqip -%}lqip="{{ page.image.lqip }}"{%- endcapture -%}
+        {%- capture lqip -%}lqip="{{ page.image.lqip }}"{%- endcapture -%}
       {% endif %}
-
       <div class="mt-3 mb-3">
-      <img {{ src }} {{ class }} {{ alt }} w="1200" h="630" {{ lqip }}>
-      {%- if page.image.alt -%}
-      <figcaption class="text-center pt-2 pb-2">{{ page.image.alt }}</figcaption>
-      {%- endif -%}
-    </div>
-    {% endif %}
-
-      <div class="d-flex justify-content-between">
-        <!-- author(s) -->
-        <span>
-          {% if page.author %}
-            {% assign authors = page.author %}
-          {% elsif page.authors %}
-            {% assign authors = page.authors %}
-          {% endif %}
-
-          {{ site.data.locales[lang].post.written_by }}
-
-          <em>
-            {% if authors %}
-              {% for author in authors %}
-                {% if site.data.authors[author].url -%}
-                  <a href="{{ site.data.authors[author].url }}">{{ site.data.authors[author].name }}</a>
-                {%- else -%}
-                  {{ site.data.authors[author].name }}
-                {%- endif %}
-                {% unless forloop.last %}{{ '</em>, <em>' }}{% endunless %}
-              {% endfor %}
-            {% else %}
-              <a href="{{ site.social.links[0] }}">{{ site.social.name }}</a>
-            {% endif %}
-          </em>
-        </span>
-
-        <div>
-          <!-- pageviews -->
-          {% if site.pageviews.provider and site.analytics[site.pageviews.provider].id %}
-            <span>
-              <em id="pageviews">
-                <i class="fas fa-spinner fa-spin small"></i>
-              </em>
-              {{ site.data.locales[lang].post.pageview_measure }}
-            </span>
-          {% endif %}
-
-          <!-- read time -->
-          {% include read-time.html content=content prompt=true lang=lang %}
-        </div>
+        <img {{ src }} {{ class }} {{ alt }} w="1200" h="630" {{ lqip }}>
+        {%- if page.image.alt -%}
+          <figcaption class="text-center pt-2 pb-2">{{ page.image.alt }}</figcaption>
+        {%- endif -%}
       </div>
-    </div>
+    {% endif %}
   </header>
 
   {% if enable_toc %}
