@@ -252,7 +252,7 @@ $breathe-selectors:
   '.meta-chip', '#toc-solo-trigger', '.post-firefly',
   '.scroll-indicator i', '.nav-ribbon', '.landing-title',
   '.btn.btn-outline-primary', '.access > section',
-  '.year::after';
+  '.year::after', '.steam-line';
 
 html.no-breathe {
   @each $sel in $breathe-selectors {
