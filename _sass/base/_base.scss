@@ -344,6 +344,7 @@ main {
   border-color: var(--btn-border-color);
   background: var(--button-bg);
   @include mx.shimmer-effect;
+  animation: breathe-slow 8s ease-in-out infinite;
 
   &:not(.disabled):hover {
     color: var(--amber-300);

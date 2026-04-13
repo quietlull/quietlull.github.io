@@ -56,13 +56,14 @@
       background-color: var(--timeline-year-dot-color);
       border-color: var(--timeline-node-bg);
 
-      box-shadow: 
+      box-shadow:
         0 0 2px 0 var(--color-gray-light),
         var(--glow-ring-small);
       z-index: 1;
-      transition: 
-        box-shadow var(--transition-fast) ease, 
+      transition:
+        box-shadow var(--transition-fast) ease,
         transform var(--transition-fast) ease;
+      animation: pulse-slow 4s ease-in-out infinite;
     }
 
     &:hover::after {

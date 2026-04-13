@@ -250,7 +250,9 @@ $breathe-selectors:
   '.sparkler-switch input:checked ~ .sparkler-switch-track',
   '.fireworks-switch input:checked ~ .fireworks-switch-track',
   '.meta-chip', '#toc-solo-trigger', '.post-firefly',
-  '.scroll-indicator i', '.nav-ribbon', '.landing-title';
+  '.scroll-indicator i', '.nav-ribbon', '.landing-title',
+  '.btn.btn-outline-primary', '.access > section',
+  '.year::after';
 
 html.no-breathe {
   @each $sel in $breathe-selectors {

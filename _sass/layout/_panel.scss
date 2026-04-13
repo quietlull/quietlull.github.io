@@ -11,9 +11,14 @@
     border-radius: 12px;
     border-left: 1px solid var(--main-border-color);
     padding: 1.25rem;
+    animation: breathe-slow 7s ease-in-out infinite;
 
     &:not(:first-child) {
       margin-top: 1rem;
+    }
+
+    @for $i from 1 through 4 {
+      &:nth-child(#{$i}) { animation-delay: #{$i * 1.5}s; }
     }
 
     > *:first-child { margin-top: 0; }
