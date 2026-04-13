@@ -185,9 +185,10 @@
     color: var(--text-muted-color);
     text-decoration: none;
     font-size: 0.9rem;
-    padding: 0.6rem 1.5rem;
+    padding: 1.3rem 1.5rem;
     border-radius: 2rem;
     border: 1px solid var(--glass-border);
+    background: rgba(15, 23, 42, 0.9);
     animation: breathe-glow 7.7s ease-in-out 1.8s infinite;
     @include mx.transition(color, border-color, background-color);
 
@@ -197,66 +198,39 @@
       align-items: center;
 
       .fa-coffee {
+        font-size: 1.4rem;
         z-index: 2;
-        position: relative;
       }
 
       .steam-svg {
         position: absolute;
-        bottom: 90%;
+        bottom: 80%;
         left: 50%;
         transform: translateX(-50%);
-        width: 24px;
-        height: 30px;
-        overflow: visible;
+        width: 30px;
+        height: 20px;
+        overflow: hidden;
+        mask-image: linear-gradient(to top, transparent, black 20%, black 80%, transparent);
 
         .steam-line {
           fill: none;
           stroke: var(--text-color);
           stroke-width: 1.5px;
           stroke-linecap: round;
-          opacity: 0;
-        }
+          opacity: 0.4;
+          animation: steam-flow-infinite 2s linear infinite;
 
-        .s1 {
-          animation: steam-s-curve 3s ease-in-out infinite, steam-rise-fade 3s ease-in-out infinite;
-        }
-        .s2 {
-          animation: steam-s-curve 3s ease-in-out 0.6s infinite, steam-rise-fade 3s ease-in-out 0.6s infinite;
-        }
-        .s3 {
-          animation: steam-s-curve 3s ease-in-out 1.2s infinite, steam-rise-fade 3s ease-in-out 1.2s infinite;
+          &.s1 { animation-duration: 2s; }
+          &.s2 { animation-duration: 2s; }
+          &.s3 { animation-duration: 2s; }
         }
       }
     }
   }
 }
 
-@keyframes steam-s-curve {
-  0% {
-    d: path("M 10,20 C 8,15 12,10 10,5");
-  }
-  50% {
-    d: path("M 10,20 C 12,15 8,10 10,5");
-  }
-  100% {
-    d: path("M 10,20 C 8,15 12,10 10,5");
-  }
+@keyframes steam-flow-infinite {
+  from { transform: translateY(0); }
+  to { transform: translateY(-20px); }
 }
 
-@keyframes steam-rise-fade {
-  0% {
-    transform: translateY(5px);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.7;
-  }
-  80% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-}
