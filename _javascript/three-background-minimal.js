@@ -59,16 +59,10 @@ function spawnElements() {
     let x, y, z;
     const yPos = yTop + Math.random() * (yBottom - yTop);
 
-    if (Math.random() > 0.15) {
-      const side = Math.random() > 0.5 ? 1 : -1;
-      x = side * (500 + Math.random() * 400);
-      y = yPos;
-      z = -100 - Math.random() * 300;
-    } else {
-      x = (Math.random() - 0.5) * 600;
-      y = yPos;
-      z = -600 - Math.random() * 400;
-    }
+    /* Spread evenly across the full viewport width */
+    x = (Math.random() - 0.5) * 1800;
+    y = yPos;
+    z = -100 - Math.random() * 500;
 
     mesh.position.set(x, y, z);
     lanternController.addLantern(mesh);

@@ -15,12 +15,12 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 0.5rem;
-    text-shadow: 0 2px 12px var(--gold-12);
     background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f97316 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: fade-in-up 0.6s ease-out 0.15s both;
+    filter: drop-shadow(0 2px 8px rgba(var(--breathe-hue), 0.15));
+    animation: fade-in-up 0.6s ease-out 0.15s both, title-glow 4s ease-in-out 1s infinite;
 
     @include bp.lte(bp.get(md)) {
       font-size: 2rem;
@@ -177,13 +177,59 @@
   }
 }
 
+.scroll-indicator {
+  position: fixed;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: none;
+  opacity: 0;
+  animation: scroll-indicator-enter 0.6s ease-out 1.2s both;
+  transition: opacity 0.6s ease;
+
+  &.hidden {
+    opacity: 0 !important;
+  }
+
+  .scroll-indicator-text {
+    font-size: 0.7rem;
+    font-family: v.$font-family-mono;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-80);
+    text-shadow: 0 0 12px rgba(var(--breathe-hue), 0.5);
+  }
+
+  i {
+    font-size: 1.5rem;
+    color: #fbbf24;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.7);
+    animation: scroll-bounce 2s ease-in-out infinite;
+  }
+}
+
+@keyframes scroll-indicator-enter {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
 .demo-reel {
-  // Centered square — small enough that projects are visible on load
-  max-width: 240px;
+  max-width: 420px;
   margin: 0 auto;
 
   @include bp.lte(bp.get(md)) {
-    max-width: 200px;
+    max-width: 100%;
   }
 
   .demo-reel-embed {
@@ -226,4 +272,9 @@
       }
     }
   }
+}
+
+@keyframes title-glow {
+  0%, 100% { filter: drop-shadow(0 2px 8px rgba(var(--breathe-hue), 0.15)); }
+  50% { filter: drop-shadow(0 2px 16px rgba(var(--breathe-hue), 0.40)); }
 }

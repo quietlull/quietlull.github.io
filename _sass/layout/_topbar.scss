@@ -178,19 +178,20 @@
         // Reward sash — small diagonal "NEW" folded into top-right corner
         .nav-ribbon {
           position: absolute;
-          top: 2px;
-          right: -8px;
-          background: linear-gradient(135deg, var(--gold-80, #d4a017), var(--amber-60, #d97706));
-          color: #1a1a2e;
-          font-family: var(--ff-mono);
-          font-size: 0.28rem;
-          font-weight: 800;
-          letter-spacing: 0.3px;
-          padding: 0 9px;
-          line-height: 1.4;
-          transform: rotate(45deg);
+          top: 8px;
+          right: 8px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: rgba(var(--breathe-hue), 0.40);
+          color: transparent;
+          font-size: 0;
+          line-height: 0;
+          padding: 0;
           pointer-events: none;
           z-index: 3;
+          box-shadow: 0 0 8px rgba(var(--breathe-hue), 0.30);
+          animation: throb-dot 2s ease-in-out infinite;
         }
 
         // Active state

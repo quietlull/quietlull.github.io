@@ -58,12 +58,17 @@ refactor: true
     {% endif %}
   </header>
 
+  <div class="scroll-indicator" aria-hidden="true">
+    <span class="scroll-indicator-text">scroll to explore</span>
+    <i class="fas fa-chevron-down"></i>
+  </div>
+
   <!-- Demo Reel (opt-in via page.show_reel) — compact square, centered -->
   {% if page.show_reel %}
   <section class="demo-reel mb-4">
     <div class="demo-reel-embed">
       {% if page.demo_reel %}
-        <div class="ratio ratio-1x1">
+        <div class="ratio ratio-16x9">
           <iframe src="https://www.youtube.com/embed/{{ page.demo_reel }}"
                   title="Demo Reel"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -71,7 +76,7 @@ refactor: true
                   loading="lazy"></iframe>
         </div>
       {% else %}
-        <div class="demo-reel-placeholder ratio ratio-1x1">
+        <div class="demo-reel-placeholder ratio ratio-16x9">
           <div class="d-flex flex-column align-items-center justify-content-center">
             <i class="fas fa-play-circle fa-3x mb-2"></i>
             <p class="mb-0">Demo reel coming soon</p>
@@ -189,3 +194,23 @@ refactor: true
   </section>
 
 </div>
+
+<script>
+/* Fade out scroll indicator after first scroll */
+(function() {
+  var el = document.querySelector('.scroll-indicator');
+  if (!el) return;
+  /* Wait for entrance animation (1.2s delay + 0.6s anim) before listening */
+  setTimeout(function() {
+    /* If already scrolled past threshold, hide immediately */
+    if (window.scrollY > 80) { el.classList.add('hidden'); return; }
+    var done = false;
+    window.addEventListener('scroll', function() {
+      if (!done && window.scrollY > 80) {
+        done = true;
+        el.classList.add('hidden');
+      }
+    }, { passive: true });
+  }, 2000);
+})();
+</script>

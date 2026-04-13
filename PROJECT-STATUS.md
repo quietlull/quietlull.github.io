@@ -284,6 +284,8 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 | — | `/sync-docs` skill + `PROJECT-STATUS.md` + `CLEANUP-LOG.md` created |
 | — | Sparkler auto-detects breathing elements — removed `GLASS_SELECTOR`, uses `animationName` pattern match instead |
 | — | `breathe-toggle-glow` upgraded to CSS variable system with wider spread for small elements |
+| L6 | Demo reel sizing changed to 420px 16:9 |
+| L7 | Scroll indicator — fixed position bouncing chevron |
 | L-FIX | Broken HTML stagger attributes already removed in prior session |
 | L1 | Hero entrance: `fade-in-up` stagger on title (0.15s) → tagline (0.4s) → tools (0.7s) |
 | L4 | "View All" shimmer via `shimmer-effect` mixin on `.btn-outline-primary` |
@@ -323,17 +325,14 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 | L4 | "View All" shimmer | ✅ Done | `shimmer-effect` mixin applied to `.btn-outline-primary` |
 | L5 | Section header heartbeat | ✅ Done | `throb-dot 2s` on `.icon-dot` — scale 1→1.5 + glow |
 | L9 | Hero title glow pulse | Partial | Static `text-shadow` exists, no breathing animation yet |
-| L2 | Tool strip entrance stagger | Not started | Each icon fades in 80ms apart, JS-driven delay |
 | L3 | Scroll-triggered card reveal | Not started | Cards fade-in-up via IntersectionObserver |
-| L6 | Demo reel sizing | Not started | 240px → 560px, 1:1 → 16:9 for YouTube embed |
-| L7 | Scroll indicator | Not started | "Scroll to explore" chevron below hero, fades on first scroll |
-| L8 | Bottom CTA | Not started | "See all projects" or "Want to work together?" after card grid |
+| L6 | Demo reel sizing | ✅ Done | Changed to 420px 16:9 |
+| L7 | Scroll indicator | ✅ Done | Fixed position bouncing chevron |
 
 ### Phase 2: Portal Page
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | P1 | Add Three.js general background | ✅ Done | Script tag in `portal.html` line 9 |
-| P4 | Ambient background orbs | Not started | Pulsing radial-gradient pseudo-elements |
 | P2 | Lantern gateway animation | Not started | CSS/SVG lanterns above door cards. Higher effort |
 | P6 | Ramblings link personality | Not started | Coffee icon exists, needs steam animation |
 
@@ -387,6 +386,7 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 | O2 | Custom 404 page | Not started | "This lantern has drifted away..." |
 | O5 | Upgrade Three.js models | Not started | Replace box lanterns with FBX/GLTF. High effort |
 | O8 | Personalize achievement names | Not started | Reference TV shows, movies, games, anime Rod likes. Rework names/descriptions/icons |
+| O9 | Achievement unlock features | Not started | Custom cursor styles, theme variants, hidden pages, card style variants, scene options |
 
 ### Easter Eggs (Backburner)
 | # | Task | Notes |
@@ -394,6 +394,10 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 | E1 | Avatar click combo | 10x clicks -> spin + achievement |
 | E3 | Long-press lantern burst | Lantern -> fireflies. Needs 3D work. |
 | E4 | Card drag-release bounce | Spring physics bounce back. |
+
+### Optional Achievement Ideas
+- 404 page visit — unlock achievement for reaching the custom 404 page
+- Under-construction post visit — unlock achievement for visiting a post that's still WIP
 
 ---
 
