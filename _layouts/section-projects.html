@@ -10,8 +10,8 @@ refactor: false
 
 {% assign section = page.section %}
 {% assign all_projects = site.posts | where: 'section', section | where: 'tags', 'project' %}
-{% assign all_pinned = all_projects | where_exp: 'item', 'item.pin == true' %}
-{% assign all_normal = all_projects | where_exp: 'item', 'item.pin != true' %}
+{% assign all_pinned = all_projects | where_exp: 'item', 'item.pin == true' | sort: 'priority' | reverse %}
+{% assign all_normal = all_projects | where_exp: 'item', 'item.pin != true' | sort: 'priority' | reverse %}
 
 <div id="blog-page">
   <header class="blog-header mb-4">
@@ -52,7 +52,8 @@ refactor: false
              data-title="{{ post.title }}"
              data-tags="{{ post_tags }}">
           <article class="post-card h-100 pinned">
-            {% if post.wip %}
+            {% assign word_count = post.content | number_of_words %}
+            {% if post.wip and word_count < 20 %}
               {% assign uc_url = '/' | append: section | append: '/under-construction/?title=' | append: post.title | append: '&tags=' | append: post_tags %}
               <a href="{{ uc_url | relative_url }}" class="card-link">
             {% else %}
@@ -141,7 +142,8 @@ refactor: false
              data-title="{{ post.title }}"
              data-tags="{{ post_tags }}">
           <article class="post-card h-100">
-            {% if post.wip %}
+            {% assign word_count = post.content | number_of_words %}
+            {% if post.wip and word_count < 20 %}
               {% assign uc_url = '/' | append: section | append: '/under-construction/?title=' | append: post.title | append: '&tags=' | append: post_tags %}
               <a href="{{ uc_url | relative_url }}" class="card-link">
             {% else %}

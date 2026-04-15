@@ -11,11 +11,11 @@ role: Artist
 team_size: 2 
 duration: 1 Week
 priority: 10
-pin: false
+pin: true
 wip: true
 takeaway: Even old techniques have their place in modern games, if i wrote off GPU Gems as a resource just because it was released in 2004 I would likely not have as deep of an understanding of the fundamentals needed to make this whole system. Although new solutions always come out that can update the old concepts people rely on, they tend to be incremental and build upon each other. 
 image:
-  path: /assets/media/GrassCompute/GrassHeroAndPreviewImage.gif
+  path: assets/media/GrassCompute/GrassHeroAndPreviewImage.gif
 media_subpath: '/assets/media/GrassCompute'
 ---
 
@@ -42,7 +42,7 @@ I'm going to skip past most of the boring stuff like buffer declarations and try
 
 To start off this is how i cull and create grass as you can see in the RT the alpha channel is designated as a creation zone and the blue channel is designated as a cull zone. The main reason i need this is because in this game there are magic spells that create grass in an area. Structures that spawn on top of that grass and need it to be culled rather than clip through their bottom
 
-![Culling and grass creation zones](/assets/media/GrassCompute/GrassCullAndCreationZoneShowcase.gif)
+![Culling and grass creation zones](GrassCullAndCreationZoneShowcase.gif)
 
 ```
 float4 rt = _GrassRT.SampleLevel(sampler_linear_clamp, uv, 0);
@@ -101,9 +101,9 @@ Lastly I add some noise, and offsets to the blade orientation to make it feel a 
 
 <!-- WRITE ABOUT: What caused the twitching? How did the smooth push / per-blade tip offset buffer fix it? -->
 
-![Grass twitching issue before fix](/assets/media/GrassCompute/GrassTwitchingIssue.gif)
+![Grass twitching issue before fix](GrassTwitchingIssue.gif)
 
-![Grass twitching issue after fix](/assets/media/GrassCompute/GrassTwitchingIssueFixed.gif)
+![Grass twitching issue after fix](GrassTwitchingIssueFixed.gif)
 
 As for the other compute its short but sweet. It converts a 2D texel texture into a 1D array for storage and pretty much does what a ping pong would but just for the R channel, the GBA channel remain untouched.
 ```
@@ -130,7 +130,7 @@ void UpdateDecay(uint3 id : SV_DispatchThreadID)
 ```
 
 This is the end result:
-![Overview of the grass rendering](/assets/media/GrassCompute/GrassHeroAndPreviewImage.gif)
+![Overview of the grass rendering](GrassHeroAndPreviewImage.gif)
 
 ### Render Texture Control
 
@@ -149,11 +149,11 @@ Originally used a ping-pong to decay the render texture but that didn't give me 
 After all of that I decided to try out some different types of grass, originally I liked the triangular grass but my partner on the project asked me for "softer" "fluffier" grass this led me to try out some different methods. I ended up doing some quick changes and tested it all out and my final preference was the Quads although most commonly people use the X cross version.  
 
 Triangle: 3 verts, cheapest, no texture support (triangular UV unwrap)
-![Triangle grass variant](/assets/media/GrassCompute/TriangleGrassCompare.gif)
+![Triangle grass variant](TriangleGrassCompare.gif)
 Quad: 6 verts, correct rect UV
-![Quad grass variant](/assets/media/GrassCompute/QuadGrassCompare.gif)
+![Quad grass variant](QuadGrassCompare.gif)
 X Cross: 12 verts, visible from all angles, full texture support, the standard
-![X Cross grass variant](/assets/media/GrassCompute/XCrossGrassCompare.gif)
+![X Cross grass variant](XCrossGrassCompare.gif)
 
 ### What I Learned
 
