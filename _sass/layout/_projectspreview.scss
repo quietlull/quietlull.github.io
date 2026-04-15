@@ -162,8 +162,10 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
   }
 
   // Hide shimmer once image loads (JS adds .loaded class)
+  // Also hide on WIP cards — SVG placeholder never triggers loaded state
   &.img-loaded::after,
-  &:has(img.loaded)::after {
+  &:has(img.loaded)::after,
+  &:has(.badge-wip)::after {
     opacity: 0;
   }
 
@@ -321,6 +323,13 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
 
 
 
+
+// ============================================================================
+// WIP cards — disable breathing shimmer (placeholder images make it obnoxious)
+// ============================================================================
+.post-card .card:has(.badge-wip) {
+  animation: none !important;
+}
 
 // ============================================================================
 // WIP badge

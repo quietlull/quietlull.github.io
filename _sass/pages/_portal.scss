@@ -105,23 +105,6 @@
     text-decoration: none;
   }
 
-  // P2: Floating lantern above door
-  &::after {
-    content: '\1F3EE';
-    position: absolute;
-    top: -1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.4rem;
-    animation: float-gentle 5s ease-in-out infinite;
-    filter: drop-shadow(0 0 8px rgba(var(--breathe-hue), 0.35));
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  &.portal-door-game-design::after {
-    animation-delay: -1.5s;
-  }
 
   @include bp.lte(bp.get(md)) {
     padding: 2rem 1.5rem;

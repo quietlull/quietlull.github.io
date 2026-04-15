@@ -72,8 +72,6 @@ function initReadingProgress() {
   bar.className = 'reading-progress-bar';
   document.body.appendChild(bar);
 
-  let ticking = false;
-
   // Cache article dimensions — only recalculate on resize
   let articleTop = 0;
   let articleHeight = 0;
@@ -93,21 +91,15 @@ function initReadingProgress() {
 
     if (total <= 0) {
       bar.style.width = '0%';
-      ticking = false;
       return;
     }
 
     const progress = Math.max(0, Math.min(1, scrolled / total));
     bar.style.width = `${progress * 100}%`;
-    ticking = false;
   }
 
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(updateProgress);
-    }
-  }, { passive: true });
+  // Passive scroll listener — single style update, no rAF needed
+  window.addEventListener('scroll', updateProgress, { passive: true });
 
   // Click-to-jump: click position on bar maps to article scroll position
   bar.addEventListener('click', (e) => {

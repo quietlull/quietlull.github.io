@@ -76,10 +76,27 @@ function setupMouseTilt(card) {
 function setupGyroTilt(cards) {
   if (!('DeviceOrientationEvent' in window)) return;
 
+  // Only enable gyro tilt on touch devices — desktop browsers expose the API
+  // but fire beta=0/gamma=0 which causes all cards to tilt -8deg on load.
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  if (!isTouch) return;
+
   // iOS 13+ requires permission
   const requestPermission = typeof DeviceOrientationEvent.requestPermission === 'function';
 
+  // Require real device movement before enabling gyro tilt.
+  // Desktops/touchscreen laptops report constant beta=0, gamma=0 which
+  // would tilt every card -8deg on load.
+  let gyroEnabled = false;
+  let firstBeta = null;
+
   function handleOrientation(e) {
+    if (!gyroEnabled) {
+      if (firstBeta === null) { firstBeta = e.beta; return; }
+      if (Math.abs(e.beta - firstBeta) < 3 && Math.abs(e.gamma) < 3) return;
+      gyroEnabled = true;
+    }
+
     const beta = Math.max(-TILT_MAX, Math.min(TILT_MAX, (e.beta - 45) * 0.3));
     const gamma = Math.max(-TILT_MAX, Math.min(TILT_MAX, e.gamma * 0.3));
 

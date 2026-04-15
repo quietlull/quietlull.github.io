@@ -10,6 +10,7 @@ role: Solo Developer
 team_size: Solo
 duration: In Progress
 pin: false
+priority: 8
 wip: true
 image:
   path: assets/img/placeholder-wip.svg

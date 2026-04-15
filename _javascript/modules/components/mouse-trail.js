@@ -112,6 +112,8 @@ export function initMouseTrail() {
   let mouseX = 0, mouseY = 0;
   let lastMouseX = 0, lastMouseY = 0;
   let mouseOnPage = false;
+  let mouseMoving = false;   // true only while cursor is actively moving
+  let idleTimeout = null;
   let animating = false;
   let lastTime = 0;
   let tipStreaks = null;
@@ -223,8 +225,8 @@ export function initMouseTrail() {
       ctx.stroke();
     }
 
-    // Sparkler tip — jagged radial streaks
-    if (mouseOnPage) {
+    // Sparkler tip — jagged radial streaks (only while cursor is moving)
+    if (mouseMoving) {
       tipTimer--;
       if (!tipStreaks || tipTimer <= 0) {
         tipTimer = 4 + Math.floor(Math.random() * 4);
@@ -254,20 +256,21 @@ export function initMouseTrail() {
       }
     }
 
-    if (anyActive || mouseOnPage) {
+    if (anyActive || mouseMoving) {
       requestAnimationFrame(animate);
     } else {
       animating = false;
     }
   }
 
-  // Track mouse presence
+  // Track mouse presence — loop starts on movement, not just entering
   document.addEventListener('mouseenter', () => {
     mouseOnPage = true;
-    startLoop();
   });
   document.addEventListener('mouseleave', () => {
     mouseOnPage = false;
+    mouseMoving = false;
+    clearTimeout(idleTimeout);
     activeTheme = THEME_DEFAULT;
   });
 
@@ -275,6 +278,10 @@ export function initMouseTrail() {
   let lastEmitTime = 0;
   document.addEventListener('mousemove', (e) => {
     mouseOnPage = true;
+    mouseMoving = true;
+    clearTimeout(idleTimeout);
+    idleTimeout = setTimeout(() => { mouseMoving = false; }, 400);
+
     const now = performance.now();
     if (now - lastEmitTime < 16) return;
     lastEmitTime = now;

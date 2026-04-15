@@ -177,6 +177,8 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 | `.demo-reel-placeholder` | T2 | breathe-glow | 7.3s | gold | 193 |
 | `.demo-reel-embed` | T2 | breathe-glow | 8.1s | gold | 205 |
 | `.demo-reel-placeholder i` | — | pulse-slow | 4s | gold | 210 |
+| `.landing-title` | — | title-glow | 4s | gold | — |
+| `.scroll-indicator i` | — | bounce | 2s | — | — |
 
 ### Base Elements (`_base.scss`)
 | Element | Tier | Keyframe | Duration | Hue | Line |
@@ -211,7 +213,9 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 |---------|------|----------|----------|-----|------|
 | `.portal-door` (tech-art) | T3 | breathe-slow | 6s | gold | 89 |
 | `.portal-door` (game-design) | T3 | breathe-slow | 6.5s | orange | 96 |
-| `.portal-side-link` | T2 | breathe-glow | 7.7s | gold | 173 |
+| `.portal-side-link` | T2 | breathe-glow | 7.7s | gold | 191 |
+| `.portal-door::after` (lantern) | — | float-gentle | 5s | gold | 116 |
+| `.steam-line` | — | steam-flow-infinite | 2s | — | 222 |
 
 ### Post Pages (`_post.scss`)
 | Element | Tier | Keyframe | Duration | Hue | Line |
@@ -245,6 +249,10 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 |---------|------|----------|----------|------|------|
 | `#searchbar-wrapper` | T1 | breathe-ember | 9.1s | _searchbar.scss | 13 |
 | `#back-to-top.show` | T1 | breathe-ember | 8.3s | _buttons.scss | 54 |
+| `.btn.btn-outline-primary` | T3 | breathe-slow | 8s | _base.scss | — |
+| `.access > section` | T3 | breathe-slow | 7s | _panel.scss | — |
+| `.year::after` | — | pulse-slow | 4s | _archives.scss | — |
+| `.nav-ribbon` | — | throb-dot | 2s | _topbar.scss | — |
 
 ---
 
@@ -324,25 +332,24 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 | L1 | Hero entrance animation | ✅ Done | `fade-in-up` stagger: title 0.15s → tagline 0.4s → tools 0.7s |
 | L4 | "View All" shimmer | ✅ Done | `shimmer-effect` mixin applied to `.btn-outline-primary` |
 | L5 | Section header heartbeat | ✅ Done | `throb-dot 2s` on `.icon-dot` — scale 1→1.5 + glow |
-| L9 | Hero title glow pulse | Partial | Static `text-shadow` exists, no breathing animation yet |
-| L3 | Scroll-triggered card reveal | Not started | Cards fade-in-up via IntersectionObserver |
+| L9 | Hero title glow pulse | ✅ Done | `title-glow 4s` via `filter: drop-shadow()` on `.landing-title` |
 | L6 | Demo reel sizing | ✅ Done | Changed to 420px 16:9 |
-| L7 | Scroll indicator | ✅ Done | Fixed position bouncing chevron |
+| L7 | Scroll indicator | ✅ Done | Fixed position bouncing chevron, fades on scroll |
 
 ### Phase 2: Portal Page
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | P1 | Add Three.js general background | ✅ Done | Script tag in `portal.html` line 9 |
-| P2 | Lantern gateway animation | Not started | CSS/SVG lanterns above door cards. Higher effort |
-| P6 | Ramblings link personality | Not started | Coffee icon exists, needs steam animation |
+| P2 | Lantern gateway animation | ✅ Done | Floating lantern emoji `::after` above each `.portal-door` |
+| P6 | Ramblings link personality | ✅ Done | SVG conveyor-belt sine-wave steam above coffee cup, opaque button bg |
 
 ### Phase 3: Breathing Expansion
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | B9 | Recommendation cards | ✅ Done | `breathe-slow` on `#related-posts a.post-preview` with stagger |
-| B4 | View All / CTA button breathing | Not started | `breathe-slow 8s` subtle |
-| B5 | Sidebar panel sections | Not started | `breathe-slow 7s` staggered |
-| B6 | Archive timeline year dots | Not started | `pulse-slow 4s` |
+| B4 | View All / CTA button breathing | ✅ Done | `breathe-slow 8s` on `.btn.btn-outline-primary` |
+| B5 | Sidebar panel sections | ✅ Done | `breathe-slow 7s` staggered on `.access > section` |
+| B6 | Archive timeline year dots | ✅ Done | `pulse-slow 4s` on `.year::after` |
 
 ### Phase 4: Interaction Polish
 | # | Task | Status | Notes |
@@ -383,7 +390,7 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 |---|------|--------|-------|
 | O6 | Polish card tilt | ✅ Done | `TILT_MAX = 8` — conservative, polished angle |
 | O7 | Custom tool tagline quips | ✅ Done | Personal `data-tool-desc` on each icon in `section-landing.html` |
-| O2 | Custom 404 page | Not started | "This lantern has drifted away..." |
+| O2 | Custom 404 page | ✅ Done | Floating lantern, gold gradient title, glass CTA, minimal Three.js bg |
 | O5 | Upgrade Three.js models | Not started | Replace box lanterns with FBX/GLTF. High effort |
 | O8 | Personalize achievement names | Not started | Reference TV shows, movies, games, anime Rod likes. Rework names/descriptions/icons |
 | O9 | Achievement unlock features | Not started | Custom cursor styles, theme variants, hidden pages, card style variants, scene options |
@@ -394,6 +401,12 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 | E1 | Avatar click combo | 10x clicks -> spin + achievement |
 | E3 | Long-press lantern burst | Lantern -> fireflies. Needs 3D work. |
 | E4 | Card drag-release bounce | Spring physics bounce back. |
+
+### Phase 8: Content — Finish Posts & Design Write-ups
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| C1 | Finish all under-construction posts | Not started | Complete every WIP post currently marked under construction |
+| C2 | Create design posts | Not started | New posts covering design work, process, and case studies |
 
 ### Optional Achievement Ideas
 - 404 page visit — unlock achievement for reaching the custom 404 page

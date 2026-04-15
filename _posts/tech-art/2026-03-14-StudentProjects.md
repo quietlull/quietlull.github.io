@@ -10,6 +10,7 @@ role: Student
 team_size: Solo
 duration: Various
 pin: false
+priority: 3
 wip: true
 image:
   path: assets/img/placeholder-wip.svg
