@@ -12,7 +12,7 @@ team_size: Solo
 duration: Ongoing
 priority: 9
 pin: true
-wip: true
+wip: false
 takeaway: A single simple to use tool that works on everything is worth more than a thousand specialized ones that only do one thing. When I first learned about the core of this system I thought to myself "I gotta try that" and now that I've made it even though its just a simple mask fed into a shader because if the way it was built to be simple and reusable, every new use case layers on top of the system without needing to rebuild anything. It sparks those "thinking with portal" moments and that's exactly what a tool is meant to be.
 image:
   path: assets/media/P3DM/TerrainShowcase.gif
@@ -27,7 +27,6 @@ Then I thought what if I added more? What if instead of just a single mask I mad
 
 A system that can be used easily in ShaderGraph, can pass arbitrary values, can be animated, can be scaled, can be used for basically whatever you need and can be added to any ShaderGraph or .shader material you would like.
 
-<!-- Actually since my hero shot should be in the image above i think its ok not to have one here but i should also improve my hero shot cus right now its not too crazy but this is a if i have time at the end thing -->
 
 ### How It Works
 
@@ -39,7 +38,7 @@ These register with a manager script which then passes the details of each objec
 
 This then is later used to construct a shape and passed into shader or wherever else you want to use them. 
 
-``` HLSL
+``` hlsl
 //Example of a function used to construct a sphere on the GPU
 inline float P3DM_Shape_Sphere(
     float3 pos, float3 center,
@@ -66,18 +65,23 @@ Here are some quick examples of what I used this system for in this specific pro
 
 ### Wall Transparency
 
-Incredibly simple effect utilizing the mask as a transparency mask, you can also add noise like in the mask example 
-
 ![Wall transparency using P3DM mask](MaskTransparency.gif)
 
+Incredibly simple effect utilizing the mask as a transparency mask, you can also add noise like in the mask example 
 
-<!-- CODE/NODES: If you have a ShaderGraph screenshot of the custom functions, this is where it goes -->
+You can see how this effect is just a couple of nodes!
+
+![ShaderGraph sphere mask nodes](Sphere.jpg)
 
 ### Terrain Blending
 
-For my terrain system I added something called type, effectively type is just a float value but when 2 types of differing value overlap they pass another type value into the shader. Using this I'm able to pass zone information and determine which index from the 2D texture array I want to use.
+For my terrain system I added something called type, effectively type is just a float value but when 2 types of differing value overlap they pass another type value into the shader. Using this I'm able to pass zone information and determine which index from the 2D texture array I want to use. Heres a showcase of the 5 zone types in the game and how they can form a differnt zone and use a different texture index for each zone.
 
-![Terrain blending with P3DM zones](P3DMHero.gif)
+![Terrain blending with P3DM zones](TerrainShowCase2.gif)
+
+Here you can see a little example of using it with my grass system as well, This is before I added the quad modes so now I could also change the image texture using the same indexed 2D Texture Array method i used for the terrain changes.
+
+![Using the zones to drive reveals, color changes and more!](P3DMHero.gif)
 
 
 ### Other Use Cases

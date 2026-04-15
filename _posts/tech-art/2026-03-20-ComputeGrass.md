@@ -12,7 +12,7 @@ team_size: 2
 duration: 1 Week
 priority: 10
 pin: true
-wip: true
+wip: false
 takeaway: Even old techniques have their place in modern games, if i wrote off GPU Gems as a resource just because it was released in 2004 I would likely not have as deep of an understanding of the fundamentals needed to make this whole system. Although new solutions always come out that can update the old concepts people rely on, they tend to be incremental and build upon each other. 
 image:
   path: assets/media/GrassCompute/GrassHeroAndPreviewImage.gif
@@ -44,7 +44,7 @@ To start off this is how i cull and create grass as you can see in the RT the al
 
 ![Culling and grass creation zones](GrassCullAndCreationZoneShowcase.gif)
 
-```
+``` hlsl
 float4 rt = _GrassRT.SampleLevel(sampler_linear_clamp, uv, 0);
 
 bool inCreation = rt.a > 0.5; // A channel — does grass exist here at all?
@@ -60,7 +60,7 @@ if (!inCreation || isCulled)
 ```
 After this I use the same rendertexture's R channel to do the pushing of interactor objects
 
-```
+``` hlsl
     float d          = _GrassRTParams.w;
     float sampleDist = d * 16.0;
 
@@ -71,20 +71,44 @@ After this I use the same rendertexture's R channel to do the pushing of interac
 
     float2 grad    = float2(rR - rL, rU - rD);
     float  gradLen = length(grad);
+```
+A very important part I added with smoothing the return of the grass in the shader. Before this fix the grass looked like this:
 
-    float2 pushDir = (gradLen > _InteractionDir) ? -(grad / gradLen) : float2(0, 0);
-    float  pushStr = saturate(rt.r * _InteractionStr);
+![Grass twitching issue before fix](GrassTwitchingIssue.gif)
 
-    // Smooth Push 
-    float2 targetPush = pushDir * pushStr;
-    float2 prevPush   = _BladeTipOffsets[bladeID];
+After this code section here:
+
+``` hlsl
+    float  pushStr  = saturate(rt.r * _InteractionStr);
+    float2 prevPush = _BladeTipOffsets[bladeID];
+    float  prevMag  = length(prevPush);
+
+    float2 targetPush;
+
+    if (gradLen > _InteractionDir)
+    {
+        targetPush = -(grad / gradLen) * pushStr;
+    }
+    else if (pushStr > 0.1 && prevMag > 1e-6)
+    {
+        targetPush = (prevPush / prevMag) * pushStr;
+    }
+    else
+    {
+        targetPush = float2(0, 0);
+    }
+
     float  t          = saturate(_ReturnSpeed * _DeltaTime * 60.0);
     float2 smoothPush = lerp(prevPush, targetPush, t);
     _BladeTipOffsets[bladeID] = smoothPush;
 ```
+The grass looks like this 
+
+![Grass after smoothing fix](GrassTwitchingIssueFixed.gif)
+
 Lastly I add some noise, and offsets to the blade orientation to make it feel a bit more organic 
 
-```
+``` hlsl
     // Wind 
     float  windPhase  = dot(bladePos.xz, _WindDir) * _WindFreq + _GrassTime * _WindSpeed;
     float  windAmt    = sin(windPhase) * _WindStrength;
@@ -99,14 +123,8 @@ Lastly I add some noise, and offsets to the blade orientation to make it feel a 
 ```
 ### Fixing the Twitching
 
-<!-- WRITE ABOUT: What caused the twitching? How did the smooth push / per-blade tip offset buffer fix it? -->
-
-![Grass twitching issue before fix](GrassTwitchingIssue.gif)
-
-![Grass twitching issue after fix](GrassTwitchingIssueFixed.gif)
-
 As for the other compute its short but sweet. It converts a 2D texel texture into a 1D array for storage and pretty much does what a ping pong would but just for the R channel, the GBA channel remain untouched.
-```
+``` hlsl
 void UpdateDecay(uint3 id : SV_DispatchThreadID)
 {
     // Convert 2D texel texture to 1D array
@@ -136,12 +154,6 @@ This is the end result:
 
 A camera renders only the GrassRT layer into _camRT each frame this way is easy to influence and test in the scene and very simple to add to objects to the RenderTexture. In hindsight I probably could have rendered the objects directly into a render texture however since this second camera will only be drawing very minor geometry in a fixed space i figured this would work well. For an example that does something similar but adds camera culling for a moving character you can check out [Cyanilux](https://www.cyanilux.com/tutorials/gpu-instanced-grass-breakdown/) which made a system just like that but for my use case this was not needed and I figured this brought the highest detail for the grass interactions. 
 
-<!-- IMAGE/GIF: Showing the render texture channels or debug view -->
-
-Here is what a real preview of the grass looks like with some interactors albeit with simple textures
-
-<!-- IMAGE/GIF: Overview of the grass with interactor dice -->
-
 Originally used a ping-pong to decay the render texture but that didn't give me the control I wanted so I decided to go with this method which I don't think I've seen in anyone else's grass shader implementation
 
 ### Three Variants: X, Quad, and Triangle
@@ -150,8 +162,10 @@ After all of that I decided to try out some different types of grass, originally
 
 Triangle: 3 verts, cheapest, no texture support (triangular UV unwrap)
 ![Triangle grass variant](TriangleGrassCompare.gif)
+
 Quad: 6 verts, correct rect UV
 ![Quad grass variant](QuadGrassCompare.gif)
+
 X Cross: 12 verts, visible from all angles, full texture support, the standard
 ![X Cross grass variant](XCrossGrassCompare.gif)
 
