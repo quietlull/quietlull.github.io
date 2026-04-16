@@ -4,7 +4,7 @@ description: "GPU-driven grass rendering in Unity using compute shaders, instanc
 author: Rod
 date: 2026-03-20 12:00:00 +0800
 categories: [project]
-tags: [project, shader, compute, 3D]
+tags: [project, unity, shader, compute, 3D]
 section: tech-art
 engine: Unity
 role: Artist
@@ -18,8 +18,6 @@ image:
   path: assets/media/GrassCompute/GrassHeroAndPreviewImage.gif
 media_subpath: '/assets/media/GrassCompute'
 ---
-
-## Compute Grass
 
 I think at this point every tech artist worth their salt eventually makes their own grass shader, but I never seemed to have the opportunity to do so. Although this project is an unusual case: a fixed-camera, top-down roguelike, not exactly the rolling meadows most grass implementations are built for. That constraint made it more interesting to solve.
 

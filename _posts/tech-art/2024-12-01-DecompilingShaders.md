@@ -4,7 +4,7 @@ description: Breaking down a compiled toon shader from Zenless Zone Zero to figu
 author: Rod
 date: 2024-12-01 20:55:00 +0800
 categories: [project]
-tags: [project, shader, study, 3D]
+tags: [project, unity, shader, study, 3D]
 section: tech-art
 engine: Unity
 role: Research
@@ -17,8 +17,6 @@ image:
   path: assets/media/ZZZProject/CodeScroll.gif
 media_subpath: '/assets/media/ZZZProject'
 ---
-
-## Decompiling shaders - learning from the pros
 
 At this point in time it's becoming increasingly easy to decompile shaders with tools like nvidia nsight, renderdoc, or even community tools for modding. Even without hex editors and resource dumping tools taking a peak behind the veil of the game engine has never been easier. With that being said I'm not going to go into more detail on how to get your hands on these files. 
 

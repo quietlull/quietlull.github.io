@@ -19,8 +19,6 @@ image:
 media_subpath: '/assets/media/PortalShadersGodot'
 ---
 
-## Portal Shaders in Godot
-
 <!-- INTRO: What is this project? Portal-style see-through rendering in Godot? What was the motivation — a game prototype, learning Godot's shader language, porting a technique from Unity? What does the final effect look like? -->
 
 <!-- IMAGE/GIF: Hero shot — looking through a portal at another scene/area -->

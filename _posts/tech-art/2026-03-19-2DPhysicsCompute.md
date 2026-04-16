@@ -4,7 +4,7 @@ description: "2D physics simulation powered by compute shaders — collision det
 author: Rod
 date: 2026-03-19 12:00:00 +0800
 categories: [project]
-tags: [project, shader, compute, 2D]
+tags: [project, unity, shader, compute, 2D]
 section: tech-art
 engine: Unity
 role: Solo Developer
@@ -18,8 +18,6 @@ image:
   path: assets/img/placeholder-wip.svg
 media_subpath: '/assets/media/2DPhysicsCompute'
 ---
-
-## 2D Physics Compute
 
 <!-- INTRO: What is this project? A 2D physics sim running entirely on compute shaders? What made you want to move physics to the GPU rather than using Unity's built-in physics? Was there a specific project need (particle count, performance) or was it more of a learning exercise? What does it look like in action? -->
 

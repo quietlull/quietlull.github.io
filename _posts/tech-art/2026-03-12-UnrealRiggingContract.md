@@ -19,8 +19,6 @@ image:
 media_subpath: '/assets/media/UnrealRigging'
 ---
 
-## Unreal Rigging Contract
-
 <!-- INTRO: What was this contract for? What kind of characters were you rigging — humanoid, creature, stylized? How many characters? What was the client's project (game, cinematic, etc.)? Keep it professional but show personality. Be mindful of NDA — if you can't name the client, say "a studio" and focus on the technical work. -->
 
 <!-- IMAGE: Hero shot — a rigged character in the viewport, or a control rig overview. If NDA restricts showing the actual assets, consider a generic shot of your rig setup or a personal test character using the same techniques. -->

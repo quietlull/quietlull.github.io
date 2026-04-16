@@ -4,7 +4,7 @@ description: "A reusable SDF-like dynamic zone system in Unity with ShaderGraph 
 author: Rod
 date: 2026-03-11 12:00:00 +0800
 categories: [project]
-tags: [project, shader, 3D]
+tags: [project, unity, shader, 3D]
 section: tech-art
 engine: Unity
 role: Solo Developer
@@ -18,8 +18,6 @@ image:
   path: assets/media/P3DM/TerrainShowcase.gif
 media_subpath: '/assets/media/P3DM'
 ---
-
-## Procedural 3D Mask
 
 It all started with a video by an artist named [Sakura Rabbit](https://www.youtube.com/watch?v=63-4VAMylV8) I looked at it and wondered to myself "How did they do that?" later on while reading an article by [MinionsArtTutorials](https://www.patreon.com/posts/26438849) I had my realization on how it was done. This led me another realization that hit me in the face Sakura Rabbit uses this effect ALL THE TIME. And even though it was right in front of me I had never noticed. Once I saw it and once I learned it, it suddenly felt like I saw instances where I could use this everywhere, in every project I worked on, all the time. 
 

@@ -4,7 +4,7 @@ description: "Breaking down the toon shading, outline rendering, and material te
 author: Rod
 date: 2026-03-10 12:00:00 +0800
 categories: [project]
-tags: [project, shader, study, 3D]
+tags: [project, unity, shader, study, 3D]
 section: tech-art
 engine: Unity
 role: Research
@@ -18,8 +18,6 @@ image:
   path: assets/img/placeholder-wip.svg
 media_subpath: '/assets/media/ArknightsEndfield'
 ---
-
-## Studying the Shaders of Arknights Endfield
 
 <!-- INTRO: Similar to your ZZZ shader study but for Arknights: Endfield. What drew you to this game's visuals specifically? How does its art style differ from ZZZ? Is this the same decompilation pipeline you used for ZZZ, or a different approach? What were you hoping to learn from this one that ZZZ didn't cover? -->
 

@@ -4,7 +4,7 @@ description: "A compute-driven dot matrix display system in Unity — world-spac
 author: Rod
 date: 2026-03-17 12:00:00 +0800
 categories: [project]
-tags: [project, shader, compute, 3D]
+tags: [project, unity, shader, compute, 3D]
 section: tech-art
 engine: Unity
 role: Solo Developer
@@ -18,8 +18,6 @@ image:
   path: assets/img/placeholder-wip.svg
 media_subpath: '/assets/media/ComputeDisplayShaders'
 ---
-
-## Compute Display Shaders
 
 <!-- INTRO: What is this and what does it look like? A dot matrix display driven by compute shaders. How did this come about — was it for the roguelike, a standalone experiment, inspiration from real LED boards? What made you want to build this? -->
 
