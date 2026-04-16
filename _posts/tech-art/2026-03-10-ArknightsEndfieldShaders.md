@@ -23,11 +23,11 @@ media_subpath: '/assets/media/ArknightsEndfield'
 
 <!-- IMAGE/GIF: Hero shot — a screenshot or comparison showing the visual style you're analyzing -->
 
-### How Does It Compare to ZZZ?
+<!-- ### How Does It Compare to ZZZ? -->
 
 <!-- COMPARISON: Both are anime-style toon shaders in Unity, so what's different? Different lighting model? Different outline approach? Different material layering? This section is important because it shows the reader (and hiring managers) that you can distinguish between implementations rather than treating all toon shaders as the same thing. -->
 
-### The Toon Shading Model
+<!-- ### The Toon Shading Model -->
 
 <!-- ANALYSIS 1: What does the main toon shading look like? How many shadow steps? Ramp texture or step function? How does it handle light direction? Any specular model? How does it differ from ZZZ's approach? -->
 
@@ -35,18 +35,18 @@ media_subpath: '/assets/media/ArknightsEndfield'
 
 <!-- CODE: Key fragment shader sections with your annotations explaining what each part does -->
 
-### Outline Rendering
+<!-- ### Outline Rendering -->
 
 <!-- ANALYSIS 2: How are outlines done? Inverted hull? Screen-space edge detection? Post-process? How does it handle outline width variation (e.g., thicker at silhouette, thinner at detail)? Any vertex color tricks for outline control? -->
 
 <!-- CODE: Outline-relevant shader code with annotations -->
 
-### Material Techniques
+<!-- ### Material Techniques -->
 
 <!-- ANALYSIS 3: Any standout material techniques — face shading with SDF, hair anisotropy, emission maps, rim lighting? What makes the materials feel distinct from other anime games? Pick 1-2 techniques that were most interesting to break down. -->
 
 <!-- IMAGE: Close-up of the technique in action -->
 
-### What I Learned
+<!-- ### What I Learned -->
 
 <!-- REFLECTION: How has doing two shader studies (ZZZ + this) changed how you approach toon shading in your own work? What techniques would you adopt vs skip? Did anything surprise you about how they solved a problem? -->

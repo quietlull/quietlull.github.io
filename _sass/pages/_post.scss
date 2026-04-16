@@ -751,7 +751,8 @@ article > header {
     }
   }
 
-  .preview-img {
+  .preview-img,
+  .preview-img-wrap img {
     max-height: 280px;
     width: auto;
     max-width: 100%;

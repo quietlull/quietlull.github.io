@@ -78,7 +78,7 @@ The last effect that was cool was using Lumen in an unreal engine to add splotch
 
 ### Other features
 
-Lastly i want to mention other features that the shader does have but i deem simple or not important. Toon lighting with a pretty standard dot product of normal and lighting was used. I did edit the shadows of the meshes but unlike unity which has “fake” shadows and can be freely manipulated unreal 6 doesn't support this because their shadows are “real” and not just a color projected onto surfaces that are “in shadow” so i ended up turning this off.
+Lastly i want to mention other features that the shader does have but i deem simple or not important. Toon lighting with a pretty standard dot product of normal and lighting was used. I did edit the shadows of the meshes but unlike unity which has “fake” shadows and can be freely manipulated Unreal Engine 5 doesn't support this because their shadows are “real” and not just a color projected onto surfaces that are “in shadow” so i ended up turning this off.
 
 ### Closing thoughts
 
