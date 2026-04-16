@@ -11,7 +11,7 @@ role: Technical Artist
 team_size: 4
 duration: 3 days (Game Jam)
 priority: 7
-pin: true
+pin: false
 takeaway: Learning shaders in a new engine under time pressure forced me to actually understand the fundamentals rather than relying on muscle memory. The post process pipeline in Unreal is more like ShaderToy than Unity — which was a fun surprise.
 image:
   path: assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.gif
