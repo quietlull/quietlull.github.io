@@ -6,17 +6,26 @@
 - type: twitter
   icon: "fa-brands fa-x-twitter"
 
-- type: email
-  icon: "fas fa-envelope"
-  noblank: true # open link in current tab
-
 - type: linkedin
   icon: "fab fa-linkedin"
   url: "https://www.linkedin.com/in/rodneyfan/"
 
-- type: rss
-  icon: "fas fa-rss"
-  noblank: true
+# Disabled until profiles are polished:
+# - type: email
+#   icon: "fas fa-envelope"
+#   noblank: true
+#
+# - type: rss
+#   icon: "fas fa-rss"
+#   noblank: true
+#
+# - type: artstation
+#   icon: "fab fa-artstation"
+#   url: "https://www.artstation.com/<handle>/projects"
+#
+# - type: itch
+#   icon: "fab fa-itch-io"
+#   url: "https://rodneyfan.itch.io/"
 # Uncomment and complete the url below to enable more contact options
 #
 # - type: mastodon
