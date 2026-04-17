@@ -1,5 +1,3 @@
-import Toast from 'bootstrap/js/src/toast';
-
 if ('serviceWorker' in navigator) {
   // Get Jekyll config from URL parameters
   const src = new URL(document.currentScript.src);
@@ -8,42 +6,29 @@ if ('serviceWorker' in navigator) {
 
   if (register) {
     const swUrl = `${baseUrl}/sw.min.js`;
-    const notification = document.getElementById('notification');
-    const btnRefresh = notification.querySelector('.toast-body>button');
-    const popupWindow = Toast.getOrCreateInstance(notification);
 
     navigator.serviceWorker.register(swUrl).then((registration) => {
-      // Restore the update window that was last manually closed by the user
-      if (registration.waiting) {
-        popupWindow.show();
-      }
-
-      registration.addEventListener('updatefound', () => {
-        registration.installing.addEventListener('statechange', () => {
-          if (registration.waiting) {
-            if (navigator.serviceWorker.controller) {
-              popupWindow.show();
-            }
-          }
-        });
-      });
-
-      btnRefresh.addEventListener('click', () => {
+      // Silent auto-update on next navigation:
+      // When a new service worker is waiting, activate it immediately in the
+      // background. The current tab keeps using its already-loaded resources
+      // (no forced reload). The next navigation naturally picks up the new
+      // version because the new SW is now in control.
+      const activateIfWaiting = () => {
         if (registration.waiting) {
           registration.waiting.postMessage('SKIP_WAITING');
         }
-        popupWindow.hide();
+      };
+
+      // Case 1: a new SW was already installed and waiting when the page loaded
+      activateIfWaiting();
+
+      // Case 2: a new SW finishes installing while the page is open
+      registration.addEventListener('updatefound', () => {
+        const installing = registration.installing;
+        if (installing) {
+          installing.addEventListener('statechange', activateIfWaiting);
+        }
       });
-    });
-
-    let refreshing = false;
-
-    // Detect controller change and refresh all the opened tabs
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        window.location.reload();
-        refreshing = true;
-      }
     });
   } else {
     navigator.serviceWorker.getRegistrations().then(function (registrations) {
