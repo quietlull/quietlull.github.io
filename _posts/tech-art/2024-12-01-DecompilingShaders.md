@@ -1,10 +1,10 @@
 ---
 title: Decompiling The Shaders Of ZZZ!
-description: Breaking down a compiled toon shader from Zenless Zone Zero to figure out what make the game look the way it does.
+description: Breaking down a compiled toon shader from Zenless Zone Zero to figure out what makes the game look the way it does.
 author: Rod
 date: 2024-12-01 20:55:00 +0800
 categories: [project]
-tags: [project, shader, study, 3D]
+tags: [project, unity, shader, study, 3D]
 section: tech-art
 engine: Unity
 role: Research
@@ -17,8 +17,6 @@ image:
   path: assets/media/ZZZProject/CodeScroll.gif
 media_subpath: '/assets/media/ZZZProject'
 ---
-
-## Decompiling shaders - learning from the pros
 
 At this point in time it's becoming increasingly easy to decompile shaders with tools like nvidia nsight, renderdoc, or even community tools for modding. Even without hex editors and resource dumping tools taking a peak behind the veil of the game engine has never been easier. With that being said I'm not going to go into more detail on how to get your hands on these files. 
 
@@ -98,7 +96,7 @@ r11.yzw = r0.xxx * r11.yzw + float3(0.0399999991,0.0399999991,0.0399999991);
 
 For `t6` we can figure out each channel by tracing where they end up in the final output. The shader I got doesn’t use transparency but if it did, `t6.r` would be opacity, this is obvious if you look at the texture itself but this post assumes that we don't. `t6.g` acts as an anti-specular mask, zeroing out specular wherever it’s applied. `t6.b` marks where rimlight appears, deduced from how it’s multiplied into the rim lighting calculations at the end of the shader.
 
-### What we learned
+### What I Learned
 
 Putting it all together, here’s what each texture slot does:
 

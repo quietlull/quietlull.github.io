@@ -30,11 +30,11 @@ script_includes:
         <span class="meta-chip">
           {% assign eng = page.engine | downcase %}
           {% if eng contains 'unity' %}
-            <img src="{{ '/assets/img/icons/unity.svg' | absolute_url }}" alt="" class="meta-chip-icon">
+            <img src="{{ '/assets/img/icons/unity.svg' | absolute_url }}" alt="Unity" class="meta-chip-icon">
           {% elsif eng contains 'unreal' %}
-            <img src="{{ '/assets/img/icons/unreal.svg' | absolute_url }}" alt="" class="meta-chip-icon">
+            <img src="{{ '/assets/img/icons/unreal.svg' | absolute_url }}" alt="Unreal Engine" class="meta-chip-icon">
           {% elsif eng contains 'godot' %}
-            <img src="{{ '/assets/img/icons/godot.svg' | absolute_url }}" alt="" class="meta-chip-icon">
+            <img src="{{ '/assets/img/icons/godot.svg' | absolute_url }}" alt="Godot" class="meta-chip-icon">
           {% elsif eng contains 'blender' %}
             <i class="fas fa-cube" style="color: #f5792a;"></i>
           {% else %}
@@ -90,14 +90,12 @@ script_includes:
 
     {% if page.image %}
       {% assign img_path = page.image.path | default: page.image %}
-      {% capture src %}src="{{ img_path | relative_url }}"{% endcapture %}
-      {% capture class %}class="preview-img{% if page.image.no_bg %}{{ ' no-bg' }}{% endif %}"{% endcapture %}
-      {% capture alt %}alt="{{ page.image.alt | xml_escape | default: "Preview Image" }}"{% endcapture %}
+      {% assign img_alt = page.image.alt | xml_escape | default: "Preview Image" %}
       {% if page.image.lqip %}
-        {%- capture lqip -%}lqip="{{ page.image.lqip }}"{%- endcapture -%}
+        {%- assign img_lqip = page.image.lqip -%}
       {% endif %}
-      <div class="mt-3 mb-3">
-        <img {{ src }} {{ class }} {{ alt }} w="1200" h="630" {{ lqip }}>
+      <div class="mt-3 mb-3 preview-img-wrap">
+        <img src="{{ img_path | relative_url }}" class="preview-img{% if page.image.no_bg %} no-bg{% endif %}" alt="{{ img_alt }}" width="1200" height="630" {% if img_lqip %}lqip="{{ img_lqip }}"{% endif %} loading="lazy">
         {%- if page.image.alt -%}
           <figcaption class="text-center pt-2 pb-2">{{ page.image.alt }}</figcaption>
         {%- endif -%}

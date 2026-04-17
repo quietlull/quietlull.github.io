@@ -4,7 +4,7 @@ description: "GPU-driven grass rendering in Unity using compute shaders, instanc
 author: Rod
 date: 2026-03-20 12:00:00 +0800
 categories: [project]
-tags: [project, shader, compute, 3D]
+tags: [project, unity, shader, compute, 3D]
 section: tech-art
 engine: Unity
 role: Artist
@@ -18,8 +18,6 @@ image:
   path: assets/media/GrassCompute/GrassHeroAndPreviewImage.gif
 media_subpath: '/assets/media/GrassCompute'
 ---
-
-## Compute Grass
 
 I think at this point every tech artist worth their salt eventually makes their own grass shader, but I never seemed to have the opportunity to do so. Although this project is an unusual case: a fixed-camera, top-down roguelike, not exactly the rolling meadows most grass implementations are built for. That constraint made it more interesting to solve.
 
@@ -38,7 +36,7 @@ The pipeline works as follows:
 
 As mentioned there are two compute shaders that this system uses one is the grass compute which does most of the calculations for the grass and one that does the RT decay. 
 
-I'm going to skip past most of the boring stuff like buffer declarations and try to get the the important details
+I'm going to skip past most of the boring stuff like buffer declarations and try to get the important details
 
 To start off this is how i cull and create grass as you can see in the RT the alpha channel is designated as a creation zone and the blue channel is designated as a cull zone. The main reason i need this is because in this game there are magic spells that create grass in an area. Structures that spawn on top of that grass and need it to be culled rather than clip through their bottom
 
@@ -175,5 +173,5 @@ Throughout this project even though it was about a week of time spent I would sa
 
 I was also surprised that I enjoyed the look of the quads rather than the X Cross which goes to show the more standard method doesn't always look the most like what you may want. It also showed me it's ok to simplify the effect of the original if you think it's unnecessary. The original grass interactor showcase I saw used both the R and G channel for grass disruption but I saw little to no difference and could keep the G channel for future light map stuff. 
 
-Overall I'm super proud of this system especially the turn around time for this whole thing which was about 1 day of research and 3 days of work. It also works really well with my P3DM system and im excited to extend the functionality of the grass shader used to render it so that it can adapt based on terrain zones. I hope you enjoyed I'll see you in the next one.
+Overall I'm super proud of this system especially the turn around time for this whole thing which was about 1 day of research and 3 days of work. It also works really well with my P3DM system and im excited to extend the functionality of the grass shader used to render it so that it can adapt based on terrain zones. I hope you enjoyed, I'll see you in the next one.
 
