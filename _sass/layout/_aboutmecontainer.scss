@@ -174,8 +174,16 @@
 }
 
 .trophy-title {
-  margin: 0 0 12px;
+  margin: 0 0 4px;
   text-shadow: 0 2px 10px var(--gold-15);
+}
+
+.trophy-subtitle {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-muted-color);
+  opacity: 0.75;
 }
 
 .trophy-summary {
