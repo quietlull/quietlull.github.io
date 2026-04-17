@@ -29,29 +29,29 @@ refactor: true
       {% for tool in page.tools_strip %}
         {% assign t = tool | downcase %}
         {% if t == 'unity' %}
-          <span class="tool-icon" title="Unity" data-tool-desc="Real-time VFX & shader dev"><img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="Unity"></span>
+          <span class="tool-icon" data-tool-desc="Realtime VFX & Shader Development"><img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="Unity"></span>
         {% elsif t == 'unreal' %}
-          <span class="tool-icon" title="Unreal Engine" data-tool-desc="Materials & Niagara VFX"><img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="Unreal Engine"></span>
+          <span class="tool-icon" data-tool-desc="Procedural Animation, Blueprints, & Post Process Effects"><img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="Unreal Engine"></span>
         {% elsif t == 'maya' %}
-          <span class="tool-icon" title="Maya" data-tool-desc="Character rigs & animation"><i class="fas fa-vector-square" style="color: #37a5cc;"></i></span>
+          <span class="tool-icon" data-tool-desc="Modeling & Custom Rigging Tools"><i class="fas fa-vector-square" style="color: #37a5cc;"></i></span>
         {% elsif t == 'blender' %}
-          <span class="tool-icon" title="Blender" data-tool-desc="3D modeling & tool scripting"><i class="fas fa-cube" style="color: #f5792a;"></i></span>
+          <span class="tool-icon" data-tool-desc="Modeling, Scripting, & Custom Tools"><i class="fas fa-cube" style="color: #f5792a;"></i></span>
         {% elsif t == 'python' %}
-          <span class="tool-icon" title="Python" data-tool-desc="Pipeline tools & automation"><i class="fab fa-python" style="color: #3776ab;"></i></span>
+          <span class="tool-icon" data-tool-desc="Pipeline Tools & Automation"><i class="fab fa-python" style="color: #3776ab;"></i></span>
         {% elsif t == 'hlsl' %}
-          <span class="tool-icon" title="HLSL" data-tool-desc="Custom toon shaders & post-FX"><i class="fas fa-code" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
+          <span class="tool-icon" data-tool-desc="Post Processing, VFX, & Compute"><i class="fas fa-code" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
         {% elsif t == 'glsl' %}
-          <span class="tool-icon" title="GLSL" data-tool-desc="Fragment & vertex shaders"><i class="fas fa-terminal" style="background: linear-gradient(135deg, #4d96ff, #6bcb77, #ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
+          <span class="tool-icon" data-tool-desc="Three.js & Godot Visual Work"><i class="fas fa-terminal" style="background: linear-gradient(135deg, #4d96ff, #6bcb77, #ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
         {% elsif t == 'compute' %}
-          <span class="tool-icon" title="Compute Shaders" data-tool-desc="GPU particle systems & sim"><i class="fas fa-microchip" style="color: #a78bfa;"></i></span>
+          <span class="tool-icon" data-tool-desc="GPU Particle Systems & Simulation"><i class="fas fa-microchip" style="color: #a78bfa;"></i></span>
         {% elsif t == 'shader graphs' %}
-          <span class="tool-icon" title="Shader Graphs" data-tool-desc="Visual shader authoring"><i class="fas fa-diagram-project" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
+          <span class="tool-icon" data-tool-desc="Visual Shader Authoring"><i class="fas fa-diagram-project" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
         {% elsif t == 'rigging' %}
-          <span class="tool-icon" title="Rigging" data-tool-desc="Character rigs & blend trees"><i class="fas fa-bone" style="color: #9b59b6;"></i></span>
+          <span class="tool-icon" data-tool-desc="Character Rigs, Blend Shapes, & Animation Transfer"><i class="fas fa-bone" style="color: #9b59b6;"></i></span>
         {% elsif t == 'substance' %}
-          <span class="tool-icon" title="Substance" data-tool-desc="Procedural textures"><i class="fas fa-fill-drip" style="color: #1a8c3c;"></i></span>
+          <span class="tool-icon" data-tool-desc="Texturing, Mask Making, & Packing Data"><i class="fas fa-fill-drip" style="color: #1a8c3c;"></i></span>
         {% elsif t == 'houdini' %}
-          <span class="tool-icon" title="Houdini" data-tool-desc="Procedural FX & sim"><i class="fas fa-fire" style="color: #ff6b35;"></i></span>
+          <span class="tool-icon" data-tool-desc="Alembic Baking, Procedural FX, & Simulations"><i class="fas fa-fire" style="color: #ff6b35;"></i></span>
         {% endif %}
       {% endfor %}
     </div>
