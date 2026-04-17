@@ -118,9 +118,11 @@
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.25s ease, transform 0.25s ease;
+        z-index: 20;
       }
 
       &:hover {
+        z-index: 20;
         opacity: 1;
         transform: translateY(-2px) scale(1.15);
         border-color: rgba(var(--breathe-border-hue), 0.45) !important;
