@@ -43,16 +43,24 @@ export function initCardTilt() {
 
 function setupMouseTilt(card) {
   let active = false;
+  // Cache rect on mouseenter to avoid forced layout on every mousemove.
+  // Invalidated on scroll/resize so tilt stays accurate if layout shifts.
+  let cachedRect = null;
+
+  const invalidateRect = () => { cachedRect = null; };
 
   card.addEventListener('mouseenter', () => {
     if (!tiltEnabled) return;
     active = true;
+    cachedRect = card.getBoundingClientRect();
     card.style.transition = TRANSITION_IN;
   });
 
   card.addEventListener('mousemove', (e) => {
     if (!active) return;
-    const rect = card.getBoundingClientRect();
+    // Recompute rect only if the cache was invalidated (scroll/resize).
+    if (!cachedRect) cachedRect = card.getBoundingClientRect();
+    const rect = cachedRect;
     // Normalise cursor position to -1..1 from card center
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
@@ -68,9 +76,15 @@ function setupMouseTilt(card) {
 
   card.addEventListener('mouseleave', () => {
     active = false;
+    cachedRect = null;
     card.style.transition = TRANSITION_OUT;
     card.style.transform = '';
   });
+
+  // Layout can shift between mouseenter and mousemove. Invalidate cache on
+  // scroll/resize so the next mousemove re-reads once instead of staying stale.
+  window.addEventListener('scroll', invalidateRect, { passive: true });
+  window.addEventListener('resize', invalidateRect, { passive: true });
 }
 
 function setupGyroTilt(cards) {
@@ -97,8 +111,12 @@ function setupGyroTilt(cards) {
       gyroEnabled = true;
     }
 
-    const beta = Math.max(-TILT_MAX, Math.min(TILT_MAX, (e.beta - 45) * 0.3));
-    const gamma = Math.max(-TILT_MAX, Math.min(TILT_MAX, e.gamma * 0.3));
+    // Gyro tilt reduced vs desktop mouse tilt — mobile gyro input is noisier
+    // and a subtler effect feels less twitchy. Also cap at half TILT_MAX.
+    const GYRO_MAX = TILT_MAX * 0.5;
+    const GYRO_STRENGTH = 0.15;
+    const beta = Math.max(-GYRO_MAX, Math.min(GYRO_MAX, (e.beta - 45) * GYRO_STRENGTH));
+    const gamma = Math.max(-GYRO_MAX, Math.min(GYRO_MAX, e.gamma * GYRO_STRENGTH));
 
     cards.forEach(card => {
       // Only apply gyro when not being mouse-controlled
