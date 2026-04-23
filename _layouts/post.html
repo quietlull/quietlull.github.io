@@ -91,11 +91,10 @@ script_includes:
     {% if page.image %}
       {% assign img_path = page.image.path | default: page.image %}
       {% assign img_alt = page.image.alt | xml_escape | default: "Preview Image" %}
-      {% if page.image.lqip %}
-        {%- assign img_lqip = page.image.lqip -%}
-      {% endif %}
+      {% assign _preview_class = 'preview-img' %}
+      {% if page.image.no_bg %}{% assign _preview_class = 'preview-img no-bg' %}{% endif %}
       <div class="mt-3 mb-3 preview-img-wrap">
-        <img src="{{ img_path | relative_url }}" class="preview-img{% if page.image.no_bg %} no-bg{% endif %}" alt="{{ img_alt }}" width="1200" height="630" {% if img_lqip %}lqip="{{ img_lqip }}"{% endif %} loading="lazy">
+        {% include post-media.html src=img_path alt=img_alt class=_preview_class width="1200" height="630" lqip=page.image.lqip %}
         {%- if page.image.alt -%}
           <figcaption class="text-center pt-2 pb-2">{{ page.image.alt }}</figcaption>
         {%- endif -%}

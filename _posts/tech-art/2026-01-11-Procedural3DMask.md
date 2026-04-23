@@ -15,7 +15,7 @@ pin: true
 wip: false
 takeaway: A single simple to use tool that works on everything is worth more than a thousand specialized ones that only do one thing. When I first learned about the core of this system I thought to myself "I gotta try that" and now that I've made it even though its just a simple mask fed into a shader because if the way it was built to be simple and reusable, every new use case layers on top of the system without needing to rebuild anything. It sparks those "thinking with portal" moments and that's exactly what a tool is meant to be.
 image:
-  path: assets/media/P3DM/TerrainShowcase.gif
+  path: assets/media/P3DM/TerrainShowcase.mp4
 media_subpath: '/assets/media/P3DM'
 ---
 
@@ -75,11 +75,11 @@ You can see how this effect is just a couple of nodes!
 
 For my terrain system I added something called type, effectively type is just a float value but when 2 types of differing value overlap they pass another type value into the shader. Using this I'm able to pass zone information and determine which index from the 2D texture array I want to use. Heres a showcase of the 5 zone types in the game and how they can form a differnt zone and use a different texture index for each zone.
 
-![Terrain blending with P3DM zones](TerrainShowCase2.gif)
+<video src="{{ '/assets/media/P3DM/TerrainShowCase2.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Terrain blending with P3DM zones"></video>
 
 Here you can see a little example of using it with my grass system as well, This is before I added the quad modes so now I could also change the image texture using the same indexed 2D Texture Array method i used for the terrain changes.
 
-![Using the zones to drive reveals, color changes and more!](P3DMHero.gif)
+<video src="{{ '/assets/media/P3DM/P3DMHero.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Using the zones to drive reveals, color changes and more!"></video>
 
 
 ### Other Use Cases

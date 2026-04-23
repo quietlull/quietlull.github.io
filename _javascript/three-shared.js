@@ -402,6 +402,7 @@ export function setupScrollLockedCamera(camera) {
 export function startAnimationLoop(renderer, composer, updatables) {
   let lastTime = performance.now();
   const TARGET_FRAME_TIME = 1000 / 60;
+  let running = false;
 
   function animate(currentTime) {
     const deltaTime = currentTime - lastTime;
@@ -414,5 +415,39 @@ export function startAnimationLoop(renderer, composer, updatables) {
     composer.render();
   }
 
-  renderer.setAnimationLoop(animate);
+  function start() {
+    if (running) return;
+    running = true;
+    // Reset lastTime so normalizedDelta doesn't spike with the gap since pause.
+    lastTime = performance.now();
+    renderer.setAnimationLoop(animate);
+  }
+
+  function stop() {
+    if (!running) return;
+    running = false;
+    renderer.setAnimationLoop(null);
+  }
+
+  // Pause the Three.js loop (including bloom composer) when the tab is
+  // hidden — no visible output, pure waste otherwise.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop();
+    else start();
+  });
+
+  // Also pause when the canvas is scrolled fully off-screen. Saves cycles
+  // on long article pages where the background is usually not visible.
+  const canvas = renderer.domElement;
+  if ('IntersectionObserver' in window && canvas) {
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) start();
+        else stop();
+      }
+    }, { threshold: 0 });
+    observer.observe(canvas);
+  } else {
+    start();
+  }
 }

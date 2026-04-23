@@ -275,27 +275,65 @@ export function initMouseTrail() {
   });
 
   // Desktop: speed-based emission + color sampling on mousemove
+  //
+  // Perf notes:
+  // - Position (mouseX/mouseY) updates on EVERY event so the sparkler tip
+  //   tracks the real cursor on 120/144Hz monitors. Previously this was
+  //   behind a 16ms throttle, halving the effective sample rate.
+  // - Color sampling (getComputedStyle + elementFromPoint) is deferred to
+  //   rAF so it never blocks the mousemove event thread. Sync sampling
+  //   was the #1 source of "feels laggy" input latency.
   let lastEmitTime = 0;
+  let colorSampleScheduled = false;
+  let lastSampleX = -1, lastSampleY = -1;
+  let lastSampleTime = 0;
+  const COLOR_SAMPLE_INTERVAL_MS = 100;
+  const COLOR_SAMPLE_MIN_MOVE_SQ = 144; // ~12px — skip sample if barely moved
+
+  function sampleColorAsync() {
+    colorSampleScheduled = false;
+    const now = performance.now();
+    if (now - lastSampleTime < COLOR_SAMPLE_INTERVAL_MS) return;
+    const dx = mouseX - lastSampleX;
+    const dy = mouseY - lastSampleY;
+    if (dx * dx + dy * dy < COLOR_SAMPLE_MIN_MOVE_SQ) return;
+    lastSampleTime = now;
+    lastSampleX = mouseX;
+    lastSampleY = mouseY;
+    const el = document.elementFromPoint(mouseX, mouseY);
+    const warmRGB = findWarmColor(el);
+    activeTheme = themeFromColor(warmRGB);
+  }
+
   document.addEventListener('mousemove', (e) => {
     mouseOnPage = true;
     mouseMoving = true;
     clearTimeout(idleTimeout);
     idleTimeout = setTimeout(() => { mouseMoving = false; }, 400);
 
-    const now = performance.now();
-    if (now - lastEmitTime < 16) return;
-    lastEmitTime = now;
-
+    // Update position EVERY event — the sparkler tip needs to track the
+    // real cursor at display refresh rate for the site to feel responsive.
     mouseX = e.clientX;
     mouseY = e.clientY;
 
-    // Color sampling — every ~100ms (every 6th tick)
-    hoverCheckCount++;
-    if (hoverCheckCount % 6 === 0) {
-      const el = document.elementFromPoint(mouseX, mouseY);
-      const warmRGB = findWarmColor(el);
-      activeTheme = themeFromColor(warmRGB);
+    // Schedule color sampling off the event thread. rAF runs after paint
+    // so the synchronous getComputedStyle/elementFromPoint cost doesn't
+    // inflate input latency.
+    if (!colorSampleScheduled) {
+      colorSampleScheduled = true;
+      requestAnimationFrame(sampleColorAsync);
     }
+
+    // Gate particle emission to ~60Hz so we don't spawn too many particles
+    // on high-refresh-rate displays. This gate is on EMISSION only, not
+    // position — the tip still updates every event.
+    const now = performance.now();
+    if (now - lastEmitTime < 16) {
+      lastMouseX = mouseX;
+      lastMouseY = mouseY;
+      return;
+    }
+    lastEmitTime = now;
 
     const dx = mouseX - lastMouseX;
     const dy = mouseY - lastMouseY;
