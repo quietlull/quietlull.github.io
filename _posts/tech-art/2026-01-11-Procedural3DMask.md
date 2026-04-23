@@ -13,13 +13,13 @@ duration: Ongoing
 priority: 9
 pin: true
 wip: false
-takeaway: A single simple to use tool that works on everything is worth more than a thousand specialized ones that only do one thing. When I first learned about the core of this system I thought to myself "I gotta try that" and now that I've made it even though its just a simple mask fed into a shader because if the way it was built to be simple and reusable, every new use case layers on top of the system without needing to rebuild anything. It sparks those "thinking with portal" moments and that's exactly what a tool is meant to be.
+takeaway: A single, simple-to-use tool that works on everything is worth more than a thousand specialized ones that only do one thing. When I first learned about the core of this system I thought to myself "I gotta try that" and now that I've made it even though it's just a simple mask fed into a shader because of the way it was built to be simple and reusable, every new use case layers on top of the system without needing to rebuild anything. It sparks those "thinking with portals" moments and that's exactly what a tool is meant to be.
 image:
   path: assets/media/P3DM/TerrainShowcase.mp4
 media_subpath: '/assets/media/P3DM'
 ---
 
-It all started with a video by an artist named [Sakura Rabbit](https://www.youtube.com/watch?v=63-4VAMylV8) I looked at it and wondered to myself "How did they do that?" later on while reading an article by [MinionsArtTutorials](https://www.patreon.com/posts/26438849) I had my realization on how it was done. This led me another realization that hit me in the face Sakura Rabbit uses this effect ALL THE TIME. And even though it was right in front of me I had never noticed. Once I saw it and once I learned it, it suddenly felt like I saw instances where I could use this everywhere, in every project I worked on, all the time. 
+It all started with a video by an artist named [Sakura Rabbit](https://www.youtube.com/watch?v=63-4VAMylV8) I looked at it and wondered to myself "How did they do that?" later on while reading an article by [MinionsArtTutorials](https://www.patreon.com/posts/26438849) I had my realization on how it was done. This led me to another realization that hit me in the face Sakura Rabbit uses this effect ALL THE TIME. And even though it was right in front of me I had never noticed. Once I saw it and once I learned it, it suddenly felt like I saw instances where I could use this everywhere, in every project I worked on, all the time. 
 
 Then I thought what if I added more? What if instead of just a single mask I made multiple? What if each mask had a different zone ID that I could use to do math and logic in my shaders? I realized honestly this system wasn't just versatile it was practically universally useful for projects. Project after project I would build on my version of this system and now we are here. 
 
@@ -28,9 +28,9 @@ A system that can be used easily in ShaderGraph, can pass arbitrary values, can 
 
 ### How It Works
 
-The basic premise is a devilishly simple three steps. 
+The basic premise is devilishly simple: three steps.
 
-At the scene level, you place the source scripts on any game object each with its own options for shape, radius, and falloff. 
+At the scene level, you place the source scripts on any game object, each with its own options for shape, radius, and falloff. 
 
 These register with a manager script which then passes the details of each object into the GPU
 
@@ -55,7 +55,7 @@ inline float P3DM_Shape_Sphere(
 
 Dead simple, extremely capable, now for practically any world space related effect you can think of there is now something that can drive it. 
 
-Here's an example using some Voronoi noise to fed into the rim output 
+Here's an example using some Voronoi noise fed into the rim output 
 
 ![Mask with Voronoi noise](MaskWithNoise.gif)
 
@@ -73,7 +73,7 @@ You can see how this effect is just a couple of nodes!
 
 ### Terrain Blending
 
-For my terrain system I added something called type, effectively type is just a float value but when 2 types of differing value overlap they pass another type value into the shader. Using this I'm able to pass zone information and determine which index from the 2D texture array I want to use. Heres a showcase of the 5 zone types in the game and how they can form a differnt zone and use a different texture index for each zone.
+For my terrain system I added something called type, effectively type is just a float value but when 2 types of differing value overlap they pass another type value into the shader. Using this I'm able to pass zone information and determine which index from the 2D texture array I want to use. Here's a showcase of the 5 zone types in the game and how they can form a different zone and use a different texture index for each zone.
 
 <video src="{{ '/assets/media/P3DM/TerrainShowCase2.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Terrain blending with P3DM zones"></video>
 
@@ -86,10 +86,10 @@ Here you can see a little example of using it with my grass system as well, This
 
 It's an understatement to say this tool is flexible. If you watch some of Sakura Rabbit's videos you'll see it everywhere. Here's a few ideas that you could use it for but I haven't tried personally yet. 
 - Want to create a path that floats up as you go near it? use P3DM as a lerp for vertex offsets and attach the P3DMObject to the player. 
-- What if you want a hidden path that only shows the ground underneath you use the same lerp but for transparency instead. 
-- Maybe you have a magic-flashlight and you want it reveal a different world when you point it at things? create a P3DMObject that's a cone and use it on the flashlight 
-- What if you wanted dust particles in the air but they only show when they're in rays of sunlight? just make the area of the window contain a P3DM object.
-- How about raindrops on characters? use the P3DM mask easy normal map change and you're good to go. 
+- What if you want a hidden path that only shows the ground underneath you? Use the same lerp but for transparency instead. 
+- Maybe you have a magic-flashlight and you want it to reveal a different world when you point it at things? create a P3DMObject that's a cone and use it on the flashlight 
+- What if you wanted dust particles in the air but they only show when they're in rays of sunlight? Just make the area of the window contain a P3DM object.
+- How about raindrops on characters? Use the P3DM mask to drive an easy normal-map change and you're good to go. 
 
 Honestly there are so many uses for this system that the question becomes what isn't this useful for? I would implore those who try this for themselves to see what other additions you could make to the system for extra effects and use cases that I never thought of. 
 
