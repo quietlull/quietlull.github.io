@@ -263,7 +263,7 @@ html.no-breathe {
 // Extra selectors killed only by reduced-motion (not the breathing toggle)
 $reduced-motion-extras:
   '.ambient-orb', '#section-landing::before',
-  '#main-wrapper', '#main-wrapper.page-exit', '.card-img-wrapper::after';
+  '#main-wrapper', '#main-wrapper.page-exit';
 
 @media (prefers-reduced-motion: reduce) {
   html:not(.breathe-override) {

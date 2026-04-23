@@ -143,32 +143,6 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
   background: var(--card-bg);
   border-radius: v.$radius-lg v.$radius-lg 0 0;
 
-  // Skeleton shimmer while image loads
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      var(--white-a04) 50%,
-      transparent 100%
-    );
-    background-size: 200% 100%;
-    animation: skeleton-shimmer 1.5s ease-in-out infinite;
-    z-index: 1;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  // Hide shimmer once image loads (JS adds .loaded class)
-  // Also hide on WIP cards — SVG placeholder never triggers loaded state
-  &.img-loaded::after,
-  &:has(img.loaded)::after,
-  &:has(.badge-wip)::after {
-    opacity: 0;
-  }
-
   img,
   video {
     width: 100%;
@@ -181,11 +155,6 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
   .post-card:hover & video {
     transform: scale(1.05);
   }
-}
-
-@keyframes skeleton-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
 }
 
 .placeholder-img {
