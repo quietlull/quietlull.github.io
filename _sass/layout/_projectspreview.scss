@@ -142,18 +142,37 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
   overflow: hidden;
   background: var(--card-bg);
   border-radius: v.$radius-lg v.$radius-lg 0 0;
+  // Force its own compositing layer so Chrome doesn't leave a 1px
+  // subpixel gap at the top edge where overflow: hidden + border-radius
+  // meets a <video> child.
+  isolation: isolate;
 
   img,
   video {
+    display: block;          // kill inline baseline whitespace
     width: 100%;
     height: 100%;
     object-fit: cover;
     @include mx.transition(transform, opacity);
   }
 
-  .post-card:hover & img,
-  .post-card:hover & video {
+  // Videos are Unity editor captures with the viewport chrome (Scene/Game
+  // tab + toolbar) baked into the top ~50px of the source. For card-sized
+  // containers, object-fit: cover scales by height so the chrome isn't
+  // cropped. Overscale slightly with origin at the bottom to push the
+  // chrome above the visible area — thumbnail only, post body videos
+  // keep the full editor context.
+  video {
+    transform: scale(1.1);
+    transform-origin: center bottom;
+  }
+
+  .post-card:hover & img {
     transform: scale(1.05);
+  }
+  .post-card:hover & video {
+    transform: scale(1.155); // base 1.1 × hover 1.05
+    transform-origin: center bottom;
   }
 }
 
