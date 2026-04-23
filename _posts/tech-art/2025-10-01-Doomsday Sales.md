@@ -14,7 +14,7 @@ priority: 7
 pin: false
 takeaway: Learning shaders in a new engine under time pressure forced me to actually understand the fundamentals rather than relying on muscle memory. The post process pipeline in Unreal is more like ShaderToy than Unity — which was a fun surprise.
 image:
-  path: assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.gif
+  path: assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.mp4
 media_subpath: '/assets/media/DoomsdaySales'
 ---
 

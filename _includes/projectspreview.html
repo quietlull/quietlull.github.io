@@ -24,10 +24,8 @@
                 {% if post.image %}
                   <div class="card-img-wrapper">
                     {% assign post_image = post.image.path | default: post.image %}
-                    <img src="{{ post_image }}"
-                         class="card-img-top"
-                         alt="{{ post.image.alt | default: post.title }}"
-                         loading="lazy">
+                    {% assign _card_alt = post.image.alt | default: post.title %}
+                    {% include post-media.html src=post_image alt=_card_alt class="card-img-top" %}
                     {% if post.pin %}
                       <span class="badge-pinned">
                         <i class="fas fa-thumbtack"></i> Pinned

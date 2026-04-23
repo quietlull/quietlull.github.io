@@ -1,0 +1,16 @@
+{%- comment -%}
+  Render a post preview image OR autoplay video based on file extension.
+  Params:
+    - src       (required): path to the media file
+    - alt       (required): alt text / aria-label
+    - class     (optional): CSS class(es)
+    - width     (optional): explicit width in pixels
+    - height    (optional): explicit height in pixels
+    - lqip      (optional): low-quality image placeholder data URI (img only)
+{%- endcomment -%}
+{%- assign _ext = include.src | split: '.' | last | downcase -%}
+{%- if _ext == 'mp4' or _ext == 'webm' -%}
+<video src="{{ include.src | relative_url }}"{% if include.class %} class="{{ include.class }}"{% endif %} aria-label="{{ include.alt }}" autoplay muted loop playsinline{% if include.width %} width="{{ include.width }}" height="{{ include.height }}"{% endif %}></video>
+{%- else -%}
+<img src="{{ include.src | relative_url }}"{% if include.class %} class="{{ include.class }}"{% endif %} alt="{{ include.alt }}"{% if include.width %} width="{{ include.width }}" height="{{ include.height }}"{% endif %}{% if include.lqip %} lqip="{{ include.lqip }}"{% endif %} loading="lazy">
+{%- endif -%}

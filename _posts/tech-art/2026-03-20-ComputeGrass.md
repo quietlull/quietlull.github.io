@@ -15,7 +15,7 @@ pin: true
 wip: false
 takeaway: Even old techniques have their place in modern games, if i wrote off GPU Gems as a resource just because it was released in 2004 I would likely not have as deep of an understanding of the fundamentals needed to make this whole system. Although new solutions always come out that can update the old concepts people rely on, they tend to be incremental and build upon each other. 
 image:
-  path: assets/media/GrassCompute/GrassHeroAndPreviewImage.gif
+  path: assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4
 media_subpath: '/assets/media/GrassCompute'
 ---
 
@@ -40,7 +40,7 @@ I'm going to skip past most of the boring stuff like buffer declarations and try
 
 To start off this is how i cull and create grass as you can see in the RT the alpha channel is designated as a creation zone and the blue channel is designated as a cull zone. The main reason i need this is because in this game there are magic spells that create grass in an area. Structures that spawn on top of that grass and need it to be culled rather than clip through their bottom
 
-![Culling and grass creation zones](GrassCullAndCreationZoneShowcase.gif)
+<video src="{{ '/assets/media/GrassCompute/GrassCullAndCreationZoneShowcase.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Culling and grass creation zones"></video>
 
 ``` hlsl
 float4 rt = _GrassRT.SampleLevel(sampler_linear_clamp, uv, 0);
@@ -72,7 +72,7 @@ After this I use the same rendertexture's R channel to do the pushing of interac
 ```
 A very important part I added with smoothing the return of the grass in the shader. Before this fix the grass looked like this:
 
-![Grass twitching issue before fix](GrassTwitchingIssue.gif)
+<video src="{{ '/assets/media/GrassCompute/GrassTwitchingIssue.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Grass twitching issue before fix"></video>
 
 After this code section here:
 
@@ -102,7 +102,7 @@ After this code section here:
 ```
 The grass looks like this 
 
-![Grass after smoothing fix](GrassTwitchingIssueFixed.gif)
+<video src="{{ '/assets/media/GrassCompute/GrassTwitchingIssueFixed.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Grass after smoothing fix"></video>
 
 Lastly I add some noise, and offsets to the blade orientation to make it feel a bit more organic 
 
@@ -146,7 +146,7 @@ void UpdateDecay(uint3 id : SV_DispatchThreadID)
 ```
 
 This is the end result:
-![Overview of the grass rendering](GrassHeroAndPreviewImage.gif)
+<video src="{{ '/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Overview of the grass rendering"></video>
 
 ### Render Texture Control
 
@@ -159,13 +159,13 @@ Originally used a ping-pong to decay the render texture but that didn't give me 
 After all of that I decided to try out some different types of grass, originally I liked the triangular grass but my partner on the project asked me for "softer" "fluffier" grass this led me to try out some different methods. I ended up doing some quick changes and tested it all out and my final preference was the Quads although most commonly people use the X cross version.  
 
 Triangle: 3 verts, cheapest, no texture support (triangular UV unwrap)
-![Triangle grass variant](TriangleGrassCompare.gif)
+<video src="{{ '/assets/media/GrassCompute/TriangleGrassCompare.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Triangle grass variant"></video>
 
 Quad: 6 verts, correct rect UV
-![Quad grass variant](QuadGrassCompare.gif)
+<video src="{{ '/assets/media/GrassCompute/QuadGrassCompare.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Quad grass variant"></video>
 
 X Cross: 12 verts, visible from all angles, full texture support, the standard
-![X Cross grass variant](XCrossGrassCompare.gif)
+<video src="{{ '/assets/media/GrassCompute/XCrossGrassCompare.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="X Cross grass variant"></video>
 
 ### What I Learned
 

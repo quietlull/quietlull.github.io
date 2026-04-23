@@ -388,7 +388,7 @@ Supporting: `three-config.js` (shared constants), `three-shared.js` (scene setup
 ### Phase 7: Polish & Optional
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| O10 | ⚠️ **HIGH PRIORITY** — Compress media assets | Not started | Total media ~449MB, several GIFs are 30–87MB. Compress with gifsicle or convert large GIFs to MP4/WebM. Worst offenders: `GrassTwitchingIssueFixed.gif` (87MB), `TerrainShowCase2.gif` (53MB), `QuadGrassCompare.gif` (43MB), `P3DMHero.gif` (40MB), `XCrossGrassCompare.gif` (36MB), `TerrainShowcase.gif` (30MB), `TriangleGrassCompare.gif` (28MB), `UnrealEditor_2dzGAmnox1.gif` (27MB). Target ~50-80% size reduction per file. |
+| O10 | Compress media assets (GIF → MP4) | ✅ Done | 14 GIFs >= 5MB converted to MP4 via `compress-media` skill. 413.6 MB → 50.6 MB (88% reduction). Originals kept for rollback — delete in a follow-up commit after deploy is verified. `_includes/post-media.html` handles the video/img branching across post.html, projectspreview, related-posts, section-landing, section-projects. |
 | O6 | Polish card tilt | ✅ Done | `TILT_MAX = 8` — conservative, polished angle |
 | O7 | Custom tool tagline quips | ✅ Done | Personal `data-tool-desc` on each icon in `section-landing.html` |
 | O2 | Custom 404 page | ✅ Done | Floating lantern, gold gradient title, glass CTA, minimal Three.js bg |

@@ -81,7 +81,7 @@
           <a href="{{ post.url | relative_url }}" class="post-preview card h-100">
             {% if post.image %}
               {% assign rel_img = post.image.path | default: post.image %}
-              <img src="{{ rel_img | relative_url }}" class="card-img-top related-thumb" alt="{{ post.title }}" loading="lazy">
+              {% include post-media.html src=rel_img alt=post.title class="card-img-top related-thumb" %}
             {% endif %}
             <div class="card-body">
               {% include datetime.html date=post.date lang=include.lang %}

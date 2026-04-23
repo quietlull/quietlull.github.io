@@ -14,7 +14,7 @@ priority: 10
 pin: true
 takeaway: The key insight from reverse engineering compiled shaders is that you can simply deduce the purpose of things from just pure math. While having big clues like textures and directly changing values is useful it's not always necessary. When it comes to reverse engineering things it's often the smallest thread that ends up unraveling the ball of yarn.
 image:
-  path: assets/media/ZZZProject/CodeScroll.gif
+  path: assets/media/ZZZProject/CodeScroll.mp4
 media_subpath: '/assets/media/ZZZProject'
 ---
 
