@@ -12,7 +12,7 @@ team_size: 4
 duration: 3 days (Game Jam)
 priority: 7
 pin: false
-takeaway: Learning shaders in a new engine under time pressure forced me to actually understand the fundamentals rather than relying on muscle memory. The post process pipeline in Unreal is more like ShaderToy than Unity — which was a fun surprise.
+takeaway: Learning shaders in a new engine under time pressure forced me to actually understand the fundamentals rather than relying on muscle memory. The post process pipeline in Unreal is more like ShaderToy than Unity which was a fun surprise.
 image:
   path: assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.mp4
 media_subpath: '/assets/media/DoomsdaySales'
@@ -82,4 +82,4 @@ Lastly i want to mention other features that the shader does have but i deem sim
 
 ### Closing thoughts
 
-So let me know what you think of the shader! I felt pretty happy with the look we ended up getting from it and if you end up giving our game a try let me know if there was anything else you found cool. Maybe I could break that down too as long as its a VFX or shad
+Overall it was fun to work in unreal which I do admit im less familar with than unity. Rather than relying on muscle memory sometimes its important to check the documentation to make sure your doing things the way its intended for the tool your using.
