@@ -13,7 +13,7 @@ duration: In Progress
 pin: false
 priority: 6
 wip: true
-takeaway: 
+takeaway: Knowing when to keep going and when to walk away is important, especially when on tight deadlines. Working with the restrictions of the tools is sometimes needed  
 image:
   path: assets/img/placeholder-wip.svg
 media_subpath: '/assets/media/PortalShadersGodot'

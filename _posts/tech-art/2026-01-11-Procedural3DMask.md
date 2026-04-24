@@ -13,7 +13,7 @@ duration: Ongoing
 priority: 9
 pin: true
 wip: false
-takeaway: A single, simple-to-use tool that works on everything is worth more than a thousand specialized ones that only do one thing. When I first learned about the core of this system I thought to myself "I gotta try that" and now that I've made it even though it's just a simple mask fed into a shader because of the way it was built to be simple and reusable, every new use case layers on top of the system without needing to rebuild anything. It sparks those "thinking with portals" moments and that's exactly what a tool is meant to be.
+takeaway: A single, simple-to-use tool that works on everything is worth more than a thousand specialized single use ones. When tools are made to be flexible every new use case layers on top of the system without needing to rebuild anything. It sparks those "thinking with portals" moments and that's exactly what a tool is meant to be.
 image:
   path: assets/media/P3DM/TerrainShowcase.mp4
 media_subpath: '/assets/media/P3DM'
