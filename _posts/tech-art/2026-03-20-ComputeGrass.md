@@ -13,7 +13,7 @@ duration: 1 Week
 priority: 10
 pin: true
 wip: false
-takeaway: Even old techniques have their place in modern games, if i wrote off GPU Gems as a resource just because it was released in 2004 I would likely not have as deep of an understanding of the fundamentals needed to make this whole system. Although new solutions always come out that can update the old concepts people rely on, they tend to be incremental and build upon each other. 
+takeaway: Even older techniques have value, even in modern games. If I wrote off GPU Gems as a resource just because it was released in 2004 I would likely not have as deep of an understanding of the fundamentals as I do now. Although new solutions always come out that update the old concepts they are always incremental and build upon the original concepts which means old knowledge is often foundational to further improvements.
 image:
   path: assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4
 media_subpath: '/assets/media/GrassCompute'
