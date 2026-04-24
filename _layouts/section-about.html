@@ -10,10 +10,44 @@ refactor: true
 
 <div id="home-page" class="home-content">
 
-  <section>
+  <section id="landing-box" class="flex-grow-1 px-xl-1">
+    <div class="text-container">
+      <h1 id="landing-title" class="landing-box-title">{{ page.section_title }}</h1>
+    </div>
+
+    <div class="landing-content">
+      <div id="about-me-image" class="profile-container"></div>
+
+      <div class="about-text">
+        <div class="text-container">
+          {{ page.bio_intro | markdownify }}
+        </div>
+      </div>
+    </div>
+
+    {% if page.bio_more %}
+      <div class="additional-content">
+        <div class="text-container">
+          {{ page.bio_more | markdownify }}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Trophy Case — populated by achievements.js -->
+    <div class="trophy-case">
+      <div class="text-container">
+        <h3 class="trophy-title">Achievements</h3>
+        <p class="trophy-subtitle">No, these aren't mine, they're yours. Keep exploring my site to earn more.</p>
+        <div id="trophy-grid" class="trophy-grid"></div>
+      </div>
+    </div>
+
+    {% comment %}
+      Legacy: pages that still write raw HTML into the body render here.
+      Converting to the bio_intro/bio_more frontmatter fields is recommended.
+    {% endcomment %}
     {{ content }}
   </section>
-
 
   <!-- Empty spacer — lets the lakeview/dock scene breathe at the bottom -->
   <div class="scene-spacer" aria-hidden="true"></div>
