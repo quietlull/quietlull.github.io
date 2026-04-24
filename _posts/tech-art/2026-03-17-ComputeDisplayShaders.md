@@ -15,7 +15,7 @@ pin: false
 wip: true
 takeaway: 
 image:
-  path: assets/media/UnfinishedProjects/Unity_Ofbrn4gbwT.mp4
+  path: assets/media/UnfinishedProjects/DisplayShader_Interaction.mp4
   alt: Compute Display Shader — interaction with objects
 media_subpath: '/assets/media/ComputeDisplayShaders'
 ---

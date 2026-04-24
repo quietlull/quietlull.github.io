@@ -15,7 +15,7 @@ priority: 8
 wip: true
 takeaway: 
 image:
-  path: assets/media/UnfinishedProjects/Unity_C0EJcubGWu.mp4
+  path: assets/media/UnfinishedProjects/PhysicsCompute_Crystals.mp4
   alt: 2D Physics Compute — particle pickups scattered across dungeon
 media_subpath: '/assets/media/2DPhysicsCompute'
 ---
