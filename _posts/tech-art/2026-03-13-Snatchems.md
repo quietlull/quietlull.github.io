@@ -13,7 +13,7 @@ pin: false
 priority: 5
 wip: true
 image:
-  path: assets/media/UnfinishedProjects/Unity_VBpgIkWzUA.mp4
-  alt: Snatchems hero sprite with chromatic aberration shader
+  path: assets/media/UnfinishedProjects/Unity_KzfRIol0sA.mp4
+  alt: Snatchems Matrix-style code rain shader with FPS weapon
 ---
 Coming soon.
