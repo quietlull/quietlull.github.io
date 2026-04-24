@@ -13,6 +13,7 @@ pin: false
 priority: 5
 wip: true
 image:
-  path: assets/img/placeholder-wip.svg
+  path: assets/media/UnfinishedProjects/Unity_VBpgIkWzUA.mp4
+  alt: Snatchems hero sprite with chromatic aberration shader
 ---
 Coming soon.

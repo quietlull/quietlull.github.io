@@ -13,6 +13,7 @@ pin: false
 priority: 4
 wip: true
 image:
-  path: assets/img/placeholder-wip.svg
+  path: assets/media/UnfinishedProjects/Unity_mkDdASoHZ1.mp4
+  alt: 7-segment display shader flipping between numbers
 ---
 Coming soon.
