@@ -1,5 +1,5 @@
 ---
-title: Decompiling The Shaders Of ZZZ!
+title: Decompiling the Shaders of ZZZ!
 description: Breaking down a compiled toon shader from Zenless Zone Zero to figure out what makes the game look the way it does.
 author: Rod
 date: 2024-12-01 20:55:00 +0800

@@ -52,7 +52,7 @@
   // TEXT - Warm stone palette for readability on dark backgrounds
   // ==========================================================================
   --text-color: #E8E0D4;                                // warm stone - less saturated for long reading
-  --text-muted-color: rgba(232, 224, 212, 0.6);        // warm stone/60
+  --text-muted-color: rgba(232, 224, 212, 0.78);       // warm stone/78 — bumped from 0.6 for card + caption readability
   --text-muted-highlight-color: rgba(232, 224, 212, 0.7);
   --text-very-muted: rgba(232, 224, 212, 0.3);         // subtle hints
   --heading-color: #FFF9F0;                             // lantern paper off-white - crisp

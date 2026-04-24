@@ -133,11 +133,26 @@ script_includes:
   </div>
   {% endif %}
 
-  <div class="post-content-container">
-    <div class="content">
-      {{ content }}
+  {% assign visible_content = content | strip_html | strip %}
+  {% if page.wip and visible_content == '' %}
+    <div class="post-content-container">
+      <div class="content wip-placeholder text-center">
+        <p class="mb-0">
+          <i class="fas fa-hard-hat me-2"></i>
+          <strong>Full write-up coming soon.</strong>
+        </p>
+        <p class="wip-placeholder-subtitle mb-0 mt-2">
+          This project has a working build — the technical breakdown is still being written. Check back soon, or peek at the preview above.
+        </p>
+      </div>
     </div>
-  </div>
+  {% else %}
+    <div class="post-content-container">
+      <div class="content">
+        {{ content }}
+      </div>
+    </div>
+  {% endif %}
 
   {% if page.takeaway %}
   <div class="post-takeaway">

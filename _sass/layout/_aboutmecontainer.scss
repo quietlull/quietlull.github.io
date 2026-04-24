@@ -26,6 +26,12 @@
   flex: 0 0 300px;
   display: flex;
   justify-content: center;
+
+  // Collapse when no profile image has been added — bio fills the full width
+  // instead of being shoved 300px to the right by a phantom slot.
+  &:empty {
+    display: none;
+  }
 }
 
 .profile-img {
