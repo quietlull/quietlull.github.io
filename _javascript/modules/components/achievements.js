@@ -34,7 +34,7 @@ const ACHIEVEMENTS = [
   { id: 'behind-curtain', cat: 'explorer', scope: 'site',    title: 'Behind the Curtain', desc: 'Found the person behind the work',  icon: '\u{1F3AD}',
     check: (s) => s.visited.some(p => p.includes('/about')) },
   { id: 'rabbit-hole',    cat: 'secret',   scope: 'site',    title: 'Down the Rabbit Hole', desc: 'Discovered the ramblings',        icon: '\u{1F407}',
-    check: (s) => s.visited.some(p => p.includes('/ramblings') || p.includes('/blog')) },
+    check: (s) => s.visited.some(p => p.includes('/ramblings')) },
 
   // ── Reader ──
   { id: 'scholar',        cat: 'reader',   scope: 'section', title: 'Scholar',           desc: 'Read an article to the end',         icon: '\u{1F4DC}',

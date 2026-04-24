@@ -17,5 +17,5 @@ bio_more: |
 
   Before game dev I was chasing a career in competitive esports — I've held top-ranked slots in Starcraft 2, Hearthstone, Puyo Puyo Tetris, and more. Understanding games at a competitive level gives me a unique lens on balance, pacing, and player psychology.
 
-  When I'm not at the computer I'm usually reading, watching anime, journaling, or thinking about something I recently played. Feel free to explore my site, [check out my technical art work](/tech-art/), or read my [blog](/game-design/blogs/).
+  When I'm not at the computer I'm usually reading, watching anime, journaling, or thinking about something I recently played. Feel free to explore my site, [check out my technical art work](/tech-art/), or read my [ramblings](/ramblings/).
 ---
