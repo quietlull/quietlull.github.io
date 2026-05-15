@@ -200,16 +200,6 @@
     opacity: 0 !important;
   }
 
-  .scroll-indicator-text {
-    font-size: 0.7rem;
-    font-family: v.$font-family-mono;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--gold-80);
-    text-shadow: 0 0 12px rgba(var(--breathe-hue), 0.5);
-  }
-
   i {
     font-size: 1.5rem;
     color: #fbbf24;
