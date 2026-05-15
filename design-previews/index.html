@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Design Direction Previews — Rodney Fan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #0b1120;
+  color: #E8E0D4;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  padding: 64px 24px;
+}
+.container { max-width: 880px; margin: 0 auto; }
+h1 {
+  font-size: 2rem;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+.sub {
+  color: rgba(232,224,212,0.6);
+  margin: 0 0 48px;
+  font-size: 1.05rem;
+}
+.cards { display: grid; gap: 24px; }
+.card {
+  display: block;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  background: rgba(15,23,42,0.6);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.card:hover { transform: translateY(-3px); border-color: #e0b050; }
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+  color: #e0b050;
+}
+.card .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(232,224,212,0.5);
+  margin-bottom: 14px;
+}
+.card p { margin: 0 0 12px; color: rgba(232,224,212,0.85); }
+.card .specs {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: rgba(232,224,212,0.5);
+  margin-top: 14px;
+}
+.back {
+  display: inline-block;
+  margin-top: 40px;
+  color: rgba(232,224,212,0.5);
+  font-size: 0.85rem;
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+  padding-bottom: 2px;
+}
+.back:hover { color: #e0b050; border-color: #e0b050; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Design Direction Previews</h1>
+  <p class="sub">Two contrasting redesigns of the tech-art landing page. Open in new tabs and compare side-by-side with the live site.</p>
+
+  <div class="cards">
+
+    <a class="card" href="/design-previews/sketchbook/">
+      <div class="tag">Brief 2 · Light · Anti-Claude</div>
+      <h2>Tech Artist's Field Sketchbook</h2>
+      <p>Warm cream paper, dark ink, brushy serif headings, hand-drawn marginalia, masking-tape card affixing. Strongest break from the current site's dark + amber + glass aesthetic.</p>
+      <div class="specs">Lora · DM Serif Display · Caveat · JetBrains Mono</div>
+    </a>
+
+    <a class="card" href="/design-previews/ghibli/">
+      <div class="tag">Brief 1 · Dark · Atmospheric</div>
+      <h2>Spirited Away Bathhouse</h2>
+      <p>Lantern theme pushed harder into Ghibli atmosphere. Wooden lattice frames, paper texture, steamy teal as second accent, rooftop silhouette at the page base, kanji touches.</p>
+      <div class="specs">Cormorant Garamond · Yuji Boku · Inter · JetBrains Mono</div>
+    </a>
+
+  </div>
+
+  <a class="back" href="/tech-art/">← back to live tech-art site</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Design Preview · Bathhouse — Rodney Fan</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Yuji+Boku&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  /* Bathhouse: deep warm brown + paper-lantern orange + steamy teal */
+  --void:        #15100a;
+  --night:       #1d1812;
+  --wood:        #2b1f15;
+  --wood-edge:   #3d2e1f;
+  --paper:       #f0e3c4;
+  --paper-soft:  rgba(240, 227, 196, 0.86);
+  --paper-mute:  rgba(240, 227, 196, 0.55);
+  --lantern:     #f4a93e;
+  --lantern-hot: #fbcf78;
+  --lantern-cool:#c45a1f;
+  --steam:       #6db8b0;
+  --steam-soft:  rgba(109, 184, 176, 0.5);
+  --stamp:       #c0392b;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--void);
+  color: var(--paper);
+  font-family: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ============================================================== */
+/* SCENERY: layered bathhouse silhouettes + paper texture + drifting steam */
+/* ============================================================== */
+body::before, body::after { content: ''; position: fixed; pointer-events: none; }
+
+/* Subtle paper grain */
+body::before {
+  inset: 0;
+  z-index: 1;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.94 0 0 0 0 0.89 0 0 0 0 0.77 0 0 0 0.03 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+  opacity: 0.7;
+}
+/* Bottom-of-page silhouette: stylized rooftop tiles */
+body::after {
+  bottom: -2px;
+  left: 0; right: 0;
+  height: 180px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 180' preserveAspectRatio='xMidYMax slice'><path fill='%2315100a' d='M0 180 V 110 L60 110 L70 70 L120 70 L130 110 L200 110 L210 60 L270 60 L280 110 L360 110 L370 80 L430 80 L440 110 L520 110 L530 70 L600 70 L610 110 L690 110 L700 60 L770 60 L780 110 L860 110 L870 80 L930 80 L940 110 L1020 110 L1030 70 L1100 70 L1110 110 L1190 110 L1200 60 L1270 60 L1280 110 L1360 110 L1370 80 L1430 80 L1440 110 L1520 110 L1530 70 L1600 70 V180 Z'/></svg>");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  opacity: 0.9;
+  z-index: 0;
+}
+
+/* Drifting lanterns */
+.lantern {
+  position: fixed;
+  width: 38px;
+  height: 50px;
+  background: radial-gradient(ellipse at 50% 40%, var(--lantern-hot), var(--lantern) 60%, var(--lantern-cool));
+  border-radius: 6px 6px 8px 8px;
+  box-shadow:
+    0 0 30px rgba(244, 169, 62, 0.55),
+    0 0 80px rgba(244, 169, 62, 0.28),
+    inset 0 -8px 14px rgba(196, 90, 31, 0.5);
+  z-index: 0;
+  animation: float 14s ease-in-out infinite;
+  pointer-events: none;
+}
+.lantern::before, .lantern::after {
+  content: ''; position: absolute; left: 50%; transform: translateX(-50%); background: var(--wood);
+}
+.lantern::before { top: -10px; width: 6px; height: 10px; }
+.lantern::after { bottom: -6px; width: 22px; height: 4px; border-radius: 2px; }
+.lantern:nth-child(1) { left: 5%; top: 12%; animation-duration: 16s; }
+.lantern:nth-child(2) { left: 88%; top: 18%; animation-duration: 13s; animation-delay: -3s; transform: scale(0.7); }
+.lantern:nth-child(3) { left: 12%; top: 52%; animation-duration: 18s; animation-delay: -7s; transform: scale(1.2); }
+.lantern:nth-child(4) { left: 78%; top: 64%; animation-duration: 15s; animation-delay: -10s; transform: scale(0.85); }
+.lantern:nth-child(5) { left: 45%; top: 8%; animation-duration: 17s; animation-delay: -5s; transform: scale(0.6); }
+.lantern:nth-child(6) { left: 92%; top: 84%; animation-duration: 14s; animation-delay: -2s; transform: scale(0.9); }
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25%      { transform: translateY(-14px) translateX(6px); }
+  50%      { transform: translateY(8px) translateX(-4px); }
+  75%      { transform: translateY(-6px) translateX(4px); }
+}
+
+/* Steam wisp */
+.steam {
+  position: fixed;
+  width: 200px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--steam-soft), transparent 65%);
+  filter: blur(20px);
+  z-index: 0;
+  animation: drift 22s ease-in-out infinite;
+  pointer-events: none;
+}
+.steam:nth-of-type(7) { left: -8%;  top: 38%; animation-delay:  0s; }
+.steam:nth-of-type(8) { left: 60%;  top: 72%; animation-delay: -8s; transform: scale(0.8); }
+@keyframes drift {
+  0%, 100% { transform: translateX(0) scale(1); opacity: 0.7; }
+  50%      { transform: translateX(80px) scale(1.15); opacity: 0.4; }
+}
+
+/* Content layering above the scene */
+.page { position: relative; z-index: 5; max-width: 1100px; margin: 0 auto; padding: 0 48px; }
+
+/* ============================================================== */
+/* HEADER */
+/* ============================================================== */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 36px 0 28px;
+  border-bottom: 1px solid rgba(244, 169, 62, 0.15);
+  margin-bottom: 64px;
+}
+.brand { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-name {
+  font-family: 'Yuji Boku', 'Cormorant Garamond', serif;
+  font-size: 1.9rem;
+  letter-spacing: 0.04em;
+  color: var(--lantern-hot);
+}
+.brand-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--paper-mute);
+  margin-top: 6px;
+}
+.nav { display: flex; gap: 32px; font-family: 'Inter', sans-serif; font-size: 0.85rem; }
+.nav a {
+  color: var(--paper);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+.nav a:hover, .nav a.active { color: var(--lantern); border-bottom-color: var(--lantern); }
+
+/* ============================================================== */
+/* HERO */
+/* ============================================================== */
+.hero { text-align: center; padding: 60px 0 48px; }
+.hero-kanji {
+  font-family: 'Yuji Boku', serif;
+  font-size: 5rem;
+  color: var(--lantern);
+  line-height: 1;
+  text-shadow:
+    0 0 24px rgba(244, 169, 62, 0.55),
+    0 0 60px rgba(244, 169, 62, 0.25);
+  margin: 0 0 16px;
+  letter-spacing: 0.06em;
+}
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 3.4rem;
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.hero-title em {
+  color: var(--lantern);
+  font-style: italic;
+}
+.hero-sub {
+  margin: 18px auto 0;
+  max-width: 580px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: var(--paper-mute);
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+}
+.hero-divider {
+  margin: 40px auto 0;
+  width: 200px;
+  height: 16px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 16'><circle cx='100' cy='8' r='3' fill='%23f4a93e' opacity='0.8'/><circle cx='80' cy='8' r='2' fill='%23f4a93e' opacity='0.4'/><circle cx='120' cy='8' r='2' fill='%23f4a93e' opacity='0.4'/><line x1='10' y1='8' x2='70' y2='8' stroke='%23f4a93e' stroke-width='1' opacity='0.3'/><line x1='130' y1='8' x2='190' y2='8' stroke='%23f4a93e' stroke-width='1' opacity='0.3'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Tech stack as soft pills */
+.toolkit { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 28px; }
+.tool {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+  padding: 6px 14px;
+  border: 1px solid rgba(244, 169, 62, 0.2);
+  border-radius: 999px;
+  background: rgba(244, 169, 62, 0.05);
+}
+
+/* ============================================================== */
+/* PROJECTS */
+/* ============================================================== */
+.section { margin: 96px 0; }
+.section-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+.section-title {
+  font-family: 'Yuji Boku', 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  color: var(--lantern-hot);
+  margin: 0;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.section-title::before {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--lantern);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--lantern);
+  display: inline-block;
+  transform: translateY(-6px);
+}
+.section-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--steam);
+  text-decoration: none;
+  border-bottom: 1px solid var(--steam-soft);
+  padding-bottom: 2px;
+}
+
+/* Cards as wooden-frame "shop windows" */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px;
+}
+.card {
+  position: relative;
+  background: var(--night);
+  border: 2px solid var(--wood-edge);
+  border-radius: 4px;
+  padding: 14px;
+  text-decoration: none;
+  color: var(--paper);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  display: block;
+  /* Wood-grain frame texture */
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 169, 62, 0.08),
+    inset 0 0 24px rgba(0, 0, 0, 0.4),
+    0 6px 14px rgba(0, 0, 0, 0.4);
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--lantern);
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 169, 62, 0.2),
+    inset 0 0 24px rgba(0, 0, 0, 0.4),
+    0 10px 32px rgba(244, 169, 62, 0.18);
+}
+/* Lattice corner decorations */
+.card::before, .card::after {
+  content: '';
+  position: absolute;
+  width: 28px; height: 28px;
+  border: 2px solid var(--lantern);
+  opacity: 0.45;
+}
+.card::before { top: 5px; left: 5px; border-right: 0; border-bottom: 0; }
+.card::after  { bottom: 5px; right: 5px; border-left: 0; border-top: 0; }
+.card-img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  display: block;
+  background: #000;
+  filter: saturate(0.92) brightness(0.95);
+}
+.card-body { padding: 18px 8px 8px; }
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 8px;
+  line-height: 1.15;
+  color: var(--paper);
+}
+.card-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: var(--paper-mute);
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+.card-meta {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--paper-mute);
+  border-top: 1px solid rgba(244, 169, 62, 0.12);
+  padding-top: 12px;
+}
+.card-meta span + span::before { content: '·'; margin-right: 4px; color: var(--lantern); opacity: 0.5; }
+.pinned-tag {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: var(--stamp);
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  padding: 4px 10px;
+  border-radius: 2px;
+  z-index: 1;
+  box-shadow: 0 4px 10px rgba(192, 57, 43, 0.4);
+}
+
+/* ============================================================== */
+/* DEMO REEL */
+/* ============================================================== */
+.reel {
+  max-width: 800px;
+  margin: 0 auto;
+  border: 2px solid var(--wood-edge);
+  background: var(--night);
+  padding: 16px;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(244, 169, 62, 0.1), 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+.reel::before, .reel::after {
+  content: ''; position: absolute; width: 32px; height: 32px;
+  border: 2px solid var(--lantern); opacity: 0.45;
+}
+.reel::before { top: 6px; left: 6px; border-right: 0; border-bottom: 0; }
+.reel::after { bottom: 6px; right: 6px; border-left: 0; border-top: 0; }
+.reel-inside {
+  aspect-ratio: 16/9;
+  background: var(--void);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--wood);
+}
+.reel-play {
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  border: 2px solid var(--lantern);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lantern);
+  font-size: 1.2rem;
+  box-shadow: 0 0 24px rgba(244, 169, 62, 0.3);
+}
+.reel-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: var(--paper-mute);
+  font-size: 1.1rem;
+}
+
+/* ============================================================== */
+/* FOOTER */
+/* ============================================================== */
+.page-footer {
+  text-align: center;
+  padding: 80px 0 40px;
+  position: relative;
+  z-index: 5;
+}
+.page-footer p {
+  font-family: 'Inter', sans-serif;
+  color: var(--paper-mute);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.preview-note {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: var(--lantern);
+  color: var(--void);
+  padding: 8px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 4px;
+  z-index: 100;
+  font-weight: 600;
+}
+.preview-note a { color: var(--void); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="preview-note">BATHHOUSE preview · <a href="/tech-art/">back to live site</a></div>
+
+<!-- Scene atmosphere -->
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="steam"></div>
+<div class="steam"></div>
+
+<div class="page">
+  <header class="page-header">
+    <div class="brand">
+      <span class="brand-name">羅德尼 · Rodney Fan</span>
+      <span class="brand-tag">— technical art portfolio</span>
+    </div>
+    <nav class="nav">
+      <a href="#" class="active">Tech Art</a>
+      <a href="#">Game Design</a>
+      <a href="#">Ramblings</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-kanji">影と光</div>
+    <h1 class="hero-title">Shadow, light, and <em>everything in between</em>.</h1>
+    <p class="hero-sub">Real-time shaders, GPU systems, and the tools that bridge the gap between artist intent and engine reality.</p>
+    <div class="hero-divider"></div>
+    <div class="toolkit">
+      <span class="tool">Unity</span>
+      <span class="tool">Unreal</span>
+      <span class="tool">HLSL</span>
+      <span class="tool">GLSL</span>
+      <span class="tool">Compute</span>
+      <span class="tool">Blender</span>
+      <span class="tool">Python</span>
+      <span class="tool">Houdini</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title-row">
+      <h2 class="section-title">Featured Projects</h2>
+      <a href="#" class="section-link">View all →</a>
+    </div>
+
+    <div class="cards">
+
+      <a class="card" href="#">
+        <span class="pinned-tag">Pinned</span>
+        <video class="card-img" src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" autoplay muted loop playsinline></video>
+        <div class="card-body">
+          <h3 class="card-title">Compute Grass</h3>
+          <p class="card-desc">GPU-driven grass rendering in Unity using compute shaders, instanced drawing, and render texture controls.</p>
+          <div class="card-meta"><span>unity</span><span>hlsl</span><span>compute</span><span>7 min</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <span class="pinned-tag">Pinned</span>
+        <video class="card-img" src="/assets/media/ZZZProject/CodeScroll.mp4" autoplay muted loop playsinline></video>
+        <div class="card-body">
+          <h3 class="card-title">Decompiling ZZZ</h3>
+          <p class="card-desc">Breaking down a compiled toon shader from Zenless Zone Zero to figure out what makes the game look the way it does.</p>
+          <div class="card-meta"><span>unity</span><span>study</span><span>6 min</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <span class="pinned-tag">Pinned</span>
+        <video class="card-img" src="/assets/media/P3DM/TerrainShowcase.mp4" autoplay muted loop playsinline></video>
+        <div class="card-body">
+          <h3 class="card-title">Procedural 3D Mask</h3>
+          <p class="card-desc">A reusable SDF-like dynamic zone system with ShaderGraph support — terrain blending, transparency, dissolves.</p>
+          <div class="card-meta"><span>unity</span><span>shadergraph</span><span>5 min</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <video class="card-img" src="/assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.mp4" autoplay muted loop playsinline></video>
+        <div class="card-body">
+          <h3 class="card-title">Doomsday Sales!</h3>
+          <p class="card-desc">Cartoon-style VFX for a 3-day Unreal Engine 5 game jam — wobbly outlines, color bleed, Lumen tricks.</p>
+          <div class="card-meta"><span>unreal</span><span>vfx</span><span>3 days</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <video class="card-img" src="/assets/media/UnfinishedProjects/Snatchems_MatrixShader.mp4" autoplay muted loop playsinline></video>
+        <div class="card-body">
+          <h3 class="card-title">Snatchems</h3>
+          <p class="card-desc">A dive into the internet — triplanar shader work for a Matrix-style level prototype.</p>
+          <div class="card-meta"><span>unity</span><span>shader</span><span>wip</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#">
+        <video class="card-img" src="/assets/media/UnfinishedProjects/SegmentDisplay_Idle.mp4" autoplay muted loop playsinline></video>
+        <div class="card-body">
+          <h3 class="card-title">SpriteBaker9000</h3>
+          <p class="card-desc">A custom 3D-to-2D pixel art rendering pipeline for Blender — Python, compositing, materials.</p>
+          <div class="card-meta"><span>blender</span><span>python</span><span>tool</span></div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="reel">
+      <div class="reel-inside">
+        <div class="reel-play">▶</div>
+        <div class="reel-text">Demo reel — drifting toward you</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="page-footer">
+  <p>© 2026 Rodney Fan</p>
+</footer>
+
+</body>
+</html>
