@@ -90,6 +90,14 @@ a.btn.btn-outline-primary.btn-sm {
 //   browser's 1-second title delay is bad UX. Add a custom ::after that
 //   reveals the label immediately on hover, matching the tool-icon pattern.
 // ============================================================================
+// Override the topbar's `contain: paint` from the glass-lantern mixin —
+// otherwise our toggle tooltips (which extend below the topbar's bounds)
+// get clipped at the topbar's paint box. The mixin lives in layout/_topbar
+// which forwards after base/, so we need !important to win the cascade.
+#topbar {
+  contain: layout style !important;
+}
+
 #topbar .topbar-bottom {
   .breathe-switch,
   .sparkler-switch,
