@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Preview · Bold (Monogatari-leaning) — Rodney Fan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:    #060508;       /* pure-ish black, slight warm tint */
+  --void:     #0a0810;
+  --bone:     #f3eee2;       /* high-contrast cream */
+  --bone-70:  rgba(243, 238, 226, 0.7);
+  --bone-40:  rgba(243, 238, 226, 0.4);
+  --gold:     #fbbf24;
+  --gold-90:  #f3a30b;
+  --crimson:  #c0392b;
+  --line:     #1a1518;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  background: var(--black);
+  color: var(--bone);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================== */
+/* HEADER — bold, asymmetric */
+/* ============================================================== */
+.page-header {
+  position: sticky;
+  top: 0;
+  background: var(--black);
+  z-index: 50;
+  border-bottom: 2px solid var(--gold);
+}
+.page-header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 32px;
+  align-items: center;
+}
+.brand {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.brand span { color: var(--gold); }
+.brand small {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--bone-40);
+  margin-top: 4px;
+}
+.nav { justify-self: center; display: flex; gap: 32px; }
+.nav a {
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 8px 0;
+  position: relative;
+}
+.nav a.active { color: var(--gold); }
+.nav a.active::after {
+  content: '';
+  position: absolute;
+  left: -4px; right: -4px;
+  bottom: 0;
+  height: 3px;
+  background: var(--gold);
+}
+.spec {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-40);
+  text-align: right;
+}
+
+/* ============================================================== */
+/* HERO — split into two flat color blocks */
+/* ============================================================== */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 80vh;
+  border-bottom: 2px solid var(--line);
+}
+.hero-text {
+  padding: 88px 64px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  background: var(--black);
+}
+.hero-num {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.hero-num::before {
+  content: '— ';
+  color: var(--bone-40);
+}
+.hero-title {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(3.4rem, 7vw, 5.4rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.hero-title em {
+  font-style: normal;
+  display: block;
+  color: var(--gold);
+  position: relative;
+}
+.hero-title em::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 18px;
+  width: 8px;
+  height: calc(100% - 36px);
+  background: var(--gold);
+}
+.hero-sub {
+  margin: 36px 0 0;
+  font-size: 1rem;
+  color: var(--bone-70);
+  max-width: 460px;
+  line-height: 1.6;
+}
+.hero-image {
+  position: relative;
+  background: var(--void);
+  overflow: hidden;
+  /* Asymmetric: hero image is the static "key art" of the latest project */
+  border-left: 2px solid var(--line);
+}
+.hero-image video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: brightness(0.75) contrast(1.1) saturate(1.15);
+}
+/* Stark color block overlay */
+.hero-image::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 60%;
+  height: 40%;
+  background: var(--gold);
+  mix-blend-mode: multiply;
+  opacity: 0.18;
+}
+/* Labelling on the image */
+.hero-image-label {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-image-label strong {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero-image-label span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--bone-70);
+}
+
+/* Big crisp light points — abstracted "lanterns" as flat squares of gold */
+.lights {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.light {
+  position: absolute;
+  background: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold-90), 0 0 24px var(--gold);
+  width: 6px;
+  height: 6px;
+  animation: pulse var(--dur, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.light.l1 { top:  18%; left:  4%; --dur: 5s; }
+.light.l2 { top:  45%; left:  92%; --dur: 6s; --delay: -2s; width: 4px; height: 4px; }
+.light.l3 { top:  78%; left:  3%; --dur: 4.5s; --delay: -1.5s; width: 8px; height: 8px; }
+.light.l4 { top:  88%; left:  90%; --dur: 5.5s; --delay: -3s; }
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.4); }
+}
+
+/* ============================================================== */
+/* PROJECTS — bold asymmetric block grid */
+/* ============================================================== */
+.section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 96px 40px;
+}
+.section-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 56px;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 20px;
+}
+.section-title {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.section-title strong { color: var(--gold); font-weight: inherit; }
+.section-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--gold);
+}
+
+/* Asymmetric layout: 1 big + 2 small in first row, alternating */
+.cards {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-auto-rows: minmax(260px, auto);
+  gap: 2px;
+  background: var(--line);
+  border: 2px solid var(--line);
+}
+.card {
+  position: relative;
+  background: var(--black);
+  display: block;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+.card:hover { background: var(--void); }
+.card:hover .card-media { transform: scale(1.04); }
+.card.feat { grid-row: span 2; }
+.card.feat .card-media { aspect-ratio: auto; height: 60%; }
+.card.feat .card-body { padding: 28px 28px 32px; }
+.card.feat .card-title { font-size: 1.9rem; }
+.card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  transition: transform 0.6s ease;
+}
+.card-media video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: contrast(1.05) saturate(1.05) brightness(0.95);
+}
+.card-body { padding: 22px 24px 26px; }
+.card-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.card-title {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+.card-desc {
+  font-size: 0.84rem;
+  color: var(--bone-70);
+  line-height: 1.55;
+  margin: 0 0 14px;
+}
+.card-meta {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-40);
+}
+.card-meta span {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+}
+.pinned {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  background: var(--gold);
+  color: var(--black);
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+}
+.wip-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  background: var(--crimson);
+  color: var(--bone);
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+}
+
+/* DEMO REEL — full-bleed block with hard play button */
+.reel-block {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px 96px;
+}
+.reel {
+  position: relative;
+  aspect-ratio: 21/9;
+  background: var(--void);
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px;
+  gap: 24px;
+}
+.reel-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+}
+.reel-title {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.reel-title em { font-style: normal; color: var(--gold); }
+.reel-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-70);
+}
+.reel-cta svg {
+  width: 18px; height: 18px;
+  background: var(--gold);
+  padding: 6px;
+}
+.reel-cta polygon { fill: var(--black); }
+
+footer {
+  border-top: 2px solid var(--line);
+  padding: 32px 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-40);
+  display: flex;
+  justify-content: space-between;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.preview-note {
+  position: fixed; top: 10px; right: 10px;
+  background: var(--crimson);
+  color: var(--bone);
+  padding: 8px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  z-index: 100;
+  font-weight: 700;
+}
+.preview-note a { color: var(--bone); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="preview-note">BOLD preview · <a href="/design-previews/">↩ all</a> · <a href="/tech-art/">live site</a></div>
+
+<div class="lights">
+  <div class="light l1"></div>
+  <div class="light l2"></div>
+  <div class="light l3"></div>
+  <div class="light l4"></div>
+</div>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="brand">RODNEY<span>·</span>FAN<small>TECHNICAL ARTIST</small></div>
+    <nav class="nav">
+      <a href="#" class="active">Tech Art</a>
+      <a href="#">Game Design</a>
+      <a href="#">Ramblings</a>
+    </nav>
+    <div class="spec">vol. iv / 2026</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-num">01 · Index</div>
+    <h1 class="hero-title">Real-time<em>shaders &amp;<br>systems</em></h1>
+    <p class="hero-sub">GPU pipelines, compute work, and tools that bridge the gap between artist intent and engine reality.</p>
+  </div>
+  <div class="hero-image">
+    <video src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" autoplay muted loop playsinline></video>
+    <div class="hero-image-label">
+      <strong>Compute Grass</strong>
+      <span>UNITY · HLSL · COMPUTE · 2026</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-row">
+    <h2 class="section-title">Featured <strong>/ work</strong></h2>
+    <a href="#" class="section-link">All projects →</a>
+  </div>
+
+  <div class="cards">
+
+    <a class="card feat" href="#">
+      <span class="pinned">Pinned</span>
+      <div class="card-media"><video src="/assets/media/ZZZProject/CodeScroll.mp4" autoplay muted loop playsinline></video></div>
+      <div class="card-body">
+        <div class="card-num">02 · Reverse engineering</div>
+        <h3 class="card-title">Decompiling ZZZ</h3>
+        <p class="card-desc">Breaking down a compiled toon shader from Zenless Zone Zero to figure out what makes the game look the way it does. A study in reading shader math without source.</p>
+        <div class="card-meta"><span>UNITY</span><span>HLSL</span><span>STUDY</span><span>6 MIN</span></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <span class="pinned">Pinned</span>
+      <div class="card-media"><video src="/assets/media/P3DM/TerrainShowcase.mp4" autoplay muted loop playsinline></video></div>
+      <div class="card-body">
+        <div class="card-num">03 · Tool</div>
+        <h3 class="card-title">P3DM</h3>
+        <p class="card-desc">SDF-like dynamic zone system — terrain blending, dissolves.</p>
+        <div class="card-meta"><span>UNITY</span><span>SHADERGRAPH</span></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-media"><video src="/assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.mp4" autoplay muted loop playsinline></video></div>
+      <div class="card-body">
+        <div class="card-num">04 · Game jam</div>
+        <h3 class="card-title">Doomsday Sales</h3>
+        <p class="card-desc">Cartoon VFX for a 3-day UE5 jam — outlines, color bleed, Lumen.</p>
+        <div class="card-meta"><span>UNREAL</span><span>VFX</span></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-media"><video src="/assets/media/UnfinishedProjects/Snatchems_MatrixShader.mp4" autoplay muted loop playsinline></video></div>
+      <div class="card-body">
+        <div class="card-num">05 · Prototype</div>
+        <h3 class="card-title">Snatchems</h3>
+        <p class="card-desc">Triplanar shader work for a Matrix-style level prototype.</p>
+        <div class="card-meta"><span>UNITY</span><span>SHADER</span></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <span class="wip-tag">WIP</span>
+      <div class="card-media"><video src="/assets/media/UnfinishedProjects/SegmentDisplay_Idle.mp4" autoplay muted loop playsinline></video></div>
+      <div class="card-body">
+        <div class="card-num">06 · Tool</div>
+        <h3 class="card-title">SpriteBaker9000</h3>
+        <p class="card-desc">Custom 3D-to-2D pixel art pipeline — Blender, Python.</p>
+        <div class="card-meta"><span>BLENDER</span><span>PYTHON</span></div>
+      </div>
+    </a>
+
+    <a class="card" href="#">
+      <div class="card-media"><video src="/assets/media/UnfinishedProjects/PhysicsCompute_Crystals.mp4" autoplay muted loop playsinline></video></div>
+      <div class="card-body">
+        <div class="card-num">07 · System</div>
+        <h3 class="card-title">2D Physics Compute</h3>
+        <p class="card-desc">GPU-side particle physics — broadphase, narrowphase, response.</p>
+        <div class="card-meta"><span>UNITY</span><span>COMPUTE</span></div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<section class="reel-block">
+  <div class="reel">
+    <div class="reel-num">08 · Reel · 2026</div>
+    <h2 class="reel-title">Demo reel<em>— in motion soon</em></h2>
+    <div class="reel-cta">
+      <svg viewBox="0 0 24 24"><polygon points="6,4 6,20 20,12"/></svg>
+      <span>Subscribe for notification</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 RODNEY FAN</span>
+  <span>VANCOUVER · CANADA</span>
+</footer>
+
+</body>
+</html>

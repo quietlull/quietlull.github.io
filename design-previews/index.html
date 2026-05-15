@@ -12,23 +12,15 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background: #0b1120;
+  background: #020617;
   color: #E8E0D4;
   font-family: 'Inter', system-ui, sans-serif;
   line-height: 1.6;
   padding: 64px 24px;
 }
 .container { max-width: 880px; margin: 0 auto; }
-h1 {
-  font-size: 2rem;
-  margin: 0 0 8px;
-  font-weight: 600;
-}
-.sub {
-  color: rgba(232,224,212,0.6);
-  margin: 0 0 48px;
-  font-size: 1.05rem;
-}
+h1 { font-size: 2rem; margin: 0 0 8px; font-weight: 600; }
+.sub { color: rgba(232,224,212,0.6); margin: 0 0 48px; font-size: 1.05rem; }
 .cards { display: grid; gap: 24px; }
 .card {
   display: block;
@@ -40,12 +32,8 @@ h1 {
   color: inherit;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
-.card:hover { transform: translateY(-3px); border-color: #e0b050; }
-.card h2 {
-  margin: 0 0 8px;
-  font-size: 1.4rem;
-  color: #e0b050;
-}
+.card:hover { transform: translateY(-3px); border-color: #fbbf24; }
+.card h2 { margin: 0 0 8px; font-size: 1.4rem; color: #fbbf24; }
 .card .tag {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
@@ -70,28 +58,54 @@ h1 {
   border-bottom: 1px dashed currentColor;
   padding-bottom: 2px;
 }
-.back:hover { color: #e0b050; border-color: #e0b050; }
+.back:hover { color: #fbbf24; border-color: #fbbf24; }
+.divider {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 48px 0 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(232,224,212,0.35);
+  padding-top: 16px;
+}
 </style>
 </head>
 <body>
 <div class="container">
   <h1>Design Direction Previews</h1>
-  <p class="sub">Two contrasting redesigns of the tech-art landing page. Open in new tabs and compare side-by-side with the live site.</p>
+  <p class="sub">Three takes on the Shinsekai Yori / Monogatari brief — all dark theme, all using your existing amber/gold palette. Lanterns reinterpreted as abstract light against dark, no CJK characters.</p>
 
   <div class="cards">
 
-    <a class="card" href="/design-previews/sketchbook/">
-      <div class="tag">Brief 2 · Light · Anti-Claude</div>
-      <h2>Tech Artist's Field Sketchbook</h2>
-      <p>Warm cream paper, dark ink, brushy serif headings, hand-drawn marginalia, masking-tape card affixing. Strongest break from the current site's dark + amber + glass aesthetic.</p>
-      <div class="specs">Lora · DM Serif Display · Caveat · JetBrains Mono</div>
+    <a class="card" href="/design-previews/soft/">
+      <div class="tag">01 · Soft · Shinsekai-leaning</div>
+      <h2>Drifting glow field</h2>
+      <p>Atmospheric, contemplative, painterly. Soft amber glows drift in the background; subtle leaf silhouettes pass through. Cards have radial-masked edges that fade into the field rather than hard borders. Heavy negative space, Cormorant italic typography, slow rhythm.</p>
+      <div class="specs">Cormorant Garamond · Inter · JetBrains Mono</div>
     </a>
 
-    <a class="card" href="/design-previews/ghibli/">
-      <div class="tag">Brief 1 · Dark · Atmospheric</div>
-      <h2>Spirited Away Bathhouse</h2>
-      <p>Lantern theme pushed harder into Ghibli atmosphere. Wooden lattice frames, paper texture, steamy teal as second accent, rooftop silhouette at the page base, kanji touches.</p>
-      <div class="specs">Cormorant Garamond · Yuji Boku · Inter · JetBrains Mono</div>
+    <a class="card" href="/design-previews/bold/">
+      <div class="tag">02 · Bold · Monogatari-leaning</div>
+      <h2>Flat blocks and hard light</h2>
+      <p>High-contrast, asymmetric, graphic. Pure black background with crisp pulsing amber points (no blur). Hero splits into two flat color blocks, project grid uses an asymmetric 2:1:1 layout with a feature card spanning two rows. Archivo Black for headlines, numbered sections, hard borders.</p>
+      <div class="specs">Archivo Black · Inter · JetBrains Mono</div>
+    </a>
+
+    <a class="card" href="/design-previews/hybrid/">
+      <div class="tag">03 · Hybrid · Both</div>
+      <h2>Soft field, one bold move</h2>
+      <p>Atmospheric base of soft drifting amber glows (Shinsekai influence) under bold display typography mixing Archivo Black with italic Cormorant (Monogatari influence). Cards retain a soft backdrop-blur frame but get a small solid gold corner mark to anchor each one.</p>
+      <div class="specs">Archivo Black + Cormorant · Inter · JetBrains Mono</div>
+    </a>
+
+    <div class="divider">Earlier exploration</div>
+
+    <a class="card" href="/design-previews/sketchbook/">
+      <div class="tag">00 · Sketchbook · Light theme · Stale</div>
+      <h2>Tech Artist's Field Sketchbook</h2>
+      <p>The earlier light-cream notebook direction. Kept for reference but doesn't match the dark-theme constraint from the Shinsekai / Monogatari brief. Will retire once a direction is locked.</p>
+      <div class="specs">Lora · DM Serif Display · Caveat · JetBrains Mono</div>
     </a>
 
   </div>
