@@ -184,10 +184,19 @@ function initSectionSparks() {
  */
 function initBottomConfetti(article) {
   let fired = false;
+  let seenOutOfView = false;
 
   const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
-      if (entry.isIntersecting && !fired) {
+      // Only fire when the bottom is scrolled INTO view after having been
+      // out of view. On short pages / mobile the IntersectionObserver
+      // reports the target as already-intersecting on load and would fire
+      // confetti immediately — this guard fixes that confetti-on-load bug.
+      if (!entry.isIntersecting) {
+        seenOutOfView = true;
+        continue;
+      }
+      if (seenOutOfView && !fired) {
         fired = true;
         observer.disconnect();
         fireConfetti();

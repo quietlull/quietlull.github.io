@@ -344,9 +344,11 @@ function setupTrackers(state) {
     let hasScrolled = false;
 
     function onScrollEnd() {
-      // Require at least 200px of actual scrolling before checking
+      // Require real DOWNWARD user scrolling before checking. Directional
+      // (not abs) so mobile scroll-restoration / address-bar jumps on page
+      // load don't count as "reading to the end" and fire the achievement.
       if (!hasScrolled) {
-        if (Math.abs(window.scrollY - initialScroll) > 200) {
+        if (window.scrollY - initialScroll > 200) {
           hasScrolled = true;
         } else {
           return;
