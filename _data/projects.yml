@@ -1,0 +1,82 @@
+# Projects curation layer (thin registry) — 2026-06-14
+#
+# WHY THIS EXISTS: post front matter is ALREADY a per-project data model (title, image,
+# date, description, tags, role, engine, priority, pin, takeaway). To avoid duplication,
+# this registry holds ONLY what the posts lack:
+#   - display ORDER   (the list order below; replaces per-post `priority`)
+#   - FEATURED flag   (replaces per-post `pin`)
+#   - external LINKS  (repo / live / itch / artstation — posts have none today)
+#
+# Cards still derive title/image/date/tags/reading-time FROM the post. Nothing here
+# duplicates post content.
+#
+# HOW TO CONSUME (for the redesign template rewrite — not wired into live templates yet,
+# to avoid throwaway work on templates the redesign replaces):
+#   {% assign list = site.data.projects[page.section] %}
+#   {% for entry in list %}
+#     {% assign post = site.posts | where: 'section', page.section
+#                                 | where: 'slug', entry.slug | first %}
+#     ...render card from `post`; `entry.featured` -> pinned treatment;
+#        render link icons from `entry.links` (only when non-empty).
+#   {% endfor %}
+#   Resolution MUST match section + slug (two posts share slug `fishgame`).
+#
+# MIGRATION: once the redesign reads ordering+featured from here, DROP `priority` and
+# `pin` from the post front matter so this stays the single source of truth.
+#
+# Fill the link URLs as profiles/repos go live; empty strings render no icon.
+
+tech-art:
+  - slug: computegrass
+    featured: true
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: decompilingshaders
+    featured: true
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: procedural3dmask
+    featured: true
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: computedisplayshaders
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: 2dphysicscompute
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: doomsday-sales
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: spritebaker9000
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: fishgame
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: arknightsendfieldshaders
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: unrealriggingcontract
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: portalshadersgodot
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: snatchems
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: 7segmentdisplay
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: 2drotationupscaling
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: cgworld-01
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+  - slug: studentprojects
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
+
+game-design:
+  - slug: fishgame
+    featured: false
+    links: { repo: "", live: "", itch: "", artstation: "" }
