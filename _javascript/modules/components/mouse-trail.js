@@ -188,13 +188,19 @@ export function initMouseTrail() {
 
     let anyActive = false;
 
+    // delta is constant across the frame, so these are loop-invariant.
+    // Hoist out of the per-particle loop (was up to 2*MAX_PARTICLES
+    // Math.pow calls/frame; now 1). Bit-identical math.
+    const dragFactor = Math.pow(DRAG, delta);
+    const gravityStep = GRAVITY * delta;
+
     for (let i = 0; i < MAX_PARTICLES; i++) {
       const p = pool[i];
       if (!p.active) continue;
 
-      p.vx *= Math.pow(DRAG, delta);
-      p.vy *= Math.pow(DRAG, delta);
-      p.vy += GRAVITY * delta;
+      p.vx *= dragFactor;
+      p.vy *= dragFactor;
+      p.vy += gravityStep;
       p.x += p.vx * delta;
       p.y += p.vy * delta;
       p.life -= delta;

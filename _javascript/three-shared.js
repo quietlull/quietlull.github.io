@@ -429,11 +429,20 @@ export function startAnimationLoop(renderer, composer, updatables) {
     renderer.setAnimationLoop(null);
   }
 
-  // Pause the Three.js loop (including bloom composer) when the tab is
-  // hidden — no visible output, pure waste otherwise.
+  // Render only when BOTH the tab is visible AND the canvas is on-screen. Tracking the two states
+  // separately (instead of each calling start/stop) prevents a hidden tab from being resumed by the
+  // intersection observer — output is identical whenever it's actually visible.
+  let pageVisible = !document.hidden;
+  let canvasOnScreen = true; // assumed until the observer reports; the observer drives the first start
+
+  function sync() {
+    if (pageVisible && canvasOnScreen) start();
+    else stop();
+  }
+
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stop();
-    else start();
+    pageVisible = !document.hidden;
+    sync();
   });
 
   // Also pause when the canvas is scrolled fully off-screen. Saves cycles
@@ -442,9 +451,9 @@ export function startAnimationLoop(renderer, composer, updatables) {
   if ('IntersectionObserver' in window && canvas) {
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) start();
-        else stop();
+        canvasOnScreen = entry.isIntersecting;
       }
+      sync();
     }, { threshold: 0 });
     observer.observe(canvas);
   } else {

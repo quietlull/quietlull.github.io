@@ -37,7 +37,13 @@ export function initCardTilt() {
   };
   document.addEventListener('mousemove', onMove);
 
-  cards.forEach(card => setupMouseTilt(card));
+  // ONE shared scroll/resize listener invalidates every card's cached rect (was N per-card listeners).
+  const invalidators = [];
+  cards.forEach(card => invalidators.push(setupMouseTilt(card)));
+  const invalidateAll = () => { for (const fn of invalidators) fn(); };
+  window.addEventListener('scroll', invalidateAll, { passive: true });
+  window.addEventListener('resize', invalidateAll, { passive: true });
+
   setupGyroTilt(cards);
 }
 
@@ -81,10 +87,9 @@ function setupMouseTilt(card) {
     card.style.transform = '';
   });
 
-  // Layout can shift between mouseenter and mousemove. Invalidate cache on
-  // scroll/resize so the next mousemove re-reads once instead of staying stale.
-  window.addEventListener('scroll', invalidateRect, { passive: true });
-  window.addEventListener('resize', invalidateRect, { passive: true });
+  // Layout can shift between mouseenter and mousemove. The shared scroll/resize listener in
+  // initCardTilt calls this to invalidate the cache so the next mousemove re-reads once.
+  return invalidateRect;
 }
 
 function setupGyroTilt(cards) {

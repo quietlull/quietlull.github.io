@@ -68,6 +68,7 @@ export class FireworkController {
     this._direction = new THREE.Vector3();
     this._midPoint = new THREE.Vector3();
     this._upVec = new THREE.Vector3(0, 1, 0);
+    this._removeGroup = []; // reused each frame (avoid per-frame array allocation)
 
     this.setupClickHandler();
   }
@@ -487,7 +488,8 @@ export class FireworkController {
       }
     }
 
-    const removeGroup = [];
+    const removeGroup = this._removeGroup;
+    removeGroup.length = 0;
 
     for (let firework of this.fireWorkGroup) {
       const elapsed = firework.clock.getElapsedTime();

@@ -174,7 +174,10 @@ export class MirroredSurface {
     this.mirrorCamera.rotation.z = this.camera.rotation.z;
 
     this.mirrorCamera.updateMatrixWorld();
-    this.mirrorCamera.updateProjectionMatrix();
+    // Projection inputs (fov/aspect/near/far) are immutable between resizes —
+    // only handleResize() changes them, and it calls updateProjectionMatrix itself.
+    // Per-frame only position/rotation (the view matrix) change, so recomputing the
+    // projection here is redundant: it yields a bit-identical matrix. Omitted.
 
     this.material.uniforms.uMirrorViewMatrix.value = this.mirrorCamera.matrixWorldInverse;
     this.material.uniforms.uMirrorProjectionMatrix.value = this.mirrorCamera.projectionMatrix;

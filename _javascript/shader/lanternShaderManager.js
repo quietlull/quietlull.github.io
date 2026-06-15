@@ -87,12 +87,14 @@ export class LanternMaterialManager {
     // Update time (runs at 60fps rate when deltaTime = 1.0)
     this.time += 0.016 * deltaTime;
 
-    // Update all materials
-    this.materials.forEach(material => {
+    // Update all materials (plain loop: no per-frame closure allocation)
+    const materials = this.materials;
+    for (let i = 0; i < materials.length; i++) {
+      const material = materials[i];
       if (material.uniforms && material.uniforms.time) {
         material.uniforms.time.value = this.time + material.userData.timeOffset;
       }
-    });
+    }
   }
 
   /**

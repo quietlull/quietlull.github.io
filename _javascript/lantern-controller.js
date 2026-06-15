@@ -167,7 +167,22 @@ export class LanternController {
     // Mouse ray available for per-lantern intersection
     const hasMouseRay = this.avoidanceEnabled && this.isMouseOverCanvas;
 
-    this.lanterns.forEach((lantern, index) => {
+    // Per-frame constants — identical for every lantern this frame, hoisted out of the loop
+    // (was recomputing 4x Math.pow per lantern). Results are bit-identical -> no visual change.
+    const avoidanceConfig = this.config.lanterns.avoidance;
+    let velocityDamping = 1;
+    let rotationDamping = 1;
+    let rotationReturnSpeed = 0;
+    let positionReturnSpeed = 0;
+    if (this.avoidanceEnabled) {
+      velocityDamping = Math.pow(0.92, normalizedDelta);
+      rotationDamping = Math.pow(0.90, normalizedDelta);
+      rotationReturnSpeed = 1 - Math.pow(1 - 0.05, normalizedDelta);
+      positionReturnSpeed = 1 - Math.pow(1 - avoidanceConfig.returnSpeed, normalizedDelta);
+    }
+
+    for (let index = 0; index < this.lanterns.length; index++) {
+      const lantern = this.lanterns[index];
       const offset = lantern.userData.floatOffset;
 
       // Base floating animation
@@ -177,7 +192,7 @@ export class LanternController {
 
       // Mouse avoidance — intersect ray at each lantern's z-depth for correct perspective
       if (hasMouseRay) {
-        const config = this.config.lanterns.avoidance;
+        const config = avoidanceConfig;
         lantern.getWorldPosition(this._worldPos);
         this._plane.constant = -this._worldPos.z;
         const mouseWorld = this.raycaster.ray.intersectPlane(this._plane, this._intersectTarget);
@@ -266,21 +281,16 @@ export class LanternController {
         lantern.rotation.y += lantern.userData.rotationVelocity.y * normalizedDelta;
         lantern.rotation.z += lantern.userData.rotationVelocity.z * normalizedDelta;
 
-        // Dampen velocity and rotation
-        const velocityDamping = Math.pow(0.92, normalizedDelta);
-        const rotationDamping = Math.pow(0.90, normalizedDelta);
+        // Dampen velocity and rotation (constants hoisted above the loop)
         lantern.userData.velocity.multiplyScalar(velocityDamping);
         lantern.userData.rotationVelocity.multiplyScalar(rotationDamping);
 
         // Gradually return to base rotation
-        const rotationReturnSpeed = 1 - Math.pow(1 - 0.05, normalizedDelta);
         lantern.rotation.x += (lantern.userData.baseRotation.x - lantern.rotation.x) * rotationReturnSpeed;
         lantern.rotation.y += (lantern.userData.baseRotation.y - lantern.rotation.y) * rotationReturnSpeed;
         lantern.rotation.z += (lantern.userData.baseRotation.z - lantern.rotation.z) * rotationReturnSpeed;
 
         // Gradually return to base position
-        const config = this.config.lanterns.avoidance;
-        const positionReturnSpeed = 1 - Math.pow(1 - config.returnSpeed, normalizedDelta);
         lantern.userData.avoidanceOffset.x *= (1 - positionReturnSpeed);
         lantern.userData.avoidanceOffset.y *= (1 - positionReturnSpeed);
 
@@ -291,7 +301,7 @@ export class LanternController {
         lantern.position.x = lantern.userData.basePosition.x + floatX;
         lantern.position.y = lantern.userData.basePosition.y + floatY;
       }
-    });
+    }
   }
 
   getLanternCount() {
