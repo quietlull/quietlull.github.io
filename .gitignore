@@ -25,5 +25,8 @@ package-lock.json
 # Misc
 assets/js/dist
 
+# Redesign test environment (blockout variations, not for deploy)
+redesign-lab/
+
 # Reel editing source material (large MP4s, planning docs)
 .claude/reel-planning/
