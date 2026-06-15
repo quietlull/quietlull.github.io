@@ -10,7 +10,15 @@
   icon: "fab fa-linkedin"
   url: "https://www.linkedin.com/in/rodneyfan/"
 
-# Disabled until profiles are polished:
+- type: artstation
+  icon: "fab fa-artstation"
+  url: "https://www.artstation.com/rodneyfan"
+
+- type: itch
+  icon: "fab fa-itch-io"
+  url: "https://rodneyfan.itch.io/"
+
+# Disabled until ready:
 # - type: email
 #   icon: "fas fa-envelope"
 #   noblank: true
@@ -18,14 +26,6 @@
 # - type: rss
 #   icon: "fas fa-rss"
 #   noblank: true
-#
-# - type: artstation
-#   icon: "fab fa-artstation"
-#   url: "https://www.artstation.com/rodneyfan"
-#
-# - type: itch
-#   icon: "fab fa-itch-io"
-#   url: "https://rodneyfan.itch.io/"
 # Uncomment and complete the url below to enable more contact options
 #
 # - type: mastodon
