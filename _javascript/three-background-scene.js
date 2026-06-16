@@ -49,7 +49,7 @@ fbxLoader.load('/assets/mesh/lantern-night/Water.fbx', (fbx) => {
     reflectionIntensity: CONFIG.water.reflection.reflectionIntensity,
     reflectionTint: new THREE.Color(CONFIG.water.reflection.reflectionTint),
     waveStrength: CONFIG.water.waves.waveStrength,
-    waveSpeed: CONFIG.water.waves.waveSpeed,
+    waveSpeed: 1.5,   // [water rework] procedural-noise animation speed (CONFIG default 0.1 was for the old shader)
     waveScale: CONFIG.water.waves.waveScale,
     waveType: CONFIG.water.waves.waveType,
   });
@@ -62,6 +62,23 @@ fbxLoader.load('/assets/mesh/lantern-night/Water.fbx', (fbx) => {
   renderer.render(scene, mirroredSurface.mirrorCamera);
   renderer.setRenderTarget(null);
   mirroredSurface.mirrorPlane.visible = true;
+
+  // Click the water -> ripple (water rework). Raycast the water MESH (so only clicks on the visible water ripple it),
+  // drag-vs-click guarded. The ripple feeds the reflection + the wave shading; getActiveRipple() drives the character look.
+  const _rRay = new THREE.Raycaster(), _rNdc = new THREE.Vector2();
+  let _rdx = 0, _rdy = 0, _rdt = 0;
+  addEventListener('pointerdown', (e) => { _rdx = e.clientX; _rdy = e.clientY; _rdt = performance.now(); });
+  addEventListener('pointerup', (e) => {
+    if (!mirroredSurface) return;
+    if (Math.hypot(e.clientX - _rdx, e.clientY - _rdy) > 6 || performance.now() - _rdt > 500) return;
+    _rNdc.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+    _rRay.setFromCamera(_rNdc, camera);
+    const hit = _rRay.intersectObject(waterMesh, false)[0];
+    if (hit) mirroredSurface.spawnRipple(hit.point);
+  });
+
+  // Expose for the character's "watch the water" head-look (getActiveRipple) + debugging.
+  window.mirroredSurface = mirroredSurface;
 });
 
 // Embers — white-yellow fireflies with organic, alive movement
