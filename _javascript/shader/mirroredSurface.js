@@ -1,17 +1,18 @@
 import * as THREE from 'three';
 
 /**
- * Water mirror surface for the About-page dock scene. Planar reflection + a NO-LIGHTING water look (the scene uses
- * flat materials, so nothing here adds a real light):
- *   - procedural snoise slope, isotropic world-xz [uProcNoise=1] -> 2D waves, no tiling seam / magnify artifact
+ * Water mirror surface for the About-page dock scene. Planar reflection + a NO-LIGHTING water look (the scene uses flat
+ * materials, so nothing here adds a real light). The depth/wave read comes from the SHADING (a normal embossed by a fake
+ * directional light), not from displacement:
+ *   - procedural snoise HEIGHT field -> central-difference gradient = slope (uProcNoise=1 default)
+ *   - uRidge: 1 - abs(height) creases the smooth hills into SHARP ridge lines, so the directional light embosses real crests
  *   - (1) distance-attenuated reflection-UV distortion (three.js Water / ameen)
  *   - (2) Fresnel depth: blend reflection toward dark uWaterColor by view angle (geometric, no light)
- *   - (3) FAKE directional light (darken-biased): broad wave shading from a CONSTANT sun direction (no scene light)
- *   - (6) click ripples: expanding wave-packets (ldBXDD) feeding BOTH the reflection AND the shading normal
- * Tuned defaults are baked in the uniforms block. `spawnRipple(worldPoint)` + `getActiveRipple()` drive interaction
- * (e.g. the character's "watch the water" head-look).
- * Provenance: original planar reflection = Rod; distortion/Fresnel/directional = three.js examples/jsm/objects/Water.js
- * + ameen-abdullah.dev; ripple = Godot/Shadertoy ldBXDD; snoise = Ashima/Gustavson (public domain). Reworked in the
+ *   - (3) fake directional light (darken-biased): broad wave shading from a CONSTANT sun direction (no scene light)
+ *   - (6) click ripples: expanding wave-packets (ldBXDD) feeding the reflection AND the shading normal
+ * `spawnRipple(worldPoint)` + `getActiveRipple()` drive interaction (e.g. the character's "watch the water" head-look).
+ * Provenance: original planar reflection = Rod; distortion/Fresnel/directional = three.js examples Water.js + ameen-abdullah.dev;
+ * ridge = standard ridged-noise; ripple = Godot/Shadertoy ldBXDD; snoise = Ashima/Gustavson (public domain). Reworked in the
  * lab water track (see redesign-lab/water-CHANGELOG.md).
  */
 export class MirroredSurface {
@@ -79,12 +80,13 @@ export class MirroredSurface {
   uniform float uWaveSpeed;
   uniform float uWaveScale;
   uniform float uNoiseMode;
-  uniform float uNoiseSpace, uWorldScale;   // 0 = original anisotropic UV (stripes) / 1 = isotropic world-xz (2D waves)
-  uniform float uProcNoise;   // 0 = DUV texture noise / 1 = procedural snoise (infinite res -> no magnify/seam artifacts)
+  uniform float uNoiseSpace, uWorldScale;   // [Bob] 0 = original anisotropic UV (stripes) / 1 = isotropic world-xz (2D waves)
+  uniform float uProcNoise;   // [Bob] 0 = DUV texture noise / 1 = procedural snoise (infinite res -> no magnify/seam artifacts)
   uniform float uUseOriginal;
-  uniform float uDistort, uDistortFalloff, uNormalUp;   // (1) distance-attenuated normal distortion
+  uniform float uDistort, uDistortFalloff, uNormalUp;   // (1) distance-attenuated reflection distortion + normal tilt
+  uniform float uRidge;   // 0 = smooth hills / 1 = sharp creased RIDGES (so the directional light embosses real crests)
   uniform float uFresnel, uFresnelPow; uniform vec3 uWaterColor;   // (2) depth
-  uniform float uSunDiffuse, uSunLift; uniform vec3 uSunDir2, uSunColor2;   // (3) fake directional light (darken-biased)
+  uniform float uSunDiffuse, uSunLift; uniform vec3 uSunDir2, uSunColor2;   // (3) FAKE directional light -> broad wave shading (darken-biased)
   uniform vec2 uRippleOrigin[16]; uniform float uRippleStart[16];   // (6) click ripples: world xz + spawn time per slot
   uniform float uRippleSpeed, uRippleFreq, uRippleWidth, uRippleDecay, uRippleLife, uRippleAmp, uRippleSlope;
   varying vec2 vUv;
@@ -93,7 +95,7 @@ export class MirroredSurface {
 
   mat2 rot2(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
 
-  // Ashima/Gustavson 3D simplex noise (public domain webgl-noise) — same one the character dissolve uses.
+  // [Bob] Ashima/Gustavson 3D simplex noise (public domain webgl-noise) — same one Rod's character dissolve uses.
   vec4 permute(vec4 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }
   vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
   float snoise(vec3 v) {
@@ -117,17 +119,26 @@ export class MirroredSurface {
     return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
   }
 
-  // procedural slope in ~[-1,1]: 3 octaves, two decorrelated channels (analog of the DUDV .rg). Animates via the z axis.
-  vec2 proceduralSlope(vec2 p) {
+  // scalar water HEIGHT (2 octaves), optionally CREASED into sharp ridges by uRidge (0 = smooth hills, 1 = sharp crests).
+  // 1 - abs(h) folds the smooth hills into V-shaped creases at the zero-crossings -> sharp ridge LINES.
+  float waterHeight(vec2 p) {
     float t = uTime * uWaveSpeed * 0.1;
-    vec2 s = vec2(0.0);
-    s += vec2(snoise(vec3(p * 1.0, t)),        snoise(vec3(p * 1.0 + 19.7, t)))        * 1.0;
-    s += vec2(snoise(vec3(p * 2.3, t * 1.3)),  snoise(vec3(p * 2.3 + 7.1, t * 1.3)))   * 0.5;
-    s += vec2(snoise(vec3(p * 4.7, t * 0.8)),  snoise(vec3(p * 4.7 + 41.3, t * 0.8)))  * 0.25;
-    return s * 0.6;
+    float h = (snoise(vec3(p, t)) + 0.5 * snoise(vec3(p * 2.3 + 7.1, t * 1.4))) * 0.7;
+    float ridged = (1.0 - abs(h)) * 2.0 - 1.0;
+    return mix(h, ridged, uRidge);
+  }
+  // procedural slope = central-difference GRADIENT of the height. Ridged height -> the slope FLIPS sharply at each crest
+  // -> a sharp normal edge -> the directional light embosses it as a 3D ridge (the "depth" the ripple has).
+  vec2 proceduralSlope(vec2 p) {
+    float e = 0.35;
+    float hR = waterHeight(p + vec2(e, 0.0)), hL = waterHeight(p - vec2(e, 0.0));
+    float hU = waterHeight(p + vec2(0.0, e)), hD = waterHeight(p - vec2(0.0, e));
+    return vec2(hR - hL, hU - hD) / (2.0 * e);
   }
 
-  // DUDV slope in ~[-1,1] (NO waveStrength). Procedural (default) or texture (world-xz isotropic / original anisotropic UV).
+  // DUDV slope in ~[-1,1] (NO waveStrength). Two spaces:
+  //  uNoiseSpace 0 = ORIGINAL anisotropic UV (vec2(.01,10.0) -> 1000:1 stretch -> straight-line slices). Kept for A/B.
+  //  uNoiseSpace 1 = isotropic WORLD-xz (three.js Water / ameen sample world xz), 4 ROTATED decorrelated layers -> 2D waves.
   vec2 slopeRaw(vec2 uv) {
     if (uProcNoise > 0.5) {
       return proceduralSlope(vWorldPosition.xz * uWorldScale);   // continuous -> no magnify artifact, no tiling seam
@@ -156,8 +167,9 @@ export class MirroredSurface {
     return texture2D(tDudv, base + uTime * uWaveSpeed * 0.05).rg * 2.0 - 1.0;
   }
 
-  // click ripples: each active slot adds an expanding wave-packet UV offset from its world-xz origin.
-  // ldBXDD core cos((d - front)*freq) [front = age*speed] x gaussian ring around the front x time-decay.
+  // [Bob] click ripples: each active slot adds an expanding wave-packet UV offset from its world-xz origin.
+  // ldBXDD core cos((d - front)*freq) [front = age*speed] x gaussian ring around the front x time-decay. Source:
+  // sources/water-ripple-formula.md (Godot/Shadertoy ldBXDD + annulus + decay). Applied like the ambient distortion.
   vec2 rippleOffset(vec2 worldXZ) {
     vec2 acc = vec2(0.0);
     for (int i = 0; i < 16; i++) {
@@ -200,7 +212,7 @@ export class MirroredSurface {
     vec2 distortion = s * uDistort * falloff;
     vec3 color = texture2D(tReflection, reflectionUV + distortion + rip * uRippleAmp).rgb;
 
-    // normal = slope + ripple slope, so the ripple shows in Fresnel + directional light too
+    // normal = field slope + ripple slope (uRippleSlope) -> Fresnel + directional shading
     vec2 sN = s + rip * uRippleSlope;
     vec3 N = normalize(vec3(sN.x, uNormalUp, sN.y));
 
@@ -209,15 +221,15 @@ export class MirroredSurface {
       float fres = pow(1.0 - max(dot(N, -viewDir), 0.0), uFresnelPow);
       color = mix(uWaterColor, color, mix(1.0 - uFresnel, 1.0, fres));
     }
-    // (3) DIRECTIONAL LIGHT — a FAKE constant sun bends across the normals (ameen diffuse term), darken-biased so it
-    //     darkens troughs (neutral) + gently lifts crests -> broad light/dark wave bands, no scene light, no bloom spike.
+    // (5) DIRECTIONAL LIGHT — a FAKE tunable sun bends across the normals (ameen's diffuse term d=dot(sunDir,N)*sunColor).
+    //     Slopes facing the sun brighten, slopes facing away darken -> broad light/dark wave bands. LARGE-scale, no tiny shapes.
     if (uSunDiffuse > 0.001) {
       vec3 L = normalize(uSunDir2);
       float dev = dot(N, L) - L.y;                              // signed wave orientation (+ toward sun, - away)
       float trough = max(-dev, 0.0);                            // slope facing AWAY from the sun
       float crest  = max( dev, 0.0);                            // slope facing TOWARD it
-      color *= max(0.0, 1.0 - uSunDiffuse * trough);            // DARKEN troughs (neutral) -> net darker, stops feeding bloom
-      color += uSunColor2 * (uSunDiffuse * uSunLift * crest);   // gently LIFT crests (small, cool moonlight)
+      color *= max(0.0, 1.0 - uSunDiffuse * trough);            // DARKEN troughs (neutral, no color shift) -> net darker, stops feeding bloom
+      color += uSunColor2 * (uSunDiffuse * uSunLift * crest);   // gently LIFT crests (small, warm). uSunLift 0 = pure darkening
     }
     gl_FragColor = vec4(color, 1.0);
   }
@@ -239,10 +251,12 @@ export class MirroredSurface {
         uWaveScale: { value: this.waveScale },
         uWaveType: { value: this.waveType },
         uNoiseMode: { value: this.noiseMode },
-        uNoiseSpace: { value: 1.0 }, uWorldScale: { value: 0.0082 },   // tuned (procedural)
-        uProcNoise: { value: 1.0 },   // default = procedural (big artifact-free waves)
-        uUseOriginal: { value: 0.0 },   // default = the new combined look (set uUseOriginal=1 for the old water)
-        uDistort: { value: 0.05 }, uDistortFalloff: { value: 150.0 }, uNormalUp: { value: 0.6 },
+        uNoiseSpace: { value: 1.0 }, uWorldScale: { value: 0.0082 },   // Rod-tuned (procedural)
+        uProcNoise: { value: 1.0 },   // default = procedural (Rod trying it for big artifact-free waves)
+        // version: default to COMBINED so the new water shows on load (Version dropdown switches it)
+        uUseOriginal: { value: 0.0 },
+        uDistort: { value: 0.1 }, uDistortFalloff: { value: 150.0 }, uNormalUp: { value: 0.6 },
+        uRidge: { value: 1.0 },   // Rod-tuned: sharp crests
         uFresnel: { value: 0.35 }, uFresnelPow: { value: 4.3 }, uWaterColor: { value: new THREE.Color(0x0a1426) },
         uSunDiffuse: { value: 0.13 }, uSunLift: { value: 0.2 }, uSunDir2: { value: new THREE.Vector3(0.4, 0.5, 0.3).normalize() }, uSunColor2: { value: new THREE.Color(0xaec6f0) },   // moonlight (cool blue-white)
         uRippleOrigin: { value: Array.from({ length: 16 }, () => new THREE.Vector2()) },
@@ -301,7 +315,7 @@ export class MirroredSurface {
     this.mirrorCamera.updateProjectionMatrix();
   }
 
-  // preset switch — sets the per-effect strengths for one of the 5 versions (original/normal/fresnel/sun/combined).
+  // [Bob] preset switch — sets the per-effect strengths for one of the 6 versions. Returns the uniforms it changed.
   applyVersion(name) {
     const u = this.material.uniforms;
     const P = {
@@ -318,7 +332,7 @@ export class MirroredSurface {
   setNoiseMode(mode) { this.noiseMode = mode ? 1 : 0; this.material.uniforms.uNoiseMode.value = this.noiseMode; }
 
   // Spawn a ripple at a WORLD point (Vector3). Round-robins a 16-slot pool. Start time = the material's own clock
-  // (same base as the shader's uTime). Cross-feature: getActiveRipple() drives the character's "watch the water" head-look.
+  // (same base as the shader's uTime). getActiveRipple() drives the character's "watch the water" head-look.
   spawnRipple(worldPoint) {
     const U = this.material.uniforms;
     if (this._rippleHead === undefined) this._rippleHead = 0;
