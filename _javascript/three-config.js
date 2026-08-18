@@ -15,8 +15,12 @@ export const CONFIG = {
 
   lanterns: {
     bloom: {
-      strength: 1.4,
-      radius: 0.3,
+      // Retuned 2026-08-13 (Rod) to sit against the now-FLAT lantern emissive. A flat source holds
+      // gradientStart across the whole mesh instead of falling to 0.35, so it feeds the bloom far
+      // more light; strength came down from 1.4 to compensate. Radius 0 weights the composite
+      // toward the sharpest mip, which is the tightest halo UnrealBloomPass can produce.
+      strength: 0.45,
+      radius: 0,
       threshold: 0.45,
     },
     float: {
@@ -28,14 +32,20 @@ export const CONFIG = {
       intensity: 2,
     },
     avoidance: {
-      proximityRadius: 10000,
-      avoidanceStrength: 0.2,
+      // Lantern/firefly avoidance — reworked 2026-06-15 (Sarah): layered direct-displacement field.
+      // Layer A = whole-screen parting (proximityRadius/avoidanceStrength), Layer B = extra local
+      // push (localRadius/localStrength), knock = impulse (knockRadius/knockStrength). Values tuned
+      // in redesign-lab/lantern-lab.html on lab-scale props -> radii likely need a re-tune per scene.
+      proximityRadius: 1000,
+      avoidanceStrength: 2,
       knockRadius: 45,
       knockStrength: 40,
-      returnSpeed: 0.08,
+      returnSpeed: 0.05,
       boundaryForce: 0.5,
-      rotationStrength: 0.005,
+      rotationStrength: 0.06,
       knockCooldown: 0.1,
+      localRadius: 90,
+      localStrength: 50,
     },
     shader: {
       gradientStart: 1.0,
@@ -50,8 +60,27 @@ export const CONFIG = {
 
   fireworks: {
     maxFireworks: 50,
-    minZ: 0,
-    maxZ: -200,
+
+    // Depth band, retuned 2026-08-16 once `??` stopped the old `||` from eating `minZ: 0`.
+    // Measured on the About scene: real scene content ends at z -1130 and the water plane reaches
+    // z -4500, so this band sits behind everything and still over the water. Kept NARROW on
+    // purpose - the old effective range was -10000..-200, and that 9800-unit spread is what made
+    // shells inconsistent, reading 110% of screen height at the near end and 7% at the far end.
+    // At this depth a burst spans roughly 15-44% of screen height (fov 55, camera z 500).
+    minZ: -3000,
+    maxZ: -4500,
+
+    // The permanent top-of-page GREETING (Rod 2026-08-16): calm, a few shells in the air at once.
+    // It has no off switch by design — the topbar toggle belongs to the earned reward stream,
+    // which stacks on top of this. maxLive caps only the greeting's own shells, so the reward is
+    // free to fill the rest of the sky. Note maxLive is a CEILING, not a target: a shell lives
+    // about 1.7s, so the delay is what actually decides how many are up at once.
+    greeting: {
+      delay: 0.85,            // Seconds between shells (3x the first pass, Rod judged it by eye)
+      delayVariation: 0.35,   // Random +/- variation in seconds
+      amount: 1,              // Shells per burst
+      maxLive: 4,             // Greeting shells allowed on screen at once
+    },
   },
 
   water: {
