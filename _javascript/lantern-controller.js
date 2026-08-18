@@ -62,49 +62,20 @@ export class LanternController {
         }
       }
     });
-
-    // Click handler — raycast against lanterns + embers for achievements
-    window.addEventListener('click', (event) => {
-      if (!this.lanterns.length) return;
-      // Skip UI element clicks
-      const tag = event.target.tagName;
-      if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'LABEL') return;
-
-      const clickMouse = new THREE.Vector2(
-        (event.clientX / window.innerWidth) * 2 - 1,
-        -(event.clientY / window.innerHeight) * 2 + 1
-      );
-      this.raycaster.setFromCamera(clickMouse, this.camera);
-      const intersects = this.raycaster.intersectObjects(this.lanterns, false);
-
-      if (intersects.length > 0) {
-        const hit = intersects[0].object;
-        // Embers (fireflies) use SphereGeometry; lanterns use BoxGeometry
-        const isEmber = hit.geometry.type === 'SphereGeometry';
-
-        if (isEmber) {
-          // Visual feedback: brief flash + scatter
-          const origScale = hit.scale.clone();
-          hit.scale.multiplyScalar(2);
-          setTimeout(() => { hit.scale.copy(origScale); }, 300);
-        } else {
-          // Visual feedback: wobble kick
-          const kick = (Math.random() - 0.5) * 0.3;
-          hit.userData.rotationVelocity.x += kick;
-          hit.userData.rotationVelocity.z += kick * 0.5;
-          hit.userData.lastKnockTime = this.time;
-        }
-      }
-    });
   }
 
   addLantern(mesh) {
+    // Tag the object's kind ONCE (lantern = BoxGeometry, ember/firefly = SphereGeometry)
+    // so the update loop never has to inspect geometry type per frame.
+    mesh.userData.kind = mesh.geometry.type === 'SphereGeometry' ? 'ember' : 'lantern';
+
     // Initialize userData for interaction
     mesh.userData.basePosition = mesh.position.clone();
     mesh.userData.baseRotation = mesh.rotation.clone();
     mesh.userData.floatOffset = Math.random() * Math.PI * 2;
     mesh.userData.floatScale = mesh.userData.floatScale || 1;
-    mesh.userData.avoidanceOffset = new THREE.Vector2(0, 0);
+    mesh.userData.avoidanceOffset = new THREE.Vector2(0, 0); // knock impulse only (Step 2)
+    mesh.userData.fieldOffset = new THREE.Vector2(0, 0);     // parting field (Step 2: direct, not accumulated)
     mesh.userData.velocity = new THREE.Vector2(0, 0);
     mesh.userData.rotationVelocity = new THREE.Vector3(0, 0, 0);
     mesh.userData.baseScale = mesh.scale.clone();
@@ -154,6 +125,17 @@ export class LanternController {
     return new THREE.Mesh(geometry, material);
   }
 
+  // Radial push away from the cursor, accumulated into `out`. Squared-distance reject FIRST
+  // (skips the sqrt for out-of-range objects -> Layer B stays cheap); linear falloff over `radius`.
+  _addParting(out, dx, dy, d2, radius, strength) {
+    if (d2 >= radius * radius) return;
+    const d = Math.sqrt(d2);
+    if (d < 0.01) return;
+    const mag = strength * (1 - d / radius);
+    out.x += (dx / d) * mag;
+    out.y += (dy / d) * mag;
+  }
+
   update(normalizedDelta = 1.0) {
     this.time += 0.016 * normalizedDelta;
 
@@ -190,6 +172,10 @@ export class LanternController {
       const floatX = Math.sin(this.time * floatConfig.speed + offset) * floatConfig.amount * fs;
       const floatY = Math.cos(this.time * floatConfig.speed * 0.7 + offset) * floatConfig.amount * 0.5 * fs;
 
+      // Parting target for this frame (0 = no push / cursor far -> the field eases home)
+      let fieldTargetX = 0;
+      let fieldTargetY = 0;
+
       // Mouse avoidance — intersect ray at each lantern's z-depth for correct perspective
       if (hasMouseRay) {
         const config = avoidanceConfig;
@@ -205,11 +191,11 @@ export class LanternController {
             lantern.parent.add(cursorSphere);
             this.debugObjects.push(cursorSphere);
 
-            const proximityCircle = this.createDebugCircle(config.proximityRadius, 0x00ff00, lanternZ);
-            proximityCircle.position.x = this._worldPos.x;
-            proximityCircle.position.y = this._worldPos.y;
-            lantern.parent.add(proximityCircle);
-            this.debugObjects.push(proximityCircle);
+            const localCircle = this.createDebugCircle(config.localRadius, 0xffaa00, lanternZ);
+            localCircle.position.x = this._worldPos.x;
+            localCircle.position.y = this._worldPos.y;
+            lantern.parent.add(localCircle);
+            this.debugObjects.push(localCircle);
 
             const knockCircle = this.createDebugCircle(config.knockRadius, 0xff0000, lanternZ);
             knockCircle.position.x = this._worldPos.x;
@@ -246,7 +232,7 @@ export class LanternController {
                   // Achievement dispatch (per-object 1s cooldown)
                   if (this.time - lantern.userData.lastAchievementDispatch > 1.0) {
                     lantern.userData.lastAchievementDispatch = this.time;
-                    if (lantern.geometry.type === 'SphereGeometry') {
+                    if (lantern.userData.kind === 'ember') {
                       document.dispatchEvent(new Event('achievement:fireflytouched'));
                     } else {
                       document.dispatchEvent(new Event('achievement:lanternknock'));
@@ -259,13 +245,18 @@ export class LanternController {
                 }
               }
             } else {
-              this._tempVec2.set(dx, dy);
-              if (this._tempVec2.length() > 0.01) {
-                this._tempVec2.normalize();
-                const pushDir = this._tempVec2;
-                lantern.userData.avoidanceOffset.x += pushDir.x * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
-                lantern.userData.avoidanceOffset.y += pushDir.y * config.avoidanceStrength * avoidanceFactor * this.displacementScale;
-              }
+              // Parting target = Layer A (whole-screen, identical to Step 2) + Layer B (extra local
+              // push on closer elements). Both via _addParting; its squared-distance reject means
+              // Layer B costs nothing for the far majority. (Knock above is untouched.)
+              const d2 = distance * distance;
+              // Layer A strength = the equilibrium the old accumulator settled at: push*(1-r)/r.
+              const sceneStrength = config.avoidanceStrength * this.displacementScale
+                * (1 - config.returnSpeed) / config.returnSpeed;
+              this._tempVec2.set(0, 0);
+              this._addParting(this._tempVec2, dx, dy, d2, config.proximityRadius, sceneStrength);
+              this._addParting(this._tempVec2, dx, dy, d2, config.localRadius, config.localStrength * this.displacementScale);
+              fieldTargetX = this._tempVec2.x;
+              fieldTargetY = this._tempVec2.y;
             }
           }
         }
@@ -290,12 +281,18 @@ export class LanternController {
         lantern.rotation.y += (lantern.userData.baseRotation.y - lantern.rotation.y) * rotationReturnSpeed;
         lantern.rotation.z += (lantern.userData.baseRotation.z - lantern.rotation.z) * rotationReturnSpeed;
 
-        // Gradually return to base position
+        // Knock impulse offset eases back to zero (parting now lives in fieldOffset)
         lantern.userData.avoidanceOffset.x *= (1 - positionReturnSpeed);
         lantern.userData.avoidanceOffset.y *= (1 - positionReturnSpeed);
 
-        lantern.position.x = lantern.userData.basePosition.x + floatX + lantern.userData.avoidanceOffset.x;
-        lantern.position.y = lantern.userData.basePosition.y + floatY + lantern.userData.avoidanceOffset.y;
+        // Parting field (Step 2): approach the direct target — set once, not accumulated.
+        // Same approach rate the old accumulator used, so the feel matches.
+        const fo = lantern.userData.fieldOffset;
+        fo.x += (fieldTargetX - fo.x) * positionReturnSpeed;
+        fo.y += (fieldTargetY - fo.y) * positionReturnSpeed;
+
+        lantern.position.x = lantern.userData.basePosition.x + floatX + lantern.userData.avoidanceOffset.x + fo.x;
+        lantern.position.y = lantern.userData.basePosition.y + floatY + lantern.userData.avoidanceOffset.y + fo.y;
       } else {
         // Float only — no avoidance physics
         lantern.position.x = lantern.userData.basePosition.x + floatX;
