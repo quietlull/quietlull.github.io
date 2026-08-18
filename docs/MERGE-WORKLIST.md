@@ -29,21 +29,39 @@ component work rather than discovered during it.
 
 ---
 
-## Gate 0 - stop the bleeding (do this first, today)
+## Gate 0 - stop the bleeding
 
-1. **Commit the working tree.** `claude/water-rework` is one commit ahead of `main`, and that commit
-   is a single shader file. Everything else - the whole `docs/` system, `CLAUDE.md`, the two-emitter
-   fireworks rework, the flat-emissive shader + bloom retune, the Sarah avoidance rework, this
-   session's top-bar and favicon work - is uncommitted: 28 staged + 5 unstaged files, +2542 lines.
-   One power cut and it is gone. *(owner: Rod / either, small)*
-2. **Recover `STYLE.md` and `_data/projects.yml`.** Both exist only on `feat/projects-registry`
-   (3 commits ahead of main, unmerged). `STYLE.md` is 415 lines and is what CLAUDE.md and the
-   ship-check cite as the coding + WCAG 2.2 AA authority; it is not on this branch at all, so the
-   quality gates below currently have no written definition. `_data/projects.yml` is the 82-line
-   projects registry the redesigned projects page would consume. *(either, small)*
-3. **Close or rebase the two dependabot branches.** Both revert the package.json rebrand from
-   commit 9a59d6b - merging either after the redesign restores `name: jekyll-theme-chirpy`,
-   `author: Cotes Chung` and the cotes2020 repo URL. *(Rod, small)*
+**DONE 2026-08-18**, except one item that needs a GitHub action Rod has to take.
+
+1. ~~Commit the working tree.~~ **Done.** Seven commits on `claude/water-rework`, since
+   fast-forwarded into `main` by Rod and pushed. The docs system, the fireworks split, the flat
+   emissive, the Sarah avoidance rework and the Umamusume post are all in history now.
+2. ~~Recover `STYLE.md` and `_data/projects.yml`.~~ **Done.** Both are on `main`:
+   - `_data/projects.yml` came over by cherry-picking `0c379a8`, which was already a clean
+     single-purpose commit.
+   - `STYLE.md` v2.1 (415 lines) was recovered as a FILE, not a cherry-pick, because its source
+     commit on `feat/projects-registry` was called "Stuff" and also carried a machine-local
+     settings change.
+   - The `vibe-site-research` skill came over with it - style-not-niche reference hunting, which is
+     the method the gallery and blockout passes run on.
+   - `feat/projects-registry` now has **nothing unique left** except its
+     `.claude/settings.local.json` permission allowlist. It is safe to delete.
+   - **Currency note on STYLE.md:** its deviations log calls Rule 86 (accessible authentication)
+     and Rule 60 (input purpose) "dormant - the site is static with no forms; they activate if
+     comments ever ship." Comments HAVE shipped (giscus). Rod's call whether to wake those rules.
+3. **Dependabot: CLOSE both PRs, do not rebase and do not merge.** Needs Rod - `gh` is not
+   installed on this machine. Both branches were cut 2025-09-28 and their merge base is **227
+   commits behind main**. Merging either as-is would:
+   - revert `name` to `jekyll-theme-chirpy` and `author` to `Cotes Chung`;
+   - re-add five packages main has since removed (`semantic-release` and its three plugins,
+     `conventional-changelog-conventionalcommits`);
+   - **drop `three` from dependencies entirely** - that alone breaks every scene on the site.
+
+   The nine bumps they carry are worth having, three of them major
+   (`@commitlint/cli` 19 -> 20, `@commitlint/config-conventional` 19 -> 20,
+   `stylelint-config-standard-scss` 15 -> 16 - that last one will move the stylelint error count).
+   Closing both makes Dependabot reopen against current main with only the packages that still
+   exist, which is the accurate PR. Rebasing keeps the stale package set in the diff.
 
 ## Gate 1 - Rod's calls (everything downstream is blocked on these)
 
