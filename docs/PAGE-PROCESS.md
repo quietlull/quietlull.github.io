@@ -230,6 +230,100 @@ as ours at the moment it is added.
 
 ---
 
+# THE BLOCKOUT IS A CONTRACT (Rod, 2026-08-18)
+
+Rod, after the projects aggregate and the landing both drifted: *"whats the point of making a great
+blockout if we just randomly slap things together later on?"*
+
+There is no point. That is the whole answer. A blockout that does not bind the aggregate is wasted
+work, and every hour spent sourcing variants for Rod to judge is wasted with it. The judging only
+means something if the thing he judged is the thing that gets built.
+
+So the blockout is not inspiration. It is a **parts list plus an arrangement**, and the aggregate's
+only job is to realise it with real components.
+
+## The rule
+
+**An aggregate may contain ONLY the elements its approved blockout contains.**
+
+- Fewer is allowed - a slot can stay a `.ph` placeholder if its component is not built yet.
+- MORE IS NOT. Not one chip, not one link, not one toggle, not a footer.
+- An element that seems obviously needed and is not in the blockout is a **proposal**. It goes back
+  to the blockout, gets a variant, and gets judged. It does not get quietly added during assembly.
+
+## The check, before calling any aggregate done
+
+List the elements in the approved blockout. List the elements in the aggregate. Diff them. Anything
+in the aggregate and not in the blockout comes out or gets explicitly flagged to Rod as a proposal
+BEFORE he is asked to look. "I flagged it in the file header" does not count - he reads the page,
+not the header.
+
+## Why this keeps happening, so it can stop
+
+The failure is not laziness, it is a plausible-looking shortcut: another lab page (usually
+`a3-assembly.html`) already has the element, so borrowing it feels like reuse rather than invention.
+It is not. `a3-assembly` is an unjudged pile of everything; taking from it is exactly as unapproved
+as making something up, and it carries the extra harm of looking sourced.
+
+A second, subtler version: being asked to "complete a stub" is not licence to decide WHAT completes
+it. Rod asking for the skills section to be finished authorised finishing the skills section. It did
+not authorise inventing a Technology/Personal switch to put above it.
+
+# STAGES ARE DEPENDENCIES, NOT A CHECKLIST (Rod, 2026-08-18)
+
+Rod: *"things need to be systematic, some things need to come first and have dependencies. you cant
+just skip things because you're missing context. remember everything needs to be human reviewed and
+approved. we are not following the provenance rule at all it seems."*
+
+All three are true, and they are one failure wearing three faces: **when context was missing, I
+improvised instead of stopping.** Every skipped stage this session started as a small gap I filled
+myself rather than asking about.
+
+## The chain, and what each stage OWES the next
+
+Each arrow is a hard dependency. You cannot start the right-hand side until the left-hand side
+exists AND Rod has approved it.
+
+```
+  references  ->  layout blockout  ->  component sourcing  ->  component blockout
+      |                  |                     |                       |
+   4+ real,         greybox only,        live CSS read           greybox variants,
+   verified,        Rod picks one        from source,            Rod picks one
+   live sites                            saved verbatim
+                                                                        |
+                                                                        v
+                        aggregate  <-  bench tune  <-  component BUILD
+                            ^                              (real code, from
+                            |                               the saved source)
+                    ONLY blockout elements,
+                    only BUILT components
+```
+
+- **Missing a reference?** Source one. Do not proceed on three.
+- **Missing a component the blockout calls for?** It stays a `.ph` placeholder. Do NOT substitute
+  something from another lab page, and do NOT invent a stand-in.
+- **Missing the CONTEXT for a decision?** Ask. Batch the question if Rod is away. An assumption
+  filled in silently is indistinguishable from a fabrication by the time he sees the page.
+
+## Human review is a GATE, not a notification
+
+Every arrow above is a stop. "I showed him afterwards" is not approval, and neither is "I flagged it
+in the file header" - Rod reads the rendered page, not the comments. If work has not been approved
+at the stage it belongs to, it does not move to the next stage.
+
+## Provenance, restated because it is being broken in practice, not in principle
+
+The rule was never "write a PROVENANCE comment". It is: **every element derives from a real snippet
+read from a live external site, saved verbatim before it is built.** Practical consequences that
+were being ignored:
+
+- An element in `a3-assembly.html`, `rework-*.html` or any other lab page **has no provenance**.
+  Copying from them is inventing with extra steps, and it is worse than inventing because it looks
+  sourced.
+- A component whose CSS header cites an in-repo file is Slop. Twelve currently do.
+- Slop **does not go into an aggregate**, not even flagged, not even temporarily. The placeholder is
+  the correct representation of an unsourced slot.
+
 # REPEAT-OFFENCE TALLY (Rod's rule, 2026-08-16)
 
 **Every duplicate mistake gets written here AGAIN, on purpose.** Rod: "if you make a duplicate
@@ -267,3 +361,24 @@ Append a dated line each time. Do not merge, do not summarise, do not delete.
   it points at, and if it points inside this repo the chain never left the building.**
   New standing rule from this: ONLY components on the workbench are made by us; the bench and every
   `rework-*.html` are source CANDIDATES, never sources.
+
+- **2026-08-18 - BLOCKOUT NOT FOLLOWED (1st), and it cost a whole page.** `projects-aggregate.html`
+  was built from the MinionsArt blockout and rejected outright: *"giga sucks... probably the most ai
+  generated page i have seen, worse than the original."* Two distinct failures in one page. (a) The
+  layout was transcribed from a site whose life is its CONTENT, so the geometry alone produced a
+  shell - see DECISIONS D19. (b) The aggregate did not match the blockout it came from.
+- **2026-08-18 - ELEMENTS ADDED WITHOUT APPROVAL (1st).** Six things went into `final-landing.html`
+  that Rod never asked for: the two-part section head with `View all ->`, a filter/tag chip row, a
+  Technology/Personal skills switch, the demo reel band, and the site footer. He caught them:
+  *"randomly things are added without my permission or approval first... idk why the landing page
+  has tag buttons, this has never been a thing i wanted."* All were lifted from `a3-assembly.html`,
+  which made borrowing feel like reuse. It was not - a3-assembly is unjudged.
+- **2026-08-18 - SHIPPED A DEAD CONTROL (1st).** The Technology/Personal skills switch had ZERO JS
+  behind it anywhere in the repo. I knew, and wrote "presentational here" in the markup instead of
+  either wiring it or not shipping it. A control that does nothing teaches the user the interface
+  lies. Removed.
+- **2026-08-18 - SHIPPED AN ELEMENT WITH NO SOURCE (2nd).** The demo reel band went onto the landing
+  while `element-tracker.md:76` recorded it as `Slop | ? | - | no ref yet`. I flagged the debt in a
+  comment and shipped it anyway. Flagging is not permission. Rod spotted it by eye - *"i actually
+  have no idea where it even comes from"* - and he was right: it comes from nowhere.
+
