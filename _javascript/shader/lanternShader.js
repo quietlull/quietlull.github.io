@@ -1,11 +1,11 @@
 /**
  * @module LanternShader
- * Custom shader for lanterns with gradient glow and flickering animation
+ * Custom shader for lanterns with FLAT emissive and flickering animation
  */
 
 /**
  * Lantern shader that simulates flame-based lighting with:
- * - Vertical gradient (bright at bottom/center, still glowing at top)
+ * - Flat emissive across the mesh, so the bloom wraps a hard silhouette (Rod 2026-08-13)
  * - Animated color flicker for flame effect
  * - Emission for bloom post-processing
  *
@@ -20,11 +20,12 @@ const LanternShader = {
     // Base lantern color (warm orange)
     baseColor: { value: null }, // THREE.Color
 
-    // Gradient controls
-    gradientStart: { value: 1.0 }, // Brightness at center (1.0 = full bright)
-    gradientEnd: { value: 0.35 },  // Brightness at edges (still glows at top)
-    gradientCenter: { value: 0.0 }, // Y position of brightest point (world coords)
-    gradientRange: { value: 100.0 }, // Height range for gradient falloff
+    // Brightness. Only gradientStart is read now (the emissive is flat); the other three are
+    // kept because every call site and the material manager still pass them.
+    gradientStart: { value: 1.0 }, // the single flat emissive level
+    gradientEnd: { value: 0.35 },  // UNUSED since 2026-08-13 (flat emissive)
+    gradientCenter: { value: 0.0 }, // UNUSED since 2026-08-13
+    gradientRange: { value: 100.0 }, // UNUSED since 2026-08-13
 
     // Flicker animation
     time: { value: 0.0 },
@@ -81,10 +82,13 @@ const LanternShader = {
 		}
 
 		void main() {
-			// Calculate gradient based on Y position
-			float distanceFromCenter = abs(vPosition.y - gradientCenter);
-			float gradientFactor = clamp(distanceFromCenter / gradientRange, 0.0, 1.0);
-			float baseBrightness = mix(gradientStart, gradientEnd, gradientFactor);
+			// FLAT EMISSIVE (Rod 2026-08-13). Was a vertical ramp from gradientStart down to
+			// gradientEnd across the body. Bloom reads as anime glow because it wraps a HARD-EDGED,
+			// FLAT source; ramping the emissive gave the halo no edge to sit against, so soft-on-soft
+			// turned to mush. One level over the whole mesh instead. See docs/DECISIONS.md D10 -
+			// the rule is narrow, gradients are only banned where something FEEDS THE BLOOM.
+			// gradientEnd/Center/Range are now unused; the manager still sets them, harmlessly.
+			float baseBrightness = gradientStart;
 
 			// Flicker: two octaves of noise for organic feel (third octave removed for perf)
 			float flicker1 = smoothNoise(time * flickerSpeed);
