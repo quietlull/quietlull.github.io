@@ -9,6 +9,7 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
 - [ARCHITECTURE.md](ARCHITECTURE.md) - subsystem map, build pipelines, file pointers.
 - [BREATHING.md](BREATHING.md) - the ambient glow system: tiers, hue variables, kill switch, sparkler hook.
 - [THEME-BOUNDARY.md](THEME-BOUNDARY.md) - stock vs modified vs custom; the known couplings.
+- [REQUESTS.md](REQUESTS.md) - Rod's request queue with statuses. Read the OPEN table; done rows are phantoms.
 - [MERGE-WORKLIST.md](MERGE-WORKLIST.md) - everything between today and the redesign living on the real site, in order.
 - [REFACTOR-PLAN.md](REFACTOR-PLAN.md) - the flaws found 2026-08-11 + the phased plan (Phases 1-3 deferred until post-redesign).
 - [TRAPS.md](TRAPS.md) - symptom-first list of things that bite. Search here FIRST when debugging.
