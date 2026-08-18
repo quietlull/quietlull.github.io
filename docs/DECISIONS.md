@@ -275,7 +275,23 @@ Gate 1 of [MERGE-WORKLIST.md](MERGE-WORKLIST.md). Judged from the six greybox bl
 per page type. This is the gate everything downstream sat behind - per PAGE-PROCESS.md, components
 cannot be built until the picks exist.
 
-**PROJECTS -> MinionsArt, with Kaito Note's card.** Rod: *"lets do minionsart, i want to note that i
+**PROJECTS -> MinionsArt page, OUR OWN cards.** *(revised the same day - see below.)*
+
+The first pass built a hybrid that put Kaito Note's card face on MinionsArt's page. Rod scratched
+it on sight: *"actually just scratch that, it pretty much looks like the project cards we have now,
+just build the page with our current project cards."* He is right, and the reason is worth keeping:
+their card and ours had already converged. Ours is a uniform square with the caption over the
+cover; theirs is a uniform square with the caption over a veil. The swap bought a different veil
+and cost a second card system to maintain.
+
+So the page is **MinionsArt's PAGE carrying `project-cards-expensive` unmodified** - `is-regular`
+uniform squares (bento cut 2026-08-16), star pin, video cover and flip back all intact. Built as
+`projects-aggregate.html`. Transcribed from their `style.css`: 1000px panel at 35px padding sitting
+lighter than the ground, 3-up 300px grid at 20px gaps, 500px filter row, 400px search, and the
+zero-blur `5px 10px` shadow - the load-bearing line, a sticker on paper rather than a glass panel.
+Variant 5 stays in the blockout labelled SCRATCHED, as the record of the attempt.
+
+**SUPERSEDED FIRST PASS - MinionsArt with Kaito Note's card.** Rod: *"lets do minionsart, i want to note that i
 really like the layout of the project cards from kaitonote so please make a variant where the
 majority of the page is using the minionsart layout but with the kaitonote project cards."*
 Built as variant 5 in `projects-blockout.html?v=hybrid`. The split of parentage is deliberate and
