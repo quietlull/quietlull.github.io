@@ -383,3 +383,42 @@ ONE CAVEAT that is not a decision and does not wait: the colours currently rende
 browser. That is not a design question, it is an unbacked-up file. Exporting it costs one console
 line and protects the work regardless of when the lock happens.
 
+## D19 - Source ELEMENTS, not page layouts (2026-08-18, ROD) - amends PAGE-PROCESS
+
+`projects-aggregate.html` was rejected outright. Rod: *"New project page giga sucks... probably the
+most ai generated page i have seen, worse than the original for sure. rejected, lets go back to the
+drawing board in detail for that one. maybe rather than sourcing a layout its a better idea to
+source elements and build from the workbench page."*
+
+**Why it failed, honestly.** The page had a container and a grid and no idea. What makes
+MinionsArt's projects page work is its CONTENT - a mascot banner, real thumbnails, varied tags, a
+purple that belongs to them. Transcribe only the geometry and fill it with placeholder squares and
+nothing survives: a dark rectangle holding nine identical tiles, a title, a description, a search,
+five chips and a View-all. That is the stock generated portfolio page, and Rod named it on sight.
+
+**The part worth keeping as a rule:** the greybox stage *cannot* catch this. Greybox removes exactly
+the thing that was carrying the source. A layout blockout proves the geometry is transcribed; it
+cannot prove the geometry is what made the page good. So:
+
+> **Layout-sourcing is valid only when the LAYOUT is the idea.** When the source's life comes from
+> its content, transcribing its geometry produces a shell, and the shell reads as generated.
+
+**The new default (Rod's call):** source ELEMENTS and compose on the workbench. Judge each element
+where it lives - in the bench, against the scene - and let the page emerge from parts that have
+each survived a look, rather than pouring parts into a borrowed silhouette.
+
+This does not overturn D15's other picks. The landing came out fine on the layout route because its
+elements had each been judged on the bench over weeks first; the projects page tried to do both
+steps at once, in one pass.
+
+**Also rejected in the same message, and both were unsourced - Rod found them by eye:**
+- **the demo reel band.** `element-tracker.md:76`: `Demo reel embed / placeholder | Slop | ? | - |
+  no ref yet.` Tier Slop, Source empty. It has no reference at all, and it was shipped into
+  final-landing earlier the same day. Now pulled back to a `.ph` placeholder.
+- **the section headers.** `final-picks.md:89`: "harumaki shead, PROVISIONAL (never a picker slot)".
+  Never judged, no verified source. Left in place because a page needs labels, but marked
+  provisional in the file and added to the sourcing list.
+
+Rod picking out precisely the two unsourced elements on a page of otherwise-sourced ones is the
+strongest argument yet that the provenance law is not bureaucracy.
+
