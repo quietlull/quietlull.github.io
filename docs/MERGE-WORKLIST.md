@@ -74,18 +74,29 @@ cannot be built until the picks are made.
    **ABOUT carries TWO survivors** (dimden + Klubnika) forward to the aggregate stage on purpose -
    they differ most in how much live scene they cover, which a greybox cannot show. That makes
    "build both About aggregates" a real task rather than a decision: see gate 3/4.
-5. **Pick the callout family** from `component-blockout.html`: three separate objects, or one object
-   in three roles. Plus the five other post components - code block, meta chips, prev/next, hero
-   media, TOC. *(small)*
-6. **Settle the type decision.** mincho vs rounded gothic. `final-landing.html` commits to the
-   rounded gothic because that is what A3 ndt is - if it ships, the decision is made by default.
-   It also gates a real file: fonts are loaded from `_data/origin/cors.yml:19`, not from SCSS.
-   *(small)*
-7. **Lock the palette.** Sodium & Sky is the frontrunner. **Urgent for a non-obvious reason:** the
-   colours on `final-landing.html` come from `palette-store.js` reading `localStorage['lab-palette']`
-   - they live in Rod's browser, not in any tracked file. Export them before they are lost, bake
-   them into `settings.css`, and drop the runtime palette store from the port. *(small)*
-8. **Rule on the ndt seam band** - back in, or does space carry the transitions? *(small)*
+5. **Pick the callout family** - BLOCKED ON BETTER EXAMPLES, not on Rod. He rejected the current set
+   2026-08-18: *"honestly your examples arent great, maybe find some sites with great and warm
+   examples for me on this one."* A six-angle warm-callout hunt is sourcing replacements (indie-web,
+   gamedev artists, zine/papercraft, JP personal, digital gardens, TTRPG). The five other post
+   components - code block, meta chips, prev/next, hero media, TOC - are still a straight pick.
+   *(small once the examples land)*
+6. ~~Settle the type decision.~~ **DONE 2026-08-18 - ROUNDED GOTHIC, see [DECISIONS.md](DECISIONS.md)
+   D16.** `--font-display` moved from Shippori Mincho to M PLUS Rounded 1c at the token, so card
+   titles, section heads, post header, dated timeline, quote block and stamp callout all moved
+   together. The site is down to three faces. **Still gates a real file at port time:** fonts are
+   requested from `_data/origin/cors.yml:19`, not from SCSS.
+7. **Lock the palette - MOVED TO THE END** ([DECISIONS.md](DECISIONS.md) D18, Rod: *"colour
+   hierarchy comes after space"*). Not a gate-1 item any more. **The EXPORT is still outstanding and
+   is not a decision:** the colours rendering on `final-landing.html` live in
+   `localStorage['lab-palette']` in Rod's browser and in no tracked file. One console line protects
+   them whenever the lock eventually happens. *(small)*
+8. **Rule on the ndt seam band** - Rod 2026-08-18: *"not sure what seam band is."* It is the 160px
+   painted horizontal strip harumaki `/ndt/` runs between sections instead of a gap. The component
+   exists and is unused (`extracted/components/seam-band`), because the borrowed painted dividers
+   were rejected 2026-08-13: they exist to divide flat painted colour fields, and this site has one
+   continuous live scene instead, so they read as stickers over it. **Currently OUT and the
+   rejection already covers it** - this stays open only if Rod wants to overturn that call after
+   seeing one in context at `a3-assembly.html?v=a3seam`. *(small)*
 9. **Hold the About design conversation** before any About component is built. Related: the
    achievements design pass (backlog E1b) - the trophy grid and unlock toast are the About page's
    reason to exist and neither is built. *(medium)*

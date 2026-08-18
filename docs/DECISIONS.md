@@ -338,3 +338,48 @@ from the sourcing backlog (it had zero tracker rows and needed 3+ references fro
 remaining references (ZUTOMAYO's page-type claim was never confirmed), and Rod had already said he
 likes the orbital and wants the 109ichiki/zutomayo popup windows folded in to replace the
 unlabelled satellites.
+
+## D16 - Rounded gothic everywhere; the serif is out (2026-08-18, ROD)
+
+Rod: *"rounded gothic is fine and we should use it for the project cards and headers as well."*
+
+This closes the type problem that had been open since the reference font audit. That audit found
+four of the five harumaki sites render in mincho/serif (Yu Mincho, Noto Serif JP, Zen Old Mincho,
+Trirong) and only `/ndt/` uses a rounded gothic - which contradicted the earlier locked call of
+"hand-drawn name + clean mono, no serif". Rod picked the `/ndt/` side, so **the original locked call
+survives intact** and the assembly's mincho/sans twins have done their job.
+
+Implemented at the TOKEN, not per page: `--font-display` in `extracted/styles/settings.css` moves
+from `"Shippori Mincho", serif` to `"M PLUS Rounded 1c", sans-serif`. Six things reach for that
+token - card titles, section heads, post header, dated timeline, quote block, stamp callout - so
+they move together and cannot drift apart later. Verified on the landing: display token, section
+head, card title and body all resolve to M PLUS Rounded 1c, with zero serif left on any head or
+title.
+
+The site now runs THREE faces, down from four: M PLUS Rounded 1c for text and display, Caveat for
+the hand/wordmark (itself on the way out, to be replaced by the line-boil animation), IBM Plex Mono
+for labels and code. Shippori Mincho stays loaded only because `a3-assembly.html` still renders the
+mincho twins for the record.
+
+**Downstream this now gates a real file:** fonts are requested from `_data/origin/cors.yml:19`, not
+from SCSS, so the webfont declaration has to change there at port time.
+
+## D17 - No scroll chevron (2026-08-18, ROD)
+
+Rod: *"remove the chevron honestly we don't need it."* Deleted from `final-landing.html` - markup,
+CSS and its `@keyframes cue`, rather than hidden. A hidden element is still a thing to maintain.
+The hero still reads as scrollable because the section below it starts inside the fold at every
+tested viewport.
+
+## D18 - Colour is decided LAST, after space (2026-08-18, ROD)
+
+Rod: *"we can wait for the palette changes, i think we should do this at the end once everything is
+sorted, colour hierarchy comes after space."* So the palette lock moves out of gate 1 and to the end
+of the build. This is a sequencing principle, not a deferral of convenience: a palette judged
+against unfinished spacing gets re-judged the moment the spacing changes.
+
+ONE CAVEAT that is not a decision and does not wait: the colours currently rendering on
+`final-landing.html` come from `palette-store.js` reading `localStorage['lab-palette']` in Rod's own
+browser. That is not a design question, it is an unbacked-up file. Exporting it costs one console
+line and protects the work regardless of when the lock happens.
+
