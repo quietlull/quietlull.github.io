@@ -1,52 +1,48 @@
 ---
 name: sync-docs
-description: Update PROJECT-STATUS.md after code changes or context window compaction. Run this after making changes to keep documentation accurate, or after resuming from a compacted context to re-orient.
+description: Update the docs/ notes so learnings propagate to every agent on the repo. Run whenever a SECTION or FEATURE is finished (lab or live), after any change batch, or after context compaction to re-orient. Periodic mode = contradiction audit.
 allowed-tools: Read Grep Glob Edit Write Bash
 ---
 
 # Sync Documentation
 
-You must update `PROJECT-STATUS.md` in the project root to reflect the current state of the codebase. This is the single source of truth that future sessions (and the user) rely on.
+The docs system lives in `docs/` (atomic notes + `docs/INDEX.md` + one-screen `docs/STATUS.md`),
+with `CLAUDE.md` at the repo root linking in. "Docs are part of done": a change batch is not
+finished until the touched note, STATUS, and CHANGELOG reflect it.
 
 ## When to run this
 
+- **Whenever a section or feature is DONE** - lab or live, redesign or code. This is the moment
+  learnings exist and the moment they get lost; docs/ is how every parallel agent on this repo
+  (redesign, Sarah, character, palette, future sessions) inherits them and stays aimed at the
+  same goal. Do not wait to be asked.
 - **After every batch of code changes** (new features, refactors, bug fixes)
-- **After a context window compaction/shrink** (re-read the file to re-orient yourself)
-- **When the user asks** via `/sync-docs`
+- **After a context window compaction/shrink** (re-read CLAUDE.md + docs/STATUS.md to re-orient)
+- **When the user asks** via `/sync-docs` - if asked with no recent changes, run periodic mode
 
-## What to update
+## After a change batch
 
-1. **Read `PROJECT-STATUS.md`** first to understand its current state.
+1. **Update the touched subsystem note** (find it via `docs/INDEX.md` - e.g. BREATHING.md,
+   ARCHITECTURE.md, THEME-BOUNDARY.md). Compile, don't retrieve: rewrite the note to be currently
+   true rather than appending history.
+2. **Update `docs/STATUS.md`** - keep it to one screen; move finished items out, add what is now
+   in flight.
+3. **Append a `docs/CHANGELOG.md` entry** - date, SHORT-CAPS-TITLE, prose with the WHY, who
+   decided (ROD / CLAUDE), what was rejected. The changelog is the only append-only file.
+4. If a decision was made or reversed: record it in `docs/DECISIONS.md` (keep the losers) or
+   `docs/DEAD-ENDS.md`. If something cost real time and is not inferable from code, add a
+   symptom-first entry to `docs/TRAPS.md`.
 
-2. **Breathing Element Map** — If any breathing animations were added, removed, or reassigned:
-   - Verify by grepping: `grep -r "breathe-ember\|breathe-glow\|breathe-slow\|breathe-beacon\|throb-glow\|throb-dot" --include='*.scss' -n`
-   - Update the element map table with: element, tier, keyframe, duration, hue override, source file
-   - Update `$breathe-selectors` in `_animations.scss` if needed
+## Periodic mode (contradiction audit)
 
-3. **Architecture Changes** — If CSS variables, keyframes, mixins, or JS modules were modified:
-   - Update the relevant section
-   - Note any new files created or files deleted
+Grep-verify the docs against the code: counts, file paths, claims. Fix what is stale (code wins),
+and declare loudly anything too rotten to patch - a small fresh note beats patching a pile.
+Spot-check that `docs/INDEX.md` still lists every note, one line each.
 
-4. **Common Mistakes** — If you made an error the user corrected:
-   - Add it to the "Mistakes to Avoid" section with: what went wrong, why, what to do instead
-   - This prevents repeating the same mistake in future sessions
+## Rules
 
-5. **TODOs** — If tasks were completed or new ones identified:
-   - Move completed items to "Completed" with date
-   - Add new items with context about what needs to happen
-
-6. **Cleanup Log** — If code was removed:
-   - Update `CLEANUP-LOG.md` with what was removed and why
-
-## Verification
-
-After updating, do a quick sanity check:
-- Does the breathing element map match what `grep` finds in the SCSS?
-- Are the keyframe names and tier assignments accurate?
-- Are the file paths still correct?
-
-## Important
-
-- Be accurate, not verbose. Short entries are better than long explanations.
-- If you're unsure about something, mark it with `[VERIFY]` rather than guessing.
-- The user's directive: "Do not assume. Ask first." applies here too — if a section seems wrong but you're not sure, flag it rather than changing it silently.
+- Be accurate, not verbose. Only document what is expensive to rediscover AND not inferable from
+  the code - delete doc content that fails that bar rather than maintaining it.
+- Never document per-element inventories or line numbers; they rot instantly (grep instead).
+- If unsure about something, mark it `[VERIFY]` rather than guessing; if a section seems wrong but
+  you cannot prove it, flag it rather than changing it silently.
