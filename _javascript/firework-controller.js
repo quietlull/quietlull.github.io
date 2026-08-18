@@ -12,52 +12,79 @@ export class FireworkController {
     this.fireWorkGroup = [];
     this.maxFireworks = config.maxFireworks || 50;
 
-    // Configuration
+    // Configuration.
+    // `??` not `||` throughout: a configured 0 is a real value, and `||` silently discarded it.
+    // That bug ran for a long time - `minZ: 0` in three-config.js fell through to the -10000
+    // default, so shells spawned anywhere across a 9800-unit depth spread instead of the intended
+    // band, which is why the same burst could read 110% of screen height or 7% of it.
     this.config = {
       // Z-depth range
-      minZ: config.minZ || -10000,
-      maxZ: config.maxZ || -10500,
+      minZ: config.minZ ?? -10000,
+      maxZ: config.maxZ ?? -10500,
 
       // Launch timing
-      launchSpeed: config.launchSpeed || 0.4,
-      minDelay: config.minDelay || 0.1,
-      maxDelay: config.maxDelay || 0.3,
+      launchSpeed: config.launchSpeed ?? 0.4,
+      minDelay: config.minDelay ?? 0.1,
+      maxDelay: config.maxDelay ?? 0.3,
 
       // Height limits
-      maxHeight: config.maxHeight || 10000,
-      extraHeightMultiplier: config.extraHeightMultiplier || 8000,
-      extraHeightThreshold: config.extraHeightThreshold || 0.6,
-      sceneBottom: config.sceneBottom || -100,
+      maxHeight: config.maxHeight ?? 10000,
+      sceneBottom: config.sceneBottom ?? -100,
+
+      // How far below its centre a burst actually reaches, per unit of scale, as a multiple of
+      // explosionSpread: the particle sphere reaches ~1.1 and the shader's gravity term adds
+      // ~0.588 by the end of the explosion. Used to keep a burst's bottom clear of the water.
+      // DERIVED FROM THE SHADER, not measured - particle positions are computed on the GPU and
+      // cannot be read back, so this is a starting constant to confirm by eye.
+      burstBottomFactor: config.burstBottomFactor ?? 1.69,
 
       // Explosion properties
-      particleCount: config.particleCount || 400,
-      particleSize: config.particleSize || 20,
-      explosionScaleMin: config.explosionScaleMin || 5.0,
-      explosionScaleMax: config.explosionScaleMax || 10.0,
-      explosionSpread: config.explosionSpread || 80.0,
-      explosionDuration: config.explosionDuration || 1.2,
+      particleCount: config.particleCount ?? 400,
+      particleSize: config.particleSize ?? 20,
+      explosionScaleMin: config.explosionScaleMin ?? 5.0,
+      explosionScaleMax: config.explosionScaleMax ?? 10.0,
+      explosionSpread: config.explosionSpread ?? 80.0,
+      explosionDuration: config.explosionDuration ?? 1.2,
 
       // Particle appearance
-      particleBrightness: config.particleBrightness || 0.6,
+      particleBrightness: config.particleBrightness ?? 0.6,
 
       // Trail properties
-      trailRadius: config.trailRadius || 15,
-      trailBrightness: config.trailBrightness || 0.2,
-      trailGradientWidth: config.trailGradientWidth || 0.2,
+      trailRadius: config.trailRadius ?? 15,
+      trailBrightness: config.trailBrightness ?? 0.2,
+      trailGradientWidth: config.trailGradientWidth ?? 0.2,
 
       // Colors
-      rainbowChance: config.rainbowChance || 0.5,
+      rainbowChance: config.rainbowChance ?? 0.5,
 
-      autoFireworks: config.autoFireworks || false,
-      autoDelay: config.autoDelay || 1.0,        // Seconds between bursts
-      autoDelayVariation: config.autoDelayVariation || 0.5,  // Random ±variation in seconds
-      autoAmount: config.autoAmount || 2,        // Number of fireworks per burst
-      autoAmountVariation: config.autoAmountVariation || 2  // Random ±variation
+      autoFireworks: config.autoFireworks ?? false,
+      autoDelay: config.autoDelay ?? 1.0,        // Seconds between bursts
+      autoDelayVariation: config.autoDelayVariation ?? 0.5,  // Random ±variation in seconds
+      autoAmount: config.autoAmount ?? 2,        // Number of fireworks per burst
+      autoAmountVariation: config.autoAmountVariation ?? 2  // Random ±variation
     };
 
-    // Auto firework timer
-    this.autoTimer = 0;
-    this.nextAutoDelay = this.getRandomDelay();  // Initialize with random delay
+    // Two independent auto-launch streams, each with its own timer and its own cap on how many
+    // of its shells may be in the air at once. GREETING is the calm welcome that runs while the
+    // top of the page is on screen; REWARD is the stream unlocked by the Pyrotechnician
+    // achievement. Both are live at the top once earned, so the reward makes the sky busier
+    // rather than replacing the greeting. Who is active is decided by the page, not here.
+    this.emitters = {
+      greeting: {
+        active: false, timer: 0, next: 0, maxLive: 4,
+        delay: 2.5, delayVariation: 1.0, amount: 1, amountVariation: 0,
+      },
+      reward: {
+        active: this.config.autoFireworks, timer: 0, next: 0, maxLive: this.maxFireworks,
+        delay: this.config.autoDelay, delayVariation: this.config.autoDelayVariation,
+        amount: this.config.autoAmount, amountVariation: this.config.autoAmountVariation,
+      },
+    };
+    Object.assign(this.emitters.greeting, config.greeting);
+
+    for (const emitter of Object.values(this.emitters)) {
+      emitter.next = this.getRandomDelay(emitter);
+    }
 
     // Shared trail geometry (reused across all rockets)
     this._sharedTrailGeometry = new THREE.PlaneGeometry(
@@ -73,9 +100,39 @@ export class FireworkController {
     this.setupClickHandler();
   }
 
-  getRandomDelay() {
-    const variation = (Math.random() * 2 - 1) * this.config.autoDelayVariation;
-    return Math.max(0.5, this.config.autoDelay + variation);
+  getRandomDelay(emitter) {
+    const variation = (Math.random() * 2 - 1) * emitter.delayVariation;
+    return Math.max(0.5, emitter.delay + variation);
+  }
+
+  countLive(source) {
+    let live = 0;
+    for (const firework of this.fireWorkGroup) {
+      if (firework.source === source) live++;
+    }
+    return live;
+  }
+
+  /**
+   * Screen point (in normalized device coordinates) -> the world position on a given Z plane that
+   * actually appears there, using the camera's own matrices.
+   *
+   * This replaced frustum trigonometry (`ndcY * halfHeight + camera.y`) that silently assumed the
+   * camera looks straight down -Z. The About page pitches the camera 25 degrees at the top of the
+   * scroll, where that assumption put the top of the screen at world Y 1281 when the true value
+   * was 2455 - so the top of the page was unreachable and clicks landed short. Unprojecting a ray
+   * and intersecting the target plane is correct at any rotation, position, fov or aspect, which
+   * also made the old `extraHeight` compensation (a hand-tuned curve bolted onto the wrong
+   * projection) unnecessary; it was deleted rather than re-tuned.
+   */
+  screenToWorldAtDepth(ndcX, ndcY, targetZ) {
+    const direction = new THREE.Vector3(ndcX, ndcY, 0.5)
+      .unproject(this.camera)
+      .sub(this.camera.position)
+      .normalize();
+
+    const distance = (targetZ - this.camera.position.z) / direction.z;
+    return direction.multiplyScalar(distance).add(this.camera.position);
   }
 
   setupClickHandler() {
@@ -90,7 +147,7 @@ export class FireworkController {
     });
   }
 
-  createFireworkFromClick(clientX, clientY) {
+  createFireworkFromClick(clientX, clientY, source = 'click') {
     if (this.fireWorkGroup.length >= this.maxFireworks) {
       return;
     }
@@ -102,35 +159,24 @@ export class FireworkController {
     // Calculate world position at a random Z depth
     const randomZ = THREE.MathUtils.lerp(this.config.minZ, this.config.maxZ, Math.random());
 
-    // Calculate the size of the view frustum at this Z depth
-    const distance = Math.abs(this.camera.position.z - randomZ);
-    const vFOV = THREE.MathUtils.degToRad(this.camera.fov);
-    const height = 2 * Math.tan(vFOV / 2) * distance;
-    const width = height * this.camera.aspect;
+    // How big this burst will be decides how low it is allowed to sit, so the scale is drawn here
+    // rather than inside createFirework.
+    const scale = Math.random() * (this.config.explosionScaleMax - this.config.explosionScaleMin)
+      + this.config.explosionScaleMin;
 
-    // Convert NDC to world coordinates at this depth
-    const worldX = x * (width / 2);
-    let worldY = y * (height / 2) + this.camera.position.y;
+    const target = this.screenToWorldAtDepth(x, y, randomZ);
 
-    // Allow fireworks to go MUCH higher by extrapolating beyond screen bounds
-    // If clicking in top 40% of screen, allow massive extra height
-    if (y > this.config.extraHeightThreshold) {
-      const extraHeight = (y - this.config.extraHeightThreshold) * this.config.extraHeightMultiplier;
-      worldY += extraHeight;
-    }
+    // A burst must never be half-drowned, so its FLOOR scales with its own size: the particles
+    // reach burstBottomFactor * explosionSpread * scale below the centre. Small shells may
+    // therefore burst low over the water while big ones are pushed high, with no special case.
+    const burstBottom = this.config.explosionSpread * this.config.burstBottomFactor * scale;
+    const lowestCentre = this.config.sceneBottom + burstBottom;
+    const worldY = Math.min(Math.max(target.y, lowestCentre), this.config.maxHeight);
 
-    // Clamp max height to 2000
-    worldY = Math.min(worldY, this.config.maxHeight);
-
-    // CLAMP: If clicked below -100, place firework above -100
-    const sceneBottom = this.config.sceneBottom;
-    const clampedY = worldY < sceneBottom ? THREE.MathUtils.lerp(sceneBottom + 50, this.camera.position.y - 100, Math.random()) : worldY;
-
-    // End point is where the click happened (or clamped position)
-    const endPoint = new THREE.Vector3(worldX, clampedY, randomZ);
+    const endPoint = new THREE.Vector3(target.x, worldY, randomZ);
 
     // Start point is BELOW the scene bottom (-100)
-    const startPoint = new THREE.Vector3(worldX, this.config.sceneBottom - 200, randomZ);
+    const startPoint = new THREE.Vector3(target.x, this.config.sceneBottom - 200, randomZ);
 
     // Random delay before explosion
     const explosionDelay = THREE.MathUtils.lerp(
@@ -142,11 +188,16 @@ export class FireworkController {
     // Random rainbow or solid color
     const isRainbow = Math.random() < this.config.rainbowChance;
 
-    this.createFirework(startPoint, endPoint, explosionDelay, isRainbow);
-    document.dispatchEvent(new Event('achievement:firework'));
+    this.createFirework(startPoint, endPoint, explosionDelay, isRainbow, source, scale);
+
+    // Only shells the visitor actually launched count toward Pyrotechnician. The greeting runs on
+    // its own forever, so counting it would unlock the reward while the visitor sits still.
+    if (source === 'click') {
+      document.dispatchEvent(new Event('achievement:firework'));
+    }
   }
 
-  createAutoFirework() {
+  createAutoFirework(source) {
     if (this.fireWorkGroup.length >= this.maxFireworks) {
       return;
     }
@@ -157,12 +208,13 @@ export class FireworkController {
 
     this.createFireworkFromClick(
       (randomX * 0.5 + 0.5) * window.innerWidth,
-      (1 - randomY) * window.innerHeight
+      (1 - randomY) * window.innerHeight,
+      source
     );
   }
 
 
-  createFirework(startPoint, endPoint, explosionDelay = 0.5, isRainbow = false) {
+  createFirework(startPoint, endPoint, explosionDelay = 0.5, isRainbow = false, source = 'click', scale = 1) {
     // Random color
     const color = new THREE.Color(
       Math.random() * 0.6 + 0.4,
@@ -172,9 +224,6 @@ export class FireworkController {
 
     // Create rocket trail that spans from start to end
     const rocketTrail = this.createRocketTrail(color, startPoint, endPoint);
-
-    // More varied scale for explosion size (0.5 to 1.5x)
-    const scale = Math.random() * (this.config.explosionScaleMax - this.config.explosionScaleMin) + this.config.explosionScaleMin;
 
     // Store data for explosion
     const firework = {
@@ -187,7 +236,8 @@ export class FireworkController {
       endPoint: endPoint.clone(),
       explosionDelay: explosionDelay,
       clock: new THREE.Clock(),
-      phase: 'launch' // 'launch' or 'explode'
+      phase: 'launch', // 'launch' or 'explode'
+      source: source   // 'click' | 'greeting' | 'reward' — drives each emitter's live cap
     };
 
     this.fireWorkGroup.push(firework);
@@ -197,7 +247,6 @@ export class FireworkController {
   createRocketTrail(color, startPoint, endPoint) {
     // Reuse shared geometry and temp vectors
     this._direction.subVectors(endPoint, startPoint);
-    const length = this._direction.length();
     this._midPoint.addVectors(startPoint, endPoint).multiplyScalar(0.5);
 
     const geometry = this._sharedTrailGeometry;
@@ -469,22 +518,27 @@ export class FireworkController {
   }
 
   update(normalizedDelta = 1.0) {
-    // Auto-generate fireworks with delay-based system
-    if (this.config.autoFireworks) {
-      this.autoTimer += 0.016 * normalizedDelta; // Increment timer (60fps baseline)
+    // Auto-generate fireworks — every active emitter runs its own delay-based timer
+    for (const source in this.emitters) {
+      const emitter = this.emitters[source];
+      if (!emitter.active) continue;
 
-      if (this.autoTimer >= this.nextAutoDelay) {
-        // Reset timer and get new random delay
-        this.autoTimer = 0;
-        this.nextAutoDelay = this.getRandomDelay();
+      emitter.timer += 0.016 * normalizedDelta; // Increment timer (60fps baseline)
+      if (emitter.timer < emitter.next) continue;
 
-        // Fire burst of fireworks
-        const variation = Math.floor(Math.random() * this.config.autoAmountVariation * 2) - this.config.autoAmountVariation;
-        const amount = Math.max(1, this.config.autoAmount + variation);
+      // Reset timer and get new random delay
+      emitter.timer = 0;
+      emitter.next = this.getRandomDelay(emitter);
 
-        for (let i = 0; i < amount; i++) {
-          this.createAutoFirework();
-        }
+      // Hold the burst if this stream already has its share of the sky
+      if (this.countLive(source) >= emitter.maxLive) continue;
+
+      // Fire burst of fireworks
+      const variation = Math.floor(Math.random() * emitter.amountVariation * 2) - emitter.amountVariation;
+      const amount = Math.max(1, emitter.amount + variation);
+
+      for (let i = 0; i < amount; i++) {
+        this.createAutoFirework(source);
       }
     }
 
@@ -598,8 +652,13 @@ export class FireworkController {
     this.fireWorkGroup = [];
   }
 
-  // Enable/disable auto fireworks
+  // Enable/disable the earned auto-fireworks stream (the topbar toggle)
   setAutoFireworks(enabled) {
-    this.config.autoFireworks = enabled;
+    this.emitters.reward.active = enabled;
+  }
+
+  // Enable/disable the top-of-page greeting stream
+  setGreeting(enabled) {
+    this.emitters.greeting.active = enabled;
   }
 }
