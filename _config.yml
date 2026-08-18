@@ -244,6 +244,14 @@ exclude:
   - purgecss.js
   - "*.config.js"
   - "package*.json"
+  # Repo-facing markdown was rendering as real pages - CLAUDE.md and STYLE.md were both served,
+  # at /CLAUDE.md and /STYLE.md.
+  - CLAUDE.md
+  - STYLE.md
+  # NOT excluded on purpose: redesign-lab. It is gitignored so CI never sees it and production is
+  # already safe; excluding it here would 404 every blockout URL the review workflow runs on
+  # (localhost:4000/redesign-lab/...). The only cost is that a LOCAL sitemap lists lab pages.
+  # Revisit at merge time, not before.
 
 jekyll-archives:
   enabled: [tags]

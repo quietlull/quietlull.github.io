@@ -184,9 +184,10 @@ The live site is **nine surfaces**, and three layouts each serve two subjects:
 37. **Freeze the final URL map before merging.** giscus is configured `mapping: pathname` with
     `strict: "1"`, and the gemspec ships no `jekyll-redirect-from` - so any changed permalink
     silently detaches every existing comment thread, with no way to redirect. *(Rod, small)*
-38. **Exclude `redesign-lab` and `CLAUDE.md` in `_config.yml`.** `CLAUDE.md` currently publishes at
-    `/CLAUDE.md`, and 145 of the 197 sitemap URLs in a local build are lab pages. Production is safe
-    only by accident (the directory is gitignored, so CI never sees it). *(claude, small)*
+38. ~~Exclude `CLAUDE.md` and `STYLE.md`~~ **done 2026-08-18** - both were publishing as real
+    pages. **`redesign-lab` is deliberately NOT excluded:** it is gitignored so CI never sees it and
+    production is already safe, and excluding it would 404 every blockout URL the review workflow
+    runs on. The only cost is a local sitemap listing lab pages. Revisit at merge time. *(done)*
 39. **Rebrand the browser-chrome and PWA colours.** `_includes/favicons.html:19` emits an
     unconditional `theme-color: #ffffff` that lands last and wins on a dark-only site; TileColor is
     still Chirpy stock `#da532c`. *(claude, small)*
