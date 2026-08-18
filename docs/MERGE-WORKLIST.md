@@ -68,8 +68,12 @@ component work rather than discovered during it.
 Per PAGE-PROCESS.md:190, *"you cannot aggregate components that do not exist yet"* - and components
 cannot be built until the picks are made.
 
-4. **Judge the six sub-page blockouts**, one winner per page type. Post is already settled
-   (stripe.dev). `projects-` `about-` `ramblings-` `resume-` `portal-blockout.html`. *(medium)*
+4. ~~Judge the six sub-page blockouts.~~ **DONE 2026-08-18, see [DECISIONS.md](DECISIONS.md) D15.**
+   POST stripe.dev · **PROJECTS MinionsArt page + Kaito Note card** (new hybrid variant, built) ·
+   **RAMBLINGS Eve hairline** · **PORTAL Space Jam orbital** · **RESUME dropped** ·
+   **ABOUT carries TWO survivors** (dimden + Klubnika) forward to the aggregate stage on purpose -
+   they differ most in how much live scene they cover, which a greybox cannot show. That makes
+   "build both About aggregates" a real task rather than a decision: see gate 3/4.
 5. **Pick the callout family** from `component-blockout.html`: three separate objects, or one object
    in three roles. Plus the five other post components - code block, meta chips, prev/next, hero
    media, TOC. *(small)*
@@ -115,8 +119,7 @@ cannot be built until the picks are made.
     debt. *(either, large)*
 17. **Source the four deliberately-empty slots**: post header, reading progress bar, image lightbox,
     related-posts cards. *(claude, medium)*
-18. **Source the surfaces that are still short of references**: resume (from zero - no tracker rows
-    at all), portal (2 of 4 found; fold in the 109ichiki/zutomayo popup windows to replace the
+18. **Source the surfaces that are still short of references**: ~~resume~~ (dropped), portal (2 of 4 found; fold in the 109ichiki/zutomayo popup windows to replace the
     unlabelled satellites), ramblings (2 of 4). *(claude, medium)*
 19. **Build the site-wide furniture the bench has never had**: back-to-top, tooltips, page
     transition, scrollbar, sparkler trail, and **skip-link + focus ring** - that last one is an
@@ -154,9 +157,9 @@ The live site is **nine surfaces**, and three layouts each serve two subjects:
 27. **Build aggregates for the five non-post blockouts**, then port them. *(claude, large)*
 28. **Design the surfaces with zero redesign artefacts**: archives, tag page, under-construction,
     404. *(either, medium)*
-29. **`resume-blockout.html` has no target.** There is no resume page anywhere on the site -
-    `grep -rl resume` outside `docs/` and `redesign-lab/` returns nothing. Either create the page or
-    drop the blockout. *(Rod, small)*
+29. ~~`resume-blockout.html` has no target.~~ **DROPPED 2026-08-18 (Rod).** No resume page is being
+    built. The blockout stays on disk, unlinked. This removes a surface from the port AND from the
+    sourcing backlog - it had zero tracker rows and needed 3+ references from scratch.
 
 ## Gate 5 - quality floor
 

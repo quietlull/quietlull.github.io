@@ -268,3 +268,57 @@ THREE DEVICES WORTH ADOPTING ALONGSIDE the scroll, all cheap and all near-univer
    longest line at 78. Writing to the column beats engineering around it.
 3. **Shrink code on mobile rather than scroll** (iq drops to 0.8em below 1280px), so the scroll
    affordance is a desktop-only fallback rather than the mobile default.
+
+## D15 - Sub-page layout winners (2026-08-18, ROD)
+
+Gate 1 of [MERGE-WORKLIST.md](MERGE-WORKLIST.md). Judged from the six greybox blockouts, one call
+per page type. This is the gate everything downstream sat behind - per PAGE-PROCESS.md, components
+cannot be built until the picks exist.
+
+**PROJECTS -> MinionsArt, with Kaito Note's card.** Rod: *"lets do minionsart, i want to note that i
+really like the layout of the project cards from kaitonote so please make a variant where the
+majority of the page is using the minionsart layout but with the kaitonote project cards."*
+Built as variant 5 in `projects-blockout.html?v=hybrid`. The split of parentage is deliberate and
+recorded in the file: MinionsArt owns the PAGE (1000px panel at 35px padding, 3-up 300px grid with
+20px gaps, 500px centred filter row, 400px search, top-right chip cluster, and the zero-blur
+`5px 10px` offset shadow); Kaito Note owns the CARD (square tile, full-tile rest veil, caption
+INSIDE at left/right 24 and bottom 16).
+- **The shadow survives on purpose.** Zero blur, zero spread is the pillar-backed move - a sticker
+  on paper, not a glass panel - and it belongs to the page, not the card. Kaito Note's own zero
+  gutter would kill it, since a shadow between touching tiles has nowhere to fall.
+- **What was dropped:** MinionsArt's 160px thumb, its 44px title band and the text block beneath
+  the card. Once the caption moves inside the image there is nothing left for that block to do.
+- **Still open for Rod's eye:** their caption-inside is sized for 549x312 tiles butting edge to
+  edge; here it sits at 300x300 with a 20px gap, so the 24px inset reads proportionally larger than
+  on the source. The alternative reading - keep Kaito Note's zero gutter and lose the shadow - is
+  recorded in the variant's own caveats rather than silently discarded.
+- REJECTED: 109ichiki (frameless field) and TUYU (live 16:9 embeds - twelve of those hits the
+  no-GPU hard constraint head-on).
+
+**ABOUT -> NO SINGLE WINNER YET, deliberately.** Rod: *"lets try 1 and 3 those are the winners i
+want to see both in the real version with the real elements."* dimden (fixed 900px, 675+225, five
+trophy categories legible at a glance) and Klubnika (928px column, borders left and right only,
+catalogue plus detail panel) both advance to the AGGREGATE stage and get judged there instead.
+This is the first time a page type carries two survivors past the blockout, and it is the right
+call for this page specifically: the two variants differ most in **how much live scene they
+cover**, which a greybox physically cannot show. 109ichiki (draggable windows) and potg.art
+(full-bleed bands) are cut.
+
+**RAMBLINGS -> Eve OFFICIAL, the hairline variant.** Fixed 1140px centred column. The deciding
+property: it is the only one of the four that handles a mix of illustrated and text-only rows
+without moving the row's left edge, and Rod's ramblings will be exactly that mix. Note that all
+four variants declared search as a deviation - none of the four sources has one.
+REJECTED: dimden (very empty at low entry counts), Klubnika (works at 200 entries but reads as a
+ledger, which is the wrong register for personal writing), whey-isolate (three heavy panels leave
+the least scene showing).
+
+**RESUME -> DROPPED for now.** Rod: *"drop it for now."* There is no resume page anywhere on the
+site - `grep -rl resume` outside `docs/` and `redesign-lab/` returns nothing - so this was never a
+design pick, it was a create-or-cut question. Cutting it removes a whole surface from the port and
+from the sourcing backlog (it had zero tracker rows and needed 3+ references from scratch).
+`resume-blockout.html` stays on disk, unlinked from the worklist, in case it comes back.
+
+**PORTAL -> Space Jam orbital**, treated as settled: it is the only VERIFIED portal of the two
+remaining references (ZUTOMAYO's page-type claim was never confirmed), and Rod had already said he
+likes the orbital and wants the 109ichiki/zutomayo popup windows folded in to replace the
+unlabelled satellites.
