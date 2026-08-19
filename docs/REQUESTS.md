@@ -26,7 +26,7 @@ absent. `BLOCKED` must name what it waits on and whether that is Rod or another 
 | # | request (Rod's words, trimmed) | status | waiting on |
 |---|---|---|---|
 | 3 | Sort out the callouts section | **BLOCKED** | #15. Four recipes were sourced and rejected as not warm enough. |
-| 9b | Close both dependabot PRs | **BLOCKED** | **Rod.** `gh` is not installed here. Merging either drops `three` from dependencies and breaks every scene. |
+| 9b | Dependabot: how to resolve the merge conflict | **NEEDS ROD TO COMMIT** | Conflict RESOLVED in the working tree: theirs' versions, ours' package list. My earlier "merging drops `three` and reverts the rebrand" was WRONG - that came from diffing whole files, but git only conflicts where both sides touched the same lines, and `name`/`author`/`three` were never in the conflict. Rod: `git add package.json && git commit`, then `npm install && npm test`. |
 | 15 | Find sites with great and WARM callout examples | **IN PROGRESS** | 6-angle hunt running: indie-web, gamedev artists, zine/papercraft, JP personal, digital gardens, TTRPG. |
 | 19b | Export the localStorage palette as insurance | **BLOCKED** | **Rod.** One console line. The approved colours exist in no tracked file — this is a backup, not the palette decision (D18 defers that). |
 | 20 | Projects page rejected — back to the drawing board in detail | **IN PROGRESS** | `final-projects.html` is blockout-only now. Elements pending #32. |
@@ -38,7 +38,7 @@ absent. `BLOCKED` must name what it waits on and whether that is Rod or another 
 
 ## Blocked on Rod specifically — clearable in one message
 
-- **9b** close the two dependabot PRs
+- **9b** commit the resolved dependabot merge (`git add package.json && git commit`), then `npm install`
 - **19b** run `copy(localStorage.getItem('lab-palette'))` on the lab
 - **22** run the FPS snippet with the scene on, then off
 - **26** centred nav with lopsided gaps, or balanced gaps with an off-centre nav
