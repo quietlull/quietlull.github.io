@@ -25,20 +25,18 @@ absent. `BLOCKED` must name what it waits on and whether that is Rod or another 
 
 | # | request (Rod's words, trimmed) | status | waiting on |
 |---|---|---|---|
-| 3 | Sort out the callouts section | **BLOCKED** | #15. Four recipes were sourced and rejected as not warm enough. |
-| 9b | Dependabot: how to resolve the merge conflict | **NEEDS ROD TO COMMIT** | Conflict RESOLVED in the working tree: theirs' versions, ours' package list. My earlier "merging drops `three` and reverts the rebrand" was WRONG - that came from diffing whole files, but git only conflicts where both sides touched the same lines, and `name`/`author`/`three` were never in the conflict. Rod: `git add package.json && git commit`, then `npm install && npm test`. |
-| 15 | Find sites with great and WARM callout examples | **IN PROGRESS** | 6-angle hunt running: indie-web, gamedev artists, zine/papercraft, JP personal, digital gardens, TTRPG. |
+| 3 | Sort out the callouts section | **NEEDS ROD** | 6 warm candidates now captured at `element-gallery.html`. Waiting on TAKE/LEAVE, then the takes get built as components. |
 | 19b | Export the localStorage palette as insurance | **BLOCKED** | **Rod.** One console line. The approved colours exist in no tracked file — this is a backup, not the palette decision (D18 defers that). |
 | 20 | Projects page rejected — back to the drawing board in detail | **IN PROGRESS** | `final-projects.html` is blockout-only now. Elements pending #32. |
 | 21 | Landing: change the headers and the demo reel element | **IN PROGRESS** | Reel pulled (no source at all). Headers have no source either — pending #32. |
 | 22 | The scene is laggy — cards plus three.js? | **BLOCKED** | **Rod.** Mechanism found: 12 blurred `plus-lighter` layers repainting on mousemove, sharing a GPU with a 644 KB scene. Needs the FPS snippet run on his machine. |
 | 26 | Top bar spacing weird, nav not centred | **PART DONE** | **Rod.** Nav was 44px off; now exactly 0. But gaps are 213/48 — centred nav vs balanced gaps is a taste call. |
-| 32 | Mine the gallery for missing elements, screenshot them, list what's Slop/missing | **IN PROGRESS** | Needs list written. Element hunt running. Screenshot pass + element gallery next. |
+| 32 | Mine the gallery for missing elements, screenshot them, list what's Slop/missing | **NEEDS ROD** | Needs list written (40 unsourced / 11 buildable / 12 circular). 9 elements captured and shown at `element-gallery.html`. **Waiting on TAKE/LEAVE per card.** 3 captures still to retry, 8 slots have nothing in the gallery. |
 | A | About layout cannot be laid out until dimden vs Klubnika is judged | **BLOCKED** | **Rod.** D15 kept two survivors on purpose; the difference is how much live scene each covers, which a greybox cannot show. |
 
 ## Blocked on Rod specifically — clearable in one message
 
-- **9b** commit the resolved dependabot merge (`git add package.json && git commit`), then `npm install`
+- **32 + 3** go through `element-gallery.html` and say TAKE or LEAVE per card - this one unblocks the most
 - **19b** run `copy(localStorage.getItem('lab-palette'))` on the lab
 - **22** run the FPS snippet with the scene on, then off
 - **26** centred nav with lopsided gaps, or balanced gaps with an off-centre nav
@@ -51,7 +49,7 @@ absent. `BLOCKED` must name what it waits on and whether that is Rod or another 
 Kept only so a past request can be looked up if Rod asks for one directly.
 
 <details>
-<summary>2026-08-18 completed (24)</summary>
+<summary>2026-08-18 completed (29)</summary>
 
 | # | request | note |
 |---|---|---|
@@ -84,6 +82,9 @@ Kept only so a past request can be looked up if Rod asks for one directly.
 | 33 | Start the `final` page group | 6 pages, slot state panels. |
 | 34 | Track requests with statuses | This file. |
 | 35 | Done tasks are phantoms | This structure. |
+| 15 | Find WARM callout examples | 6-angle hunt, 21 candidates, 5 survived both checks. Captured. |
+| 9b | Resolve both dependabot merges | Dev-deps: theirs' versions, ours' package list. Prod-deps: bootstrap from theirs, `three` from ours - that one WOULD have deleted `three`. Both merged and pushed. |
+| 36 | Fix the other dependabot conflict | Same merge, one line. |
 
 </details>
 
