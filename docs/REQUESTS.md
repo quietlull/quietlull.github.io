@@ -32,6 +32,8 @@ absent. `BLOCKED` must name what it waits on and whether that is Rod or another 
 | 22 | The scene is laggy — cards plus three.js? | **BLOCKED** | **Rod.** Mechanism found: 12 blurred `plus-lighter` layers repainting on mousemove, sharing a GPU with a 644 KB scene. Needs the FPS snippet run on his machine. |
 | 26 | Top bar spacing weird, nav not centred | **PART DONE** | **Rod.** Nav was 44px off; now exactly 0. But gaps are 213/48 — centred nav vs balanced gaps is a taste call. |
 | 32 | Mine the gallery for missing elements, screenshot them, list what's Slop/missing | **NEEDS ROD** | Needs list written (40 unsourced / 11 buildable / 12 circular). 9 elements captured and shown at `element-gallery.html`. **Waiting on TAKE/LEAVE per card.** 3 captures still to retry, 8 slots have nothing in the gallery. |
+| 37 | Big performance check - performance is the biggest issue right now | **IN PROGRESS** | 5-area audit running: CSS paint cost, JS runtime, three.js, asset weight, and what actually ships live vs lab-only. |
+| 38 | Manual code audit of everything written so far | **NOT STARTED** | Rod: *"I've been trusting you too much for code and that's on me. I'll be manually looking over all code from now on."* Starts after #37. Standing change recorded in memory. |
 | A | About layout cannot be laid out until dimden vs Klubnika is judged | **BLOCKED** | **Rod.** D15 kept two survivors on purpose; the difference is how much live scene each covers, which a greybox cannot show. |
 
 ## Blocked on Rod specifically — clearable in one message
