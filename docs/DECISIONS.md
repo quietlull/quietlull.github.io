@@ -535,8 +535,20 @@ scan's flaws got half-fixed twice already.
 - Repo hygiene that touches no rendered surface (git, docs, dependency merges) stays allowed.
 - If a lab page needs something from the live site, it COPIES it into the lab rather than editing
   the original.
+- **THE THREE.JS SCENE IS THE EXCEPTION, and it has to be** (noted 2026-08-18 when the parallel
+  performance session began editing `_javascript/three-background-scene.js`). The scene is not
+  "main page stuff" - it is SHARED INFRASTRUCTURE. Every lab page loads the built bundle at
+  `/assets/js/dist/three-background-scene.min.js`, so scene and shader work in `_javascript/`
+  lands in the lab too and is the one live directory the redesign genuinely depends on.
+  Rebuild with `BUILD=production npx rollup -c` after touching it.
+  This does NOT reopen `_sass/`, `_layouts/`, `_includes/` or `_config.yml`.
 
-## D20 - Bloom is a 2-level Dual Kawase with no threshold (2026-08-18, ROD)
+## D23 - Bloom is a 2-level Dual Kawase with no threshold (2026-08-18, ROD)
+
+<!-- RENUMBERED from D20 to D23 on 2026-08-18. Two sessions were writing to this file at once - the
+     redesign pass and the performance audit - and both reached for D20 within minutes of each
+     other. The bloom decision was committed second so it moved. Nothing about its content changed.
+     If the perf session refers to "D20 bloom" anywhere, it means this. -->
 
 UnrealBloomPass is out. Rod, after A/B-ing four implementations in `redesign-lab/scene-tuner.html`:
 *"the two pyramid kawase is the winner for now"*, then *"remove the other blooms"* and *"remove the
