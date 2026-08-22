@@ -30,11 +30,15 @@ export function createBaseScene() {
      so the flag antialiased nothing while still allocating a multisampled backbuffer. Removing it
      is a pure saving. (2026-08-18, measured under software rasterisation.) */
   const renderer = new THREE.WebGLRenderer({ antialias: false });
-  /* Capped at 1 rather than 1.5. This is a FRAGMENT lever, and fragments are the whole cost here:
-     the scene is only 27 draw calls and 733 triangles, so nothing about it is geometry-bound. At
-     1.5 on a HiDPI screen every pass and every composite shades 2.25x the pixels. On the no-GPU
-     machine the project targets, that work lands on the CPU. */
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+  /* Capped at 0.5 (Rod, 2026-08-22; was 1, before that 1.5). This is a FRAGMENT lever and fragments
+     are the whole cost here: the scene is 27 draw calls and 733 triangles, so nothing about it is
+     geometry-bound. Half ratio shades a QUARTER of the pixels in every pass.
+     It is only acceptable because of the paper filter - at 0.5 the scene is visibly soft on its own,
+     and the paper grain is what turns that softness into a deliberate print look rather than a
+     rendering fault. Do not raise the paper amount and this together without re-judging both.
+     NOTE this must stay ABOVE the EffectComposer construction below: the composer captures the
+     renderer's pixel ratio once, at construction, and never re-reads it. */
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 0.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   // Post-processing bloom (identical on all pages)
@@ -46,11 +50,26 @@ export function createBaseScene() {
      NOTE the size argument is the FULL frame, not the halved one UnrealBloomPass wanted. This pass
      applies CONFIG.lanterns.bloom.scale itself inside setSize, so it STAYS at half resolution
      after a window resize instead of being promoted to full by composer.setSize(). */
+  const paper = CONFIG.lanterns.paper;
   const bloomPass = new KawaseBloomPass(window.innerWidth, window.innerHeight, {
     strength: CONFIG.lanterns.bloom.strength,
     radius: CONFIG.lanterns.bloom.radius,
-    scale: CONFIG.lanterns.bloom.scale
+    scale: CONFIG.lanterns.bloom.scale,
+    paperAmount: paper.amount,
+    paperTile: paper.tile,
+    paperTile2: paper.tile2,
+    paperMix: paper.mix,
+    paperBlend: paper.blend,
+    paperBleed: paper.bleed,
+    paperDisplace: paper.displace,
+    paperTooth: paper.tooth,
+    paperBoilHz: paper.boilHz
   });
+  /* Loaded here rather than inside the pass so the pass never owns an asset path. Both sheets are
+     baked normal+height maps; see assets/tex/ and the generator note in DECISIONS D24. */
+  const paperLoader = new THREE.TextureLoader();
+  bloomPass.setPaperTexture(paperLoader.load(`/assets/tex/${paper.sheet}.png`), 0);
+  bloomPass.setPaperTexture(paperLoader.load(`/assets/tex/${paper.sheet2}.png`), 1);
   composer.addPass(bloomPass);
 
   // Canvas as fixed background

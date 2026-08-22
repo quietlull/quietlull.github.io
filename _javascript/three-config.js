@@ -23,7 +23,30 @@ export const CONFIG = {
       strength: 0.7,
       radius: 0.15,
       // Fraction of the frame the blur chain runs at. Owned by the pass, applied in setSize.
-      scale: 0.5,
+      // 0.5 -> 0.25 (Rod, 2026-08-22). Only viable because of the paper filter below: Rod judged
+      // that it "completely masks" the artefacts this resolution would otherwise show.
+      scale: 0.25,
+    },
+
+    /* PAPER FILTER (Rod, approved 2026-08-22). Two baked sheets at different tilings, composited
+       inside the bloom pass so it costs no extra pass - see shader/kawaseBloom.js.
+       This is what pays for the low bloom/reflection resolutions and the 0.5 pixel ratio: Rod,
+       "the artifacts ... get completely masked and makes it look intentional with the paper grain." */
+    paper: {
+      // BAKED 2026-08-22 (Rod). Washi at screen scale carries the big fibre structure; cold press
+      // at 4x sits inside it as tooth. SUBTRACT, not crossfade - the sheets cancel where they
+      // agree, which keeps the combined field from just reading as more noise.
+      sheet: 'paper-washi',
+      tile: 1,
+      sheet2: 'paper-coldpress',
+      tile2: 4,
+      blend: 2,          // 2 = subtract; see blendSheets() in shader/kawaseBloom.js
+      mix: 0.5,
+      amount: 1,
+      bleed: 0.5,
+      displace: 0.0075,
+      tooth: 0.05,
+      boilHz: 3.25,
     },
     float: {
       speed: 1,

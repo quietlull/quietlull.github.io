@@ -39,11 +39,16 @@ export class MirroredSurface {
 
     this.mirrorCamera = new THREE.PerspectiveCamera(camera.fov * 1, camera.aspect, 0.001, camera.far);
 
-    /* Half resolution (Rod, 2026-08-21). This target renders the ENTIRE scene a SECOND time every
-       frame, so it is the second biggest fragment cost after bloom. The reflection is read through
-       a distorted, fresnel-blended UV on a moving water surface, so the detail it loses is detail
-       the water shader was already destroying. */
-    this.reflectionScale = options.reflectionScale ?? 0.5;
+    /* Quarter resolution (Rod: 0.5 on 2026-08-21, then 0.25 on 2026-08-22). This target renders the
+       ENTIRE scene a SECOND time every frame, so it is the second biggest fragment cost after bloom.
+       The reflection is read through a distorted, fresnel-blended UV on a moving water surface, so
+       the detail it loses is detail the water shader was already destroying - and since 08-22 the
+       paper filter masks the rest.
+       NOTE this scales window.innerWidth (CSS pixels), NOT the drawing buffer, so it does NOT
+       compound with the renderer's pixel ratio the way the bloom scale does. At dpr 0.5 the
+       reflection lands at half the canvas, not a quarter. The tuner does the same arithmetic, so
+       what Rod judged is what ships - but change one and the other will not follow. */
+    this.reflectionScale = options.reflectionScale ?? 0.25;
     this.renderTarget = new THREE.WebGLRenderTarget(
       Math.round(window.innerWidth * this.reflectionScale),
       Math.round(window.innerHeight * this.reflectionScale),

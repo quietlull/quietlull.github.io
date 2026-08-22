@@ -107,6 +107,19 @@ const COMPOSITE_FRAG = `uniform sampler2D tDiffuse;
   uniform sampler2D tMipWide;
   uniform float uStrength;
   uniform float uRadius;
+
+  uniform sampler2D tPaper;
+  uniform sampler2D tPaper2;
+  uniform float uPaperAmount;
+  uniform vec2 uPaperTile;
+  uniform vec2 uPaperTile2;
+  uniform float uPaperMix;
+  uniform int uPaperBlend;
+  uniform vec2 uPaperOffset;
+  uniform float uPaperBleed;
+  uniform float uPaperDisplace;
+  uniform float uPaperTooth;
+
   varying vec2 vUv;
 
   const float FACTOR_TIGHT = 1.0;
@@ -115,10 +128,63 @@ const COMPOSITE_FRAG = `uniform sampler2D tDiffuse;
 
   float lerpBloomFactor(float f){ return mix(f, LERP_PIVOT - f, uRadius); }
 
+  /* How the two sheets combine. Both operands are SIGNED here - xy is a surface normal in -1..1 and
+     z is height re-centred on 0 - so these behave like signal ops, not like Photoshop layer modes:
+       LERP     crossfade, the two sheets never coexist at full strength
+       ADD      both sheets at once, roughness accumulates
+       SUBTRACT sheet B carves into sheet A, cancelling where they agree
+       MODULATE B rides A's amplitude, so A's coarse cells gate where B's grain shows
+       MAX/MIN   whichever sheet is more extreme wins, keeping hard features intact */
+  vec3 blendSheets(vec3 a, vec3 b, float m) {
+    if (uPaperBlend == 1) return a + b * m;
+    if (uPaperBlend == 2) return a - b * m;
+    if (uPaperBlend == 3) return a * (1.0 + b * m * 2.0);
+    if (uPaperBlend == 4) return mix(a, max(a, b), m);
+    if (uPaperBlend == 5) return mix(a, min(a, b), m);
+    return mix(a, b, m);
+  }
+
   void main(){
     vec3 glow = lerpBloomFactor(FACTOR_TIGHT) * texture2D(tMipTight, vUv).rgb
               + lerpBloomFactor(FACTOR_WIDE) * texture2D(tMipWide, vUv).rgb;
     vec3 base = texture2D(tDiffuse, vUv).rgb;
+
+    /* PAPER (uniform branch, so it costs nothing while amount is 0).
+       tPaper is a BAKED normal+height map: rg = surface normal xy, b = height. The Shadertoy this
+       came from derived that from a 4-octave simplex fbm evaluated ~24 times per pixel, which is
+       impossible on a software rasteriser - baking makes it one fetch. */
+    if (uPaperAmount > 0.0) {
+      vec3 paper = texture2D(tPaper, vUv * uPaperTile + uPaperOffset).rgb;
+      vec2 slope = paper.rg * 2.0 - 1.0;
+      float tooth = paper.b - 0.5;
+
+      /* SECOND SHEET at a different size. Real paper has structure at more than one scale - a
+         coarse tooth with a finer grain sitting inside it - and one tiling of one sheet can only
+         ever give you one. This costs exactly ONE extra fetch, because the two normals are combined
+         BEFORE the displaced tap rather than the frame being sampled twice. The offset is scaled by
+         a non-integer so the two sheets do not boil in lockstep. */
+      if (uPaperMix > 0.0) {
+        vec3 paper2 = texture2D(tPaper2, vUv * uPaperTile2 + uPaperOffset * 1.7).rgb;
+        vec3 combined = blendSheets(
+          vec3(slope, tooth),
+          vec3(paper2.rg * 2.0 - 1.0, paper2.b - 0.5),
+          uPaperMix
+        );
+        slope = combined.xy;
+        tooth = combined.z;
+      }
+
+      /* ink bleeding into the fibres: blend the straight tap with one pulled along the paper
+         normal. This is the 0.4/0.6 two-tap blend from the source, made tunable. */
+      vec3 bled = texture2D(tDiffuse, vUv + slope * uPaperDisplace).rgb;
+      base = mix(base, bled, uPaperBleed * uPaperAmount);
+      /* the sheet's own tooth, applied OVER the glow so the image reads as printed ON the paper
+         rather than behind it. Centred on 0.5 so it both catches light and casts into the weave. */
+      vec3 lit = base + glow * uStrength;
+      gl_FragColor = vec4(lit + tooth * uPaperTooth * uPaperAmount, 1.0);
+      return;
+    }
+
     gl_FragColor = vec4(base + glow * uStrength, 1.0);
   }`;
 
@@ -168,13 +234,39 @@ export class KawaseBloomPass {
       vertexShader: VERT,
       fragmentShader: UP_FRAG
     });
+    /* Paper filter. Rod's numbers, approved 2026-08-22: it masks the artefacts from the low bloom
+       and reflection resolutions and makes them read as intentional. Source: Shadertoy
+       bump-from-depth paper displacement, remixed (procedural fbm replaced with a baked texture). */
+    this.paper = {
+      amount: options.paperAmount ?? 1,
+      tile: options.paperTile ?? 4,
+      tile2: options.paperTile2 ?? 12,       // second sheet, deliberately a different scale
+      mix: options.paperMix ?? 0.5,          // 0 = first sheet only
+      blend: options.paperBlend ?? 0,        // see blendSheets() in COMPOSITE_FRAG
+      bleed: options.paperBleed ?? 0.5,      // the source blended 0.4/0.6; Rod took it to 0.5
+      displace: options.paperDisplace ?? 0.0075,
+      tooth: options.paperTooth ?? 0.05,
+      boilHz: options.paperBoilHz ?? 2       // the hand-drawn boil; the source used 4
+    };
+
     this.composite = new THREE.ShaderMaterial({
       uniforms: {
         tDiffuse: { value: null },
         tMipTight: { value: null },
         tMipWide: { value: null },
         uStrength: { value: this.strength },
-        uRadius: { value: this.radius }
+        uRadius: { value: this.radius },
+        tPaper: { value: null },
+        tPaper2: { value: null },
+        uPaperAmount: { value: 0 },
+        uPaperTile: { value: new THREE.Vector2() },
+        uPaperTile2: { value: new THREE.Vector2() },
+        uPaperMix: { value: this.paper.mix },
+        uPaperBlend: { value: 0 },
+        uPaperOffset: { value: new THREE.Vector2() },
+        uPaperBleed: { value: this.paper.bleed },
+        uPaperDisplace: { value: this.paper.displace },
+        uPaperTooth: { value: this.paper.tooth }
       },
       vertexShader: VERT,
       fragmentShader: COMPOSITE_FRAG,
@@ -203,6 +295,16 @@ export class KawaseBloomPass {
     this.quarter = makeTarget(quarterW, quarterH);
     this.wide = makeTarget(quarterW, quarterH);
     this.tight = makeTarget(halfW, halfH);
+  }
+
+  /* The pass does not load the texture itself - the caller owns that, so the tuner can swap between
+     paper variants without the pass knowing they exist. */
+  setPaperTexture(texture, slot = 0) {
+    if (texture) {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+    }
+    this.composite.uniforms[slot === 1 ? 'tPaper2' : 'tPaper'].value = texture;
   }
 
   blit(renderer, material, target) {
@@ -237,11 +339,36 @@ export class KawaseBloomPass {
     this.tent(renderer, this.wide, this.tight, tapOffset);
 
     // 5. sum both bands over the original frame
-    this.composite.uniforms.tDiffuse.value = readBuffer.texture;
-    this.composite.uniforms.tMipTight.value = this.tight.texture;
-    this.composite.uniforms.tMipWide.value = this.wide.texture;
-    this.composite.uniforms.uStrength.value = this.strength;
-    this.composite.uniforms.uRadius.value = this.radius;
+    const u = this.composite.uniforms;
+    u.tDiffuse.value = readBuffer.texture;
+    u.tMipTight.value = this.tight.texture;
+    u.tMipWide.value = this.wide.texture;
+    u.uStrength.value = this.strength;
+    u.uRadius.value = this.radius;
+
+    const p = this.paper;
+    u.uPaperAmount.value = p.amount;
+    u.uPaperTile.value.set(p.tile, p.tile);
+    u.uPaperTile2.value.set(p.tile2, p.tile2);
+    /* no second texture bound = no second layer, whatever the mix says */
+    u.uPaperMix.value = u.tPaper2.value ? p.mix : 0;
+    u.uPaperBlend.value = p.blend;
+    u.uPaperBleed.value = p.bleed;
+    u.uPaperDisplace.value = p.displace;
+    u.uPaperTooth.value = p.tooth;
+    /* The "boil": re-roll the sheet a few times a second rather than every frame, so it reads as
+       hand-drawn rather than as video noise. Quantised in JS so the shader stays arithmetic-free. */
+    if (p.boilHz > 0) {
+      const step = Math.floor(performance.now() * 0.001 * p.boilHz);
+      const frac = (x) => x - Math.floor(x);
+      u.uPaperOffset.value.set(
+        frac(Math.sin(step * 12.9898) * 43758.5453),
+        frac(Math.sin(step * 78.233) * 43758.5453)
+      );
+    } else {
+      u.uPaperOffset.value.set(0, 0);
+    }
+
     this.blit(renderer, this.composite, this.renderToScreen ? null : writeBuffer);
 
     renderer.setRenderTarget(previousTarget);
