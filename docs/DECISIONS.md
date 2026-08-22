@@ -497,11 +497,42 @@ be confused by 221 references.
 also a `html.breathe-override` escape hatch so a user who deliberately turns motion ON can overrule
 their OS setting. That pattern is worth carrying into the new control rather than rebuilding.
 
-**STILL OPEN (asked, not assumed):** whether "no breathing" means retiring the SUBSYSTEM (a 18-file
-removal that also deletes the ambient glow the site is partly built on) or only retiring its
-TOGGLE and letting the motion control cover it. Those are very different jobs.
+**RESOLVED same day.** Rod: *"Kill this subsystem it wont exist anymore."* Breathing is out of the
+new design entirely - no ambient glow animation, no selector list, no toggle.
 
-**ALSO STILL OPEN:** what the one combined control actually governs. Four things existed - scene,
-breathing, sparkler, fireworks - and Rod named scene and motion. Sparkler and the fireworks reward
-stream (D12, an unlockable) have not been ruled on.
+**But NOT as an 18-file removal, because of the scope rule below.** The live site's breathing dies
+when the new theme replaces `_sass/` at port time. Deleting it from the current SCSS now would be
+exactly the main-site work Rod has ruled out. So: breathing is ABSENT from everything built in the
+lab, and the old subsystem is left alone until the port removes its surfaces wholesale.
+
+**The single control governs SCENE + ALL MOTION**, one switch (Rod's pick). Scene, drift/magnet and
+any remaining animation go together. The trade he accepted: you cannot keep the scene while calming
+the motion. `prefers-reduced-motion` defaults it to still, and the `breathe-override` idea - letting
+someone deliberately turn motion back ON against their OS setting - is the one part of the old
+system worth carrying forward.
+
+Sparkler and the fireworks reward stream fold under "all motion" by this reading. Flagged rather
+than assumed: D12 made the fireworks reward an UNLOCKABLE, which only works if it has its own
+button, so that specific one may need to survive separately. Not decided.
+
+## D22 - LAB ONLY. No main-site work. (2026-08-18, ROD) - STANDING RULE
+
+Rod: *"i want to make it clear we are only working on the new design lab stuff, zero main page stuff
+at this point."*
+
+**All work happens in `redesign-lab/`.** `_sass/`, `_layouts/`, `_includes/`, `_javascript/`,
+`_config.yml` and the page files are OFF LIMITS until the port.
+
+This is not a preference, it is what makes the redesign finishable. Every hour spent fixing the
+current site is spent on surfaces the redesign is about to replace, and it is how the 2026-08-11
+scan's flaws got half-fixed twice already.
+
+**Consequences worth stating so they are not rediscovered:**
+- "Kill breathing" is not a removal job. It is an absence in the new design.
+- The live-site items in [MERGE-WORKLIST.md](MERGE-WORKLIST.md) gates 4-6 - the dead search
+  subsystem, PWA theme-colour, og:image, PurgeCSS globs, the 11 real eslint errors - are NOT
+  cancelled. They are PORT-TIME work, and they stay in the worklist under those gates.
+- Repo hygiene that touches no rendered surface (git, docs, dependency merges) stays allowed.
+- If a lab page needs something from the live site, it COPIES it into the lab rather than editing
+  the original.
 
