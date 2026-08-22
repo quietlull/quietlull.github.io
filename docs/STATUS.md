@@ -103,8 +103,25 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
   `redesign-lab/anime-glow-scene.html`; rule and evidence in [DECISIONS.md](DECISIONS.md) D10
   (bloom entry). The earlier "nothing live changed" line here was stale: `shader/lanternShader.js`
   now runs a FLAT emissive and `three-config.js` carries the matching bloom retune (strength
-  1.4 -> 0.45, radius 0.3 -> 0), both annotated Rod 2026-08-13. Still UNCOMMITTED in the working
-  tree, alongside the Sarah avoidance rework whose radii were never re-tuned per scene.
+  1.4 -> 0.45, radius 0.3 -> 0), both annotated Rod 2026-08-13. CORRECTED 2026-08-21: these are
+  COMMITTED (`970a6ba`, `0acec39`), as is the Sarah avoidance rework (`ae2c59c`) - the old
+  "uncommitted" line was stale. Sarah's radii were still never re-tuned per scene. What IS
+  uncommitted today is the perf session's `three-shared.js` / `three-background-scene.js` work
+  (antialias off, pixel ratio capped at 1, bloom at half res, composer + THREE exposed for the
+  tuner).
+- **BLOOM IS NOW KAWASE IN THE LIVE BUNDLE (2026-08-21).** D23 had been true of the tuner page only;
+  `three-shared.js` still imported `UnrealBloomPass` and the lab hot-swapped over it. The pass now
+  lives at `_javascript/shader/kawaseBloom.js`, fixed at 2 levels, bright pass and `threshold`
+  deleted outright, kernel weights named as GLSL consts. `redesign-lab/cheap-bloom.js` is retired to
+  a pointer note - there is no second copy any more. Rod's numbers, applied and verified in-page:
+  sky `0x162237` (was `0x080f1b`), strength 0.7, radius 0.15, bloom scale 0.5, reflection target
+  0.5, pixel ratio 1, `NoToneMapping`, and `uSunLift` 0.2 -> 1.5 so the water's dormant moonlight
+  model finally carries load. Three things found on the way, all now fixed or written down:
+  UnrealBloom was silently promoted from half to FULL res by `composer.setSize()` on the first
+  window resize; the tuner's `swapBloom` threw on a deleted `v-impl` element and aborted its own
+  init; and the ablation baseline in the tuner header is stale, since it was measured against the
+  old pass and a full-window reflection. **Nothing has been re-profiled** - request #37 should
+  re-run the ablation before any of those ms numbers get quoted again.
 - Palette exploration (`redesign-lab/palette-explorer.html`) - Sodium & Sky is the frontrunner.
 - Next refactor step (post-redesign): Phase 1 boundary audit.
 

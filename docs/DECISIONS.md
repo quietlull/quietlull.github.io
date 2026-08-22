@@ -565,18 +565,31 @@ SEPARABLE GAUSSIAN at every level - two passes per mip plus a composite, so ~12 
 iteration, so the deepest level is 42 taps per pixel per direction. It also samples on-texel, so it
 gets no benefit from bilinear filtering.
 
-**What shipped instead** (`redesign-lab/cheap-bloom.js`, `KawaseBloomPass`): Marius Bjorge's dual
-filtering at TWO levels with the bright-pass skipped -
+**What shipped instead** (`_javascript/shader/kawaseBloom.js`, `KawaseBloomPass`): Marius Bjorge's
+dual filtering at TWO levels with the bright-pass skipped -
 
 ```
 1  copy       whole frame -> 640x360    (no threshold, nothing is cut)
 2  down       640x360 -> 320x180        (5-tap)
-3  up         320x180 -> 640x360        (8-tap tent)
-4  composite  base + blur * strength
+3  up         320x180 -> 320x180        (8-tap tent)      -> the WIDE band
+4  up         320x180 -> 640x360        (8-tap tent)      -> the TIGHT band
+5  composite  base + tight*1.0 + wide*0.8, both through lerpBloomFactor
 ```
 
-**Four passes, two render targets**, against twelve and eleven. Every tap is offset to land between
-texels so the GPU's bilinear filter fetches four texels per sample for free.
+**Five renders, four render targets**, against Unreal's twelve and eleven. Every tap is offset to
+land between texels so the GPU's bilinear filter fetches four texels per sample for free.
+
+<!-- CORRECTED 2026-08-21. This section originally read "four passes, two render targets", which
+     described an earlier draft. The mip-composite rework needs each reconstructed level to SURVIVE
+     as its own frequency band, so the up-chain got its own targets and a same-resolution seed
+     blur. Counted from the code, not from memory. -->
+
+**Ported to the live scene 2026-08-21.** Until then this decision was only true of the tuner page:
+`three-shared.js` still imported `UnrealBloomPass`, and `redesign-lab/cheap-bloom.js` hot-swapped
+Kawase in at runtime over the top of it. The pass now lives in the bundle, the lab copy is retired
+to a pointer note, and there is no runtime swap. In the move it lost `setLevels` and the
+generated-for-N composite (fixed at 2), the bright pass and `threshold` (deleted, not just skipped),
+and every kernel weight became a named GLSL const.
 
 **Brightness had to be matched deliberately.** Rod: *"the unreal bloom is definitely doing something
 to the exposure."* He was right, and it was energy, not tone: Unreal's composite sums five mips
@@ -590,16 +603,28 @@ back, which lifts the dark water as well as the lanterns. That matters because o
 
 **DELETED the same day, having lost on look rather than cost:** the single-pass variant (bright +
 9-tap blur), the plain additive composite, and the paper-grain experiment. Rod: *"just remove the
-grain its not what i wanted."* The implementation switcher is gone too - Kawase is installed on load,
-and UnrealBloom survives only as `window.__stockBloom` for a console A/B.
+grain its not what i wanted."* The implementation switcher is gone too, and as of the 2026-08-21
+port so is `window.__stockBloom` - the bundle builds Kawase directly, so there is no stock pass left
+to A/B against.
 
 **THE FINDING THAT OUTLIVES THIS DECISION: the scene has no lights at all.** `grep` for
 `AmbientLight|DirectionalLight|HemisphereLight|PointLight|SpotLight` across `_javascript/` returns
 nothing. Lanterns are visible only because their material is emissive, and the water is a mirror
-whose sky is `scene.background = 0x080f1b` - rgb(8,15,27), almost black. **Bloom was functioning as
+whose sky was `scene.background = 0x080f1b` - rgb(8,15,27), almost black. **Bloom was functioning as
 the scene's lighting rig**, which is why removing it made everything read unlit and why tone mapping
 could not rescue it (exposure multiplies, and anything x near-black is still black). The water shader
-already carries an unused moonlight model - `uSunLift 0.2`, `uSunDiffuse 0.13`, `uSunColor2 0xaec6f0`
-- dialled almost to zero because bloom was doing the job. Sky, water colour and moonlight are now
+already carries a moonlight model - `uSunLift`, `uSunDiffuse 0.13`, `uSunColor2 0xaec6f0` - which
+was dialled almost to zero (`uSunLift 0.2`) because bloom was doing the job. Sky, water colour and moonlight are now
 live sliders in the tuner. Lighting the scene properly is still open.
+
+**FIRST MOVE ON THAT, 2026-08-21 (Rod):** the sky went to `0x162237`, bloom strength/radius to
+0.7 / 0.15, and `uSunLift` from 0.2 to **1.5** - the top of the tuner's range, so the moonlight model
+that was sitting dormant in the water shader is finally carrying load. Rod's reasoning: *"previously
+the unreal bloom acted as the light source on the site but now its dead so the background is almost
+pitch black."* At those numbers the composite adds
+`0.7 * (0.88 + 0.74) = 1.13x` the frame back as glow against `0.45 * 1.8 = 0.81x` before, so ~1.4x
+more light, on top of a sky that is no longer near-black. Tone mapping was considered and REJECTED
+as the fix for the same reason it failed before: exposure multiplies, and near-black x anything is
+still near-black. The renderer stays on `NoToneMapping`. This is a first pass, not the lighting rig
+- request #40 is still open.
 
