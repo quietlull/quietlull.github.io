@@ -422,3 +422,50 @@ steps at once, in one pass.
 Rod picking out precisely the two unsourced elements on a page of otherwise-sourced ones is the
 strongest argument yet that the provenance law is not bureaucracy.
 
+## D20 - Four calls from the decision pass (2026-08-18, ROD)
+
+**1. TOGGLES COME OUT OF THE TOP BAR.** Rod: *"i got a feedback which is that i should remove
+toggles from the bar and i think thats what we will do."* Breathing / sparkler / fireworks leave the
+bar entirely.
+
+This also SETTLES the nav-centring problem rather than trading it off. The bar is
+`grid-template-columns: 1fr auto 1fr`; the asymmetry existed only because the toggles made the right
+zone 165px wider than the mark+name. With the third zone empty, the outer columns are equal, so the
+nav is centred AND the gaps are even. No compromise needed.
+**STILL OPEN: where the three toggles GO.** They are real controls, not decoration - the motion
+toggle in particular is an accessibility affordance. Parked as a proposal, not decided.
+
+**2. CODE BLOCK -> Maxime Heckel's header strip, SQUARED.** Rod: *"i like Maxime Heckel's, i however
+do need it to be a square instead of a rounded shape and i like the colors of other code blocks
+more."* So the structure is Maxime's filename/language strip with the copy button in it, corners
+squared per the 2026-08-11 shape pass (square by default, round only by exception).
+**STILL OPEN: whose colours.** Rod prefers another block's palette but did not name which. The
+sourced candidates with their own schemes are Starlight, Josh Comeau, iquilezles, ronja and
+catlikecoding. Needs a side-by-side of the SAME code under each scheme before he can answer.
+
+**3. POST RAIL -> metadata AND a TOC below it**, as the post blockout already shows. Two removals
+and one repurpose, all from Rod:
+- **No "Copy for LLM" and no "View as Markdown".** Those are stripe's agent buttons. We are not
+  building for agents, and copying them would be transcribing a feature rather than a design.
+- **Share buttons become a SOCIALS section** linking to Rod's own accounts, rather than
+  share-this-page actions.
+
+**4. THE CALLOUT FAMILY IS NOT A SEPARATE DECISION.** Rod rejected the framing of the question:
+*"actually the current callout family isnt great and i think we should do a comprehensive rework
+with context from things that will surround it like tags, headers, image boxes, etc. do we have a
+blockout like stripe's yet?"*
+
+**Answer: no, and that is the real gap.** Two artefacts exist and neither is this:
+- `post-blockout.html?v=stripe` is the page SPINE - grid, rail position, column widths. It says
+  nothing about prose.
+- `component-blockout.html` holds components in ISOLATION, each alone in a ~340px card.
+
+Judging a callout alone in a small card cannot tell you how it reads between a heading and a code
+block at a 663px measure. That is almost certainly why the callout picks kept feeling wrong: the
+question was being asked in a context that hides the answer.
+
+**So the next artefact is a PROSE BLOCKOUT** - the whole reading system in context, in reading
+order, at real measure: headings, body, links, inline code, tags/meta, image boxes with captions,
+code blocks, callouts, quotes, lists. Greybox, judged as a FAMILY. The individual take/leave pass
+on `element-gallery.html` waits for it, because the answers change once the neighbours are visible.
+
