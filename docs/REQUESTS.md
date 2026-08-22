@@ -35,8 +35,8 @@ absent. `BLOCKED` must name what it waits on and whether that is Rod or another 
 | 37 | Big performance check - performance is the biggest issue right now | **IN PROGRESS** | 5-area audit running: CSS paint cost, JS runtime, three.js, asset weight, and what actually ships live vs lab-only. |
 | 38 | Manual code audit of everything written so far | **NOT STARTED** | Rod: *"I've been trusting you too much for code and that's on me. I'll be manually looking over all code from now on."* Starts after #37. Standing change recorded in memory. |
 | 39 | Comprehensive prose rework with context (tags, headers, image boxes) | **NEEDS ROD** | Answer to "do we have a blockout like stripe's yet?" was NO. Built `prose-blockout.html` - whole reading system in reading order at 663px. Judge the callouts THERE, not in isolation. |
-| 40 | Where do the three top-bar toggles go now? | **NEEDS ROD** | D20 removed them from the bar. They are real controls - the motion one is an a11y affordance - so they need a home. |
-| 41 | Code block colours - whose? | **NEEDS ROD** | D20 took Maxime's structure, squared. Rod prefers another block's palette but did not name it. Candidates with their own schemes: Starlight, Josh Comeau, iquilezles, ronja, catlikecoding. |
+| 40 | Where do the toggles go | **PART DECIDED** | D21: fold into the scene toggle, keep motion, reduced-motion = still. OPEN: kill the breathing SUBSYSTEM (18 files, 221 refs) or just its toggle; and whether sparkler + fireworks fold in too. |
+| 41 | Code block colours | **THINKING** | Rod: type = our orange, then a square harmony (green/blue/pink), VS Code-ish roles. CONFLICT: palette law says no cool UI accent and no red. Syntax may be a carve-out but that needs saying out loud. Also out of sequence with D18 (colour last). |
 | A | About layout cannot be laid out until dimden vs Klubnika is judged | **BLOCKED** | **Rod.** D15 kept two survivors on purpose; the difference is how much live scene each covers, which a greybox cannot show. |
 
 ## Blocked on Rod specifically — clearable in one message

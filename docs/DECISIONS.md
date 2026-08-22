@@ -469,3 +469,39 @@ order, at real measure: headings, body, links, inline code, tags/meta, image box
 code blocks, callouts, quotes, lists. Greybox, judged as a FAMILY. The individual take/leave pass
 on `element-gallery.html` waits for it, because the answers change once the neighbours are visible.
 
+## D21 - One combined control; the breathing TOGGLE retires (2026-08-18, ROD)
+
+Rod, on where the three bar toggles go: *"We should just have it combined with the scene toggle. we
+also wont have breathing anymore it doesn't exist but we should just keep the motion. if they have
+prefer reduced motion then it can be still instead."*
+
+**Decided:** the separate bar toggles are gone (D20) and their function folds into the existing
+scene toggle. One control, not four. Motion survives as a concept; a separate breathing switch does
+not. `prefers-reduced-motion` defaults the site to STILL rather than needing the user to find a
+control.
+
+**FACTUAL CORRECTION, because the decision reads differently once this is known.** Breathing is not
+gone from the code. Measured 2026-08-18:
+- **18 SCSS files** reference it, 221 references total (`_animations.scss` alone has 60,
+  `_topbar.scss` 59, `_post.scss` 30).
+- `$breathe-selectors` at `_sass/abstracts/_animations.scss:235` names ~14 live selectors.
+- The toggle is wired and rendering at `_includes/topbar.html:75`.
+
+So "we won't have breathing any more" is a **removal task with real reach**, not a statement of
+current fact. Recorded that way on purpose: if a future session reads it as "already gone" it will
+be confused by 221 references.
+
+**AND THE REDUCED-MOTION BEHAVIOUR ROD ASKED FOR ALREADY EXISTS.**
+`_sass/abstracts/_animations.scss:266-272` runs `@media (prefers-reduced-motion: reduce)` over
+`join($breathe-selectors, $reduced-motion-extras)` and sets `animation: none !important`. There is
+also a `html.breathe-override` escape hatch so a user who deliberately turns motion ON can overrule
+their OS setting. That pattern is worth carrying into the new control rather than rebuilding.
+
+**STILL OPEN (asked, not assumed):** whether "no breathing" means retiring the SUBSYSTEM (a 18-file
+removal that also deletes the ambient glow the site is partly built on) or only retiring its
+TOGGLE and letting the motion control cover it. Those are very different jobs.
+
+**ALSO STILL OPEN:** what the one combined control actually governs. Four things existed - scene,
+breathing, sparkler, fireworks - and Rod named scene and motion. Sparkler and the fireworks reward
+stream (D12, an unlockable) have not been ruled on.
+
