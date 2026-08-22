@@ -39,11 +39,20 @@ export class MirroredSurface {
 
     this.mirrorCamera = new THREE.PerspectiveCamera(camera.fov * 1, camera.aspect, 0.001, camera.far);
 
-    this.renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-      minFilter: THREE.LinearFilter,
-      magFilter: THREE.LinearFilter,
-      format: THREE.RGBFormat
-    });
+    /* Half resolution (Rod, 2026-08-21). This target renders the ENTIRE scene a SECOND time every
+       frame, so it is the second biggest fragment cost after bloom. The reflection is read through
+       a distorted, fresnel-blended UV on a moving water surface, so the detail it loses is detail
+       the water shader was already destroying. */
+    this.reflectionScale = options.reflectionScale ?? 0.5;
+    this.renderTarget = new THREE.WebGLRenderTarget(
+      Math.round(window.innerWidth * this.reflectionScale),
+      Math.round(window.innerHeight * this.reflectionScale),
+      {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBFormat
+      }
+    );
 
     const textureLoader = new THREE.TextureLoader();
     this.dudvTexture = textureLoader.load('/assets/tex/DUV.png');
@@ -258,7 +267,10 @@ export class MirroredSurface {
         uDistort: { value: 0.1 }, uDistortFalloff: { value: 150.0 }, uNormalUp: { value: 0.6 },
         uRidge: { value: 1.0 },   // Rod-tuned: sharp crests
         uFresnel: { value: 0.35 }, uFresnelPow: { value: 4.3 }, uWaterColor: { value: new THREE.Color(0x0a1426) },
-        uSunDiffuse: { value: 0.13 }, uSunLift: { value: 0.2 }, uSunDir2: { value: new THREE.Vector3(0.4, 0.5, 0.3).normalize() }, uSunColor2: { value: new THREE.Color(0xaec6f0) },   // moonlight (cool blue-white)
+        // uSunLift 0.2 -> 1.5 (Rod, 2026-08-21), the top of the tuner's range. It was dialled almost
+        // to zero back when bloom was the lighting rig; with the sky doing that job the crest lift is
+        // real moonlight now. It multiplies uSunDiffuse, so crests gain 0.13 * 1.5 = 0.195 of uSunColor2.
+        uSunDiffuse: { value: 0.13 }, uSunLift: { value: 1.5 }, uSunDir2: { value: new THREE.Vector3(0.4, 0.5, 0.3).normalize() }, uSunColor2: { value: new THREE.Color(0xaec6f0) },   // moonlight (cool blue-white)
         uRippleOrigin: { value: Array.from({ length: 16 }, () => new THREE.Vector2()) },
         uRippleStart: { value: new Array(16).fill(-1000.0) },   // far-past = inactive
         uRippleSpeed: { value: 80.0 }, uRippleFreq: { value: 0.2 }, uRippleWidth: { value: 30.0 },
@@ -310,7 +322,10 @@ export class MirroredSurface {
   }
 
   handleResize() {
-    this.renderTarget.setSize(window.innerWidth, window.innerHeight);
+    this.renderTarget.setSize(
+      Math.round(window.innerWidth * this.reflectionScale),
+      Math.round(window.innerHeight * this.reflectionScale)
+    );
     this.mirrorCamera.aspect = this.camera.aspect;
     this.mirrorCamera.updateProjectionMatrix();
   }

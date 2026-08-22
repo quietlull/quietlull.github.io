@@ -15,13 +15,15 @@ export const CONFIG = {
 
   lanterns: {
     bloom: {
-      // Retuned 2026-08-13 (Rod) to sit against the now-FLAT lantern emissive. A flat source holds
-      // gradientStart across the whole mesh instead of falling to 0.35, so it feeds the bloom far
-      // more light; strength came down from 1.4 to compensate. Radius 0 weights the composite
-      // toward the sharpest mip, which is the tightest halo UnrealBloomPass can produce.
-      strength: 0.45,
-      radius: 0,
-      threshold: 0.45,
+      // Retuned 2026-08-21 (Rod) for the Dual Kawase pass. No threshold knob any more: the bright
+      // pass is gone, so the whole frame blurs and is added back (D23).
+      // At these numbers the composite adds 0.7 * (0.88 + 0.74) = 1.13x the frame back as glow,
+      // against 0.45 * 1.8 = 0.81x before, so roughly 1.4x more light than the old settings.
+      // Radius is NOT a blur width - it rebalances the tight band against the wide one.
+      strength: 0.7,
+      radius: 0.15,
+      // Fraction of the frame the blur chain runs at. Owned by the pass, applied in setSize.
+      scale: 0.5,
     },
     float: {
       speed: 1,
