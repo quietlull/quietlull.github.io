@@ -84,6 +84,5 @@ export default [
   build('app', { src: SRC_PWA, jekyll: true }),
   build('sw', { src: SRC_PWA, jekyll: true }),
   build('three-background-scene'),
-  build('three-background-general'),
   build('three-background-minimal'),
 ];

@@ -1,5 +1,6 @@
-// Three.js Minimal — Ambient background for post pages
-// Tiny floating embers (white-yellow, organic flutter) + a few edge lanterns.
+// Three.js Minimal — Ambient background for post pages and every section page.
+// Tiny floating embers ONLY (white-yellow, organic flutter) — the edge lanterns the previous
+// comment described were removed and only this note survived them. No fireworks, no water, no FBX.
 // Scroll-locked camera, mouse avoidance.
 
 import * as THREE from 'three';
