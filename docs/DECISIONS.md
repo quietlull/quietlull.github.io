@@ -536,3 +536,58 @@ scan's flaws got half-fixed twice already.
 - If a lab page needs something from the live site, it COPIES it into the lab rather than editing
   the original.
 
+## D20 - Bloom is a 2-level Dual Kawase with no threshold (2026-08-18, ROD)
+
+UnrealBloomPass is out. Rod, after A/B-ing four implementations in `redesign-lab/scene-tuner.html`:
+*"the two pyramid kawase is the winner for now"*, then *"remove the other blooms"* and *"remove the
+slider we are keeping the kawase"*.
+
+**Why it was ever a question.** Ablation profiling on Rod's machine with hardware acceleration OFF
+(his stated no-GPU constraint) measured the scene at 16.5 ms/frame, of which **bloom was 8.5 ms -
+52%** - and that was already at HALF resolution, so full-res bloom was costing roughly 34 ms. Draw
+calls were never the issue: the scene is 27 draw calls and 733 triangles. It is fragment-bound.
+
+**What UnrealBloomPass actually costs.** Read from source: `nMips = 5`, eleven render targets, and a
+SEPARABLE GAUSSIAN at every level - two passes per mip plus a composite, so ~12 passes.
+`kernelSizeArray = [3,5,7,9,11]` and the inner loop fetches `vUv + offset` AND `vUv - offset` per
+iteration, so the deepest level is 42 taps per pixel per direction. It also samples on-texel, so it
+gets no benefit from bilinear filtering.
+
+**What shipped instead** (`redesign-lab/cheap-bloom.js`, `KawaseBloomPass`): Marius Bjorge's dual
+filtering at TWO levels with the bright-pass skipped -
+
+```
+1  copy       whole frame -> 640x360    (no threshold, nothing is cut)
+2  down       640x360 -> 320x180        (5-tap)
+3  up         320x180 -> 640x360        (8-tap tent)
+4  composite  base + blur * strength
+```
+
+**Four passes, two render targets**, against twelve and eleven. Every tap is offset to land between
+texels so the GPU's bilinear filter fetches four texels per sample for free.
+
+**Brightness had to be matched deliberately.** Rod: *"the unreal bloom is definitely doing something
+to the exposure."* He was right, and it was energy, not tone: Unreal's composite sums five mips
+weighted `[1.0, 0.8, 0.6, 0.4, 0.2]`, summing to 3.0, so at identical `strength` it deposits ~3x the
+light of a single-texture composite. The Kawase pass therefore uses Unreal's own per-mip composite
+(`lerpBloomFactor(f) = mix(f, 1.2 - f, radius)`), which is why `radius` still rebalances tight
+against wide the way the stock knob did.
+
+**No threshold is deliberate.** With the bright-pass skipped the whole frame blurs and is added
+back, which lifts the dark water as well as the lanterns. That matters because of the finding below.
+
+**DELETED the same day, having lost on look rather than cost:** the single-pass variant (bright +
+9-tap blur), the plain additive composite, and the paper-grain experiment. Rod: *"just remove the
+grain its not what i wanted."* The implementation switcher is gone too - Kawase is installed on load,
+and UnrealBloom survives only as `window.__stockBloom` for a console A/B.
+
+**THE FINDING THAT OUTLIVES THIS DECISION: the scene has no lights at all.** `grep` for
+`AmbientLight|DirectionalLight|HemisphereLight|PointLight|SpotLight` across `_javascript/` returns
+nothing. Lanterns are visible only because their material is emissive, and the water is a mirror
+whose sky is `scene.background = 0x080f1b` - rgb(8,15,27), almost black. **Bloom was functioning as
+the scene's lighting rig**, which is why removing it made everything read unlit and why tone mapping
+could not rescue it (exposure multiplies, and anything x near-black is still black). The water shader
+already carries an unused moonlight model - `uSunLift 0.2`, `uSunDiffuse 0.13`, `uSunColor2 0xaec6f0`
+- dialled almost to zero because bloom was doing the job. Sky, water colour and moonlight are now
+live sliders in the tuner. Lighting the scene properly is still open.
+
