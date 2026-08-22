@@ -527,6 +527,12 @@ This is not a preference, it is what makes the redesign finishable. Every hour s
 current site is spent on surfaces the redesign is about to replace, and it is how the 2026-08-11
 scan's flaws got half-fixed twice already.
 
+**EXCEPTION, 2026-08-22 (Rod, explicit):** `_layouts/` and `_includes/` were opened once, for the
+scene consolidation only - four layouts repointed from the retired `general` bundle to `minimal`,
+and the fireworks toggle narrowed to the one layout that still has fireworks. Rod: *"remove general
+and just replace it with minimal for now that makes sense."* This does NOT reopen those directories
+generally; the three.js scene was already carved out of this rule, and this is its page wiring.
+
 **Consequences worth stating so they are not rediscovered:**
 - "Kill breathing" is not a removal job. It is an absence in the new design.
 - The live-site items in [MERGE-WORKLIST.md](MERGE-WORKLIST.md) gates 4-6 - the dead search
