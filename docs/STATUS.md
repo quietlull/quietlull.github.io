@@ -120,76 +120,50 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
 
 # SESSION SAVE - 2026-08-18 (read this first after a clear)
 
-## Merge readiness
+## The job is now ONE thing
 
-**[MERGE-WORKLIST.md](MERGE-WORKLIST.md) is the answer to "what is left before we merge."** Built
-2026-08-18 from an eight-agent sweep, 111 verified findings, ordered into gates. Read it instead of
-reassembling the question. Headline: nothing of the redesign has ever touched the live site, and the
-two sides share **2 token names out of 39 and 270** - so the port needs a token bridge, a Rollup
-decision and an SCSS delivery decision sequenced ahead of any component work.
+**Finish `redesign-lab/` until it can replace the entire main site in a single port.**
+D22, Rod: *"zero main page stuff at this point."* `_sass/`, `_layouts/`, `_includes/`,
+`_javascript/`, `_config.yml` are OFF LIMITS. Repo hygiene that touches no rendered surface is fine.
 
-## What changed this session
+Orient from **`redesign-lab/HANDOFF.md`** (rewritten 2026-08-18, current). Open work is
+**`docs/REQUESTS.md`** - read the OPEN table only; done rows are phantoms.
 
-- **FINAL LANDING BUILT** - `redesign-lab/final-landing.html`. ROD: *"we are using A3 NDT as the
-  main base of the new landing, keep the changes we did to the hero test and combine them."*
-  Layout is `a3-assembly` body.a3seam (harumakigohan.com/ndt): M PLUS Rounded 1c, content in a
-  narrow column inset 18.5% each side, descent rhythm. Hero is the LOCKED V6 verbatim. Everything
-  below the hero is the same bench components as new-landing; nothing was rebuilt.
-  **One deliberate omission, flagged in the file header:** ndt's 160px painted SEAM BAND is NOT
-  there, because the borrowed painted dividers were rejected 2026-08-13 (they read as stickers over
-  a continuous live scene). Sections are separated by space instead, per that decision. Say the
-  word and the band comes back from `extracted/components/seam-band`.
-  Verified at 1440 and 895: bar + hero = viewport exactly, mark matches the bar, social rail sits
-  exactly 48px under the vertical name, no overflow, no console errors.
-- **CALLOUTS ARE SOURCED.** Eight sites fetched by curl and independently re-verified; records in
-  `redesign-lab/sources/*-prose.md`. `component-blockout.html`'s callout section is now split into
-  three ROLE sections (note / pull quote / TL;DR) with 32 greybox variants, zero non-grey colours.
-  The headline finding: **stripe.dev has no callout system at all** - that is now variant G, not a
-  gap. Four real recipes landed (Maxime escaping badge + label tab, catlikecoding disclosure aside,
-  MinionsArt fill-only and dropped panel), joining Cyanilux.
-- **stripe.dev is in the gallery** - S tier, plus post-template and post-index sub-page cards, all
-  captured fresh at the exact URL ROD named.
-- **Lab index rebuilt** and reordered by what needs ROD's eye. Four superseded pages retired to
-  `archive/2026-08-18-retired/`. Every link verified 200.
-- **Favicon**: rotation now persists on hover-off, position springs back (the previous pass had it
-  backwards). `data-magnet-hold` is deleted from the engine.
-- **Top bar scaling ladder**: `--top-bar-height` is derived from the rows at every tier and now
-  lives on `:root`, so the mark and the hero both size against the real bar instead of a constant.
+## Build target: the `final-*` group
 
-## OPEN DECISIONS - waiting on Rod
+Six pages, each containing ONLY its chosen blockout, every slot greybox until Rod approves that
+specific element. State panel on each. `final-landing` is 3 of 8; the rest are 0. The only approved
+things on the whole site are the favicon, the V6 hero and the scene bottom.
 
-1. **Callout family** - now a real choice rather than a shortage. Six sourced treatments in
-   `component-blockout.html`, three roles. The live question is still: three separate objects, or
-   one object in three roles? Maxime's label tab is the option that answers it without three
-   objects. Rod has already said REPLACE ALL EXCEPT the stamp takeaway.
-2. **Final landing** - does the ndt seam band come back, or does space carry the transitions?
-3. **Component picks** from `component-blockout.html`: code block, meta chips, prev/next, hero
-   media, TOC.
-4. **Projects** - Kaito vs MinionsArt, no winner. **About** - dimden vs Klubnika, no winner.
-   **Ramblings / Resume** - "try them all" is not yet a pick.
-5. **Portal** - two verified sources (ZUTOMAYO, Space Jam); fold in the 109ichiki/zutomayo popup
-   windows, replacing the unlabelled satellites.
-6. **Type decision** - mincho vs rounded gothic. final-landing currently commits to the ROUNDED
-   GOTHIC, because that is what A3 ndt is. That is a de-facto answer if it ships.
-7. **Wordmark** - kept as plain text, replace near the end (backlog R2).
-8. **Achievements design pass** - backlog E1b.
-9. **Where the dated timeline lives** - the frozen flow has no ramblings section for it.
-10. **Mobile top bar** - below 560px the mark stops being full-bleed and goes inset, because a
-    square the height of a three-row bar leaves no room for the toggles. Deliberate, but untuned.
+## Two new judging surfaces
 
-## UNCOMPLETED TASKS
+- **`prose-blockout.html`** - the whole reading system in reading order at stripe's 663px measure,
+  all six callout candidates in real sequence. Callouts get judged HERE, not in isolation: a callout
+  alone in a 340px card cannot show how it reads between a heading and a code block.
+- **`element-gallery.html`** - 9 real cropped screenshots of live elements, take/leave per card.
 
-- **ROD: get the Z measurements of the scene** (backlog R1) - gates the near-water firework band.
-- **Build the sourced components** - the callout recipes are sourced and greyboxed but not BUILT.
-- **Re-source the 12 circular-citation components** - each now carries a warning in its CSS header.
-- Aggregates for the other blockouts (only post exists, and only as a worklist).
-- Reduced-motion path for the card cursor-reveal; FPS check on `filter:blur()` + `mix-blend-mode`.
-- `npm test` is RED from ~3309 pre-existing lint errors, mostly in `redesign-lab/`.
-- Uncommitted in the working tree: the flat-emissive shader + bloom retune, and the Sarah
-  lantern/firefly avoidance rework whose radii were never re-tuned per scene.
+## Decisions this session
 
-## THE THING THAT KEEPS GOING WRONG
+D15 sub-page winners (resume dropped, About keeps two) - D16 rounded gothic, no serif -
+D17 no chevron - D18 colour comes last - D19 source ELEMENTS not layouts - D20 code block, post rail,
+toggles out of the bar - D21 one control (scene + all motion) - D22 lab only.
 
-Five failures logged, one root: **the mechanics were verified and the premise never was.** The
-tally is in [PAGE-PROCESS.md](PAGE-PROCESS.md) under REPEAT-OFFENCE TALLY and it grows by
-repetition on Rod's instruction - do not tidy it.
+## What it cost, so it is not repeated
+
+`projects-aggregate.html` built and rejected as *"the most ai generated page i have seen"*, and six
+elements added to the landing that Rod never asked for. Same root, now hard gates in
+[PAGE-PROCESS.md](PAGE-PROCESS.md): **the blockout is a contract** (an aggregate contains only its
+approved blockout's elements, never more) and **stages are dependencies** (missing context = ASK).
+
+## Numbers
+
+Of 72 tracked elements: 40 Slop with no source, 11 Slop with a source saved, 12 circular-citation,
+21 with real provenance. Port substrate gap: 39 lab tokens vs 270 live, **2 names in common**.
+
+## Waiting on Rod
+
+Prose-blockout judgement - element-gallery take/leave - code-block colours (and whether syntax is an
+explicit carve-out from the palette law, which bans cool accents and red) - whether the fireworks
+reward keeps its own button despite D21 - About layout - and the palette export, which is the only
+item that can be LOST rather than deferred: the approved colours live in
+`localStorage['lab-palette']` in his browser and in no tracked file.
