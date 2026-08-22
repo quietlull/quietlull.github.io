@@ -136,5 +136,12 @@ window.bloomPass = bloomPass;
 window.lanternController = lanternController;
 window.lanternMaterialManager = lanternMaterialManager;
 window.fireworkController = fireworkController;
+// composer added 2026-08-18 so redesign-lab/scene-tuner.html can drive render-target sizes live.
+// It owns the bloom chain's targets. mirroredSurface is already exposed further down; it owns the
+// half-window reflection target that renders the whole scene a SECOND time every frame.
+window.composer = composer;
+// THREE itself, for poking at materials from the console. The runtime bloom A/B this was added for
+// is gone - Kawase won (D23) and is built by three-shared.js. Debug-only, like every line around it.
+window.THREE = THREE;
 
 }

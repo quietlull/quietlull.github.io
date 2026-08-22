@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { KawaseBloomPass } from './shader/kawaseBloom.js';
 import { CONFIG } from './three-config.js';
 
 export { CONFIG };
@@ -15,26 +15,42 @@ export { CONFIG };
 
 export function createBaseScene() {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x080f1b);
+  /* Raised from 0x080f1b on 2026-08-21 (Rod). The scene has no lights at all and the water is a
+     mirror, so a near-black sky gave a near-black water and bloom was the only thing making the
+     scene readable. The sky IS the lighting until request #40 lands. */
+  scene.background = new THREE.Color(0x162237);
 
   const camera = new THREE.PerspectiveCamera(
     55, window.innerWidth / window.innerHeight, 0.1, 10000
   );
   camera.position.z = CONFIG.camera.positionZ;
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  /* antialias:false is deliberate, not an oversight. The scene never renders to the default
+     framebuffer - EffectComposer renders into its own WebGLRenderTarget, which carries no MSAA -
+     so the flag antialiased nothing while still allocating a multisampled backbuffer. Removing it
+     is a pure saving. (2026-08-18, measured under software rasterisation.) */
+  const renderer = new THREE.WebGLRenderer({ antialias: false });
+  /* Capped at 1 rather than 1.5. This is a FRAGMENT lever, and fragments are the whole cost here:
+     the scene is only 27 draw calls and 733 triangles, so nothing about it is geometry-bound. At
+     1.5 on a HiDPI screen every pass and every composite shades 2.25x the pixels. On the no-GPU
+     machine the project targets, that work lands on the CPU. */
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   // Post-processing bloom (identical on all pages)
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    CONFIG.lanterns.bloom.strength,
-    CONFIG.lanterns.bloom.radius,
-    CONFIG.lanterns.bloom.threshold
-  );
+  /* Dual Kawase, two levels, no bright pass (D23). Bloom runs at HALF resolution: it is a blur
+     chain, so its output is low-frequency by definition and halving the buffer costs roughly a
+     quarter of the fragments for a difference that is very hard to see.
+     NOTE the size argument is the FULL frame, not the halved one UnrealBloomPass wanted. This pass
+     applies CONFIG.lanterns.bloom.scale itself inside setSize, so it STAYS at half resolution
+     after a window resize instead of being promoted to full by composer.setSize(). */
+  const bloomPass = new KawaseBloomPass(window.innerWidth, window.innerHeight, {
+    strength: CONFIG.lanterns.bloom.strength,
+    radius: CONFIG.lanterns.bloom.radius,
+    scale: CONFIG.lanterns.bloom.scale
+  });
   composer.addPass(bloomPass);
 
   // Canvas as fixed background
