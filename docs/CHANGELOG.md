@@ -550,3 +550,53 @@ needs verification. The why is the point; a diff already says the what.
   mobile design rather than left as a silent mismatch. Measured at 1440 / 1250 / 1210 / 910 / 700 /
   390: bar and mark identical at every one above 560, no wrap, no squeezed labels, no overflow, and
   1440 unchanged from the layout ROD approved.
+
+## 2026-08-22 - SCENE PASS: PAPER FILTER BUYS THE RESOLUTION DROP (ROD)
+
+The three.js scene stopped being tuned and got restructured. Six things landed and all are live.
+
+**Bloom.** The 2-level Dual Kawase that D23 chose on 2026-08-18 had only ever run in the tuner -
+`three-shared.js` still imported `UnrealBloomPass` and the lab hot-swapped over the top of it. It is
+in the bundle now at `shader/kawaseBloom.js`, fixed at two levels, with the bright pass and the
+`threshold` knob deleted rather than skipped and every kernel weight named as a GLSL const. D23's
+own pass count was wrong and is corrected: five renders over four targets, not four and two.
+
+**Lighting.** The finding that outlived D23 - the scene has zero lights and bloom was standing in
+for a rig - got its first real answer. Sky `0x080f1b -> 0x162237`, bloom strength 0.45 -> 0.7,
+radius 0 -> 0.15, and `uSunLift` 0.2 -> 1.5 so the water's dormant moonlight model finally carries
+load. Tone mapping was considered and rejected for the same reason as before: exposure multiplies,
+and near-black times anything is still near-black.
+
+**Paper (D24).** ROD asked whether a paper texture would let the resolutions halve, and it did:
+*"the artifacts ... get completely masked and makes it look intentional with the paper grain."* Two
+baked sheets composited INSIDE the bloom pass - no new pass, no new target. Behind it, pixel ratio
+1 -> 0.5, bloom scale 0.5 -> 0.25, reflection 0.5 -> 0.25. The sheets are baked because the source
+Shadertoy evaluated a 4-octave fbm ~24 times per pixel, which software rasterisation cannot pay for.
+REJECTED along the way, twice, from an external review: 8-bit bloom buffers (the linear sky is steps
+2/4/10 of 255, so it would band) and a 1/8-resolution blur (backwards for a bloom with no threshold).
+
+**Fireworks.** The explosion vertex shader was recomputing a constant - a hash plus `acos`, two
+`sin`, two `cos` and a `cbrt`, every frame, once per trail copy, 200,000 times a frame at the cap.
+Baked to the position attribute on the CPU. A shared-geometry variant was built and REJECTED by ROD
+on look (rainbow shells lost their colour variety). The rocket trail was deleted outright - ROD:
+*"they cannot be seen anyways"*. Particle trails stay at 10; ROD: *"the particle trails are
+important."* Investigated and NOT acted on: there is no shell pool and building one is not worth it,
+because allocation is only 0.015 ms of the 0.207 ms spawn cost.
+
+**Scenes 3 -> 2.** `three-background-general.js` retired; `minimal` now serves everything except
+About. ROD: *"remove general and just replace it with minimal for now that makes sense."* 101 dead
+lines went with it. Two consequences worth carrying: portal, landing and projects have **no
+fireworks at all** now, so the topbar toggle was narrowed to `section-about` rather than left inert;
+and this needed `_layouts/` and `_includes/`, which D22 closes - ROD authorised it for this change
+only and the exception is recorded in D22 itself.
+
+**Three traps found**, all now in TRAPS.md: the composer caches its pixel ratio so lowering dpr made
+post-processing *slower* (every dpr reading before today was inverted), a backgrounded tab throttles
+`setInterval` so timed load tests silently under-deliver, and `sizeAttenuation` meant firework fill
+was never the cost despite a scary-looking `particleSize: 20`.
+
+**WHAT IS NOT DONE, stated plainly because it is easy to lose:** the paper filter is live on every
+page including posts without a provenance row, the boil runs 3.25/sec behind body text with no
+`prefers-reduced-motion` path despite D21 asking for one, and **nothing has been re-profiled** - the
+entire performance case for this batch rests on a measurement of a pass that no longer exists.
+

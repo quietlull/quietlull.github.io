@@ -6,9 +6,12 @@ relying on them. If this disagrees with the code, this is stale - fix it.
 ## Build: two toolchains, one deploy
 
 1. **Node** - `npm run build` runs both in parallel:
-   - `rollup.config.js` - 12 targets: Chirpy-convention page bundles (`commons`, `home`, `page`,
+   - `rollup.config.js` - 11 targets: Chirpy-convention page bundles (`commons`, `home`, `page`,
      `post`, `categories`, `misc`), PWA `app`/`sw` (front matter injected by a custom plugin), and
-     3 standalone Three.js bundles. Output: `assets/js/dist/` (gitignored, machine-owned).
+     2 standalone Three.js bundles. Output: `assets/js/dist/` (gitignored, machine-owned).
+     **Each Three.js bundle carries its OWN copy of three.js**, which is why `minimal` is ~525 KB to
+     draw 35 spheres. Separate URLs get separate caches, so moving between a section page and About
+     downloads two complete copies. A shared vendor chunk is the fix and has not been attempted.
    - `purgecss.js` - strips Bootstrap down to classes actually used in `_includes/**`,
      `_layouts/**`, `_javascript/**`. Output: `_sass/vendors/_bootstrap.scss` (checked in but
      machine-owned - never hand-edit).
@@ -34,9 +37,19 @@ relying on them. If this disagrees with the code, this is stale - fix it.
 - **Breathing glow** - the ambient glow system; full note: [BREATHING.md](BREATHING.md).
 - **Sparkler cursor** - `mouse-trail.js`; Canvas2D particle trail that samples color from breathing
   elements via `animationName` string-matching (a trap - see [TRAPS.md](TRAPS.md)).
-- **Three.js scenes** - `three-background-{scene,general,minimal}.js` (about / landing+portal /
-  posts), `three-shared.js`, `three-config.js`, `lantern-controller.js` (physics, avoidance, click
-  raycast), `firework-controller.js`, GLSL in `shader/`. Loaded as standalone bundles per layout.
+- **Three.js scenes** - TWO bundles since 2026-08-22 (`general` was retired): `scene` for the
+  About layout (water mirror, dock + lantern FBX, rotating scroll camera, fireworks) and `minimal`
+  for everything else (35 embers, scroll-locked camera, mouse avoidance, and nothing else - no
+  fireworks anywhere but About). Plus `three-shared.js` (`createBaseScene` owns renderer, composer,
+  bloom and the paper filter), `three-config.js`, `lantern-controller.js` (physics, avoidance, click
+  raycast), `firework-controller.js`, GLSL in `shader/`.
+- **Post-processing is one pass, not several.** `shader/kawaseBloom.js` is a 2-level Dual Kawase
+  with no bright pass (D23), and the paper-grain filter is composited INSIDE its final pass rather
+  than added as its own - see D24. Two sheets from `assets/tex/paper-*.png`, which are baked
+  normal+height maps (rg = normal xy, b = height), not photographs.
+- **The scene has ZERO lights.** Lanterns are visible only through emissive materials; the sky
+  colour and the water's moonlight terms are the lighting. Bloom was standing in for a rig until
+  2026-08-21. Request #40 (light it properly) is still open.
 - **Fireworks ownership is split across two files** and neither half makes sense alone.
   `firework-controller.js` runs two independent auto-launch emitters (`greeting`, `reward`), each
   with its own timer and its own cap on live shells, but it knows nothing about pages - it never

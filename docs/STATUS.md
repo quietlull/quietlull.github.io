@@ -109,19 +109,22 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
   uncommitted today is the perf session's `three-shared.js` / `three-background-scene.js` work
   (antialias off, pixel ratio capped at 1, bloom at half res, composer + THREE exposed for the
   tuner).
-- **BLOOM IS NOW KAWASE IN THE LIVE BUNDLE (2026-08-21).** D23 had been true of the tuner page only;
-  `three-shared.js` still imported `UnrealBloomPass` and the lab hot-swapped over it. The pass now
-  lives at `_javascript/shader/kawaseBloom.js`, fixed at 2 levels, bright pass and `threshold`
-  deleted outright, kernel weights named as GLSL consts. `redesign-lab/cheap-bloom.js` is retired to
-  a pointer note - there is no second copy any more. Rod's numbers, applied and verified in-page:
-  sky `0x162237` (was `0x080f1b`), strength 0.7, radius 0.15, bloom scale 0.5, reflection target
-  0.5, pixel ratio 1, `NoToneMapping`, and `uSunLift` 0.2 -> 1.5 so the water's dormant moonlight
-  model finally carries load. Three things found on the way, all now fixed or written down:
-  UnrealBloom was silently promoted from half to FULL res by `composer.setSize()` on the first
-  window resize; the tuner's `swapBloom` threw on a deleted `v-impl` element and aborted its own
-  init; and the ablation baseline in the tuner header is stale, since it was measured against the
-  old pass and a full-window reflection. **Nothing has been re-profiled** - request #37 should
-  re-run the ablation before any of those ms numbers get quoted again.
+- **THE SCENE PASS IS DONE AND LIVE (2026-08-22).** Bloom is a 2-level Dual Kawase in the bundle
+  (`shader/kawaseBloom.js`); UnrealBloomPass, the bright pass and `threshold` are gone. A paper-grain
+  filter is composited inside that pass at zero extra passes, and the render resolutions dropped
+  behind it - **pixel ratio 0.5, bloom 0.25, reflection 0.25** (D24; the two are one decision).
+  Lighting numbers: sky `0x162237`, strength 0.7, radius 0.15, `uSunLift` 1.5, no tone mapping.
+  Fireworks: particle directions baked on the CPU, rocket trail deleted, trail copies stay at 10.
+  Scene bundles went **3 -> 2** - `general` retired, `minimal` everywhere but About, which cost
+  those pages their fireworks and narrowed the topbar toggle to `section-about`.
+  **FIVE DEBTS CARRIED, none of them blocking but all of them real:** the Shadertoy URL is still
+  owed for the paper filter's `element-tracker.md` row (live without provenance, flagged by three
+  ship-checks); there is no `prefers-reduced-motion` path anywhere in the scene code although D21
+  requires one, and the paper boil now runs 3.25/sec behind body text on every post; that boil
+  clears WCAG 2.3.1 only on amplitude, not frequency; there is no WebGL-absent fallback; and
+  **nothing has been re-profiled since UnrealBloomPass was removed**, so every ms figure in D23 and
+  in the tuner header describes a pass that no longer exists. Re-run the ablation before quoting any
+  of them (#37).
 - Palette exploration (`redesign-lab/palette-explorer.html`) - Sodium & Sky is the frontrunner.
 - Next refactor step (post-redesign): Phase 1 boundary audit.
 

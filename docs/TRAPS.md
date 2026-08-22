@@ -139,3 +139,29 @@ identical across articles, so a stale capture passes every eyeball check. `strip
 had been captured from a sibling article, not the URL ROD named. If a card cites a specific URL,
 re-capture that URL rather than trusting a plausibly-named file. Cheap check: read the headline in
 the capture and compare it to the link.
+
+**Lowering the pixel-ratio slider makes post-processing SLOWER, not faster ->** `EffectComposer`
+caches the renderer's pixel ratio at CONSTRUCTION and has its own `setPixelRatio()`. Calling only
+`renderer.setPixelRatio(v)` shrinks the canvas while the composer keeps the old ratio, so
+`composer.setSize(w, h)` sizes every internal target at `w * OLD_ratio` - at dpr 0.5 the post chain
+renders ~4x the canvas pixels and discards them on the final blit. Fixed in the scene tuner
+2026-08-22; **every dpr reading taken before that date measured the inverted effect.** Live code is
+safe only because `createBaseScene` sets the ratio BEFORE constructing the composer and never
+changes it at runtime - moving that line below the `new EffectComposer` reintroduces this silently,
+which is why there is a comment on it.
+
+**A load test built on `setInterval` quietly under-delivers and looks like a pass ->** a
+backgrounded tab throttles timers hard. Measured in the scene tuner: an 83 ms interval fired **3
+times in 2 seconds instead of 24**, so a "12 spawns/sec" stress test proved nothing while appearing
+to prove the system was fine. Drive load tests from `requestAnimationFrame` with a time
+accumulator - rAF pauses outright when the page is hidden, which is honest, rather than running at
+a wrong rate you cannot see.
+
+**A firework/particle vertex shader recomputing a constant every frame ->** the explosion shader
+derived each particle's direction from a hash plus `acos`, two `sin`, two `cos` and a `cbrt` on
+every frame, once per trail copy - ten times per particle, at a 50-shell cap that is 200,000
+evaluations a frame of a value that never changes during a shell's life. Check whether a per-vertex
+computation's inputs actually vary before optimising anything around it; here the inputs were the
+position attribute and `floor(uTime)`, and `uTime` only ever runs 0..1. Baked to the position
+attribute on the CPU 2026-08-22. Related: with `sizeAttenuation` on, those points are ~1.4px on
+screen, so **fill was never the cost** despite `particleSize: 20` looking alarming.

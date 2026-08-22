@@ -256,3 +256,22 @@ The live site is **nine surfaces**, and three layouts each serve two subjects:
   unresolved; `element-tracker.md:52` records Rod resolving it the same day as his own Figma work.
 - **`npm run build:css` staleness is not a production risk** - CI runs `npm run build` before every
   Jekyll build. The real symptom is local-vs-CI divergence.
+
+## Lab chrome to strip at port time (added 2026-08-21, ROD)
+
+Rod: *"remember what we need to remove later."* The `final-*` pages carry judging apparatus that is
+NOT part of the design. None of it may reach the live site. It is listed here rather than only in
+each file's header, because a header comment is not a checklist.
+
+| chrome | where | note |
+|---|---|---|
+| `#state` panel + its `<script>` | every `final-*` page | the slot counter and the toggle button |
+| `.slot`, `.slot__name`, `.slot__wait`, `.slot__tag` | every `final-*` page | greybox placeholders; each one is also an unbuilt element, so these mark real gaps |
+| `.raw` + its `::before` badge | `final-post.html` | real content, no approved design |
+| `.ok` | every `final-*` page | badge REMOVED 2026-08-21 on Rod's call, but the class and `data-state` remain as hooks |
+| `data-slot` / `data-state` / `data-raw` attributes | every `final-*` page | what the panel counts |
+| `.labtag` | every `final-*` page | the bottom-left lab breadcrumb |
+| `body class="show-state"` | `final-post.html` | badges default to visible while judging |
+
+**The `.slot` entries are the useful part of this list.** A slot left at port time is an element
+that was never built, so this doubles as the "what is still missing" check before the port runs.

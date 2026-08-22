@@ -549,6 +549,50 @@ generally; the three.js scene was already carved out of this rule, and this is i
   Rebuild with `BUILD=production npx rollup -c` after touching it.
   This does NOT reopen `_sass/`, `_layouts/`, `_includes/` or `_config.yml`.
 
+## D24 - Paper filter pays for low render resolutions (2026-08-22, ROD)
+
+Rod, after seeing it: *"the artifacts from bloom resolution and reflection being a lower resolution
+get completely masked and makes it look intentional with the paper grain."*
+
+A paper-grain post effect over the whole scene, composited INSIDE the bloom pass's final composite
+rather than added as its own pass - so it costs two texture fetches and one extra tap of the frame,
+no new pass and no new render target. With it on, the render resolutions dropped: **pixel ratio
+1 -> 0.5, bloom scale 0.5 -> 0.25, water reflection 0.5 -> 0.25.** The two decisions are one
+decision. Do not raise the resolutions or drop the paper without re-judging both.
+
+**Shipped values:** washi at tile 1 carrying the large fibre structure, cold press at tile 4 sitting
+inside it as tooth, combined with SUBTRACT (the sheets cancel where they agree, which keeps the
+result from just reading as more noise), mix 0.5, bleed 0.5, displace 0.0075, tooth 0.05, boil 3.25.
+
+**The sheets are BAKED, and that is the whole reason this is affordable.** The source Shadertoy
+derived its paper normal from a 4-octave simplex fbm evaluated ~24 times per pixel - about 144 `sin`
+calls - which is impossible under software rasterisation. `assets/tex/paper-*.png` are normal+height
+bakes (rg = normal xy, b = height), so the shader does one fetch. The generator is not in the repo.
+
+**The boil is the on-pillar part.** It re-rolls both sheets 3.25 times a second instead of every
+frame, which reads as a hand-drawn boiling line rather than video noise. The two sheets are offset
+by a non-integer factor so they do not pulse together.
+
+- REJECTED: `UnsignedByteType` for the bloom buffers, suggested twice by an external review as a
+  software-rasteriser win. The pipeline is LINEAR, and the sky `#162237` is linear
+  `[0.008, 0.016, 0.038]` - steps 2, 4 and 10 out of 255. The whole scene's base tone would quantise
+  into the bottom 4% of the range, and a blur is exactly the smooth gradient that banding destroys.
+  Viable only with sRGB encoding on the way in, which costs an encode/decode.
+- REJECTED: dropping the blur chain to 1/8 resolution. The reasoning offered was "no threshold means
+  low resolution is fine", which is backwards: with a threshold you blur sparse bright blobs and low
+  res hides, without one you composite a low-res copy of the ENTIRE frame back over itself.
+- REJECTED: a single-band composite and a one-pass blur - both were built on 2026-08-18 and lost on
+  LOOK (D23). Re-proposing them as performance wins does not address why they were dropped.
+- NOT DONE, and the honest limit on all of the above: **nothing has been re-profiled** since
+  UnrealBloomPass was removed. The 8.5 ms / 52% figure in D23 and in the tuner header describes a
+  pass that no longer exists. Every resolution decision here was judged by eye.
+
+**CARRIED DEBTS.** The Shadertoy URL is still owed for the `element-tracker.md` provenance row -
+three ship-checks have flagged it and the effect is live without one. There is no
+`prefers-reduced-motion` path anywhere in the scene code, which D21 explicitly asks for. And at
+3.25/sec the boil clears the WCAG 2.3.1 flash threshold only on AMPLITUDE (~2.5% luminance at tooth
+0.05, limit 10%), not on frequency - so raising tooth past ~0.2 would cross it.
+
 ## D23 - Bloom is a 2-level Dual Kawase with no threshold (2026-08-18, ROD)
 
 <!-- RENUMBERED from D20 to D23 on 2026-08-18. Two sessions were writing to this file at once - the
