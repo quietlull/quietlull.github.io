@@ -49,10 +49,10 @@ export class FireworkController {
       // Particle appearance
       particleBrightness: config.particleBrightness ?? 0.6,
 
-      // Trail properties
-      trailRadius: config.trailRadius ?? 15,
-      trailBrightness: config.trailBrightness ?? 0.2,
-      trailGradientWidth: config.trailGradientWidth ?? 0.2,
+      /* PARTICLE TRAIL: how many ghost copies of each particle are emitted, each one step further
+         behind in time. This MULTIPLIES the vertex count - at 10 a 400-particle shell is 4000
+         vertices - and every copy runs the full vertex shader. 1 = no trail. */
+      particleTrail: config.particleTrail ?? 10,
 
       // Colors
       rainbowChance: config.rainbowChance ?? 0.5,
@@ -86,15 +86,6 @@ export class FireworkController {
       emitter.next = this.getRandomDelay(emitter);
     }
 
-    // Shared trail geometry (reused across all rockets)
-    this._sharedTrailGeometry = new THREE.PlaneGeometry(
-      this.config.trailRadius, this.config.trailRadius, 1, 8, 1, true
-    );
-
-    // Reusable math objects (avoid per-call allocations)
-    this._direction = new THREE.Vector3();
-    this._midPoint = new THREE.Vector3();
-    this._upVec = new THREE.Vector3(0, 1, 0);
     this._removeGroup = []; // reused each frame (avoid per-frame array allocation)
 
     this.setupClickHandler();
@@ -222,13 +213,9 @@ export class FireworkController {
       Math.random() * 0.6 + 0.4
     );
 
-    // Create rocket trail that spans from start to end
-    const rocketTrail = this.createRocketTrail(color, startPoint, endPoint);
-
     // Store data for explosion
     const firework = {
-      rocket: rocketTrail,
-      explosion: null, // Will be created when rocket reaches target
+      explosion: null, // Will be created once the launch delay has elapsed
       color: color,
       isRainbow: isRainbow,
       scale: scale,
@@ -241,98 +228,29 @@ export class FireworkController {
     };
 
     this.fireWorkGroup.push(firework);
-    this.scene.add(rocketTrail);
   }
 
-  createRocketTrail(color, startPoint, endPoint) {
-    // Reuse shared geometry and temp vectors
-    this._direction.subVectors(endPoint, startPoint);
-    this._midPoint.addVectors(startPoint, endPoint).multiplyScalar(0.5);
-
-    const geometry = this._sharedTrailGeometry;
-
-    // Create custom shader material for animated gradient
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        uColor: { value: new THREE.Color(color.r * this.config.trailBrightness, color.g * this.config.trailBrightness, color.b * this.config.trailBrightness) },
-        uProgress: { value: 0.0 },
-        uGradientWidth: { value: this.config.trailGradientWidth }
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        varying vec3 vPosition;
-        
-        void main() {
-          vUv = uv;
-          vPosition = position;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 uColor;
-        uniform float uProgress;
-        uniform float uGradientWidth;
-        
-        varying vec2 vUv;
-        varying vec3 vPosition;
-        
-        void main() {
-          // vUv.y goes from 0 (bottom) to 1 (top)
-          // Progress goes from 0 to 1 as rocket travels
-          
-          // Calculate distance from current progress point
-          float distFromProgress = abs(vUv.y - uProgress);
-          
-          // Create gradient that follows the progress
-          // Bright near progress point, fade out behind
-          float brightness = 1.0 - smoothstep(0.0, uGradientWidth, distFromProgress);
-          
-          // Only show trail BEHIND the rocket (below progress)
-          if (vUv.y > uProgress) {
-            brightness = 0.0;
-          }
-          
-          // Fade out the tail
-          float tailFade = smoothstep(max(0.0, uProgress - uGradientWidth - 0.3), uProgress, vUv.y);
-          brightness *= tailFade;
-          
-          vec3 finalColor = uColor * brightness;
-          float alpha = brightness;
-          
-          gl_FragColor = vec4(finalColor, alpha);
-        }
-      `,
-      transparent: true,
-      depthTest: true,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide
-    });
-
-    const trail = new THREE.Mesh(geometry, material);
-
-    // Position the cylinder at midpoint
-    trail.position.copy(this._midPoint);
-
-    // Rotate cylinder to point from start to end
-    trail.quaternion.setFromUnitVectors(
-      this._upVec,
-      this._direction.normalize()
-    );
-
-    return trail;
+  /* Uniform point in a shell of radius 0.9-1.1, matching the sphere maths this replaced in the
+     vertex shader. That version was fed three hashed values; three Math.random() calls have the
+     same distribution, so shells are statistically identical rather than bit-identical. */
+  randomDirectionInSphere() {
+    const theta = Math.random() * 2 * Math.PI;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const radius = Math.cbrt(Math.random()) * 0.2 + 0.9;
+    const sinPhi = Math.sin(phi);
+    return [radius * sinPhi * Math.cos(theta), radius * sinPhi * Math.sin(theta), radius * Math.cos(phi)];
   }
 
-  createPoints(color, number, endPoint, startPoint, isRainbow) {
-    const times = 10; // Trail length
+  buildExplosionGeometry(number, times, isRainbow) {
     const step = 0.005;
-
     const positionAttribute = new THREE.Float32BufferAttribute(number * 3 * times, 3);
-    const vertexColorAttribute = new THREE.Float32BufferAttribute(number * 4 * times, 4);
     const delayAttribute = new THREE.Float32BufferAttribute(number * 2 * times, 2);
+    const vertexColorAttribute = isRainbow
+      ? new THREE.Float32BufferAttribute(number * 4 * times, 4)
+      : null;
 
     for (let i = 0; i < number; i++) {
-      // Random color for rainbow mode
-      if (isRainbow) {
+      if (vertexColorAttribute) {
         const r = Math.random();
         const g = Math.random();
         const b = Math.random();
@@ -341,10 +259,8 @@ export class FireworkController {
         }
       }
 
-      // Random position for initial spread
-      const x = Math.random();
-      const y = Math.random();
-      const z = Math.random();
+      // position IS the direction - the shader uses it as-is
+      const [x, y, z] = this.randomDirectionInSphere();
 
       for (let j = 0; j < times; j++) {
         delayAttribute.setXY(i * times + j, j * step, 0);
@@ -355,9 +271,15 @@ export class FireworkController {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', positionAttribute);
     geometry.setAttribute('delay', delayAttribute);
-    if (isRainbow) {
+    if (vertexColorAttribute) {
       geometry.setAttribute('color', vertexColorAttribute);
     }
+    return geometry;
+  }
+
+  createPoints(color, number, endPoint, startPoint, isRainbow) {
+    const times = this.config.particleTrail;
+    const geometry = this.buildExplosionGeometry(number, times, isRainbow);
 
     const timeUniform = { value: 0 };
     const material = this.createMaterial(timeUniform, color, isRainbow);
@@ -442,51 +364,16 @@ export class FireworkController {
         #include <common>
         uniform float uTime;
         attribute vec2 delay;
-        
-        #define NEWTON_ITER 1
-        #define HALLEY_ITER 1
-        
-        vec3 hash13(uint n) {
-          n = (n << 13U) ^ n;
-          n = n * (n * n * 15731U + 789221U) + 1376312589U;
-          uvec3 k = n * uvec3(n, n*16807U, n*48271U);
-          return vec3(k & uvec3(0x7fffffffU))/float(0x7fffffff);
-        }
-        
-        float cbrt(float x) {
-          float y = sign(x) * uintBitsToFloat(floatBitsToUint(abs(x)) / 3u + 0x2a514067u);
-          for(int i = 0; i < NEWTON_ITER; ++i)
-            y = (2. * y + x / (y * y)) * .333333333;
-          for(int i = 0; i < HALLEY_ITER; ++i) {
-            float y3 = y * y * y;
-            y *= (y3 + 2. * x) / (2. * y3 + x);
-          }
-          return y;
-        }
-        
-        vec3 randomPositionInSphere(float u, float v, float w) {
-          float theta = u * 2. * PI;
-          float phi = acos(2. * v - 1.);
-          float r = cbrt(w) * 0.2 + 0.9;
-          float sinTheta = sin(theta);
-          float cosTheta = cos(theta);
-          float sinPhi = sin(phi);
-          float cosPhi = cos(phi);
-          float x = r * sinPhi * cosTheta;
-          float y = r * sinPhi * sinTheta;
-          float z = r * cosPhi;
-          return vec3(x, y, z);
-        }
         `
       );
 
       shader.vertexShader = shader.vertexShader.replace(
         '#include <project_vertex>',
         `
-        vec3 randomPosition = hash13(uint(transformed.x*65526.+transformed.y*65526.+transformed.z*65526.+floor(uTime)));
-        vec3 randomOnSphere = randomPositionInSphere(randomPosition.x, randomPosition.y, randomPosition.z);
-        transformed.xyz = randomOnSphere;
-        
+        /* transformed.xyz IS the baked direction, written by randomDirectionInSphere() on the CPU.
+           Until 2026-08-22 this was re-derived here every frame from a hash + acos + 2 sin + 2 cos
+           + cbrt (1 Newton + 1 Halley iteration), once per trail copy - so ten times per particle,
+           sixty times a second, for a value that is constant across the shell's whole life. */
         float t = uTime - delay.x;
         if(t < 0.) {
           t = 0.;
@@ -553,43 +440,26 @@ export class FireworkController {
       const time = elapsed * launchSpeed;
 
       if (firework.phase === 'launch') {
-        // LAUNCH PHASE - animate the gradient moving up the trail
-        const launchProgress = Math.min(time / explosionDelay, 1);
+        /* LAUNCH is now purely a delay - nothing is drawn during it. The rocket trail that used to
+           animate here was removed 2026-08-22 (Rod: "they cannot be seen anyways"), which also took
+           a draw call and a ShaderMaterial per shell with it. The delay stays because it is what
+           staggers the explosions instead of letting a burst detonate all at once. */
+        if (time < explosionDelay) continue;
+        firework.phase = 'explode';
 
-        if (launchProgress < 1) {
-          // Gentler ease-out: fast start, gradual deceleration to peak
-          // Using quadratic ease-out instead of cubic for less extreme slowdown
-          const t = launchProgress;
-          const eased = 1 - Math.pow(1 - t, 2); // Quadratic instead of cubic
+        const explosion = this.createPoints(
+          firework.color,
+          this.config.particleCount,
+          firework.endPoint,
+          firework.startPoint,
+          firework.isRainbow
+        );
+        explosion.scale.setScalar(firework.scale);
+        explosion.position.copy(firework.endPoint);
 
-          // Update the shader progress uniform - gradient moves up the trail
-          firework.rocket.material.uniforms.uProgress.value = eased;
-
-        } else {
-          // Reached target - EXPLODE!
-          firework.phase = 'explode';
-
-          // Remove rocket trail (geometry is shared, only dispose material)
-          this.scene.remove(firework.rocket);
-          if (firework.rocket.material && firework.rocket.material.dispose) {
-            firework.rocket.material.dispose();
-          }
-
-          // Create explosion particles
-          const explosion = this.createPoints(
-            firework.color,
-            this.config.particleCount,
-            firework.endPoint,
-            firework.startPoint,
-            firework.isRainbow
-          );
-          explosion.scale.setScalar(firework.scale);
-          explosion.position.copy(firework.endPoint);
-
-          firework.explosion = explosion;
-          firework.explosionClock = new THREE.Clock(); // New clock for explosion timing
-          this.scene.add(explosion);
-        }
+        firework.explosion = explosion;
+        firework.explosionClock = new THREE.Clock();
+        this.scene.add(explosion);
       } else if (firework.phase === 'explode') {
         // EXPLOSION PHASE - particles spreading
         const explosionTime = firework.explosionClock.getElapsedTime();
@@ -619,12 +489,6 @@ export class FireworkController {
           firework.explosion.geometry.dispose();
           firework.explosion.material.dispose();
         }
-        if (firework.rocket && firework.rocket.parent) {
-          this.scene.remove(firework.rocket);
-          if (firework.rocket.material && firework.rocket.material.dispose) {
-            firework.rocket.material.dispose();
-          }
-        }
       }
     }
   }
@@ -637,12 +501,6 @@ export class FireworkController {
   // Clear all fireworks
   clear() {
     for (let firework of this.fireWorkGroup) {
-      if (firework.rocket && firework.rocket.parent) {
-        this.scene.remove(firework.rocket);
-        if (firework.rocket.material && firework.rocket.material.dispose) {
-          firework.rocket.material.dispose();
-        }
-      }
       if (firework.explosion && firework.explosion.parent) {
         this.scene.remove(firework.explosion);
         if (firework.explosion.geometry) firework.explosion.geometry.dispose();
