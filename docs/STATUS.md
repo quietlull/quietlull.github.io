@@ -157,8 +157,10 @@ is ~48px taller), bio block (real copy needs 257px more).
 - **NEXT SESSION IS THE SOURCING PASS.** Brief at the top of `redesign-lab/HANDOFF.md`; roadmap and
   counts at the top of `docs/MERGE-WORKLIST.md`. Rod's goal: *"finish the lab, find all content that
   needs to have a reference and find a suitable reference from the gallery or workbench."*
-  **15 of 100 slots approved** across the six final pages (landing 8/12, post 3/19, projects 1/19,
-  about 1/26, ramblings 1/12, portal 1/12).
+  **23 of 97 slots approved** across the six final pages (portal 8/9, landing 8/12, post 4/19,
+  projects 1/19, about 1/26, ramblings 1/12). Counted on the `data-slot` ATTRIBUTE - grepping the
+  bare string also matches the state panel's own selector and the CSS, which is how a "measured"
+  105 briefly overruled a correct 97.
 
 - **PAPER IS DEAD EVERYWHERE (D29).** A0 picked for the image mat; D27 had already taken it off the
   cards. Same reason both times - the background carries the texture. Files stay on disk; the scene's
