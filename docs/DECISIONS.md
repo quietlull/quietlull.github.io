@@ -768,6 +768,21 @@ longer shares `--syn-var`. **Nothing was invented to do it:** the hue was alread
 now simply on the role he wants. Every value here remains Dark+'s own, mapped to HIS roles rather
 than theirs, which is precisely what made option A cost no new colour and why it was cheap to pick.
 
+**WHAT COUNTS AS A CONSTANT - Rod corrected the demo, and the correction is the durable part.**
+*"constants should be in SCREAMING but alot of the uses of the constants are in _camelCase."* He was
+right: the first sample marked `_Cutoff`, `_EdgeWidth`, `_NoiseTex` and `_EdgeColor` as constants,
+and they are shader UNIFORMS. The leading underscore is Unity's property convention and their values
+change per material and per frame. **The demo was teaching the wrong rule while being used to judge
+the rule.** So the highlighter binds by NAMING, not by position:
+- `.tok-const` - **SCREAMING_SNAKE_CASE only**, fixed at compile time (`#define MAX_STEPS`,
+  `static const EDGE_SOFTNESS`).
+- `.tok-var` - everything that varies, **including `_Prefixed` uniforms and buffer names**. A uniform
+  is a variable that happens to be set from outside.
+
+**One case left undecided rather than guessed:** HLSL SEMANTICS (`POSITION`, `TEXCOORD0`,
+`SV_Target`) currently sit on `.tok-const` because they are fixed reserved names, but `SV_Target` is
+not screaming and they are arguably closer to keywords. One word from Rod moves them.
+
 **Provenance.** Ledger row added as its own element, **Remixed / rod** - separate from the code
 block CHROME row, which is a different element with a different source. The VALUES are cited to
 Dark+; the MAPPING is Rod's. This is one of the few **rod**-origin rows in a ledger where almost
