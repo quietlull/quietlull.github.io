@@ -14,7 +14,7 @@ Three stages, in order, and they cannot overlap. Stage 2 needs a finished lab; s
 redesign to have replaced the very surfaces it would refactor (D6).
 
 ```
-  STAGE 1  FINISH THE LAB          15 of 100 slots approved     <- WE ARE HERE
+  STAGE 1  FINISH THE LAB          23 of 97 slots approved      <- WE ARE HERE
   STAGE 2  THE PORT                gates 0-6 below, 0 done of 6
   STAGE 3  JEKYLL REFACTOR         REFACTOR-PLAN phases 1-3, all deferred
 ```
@@ -23,24 +23,34 @@ redesign to have replaced the very surfaces it would refactor (D6).
 
 | surface | approved | slots | what it is waiting on |
 |---|---|---|---|
-| `final-landing` | **8** | 12 | top bar (#26/#45), project cards, demo reel |
-| `final-post` | 3 | 19 | the callout family (#3) gates most of it |
+| `final-portal` | **8** | 9 | only the centre identity mark, and that is blocked on Rod's fonts |
+| `final-landing` | **8** | 12 | project cards (scaling only), demo reel (no source) |
+| `final-post` | 4 | 19 | the component merge, blocked on the `.prose` prefix policy |
 | `final-projects` | 1 | 19 | every element; card is circular-citation Slop |
-| `final-about` | 1 | 26 | trophy wall has no source; needs the design conversation |
+| `final-about` | 1 | 26 | the 3B horizontal spacing call, then the trophy wall |
 | `final-ramblings` | 1 | 12 | every element, all unsourced |
-| `final-portal` | 1 | 12 | rebuild not started; direction decided |
 
-**The landing is the only surface anywhere near done.** Nothing else is above 3 of 19.
+**The portal is now the most finished surface** (Rod 2026-08-23: everything approved but the centre
+name), with the landing just behind it. Nothing else is above 4 of 19.
+
+**Count correction, 2026-08-23.** These per-page totals were briefly overwritten with an inflated set
+(105 slots) taken by grepping the bare string `data-slot`, which also matches the state panel's own
+selector and the CSS. **The numbers in this table were right; the "measurement" that overruled them
+was not.** Re-counted on the attribute: **97 slots, 23 approved.**
 
 ### What actually gates progress, in dependency order
 
-1. **The callout family (#3).** Post, projects and ramblings all use callouts. One pick unblocks
-   more than any other single decision on the list.
-2. **The 12 circular-citation components (gate 3, item 16).** By the ledger's own rule Slop is not
+1. ~~**The callout family (#3).**~~ **DECIDED - D30.** Four categories, tape colour encodes type.
+2. **The `.prose` prefix policy.** Nine built components render wrong the moment they land inside
+   `.prose` and two land at 1:1 contrast. It is now the single thing blocking the component merge,
+   and guessing it means redoing nine components. **This is the new number 1.**
+3. **The About 3B horizontal spacing call.** Rod sequenced two builds behind it himself: the V6
+   achievement tile rebuild, and the achievements-as-scene-controls work (D34) behind that.
+4. **The 12 circular-citation components (gate 3, item 16).** By the ledger's own rule Slop is not
    shippable, and the landing already links two of them - so the surface Rod calls done is not
    portable yet. Largest provenance debt on the project.
-3. **The trophy wall (About) and the portal rebuild.** Both have their references and neither is
-   built; both need a design conversation first, which is Rod's, not Claude's.
+5. ~~**The portal rebuild.**~~ **BUILT AND APPROVED 2026-08-23**, 8 of 9 slots. The trophy wall is
+   still unbuilt, but its tile design is settled (V6) and only its colours wait, on the About scene.
 4. **The token bridge (gate 2, item 10).** 39 lab tokens vs 270 live, two names in common, no
    mapping file. Every one of the lab stylesheets depends on it and nothing can port without it.
 
