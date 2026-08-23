@@ -35,7 +35,8 @@ caught three in a single message. The list had been read straight out of the tra
 `decisions.css` instead. **D32 already recorded this exact failure at page scale** ("the page kept
 re-asking questions Rod had already answered"); this was the same thing at LIST scale.
 **Rule now in REQUESTS: nothing goes on that list without a same-day check against the decision
-record and the built CSS.** Re-verified list is down to six.
+record and the built CSS.** Re-verified the list went 12 -> 6, and Rod then closed five more himself:
+**one open decision remains on the whole project, the `.prose` prefix policy.**
 
 **A second-order finding worth more than the fix:** the code block colours were not just decided,
 they were decided AND the built CSS silently contradicts them. `decisions.css`'s own header says the
@@ -47,7 +48,7 @@ provenance.
 ### Everything left is on ONE page now
 
 **`redesign-lab/todo.html`** is the whole remaining road in one table, deduplicated from this note,
-the request tracker and the merge worklist: Rod's 12 open calls, the re-look the type-ladder fix
+the request tracker and the merge worklist: Rod's remaining call, the re-look the type-ladder fix
 forces, the measured slot debt, the build queue, 8 verified open bugs, the port's gates 0-6, stage 3,
 and what is parked on a missing file. It is a PAGE, not a note, because of the never-link-him-a-.md
 rule. **The lab index's Judge section is now 7 cards, down from 17** - the nine decided surfaces
@@ -66,19 +67,35 @@ bulk when Rod walks a page. The open list does not mean 96 decisions.
 - **ONE review surface: `redesign-lab/component-review.html`.** Rod's standing instruction
   2026-08-23: ***never link him .md files*** - everything needed to decide goes in chat or on a page
   he can look at. That page has zero .md links and must stay that way.
-- **~20 of the component picks are made** (P152, P153 in REQUESTS). Still open: achievement tiles
-  (3 more building, sourced from real systems - he named Minecraft, then Stardew Valley / Steam).
+- **~20 of the component picks are made** (P152, P153 in REQUESTS) and `component-review.html` now
+  SHOWS them - 19 decision lines, 9 winning variants badged, six deliberately showing no winner
+  because the pick was not one of the three built. Achievement tiles settled on **V6** (P182).
 - **THE FINAL PAGES ARE STILL CLEAN.** Only `decisions.css` + `focus-ring.css` are on them - type,
   colour and the ring, no components. **Rod merges components himself, with me.**
 
 ### THE ONE THING BLOCKING THE MERGE
 
-**Nine components render wrong the moment they land inside `.prose`, and two land at 1:1 contrast.**
-Load order on all six pages puts component stylesheets as the WEAKEST layer: `.rc` (0,1,0) loses to
-`.prose a` (0,1,1), so related cards get a gold background flood on hover; `.pn--v1 a:hover` ties
-`.prose a:hover`, giving gold text on gold fill. **This needs ONE vocabulary decision from Rod** -
-a `.prose`-prefix policy - and guessing it means redoing nine components. `heading-anchor-real` is
-the only one that computed this correctly.
+**EIGHT components render wrong the moment they land inside `.prose`.** Measured 2026-08-23 by
+`redesign-lab/prose-collisions.html`, which reads the real stylesheets rather than a note: 8
+components, 53 losing rules. **It is 8, not the 9 repeated everywhere** - the ninth was a selector
+parser breaking `:is(h2, h3)` on its comma and wrongly flagging `heading-anchor-real`, which the
+docs always said was the one that got it right.
+
+**The failure is NOT "gold text on gold fill", which is how it has been written up.** Rendered and
+measured: the fill stays transparent (the component declares the `background` shorthand and still
+wins that property) while prose wins `color` and sets it to the near-black panel token. **Dark text
+on a dark panel at 1.06:1.** A per-property split, only visible when rendered.
+Load order is what turns a TIE into a loss: on all six pages `decisions.css` loads AFTER the
+component sheets, so where the two specificities are equal, prose wins.
+
+**Rod can see the choice rather than read about it.** The top of `prose-collisions.html` renders the
+same real callout four ways - outside `.prose`, inside it as things stand, and inside it under each
+candidate fix. **Both fixes render identically**, which is the point: the decision is not which looks
+better, it is whether a component is allowed to be prose-only.
+**Option A** scopes components under `.prose` (`.prose .co-ref a`) and costs portability - the same
+callout on projects or ramblings loses its styling. **Option B** has the component raise itself
+(`.co-ref.co-ref a`) and costs legibility - it reads as a trick every future component must remember.
+One pick rewrites all 53 losing declarations.
 
 ### The blockout contract
 
