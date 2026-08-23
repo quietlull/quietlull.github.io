@@ -745,6 +745,51 @@ It is Catlike Coding's 768px re-expressed in our narrower face. Held as a CHARAC
 column span, because a column count drifts on a fluid spine. Spine = **1401px**, stripe's own grid
 width, which puts the rail on 350px and the body on 701px - the blockout's annotated numbers.
 
+## D35 - Code syntax colours: Rod's role list wins, constants take the dark blue (2026-08-23, ROD)
+
+Rod, after seeing both readings drawn side by side: ***"Keep dark blue for constants but 100% a."***
+
+**WHAT IT CORRECTED, and this is the reason the tab existed.** `decisions.css` held Dark+'s values
+under a comment claiming it followed Rod's role list. It did not: `--syn-type` was `#569CD6` BLUE
+where he said orange, `--syn-func` was `#DCDCAA` YELLOW where he said pink, and an unused
+`--syn-orange` sat in the same block. **Two of four roles had rendered against spec for as long as
+the file existed**, under a comment asserting the opposite. Nothing errored, because a wrong colour
+is still a valid colour. **A comment is not evidence** - the same shape as a provenance header not
+being provenance.
+
+**THE FINAL MAPPING.** orange `#ce9178` types and storage keywords - **dark blue `#569cd6` named
+constants** - light blue `#9cdcfe` plain variables - green `#4ec9b0` classes and type names -
+pink `#c586c0` functions.
+
+**The refinement is the interesting half.** Rod's original list gave constants and variables ONE
+hue. Seeing it rendered, he split them - and the dark blue he wants for constants is exactly the
+`#569CD6` that types vacated by going orange. So `--syn-const` is a new token and `.tok-const` no
+longer shares `--syn-var`. **Nothing was invented to do it:** the hue was already in the file and is
+now simply on the role he wants. Every value here remains Dark+'s own, mapped to HIS roles rather
+than theirs, which is precisely what made option A cost no new colour and why it was cheap to pick.
+
+**Provenance.** Ledger row added as its own element, **Remixed / rod** - separate from the code
+block CHROME row, which is a different element with a different source. The VALUES are cited to
+Dark+; the MAPPING is Rod's. This is one of the few **rod**-origin rows in a ledger where almost
+every entry reads "theirs".
+
+**Measured, against the composited ground `rgb(10,14,34)` rather than the block's own
+`rgba(0,0,0,.34)`** - measuring against the rgba would have flattered every number by treating the
+ground as pure black. At 12.48px the threshold is 4.5:1: type 7.23, const 6.48, var 12.82,
+class 9.38, func 6.87, number 11.25. All pass.
+
+**TWO THINGS LEFT OPEN, neither caused by this decision:**
+- **Strings share the type orange.** `#ce9178` is Dark+'s string colour and types now hold it, so a
+  string and a type render identically. Dark+ has no second string hue to fall back on, and HLSL -
+  the language in every code block on this site - barely uses strings, so it may never show. Left
+  alone rather than invented around; if it shows, it needs one value from Rod.
+- **`--syn-comment: #6a6a6a` measures 3.53:1, below AA.** A placeholder held neutral pending the
+  green-vs-comments conflict (Dark+ puts comments on green, Rod put classes there). Pre-existing.
+
+**A caveat worth stating plainly: no page renders a highlighted code block yet.** Zero `.tok-*`
+spans exist in any markup, so this decision is correct in the CSS and currently only visible on
+`text-decisions.html#code`. The highlighting itself is unbuilt.
+
 ## D34 - The trophy wall IS the control panel, and reduced motion is out of scope (2026-08-23, ROD)
 
 Two calls made in one message, and the first one closes a question that has been open since D20.

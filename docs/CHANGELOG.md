@@ -6,6 +6,37 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (CODE SYNTAX COLOURS LOCKED, AND THE CSS FINALLY MATCHES THE DECISION).**
+
+  ROD, after seeing both readings drawn side by side: *"Keep dark blue for constants but 100% a."*
+  Recorded as **D35**.
+
+  **The point of the exercise was never the pick.** It was that `decisions.css` had held Dark+'s
+  values under a comment claiming it followed Rod's role list, and it did not - type was blue where
+  he said orange, functions yellow where he said pink. Two of four roles wrong for the life of the
+  file, under a comment asserting the opposite. Nothing errored, because a wrong colour is still a
+  valid colour. **A comment is not evidence.**
+
+  **His refinement is the better half of the decision.** His original list gave constants and
+  variables one hue; seeing it rendered, he split them - and the dark blue he wants for constants is
+  exactly the `#569CD6` that types vacated by going orange. `--syn-const` is new, `.tok-const` no
+  longer shares `--syn-var`, and **nothing was invented to do it**. Every hue is still Dark+'s own,
+  mapped to his roles instead of theirs, which is why A cost no new colour.
+
+  **Verified on the real thing, not the demo.** Real `.tok-*` spans injected into the actual
+  `.prose pre code` on `final-post.html`; all six resolve. **Contrast measured against the
+  COMPOSITED ground `rgb(10,14,34)`** rather than the block's own `rgba(0,0,0,.34)` - measuring
+  against the rgba treats the ground as pure black and flatters every number. All six of Rod's roles
+  pass 4.5:1 at 12.48px (6.48 to 12.82).
+
+  **Three things stated rather than buried:** strings now share the type orange and Dark+ has no
+  second string hue; `--syn-comment #6a6a6a` measures 3.53:1, below AA, a pre-existing placeholder;
+  and **no page renders a highlighted code block yet** - zero `.tok-*` spans exist in any markup, so
+  this is correct in the CSS and visible only on the new tab. The highlighting is unbuilt.
+
+  **Ledger:** added as its own element, **Remixed / rod**, separate from the code block CHROME row
+  which is a different element with a different source. Values cited to Dark+, mapping is Rod's.
+
 - **2026-08-23 (HALF THE "OPEN" LIST WAS ALREADY DECIDED, AND THE CODE COLOURS WERE BUILT WRONG).**
 
   The todo page went to Rod with 12 open calls. **Six were already decided.** He caught three in one
