@@ -4,6 +4,20 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**Code samples render with random floating boxes around individual words ->**
+short utility class names collided with the host page's own classes. A syntax sample used
+`<span class="v">` for variables on a page where `.v` is the variant CARD
+(`border:1px solid #2c2c2c; padding:18px; background:#171717`), so **58 identifiers each rendered as a
+bordered dark card.** `.a` collided too, giving one of two side-by-side samples a different colour,
+font-size and a 6px offset from the other - which reads as a rendering bug rather than a clash.
+**Nothing errors and nothing is missing; the markup is valid and the CSS is valid.** On a 2,000-line
+single-file page, one-or-two-letter class names WILL already be taken.
+**Rule: namespace every class you add to a page you did not write** (`sy-v`, not `v`), and before
+adding one, grep `\.<name>\{` in the host file. Cost: Rod seeing a broken page the first time he
+opened a tab that was built for him.
+**The same shape as the token traps below:** a name resolving to something you did not intend renders
+wrong without erroring. Here the name resolved to somebody ELSE'S rule rather than to a fallback.
+
 **A layout sized from measured text is right in your checks and wrong in Rod's browser ->**
 the webfont had not arrived when the layout measured. Fonts load with `display=swap`, so the first
 measurement of `scrollWidth` runs against the FALLBACK, the box gets sized to that, and the real face
