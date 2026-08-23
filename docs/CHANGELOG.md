@@ -6,6 +6,42 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (THE OPEN LIST GOES 12 TO 1, AND TWO NEW ANALYSER PAGES THAT MEASURE INSTEAD OF ASSERT).**
+
+  Rod closed six calls in a row - the silver (**ii**, confirmed), the demo reel, the portal, the FPS
+  test, the About 3B spacing (**option A**), and the palette backup - leaving **one open decision on
+  the whole project: the `.prose` prefix policy.**
+
+  **`prose-collisions.html` - the eight components, split out.** It reads `decisions.css` and all 15
+  post-component stylesheets ON LOAD, parses every selector, computes both specificities and reports
+  only genuine losses on a shared property. **8 components, 53 losing rules** (callout-family 10,
+  prevnext-real 11, toc-real 11, figure-real 6, status-chip 6, table-real 4, entry-row 3,
+  image-zoom-real 2); six are clean. **It is 8, not the 9 the docs have been repeating** - and the
+  ninth was my own bug: the selector-list splitter broke `:is(h2, h3)` on its comma into two nonsense
+  fragments and reported `heading-anchor-real` as colliding. **The docs had always said
+  heading-anchor-real was the one component that got this right, and they were right.** Caught it by
+  checking the one result that contradicted a standing claim, rather than shipping a number that
+  looked plausible.
+
+  **`palette-backup.html` stopped being an export and became the palette.** Rod: *"i dont think we
+  need a palette backup."* It now reads every custom property off the live stylesheets, so it cannot
+  go stale: **47 tokens**, nine groups, translucent ones shown over a checkerboard with their
+  composited hex. **Three faults in my own first pass, all fixed before reporting:** hairlines and
+  tape fills were measured against the 4.5:1 TEXT threshold and reported as failures, which is noise
+  rather than a finding; the page's own `--pal-*` chrome leaked into the palette; and
+  `--color-silver` plus the eight `--syn-*` tokens were missing because `decisions.css` was not
+  loaded. **Both new pages made the same mistake in their first version** - measuring something
+  against a rule that does not apply to it - which is worth naming as a pattern.
+
+  **About 3B, option A, built.** Scoped to bands 0 and 1 only, because band 2 is the trophy case and
+  Rod likes it as it is. Hero `.sect` **34px 38px -> 34px 15px**, band-1 `.textbox` **30px -> 30px
+  15px**, portrait **280 -> 225**. Vertical is untouched, per his instruction. Measured after:
+  portrait 225, text column **611** against the 613 I predicted - the measurement is what counts.
+
+  **The demo reel row was stale, not the element.** A real 599x337 video has been playing near the
+  bottom of the landing, under a reel head that was already approved, while the tracker carried
+  "no source" from a placeholder his own footage had replaced. Landing **9/12**, total **24 of 97**.
+
 - **2026-08-23 (CODE SYNTAX COLOURS LOCKED, AND THE CSS FINALLY MATCHES THE DECISION).**
 
   ROD, after seeing both readings drawn side by side: *"Keep dark blue for constants but 100% a."*
