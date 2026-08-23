@@ -183,6 +183,12 @@ scribbly name), and **the scene carrying the rest**. Consequences:
 
 ## D12 - Fireworks are TWO features: a permanent greeting and an earned reward (2026-08-16, ROD)
 
+> **HALF RETIRED 2026-08-23 by D28.** The EARNED REWARD half is gone - Rod scrapped every
+> unlock: *"lets scrap the idea of unlocks they get an achievement and thats fine."* The
+> GREETING half stands and is now the only auto stream. Kept rather than deleted because the
+> two-features split is still the reason the greeting exists at all, and because a future
+> "additional ideas" pass (his words) may want the reward shape back.
+
 The queued item was only "gate the auto-fireworks by scroll position". ROD split it into two
 independent streams instead: a GREETING that always runs while the top of the page is on screen,
 and the REWARD stream unlocked by Pyrotechnician, which stacks on top of the greeting rather than
@@ -458,7 +464,7 @@ blockout like stripe's yet?"*
 **Answer: no, and that is the real gap.** Two artefacts exist and neither is this:
 - `post-blockout.html?v=stripe` is the page SPINE - grid, rail position, column widths. It says
   nothing about prose.
-- `component-blockout.html` holds components in ISOLATION, each alone in a ~340px card.
+- `text-decisions.html` (was `component-blockout.html`, renamed 2026-08-23) holds components in ISOLATION, each alone in a ~340px card.
 
 Judging a callout alone in a small card cannot tell you how it reads between a heading and a code
 block at a 663px measure. That is almost certainly why the callout picks kept feeling wrong: the
@@ -678,3 +684,449 @@ as the fix for the same reason it failed before: exposure multiplies, and near-b
 still near-black. The renderer stays on `NoToneMapping`. This is a first pass, not the lighting rig
 - request #40 is still open.
 
+## D25 - Layout changes need Rod's direct, confirmed instruction (2026-08-22, ROD) - STANDING RULE
+
+Rod: *"after every change you NEED to check if it changed the layout. if not continue, if so
+remember only I the user can ask for layout changes and they always need to be direct and
+confirmed."*
+
+Two halves, both binding. **A check after EVERY change**, not only layout-shaped ones - a colour
+edit can still reflow. **And if something moved, it needed his direct instruction first.** Not
+inferred from a nearby request, not justified as a side effect of a fix, not "it looked wrong".
+
+**Why it exists:** a request for a text backing and one for heading colour turned into a page-width
+change, the backing moving from the column to the measure, a new vertical rhythm, and a zone label
+being added. Some of that was defensible; none of it was asked for. Rod reads the rendered page, so
+unrequested movement is the first thing he sees.
+
+**The corollary that caught a real bug:** lab chrome must never move the design. The `RAW` badge's
+`border` was holding the rail's metadata rows to 275px inside a 277px column. It is an `outline`
+now, which is painted outside the box model.
+
+Applied retroactively the same day: four unrequested layout changes were put to Rod, he kept one
+(heading sizes) and rejected three, all reverted and verified by before/after snapshot.
+
+## D26 - The landing's remaining picks (2026-08-22, ROD)
+
+Four calls made while building `final-landing.html` out. Each is recorded with what it cost, because
+each has a live alternative that will otherwise be re-proposed.
+
+**1. SECTION HEAD = the centred ornament head**, kicker removed, hairline added, label links to its
+section. Chosen from four candidates on `section-head-tests.html`, all of which were OUR builds.
+Filed origin ROD, not provenance.
+*The parent device is real and was measured:* harumakigohan.com's section headers are drawn PNGs
+(`m_*.png`, `m_` = midashi), fixed 30px tall, structured squiggle | white label | squiggle, label
+`#f0f0f0` and ornament `#f078f0`. That page has **124 images and ZERO html headings**. Our typed `~`
+is a STAND-IN for their drawn wave, and gold replaces their pink. **Asset owed** - Rod: "we will
+replace this with hand drawn text later like the header art."
+
+**2. SKILLS ROW = simpleicons.org marks (CC0), stroked in deep gold, drawing in.** Seven tools:
+Unity, Unreal, Godot, Blender, Maya, Python, Git.
+- REJECTED: devicon's full-colour multipath marks, which Rod initially chose. They kill the draw-in
+  (it needs one path) and they fail contrast on the night ground - see TRAPS.
+- REJECTED: re-drawing "cartoony" icons the way the old set was made. That set was AI-drawn
+  approximation - `draw-in-icons.css` says so itself - and its charm was a failure mode. The honest
+  route to the same look is a procedural wobble over real geometry (`icon-wobble-tests.html`,
+  feTurbulence displacement), which is D10's side of the line. Not adopted; Rod: "not worth it."
+- **C#, HLSL and Compute are ABSENT rather than faked.** Simple Icons carries no C# (verified
+  against their 3,453-icon index) and the other two are not products, so no mark exists.
+
+**3. FOOTER = one quiet line**, the lab `.labtag` treatment promoted to a real element. Origin ROD.
+It is a footnote, not a second navigation, because the top bar already carries the nav.
+It SUPERSEDES the circular-citation `site-footer` component rather than fixing it; that one should
+be retired at port time.
+
+**4. DEMO REEL = a random placeholder.** Rod: "just make it pull random video files from the site
+for now we will fix it later." Nothing has changed about why he pulled it on 2026-08-18: it still
+has no source. Random content is a stand-in, not a design.
+
+**Post page, same batch:** measure LOCKED at **94 characters** (767px), chosen over 72 after an A/B.
+It is Catlike Coding's 768px re-expressed in our narrower face. Held as a CHARACTER COUNT, not a
+column span, because a column count drifts on a fluid spine. Spine = **1401px**, stripe's own grid
+width, which puts the rail on 350px and the body on 701px - the blockout's annotated numbers.
+
+## D32 - The component layer: 22 built, ~20 picked (2026-08-23, ROD)
+
+Two batches, every component built from a reference brief that **re-fetched its source live**
+rather than trusting the saved note. Briefs kept at `redesign-lab/analysis/reference-briefs/`.
+
+**THE PICKS.** callout **V1** (flamedfury shell) - code block **V1** (Rod's own scheme) - figure
+**V2** (silver caption) - table **V2** (effect not literal, and it scrolls) - related card **V2** -
+prev/next **a new V4**, two related-cards in two lanes - heading anchor **V3** (always visible) -
+TOC **V3** - search bar **A** - empty state **V1** - filter pills **REBUILT** - page title **V1** -
+entry row **B** - view all **C as a drop-in swap** - status chip **A**, terminal at 675x172 -
+portrait **V3** named window - bio block **V4**, V1's panel with V2's heading line.
+**Still open:** achievement tiles (V2 preferred, three more sourced from real systems).
+
+**SKILL TILE AND FLIPPER ARE DROPPED, not pending.** Rod: *"lets not do extra work and keep it the
+same as it is now."* The approved `skills-row` stands.
+
+### Three things Rod caught that were build errors, not preferences
+
+1. **The view-all button was changing the layout.** Versions A and C shipped a `.va--row` wrapper
+   replacing the ROW, when the ask was to swap the BUTTON inside the row the landing already has.
+   Rebuilt as `.va--swap`, deliberately empty of layout - no display, margin, width or position.
+2. **The search bar and the filter pills already existed on the workbench.** `list-controls` has
+   `.list-controls__input`, `.list-controls__filter` AND `.is-active`. Two agents rebuilt what was
+   already built and approved. **Check the workbench before sourcing anything.**
+3. **The review page was squeezing components.** A 3-up grid at 320px rendered 767px components at
+   ~206px, so every proportion read wrong. That was the PAGE's fault, not the components'.
+
+### The rule this produced
+
+**REUSE BEATS SOURCING WHEN THE THING ALREADY EXISTS AND IS APPROVED.** Three components now
+actively reuse rather than rebuild - view-all takes button-kit's outline variant, prev/next takes
+the related card, filter pills take list-controls' behaviour on button-kit's tag box. Each reuse
+also surfaced law debt in its parent that a rebuild would have hidden: `.kit-tag` carries the
+banned `--color-muted` and a 6px radius; `tag-badge`'s line-height puts the entry-row tag strip
+6.8px over its reservation. **Fix those at the parent, not in the child.**
+
+## D33 - Two bugs that made earlier judgements invalid (2026-08-23)
+
+Both found by audit, both verified independently before acting, both fixed.
+
+**THE TYPE LADDER WAS NEVER RENDERING.** Pages requested `wght@400;500;700`; `decisions.css` asks
+for **100 and 300**. Neither face loaded. **Measured: 100, 300 and 400 all rendered at exactly
+438.25px.** So D31's central rule - *hierarchy is size and tracking, never weight* - was collapsed
+to a single weight, and **every judgement made before this fix was against weight 400.** Fixed on
+22 files; re-measured all distinct.
+
+**THERE WAS NO FOCUS INDICATOR ANYWHERE.** `generic.css` holds the ring and was linked by **zero**
+of the six final pages. Six components declined to write their own on the grounds that they inherit
+it. WCAG 2.4.7 and 2.4.11 failing sitewide. Extracted to `redesign-lab/focus-ring.css` - *not*
+`generic.css` wholesale, whose `body{background}` would flatten the scene ground.
+
+**THE PATTERN, and it is the transferable part:** a name that resolves to a fallback **renders
+wrong without erroring**. Three instances in one session - the font weights, `--nav-h` (used 9x,
+defined never, hiding the mobile TOC under the top bar), and `--color-muted-warm` (used 3x, defined
+never). **A token or a weight that looks right is not evidence. Measure it.**
+
+**Also fixed:** the anchor scroll offset was applied twice and the two ADDED, overshooting every
+in-page jump by 80-116px. `toc-real.css` was also the only bare-element global selector in all 22
+components - which is how a component file reached out and changed the whole page.
+
+## D31 - The text system: one ladder, one colour ramp, 23 picks (2026-08-23, ROD)
+
+Judged on `redesign-lab/text-decisions.html`, which replaced four separate comparison pages
+(`prose-blockout`, `component-blockout`, `callout-tests`, `orb-callout-tests`) after Rod:
+*"Rather than making alot of comparison pages just add things to the component block out rename it
+to Text decisions... and add tabs so i can just see and choose the things i like the most."*
+
+**THE FINDING THAT RESHAPED THE WHOLE PASS.** Counted across all 19 posts: `takeaway:` appears in
+**14 of 19**; TL;DR, blockquote, admonition, pull quote, margin note, h4 and `hr` appear **zero**
+times. Rod: *"im realizing we might have been doing all of this for nothing."* He was right - six of
+the seven callout candidates answered a question his writing had never asked. **The callout system
+was already finished for the content that exists**, and everything else is "do you want to start
+writing this", which is a content question, not a design one.
+
+### The heading ladder - ACCEPTED, and it is layout-affecting
+
+Rod: *"we are about to have many different headings... these should be consistent throughout the
+pages."* He was right, and it was worse than suspected. **Five contradictions, all measured off the
+six `final-*` pages at 1440, not read off class names:**
+
+1. **H1 meant two things** - landing 33px w700, post 101px w300. Same tag, 3x size, opposite weight.
+2. **H3 meant three things** - 36px/w100, 27px/w700, 20px/w700.
+3. **The landing's scale was INVERTED** - its H3 (27px) was larger than its H2 (24px).
+4. **Weight ran in opposite directions** - the post follows stripe's rule that hierarchy never uses
+   weight; landing and about ran 700 everywhere, which is that rule inverted.
+5. **The post SKIPS H2**, running h1 straight to h3 - a **WCAG 1.3.1 heading-order failure** that
+   must be fixed whichever scale wins. **Still outstanding: it is a MARKUP fix, and styling h3 to
+   look like h2 would hide the failure rather than fix it.**
+
+**The ladder (structure is Rod's, the ladder itself is OURS - no source supplies it):**
+`H0` site mark - `H1` page title - `H2` section break - `H3` subsection - `H4` card/item title.
+
+### The colour ramp - and it deliberately inverts at the bottom
+
+`H0`/`H1` **signature orange** `#ff6a00` - `H2` **yellow** `#fbbf24` - `H3`/`H4` **silver**
+`#a3a19d` - **body PRISTINE WHITE** `#f5f3ef`. Bold takes the H2 yellow.
+
+Rod: *"keep the pristine white text for the things we are going to be reading the most often."*
+**So body copy is the brightest thing on the page and H3/H4 sit UNDER it - headings recede, prose
+leads.** That is the interesting part of the call and it is intentional.
+
+**MEASURED against the reading well `#080f1b`, and the finished ramp does NOT descend by
+brightness:** body 17.31 > H2 yellow 11.49 > silver 7.44 > **H0/H1 orange 6.68**. All clear WCAG,
+but the two most important headings are the lowest-contrast text on the page and silver
+out-contrasts them. Flagged to Rod as a deliberate call rather than an accident.
+
+- **Silver was DERIVED, not invented** - `color-mix(--color-text 62%, --color-panel-solid)`, from
+  two tokens already approved. Of three candidates only this one keeps the ramp monotonic: the
+  brighter one (9.51) beat gold-deep and broke the descent; the third (16.40) was within a hair of
+  body white and was not silver at all.
+- **HAZARD RECORDED:** `--color-muted` `#9aa3bd` is a **blue** grey and is the last blue in any text
+  token. It is the obvious bottom step of a ramp and must never be used as one.
+
+### The picks
+
+**Body:** measure 94ch (Rod's, P33) - links **stripe** hairline that inverts on hover - inline code
+**Maxime** bordered chip, squared, shadow dropped as a glass tell - bold **acegikmo treatment,
+remixed** (their custom-element mechanism cannot survive markdown, so it becomes `strong{}`) -
+`del`/`ins` **catlikecoding**, the only source that has them - lists **Maxime nested counters**,
+which is the same mechanism as the approved section break, so headings and lists now share one
+numbering logic - `sup` **gwern**, `vertical-align:baseline` so footnote markers shrink but never
+rise - `sub` and `abbr` **accepted as browser defaults**, which for `abbr` is a decision NOT to
+style it - **`kbd` and `mark` REJECTED** outright.
+
+**Blocks:** code block **Maxime header strip squared** (already D20; the page was still asking, and
+Rod caught it) - figure **catlikecoding no-mat with a LEFT-aligned caption** (their centring
+dropped, so it is a remix) - hero media **no special treatment at all**, all three mask candidates
+rejected, a hero is just a figure - table **iquilezles body + scroll wrapper with acegikmo's
+coloured `th` in the H2 yellow**, squared, their four semantic cell states NOT taken because the
+palette law bans red and cool.
+
+**Navigation:** TOC **Starlight** rail + mobile popup - prev/next **TheRealMJP** split halves, no
+box - tags **squares, OURS** (the live `.post-tag`, squared) - meta rectangles **`.kit-button`**,
+squared, **and it inherits button-kit's circular-citation warning, which does not go away by being
+reused** - related post cards **the project card minus blur, band reveal and hover shadow**, plus a
+border-colour focus state because a motionless link still needs an affordance (WCAG 2.4.7).
+
+### Two process notes worth keeping
+
+**A pattern showed up three times in one session: the page kept re-asking questions Rod had already
+answered.** The callouts (answered 08-22), the meta chips (answered 08-21, with the ledger already
+recording the external sources as UNUSED), and the code block (answered in D20). Each time he
+caught it. **The cause is that decisions were landing in `DECISIONS.md` and never being reflected
+back onto the judging surfaces.** `decisions.css` now exists partly to close that gap.
+
+**Rod's own instinct beat the process twice.** He spotted that the callout work was largely wasted
+before the count was run, and he was right to push back on "the pull quote cannot be taped", which
+was overstated. Both are recorded because the corrections are the useful part.
+
+## D30 - The callout family exists, and tape COLOUR now means TYPE not SECTION (2026-08-23, ROD)
+
+**THE FAMILY IS CREATED.** Rod: *"lets create the callout categories im sure we can find places to
+use them."* Five categories, each with one washi-tape placement and one hard-coded colour:
+
+| category | tape placement | colour |
+|---|---|---|
+| warning | D - four diagonal corner tabs | **pink** `#f078f0` |
+| note | A - over the top edge | **green** `#6fbf73` |
+| tldr | B - down the left edge | **orange** `--color-glow` |
+| quote | C - L-shaped corners | **blue** `--color-accent-cool` |
+| reference / links | **none** | - |
+
+Rod's words: *"for warning use the green D washi tape, for notes use A, for TLDR use B, for qoutes
+lets use the L shaped C"*, then the colour pass: *"we should hard code the colors in a way that
+makes sense maybe red for errors, green for notes, blue for quotes?"* and the correction *"do pink
+for warning instead my mistake."* Orange falls to tldr by elimination. Reference takes no tape:
+*"reference i guess should have no tape"* - it is end matter, not an interruption.
+
+**CORRECTED 2026-08-23, and the correction matters because the first version overstated it.**
+This was written up as "overturning the colour half of D27". Rod pushed back - *"im confused as to
+what this means because im not sure if you misinterpreted me or what because site sections
+genuinely do not have different colors"* - and **he is right. It was checked and there is nothing
+to overturn:**
+
+- **No `final-*` page assigns a per-section tape colour.** Zero hits.
+- **No section-colour token, class or variable exists anywhere in the lab.** Zero hits.
+- The four colours appear only on bench pages: `washi-tape.html`, `achievement-tests.html` and
+  `text-decisions.html`.
+
+So D27's *"in the blue, green, pink, and orange for different sections"* was **a stated intention
+that was never built**. D30 does not overturn a working system; it **redirects an unbuilt plan
+before it was ever implemented**, which costs nothing and unwinds nothing.
+
+**D27's other half was real and still holds** - the tape is the site's one loud object, colour is
+concentrated in one component rather than spread, and the cards stay plain, grey and untextured.
+
+**There is therefore NO section-colour hole.** The earlier claim that "sections no longer have a
+colour identity via the tape" described a loss that never existed. If sections ever want a colour
+identity, that is a fresh question with nothing behind it, not a regression created here.
+
+**The lesson, since this is the second time in one session:** check whether a decision was ever
+IMPLEMENTED before describing a change to it as an overturn. A decision recorded in this file is
+not the same as a decision that shipped.
+
+**Two things this decision also settled:**
+
+1. **"Note" and "warning" SPLIT.** Rod named them separately, so `final-post.html`'s single
+   `note / warning` slot becomes two categories. The post now reserves five callout slots, not three.
+2. **The quote gains a card, and that contradicts its own sources.** L-corners need corners to sit
+   on. Both pull-quote references deliberately refuse a box - Maxime escapes the measure at 118%
+   width with no border or fill, stripe uses a plain italic paragraph with no ornament. So the quote
+   stops being a *pull quote* and becomes a *quote callout*. **Originated, not transcribed**, and
+   the ledger says so.
+
+**A correction on record, because the reasoning was wrong before it was right:** the earlier claim
+that a pull quote *cannot* be taped was overstated. Rod pushed back - *"any reason the pull quote
+cannot be taped?"* - and he was right. Tape is absolutely positioned against a host needing only
+`position:relative`; it needs no border, fill or card. The honest objection was "has no precedent",
+not "cannot". Both versions were then drawn rather than argued about.
+
+**Colour provenance:** orange and blue are ours already, **pink is measured** off harumakigohan's
+own section-header PNGs.
+
+**GREEN IS SETTLED, and the earlier "no source, still Slop" framing was wrong.** Rod:
+*"the source is the other tape components the only thing that changed is its color idk what i would
+need to source a color i chose."* He is right, and D27's own table already set the condition:
+green *"wants sampling from a real asset **or Rod picking it**"*. He picked it. **The condition is
+met and the thread is closed.**
+
+The error was conflating two different things: the tape's MECHANISM is sourced (gneiss `.taped`
+plus winterwind's tear, both read from live CSS), and only the colour VALUE is Rod's choice. A
+colour the owner chooses has idea-origin ROD - that is a tracked, legitimate origin under the
+provenance law, not a gap. **The law asks where an element came from, and "Rod picked it" is an
+answer.** Filed origin ROD, not Slop.
+
+## D29 - Paper is dead everywhere, and the callout question was malformed (2026-08-23, ROD)
+
+**A0 - NO PAPER ON THE IMAGE MAT.** Rod: *"stick to A0 paper test was failure texture comes in from
+the background anyways."* Rejected: A (gneiss `border-image` torn edge), B (tiled paper ground),
+C (ibelick `feTurbulence` grain - the only one needing no asset).
+
+**This is D27's reason applied a second time**, not a new one. D27 took paper off the cards because
+"the background already adds some texture"; the same argument retires it on the image mat. Between
+them, **paper is finished as a surface treatment** - there is no open question pointing at it any
+more. `paper-tests.html`, `paper-tuner.html` and the baked height maps stay on disk, nothing
+shipped, nothing to unwind. **The paper FILTER inside the three.js scene (D24) is a different
+thing and is untouched** - that one is in the render, not on a surface.
+
+**THE CALLOUT SET WAS ASKING A BAD QUESTION.** Rod, on being shown seven bracketed candidates:
+*"decision 2 is weird i dont understand what im choosing between again these are all elements for
+different things."* He is right, and the fix on 2026-08-23 - bracketing them so they read as
+alternatives - only made the problem legible rather than solving it. Three things were wrong:
+
+1. **One of the seven is a different KIND of thing.** The famicom.party margin note leaves the
+   column into the gutter; the other six interrupt the column. That is a layout decision about the
+   page, not a style decision about a callout, and it cannot be compared against them.
+2. **Three of the seven are one thing wearing a settled convention.** Tape-on-top, taped corners and
+   left-edge tape are three PLACEMENTS of the washi tape, which is already a locked site convention
+   (D27 + the case-D build). Presenting them as rival callouts re-opens something closed.
+3. **Rod had already answered the real question and the page kept asking it.** On 2026-08-22, in the
+   element-gallery pass: *"i kinda like the flamedfury.com callout with the orb but move it to the
+   top right instead maybe. For the washi tape ones i think it would be nice to have them overlay on
+   top of the posts content box like a section is being stuck on the page."*
+
+**The lesson worth keeping, because it will recur:** a comparison page is only honest if its
+candidates are genuinely substitutable for each other. Seven things that do different jobs, some of
+them already decided, is a pile with a border drawn round it. **Before building any future
+comparison, check that swapping any candidate for any other would leave the page still working** -
+if not, it is several questions and it should be several pages.
+
+**What the callout question actually is, restated for next session:**
+- *the default callout's look* - answered: flamedfury's orb, moved to the top right
+- *where the tape sits on it* - answered: overlaying the content box, "like a section is being stuck
+  on the page"
+- *whether a margin note exists at all* - genuinely OPEN, and it is a layout call because it needs
+  the rail's gutter
+
+## D28 - The 2026-08-22/23 decision batch (ROD)
+
+Eleven calls made across two days of judging. Grouped because they were made together and several
+of them only make sense against each other.
+
+**WASHI TAPE: case D, opaque, axis-aligned.** Rod: *"washi tape d remix"*, then *"keep opaque"* and
+*"axis aligned"*. D is winterwind.com's irregular `clip-path` tear. Their pitch is unchanged - the
+IRREGULAR spacing is the device, and a uniform pitch reads as a postage stamp. Two things are ours
+and labelled: the AXIS (theirs is a long-edge tear on a 2px strip; ours runs on the two ENDS) and
+the AMPLITUDE IN PIXELS - a percentage would resolve against `.tape--left`'s 300px+ height and bite
+15px out of a 26px strip. **REJECTED, by measurement then by Rod:** the SVG-filter routes (Daniel
+Jones' two-primitive squiggle, TornPaper.js's full chain) - both real and both more faithful to how
+real washi tears, but they cost a filter and a rasterisation where a clip-path costs nothing.
+**REJECTED by Rod after seeing them:** the transparent third band in the fill (case E) and the
+5.42-degree rotation the real asset has (case G).
+**A finding that outlived the decision:** the reference asset measures as a TEAR, not a serration -
+ends wandering +/-6px in 2-3 broad lobes across a 116px width. Rod asked for a roller's serration
+and picked the serration knowingly. Recorded because the two are different targets and the
+distinction will come back.
+
+**SECTION BREAKS: case G.** Catlike Coding's nested COUNTERS on acegikmo's ruled chapter DIVIDER.
+Both halves verbatim; **the COMBINATION is ours** - no source does both. They merge rather than
+collide because **neither uses SIZE to carry hierarchy**: Catlike de-emphasises the number,
+acegikmo the type. So the counter ranks and the rule separates while the type stays quiet.
+**REJECTED:** cyanilux's heading-as-a-card (Rod's ask almost literally, but it nests three opaque
+fills deep before any prose and this site has a live scene behind it), dimden's boxed section,
+MinionsArt's tinted block, and the two no-box options.
+Follow-ups Rod called: the counter must SCALE with its heading (`0.68em`, which is Catlike's own
+14/20 ratio) and heads/subheads take colour.
+
+**ACHIEVEMENTS: dimden's box at 200x76, and EVERY reward is scrapped.** *"lets scrap the idea of
+unlocks they get an achievement and thats fine."* **This RETIRES D12** (reward-as-unlockable)
+outright - the fireworks unlock and all three lantern tiers go together. Confetti is deprecated in
+the same breath and the popups are minimised.
+**The consequence, stated because it changes what the system is FOR:** with no rewards, the trophy
+wall IS the payoff and the popup's only job is to say "that went on the wall" and get out of the
+way. That is why the smallest sourced option won.
+**REJECTED:** zutomayo's fold-into-its-own-title-bar window (the most literal reading of
+"minimise", and still the better mechanism if a window component is ever wanted), cyanilux's accent
+bar, the taped card, and the no-box floor.
+
+**SCENE TIERS: two, not four.** `full` = lanterns + fireflies + post-processing + dock + water, on
+landing and about. `minimal` = lanterns + fireflies + post-processing, on projects, portal and
+ramblings. **The POST page carries no three.js at all** - Rod: *"when i say none is the blob thats
+exactly what i mean keep it like this"* - which preserves the 845 KB saving from 2026-08-21.
+`bare` and `blobs` are deleted rather than kept unused.
+**What this corrected:** the docs said "minimal everywhere but About". Measurement said otherwise -
+every page was running the FULL scene, and `three-background-minimal.min.js` was loaded by nothing.
+"Minimal" as shipped is 35 spheres with no lanterns at all, so Rod's ask to add them was real.
+
+**COLOUR: warm grey.** `--color-panel: rgba(28,26,24,.55)`, solid `#1c1a18`. **ORIGIN IS ROD, not a
+source** - the swatch was drawn as "a grey pulled 2 points warm" and labelled ours on the test page,
+and he chose it knowing that. Alpha held at .55 so only hue moved and no box changed size.
+**This finishes what D27 started:** with the cards neutral, the only blue left anywhere is the sky.
+**REJECTED:** the blockout's own #141414/#1b1b1b/#1d1d1d ramp, cyanilux's #282828, and dimden's
+translucent black - all sourced, all beaten by an unsourced warm grey, which is a legitimate outcome
+when the person deciding is the one whose taste the site is.
+
+**ABOUT IS THE LANDING.** Rod: *"about page is the landing page except the about me is the hero, the
+achievements are the project cards."* Klubnika's 928px column is the picked layout (dimden survives
+at `?v=panels` for reference), but the RHYTHM now comes from his own landing rather than a reference
+site: hero fills the first screen with the landing's `min-height:520px` floor, sections at
+`padding-block: 30px 60px`. **SUPERSEDES** the potg.art 200px rhythm used one pass earlier, which
+was the right answer only while he had given no reference of his own.
+Its type is the POST's, verbatim - which rests on P33, the 94-character measure.
+
+**SYNTAX HIGHLIGHTING IS A CARVE-OUT FROM THE PALETTE LAW.** Rod: *"this is ok because its important
+for readability and convention."* Code colour is exempt from the no-cool-accent/no-red rule AND from
+D18's colour-last sequencing, on readability grounds. Said out loud because the conflict was real
+and had been flagged as unresolved.
+
+**AND TWO SMALLER ONES.** The top bar keeps a centred nav with lopsided gaps (213/48) - taste call
+made, closed. The project cards' circular-citation objection is **withdrawn by Rod**: *"we made the
+project cards together so its ok"* - origin is his, and only scaling remains open.
+
+## D27 - Paper is OUT. The cards go grey, and the TAPE carries all the colour (2026-08-22, ROD)
+
+Rod: *"i dont think paper is the play lets do something else. im thinking we just do normal
+transparent cards in grey with no texture, the background already adds some texture, and we will
+have the fun striped washi tape in the blue, green, pink, and orange for different sections and i
+think that will be fine and good."*
+
+**Three things at once, and they only make sense together:**
+
+1. **No texture on the cards.** The scene already carries grain - `assets/tex/paper-*.png` runs
+   inside the bloom pass (D24) - so a second texture on the card was competing with it, not adding
+   to it. Cards are plain, transparent, grey.
+2. **The tape becomes the site's one loud object.** Striped, in four colours, one per section.
+3. **So colour is CONCENTRATED rather than spread.** That is the part worth keeping hold of: the
+   design does not get more colourful, it gets colourful in exactly one place.
+
+**THIS OVERTURNS T0-A**, recorded 2026-06-12 as *"warm + 1 cool"* - one cool accent, spent RARELY
+on the single most-important mark per view, *"decided per-surface, not blanket-applied"*. Four
+accents applied per section is the opposite of that sentence. Recorded as an overturn rather than
+slipped in, because T0-A will otherwise be quoted back at this.
+
+The reconciliation, for whoever hits the contradiction: the SPIRIT of T0-A survives - colour is
+still spent rarely and deliberately, on one small object - while its LETTER (one cool accent) does
+not. What changed is that the accent is now a component rather than a token used sparingly.
+
+**Colour provenance, because three of the four already existed and one does not:**
+
+| | value | where it comes from |
+|---|---|---|
+| orange | `--color-glow` `#ff6a00` | ours already, the ember |
+| pink | `#f078f0` | **MEASURED** off harumakigohan.com's own section-header PNGs, pixel census 2026-08-22. Their ornament is this pink. |
+| blue | `--color-accent-cool` `#3090a8` | ours already, sampled from the Gen'eiten flyers |
+| green | `#6fbf73` | **NO SOURCE.** The one guess in the set. Wants sampling from a real asset or Rod picking it. |
+
+**PAPER IS PARKED, NOT DELETED.** It was never applied to a shipped surface, so nothing needs
+unwinding. What survives and is worth not re-deriving:
+- `redesign-lab/references/paper/*-height.png` - the scene's own sheets with the height channel
+  split out. The blue channel IS the height.
+- `paper-tests.html` (A/B/C sourced options + the baked sheets) and `paper-tuner.html` (a real
+  gradient map over the live scene).
+- Three verbatim sources in `sources/`: gneiss border-image, gneiss ground, ibelick feTurbulence.
+- The finding that outlives it: **only three sheets exist and the generator that baked them is not
+  in the repo** (D24), so washi / cold press / wove is the entire palette of paper available.

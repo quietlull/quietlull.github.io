@@ -4,6 +4,45 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**A layout sized from measured text is right in your checks and wrong in Rod's browser ->**
+the webfont had not arrived when the layout measured. Fonts load with `display=swap`, so the first
+measurement of `scrollWidth` runs against the FALLBACK, the box gets sized to that, and the real face
+then swaps in wider with nothing to trigger a re-measure. **Why it survived verification:** every
+check forced a relayout first, which happens long after fonts settle - so the test measured a state
+the page never reaches on its own. Two fixes, both needed: re-run the layout on
+`document.fonts.ready`, and actually REQUEST the weight you style with (`font-weight: 700` against a
+`wght@400;500` request makes the browser synthesise a wider faux bold). Cost: Rod reporting cut-off
+headers three times while every measurement said they fit.
+
+**A child grows past its parent and the parent's `overflow: hidden` eats a control ->**
+grid and flex items default to `min-width: auto` / `min-height: auto`, so they refuse to shrink below
+their content and grow straight through a clipping parent. Presented as "some cards have their X cut
+off": the title bar was 135.7px inside an 86px window, and the close button sits at the far right, so
+it was the first thing past the clip edge. Fix is `min-width: 0` (or `min-height: 0`) on the ITEM,
+not on its child. **Caught once for height on a body and missed for width on its sibling bar** - if
+you fix one axis, check the other.
+
+**A pointer drag works from one part of an element and dies from another ->**
+`<a>` is natively draggable. Pressing and moving over a link starts the browser's own drag-and-drop,
+which tears down the pointer stream. Fix: `-webkit-user-drag: none` plus a `dragstart` preventDefault
+on the container. **A synthetic `PointerEvent` test CANNOT reproduce this** and will report the drag
+as working - native drag is not driven by pointer events, so the test measures the wrong mechanism.
+
+**A CSS change reads as having no effect in the browser pane ->**
+the pane does not advance its animation timeline, so any property under a `transition` reports its
+START value forever, and `getAnimations()` shows the transition "running" while it never progresses.
+rAF loops and `ResizeObserver` delivery freeze with it. This has now cost time three separate times
+(a collapse height, throw physics, a hover fill - four attempts on the last). **The rule: set
+`transition: none` before measuring a transitioned property, and drive rAF work manually rather than
+waiting for it.**
+
+**A layout fix works, then breaks again the next time sizes change ->**
+you modelled the layout instead of measuring it. Re-solving positions in Python against a model of
+the runtime's sizing drifts the moment the runtime gains a rule the model does not have - squaring,
+header-fitting, tier floors. Solve it in the BROWSER against the real computed geometry, every
+element against every other, at several viewport sizes. **Hand-nudging one pair at the sizes you
+happen to pick will pass and then fail.**
+
 **A reference-site screenshot comes back empty, cut short, or with the navbar repeated down it ->**
 plain `chrome --headless --screenshot` fires at the load event, long before lazy images and
 scroll-reveals arrive, so most of the page never paints. Four distinct causes, all solved by the
@@ -165,3 +204,125 @@ computation's inputs actually vary before optimising anything around it; here th
 position attribute and `floor(uTime)`, and `uTime` only ever runs 0..1. Baked to the position
 attribute on the CPU 2026-08-22. Related: with `sizeAttenuation` on, those points are ~1.4px on
 screen, so **fill was never the cost** despite `particleSize: 20` looking alarming.
+
+**The top bar grows ~12px and shoves every page's content down as the window narrows ->** the bar
+is not scaling badly, it is STACKING for a zone that no longer exists. `top-bar.css`'s media ladder
+was written while the bar still carried the three toggles - its own comment called row 1
+"name + toggles" - and D20 removed them without the ladder being touched. From its breakpoint down,
+the nav dropped to a second row for an empty cell. **When a decision removes an element, grep the
+breakpoints that were laid out around it.** The same bug was in all three tiers.
+
+**An icon row renders as outlines but nothing draws in ->** the stroke and dash-array are cosmetic;
+the animation needs `pathLength="1"` on each `<path>`. Without it the dash values are in user units
+and every icon needs its own measurement, so a single shared animation silently does nothing.
+`pathLength="1"` renormalises any path to length 1 regardless of geometry, which is what lets ONE
+dashoffset animation drive an entire set. Read off stephanewillems.be; recorded in
+`redesign-lab/sources/stephanewillems-skills.md`.
+
+**`background-blend-mode` appears to do nothing ->** it must be declared on the SAME element that
+carries the `background-image` layers. Put it on a wrapper and the child composites normally with
+no warning. Cost a full round of "the gradient map isn't working" on the paper tests.
+
+**A backing added to a column shrinks everything inside it ->** `padding` and `border` on the box
+eat its content width. The rail's metadata rows went from 277px to 225px in a 277px column that way.
+If a surface needs a ground but must not move anything, paint it on an absolutely-positioned
+`::before` with a negative `inset` - it costs the layout exactly nothing. Same reason lab chrome
+should use `outline`, not `border`: an outline is outside the box model.
+
+**A measure expressed in `em` on a wrapper comes out ~10% short ->** `em` resolves against THAT
+element's own font-size, not the font-size its children actually use. `.prose` inherited 16.33px
+while its paragraphs ran at 18px, so a 72-character measure rendered as 65. Derive a measure from
+the size the TEXT uses, per breakpoint, not from the container's inherited size.
+
+**Path/element counts from `grep -c` are wrong on minified or one-line files ->** `grep -c` counts
+matching LINES, not matches. SVGs are routinely one line, so a 3-path icon reports as 1. Use
+`grep -o ... | wc -l`. This produced a wrong claim that a whole icon set was single-path, which was
+the basis of a recommendation.
+
+**A brand logo disappears on the night background ->** brand marks are drawn for light pages.
+Measured against `#070C23`: devicon Unity 2.29:1, Blender 2.55:1, Vulkan 2.68:1, and Unreal Engine's
+own `#0E1128` is **1.04:1** - not dark, invisible. Check contrast before adopting any official mark;
+a CSS `mask` re-tints one without editing the sourced file, so the citation stays true.
+
+**Fireworks do not reach the top, AND the unprojection entry above does not fix it ->** there are
+TWO causes with one symptom, and the second is not a bug at all. `createAutoFirework` picks
+`randomY = Math.random() * 0.5 + 0.3` and spawns at `(1 - randomY) * innerHeight`, so auto bursts
+land between **20% and 70% down the viewport** - the top fifth is excluded by construction. The
+comment above it reads "Upper/middle portion of screen", which is exactly what the code does; the
+range is just not what was wanted. **The lesson is about the TRAPS file itself:** a symptom that
+already has an entry invites you to re-apply that entry and conclude the fix regressed. Check
+whether the recorded cause is still the cause before re-fixing it. Measured 2026-08-22 by recording
+50 auto spawns and reading back the fraction of viewport height each burst used.
+
+**An effect "is not showing" and its code looks fine ->** check whether it is on the page at all
+before reading a line of it. The sparkler was reported missing across the whole new landing; it
+lives in `_javascript/modules/components/mouse-trail.js`, which Rollup bundles into
+`commons.min.js`, and **no lab page loads that bundle** - `final-landing.html` requested exactly two
+scripts. Cheapest possible check, and it beats any amount of reading:
+`document.querySelectorAll('[class*=spark]').length` and
+`[...document.querySelectorAll('script[src]')].map(s => s.src)`. Same class of mistake as debugging
+CSS that was never linked.
+
+**A three.js object will not stay hidden and `visible` keeps flipping back to true ->** something
+else owns that flag. `Reflector` (the water) sets its own mesh invisible, renders the reflection
+pass, then restores it, every frame - so anything written to `visible` from outside is overwritten
+on the next tick, silently and with no error. `material.visible` is not part of that cycle and
+holds. Symptom to recognise: sibling objects obey the same code immediately and only one refuses.
+
+**A module copied out of `_javascript/` into the lab 404s on its own imports ->** the live modules
+use extensionless specifiers (`from '../config/storage-keys'`) because Rollup resolves them. A
+browser loading the same file as a plain ES module does not, and the failure is a bare 404 in the
+network panel rather than anything that names the cause. Add `.js` to every relative import when
+copying, and say in the header that this is the only edit, so the copy still diffs cleanly against
+its original.
+
+**An editing pass changes a component's CSS and the page does not move ->** the page has its own
+inline copy. `final-landing.html` inlines `skills-row`, `section-head` and the tape rather than
+linking `extracted/components/*`, so editing the component alone is a no-op on the rendered page,
+and editing the page alone silently forks it from the bench. `text-decisions.html` keeps a greybox
+twin of the tape for the same reason. Before changing any component, grep the lab for its selector:
+`grep -rln '<selector>' redesign-lab --include=*.html`.
+
+**A CSS change is reported as applied and the page still shows the old value ->** a later rule with
+the same specificity is overriding it, and the source edit looks perfectly correct. This bit three
+times in one session: the skills draw duration (the landing inlines its own copy of the component
+CSS), the washi tape (`text-decisions.html` keeps a greybox twin), and the post's section heading
+(`final-post.html` had TWO `.prose h3` rules and the older one came later in the file, carrying
+`margin: 0` that cancelled the new `2em 0 1em`). Equal specificity means LAST WINS, so an edit near
+the top of a file can be dead on arrival with no warning of any kind.
+**The rule that catches all three: never report a CSS change as done from the source edit. Read the
+COMPUTED value off the rendered page.** `getComputedStyle(el).marginTop` would have caught every
+one in a second. And when two rules share a selector, MERGE them - adding a third only moves the
+fight further down the file.
+Cheap audit for any selector before editing it:
+`[...document.styleSheets].flatMap(ss=>[...ss.cssRules]).filter(r=>r.selectorText==='<sel>').length`
+
+**A panel looks "connected to the top" and its own padding is demonstrably correct ->** a
+`position:fixed` bar above it is overlapping, and the page reserves room for that bar with a
+CONSTANT that no longer matches. `final-about.html` set `body{padding-top:44px}` when its variant
+bar was one row; adding a third button wrapped the bar to 55px, so it covered the panel by 11px.
+Every measurement of the panel says it is fine, because the panel IS fine - the thing on top of it
+is not in any of those numbers. **Measure the gap BETWEEN them**
+(`panel.getBoundingClientRect().top - bar.getBoundingClientRect().bottom`); a negative result names
+the cause instantly. Fix by making the bar `position:sticky` rather than raising the constant: a
+sticky bar occupies real layout space at whatever height it wraps to, so there is no constant left
+to drift. Same family as the top-bar entry above, and the same lesson - derive the space from the
+bar, never guess it.
+
+**Placeholder "text" drawn as grey 1px rules hides a real problem ->** the block gets sized around
+the rules instead of around prose, so line-height, measure and paragraph spacing are never set and
+nobody notices until real copy lands and the panel is the wrong height. Rod, 2026-08-23: *"never to
+do this weird like dividers do real text just use the about me page text directly its not like we
+dont have any."* **If the copy exists in the repo, use it** - `tech-art/about.md` front matter
+carries `bio_intro` and `bio_more` verbatim, and the post pages carry their own. Grey lines are only
+honest for copy that genuinely has not been written yet.
+
+**A new surface gets type that "looks about right" and Rod asks why that size ->** because it was
+picked freehand when a decided spec already existed on another page. The post's prose type is not a
+preference, it is P33: Rod chose a 94-character measure after seeing 72 and 94 side by side, and
+`final-post.html:417-422` encodes it (16px, 18px above 960, weight 300, line-height 130%,
+letter-spacing -.18px, 24px paragraph rhythm, measure as `--char-w x --measure-ch`). **Before setting
+type on any new surface, grep for an existing rule and copy it** rather than choosing. The same goes
+for section rhythm (the landing's `padding-block: 30px 60px`), card fill (`--color-panel`) and
+heading margins (catlike's `2em 0 1em`) - every one of those was re-picked at least once in this
+project before someone noticed it was already decided.

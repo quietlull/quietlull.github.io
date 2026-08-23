@@ -8,6 +8,58 @@ against the repo; nothing here is asserted from memory.
 After this ships, [REFACTOR-PLAN.md](REFACTOR-PLAN.md) Phases 1-3 begin. Nothing in this note is
 refactor work - the refactor is deliberately downstream of it.
 
+## WHERE WE ARE - the whole road to the main site (2026-08-23)
+
+Three stages, in order, and they cannot overlap. Stage 2 needs a finished lab; stage 3 needs the
+redesign to have replaced the very surfaces it would refactor (D6).
+
+```
+  STAGE 1  FINISH THE LAB          15 of 100 slots approved     <- WE ARE HERE
+  STAGE 2  THE PORT                gates 0-6 below, 0 done of 6
+  STAGE 3  JEKYLL REFACTOR         REFACTOR-PLAN phases 1-3, all deferred
+```
+
+**Measured 2026-08-23, not estimated** - `[data-slot][data-state=approved]` counted on each page:
+
+| surface | approved | slots | what it is waiting on |
+|---|---|---|---|
+| `final-landing` | **8** | 12 | top bar (#26/#45), project cards, demo reel |
+| `final-post` | 3 | 19 | the callout family (#3) gates most of it |
+| `final-projects` | 1 | 19 | every element; card is circular-citation Slop |
+| `final-about` | 1 | 26 | trophy wall has no source; needs the design conversation |
+| `final-ramblings` | 1 | 12 | every element, all unsourced |
+| `final-portal` | 1 | 12 | rebuild not started; direction decided |
+
+**The landing is the only surface anywhere near done.** Nothing else is above 3 of 19.
+
+### What actually gates progress, in dependency order
+
+1. **The callout family (#3).** Post, projects and ramblings all use callouts. One pick unblocks
+   more than any other single decision on the list.
+2. **The 12 circular-citation components (gate 3, item 16).** By the ledger's own rule Slop is not
+   shippable, and the landing already links two of them - so the surface Rod calls done is not
+   portable yet. Largest provenance debt on the project.
+3. **The trophy wall (About) and the portal rebuild.** Both have their references and neither is
+   built; both need a design conversation first, which is Rod's, not Claude's.
+4. **The token bridge (gate 2, item 10).** 39 lab tokens vs 270 live, two names in common, no
+   mapping file. Every one of the lab stylesheets depends on it and nothing can port without it.
+
+### Stage 3 is not small and it is not optional
+
+`REFACTOR-PLAN.md` phases 1-3 were deferred so the boundary work happens ONCE, on the final
+surfaces. They are still ahead of us:
+- **Phase 1** draw the theme boundary - diff every layout/include/sass/js against upstream Chirpy,
+  extract our logic out of modified stock files, create the Sass override layer.
+- **Phase 2** decouple - `data-breathing` as the single hook (kills both the manual
+  `$breathe-selectors` list and the `animationName` string match), plus the **teardown + memory
+  audit** that was deliberately parked here rather than done during the redesign.
+- **Phase 3** theme-swap readiness - only meaningful once the boundary exists.
+
+**The honest sequencing risk:** stage 2 ports lab code into files stage 3 then restructures. Some
+port work will be redone. That is the accepted cost of D6 (boundary work happens once, on the final
+surfaces) and it is cheaper than extracting a boundary around surfaces that are about to be
+replaced - but it should not be a surprise when it happens.
+
 ## The thing to understand first
 
 **Nothing of the redesign has ever touched the live site.** Grep every bench class name
@@ -130,8 +182,14 @@ cannot be built until the picks are made.
     debt. *(either, large)*
 17. **Source the four deliberately-empty slots**: post header, reading progress bar, image lightbox,
     related-posts cards. *(claude, medium)*
-18. **Source the surfaces that are still short of references**: ~~resume~~ (dropped), portal (2 of 4 found; fold in the 109ichiki/zutomayo popup windows to replace the
-    unlabelled satellites), ramblings (2 of 4). *(claude, medium)*
+18. **Source the surfaces that are still short of references**: ~~resume~~ (dropped), **portal -
+    DONE 2026-08-23**, ramblings (2 of 4). Both portal window references are now read from source and
+    saved: `sources/109ichiki-dialog-window.md` (genuinely draggable - `cursor:grab`) and
+    `sources/zutomayo-pcmove-window.md` (collapses into its own title bar). **Two is what exists** -
+    a further sweep returned template listicles, not readable sites, and the portal is exactly the
+    rare page type where a quota manufactured false provenance last time. Space Jam orbital is
+    REJECTED by Rod; the rebuild is directed (drag + magnetism + edge bounce) and not started.
+    *(claude, medium)*
 19. **Build the site-wide furniture the bench has never had**: back-to-top, tooltips, page
     transition, scrollbar, sparkler trail, and **skip-link + focus ring** - that last one is an
     accessibility gate, not a nicety. *(claude, large)*
@@ -163,7 +221,10 @@ The live site is **nine surfaces**, and three layouts each serve two subjects:
     everything from `/redesign-lab/` absolute paths. *(claude, medium)*
 24. **Decide and build the nav model** - the bench bar's four links are hardcoded `href="#"`.
     *(either, medium)*
-25. **Source and build a footer**, or explicitly keep the live one. *(either, medium)*
+25. ~~**Source and build a footer**~~ **BUILT 2026-08-23.** `footer-line` is on all six final
+    pages: left-anchored at a 2.5vw gutter, sized to the lab tag, name links home, dead `#` socials
+    removed. **Open:** the landing still carries the older 8-item version because it is approved
+    there - the two need reconciling before the port. *(Rod, small)*
 26. **Decide the fate of the demo reel** - `final-landing` drops it and it has no source. *(either)*
 27. **Build aggregates for the five non-post blockouts**, then port them. *(claude, large)*
 28. **Design the surfaces with zero redesign artefacts**: archives, tag page, under-construction,

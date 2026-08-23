@@ -3,6 +3,105 @@
 Keep this note to roughly one screen. It answers "what is true right now" so a session orients
 cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANGELOG.md).
 
+## READ THIS FIRST AFTER A CLEAR (2026-08-23, end of the component session)
+
+### The two bugs that invalidated work, both now fixed
+
+**1. THE TYPE LADDER WAS NEVER RENDERING.** Every page requested `wght@400;500;700` while
+`decisions.css` asks for **weight 100 (x7) and 300 (x5)**. Neither face was loaded.
+**Measured proof: 100, 300 and 400 all rendered at exactly 438.25px - identical.** So the whole
+"hierarchy is size and tracking, NEVER weight" rule was collapsed to 400, and **every judgement Rod
+made before 2026-08-23 was against weight 400.** Fixed on 22 files; re-measured 421.45 / 429.77 /
+438.25 / 462.34, all distinct. **He has been told the pages will look different and may need a
+re-look.**
+
+**2. THERE WAS NO FOCUS INDICATOR ANYWHERE.** `extracted/styles/generic.css` holds the ring and was
+linked by **zero** of the six final pages. Six components declined to write their own because they
+"inherit the global ring" - they inherited nothing. WCAG 2.4.7 + 2.4.11 failing sitewide.
+Extracted to **`redesign-lab/focus-ring.css`** (NOT generic.css wholesale - its `body{background}`
+would flatten the scene ground) and linked on 22 pages. **That file also defines `--nav-h`**, which
+was used 9x in `toc-real.css` and defined nowhere, hiding the mobile TOC under the top bar entirely
+at <=780px.
+
+**The pattern behind both:** a name that resolves to a fallback renders wrong WITHOUT ERRORING.
+Same shape as `--color-muted-warm` (used 3x, defined never). **When a token or a weight looks
+right, measure it.**
+
+### Where the work is
+
+- **22 components built** in `redesign-lab/extracted/components/`, 2-3 versions each, every one
+  from a reference brief that **re-fetched its source live**. Briefs saved in
+  `redesign-lab/analysis/reference-briefs/` (84KB).
+- **ONE review surface: `redesign-lab/component-review.html`.** Rod's standing instruction
+  2026-08-23: ***never link him .md files*** - everything needed to decide goes in chat or on a page
+  he can look at. That page has zero .md links and must stay that way.
+- **~20 of the component picks are made** (P152, P153 in REQUESTS). Still open: achievement tiles
+  (3 more building, sourced from real systems - he named Minecraft, then Stardew Valley / Steam).
+- **THE FINAL PAGES ARE STILL CLEAN.** Only `decisions.css` + `focus-ring.css` are on them - type,
+  colour and the ring, no components. **Rod merges components himself, with me.**
+
+### THE ONE THING BLOCKING THE MERGE
+
+**Nine components render wrong the moment they land inside `.prose`, and two land at 1:1 contrast.**
+Load order on all six pages puts component stylesheets as the WEAKEST layer: `.rc` (0,1,0) loses to
+`.prose a` (0,1,1), so related cards get a gold background flood on hover; `.pn--v1 a:hover` ties
+`.prose a:hover`, giving gold text on gold fill. **This needs ONE vocabulary decision from Rod** -
+a `.prose`-prefix policy - and guessing it means redoing nine components. `heading-anchor-real` is
+the only one that computed this correctly.
+
+### The blockout contract
+
+**`redesign-lab/analysis/2026-08-23-blockout-contract.md`** holds every reservation MEASURED off the
+rendered blockouts at 1440. **The post content column is 767 (94ch), NOT the blockout's 711** - Rod
+settled it: *"its the 94 character one that's correct."* The blockout is 56px stale and stays on
+disk as an approved artefact; that file is the correction layer.
+**Reservations corrected from measurement:** callout 76 -> 130 (the old number came from a
+single-line, unlabelled callout). **Reservations that a picked component cannot fit and should not:**
+prev/next 345x44 (drawn for the text version, Rod picked a card), page title 930x44 (the locked H1
+is ~48px taller), bio block (real copy needs 257px more).
+
+## THE TEXT PASS IS DECIDED (2026-08-23) - read this first
+
+- **`redesign-lab/text-decisions.html` is the single decision surface for everything that displays
+  text.** 7 tabs, 25 sections, ~77 sourced variants, **23 picks settled**. It REPLACED and DELETED
+  four separate comparison pages (`prose-blockout`, `component-blockout`, `callout-tests`,
+  `orb-callout-tests`) - do not go looking for them, and do not build a fifth.
+- **`redesign-lab/decisions.css` is where those picks live as real CSS**, imported by all six
+  `final-*` pages. One definition, six consumers. Every block carries the citation that decided it;
+  a rule with no citation is a bug in that file. Full record: [DECISIONS.md](DECISIONS.md) **D31**
+  (the ladder, the colour ramp, the 23 picks) and **D30** (the callout family).
+- **D30: tape colour encodes callout TYPE** - warning pink, note green, tldr orange, quote blue,
+  reference no tape. **CORRECTED, and the correction matters:** this was first written up as
+  "overturning the colour half of D27". Rod pushed back, it was checked, and **he was right** - no
+  `final-*` page ever assigned a per-section tape colour and no section-colour token exists
+  anywhere. D27's "for different sections" was **never built**, so D30 redirects an unbuilt plan.
+  **There is no section-colour hole.** *Lesson: check whether a decision was ever IMPLEMENTED
+  before calling a change an overturn.*
+- **The heading ladder is ACCEPTED and it is layout-affecting** - landing and about change on every
+  heading; the post already matched. **The post's h1 -> h3 skip (WCAG 1.3.1) is FIXED** - its five
+  section breaks are real `<h2>` now and pick up case G automatically. Bench chrome was also
+  de-outlined on five pages (state-panel `<h4>`s were polluting the document outline).
+- **MARGIN NOTE DROPPED** (Rod 2026-08-23). One candidate instance in 19 posts, and it cost a
+  permanently asymmetric article plus a fight with the Starlight TOC over the single gutter. **Two
+  things settle by it not happening: the prose column stays centred, and the TOC keeps its gutter.**
+- **WASHI TAPE ROTATION WAS 10x TOO BIG and is corrected** - `-0.5deg` -> `-0.05deg`, gneiss's real
+  value. Found by a reference agent, verified against the saved source. **Consequence worth knowing:
+  0.05deg lifts a 700px card's corner 0.61px, so the card effectively stops looking tilted** - which
+  is what gneiss's own does. Visible tilt would be OURS and needs labelling.
+- **THE FINAL PAGES ARE DELIBERATELY CLEAN.** Rod: *"keep the final pages clean and we can add
+  everything together."* Only `decisions.css` has been spread to them - type and colour, no
+  components. Real components land in `extracted/components/` for review first.
+- **MORNING REVIEW PACKET: [`redesign-lab/REVIEW.md`](../redesign-lab/REVIEW.md)** - what changed on
+  all six pages, the picks, the corrections Rod caught, what the agents found, and the short list of
+  what still needs him. Linked as the first card on the lab index.
+- **Worklist: [`redesign-lab/COMPONENT-TABLE.md`](../redesign-lab/COMPONENT-TABLE.md)** - 9 to
+  build, 5 already real, 3 blocked on missing sources, 3 out of scope. Portal was excluded while
+  another agent held it; **that agent has since finished it** - see the portal entry below.
+- **A pattern to watch, it recurred three times in one session:** the judging pages kept re-asking
+  questions Rod had already answered (callouts, meta chips, code block). Decisions were landing in
+  DECISIONS.md and never being reflected back onto the surfaces. Check the decision record before
+  presenting any comparison.
+
 ## Current (2026-08-11)
 
 - **Docs system LANDED (Phase 0 done).** PROJECT-STATUS.md and CLEANUP-LOG.md are RETIRED - their
@@ -23,6 +122,198 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
   already deployed; originals kept for rollback); `.claude/worktrees/` (~900 MB) to prune.
 
 ## In flight
+
+- **NEXT SESSION IS THE SOURCING PASS.** Brief at the top of `redesign-lab/HANDOFF.md`; roadmap and
+  counts at the top of `docs/MERGE-WORKLIST.md`. Rod's goal: *"finish the lab, find all content that
+  needs to have a reference and find a suitable reference from the gallery or workbench."*
+  **15 of 100 slots approved** across the six final pages (landing 8/12, post 3/19, projects 1/19,
+  about 1/26, ramblings 1/12, portal 1/12).
+
+- **PAPER IS DEAD EVERYWHERE (D29).** A0 picked for the image mat; D27 had already taken it off the
+  cards. Same reason both times - the background carries the texture. Files stay on disk; the scene's
+  paper FILTER (D24) is a different thing and is untouched.
+
+- **THE CALLOUT QUESTION NEEDS RE-ASKING, NOT RE-PRESENTING (D29).** The seven-way set mixed a
+  layout device (margin note), three placements of an already-settled convention (the tape) and a
+  question Rod had already answered (flamedfury orb, top right; tape overlaying the content box).
+  Split into its three real questions before showing him anything.
+
+- **THE PORTAL IS FINISHED (2026-08-23, ROD: "Yup ok we are good here").** It was the last unbuilt
+  surface and it is now the most complete one. `final-portal.html` + `extracted/components/portal-window/`.
+  **ONE THING IS STILL OPEN and Rod named it himself: the centre identity mark.** It is greybox at
+  272x165 and *"will be replaced by the line boil h0 font later"* - which is BLOCKED on his three
+  scratch fonts (P100: identical metrics across all three or the text reflows every frame). It also
+  doubles as the RESET control, so it is doing a real job while it waits.
+
+  **The page.** Full-bleed field, no scroll at any height, eight windows: three section doors, five
+  socials. Space Jam supplies only the SIZE relationships and its no-two-alike rule; the POSITIONS
+  are Rod's own, hand-placed and converted from a screenshot he sent (P138). Everything is held as a
+  fraction of each window's TRAVEL RANGE, which is the single idea that makes the constellation and
+  the drag bounds grow with the page together. Three tiers enforced at runtime rather than baked:
+  leads floored at 1.6x the tallest social, socials squared, every window grown to fit its own header.
+
+  **The look took three passes and the first two were both properly sourced and both wrong.**
+  Windows-98 chrome (98.css), then a faithful zutomayo copy in their real `#E8D2E9`/`#6F2ADD` - the
+  latter only possible because Rod granted a palette exception, which is now spent. The answer was a
+  component we already had: the approved project card, opaque, in its own deep blue. **The lesson is
+  worth more than the result** - two rounds of chasing an external look ended at internal reuse.
+
+  **What is genuinely borrowed, and what is ours.** zutomayo's drag is CONFIRMED (their `common.js`
+  read from source: `.drag-and-drop`, mousemove writes `style.top/left`, the whole panel is the
+  handle). They have **no inertia and no clamping at all**, so the throw, the page-edge bounce and
+  the proximity lean are provably ours. Their measured 43%-of-bar-height type ratio is the one thing
+  that survived the look changes. Social icons are Simple Icons, verbatim. The Enter affordance is
+  button-kit's outline variant - **not a button**, a `<span>` inside the card's own link, so it adds
+  no second tab stop.
+
+  **FIVE FINDINGS FROM THIS BUILD THAT GENERALISE** (all in `docs/TRAPS.md` now):
+  a font swap silently invalidates any layout measured from text; grid items default to `min-width`/
+  `min-height: auto` and will grow past a clipping parent; `<a>` is natively draggable and eats
+  pointer drags; the browser pane freezes CSS transitions, so a transitioned property reads its start
+  value forever; and do not MODEL a layout the runtime already computes - measure it.
+
+  **SHIP-CHECK FLAGS, open for Rod:** the `ResizeObserver` in `portal-windows.js:485` has no
+  teardown twin; and there is no `prefers-reduced-motion` path in the component CSS - only the LEAN
+  is gated in JS, so drag, throw and bounce still run. Contrast passes everywhere (lowest 3.45:1).
+
+- **AWAITING ROD, each with a page:** the trophy wall design (no source, needs the conversation),
+  `palette-backup.html` (open in HIS browser - localStorage is per-origin), the landing footer vs the
+  other five (8 items/107px vs 5 items/63px), and the two queued asks - the nav hover effect and the
+  kit tags.
+
+- **BLOCKED ON FILES:** the line boil needs Rod's three scratch fonts. Constraints recorded in P100 -
+  identical metrics across all three or the text reflows every frame.
+
+
+- **COLOUR: WARM GREY IS LOCKED (2026-08-23, ROD).** `--color-panel: rgba(28,26,24,.55)`,
+  `--color-panel-solid` / `foundations --panel`: `#1c1a18`. Origin ROD, not a source - the swatch was
+  labelled "ours" when he picked it. Removes the last blue from every surface except the sky.
+
+- **THE ABOUT PAGE IS BUILT ON THE LANDING'S MODEL.** ROD: *"about page is the landing page except
+  the about me is the hero, the achievements are the project cards."* Numbers come from HIS landing,
+  measured: hero = full first screen (`min-height:520px` floor), sections at `padding-block:30px 60px`
+  = 90px apart, each with its own backing on `--color-panel`. `?v=strip` still shows the Klubnika
+  version he approved; `?v=panels` still has dimden.
+
+- **FOOTER IS ON ALL SIX FINAL PAGES.** `footer-line`, verbatim from the landing where it is approved.
+
+- **APPROVED THIS ROUND:** achievements popup (dimden at 200x76), scene tiers, skills draw at 6s,
+  Klubnika for About, warm grey. **Post page confirmed: no three.js at all, and that is final.**
+
+- **THE PORTAL IS BUILT** (see the rebuild bullet above). The frame ended up ZUTOMAYO's rather
+  than 109ichiki's, on Rod's 2026-08-23 instruction. Frame and handle sourced
+  (`sources/109ichiki-dialog-window.md`); the magnetism is ours; **the bounce has no source** and
+  must be labelled ours. Space Jam orbital is rejected.
+
+- **STILL NEEDING ROD:** the achievements TROPHY WALL has no source and he has said it needs a design
+  conversation first (backlog E1b). `palette-backup.html` still wants opening in HIS browser -
+  localStorage is per-origin.
+
+
+- **ROD'S DECISION BATCH IS BUILT IN (2026-08-23).** Washi tape case D, section-break case G (now on
+  `final-post.html`), the achievement toast at 200x76 dimden B, Klubnika for About, the two scene
+  tiers, all rewards scrapped, skills draw at 6s, magnetic skills, the View-all button, and the
+  119px -> 30px gap. Every one verified by measurement, not by eye.
+
+- **BOTH SCENE EFFECT BUGS HAD THE SAME CAUSE: the module was never on the page.** The sparkler and
+  the firework GREETING GATE both ship in `commons.min.js`, which no lab page loads. Copied into
+  `redesign-lab/effects/` per D22. **Correction on record:** the earlier "fireworks verified at 6.8%
+  down" measured forced calls, not the emitter - proving a patch works is not proving a feature runs.
+
+- **SCENE TIERS (ROD, P72):** `full` = lanterns + fireflies + post + dock + water -> landing, about.
+  `minimal` = lanterns + fireflies + post -> projects, portal, ramblings. `bare`/`blobs` deleted.
+  **OPEN: what the POST page gets** - it loads no three.js at all and "none will be the blobs"
+  reverses the earlier "hana blobs for posts".
+
+- **AWAITING ROD, each with a page:** [`final-about.html`](/redesign-lab/final-about.html) spacious
+  rebuild (200px rhythm, four slots, full-bleed scene), [`card-greys-tests.html`] over the live
+  scene, [`achievement-tests.html`] trophy wall (the toast is picked, the wall is not),
+  [`palette-backup.html`] (open it in HIS browser - localStorage is per-origin).
+
+- ~~**NOT STARTED:** the PORTAL rebuild.~~ DONE 2026-08-23 - see the rebuild bullet above. Space Jam is rejected;
+  zutomayo's `.ztmy-pcmove-*` window is sourced and saved, but that is ONE verified reference and
+  the process wants more before variants get drawn.
+
+
+- **TWO SCENE BUGS FIXED, and neither was where the docs pointed (2026-08-22).** The **sparkler was
+  never loaded** - it lives in `commons.min.js` and no lab page loads that bundle; measured zero
+  `[class*=spark]` elements before the fix. The **fireworks never reached the top** because
+  `createAutoFirework` uses `randomY = Math.random() * 0.5 + 0.3` against a `1 - randomY` screen
+  coordinate, so bursts land 20-70% down and the top fifth is excluded by construction - NOT the
+  unprojection trap in TRAPS, which is fixed and holding. Both patched lab-side in
+  `redesign-lab/effects/`; fireworks verified reaching **6.8% down** over 50 spawns.
+
+- **EVERY FINAL PAGE NOW HAS `?scene=full|lanterns|bare|blobs`.** Measuring corrected the premise:
+  all six run the FULL scene (58 lanterns + dock + water) and **nothing loads
+  `three-background-minimal.min.js`**. "Minimal" is 35 spheres with no lanterns at all. Rod's pick
+  between the four modes is open.
+
+- **WASHI TAPE IS SETTLED.** Case D (winterwind irregular clip-path tear) picked and built, border
+  deleted, opaque fill and axis-alignment both confirmed kept. The only tape debt left is the
+  green's missing source, which Rod parked as "ok for now".
+
+- **AWAITING ROD, all with a page:** `achievement-tests.html` (5 minimised toasts + trophy grid),
+  `section-break-tests.html` (7 cases incl. his D+F mix), `card-greys-tests.html` (now over the LIVE
+  scene), `final-about.html?v=panels|strip`, `palette-backup.html`.
+
+- **THE ABOUT AND PORTAL REBUILDS ARE THE NEXT REAL BUILDS.** Both have their references measured
+  and saved (`sources/about-page-spacing.md`, `sources/zutomayo-pcmove-window.md`) and neither is
+  started. The About number that matters: **our section rhythm is 10px, the references run 100-213px.**
+
+
+- **ALL SIX `final-*` PAGES NOW CARRY A REAL LAYOUT (2026-08-22).** Landing and post were already
+  built out; projects, ramblings, portal and about were one-slot stubs and are now their chosen
+  blockout's actual geometry with greybox slots in the right places. Every number verified by
+  measurement at 1440, not by eye: projects panel **1000** with a 3x300/20px grid and the zero-blur
+  `5px 10px` sticker shadow; ramblings `.wf` **1140** with the left edge identical on all 8 rows
+  (the property D15 picked it for); portal's **8 satellites matching [w,h,left,top] exactly**, no
+  two the same size; about carrying **BOTH** dimden (675+225=900, zero gap) and Klubnika (928, side
+  borders only) behind `?v=panels` / `?v=strip`, which is what D15 asked for. **`final-about` is no
+  longer blocked on building - it is waiting on Rod's pick.**
+
+- **THE WASHI TAPE RESEARCH IS DONE AND IT CONTRADICTS THE ASK (2026-08-22).** `washi-tape-tests.html`
+  holds the real reference asset plus 6 sourced edge mechanisms. gneiss.place's `tape1.png` measures
+  **298 x 116 on its own axis, drawn at 5.42 degrees off its bitmap axis, ends wandering +/- 6px in
+  2-3 broad lobes** - a TEAR, where Rod asked for a roller's serration (10-20 alternations). Both
+  are drawn; the pick is his. **Three faults independent of the tips**, all measured: a `1px border`
+  the real tape has none of, axis-alignment where the real tape sits at 5.42 degrees to its own
+  edge, and an opaque two-tone fill where the sourced stripe has a transparent third band.
+  Citation corrected: `.taped` is in gneiss's `deco.css`, NOT `index.css` (0 hits for "tape" there).
+
+- **THREE NEW COMPONENT PAGES AWAITING ROD.** `washi-tape-tests.html` (8 cases),
+  `section-break-tests.html` (6 sourced heading/section treatments at the real 767px measure, three
+  of them deliberately box-free so the ask gets tested rather than proved), and
+  `card-greys-tests.html` (7 candidates - the cards are genuinely blue today at
+  `rgba(12,16,38,.55)`; NOT committed, because that one line repaints every card on every page).
+
+
+- **THE LANDING IS BUILT OUT (2026-08-22, ROD: "im fairly happy with what we have now").**
+  `final-landing.html` carries every section it declares: top bar, V6 hero, section head, project
+  cards, skills head, skills row, reel head, demo reel, scene bottom, footer. **8 of 11 slots
+  approved.** Rod called it DONE as a build; it is not "everything approved", and the difference
+  matters:
+    - **top bar** - #26 is still his taste call, and #45 (where the one motion/scene control lives)
+      is still unanswered. There is currently NO manual motion control anywhere on the final pages;
+      `prefers-reduced-motion` is honoured but a visitor cannot turn the scene off.
+    - **project cards** - the component carries a CIRCULAR CITATION. Its band-reveal cites
+      yannesidibe.com/about, a real URL that has never been read. Ledger still says Slop.
+    - **demo reel** - a deliberate placeholder. ONE bar that chains: a clip plays, and on `ended`
+      another takes over. Its pool is the POSTS' OWN HEROES, read from each post's `image.path` in
+      front matter, not a sweep of `assets/media` - the sweep was serving `GrassTwitchingIssue.mp4`,
+      which is a clip of a bug. Four usable heroes; WIP posts and missing files excluded.
+      Regenerate from front matter, do not hand-edit the baked list. Still has no sourced DESIGN,
+      which is why Rod pulled the section on 08-18. He: "we will fix it later."
+  New components on the bench: `section-head`, `skills-row`, `footer-line`, `tag-badge`,
+  `washi-tape` (registry now 32).
+
+- **PAPER IS OUT, THE TAPE CARRIES THE COLOUR (D27, 2026-08-22, ROD).** Cards are plain,
+  transparent and grey - the scene already carries grain, so a second texture competed with it.
+  The washi tape becomes the site's one loud object: striped, four colours, one per section
+  (orange, pink, blue, green). Colour is concentrated in one component rather than spread.
+  **This overturns T0-A ("warm + 1 cool")** - see D27 for the reconciliation before re-litigating.
+  Green is the one colour with no source. Paper is PARKED not deleted; `paper-tests.html`,
+  `paper-tuner.html` and the extracted height maps all survive and nothing shipped, so there is
+  nothing to unwind.
 
 - **V6 IS THE HERO (LOCKED 2026-08-16, ROD).** `hero-tests.html?v=v6` - three upright all-caps
   vertical columns at the right edge plus the large live clock. Two changes landed on it the same
@@ -157,7 +448,7 @@ things on the whole site are the favicon, the V6 hero and the scene bottom.
 
 ## Two new judging surfaces
 
-- **`prose-blockout.html`** - the whole reading system in reading order at stripe's 663px measure,
+- **`text-decisions.html`** - the whole reading system in reading order at stripe's 663px measure,
   all six callout candidates in real sequence. Callouts get judged HERE, not in isolation: a callout
   alone in a 340px card cannot show how it reads between a heading and a code block.
 - **`element-gallery.html`** - 9 real cropped screenshots of live elements, take/leave per card.
