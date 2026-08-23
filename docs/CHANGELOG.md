@@ -6,6 +6,55 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (HALF THE "OPEN" LIST WAS ALREADY DECIDED, AND THE CODE COLOURS WERE BUILT WRONG).**
+
+  The todo page went to Rod with 12 open calls. **Six were already decided.** He caught three in one
+  message: the element gallery ("nothing on here that i need"), the code block colours, and the
+  silver for heading tiers 3 and 4 ("i already picked... it was iii"). Auditing the rest found three
+  more: the top bar's lopsided gaps (D26, *"taste call made, closed"*), the About variant (Klubnika,
+  P60 - and `final-about.html`'s own variant bar has said so all along), and the meta chips
+  (answered 08-21). The fireworks button was moot on top of that, since D28 scrapped every reward.
+
+  **The cause, and it is not carelessness about any one row.** The list was assembled from the
+  tracker's "Blocked on Rod specifically" bullets, which had never been updated as the answers landed
+  in `DECISIONS.md` and `decisions.css` instead. **D32 recorded this identical failure a day earlier
+  at PAGE scale** - "the page kept re-asking questions Rod had already answered". This was the same
+  failure at LIST scale, and repeating it while the warning sat in the same repo is the part worth
+  recording. Rule written into REQUESTS: nothing joins that list without a same-day check against
+  the decision record and the built CSS.
+
+  **A worse thing surfaced underneath the code-colour row.** The decision was real and the CSS is
+  built - and **the CSS contradicts the decision.** `decisions.css`'s own header says the values
+  follow Rod's role list. Measured: `--syn-type` is `#569cd6` BLUE where he said orange, and
+  `--syn-func` is `#dcdcaa` YELLOW where he said pink. Two of four roles render against spec, with an
+  unused `--syn-orange` sitting in the same block, under a comment asserting the opposite.
+  **A comment is not evidence** - the same shape as a provenance header not being provenance.
+
+  **Built: an eighth tab, CODE COLOUR**, split out of "Callouts & code" because that tab only ever
+  showed the code block's CHROME and never a single hue, which is exactly what Rod said. It renders
+  both readings side by side on the same HLSL sample - his role list against what is built today -
+  so it settles by looking rather than by trusting a note. **Neither sample invents a hue**; every
+  value in both is from VS Code Dark+'s own palette, so choosing his list costs no new colour.
+  Two bugs found building it, both already in TRAPS in a nearby form: `section.comp` is styled by
+  ELEMENT so `div.comp` silently got nothing, and a `1fr` grid track's automatic minimum is `auto`,
+  so a `white-space:pre` block sized the track to its longest line and pushed the page 179px sideways
+  (`min-width:0` on the ITEM does not fix it - the floor is on the TRACK, `minmax(0,1fr)` does).
+  Also worth noting: two rounds of measuring said the fix had failed and it was **browser cache**,
+  the same near-miss as P123.
+
+  **Four decisions came in while this was running**, all recorded:
+  **P182** the achievement tiles are V6, plus the project cards' hover edge glow and a border colour
+  that varies per achievement - rebuild deliberately BEHIND the About scene, Rod's own sequencing.
+  **P184 (now D34)** the trophy wall IS the control panel: a tile remembers what you found and
+  toggles what it unlocked, persisting across pages. **This finally answers where the toggles went**,
+  open since D20 removed them and D21 specified a combined control with no home. D21's control is
+  retired, and D28 is untouched - nothing is gated behind progress, the tile is a control not a
+  prize. **P185** reduced motion is out of scope by Rod's call, which closes gate 5 items 32 and 33
+  and the portal's missing guard as WILL NOT DO rather than leaving them rotting in the bug list;
+  the fireworks flash audit is flagged once as a different category (WCAG 2.3.1 is a seizure
+  threshold, never measured) and then dropped. **P183** #26 confirmed resolved by Rod, matching what
+  the audit had independently found.
+
 - **2026-08-23 (ONE PAGE FOR EVERYTHING LEFT, AND THE LAB INDEX CUT BACK TO WHAT IS STILL OPEN).**
 
   ROD: *"can make a table with everything that needs to be done and update the lab page so only

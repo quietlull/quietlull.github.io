@@ -27,6 +27,23 @@ at <=780px.
 Same shape as `--color-muted-warm` (used 3x, defined never). **When a token or a weight looks
 right, measure it.**
 
+### THE OPEN LIST WAS HALF STALE, AND IT IS THE FAILURE TO WATCH FOR (2026-08-23)
+
+`todo.html` first went to Rod with **12 open calls. Six of them he had already decided**, and he
+caught three in a single message. The list had been read straight out of the tracker's
+"blocked on Rod" bullets, which nobody had updated as the answers landed in DECISIONS and
+`decisions.css` instead. **D32 already recorded this exact failure at page scale** ("the page kept
+re-asking questions Rod had already answered"); this was the same thing at LIST scale.
+**Rule now in REQUESTS: nothing goes on that list without a same-day check against the decision
+record and the built CSS.** Re-verified list is down to six.
+
+**A second-order finding worth more than the fix:** the code block colours were not just decided,
+they were decided AND the built CSS silently contradicts them. `decisions.css`'s own header says the
+values follow Rod's role list; measured, `--syn-type` is blue where he said orange and `--syn-func`
+is yellow where he said pink. **Two of four roles render against spec, and a comment claiming
+otherwise sat directly above them.** A comment is not evidence, same as a provenance header is not
+provenance.
+
 ### Everything left is on ONE page now
 
 **`redesign-lab/todo.html`** is the whole remaining road in one table, deduplicated from this note,

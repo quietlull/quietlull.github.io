@@ -745,6 +745,44 @@ It is Catlike Coding's 768px re-expressed in our narrower face. Held as a CHARAC
 column span, because a column count drifts on a fluid spine. Spine = **1401px**, stripe's own grid
 width, which puts the rail on 350px and the body on 701px - the blockout's annotated numbers.
 
+## D34 - The trophy wall IS the control panel, and reduced motion is out of scope (2026-08-23, ROD)
+
+Two calls made in one message, and the first one closes a question that has been open since D20.
+
+**ACHIEVEMENTS ARE CONTROLS.** Rod: *"the three.js scene should remember what achievements you have
+and when you click on that particular achievement it toggles what it unlocked. this will persist
+elsewhere in the scene as well."*
+
+**What it answers.** D20 took the three toggles out of the top bar and explicitly left "where the
+toggles GO" open. D21 answered it with one combined scene+motion control and never said where that
+control sits, so it was never built and no final page has one. **The answer is that it does not need
+a home in the chrome: the trophy wall is the control surface.** A tile is two things at once, the
+record that you found something and the switch for it, which is why it needs no separate UI.
+**D21's combined control is therefore retired** - its function moved rather than disappeared.
+
+**Its relationship to D28, stated rather than smuggled.** D28 scrapped every reward outright
+(*"lets scrap the idea of unlocks they get an achievement and thats fine"*) and retired D12. This
+does NOT reinstate that. Nothing is gated behind progress and nothing is withheld until you earn it.
+The tile is a control, not a prize. What changes is that the wall stops being purely a display.
+
+**What it costs.** Scene state has to persist across pages, so this needs real storage and a defined
+default - and 19b is still open, which is the same class of problem (state living only in a browser).
+The build sits behind the About scene (P179) and the tile rebuild (P182), both by Rod's own
+sequencing: *"we should settle about scene before building this again."*
+
+**REDUCED MOTION IS OUT OF SCOPE.** Rod: *"as for reduced motion and other features we are ignoring
+that even if it might be 'more accessible'."* His site, his call, recorded as a decision so it stops
+reappearing as a bug.
+- **Closed as WILL NOT DO:** gate 5 item 32 (`body.motion-off` has no stylesheet reacting to it),
+  item 33 (four component stylesheets with no reduced-motion guard), and the portal component CSS
+  having no `prefers-reduced-motion` path.
+- **Not a strip, a stop.** `drift-magnet.js:257` already adds `motion-off` from the OS preference and
+  stays. This is a decision not to build more, not to remove what exists.
+- **One item flagged once and then dropped, because it is a different category:** the fireworks flash
+  audit is WCAG 2.3.1 Level A, a photosensitive-seizure threshold rather than a comfort preference,
+  and it has never been measured - so nobody knows which side of three-flashes-per-second it lands
+  on. Recorded here so the decision is on the record whichever way he goes.
+
 ## D32 - The component layer: 22 built, ~20 picked (2026-08-23, ROD)
 
 Two batches, every component built from a reference brief that **re-fetched its source live**
