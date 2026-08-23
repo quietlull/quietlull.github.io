@@ -6,6 +6,43 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (ONE PAGE FOR EVERYTHING LEFT, AND THE LAB INDEX CUT BACK TO WHAT IS STILL OPEN).**
+
+  ROD: *"can make a table with everything that needs to be done and update the lab page so only
+  relevant sections are on the top?"*
+
+  **Built as a page, not a note.** `redesign-lab/todo.html` holds the whole remaining road in eight
+  sections: his 12 open calls, the re-look the type-ladder fix forces on judgements he already made,
+  the measured slot debt, my build queue, 8 verified open bugs, the port's gates 0-6, the stage-3
+  phases, and what is parked on a file that does not exist. A `.md` would have been faster and would
+  have broken his standing instruction never to be linked one.
+
+  **The reason it had to be deduplicated rather than dumped.** The tracker's OPEN table is **173 rows
+  and 96 of them say NEEDS ROD** - that status quietly became a catch-all for "built, awaiting your
+  eye", which is not the same thing as a decision. Dumping 173 rows in front of him would have
+  reproduced exactly the problem he asked to be fixed. The 12 real calls were extracted by reading
+  what each row is actually waiting on.
+
+  **The lab index's Judge section went from 17 cards to 7.** Nothing was deleted: the nine decided
+  surfaces moved to a new "Settled, kept for reference" section, each carrying the decision that
+  closed it (card greys and washi tape and section breaks D28, tape colour D30, paper D29, sub-page
+  layouts D15), so the record of why a surface stopped being a question survives with it. Two of the
+  removed cards had a second reason to go: `BACKLOG.md` and `REVIEW.md` were the only `.md` links in
+  the top section, on a page whose own rule bans them.
+
+  **Every header count on that page was stale and is now measured, not copied:** 5 of 26 slots ->
+  **15 of 105**, 29 -> **56** bench components, 9 -> **7** blockouts, 51 -> **60** sources. The
+  gallery's "72" turned out to be right but under-stated: 72 kept of **102** entries, the other 30
+  cut. **Slot counts come from `[data-state="approved"]` on the rendered pages**, which is also how
+  the portal's 0 of 10 surfaced - Rod approved that page's look and no slot on it was ever marked.
+
+  **Verified before reporting:** todo.html renders 8 sections and 60 rows with zero `.md` links, all
+  14 of its links 200; the index has 88 links, 0 broken; neither page overflows horizontally and
+  neither logs a console error.
+
+  Also committed here: the seven docs files the component and portal sessions wrote and never
+  committed (`49cd980`, 1,854 insertions - D25 through D33, five new traps, the STATUS rewrite).
+
 - **2026-08-23 (THE COMPONENT LAYER: 22 BUILT, AND TWO BUGS THAT MADE EARLIER JUDGEMENTS INVALID).**
 
   **The headline is not the components.** An audit found that **the type ladder had never

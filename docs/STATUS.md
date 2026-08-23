@@ -27,6 +27,20 @@ at <=780px.
 Same shape as `--color-muted-warm` (used 3x, defined never). **When a token or a weight looks
 right, measure it.**
 
+### Everything left is on ONE page now
+
+**`redesign-lab/todo.html`** is the whole remaining road in one table, deduplicated from this note,
+the request tracker and the merge worklist: Rod's 12 open calls, the re-look the type-ladder fix
+forces, the measured slot debt, the build queue, 8 verified open bugs, the port's gates 0-6, stage 3,
+and what is parked on a missing file. It is a PAGE, not a note, because of the never-link-him-a-.md
+rule. **The lab index's Judge section is now 7 cards, down from 17** - the nine decided surfaces
+moved to "Settled, kept for reference" rather than being deleted, each carrying the decision that
+closed it.
+
+**A number worth knowing before reading the tracker:** the OPEN table is 173 rows and **96 of them
+say NEEDS ROD**, because that status became a catch-all for "built, awaiting your eye". Most close in
+bulk when Rod walks a page. The open list does not mean 96 decisions.
+
 ### Where the work is
 
 - **22 components built** in `redesign-lab/extracted/components/`, 2-3 versions each, every one
