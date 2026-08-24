@@ -334,6 +334,74 @@ The live site is **nine surfaces**, and three layouts each serve two subjects:
 - **`npm run build:css` staleness is not a production risk** - CI runs `npm run build` before every
   Jekyll build. The real symptom is local-vs-CI divergence.
 
+## THE MERGE CLEANUP LIST - every HTML and CSS thing to remove (2026-08-23, ROD)
+
+Rod: *"can you list all HTML and CSS we need to clean during the big merge?"* Counted by grep on
+2026-08-23, not recalled. **Re-count before relying on any number here - they rot.**
+
+### 1. Lab chrome on the six `final-*` pages - none of it may reach the live site
+
+| chrome | count today | note |
+|---|---|---|
+| `class="slot*"` | **243** | greybox placeholders. **Each one is also an unbuilt element**, so this doubles as the "what is still missing" check |
+| `class="cell"` | **164** | greybox fill inside the slots |
+| `data-state=` | **98** | what the state panel counts |
+| `data-slot=` | **97** | ditto |
+| `.slot__tag` badges | **85** | PENDING markers |
+| `show-state` | **25** | body class + the toggle that drives it |
+| `catlabel` | **12** | greybox captions |
+| `#state` panel + its `<script>` | **6** (one per page) | the slot counter |
+| `.labtag` | **6** | the bottom-left lab breadcrumb |
+| `class="gb"` | **3** | greybox blocks |
+| `#vbar` variant bar | **1** (`final-about`) | the `?v=panels/strip/spacious` switcher, plus the script that reads the query string |
+| lab-chrome CSS rules in each page's inline `<style>` | about 16-29 per page | `#state`, `.slot*`, `.ok`, `.labtag`, `#vbar`, `.cell`, `.catlabel`, `.sp__h`, `body.show-state` |
+
+### 2. Dead CSS measured on the pages
+
+- **`.two` / `.three` / `.stack`** - declared in the inline `<style>` of `final-portal`,
+  `final-projects` and `final-ramblings`, **0 uses in the markup of any of them**.
+- **`.wrap`** - `foundations.css` clamps it to `--measure` (64rem = 1024px) while pages set only
+  `width`, so on several pages the clamp silently wins. Dead on some pages, actively wrong on
+  others. **Flagged, not fixed - it is a layout question.**
+- **`.bgcanvas` / `.bg-1` / `.bg-2` / `@keyframes bgfade`** - the opposite problem. `hana-bloom.js`
+  REQUIRES the host page to supply these and **no sheet does**, so two canvases render
+  `position:static` inside a fixed parent with no crossfade. The rule exists at `a3-assembly.html`
+  if it needs porting. **This is a live broken background, not dead code.**
+
+### 3. Components carrying code that a decision already removed
+
+- **`top-bar`** - still carries the three toggles **D20 deleted**: 27 references in
+  `top-bar.html`, 23 in `top-bar.css` (`slap-toggle`, `goo-toggle`, `breathe-*`). The six final
+  pages do NOT use them, so this is dead weight in the component only. **Delete during the merge.**
+- **`site-footer`** - the OLD footer, superseded by `footer-line`, and it carries a CIRCULAR
+  CITATION banner. Still linked by **3** bench pages. Retire rather than port.
+- **`code-block`, `post-header`, `skill-tile`** - superseded by `code-block-real`,
+  `post-header-real`, and by Rod's "keep the skills row as it is". Linked by **0** pages.
+- **`seam-band`** - built, rejected 2026-08-13, still linked by 1 bench page.
+
+### 4. The provenance debt, which is a shipping gate not a tidy-up
+
+**14 components carry a CIRCULAR CITATION banner**: button-kit, card-tests, code-block,
+draw-in-icons, empty-state, footer-line, hero, list-controls, post-header,
+project-cards-expensive, quote-block, reel-band, site-footer, tldr-callout.
+By the ledger's own rule **Slop cannot ship**. Several are already on approved surfaces.
+Note `footer-line`'s banner is now stale - its origin is ROD and the file says so.
+
+### 5. Delete after the port
+
+- **`redesign-lab/original-css/`** - the frozen pre-refactor copy (60 files) that
+  `layer-diff.html` renders against. Its only job is the before/after comparison.
+- **`layer-diff.html`, `prose-collisions.html`** - diagnostic surfaces, not design.
+
+### 6. Deliberately NOT on this list
+
+- **Unlayered inline `<style>` blocks.** Rod ruled 2026-08-23 (P200) that **pages may override**.
+  They stay. What they need instead is the lint in D36 so an override is always deliberate.
+- **`prefers-reduced-motion` gaps.** Out of scope by Rod's call (D34).
+
+**The `.slot` count is the useful number in all of this.** A slot still present at port time is an
+element that was never built.
+
 ## Lab chrome to strip at port time (added 2026-08-21, ROD)
 
 Rod: *"remember what we need to remove later."* The `final-*` pages carry judging apparatus that is
