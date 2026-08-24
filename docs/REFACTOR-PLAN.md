@@ -97,3 +97,11 @@ cruft has been actively pruned before; the custom subsystems themselves are feat
 
 0 (done) before 1; 1 before 2 (cannot decouple what you cannot tell apart); 3 only after 2. All of
 1-3 wait for the redesign. Housekeeping items can land any time.
+
+## Behaviours split out from components (D39, Rod 2026-08-24)
+
+Rod's own framing: *"magnetic should just be a behavior i can stack with drift, border glow, etc."*
+Single-purpose, stackable, host-agnostic. The evidence that it matters is already in the tracker:
+drift and magnetism could not be separated when the post needed one without the other; the card
+edge glow could not be reused on achievement tiles; a second tag style got built because the first
+was entangled with button-kit. Full reasoning in DECISIONS.md D39.

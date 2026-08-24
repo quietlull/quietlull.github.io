@@ -1348,3 +1348,38 @@ section-level headings at two sizes. Aligning them moves three approved pages, s
 leaves. At 48px a long heading eats the line - "Three Variants: X, Quad, ..." leaves the rule
 **0px** wide, so that one heading has no divider at all. The other four measure 217-395px.
 
+## D39 - BEHAVIOURS ARE SINGLE-PURPOSE AND STACKABLE (ROD, 2026-08-24)
+
+Rod: *"something im realizing is actually we should probably do a splitting of all the
+functionalities because i reuse alot of stuff. like magnetic should just be a behavior i can
+stack with drift, border glow, etc. during our refactor we should do this and make sure we have
+a bunch of single purpose components so we can mix and match what we need."*
+
+**THE PRINCIPLE.** A behaviour is one thing that can be applied to anything. A component is a
+thing that has behaviours. Today those are fused, and the cost is already measurable on this
+project rather than theoretical:
+
+- **drift-magnet** is TWO behaviours welded into one engine and one class. When Rod asked for the
+  post's socials to stop moving, there was no way to remove DRIFT while keeping MAGNETISM - the
+  only lever was stripping `.js-magnetic` and killing both. Stacked, that request is one class off.
+- **`.ct-glow-card`** carries the edge glow, but the same glow was wanted on achievement tiles
+  (P154). It could not be reused without dragging the card with it.
+- **`.kit-tag` vs `.tag-badge`** - two tag styles existed doing the same job, and the second was
+  built because the first was entangled with button-kit. Rod: *"why did we make a new tag style"*.
+- **`merged-card`** scopes EVERY card rule under `.merged-cards`, so the container is load-bearing
+  styling rather than layout. Removing it to change the grid stripped the cards entirely - that
+  cost two wrong fixes in one day.
+
+**WHAT THIS MEANS IN PRACTICE, when the refactor happens:**
+  - one behaviour per file, each addable by a single class: `.js-magnetic`, `.js-drift`,
+    `.fx-glow-edge`, `.fx-tilt`, `.fx-boil`, `.fx-flash`
+  - behaviours must not assume their host. `.fx-glow-edge` on a card, a tile and a button should
+    need no knowledge of which it is on
+  - components own STRUCTURE and LAYOUT; behaviours own MOTION and LIGHT. A component may declare
+    which behaviours it ships with, never re-implement one
+  - a behaviour that needs config takes it from a data attribute, as drift already does
+    (`data-drift`, `data-strength`), not from a variant class
+
+**SCOPE.** This is a REFACTOR-stage change, not a now-change. The lab is mid-merge and rewriting
+the component boundaries under it would invalidate picks Rod has already made. Recorded here so
+the refactor starts from it rather than rediscovering it. See docs/REFACTOR-PLAN.md.
