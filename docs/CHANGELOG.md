@@ -6,6 +6,45 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (THE LANDING'S NAME BLOCK, AND THE ONE FACT THAT ANSWERED FOUR ASKS).**
+
+  Rod tuned the hero name five times and then closed it: "fix all the flagged issues, once finished
+  consider landing done."
+
+  **The fact worth carrying: in a vertical writing mode, the axes swap names.** `letter-spacing` is
+  the VERTICAL gap and `line-height` is the HORIZONTAL one. Four of his five asks - more vertical
+  space, more space between letters, more horizontal space, extend out to a drawn line - were the
+  same two properties, and each became a one-number change once that was clear. The tracking the
+  block inherited was `-.23em`, **drawn for Caveat, a connected script where tight fitting reads as
+  handwriting**; on separate letterforms it advanced 13.56px against a ~24px glyph, overlapping them
+  by more than half.
+
+  **He drew the target rather than describing it, and the drawing was measurable:** a vertical stroke
+  178px out from a 175.5px block - one block-width further, a straight 2.012x. Doubling the air
+  rather than the type landed it at `missBy: 0`. Doubling the TYPE would have hit the same left edge
+  while making the block twice as tall as the line he drew, which is what ruled it out.
+
+  **Four flagged issues fixed with the desktop composition unmoved - max drift 0.01px across eight
+  measurements, swept over six viewports.** The one that generalises beyond this page: **the
+  line-boil pin never re-ran on resize.** It writes fixed px advances while callers size it with `vh`
+  clamps, so a pin taken at one window height is wrong at the next - loaded at 900 and resized to
+  620, the mark stayed 274.9px against its true 189.1px, every letter carrying phantom gap until a
+  reload. It re-pins now, debounced, with the listener attached only after fonts resolve so a resize
+  cannot pin fallbacks.
+
+  **A fifth measurement artefact, caught before it reached Rod.** The ship check first reported the
+  focus ring missing: `outline:none`, no shadow. That was the method - `:focus-visible` does not
+  match a scripted `.focus()`. On a real Tab press the ring is there. **The session tally is now five
+  failures that produced plausible NUMBERS rather than errors, plus one that produced a plausible
+  ABSENCE. The lesson has stopped being about any individual trap: a measurement harness needs its
+  own verification before its output counts as evidence.**
+
+  **Ledger debt paid.** The ship check found line-boil had no `element-tracker.md` row at all despite
+  shipping on three surfaces, and the portal identity mark was still `Tier: Slop` - which cannot ship
+  - after it shipped. Both written, plus a recorded DEVIATION: the Hero V6 row cites ndt's slot as
+  `width:20%/min-width:250px` and the block now uses `width:auto`, so the placement is still ndt's
+  but the sizing rule is ours.
+
 - **2026-08-23 (H0 ON ALL THREE SURFACES, AND THE PORTAL HITS 9 OF 9).**
 
   The line boil went from one surface to three on Rod's call: *"add the line boil text to the top bar

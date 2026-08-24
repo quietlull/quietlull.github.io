@@ -29,22 +29,38 @@ is now a plain text node. All in TRAPS.
 digit faces TABULAR, the clock becomes the easy case and the reason it was routed to procedural
 jitter disappears.
 
-### The landing is finished except for the top bar slot
+### THE LANDING'S H0 BLOCK IS FINISHED, AND EVERY FLAGGED ISSUE ON IT IS CLOSED (2026-08-23)
 
-**Socials are drift-magnet's `.dm-social`** - the workbench component Rod pointed at - at 2.2rem with
-the real Simple Icons marks and real destinations, replacing four dead `href="#"` initials. They sit
-BELOW the vertical name: `.h__vert` became a column with the name row and the socials stacked, rather
-than a hard-coded `top`, because the name's height is a vh clamp and any fixed offset would drift.
-Verified: 0 of 24 glyph cells overlap them.
+Rod tuned the hero name across five asks, then closed it: "fix all the flagged issues, once finished
+consider landing done." The tuning: tracking `-.23em -> -.06em` (that value was drawn for Caveat, a
+CONNECTED script, and it crushed separate letterforms), `line-height 1.7 -> 4.23`, and a doubling out
+to a left edge he drew on a screenshot.
 
-**The view-all button is button-kit's PILL.** It had been broken for a bigger reason than its
-variant: the page never linked `button-kit.css`, only an inline copy of base + primary, so it
-rendered in browser-default link blue.
+**In a vertical writing mode `letter-spacing` is the VERTICAL gap and `line-height` is the HORIZONTAL
+one.** That single fact answered four of his five asks, each as a one-number change.
 
-**FIVE times in two days a missing stylesheet link or an inline component copy was the actual bug** -
-the footer across six pages, `.section-head__name`, the button, the socials (drift-magnet's JS was
-running with its CSS never loaded), and the top bar. **When a component looks wrong, check the page
-loads its stylesheet at all before debugging the component.**
+**Four flagged issues, all fixed, with the desktop composition unmoved - max drift 0.01px across
+eight measurements.** That was the constraint: robustness only, no design movement.
+
+1. **A dead `ResizeObserver`** was writing `top` to a `position:static` element on every resize.
+2. **The trench drifted against the halo.** `line-height` resolves against the column's clamped
+   font-size while the row `gap` resolved against the base font, so the proportion Rod approved held
+   at exactly one viewport height: 10.1% of a column at 26.1px, 5.7% at the clamp ceiling. The clamp
+   is hoisted onto the row now so both ems share one base. Measured 10.1% at both ends.
+3. **The stack spilled the hero below ~633px of viewport height**, because the socials were rem-fixed
+   at 247.6px while the name shrank with its `vh` clamp. Every value is a clamp capped at the
+   approved number, so desktop is untouched and only short windows differ.
+4. **THE LINE-BOIL PIN NEVER RE-RAN ON RESIZE.** It writes fixed px while callers size it with `vh`,
+   so a pin taken at one window height is simply wrong at the next: loaded at 900 and resized to 620,
+   the mark stayed 274.9px against its true 189.1px. Debounced resize re-pin, with the listener
+   attached only AFTER fonts resolve so a resize cannot re-pin fallbacks. Teardown twin added.
+
+Verified across six viewports - 375x667, 390x920, 1440x620, 1440x900, 1905x1080, 1425x1700 - all
+passing fits-hero, no-left-spill, no-page-overflow and symmetric air.
+
+**THE LANDING IS NOT 12 OF 12.** Three slots are still `data-state="pending"`: top bar, view all
+button, project cards. The top bar's own label carries an unanswered question. "Consider landing
+done" was NOT read as approving them - that is Rod's call, and it is queued as an open question.
 
 ### The CSS architecture changed. Everything in `redesign-lab/` is now in cascade layers.
 
