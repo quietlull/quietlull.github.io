@@ -14,7 +14,7 @@ Three stages, in order, and they cannot overlap. Stage 2 needs a finished lab; s
 redesign to have replaced the very surfaces it would refactor (D6).
 
 ```
-  STAGE 1  FINISH THE LAB          24 of 97 slots approved      <- WE ARE HERE
+  STAGE 1  FINISH THE LAB          24 of 97 slots approved      <- WE ARE HERE (merging components in)
   STAGE 2  THE PORT                gates 0-6 below, 0 done of 6
   STAGE 3  JEKYLL REFACTOR         REFACTOR-PLAN phases 1-3, all deferred
 ```
@@ -41,7 +41,12 @@ was not.** Re-counted on the attribute: **97 slots**, and 24 approved once Rod s
 ### What actually gates progress, in dependency order
 
 1. ~~**The callout family (#3).**~~ **DECIDED - D30.** Four categories, tape colour encodes type.
-2. **The `.prose` prefix policy - THE ONLY OPEN DECISION LEFT.** **Eight** components, **53** losing
+2. ~~**The `.prose` prefix policy.**~~ **SOLVED by cascade layers, D36** - not by either patch. The
+   next question it leaves is whether a page's inline `<style>` may override the ladder.
+2b. **THE MERGE ITSELF - this is now the work.** 22 of the 25 pending slot TYPES have a built
+   component; only the post's metadata rail, the portal's identity mark and the About trophy wall do
+   not. The components are on the bench and the final pages are clean. **Merging them in is stage
+   1's remaining job.** Old text follows for the record: **Eight** components, **53** losing
    declarations, measured by `prose-collisions.html` off the real stylesheets. The worst case renders
    dark text on a dark panel at **1.06:1**. Both candidate fixes are rendered side by side at the top
    of that page and look identical, so the call is about portability, not looks.

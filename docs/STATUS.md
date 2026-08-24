@@ -3,99 +3,72 @@
 Keep this note to roughly one screen. It answers "what is true right now" so a session orients
 cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANGELOG.md).
 
-## READ THIS FIRST AFTER A CLEAR (2026-08-23, end of the component session)
+## READ THIS FIRST AFTER A CLEAR (2026-08-23, end of the layer-refactor session)
 
-### The two bugs that invalidated work, both now fixed
+### The CSS architecture changed. Everything in `redesign-lab/` is now in cascade layers.
 
-**1. THE TYPE LADDER WAS NEVER RENDERING.** Every page requested `wght@400;500;700` while
-`decisions.css` asks for **weight 100 (x7) and 300 (x5)**. Neither face was loaded.
-**Measured proof: 100, 300 and 400 all rendered at exactly 438.25px - identical.** So the whole
-"hierarchy is size and tracking, NEVER weight" rule was collapsed to 400, and **every judgement Rod
-made before 2026-08-23 was against weight 400.** Fixed on 22 files; re-measured 421.45 / 429.77 /
-438.25 / 462.34, all distinct. **He has been told the pages will look different and may need a
-re-look.**
+`@layer reset, tokens, prose, components, overrides;` at the top of all 60 lab stylesheets.
+Full reasoning, the rejected `:where()` route and the open question: [DECISIONS.md](DECISIONS.md)
+**D36**. **The one rule to carry:** unlayered CSS beats every layer, so a page's own inline
+`<style>` outranks both the ladder and every component it loads. That is not settled yet - see
+"What is still open" below.
 
-**2. THERE WAS NO FOCUS INDICATOR ANYWHERE.** `extracted/styles/generic.css` holds the ring and was
-linked by **zero** of the six final pages. Six components declined to write their own because they
-"inherit the global ring" - they inherited nothing. WCAG 2.4.7 + 2.4.11 failing sitewide.
-Extracted to **`redesign-lab/focus-ring.css`** (NOT generic.css wholesale - its `body{background}`
-would flatten the scene ground) and linked on 22 pages. **That file also defines `--nav-h`**, which
-was used 9x in `toc-real.css` and defined nowhere, hiding the mobile TOC under the top bar entirely
-at <=780px.
+**A frozen copy of every pre-refactor stylesheet is served at `redesign-lab/original-css/`.**
+`redesign-lab/layer-diff.html` renders any page against it, live, with tabs. The refactor reverses
+by copying that directory back.
 
-**The pattern behind both:** a name that resolves to a fallback renders wrong WITHOUT ERRORING.
-Same shape as `--color-muted-warm` (used 3x, defined never). **When a token or a weight looks
-right, measure it.**
+### What the 7-agent audit found, because it changes how much to trust a green result
 
-### THE OPEN LIST WAS HALF STALE, AND IT IS THE FAILURE TO WATCH FOR (2026-08-23)
+One agent per page, each asked to DISPROVE its result rather than confirm it.
 
-`todo.html` first went to Rod with **12 open calls. Six of them he had already decided**, and he
-caught three in a single message. The list had been read straight out of the tracker's
-"blocked on Rod" bullets, which nobody had updated as the answers landed in DECISIONS and
-`decisions.css` instead. **D32 already recorded this exact failure at page scale** ("the page kept
-re-asking questions Rod had already answered"); this was the same thing at LIST scale.
-**Rule now in REQUESTS: nothing goes on that list without a same-day check against the decision
-record and the built CSS.** Re-verified the list went 12 -> 6, and Rod then closed five more himself:
-**one open decision remains on the whole project, the `.prose` prefix policy.**
+- **The refactor had shipped broken to 40 lab pages** that kept their own unlayered `*` reset. Every
+  component's padding was zeroed on them. Fixed on all 41; verified restored. In TRAPS.
+- **The before/after harness under-reported badly** - it sampled `[class]` elements only, 15
+  properties, one width, default state. A page with 37 changed values read as 1. Also in TRAPS.
+- **Two zeros were proven properly** (portal via its own debug API at 5 widths and 4 states;
+  about across 3 variants x 2 widths x 44 properties) and two were zero for a boring reason: the
+  page loads almost nothing.
+- **One agent claim was checked and rejected** (a 4th declaration supposedly removed from
+  merged-card; it is present). An audit finding is a claim like any other.
 
-**A second-order finding worth more than the fix:** the code block colours were not just decided,
-they were decided AND the built CSS silently contradicts them. `decisions.css`'s own header says the
-values follow Rod's role list; measured, `--syn-type` is blue where he said orange and `--syn-func`
-is yellow where he said pink. **Two of four roles render against spec, and a comment claiming
-otherwise sat directly above them.** A comment is not evidence, same as a provenance header is not
-provenance.
+### THE THING THAT REFRAMES EVERYTHING ELSE
 
-### Everything left is on ONE page now
-
-**`redesign-lab/todo.html`** is the whole remaining road in one table, deduplicated from this note,
-the request tracker and the merge worklist: Rod's remaining call, the re-look the type-ladder fix
-forces, the measured slot debt, the build queue, 8 verified open bugs, the port's gates 0-6, stage 3,
-and what is parked on a missing file. It is a PAGE, not a note, because of the never-link-him-a-.md
-rule. **The lab index's Judge section is now 7 cards, down from 17** - the nine decided surfaces
-moved to "Settled, kept for reference" rather than being deleted, each carrying the decision that
-closed it.
-
-**A number worth knowing before reading the tracker:** the OPEN table is 173 rows and **96 of them
-say NEEDS ROD**, because that status became a catch-all for "built, awaiting your eye". Most close in
-bulk when Rod walks a page. The open list does not mean 96 decisions.
+**None of the eight components the refactor was built to fix is loaded by any final page.** Five
+live only on `component-review.html`; three are on no page at all. **The six final pages load 12 of
+the 56 bench components.** So the `.prose` collision - including the 1.06:1 case - was only ever
+rendering on bench and review surfaces. It would have bitten the moment components landed in
+`.prose`, which is exactly what happens next, so the fix was worth making before the merge rather
+than after. But it was never live damage on Rod's pages, and a "0 changed" on a page that loads one
+component is close to no evidence at all.
 
 ### Where the work is
 
-- **22 components built** in `redesign-lab/extracted/components/`, 2-3 versions each, every one
-  from a reference brief that **re-fetched its source live**. Briefs saved in
-  `redesign-lab/analysis/reference-briefs/` (84KB).
-- **ONE review surface: `redesign-lab/component-review.html`.** Rod's standing instruction
-  2026-08-23: ***never link him .md files*** - everything needed to decide goes in chat or on a page
-  he can look at. That page has zero .md links and must stay that way.
-- **~20 of the component picks are made** (P152, P153 in REQUESTS) and `component-review.html` now
-  SHOWS them - 19 decision lines, 9 winning variants badged, six deliberately showing no winner
-  because the pick was not one of the three built. Achievement tiles settled on **V6** (P182).
-- **THE FINAL PAGES ARE STILL CLEAN.** Only `decisions.css` + `focus-ring.css` are on them - type,
-  colour and the ring, no components. **Rod merges components himself, with me.**
+- **The components ARE built.** 56 on the bench; **22 of the 25 pending slot TYPES across the final
+  pages have one.** Only three do not: the post's metadata rail, the portal's centre identity mark
+  (blocked on Rod's three scratch fonts), and the About trophy WALL (its tile is picked - V6 - but
+  the wall is unbuilt and its colours wait on the About scene).
+- **What has NOT happened is the merge.** The final pages are deliberately clean and the components
+  sit on the bench. **That is the next job** and Rod has asked to start it.
+- **`component-review.html` now shows the picks** - 19 decision lines, 9 winning variants badged,
+  six deliberately showing no winner because the pick was not one of the three built.
+- Slot state: **24 of 97 approved.** portal 8/9, landing 9/12, post 4/19, projects 1/19,
+  about 1/26, ramblings 1/12.
 
-### THE ONE THING BLOCKING THE MERGE
+### What is still open
 
-**EIGHT components render wrong the moment they land inside `.prose`.** Measured 2026-08-23 by
-`redesign-lab/prose-collisions.html`, which reads the real stylesheets rather than a note: 8
-components, 53 losing rules. **It is 8, not the 9 repeated everywhere** - the ninth was a selector
-parser breaking `:is(h2, h3)` on its comma and wrongly flagging `heading-anchor-real`, which the
-docs always said was the one that got it right.
-
-**The failure is NOT "gold text on gold fill", which is how it has been written up.** Rendered and
-measured: the fill stays transparent (the component declares the `background` shorthand and still
-wins that property) while prose wins `color` and sets it to the near-black panel token. **Dark text
-on a dark panel at 1.06:1.** A per-property split, only visible when rendered.
-Load order is what turns a TIE into a loss: on all six pages `decisions.css` loads AFTER the
-component sheets, so where the two specificities are equal, prose wins.
-
-**Rod can see the choice rather than read about it.** The top of `prose-collisions.html` renders the
-same real callout four ways - outside `.prose`, inside it as things stand, and inside it under each
-candidate fix. **Both fixes render identically**, which is the point: the decision is not which looks
-better, it is whether a component is allowed to be prose-only.
-**Option A** scopes components under `.prose` (`.prose .co-ref a`) and costs portability - the same
-callout on projects or ramblings loses its styling. **Option B** has the component raise itself
-(`.co-ref.co-ref a`) and costs legibility - it reads as a trick every future component must remember.
-One pick rewrites all 53 losing declarations.
+1. **Do pages get to override the ladder?** Each page's inline `<style>` is unlayered and currently
+   wins. The proposed answer is a **lint that fails on any unlayered rule in a `final-*` page**,
+   not a wrapper - a `page` layer above `prose` changes nothing, and escalating decisions.css's
+   selectors would contradict its own documented strategy.
+2. **Adopting the bigger post headings** (Rod prefers them, D31 change). **Blast radius is none** -
+   no other final page uses `.prose`. But the five H2 margins were carrying the article's entire
+   rhythm, because paragraph-to-paragraph gap is 0 and always was. Exact edits and the two ladder
+   knock-ons are in REQUESTS P219.
+3. **The portal's focus rings** degraded when `focus-ring.css` went into `overrides` above
+   `components` - four controls lost their gold outline and two link rings flipped from inset to
+   outset, where `overflow:hidden` clips them.
+4. Rod's `#f86a03` is set on `--h0-color`/`--h1-color` but **does not reach the post's H1**, for the
+   same page-override reason as (1).
 
 ### The blockout contract
 

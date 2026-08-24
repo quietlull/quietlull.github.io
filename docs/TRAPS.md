@@ -4,6 +4,31 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**Every component on a page loses its padding at once, and nothing errors ->**
+the page keeps its own `*{box-sizing:border-box;margin:0;padding:0}` in an inline `<style>` while the
+stylesheets moved into cascade layers. **Unlayered CSS beats every layer**, so a universal selector at
+specificity (0,0,0) - which used to lose to every class - now outranks all of them. Measured on
+`a3-assembly.html`: top bar padding `16px 32px` -> `0`, footer `40px` -> `0`, hero `64px 16px` -> `0`.
+**It is worse than cosmetic where JS measures the DOM:** the portal sizes every window from its title
+bar's computed padding, so a zeroed padding silently becomes wrong geometry - re-injecting the rule
+moved 4 of 8 window sizes and 4 of 8 positions.
+**Fix:** delete the duplicate if the page loads `foundations.css`, otherwise wrap it in
+`@layer reset{}`. **Check for it with:** a page that has `*{box-sizing` outside a `@layer` block.
+Cost: shipped broken across 40 lab pages, and the before/after harness could not see it because it
+only sampled the pages that had already been fixed.
+
+**A before/after comparison reports far fewer changes than really happened ->**
+the sampler was choosing elements by a property of the thing it expected to change. Sampling
+`querySelectorAll('[class]')` missed `.posthead h1`, which has no class, and reported a page with 37
+changed values as having 1. Sampling only 15 CSS properties missed `outline-color`, so four focus
+rings changed on the portal and the diff said zero. Sampling only the default state at one width
+missed every `:hover`, `:focus-visible` and breakpoint.
+**Rules that follow:** sample `body *`, not `[class]`; include `transform`, `position`, `z-index`,
+`overflow`, `min-width`, `outline-color`; and **wait for `document.fonts.ready` plus any layout the
+page re-runs on it** - fixed `setTimeout`s race the font swap. Also: **CSS transitions freeze in a
+background tab**, so read `el.getAnimations().forEach(a => a.finish())` before measuring a hover or
+focus state, or it silently reports the pre-transition value.
+
 **Code samples render with random floating boxes around individual words ->**
 short utility class names collided with the host page's own classes. A syntax sample used
 `<span class="v">` for variables on a page where `.v` is the variant CARD

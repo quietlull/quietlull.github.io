@@ -745,6 +745,50 @@ It is Catlike Coding's 768px re-expressed in our narrower face. Held as a CHARAC
 column span, because a column count drifts on a fluid spine. Spine = **1401px**, stripe's own grid
 width, which puts the rail on 350px and the body on 701px - the blockout's annotated numbers.
 
+## D36 - CSS cascade layers replace the specificity war (2026-08-23, ROD)
+
+Rod: *"i feel like this nesting is really bad in general and we should design this better ... i
+mean this is how CSS is intended to be used to begin with."* Then, seeing it: *"So after looks
+alot better so its approved."*
+
+**THE LAYER ORDER, and it is the whole decision.**
+`@layer reset, tokens, prose, components, overrides;` repeated at the top of every lab stylesheet -
+idempotent, so each file is correct on its own whatever a page loads. reset=foundations.css,
+tokens=extracted/styles/*, prose=decisions.css, components=extracted/components/*,
+overrides=focus-ring.css.
+
+**What it replaced.** Eight components had 53 declarations losing to `.prose` element rules, worst
+case rendering dark text on a dark panel at 1.06:1. The two candidate patches both made the
+COMPONENT apologise for where it was put - either scoping it under `.prose` (costing portability)
+or doubling its own class (costing legibility). Layers make the question disappear: a component
+never has to know prose exists, and **all 53 declarations stayed exactly as written.**
+
+**REJECTED: `:where()`.** It also worked, and it is a smaller change - one file. But it flattens
+specificity INSIDE prose too, and measuring found a real regression: `ol li` line-height 24px ->
+20.8px, because `.prose ol > li` currently outranks `.prose li` and `:where()` makes them equal.
+Layers preserve normal specificity within a layer and only change precedence between layers, which
+is the property actually wanted. Also worth knowing: a regex rewrite caught only 38 of 58 prose
+selectors, so that route needs a parser, not find-and-replace.
+
+**Option B over option A, Rod's call.** Where a component restated type the ladder already owns,
+the COMPONENT defers. Scope was far smaller than estimated - **5 declarations across 2 files**
+(section-head 2, merged-card 3), verified by diffing live against the frozen copy declaration by
+declaration. Interaction states and pseudo-element ornaments were deliberately left with the
+component: a `:hover` colour is not the base ladder value.
+
+**THE ONE FOOTGUN, and it cost 40 pages.** Unlayered CSS beats every layer. Any page keeping its own
+`*{margin:0;padding:0}` in an inline `<style>` now outranks every component it loads. See TRAPS.
+
+**Not settled by this decision, and it is the next question:** each page's inline `<style>` is still
+unlayered, so a page can silently beat both the ladder and any component. The proposed answer is a
+LINT that fails on any unlayered rule in a `final-*` page, rather than a wrapper - a `page` layer
+above `prose` changes nothing, and escalating decisions.css's selectors would contradict that file's
+own documented strategy of matching page specificity and relying on load order.
+
+**A frozen copy of every pre-refactor stylesheet is served at `redesign-lab/original-css/`**, which
+is what makes `layer-diff.html` able to render before and after side by side rather than describe
+them. The whole refactor reverses by copying that directory back.
+
 ## D35 - Code syntax colours: Rod's role list wins, constants take the dark blue (2026-08-23, ROD)
 
 Rod, after seeing both readings drawn side by side: ***"Keep dark blue for constants but 100% a."***

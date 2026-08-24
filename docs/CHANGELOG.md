@@ -6,6 +6,58 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (CASCADE LAYERS, AND A 7-AGENT AUDIT THAT CAUGHT WHAT I SHIPPED BROKEN).**
+
+  ROD, on the specificity war between `.prose` and the components: *"i feel like this nesting is
+  really bad in general and we should design this better ... i mean this is how CSS is intended to
+  be used to begin with."* Recorded as **D36**.
+
+  **The refactor.** `@layer reset, tokens, prose, components, overrides;` on all 60 lab stylesheets.
+  A component no longer has to know prose exists, and **all 53 losing declarations stayed exactly as
+  written.** `:where()` was rejected after measuring: it works, and it is one file, but it flattens
+  specificity INSIDE prose too and moved `ol li` line-height 24px -> 20.8px. Rod chose option B for
+  the overlaps, so where a component restated type the ladder owns, the component defers - **5
+  declarations across 2 files**, verified by diffing live against the frozen copy rather than by
+  counting what I intended to remove.
+
+  **Then he asked for one agent per page, and it was worth it.**
+
+  **The refactor had shipped broken to 40 lab pages.** I deleted the duplicate unlayered `*` reset
+  from the 8 pages my harness sampled and never checked the rest. On the other 40 that rule now
+  outranks every layer, so every component's padding was zeroed. Proven on `a3-assembly`: top bar
+  `16px 32px` -> `0`, footer `40px` -> `0`, hero `64px 16px` -> `0`. **It is worse where JS measures
+  the DOM** - re-injecting it moved 4 of 8 portal window sizes and 4 of 8 positions, because the
+  portal sizes windows from its title bar's computed padding. Fixed on all 41 and verified restored.
+
+  **My measurement was the other failure.** The before/after harness sampled `[class]` elements
+  only, 15 properties, one width, the default state. `.posthead h1` has no class, so a page with
+  **37** changed values reported **1**. Four portal focus rings changed and the diff said zero
+  because `outline-color` was not in the list. **I was sampling by what I expected to change**, and
+  I reported "4 of 7 pages identical" on that basis. Both failures are now in TRAPS.
+
+  **THE FINDING THAT REFRAMES THE WHOLE EXERCISE.** None of the eight components the refactor was
+  built to fix is loaded by any final page - five live only on `component-review.html`, three on no
+  page at all, and the six final pages load 12 of 56 bench components. So the `.prose` collision,
+  including the 1.06:1 dark-on-dark case I put in front of Rod, was only ever rendering on bench
+  surfaces. **It would still have blocked the merge** - which is the very next job - so fixing it
+  first was right. But I let it read as live breakage on his pages and it was not.
+
+  **What the audit verified rather than assumed.** The portal zero survived its own debug API at 5
+  field widths and 4 class states across 78 properties plus the JS-computed geometry. The About zero
+  survived 3 variants x 2 widths x 44 properties, and the two variants nobody had ever measured came
+  back clean for a structural reason. **One agent claim was checked and rejected** - a fourth
+  declaration supposedly removed from merged-card is present at line 230.
+
+  **Rod's calls this session:** the post's bigger headings are preferred, so that becomes a
+  deliberate D31 change rather than a regression - and the blast radius is none, because no other
+  final page uses `.prose`. `#f86a03` goes to H0/H1 only; `--color-glow` keeps `#ff6a00` across its
+  other 75 uses, so two oranges coexist at deltaE 3.23, chosen knowingly.
+
+  **Still open and not guessed at:** whether a page's inline `<style>` may override the ladder. The
+  proposal is a lint that fails on any unlayered rule in a `final-*` page rather than a wrapper,
+  because a `page` layer above `prose` changes nothing and escalating decisions.css's selectors
+  would contradict its own documented strategy.
+
 - **2026-08-23 (THE OPEN LIST GOES 12 TO 1, AND TWO NEW ANALYSER PAGES THAT MEASURE INSTEAD OF ASSERT).**
 
   Rod closed six calls in a row - the silver (**ii**, confirmed), the demo reel, the portal, the FPS
