@@ -137,8 +137,14 @@ component is close to no evidence at all.
   sit on the bench. **That is the next job** and Rod has asked to start it.
 - **`component-review.html` now shows the picks** - 19 decision lines, 9 winning variants badged,
   six deliberately showing no winner because the pick was not one of the three built.
-- Slot state: **25 of 97 approved.** **portal 9/9 (complete)**, landing 9/12, post 4/19,
-  projects 1/19, about 1/26, ramblings 1/12.
+- Slot state: **24 of 97 approved, 73 pending.** **portal 9/9 (complete)**, landing 9/12,
+  post 3/19, projects 1/19, ramblings 1/12, about 1/26.
+  **The 25 previously recorded here was over-counted** - `grep -o 'data-state="approved"'`
+  matches inside JS selectors and comments as well as tags, and a line-based tag grep misses
+  the multi-line ones. Counted by parsing tag spans: 97 / 24 / 73. Same bug class as the
+  105-vs-97 inflation. **final-about carries TWO parallel slot sets** - h1, portrait,
+  bio_intro, bio_more, status terminal and locked/empty each appear twice - which is why it
+  reads as 26.
 
 ### What is still open
 
