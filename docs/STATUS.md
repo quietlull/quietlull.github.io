@@ -5,6 +5,50 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
 
 ## READ THIS FIRST AFTER A CLEAR (2026-08-23, end of the layer-refactor session)
 
+### THE HEADING LADDER NOW APPLIES BY ROLE, ON EVERY PAGE (2026-08-24)
+
+It did not before, and the failure was silent. Rod: *"the h1 on landing are still a little weird
+looking btw check if its following ladder properly"*. Measured: the landing's only `<h1>` computed
+**32.64px / weight 700 / white - the browser default**. A bare `<h1>` injected into the page came
+out the same, which proved nothing in the ladder reached it.
+
+**CAUSE: every SIZE rule in decisions.css was scoped to `.prose` or a `.d-h*` class.** The landing,
+projects, ramblings and portal have neither, so they picked up colour and weight from the handful of
+rules that name classes directly and every size quietly did not apply. **Colours right, scale wrong**
+- which is why it read as "a little weird" rather than obviously broken, and why four pages carried
+it for weeks.
+
+Bare `h1`-`h4` are now in the ladder alongside the existing selectors. **Case G did NOT come with
+them**: its counter and ruled divider stay scoped to `.prose h2`, because they are a prose DEVICE
+rather than the h2 scale - broadening them would number every section head on the landing.
+
+**ONE WEIGHT PER LEVEL, SITE-WIDE: 300.** Rod: *"make the section heads 300 too so they match"*,
+then *"yes do the bio headings too just make things match site wide"*. The only `font-weight: 100`
+left in decisions.css is `.prose th`, deliberately - a table header is not a heading level.
+
+### The post is finished except for one thing, and that thing is Rod's
+
+**Slots: 96 total, 24 approved, ZERO greybox markup left on any page.** The post went from 15
+pending greyboxes to none: callouts, figure, code colours, TOC (both halves), hero media, stamp,
+share buttons and the reference block are all real components now.
+
+What is still open on it is a DECISION, not work: `post header` and `socials-row` have **no recorded
+pick**, and `list-controls` - the search field on projects and ramblings - declares itself
+**circular-citation Slop** in its own header, which cannot ship.
+
+### What actually went wrong today, and the shape it kept taking
+
+Six separate bugs this session were the same fault wearing different clothes: **a page restating
+something the ladder or a component already owned.** Unlayered page CSS beats every `@layer`, so
+each one won silently and rendered the old value with no error:
+the section head (700/#f59e0b against the component's 100/#fbbf24), the post's `.prose h2` killing
+case G, `.prose h1`/`h3` forcing gold-deep, `.prose ul` indenting the reference list, `.prose a`
+underlining the related cards, and the clock forcing mono over the boil.
+
+**The fix is always the same and Rod named the rule: delete the page's copy, do not add an
+exception.** *"When something conflicts simply add them to the ladder ... we shouldnt be making 100
+exceptions just a few simple rules."*
+
 ### THE H0 SITE MARK IS LIVE ON ALL THREE SURFACES, AND P100 IS CLOSED (2026-08-23)
 
 Rod's three scratch fonts landed. `redesign-lab/assets/fonts/Lineboil{1,2,3}-Regular.ttf` - three
@@ -137,7 +181,7 @@ component is close to no evidence at all.
   sit on the bench. **That is the next job** and Rod has asked to start it.
 - **`component-review.html` now shows the picks** - 19 decision lines, 9 winning variants badged,
   six deliberately showing no winner because the pick was not one of the three built.
-- Slot state: **24 of 97 approved, 73 pending.** **portal 9/9 (complete)**, landing 9/12,
+- Slot state: **24 of 96 approved, and ZERO greybox markup left on any page.** **portal 9/9 (complete)**, landing 9/12,
   post 3/19, projects 1/19, ramblings 1/12, about 1/26.
   **The 25 previously recorded here was over-counted** - `grep -o 'data-state="approved"'`
   matches inside JS selectors and comments as well as tags, and a line-based tag grep misses
@@ -239,7 +283,7 @@ is ~48px taller), bio block (real copy needs 257px more).
 - **NEXT SESSION IS THE SOURCING PASS.** Brief at the top of `redesign-lab/HANDOFF.md`; roadmap and
   counts at the top of `docs/MERGE-WORKLIST.md`. Rod's goal: *"finish the lab, find all content that
   needs to have a reference and find a suitable reference from the gallery or workbench."*
-  **23 of 97 slots approved** across the six final pages (portal 8/9, landing 8/12, post 4/19,
+  **24 of 96 slots approved** across the six final pages (portal 8/9, landing 8/12, post 4/19,
   projects 1/19, about 1/26, ramblings 1/12). Counted on the `data-slot` ATTRIBUTE - grepping the
   bare string also matches the state panel's own selector and the CSS, which is how a "measured"
   105 briefly overruled a correct 97.

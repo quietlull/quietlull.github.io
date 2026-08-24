@@ -6,6 +6,52 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-24 (THE LADDER REACHES EVERY PAGE, THE POST FINISHES, AND ONE FAULT WEARING SIX COSTUMES).**
+
+  **The heading ladder was never reaching four of the six final pages, and it failed silently.**
+  Rod spotted it as "a little weird looking" rather than broken, which is exactly the signature:
+  every SIZE rule was scoped to `.prose` or `.d-h*`, so pages without a prose container inherited
+  colour and weight from the few class-named rules and no scale at all. The landing's `<h1>`
+  computed the browser default - 32.64px, weight 700, white - and proving it took injecting a bare
+  `<h1>` to watch it come out the same. The ladder applies by ROLE now. Case G stayed prose-scoped
+  on purpose: its counter and divider are a prose device, not the h2 scale.
+
+  **One weight per level, site-wide, on Rod's call** - section heads then bio headings to 300.
+  The first attempt changed nothing on screen because the weight went on the element while the
+  visible text sat in a child span with its own 100. Now in TRAPS, along with the check that a
+  computed 300 does not prove weight 300 LOADED: three weights must render three different widths.
+
+  **THE FAULT OF THE DAY, six times over: a page restating what the ladder or a component already
+  owned.** A page `<style>` is unlayered and unlayered beats every `@layer`, so each one won
+  quietly and rendered the old value - the landing's section head at 700/#f59e0b against the
+  component's 100/#fbbf24, the post's `.prose h2` cancelling the approved case-G section break,
+  `.prose ul` indenting the reference list past body text, `.prose a` drawing an underline across
+  the related CARDS, the clock forcing mono over the boil. **Rod named the rule that ends it:**
+  *"When something conflicts simply add them to the ladder ... we shouldnt be making 100 exceptions
+  just a few simple rules."* Every fix was a deletion, not an exception.
+
+  **The post reached zero greybox slots.** Callouts to D30's tape placements, figure, D35 syntax
+  colours that had been locked and rendering nowhere, both halves of the TOC, the hero video that
+  had been sitting in the repo unused, the stamp, share buttons, and a reference block rebuilt from
+  Ronja Tutorials. Prev/next was DELETED rather than built - Rod: chronological neighbours here are
+  unrelated, so a control presenting them as a sequence claims something untrue.
+
+  **The line-boil jiggle was not a layout bug at all.** Three reports, two failed fixes, and the
+  answer only arrived when Rod gave the reproduction: scrolled half way down the hero. Every
+  geometry value was stable; `window.scrollY` was drifting 8px. Chrome's scroll anchoring was
+  compensating for content it saw changing above the fold, six times a second. `overflow-anchor:
+  none`. In TRAPS as the difference between "the viewport moves" and "an element moves".
+
+  **D39, Rod's own architecture call:** behaviours should be single-purpose and stackable -
+  magnetic, drift, glow, boil - because they are currently welded into components and the cost is
+  already on the record. When he asked for the post's socials to stop moving there was no way to
+  remove drift without also killing magnetism.
+
+  **Also: the footer, third report and third genuinely different fault** (spacing, then being a
+  grid item, then living inside a parent with 140px of bottom padding). Each earlier fix was right
+  for what it addressed and blind to the next - which is what happens when the fix aims at the
+  symptom that was just measured rather than at the element.
+
 - **2026-08-23 (THE BOIL GETS NUMBERS, AND A PIN THAT HAD BEEN WRONG ALL ALONG).**
 
   Rod cut three digit faces and asked whether they could be combined with the text boils. **Yes, and

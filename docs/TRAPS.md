@@ -377,3 +377,45 @@ type on any new surface, grep for an existing rule and copy it** rather than cho
 for section rhythm (the landing's `padding-block: 30px 60px`), card fill (`--color-panel`) and
 heading margins (catlike's `2em 0 1em`) - every one of those was re-picked at least once in this
 project before someone noticed it was already decided.
+
+## "The viewport moves" did not mean anything moved
+
+**Symptom:** Rod reported the page jiggling in time with the line boil, three times. Two fixes
+failed because both hunted for something changing SIZE.
+
+**What it actually was:** at his reproduction - scrolled half way down the hero - 26 off-beat
+samples showed font-size, the pinned advance, cell and column boxes ALL STABLE to three decimals.
+The only value that moved was `window.scrollY`, drifting **394 <-> 402, eight pixels**, in time
+with the boil. **Chrome's scroll anchoring** adjusts `scrollTop` to hold the visual position when
+content above the viewport changes; the boil replaces every glyph six times a second, so the
+browser re-anchored six times a second. The browser was helping.
+
+**Fix:** `overflow-anchor: none` on the boil host and its cells. 8px -> 0px.
+**The lesson:** "the viewport moves" is not the same claim as "an element moves", and assuming it
+was cost two rounds of measuring the wrong things.
+
+## Setting a property on the element when the text lives in a child
+
+**Symptom:** changed `h2.section-head` to `font-weight: 300`. The element computed 300. Nothing
+changed on screen.
+
+**Why:** the visible text is in a `.section-head__name` child which carried its own
+`font-weight: 100`. The parent's weight is irrelevant to text it does not contain.
+**Catch it by:** measuring the element that renders the TEXT, not the one that carries the class.
+
+## A computed weight of 300 does not prove weight 300 loaded
+
+Three faces at 100 / 300 / 700 must produce three DIFFERENT rendered widths for the same string.
+Measured on the landing: 310.7 / 316.3 / 337.3px. If they match, the ladder has collapsed to one
+fallback face and every computed value is still reporting the number you asked for. This project
+has already shipped that bug once.
+
+## A regex that needs N closing tags will eat past the element
+
+**Symptom:** lifting a `.toc-pop` block out of the post's rail silently deleted the TAGS block.
+Rod noticed before I did: *"you just removed the tags where are they now?"*
+
+**Why:** the pattern ended `</div>\s*</div>\s*</div>` - three closes - and the popup has two, so
+the non-greedy `.*?` ran past the end of the popup and swallowed the next sibling whole.
+**Rule:** never bound an HTML extraction by counting closing tags. Match the open tag and walk the
+nesting depth, or rebuild the container wholesale.
