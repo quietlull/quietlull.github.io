@@ -1309,3 +1309,42 @@ unwinding. What survives and is worth not re-deriving:
 - Three verbatim sources in `sources/`: gneiss border-image, gneiss ground, ibelick feTurbulence.
 - The finding that outlives it: **only three sheets exist and the generator that baked them is not
   in the repo** (D24), so washi / cold press / wove is the entire palette of paper available.
+
+## D38 - CASE G KEEPS ITS MECHANISM AND GIVES UP ITS SIZE (ROD, 2026-08-24)
+
+Rod, seeing the post: *"H2 isnt meant to look like how it is on the post page"*, then
+*"hierarchies across the site should be consistent"*, then *"please do 2"*.
+
+**WHAT D28 ACTUALLY SAID, because this is where the drift started.** D28 records
+*"SECTION BREAKS: case G"* and its rationale is that *"neither uses SIZE to carry hierarchy ...
+the counter ranks and the rule separates while the type stays quiet"*. **It never says h2.**
+Mapping a section BREAK onto the top-level section HEADING was an implementation choice made
+after the fact, and it is what produced a 22px h2 - 1.22x the 18px body, and THINNER than it at
+weight 100 against 300.
+
+**A NAMING TRAP WORTH RECORDING:** "case G" appears TWICE in D28 for different things. The washi
+tape case G (the 5.42-degree rotation) was REJECTED; the section-break case G was approved. Same
+label, opposite verdicts, which is why Rod asked whether he had misspoken. He had not.
+
+**THE CALL.** The mechanism stays, the size comes back:
+  h1  101px / 300   unchanged, the post title
+  h2   48px / 300   stripe's own measured number, ALREADY transcribed in the post's heading
+                    block - a value that existed, not a new invention. Keeps case G's counter
+                    (0.68em, so it still scales) and its ruled divider.
+  h3   24px / 300   the quiet one now. A sub-break under a real heading is what D28 described.
+                    Raised from 17px, where it was SMALLER than the 18px body it headed.
+  body 18px / 300
+Steps: 2.10x, 2.00x, 1.33x. **Every heading now sits above the body text and none is thinner
+than it**, which was true of neither h3 nor h4 before.
+
+**BLAST RADIUS: the post only.** It is the only final page with a `.prose` container; every
+other page's headings are component-scoped (`.section-head`, `.er-ttl`).
+
+**LEFT OPEN, and it is the consistency question Rod raised:** `.section-head__name` renders
+2.4rem / 38.4px on landing, projects and about, while the post's h2 is now 3rem / 48px. Two
+section-level headings at two sizes. Aligning them moves three approved pages, so it is his call.
+
+**A CONSEQUENCE OF THE SIZE, measured:** the ruled divider is `flex:1` on whatever the heading
+leaves. At 48px a long heading eats the line - "Three Variants: X, Quad, ..." leaves the rule
+**0px** wide, so that one heading has no divider at all. The other four measure 217-395px.
+
