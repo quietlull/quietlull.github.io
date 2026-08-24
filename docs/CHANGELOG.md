@@ -6,6 +6,30 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-24, later (PROJECTS REBUILT FROM THE LIVE PAGE AND PROMOTED OVER THE OLD ONE).**
+
+  Rod asked for the projects page to be rebuilt from the LIVE layout rather than the blockout the
+  lab invented - *"i actually think our old one is better"* - after two rebuilds in one day still
+  read wrong. Three agents: measure the live page, build to that spec, verify independently against
+  both. His verdict: *"looks really good"*, then *"remove the old final project this is leagues
+  better instantly"*. It is `final-projects.html` now; the superseded build is archived rather than
+  deleted, because it is the only record of that blockout and the ledger still cites its notes.
+
+  **Both of his complaints about that page were real defects that measurement found.**
+  *"Doesnt match any of the colors"*: `--color-pink` is **defined nowhere in any stylesheet**, so
+  the pinned badges had been rendering a hard-coded off-palette fallback the entire time, silently.
+  *"Tags are weird amalgams"*: `.kit-tag` never reset `border`, so the same class rendered a
+  bevelled box on a `<button>` and a clean one on a `<span>` - 44 bevels on one page. Both fixed in
+  the components rather than the pages, so every consumer inherits the fix.
+
+  **A third in the same family:** the page sat 76px off centre because its inline `.wrap` restated
+  `padding` but not `width`. Partial restatement of a shorthand reads as ownership and is not - now
+  in TRAPS alongside the tag one.
+
+  **Two things deliberately NOT decided**, both layout and therefore Rod's: whether cards stay
+  globally uniform or follow the live page's per-row equalising, and whether to buy back the
+  description's third line by growing the card or moving the meta onto the tile.
+
 - **2026-08-24 (THE LADDER REACHES EVERY PAGE, THE POST FINISHES, AND ONE FAULT WEARING SIX COSTUMES).**
 
   **The heading ladder was never reaching four of the six final pages, and it failed silently.**

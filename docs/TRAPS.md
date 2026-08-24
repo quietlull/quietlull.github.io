@@ -419,3 +419,29 @@ Rod noticed before I did: *"you just removed the tags where are they now?"*
 the non-greedy `.*?` ran past the end of the popup and swallowed the next sibling whole.
 **Rule:** never bound an HTML extraction by counting closing tags. Match the open tag and walk the
 nesting depth, or rebuild the container wholesale.
+
+## Restating a shorthand PARTIALLY keeps inheriting the half you left out
+
+**Symptom:** the rebuilt projects page sat 76px right of centre - gutters 208 / 56 against the live
+page's 132 / 132.
+
+**Why:** its inline `.wrap` rule restated `padding` but not `width`, so `foundations.css`'s
+`.wrap{max-width:var(--measure)}` was still in force - and `--measure` is 64rem. `.wrap` computed
+**1024px** while `.col` is 1176, so the column overflowed its own wrapper. Every sibling page
+declares `width:min(1180px,92vw)`; this one dropped it.
+
+**The shape:** a partial restatement READS as "this rule owns .wrap now" and does not. The
+properties you omit keep resolving from a layer you have stopped thinking about.
+
+## The same class rendering two different boxes
+
+**Symptom:** Rod - "tags are weird amalgams". `button.kit-tag` measured 52.22x28.59 WITH a 2px black
+outset bevel; `span.kit-tag` 47.27x27.55 without. 44 bevels on one page.
+
+**Why:** `.kit-tag` styles its edge with `outline` and never declares `border`, so a `<button>`
+keeps the UA default. `foundations.css`'s `*` reset only covers box-sizing, margin and padding.
+
+**Rule:** a component that can land on BOTH a control and a plain element must neutralise the UA
+control styling - `border`, `background`, `font`, `appearance` - or it is two components sharing
+one class name.
+

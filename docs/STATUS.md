@@ -5,6 +5,51 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
 
 ## READ THIS FIRST AFTER A CLEAR (2026-08-23, end of the layer-refactor session)
 
+### PROJECTS WAS REBUILT FROM THE LIVE PAGE AND HAS REPLACED THE OLD ONE (2026-08-24)
+
+`final-projects` had been rebuilt twice in one day and still read wrong to Rod: *"Projects page is
+landing really poorly i actually think our old one is better can you try grabbing the old one
+create a blockout page using it and lay the new elements into that instead?"*
+
+So the LIVE page was measured and used as the blockout, with already-approved components laid into
+it. His verdict on seeing it: *"looks really good"*, then *"remove the old final project this is
+leagues better instantly"*. **It is now `final-projects.html`.** The superseded sticker/hybrid build
+sits in `archive/2026-08-24-projects-superseded/` rather than deleted - it is the only record of
+that blockout and its slot notes carry provenance the ledger still cites.
+
+**The live projects page is SECTION-SCOPED** - `/tech-art/projects/` and `/game-design/projects/`.
+`/projects/` 404s. Worth knowing before someone "fixes" a URL that was never broken.
+
+All 16 cards carry description, date, read time and tags, verbatim from `_posts/tech-art/*.md`.
+Heights are uniform at every breakpoint, held by a 2-line clamp that CUTS a long description rather
+than letting it grow the box.
+
+### Both complaints about that page were defects, not taste
+
+- **`--color-pink` IS DEFINED NOWHERE.** `merged-card.css` used `var(--color-pink, #ff7ec8)` on the
+  pinned badges, so it rendered its FALLBACK - an off-palette pink - the whole time, without
+  erroring. Now `--color-gold`.
+- **`.kit-tag` never reset `border`**, so a `<button>` kept the browser's 2px bevel and a `<span>`
+  did not: the same class rendering 52.22x28.59 and 47.27x27.55, 44 bevels on one page.
+- A third in the same family: the page sat **76px off centre** because its inline `.wrap` restated
+  `padding` but not `width`, leaving `foundations.css`'s `--measure` (64rem) in force underneath.
+
+### Slot state, parsed not grepped
+
+**25 of 104 approved, ZERO greybox markup on any page.**
+portal 8/9 - landing 9/12 - post 4/19 - projects 2/26 - ramblings 1/12 - about 1/26.
+The total moved 96 -> 104 because the new projects page declares 26 slots against the old 18.
+
+### Waiting on Rod, not on work
+
+- **Uniform vs live cards.** Live equalises within a row but lets rows differ
+  (421/447/421/397/397); ours is globally uniform. He asked for both at different moments.
+- **The description's third line**, lost to fit date + read time; 9 of 16 truncated.
+- **No recorded pick:** `post header`, `socials-row`.
+- **`list-controls` declares itself circular-citation Slop in its own header** and is the search on
+  projects and ramblings. Slop cannot ship, so it blocks both regardless of preference.
+- **h2 renders at two sizes on About** - `bio-h` 20px vs `section-head` 38.4px. A tagging question.
+
 ### THE HEADING LADDER NOW APPLIES BY ROLE, ON EVERY PAGE (2026-08-24)
 
 It did not before, and the failure was silent. Rod: *"the h1 on landing are still a little weird
@@ -181,7 +226,7 @@ component is close to no evidence at all.
   sit on the bench. **That is the next job** and Rod has asked to start it.
 - **`component-review.html` now shows the picks** - 19 decision lines, 9 winning variants badged,
   six deliberately showing no winner because the pick was not one of the three built.
-- Slot state: **24 of 96 approved, and ZERO greybox markup left on any page.** **portal 9/9 (complete)**, landing 9/12,
+- Slot state: **25 of 104 approved, and ZERO greybox markup left on any page.** **portal 9/9 (complete)**, landing 9/12,
   post 3/19, projects 1/19, ramblings 1/12, about 1/26.
   **The 25 previously recorded here was over-counted** - `grep -o 'data-state="approved"'`
   matches inside JS selectors and comments as well as tags, and a line-based tag grep misses
@@ -283,7 +328,7 @@ is ~48px taller), bio block (real copy needs 257px more).
 - **NEXT SESSION IS THE SOURCING PASS.** Brief at the top of `redesign-lab/HANDOFF.md`; roadmap and
   counts at the top of `docs/MERGE-WORKLIST.md`. Rod's goal: *"finish the lab, find all content that
   needs to have a reference and find a suitable reference from the gallery or workbench."*
-  **24 of 96 slots approved** across the six final pages (portal 8/9, landing 8/12, post 4/19,
+  **25 of 104 slots approved** across the six final pages (portal 8/9, landing 8/12, post 4/19,
   projects 1/19, about 1/26, ramblings 1/12). Counted on the `data-slot` ATTRIBUTE - grepping the
   bare string also matches the state panel's own selector and the CSS, which is how a "measured"
   105 briefly overruled a correct 97.

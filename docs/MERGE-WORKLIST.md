@@ -14,7 +14,7 @@ Three stages, in order, and they cannot overlap. Stage 2 needs a finished lab; s
 redesign to have replaced the very surfaces it would refactor (D6).
 
 ```
-  STAGE 1  FINISH THE LAB          24 of 96 slots approved      <- WE ARE HERE (merging components in)
+  STAGE 1  FINISH THE LAB          25 of 104 slots approved      <- WE ARE HERE (merging components in)
   STAGE 2  THE PORT                gates 0-6 below, 0 done of 6
   STAGE 3  JEKYLL REFACTOR         REFACTOR-PLAN phases 1-3, all deferred
 ```
