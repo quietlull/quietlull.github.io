@@ -4,6 +4,18 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**A measurement returns 0 for everything and reads like a real result ->**
+the element was not in the document yet. `getBoundingClientRect()` on a detached node does not throw
+and does not warn - it returns zeros, which look exactly like a measurement of something very small.
+Cost: a pinned column built from those zeros collapsed to 0px, and the numbers said "pinned, zero
+drift" because 0 minus 0 is 0. **Attach first, then measure.** Same shape as the font-loading trap:
+the failure produces a green-looking number rather than an error.
+
+**A word loses its spaces when you split it into per-glyph spans ->**
+a `<span>` containing only a space collapses under normal white-space handling and measures ZERO
+advance - not a narrow one. Splitting "rodney fan" into boxes therefore rendered RODNEYFAN. Put
+`white-space: pre` on the measuring probe AND on the cell.
+
 **Every component on a page loses its padding at once, and nothing errors ->**
 the page keeps its own `*{box-sizing:border-box;margin:0;padding:0}` in an inline `<style>` while the
 stylesheets moved into cascade layers. **Unlayered CSS beats every layer**, so a universal selector at

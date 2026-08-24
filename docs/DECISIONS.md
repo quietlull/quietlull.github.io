@@ -745,6 +745,43 @@ It is Catlike Coding's 768px re-expressed in our narrower face. Held as a CHARAC
 column span, because a column count drifts on a fluid spine. Spine = **1401px**, stripe's own grid
 width, which puts the rail on 350px and the body on 701px - the blockout's annotated numbers.
 
+## D37 - The H0 site mark is the line boil (2026-08-23, ROD)
+
+Rod's three scratch fonts landed and unblocked P100. The mark on the landing hero now boils.
+
+**THE PATTERN, his pick:** *"Sequential per glyph 6sec on 4's looks best for me."* Sequential order
+(every glyph runs 1,2,3 in turn), per-glyph phase, each glyph starting on a RANDOM face, 6/sec.
+
+**Why that is the right pick and not just a preference.** The traditional recipe is three drawings
+cycled IN SEQUENCE on 2s-4s - three is already the canonical count, so adding fonts was never the
+lever. The craft rule that comes with it is *draw the three with as little deviation as possible or
+the boil looks too jumpy*, which is why a 3-frame loop reads as texture rather than as a loop. Rod's
+pick lands on that tradition; the random ORDER option that also exists is a digital patch for
+deviation being too large.
+**REJECTED:** more fonts (the loop comes from the sequence, not the count - and per-glyph phase
+already gives 3^10 = 59,049 renderings of a ten-letter line); random order (works, but departs from
+the tradition for no gain once the faces are close).
+
+**THE RANDOM STARTING PHASE IS LOAD-BEARING.** Without it every glyph increments in lockstep and
+per-glyph renders identically to swapping the whole line - measured, 3 distinct states in 24 ticks.
+
+**THE ADVANCE HAS TO BE PINNED, and the vertical case is NOT the horizontal one rotated.**
+The faces do not share metrics: 55 of 68 glyphs differ. Horizontally "RODNEY FAN" drifts 4.26%.
+**Vertically it drifts 100px** because the faces have different ascent/descent. And under
+`text-orientation: upright` **every glyph advances by the same em box**, so per-glyph widths carry
+no information at all - the vertical pin is ONE uniform advance for every cell, the space included.
+A fixed `line-height` does not fix it; measured, still drifting.
+
+**WHAT CHANGED ON THE HERO.** `--font-hand` (Caveat) was always the placeholder - `decisions.css`
+said H0 was "PROVISIONAL BY DEFINITION ... being replaced by the line boil". Colour corrected from
+`--color-gold-deep` to the H0 token `#f86a03`. **Size deliberately unchanged** - the clamp is part
+of the locked V6 composition and Rod asked for font and colour.
+
+**KNOWN GAP: the faces contain no digits.** Measured - `0` and `7` render at the fallback width in
+all three. So the hero clock cannot use this yet. If Rod cuts three digit faces **tabular**, the
+clock becomes the EASY case rather than the hard one, and the reason it was routed to procedural
+jitter (a digit changing every second compounding with the boil) disappears.
+
 ## D36 - CSS cascade layers replace the specificity war (2026-08-23, ROD)
 
 Rod: *"i feel like this nesting is really bad in general and we should design this better ... i

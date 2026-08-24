@@ -6,6 +6,49 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (THE H0 MARK BOILS, AND FOUR BUGS THAT ALL LOOKED LIKE RESULTS).**
+
+  Rod's three scratch fonts arrived and unblocked P100 after weeks. The landing hero's vertical name
+  now animates by cycling them. **D37** carries the decision; the pattern is his:
+  *"Sequential per glyph 6sec on 4's looks best for me."*
+
+  **Looking up the craft changed the advice halfway through.** Line boil is traditionally **three
+  drawings cycled in sequence on 2s-4s**, so three was already the canonical count and adding fonts
+  was never the lever - which is what I had first offered to measure. The rule that comes with the
+  tradition is *draw the three with as little deviation as possible, or the boil looks too jumpy*,
+  and that is why a 3-frame loop reads as texture rather than as a loop. Rod's pick lands on the
+  tradition instead of patching around it with randomness.
+
+  **Vertical is not horizontal rotated, and he caught it from the markup.** Under
+  `text-orientation: upright` every glyph advances by the same em box, so the per-glyph widths that
+  fix the horizontal case pin nothing at all. Raw vertical drift is 100px against 4.26% horizontally.
+  A fixed `line-height` does not help - the advance comes from the font's own vertical metrics.
+
+  **FOUR FAILURES THIS SESSION PRODUCED PLAUSIBLE NUMBERS RATHER THAN ERRORS.** That is the pattern
+  worth carrying, not the individual bugs:
+  - `@font-face` is fetched lazily, so `document.fonts.ready` resolved before the faces loaded and
+    the metric harness compared three FALLBACK renderings: *"PASS, max drift 0.00px"* - precisely the
+    drift it exists to detect.
+  - `getBoundingClientRect()` on a **detached** node returns zeros, so a pinned column built from
+    them collapsed to 0px and reported "pinned, zero drift", because 0 minus 0 is 0.
+  - A `<span>` holding only a space **collapses to zero advance**, so the mark rendered RODNEYFAN.
+  - Wrapping that space in a cell also removed the natural **line break**, forcing one long column
+    where the design wraps into two. Measured by comparing glyph tops against natural text.
+  None of the four threw. All are in TRAPS.
+
+  **Also corrected: the faces have no digits.** I had earlier reported digits as "identical across
+  all three, zero drift" - that was all three falling back to the same system font. If Rod cuts three
+  TABULAR digit faces, the clock becomes the easy case rather than the hard one.
+
+  **The landing closed out.** Socials are drift-magnet's `.dm-social` - the workbench component Rod
+  pointed at - with real Simple Icons marks and real destinations, replacing four dead `#` initials.
+  The page had been running drift-magnet's JS while never loading its CSS. The view-all button is
+  button-kit's PILL, and it was rendering in browser-default link blue because the page never linked
+  `button-kit.css` either. **That is four times in two days that a missing link or an inline copy was
+  the real bug** - the footer across six pages, `.section-head__name`, the button, the socials. The
+  rule that falls out: when a component looks wrong, check the page loads its stylesheet before
+  debugging the component.
+
 - **2026-08-23 (CASCADE LAYERS, AND A 7-AGENT AUDIT THAT CAUGHT WHAT I SHIPPED BROKEN).**
 
   ROD, on the specificity war between `.prose` and the components: *"i feel like this nesting is

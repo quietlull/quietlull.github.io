@@ -5,6 +5,42 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
 
 ## READ THIS FIRST AFTER A CLEAR (2026-08-23, end of the layer-refactor session)
 
+### THE H0 SITE MARK IS LIVE, AND P100 IS UNBLOCKED (2026-08-23)
+
+Rod's three scratch fonts landed. `redesign-lab/assets/fonts/Lineboil{1,2,3}-Regular.ttf` - three
+files, not six: the `.otf` twins are byte-identical to the `.ttf` and all are TrueType.
+
+**The hero's vertical name now boils.** `extracted/components/line-boil/` (css + js). Pattern is
+Rod's pick: sequential order, per-glyph phase with a random STARTING face, 6/sec. Record: **D37**.
+Colour corrected to the H0 token `#f86a03`; size untouched, the clamp belongs to the locked V6.
+
+**Vertical is not horizontal rotated - three separate bugs came out of assuming it was.** Under
+`text-orientation: upright` every glyph advances by the same em box, so per-glyph widths pin nothing;
+the vertical pin is ONE uniform advance. Raw drift there is 100px. A lone space in a `<span>`
+measures ZERO advance, which rendered the mark as RODNEYFAN. And the mark WRAPS at the space into
+two sub-columns - wrapping the space in a cell removed the break and forced one long column, so the
+space is now left as a plain text node. All in TRAPS.
+
+**The faces contain NO DIGITS** (measured). The hero clock cannot use this yet. If Rod cuts three
+digit faces TABULAR the clock becomes the easy case, and the reason it was routed to procedural
+jitter disappears.
+
+### The landing is finished except for the top bar
+
+**Socials are drift-magnet's `.dm-social`** - the workbench component, four circles with the real
+Simple Icons marks and real destinations, replacing four dead `href="#"` initials. The page had been
+running drift-magnet's JS while never loading its CSS, which is why the marks had no treatment.
+`.h__vert` right padding went 30px -> 96px so the 54px circles clear the boiling letters; verified
+zero glyph cells intersect the socials box.
+
+**The view-all button is button-kit's PILL**, and it had been broken for a bigger reason than its
+variant: the page never linked `button-kit.css`, only an inline copy of base + primary, so it
+rendered in browser-default link blue.
+
+**Four times in two days an inline copy, or a missing link, was the actual bug** - the footer across
+six pages, `.section-head__name`, the button, and now the socials. **When a component looks wrong,
+check the page is loading its stylesheet at all before debugging the component.**
+
 ### The CSS architecture changed. Everything in `redesign-lab/` is now in cascade layers.
 
 `@layer reset, tokens, prose, components, overrides;` at the top of all 60 lab stylesheets.
