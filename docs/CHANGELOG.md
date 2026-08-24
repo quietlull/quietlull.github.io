@@ -6,6 +6,40 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (THE BOIL GETS NUMBERS, AND A PIN THAT HAD BEEN WRONG ALL ALONG).**
+
+  Rod cut three digit faces and asked whether they could be combined with the text boils. **Yes, and
+  no font merging was needed:** `unicode-range` assembles one family name out of several files, so
+  `Lineboil1` resolves to his letters for letters and his numerals for digits. Because the boil
+  cycles family NAMES rather than files, every existing caller kept working untouched and the clock
+  became the fourth surface by the same code path as a word.
+
+  **His instinct about the colon was not merely right, it was forced.** He wrote "if not you will
+  need to use the text boil font for :" - and measured, none of the three number faces contains
+  U+003A at all, while all three letter faces do. Scoping the range to the digits alone makes the
+  colon fall through by itself, with no special case anywhere in the JS. It boils as a bonus: the
+  three letter faces draw it 31.3 / 31.6 / 40.4px wide.
+
+  **The faces are not tabular, and only the clock cares.** Numberboil1 draws "1" at 491 per 1000em
+  against "2" at 680 - a 39% spread. In a word that is invisible; in a ticking clock it would shove
+  the line sideways every second AND on every boil frame. The pin gives every digit one shared box,
+  the widest digit of all three faces, which is `tabular-nums` done by hand for faces that have no
+  tabular figures.
+
+  **THE HORIZONTAL PIN HAD BEEN WRONG SINCE IT WAS WRITTEN, and Rod caught it by eye** - "the pinning
+  isnt looking right". The probe measured each glyph in whichever face the HOST was set in, which is
+  font 1, and pinned the box to that. That is only correct if font 1 is the widest, and it usually is
+  not: **7 of 9 glyphs on the top-bar mark are wider in another face than the box they were given,
+  and "F" is 17.30px in face 1 against 23.20px in face 3 - a 34% overflow that spilled it into the
+  neighbouring letter every time the cycle landed there.** The whole point of the pin is that the
+  glyph boils inside a fixed box; sizing the box from one face defeats it. It measures all three now.
+
+  **Worth recording as method:** the verification of the clock first reported the boil as NOT running.
+  It was sampling every 1000ms against a 6/sec cycle of 3 faces - six steps is exactly two full
+  cycles, so every sample landed on the same frame. Re-sampled at 170ms it shows all three faces.
+  **That is the sixth measurement this session to produce a confident wrong answer**, and the first
+  caused by aliasing rather than by a stale or absent value.
+
 - **2026-08-23 (THE LANDING'S NAME BLOCK, AND THE ONE FACT THAT ANSWERED FOUR ASKS).**
 
   Rod tuned the hero name five times and then closed it: "fix all the flagged issues, once finished

@@ -29,6 +29,35 @@ is now a plain text node. All in TRAPS.
 digit faces TABULAR, the clock becomes the easy case and the reason it was routed to procedural
 jitter disappears.
 
+### THE BOIL NOW HAS NUMBERS, AND THE CLOCK IS THE FOURTH SURFACE (2026-08-23)
+
+Rod cut three DIGIT faces and asked whether they could be combined with the text boils. **They can,
+and nothing had to be merged into new font files.** `unicode-range` assembles one family name from
+several files, so `Lineboil1` means his letters for letters and his numerals for U+0030-0039. Every
+caller keeps working untouched, because the boil cycles family NAMES - a clock boils by the same
+code path as a word.
+
+**The colon comes from the letter faces, and it had to.** Measured: none of the three number faces
+carries U+003A; all three letter faces do. Rod called this himself. Since the range covers only the
+digits, the colon falls through on its own and needs no branch. It boils too - the three letter
+faces draw it 31.3 / 31.6 / 40.4px wide at 100px.
+
+**THE NUMBER FACES ARE NOT TABULAR**, which a word does not care about and a clock does. Numberboil1
+draws "1" at 491 per 1000em against "2" at 680, a 39% spread. On raw metrics the clock would shove
+itself sideways every tick and every boil frame. The pin now gives every digit ONE shared box - the
+widest digit across all three faces - making them tabular at runtime. Measured: six digit cells all
+47.06px, mark width 340.72px unchanged across five ticks and twelve boil frames.
+
+**THE HORIZONTAL PIN WAS WRONG SINCE IT WAS WRITTEN, and Rod spotted it by eye.** The probe measured
+each glyph in whichever face the HOST was set in - font 1 - and pinned the box to that. That is only
+right if font 1 is the widest, and it usually is not: **7 of 9 glyphs on the top-bar mark are wider
+in another face than the box they were given, worst "F" at 17.30px against 23.20px in face 3, a 34%
+overflow into the next letter.** It measures all three faces now and pins to the per-character max.
+0 overflowing after.
+
+**The clock's tick had to stop assigning `textContent`** - that would delete all eight pinned cells
+every second and kill the boil on the first tick. It writes into the cells instead.
+
 ### THE LANDING'S H0 BLOCK IS FINISHED, AND EVERY FLAGGED ISSUE ON IT IS CLOSED (2026-08-23)
 
 Rod tuned the hero name across five asks, then closed it: "fix all the flagged issues, once finished
