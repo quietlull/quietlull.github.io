@@ -14,24 +14,27 @@ Three stages, in order, and they cannot overlap. Stage 2 needs a finished lab; s
 redesign to have replaced the very surfaces it would refactor (D6).
 
 ```
-  STAGE 1  FINISH THE LAB          25 of 104 slots approved      <- WE ARE HERE (merging components in)
+  STAGE 1  FINISH THE LAB          25 of 102 slots approved      <- WE ARE HERE (about is the last build)
   STAGE 2  THE PORT                gates 0-6 below, 0 done of 6
   STAGE 3  JEKYLL REFACTOR         REFACTOR-PLAN phases 1-3, all deferred
 ```
 
-**Measured 2026-08-23, not estimated** - `[data-slot][data-state=approved]` counted on each page:
+**Measured 2026-08-24, not estimated** - `data-slot` / `data-state` attribute pairs parsed on each
+page. The three earlier versions of this table disagreed with each other and with STATUS; this one
+is the single count.
 
 | surface | approved | slots | what it is waiting on |
 |---|---|---|---|
-| `final-portal` | **9** | 9 | **COMPLETE** - the centre mark is the line boil, 2026-08-23 |
-| `final-landing` | **9** | 12 | project cards, and only their scaling |
-| `final-post` | 4 | 19 | the component merge, blocked on the `.prose` prefix policy |
-| `final-projects` | 1 | 19 | every element; card is circular-citation Slop |
-| `final-about` | 1 | 26 | the 3B horizontal spacing call, then the trophy wall |
-| `final-ramblings` | 1 | 12 | every element, all unsourced |
+| `final-portal` | **8** | 9 | Rod's sign-off on the centre mark, which is BUILT (the line boil) |
+| `final-landing` | **9** | 12 | top bar, view all button, project cards |
+| `final-post` | **4** | 19 | Rod's eye. Zero greybox, every component real |
+| `final-projects` | **2** | 24 | Rod's eye. Rebuilt from the live page, cards carry real fields |
+| `final-ramblings` | **1** | 12 | Rod's eye. Real post data, 6 rows marked as substitutes |
+| `final-about` | **1** | 26 | **the only surface still needing construction** |
 
-**The portal is now the most finished surface** (Rod 2026-08-23: everything approved but the centre
-name), with the landing just behind it. Nothing else is above 4 of 19.
+**Four of the six are built and waiting on judgement, not on work.** About is the exception: 24
+greybox marks, two parallel slot sets, and only 5 component stylesheets loaded. A full assembly spec
+exists for it.
 
 **Count correction, 2026-08-23.** These per-page totals were briefly overwritten with an inflated set
 (105 slots) taken by grepping the bare string `data-slot`, which also matches the state panel's own
