@@ -6,6 +6,35 @@ needs verification. The why is the point; a diff already says the what.
 
 ---
 
+- **2026-08-23 (H0 ON ALL THREE SURFACES, AND THE PORTAL HITS 9 OF 9).**
+
+  The line boil went from one surface to three on Rod's call: *"add the line boil text to the top bar
+  as well and the portal"*. The landing hero, the top-bar wordmark on landing and post, and the
+  portal's centre identity mark all now run the same component and the same picked pattern.
+
+  **The portal is the first fully approved surface on the project, 9 of 9.** Its centre mark was the
+  last greybox there and had been blocked on these fonts since P100 was written; the slot header
+  literally said it *"will be replaced by the line boil h0 font later"*. It keeps its second job as
+  the reset control.
+
+  **The socials moved twice and the second move was the right one.** Rod first said ring variant;
+  seeing it he pointed at the bench `dm-row` instead - so they are drift-magnet's `.dm-social`, with
+  the real Simple Icons marks rather than GH/AS/IO/IN initials. Then: *"they need to be smaller and
+  below the text itself"*. `.h__vert` became a column holding the name row and the socials, rather
+  than giving the socials a fixed `top` - the name's height is a `vh` clamp, so any hard-coded offset
+  would drift with the viewport. 2.2rem circles, 15px marks, and 0 of 24 glyph cells overlapping.
+
+  **The pattern of the whole session, stated once.** Five times in two days the bug was not the
+  component but the page failing to load it: the footer (six inline copies), `.section-head__name`,
+  the view-all button (browser-default link blue because `button-kit.css` was never linked), the
+  socials (drift-magnet's JS running with its CSS absent), and the top bar. **Check the page loads
+  the stylesheet before debugging the component.**
+
+  And separately: four failures this session produced plausible NUMBERS rather than errors - lazy
+  `@font-face` making the harness compare fallbacks and report PASS, a detached node returning zeros
+  from `getBoundingClientRect`, a lone space collapsing to zero advance, and wrapping that space
+  removing a line break the design depends on. All four are in TRAPS.
+
 - **2026-08-23 (THE H0 MARK BOILS, AND FOUR BUGS THAT ALL LOOKED LIKE RESULTS).**
 
   Rod's three scratch fonts arrived and unblocked P100 after weeks. The landing hero's vertical name

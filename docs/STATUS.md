@@ -5,41 +5,46 @@ cheaply. Detail lives in the linked notes; history lives in [CHANGELOG.md](CHANG
 
 ## READ THIS FIRST AFTER A CLEAR (2026-08-23, end of the layer-refactor session)
 
-### THE H0 SITE MARK IS LIVE, AND P100 IS UNBLOCKED (2026-08-23)
+### THE H0 SITE MARK IS LIVE ON ALL THREE SURFACES, AND P100 IS CLOSED (2026-08-23)
 
 Rod's three scratch fonts landed. `redesign-lab/assets/fonts/Lineboil{1,2,3}-Regular.ttf` - three
 files, not six: the `.otf` twins are byte-identical to the `.ttf` and all are TrueType.
 
-**The hero's vertical name now boils.** `extracted/components/line-boil/` (css + js). Pattern is
-Rod's pick: sequential order, per-glyph phase with a random STARTING face, 6/sec. Record: **D37**.
-Colour corrected to the H0 token `#f86a03`; size untouched, the clamp belongs to the locked V6.
+**`extracted/components/line-boil/`** (css + js) carries the pattern Rod picked: sequential order,
+per-glyph phase with a random STARTING face, 6/sec. Record: **D37**. It is now on:
+- the **landing hero**, the vertical name (3 columns, 24 glyph cells)
+- the **top bar wordmark** on landing and post
+- the **portal centre mark**, which was the last greybox on that page
 
-**Vertical is not horizontal rotated - three separate bugs came out of assuming it was.** Under
-`text-orientation: upright` every glyph advances by the same em box, so per-glyph widths pin nothing;
-the vertical pin is ONE uniform advance. Raw drift there is 100px. A lone space in a `<span>`
-measures ZERO advance, which rendered the mark as RODNEYFAN. And the mark WRAPS at the space into
-two sub-columns - wrapping the space in a cell removed the break and forced one long column, so the
-space is now left as a plain text node. All in TRAPS.
+**THE PORTAL IS 9 OF 9 - the first fully approved surface on the project.**
+
+**Vertical is not horizontal rotated, and four separate bugs came out of assuming it was.** Under
+`text-orientation: upright` every glyph advances by the same em box, so per-glyph widths pin nothing
+- the vertical pin is ONE uniform advance, and raw drift there is 100px. A lone space in a `<span>`
+measures ZERO advance (rendered the mark as RODNEYFAN). The mark also WRAPS at the space into two
+sub-columns, so wrapping the space in a cell removed the break and forced one long column - the space
+is now a plain text node. All in TRAPS.
 
 **The faces contain NO DIGITS** (measured). The hero clock cannot use this yet. If Rod cuts three
-digit faces TABULAR the clock becomes the easy case, and the reason it was routed to procedural
+digit faces TABULAR, the clock becomes the easy case and the reason it was routed to procedural
 jitter disappears.
 
-### The landing is finished except for the top bar
+### The landing is finished except for the top bar slot
 
-**Socials are drift-magnet's `.dm-social`** - the workbench component, four circles with the real
-Simple Icons marks and real destinations, replacing four dead `href="#"` initials. The page had been
-running drift-magnet's JS while never loading its CSS, which is why the marks had no treatment.
-`.h__vert` right padding went 30px -> 96px so the 54px circles clear the boiling letters; verified
-zero glyph cells intersect the socials box.
+**Socials are drift-magnet's `.dm-social`** - the workbench component Rod pointed at - at 2.2rem with
+the real Simple Icons marks and real destinations, replacing four dead `href="#"` initials. They sit
+BELOW the vertical name: `.h__vert` became a column with the name row and the socials stacked, rather
+than a hard-coded `top`, because the name's height is a vh clamp and any fixed offset would drift.
+Verified: 0 of 24 glyph cells overlap them.
 
-**The view-all button is button-kit's PILL**, and it had been broken for a bigger reason than its
+**The view-all button is button-kit's PILL.** It had been broken for a bigger reason than its
 variant: the page never linked `button-kit.css`, only an inline copy of base + primary, so it
 rendered in browser-default link blue.
 
-**Four times in two days an inline copy, or a missing link, was the actual bug** - the footer across
-six pages, `.section-head__name`, the button, and now the socials. **When a component looks wrong,
-check the page is loading its stylesheet at all before debugging the component.**
+**FIVE times in two days a missing stylesheet link or an inline component copy was the actual bug** -
+the footer across six pages, `.section-head__name`, the button, the socials (drift-magnet's JS was
+running with its CSS never loaded), and the top bar. **When a component looks wrong, check the page
+loads its stylesheet at all before debugging the component.**
 
 ### The CSS architecture changed. Everything in `redesign-lab/` is now in cascade layers.
 
@@ -87,8 +92,8 @@ component is close to no evidence at all.
   sit on the bench. **That is the next job** and Rod has asked to start it.
 - **`component-review.html` now shows the picks** - 19 decision lines, 9 winning variants badged,
   six deliberately showing no winner because the pick was not one of the three built.
-- Slot state: **24 of 97 approved.** portal 8/9, landing 9/12, post 4/19, projects 1/19,
-  about 1/26, ramblings 1/12.
+- Slot state: **25 of 97 approved.** **portal 9/9 (complete)**, landing 9/12, post 4/19,
+  projects 1/19, about 1/26, ramblings 1/12.
 
 ### What is still open
 

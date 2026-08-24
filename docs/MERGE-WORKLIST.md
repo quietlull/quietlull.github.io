@@ -14,7 +14,7 @@ Three stages, in order, and they cannot overlap. Stage 2 needs a finished lab; s
 redesign to have replaced the very surfaces it would refactor (D6).
 
 ```
-  STAGE 1  FINISH THE LAB          24 of 97 slots approved      <- WE ARE HERE (merging components in)
+  STAGE 1  FINISH THE LAB          25 of 97 slots approved      <- WE ARE HERE (merging components in)
   STAGE 2  THE PORT                gates 0-6 below, 0 done of 6
   STAGE 3  JEKYLL REFACTOR         REFACTOR-PLAN phases 1-3, all deferred
 ```
@@ -23,7 +23,7 @@ redesign to have replaced the very surfaces it would refactor (D6).
 
 | surface | approved | slots | what it is waiting on |
 |---|---|---|---|
-| `final-portal` | **8** | 9 | only the centre identity mark, and that is blocked on Rod's fonts |
+| `final-portal` | **9** | 9 | **COMPLETE** - the centre mark is the line boil, 2026-08-23 |
 | `final-landing` | **9** | 12 | project cards, and only their scaling |
 | `final-post` | 4 | 19 | the component merge, blocked on the `.prose` prefix policy |
 | `final-projects` | 1 | 19 | every element; card is circular-citation Slop |
