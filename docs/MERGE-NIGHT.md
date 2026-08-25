@@ -89,9 +89,104 @@ Three names on my list did not exist at all (`section-landing-A/-A2/-B1` are rea
 `-A2-japanese`, `-B1-western`). They were left alone rather than guessed at; they are referenced only
 from `index.html` and can go on your word.
 
-## Still open at the time of writing
+## THE SITE RENDERS. Measured on the running server, not assumed.
 
-Filled in as the night goes.
+`/tech-art/` at the time of writing: **top bar 96px** with Home / Projects / About / Ramblings, the
+**wordmark boiling across 9 glyph cells** on your own hand-drawn faces, the **footer anchored at
+left 0 across the full width** (it used to sit 118px in and 648px wide inside the content column -
+the exact defect you had already rejected once), the **scene running at tier "full"**, and every
+font resolving.
+
+A font scare that was not one: `document.fonts.check()` reported M PLUS and Caveat as missing.
+That is what `check()` does for a face the page has not USED yet - after forcing the load all five
+resolve, and a heading measures 8.6px away from its fallback, so it is rendering the real face.
+Worth knowing because the opposite mistake is the dangerous one: **the line boil pins glyph advances
+in px at load, so a missing face does not look missing, it looks permanently mis-spaced.**
+
+## WHAT NEEDS YOUR EYE - four things, in order of how much they matter
+
+### 1. The port created six collisions and the OLD code is winning them
+
+The ported component CSS is wrapped in `@layer components`. The old design's partials are
+UNLAYERED, and **unlayered CSS beats every layer**. Six classes are now styled by both, and the old
+rule wins every one:
+
+`post-card` · `card-title` · `card-body` · `card-meta` · `card-link` · `takeaway-text`
+
+Old side: `_sass/layout/_projectspreview.scss:42-345`, `_sass/pages/_home.scss`, `_sass/pages/_post.scss`.
+
+It is **contained - six names, not three hundred** - and it resolves by deleting the old partials.
+That is roughly 2,500 lines, which is why I did not do it at 3am on the branch you review at 8.
+This is the single thing most worth your first ten minutes.
+
+### 2. BREATHING HAS NO SUCCESSOR, and D42 kills it by implication rather than by decision
+
+`--breathe-hue` and `--breathe-border-hue` are **144 references across 12 partials and 6 keyframes**
+- the largest style subsystem on the site and a good part of its ambient identity. **The redesign
+has no equivalent at all**; the only match in the whole lab is the word "breathes" in prose copy.
+
+"Everything style related in the old site is now dead" therefore deletes it silently. That should be
+a call you make on purpose, in either direction.
+
+### 3. The top bar lost six controls
+
+Theme flip, breathing switch, sparkler switch, fireworks switch, contact icons, and the copyright
+line. Every JS entry point was checked and all are null-safe, so these are **missing features, not
+errors**. But one has a quiet edge: a visitor who previously turned breathing OFF has that
+preference saved, and it now goes unapplied.
+
+### 4. Two calls made for you that are yours to overturn
+
+- **live ramblings now has a top bar**, though `final-ramblings.html` has none
+- **game-design's bar carries a fifth "Blogs" item**, so `/game-design/blogs/` is not orphaned
+
+## Fixed on the way, both found while looking for something else
+
+- **20 pages have been rendering completely unstyled.** `_sass/pages/_index.scss` forwarded 6 of its
+  11 partials; `archives`, `categories`, `category-tag` and `tags` were never forwarded, so their CSS
+  has never compiled into this site. `#page-tag` renders on **20 of 53 pages** with no styles.
+  Found while hunting for code to DELETE - the opposite answer. 36 rules now compile.
+- **The top bar was not sticky.** All four lab pages declared `position:sticky` in their OWN page
+  style - four copies of one behaviour, none in the component - so ported cleanly it scrolled away.
+  Now owned by the bar.
+
+## A claim of mine that was wrong, corrected in the repo
+
+Commit `8de6bb5` said the heaviest consumer of the old tokens was `vendors/_bootstrap.scss` at 167.
+**Bootstrap references 167 custom properties and every one is a `--bs-*` it defines in that same
+file. The intersection with the theme's 270 is ZERO.** I counted `var()` occurrences per file
+without checking whether the names matched anything.
+
+The corrected picture is better than the wrong one: of the 270 theme tokens, **155 are read only by
+our own partials, 25 only by tokens beside them, and 108 by nothing at all.** `_includes`,
+`_layouts`, `_javascript` and `assets` reference them **zero** times.
+
+**So the vendored Chirpy never read them, and removing the old tokens cannot break it.** That was
+the single biggest fear about this port and it does not exist.
+
+## Deliberately NOT done
+
+- **The old partials are still on disk and still winning six selectors.** Deleting them is item 1
+  above and wants your eye.
+- **`sparkler-init.js` and `fireworks-greeting.js` were not ported.** The live site already calls
+  `initMouseTrail()` and `fireworksToggle()` in every bundle with the same greeting gate - porting
+  them would double-init. Verified: exactly one sparkler canvas per page.
+- **Posts now download no three.js at all** (was 525 KB). That is your 2026-08-21 call; one word in
+  the `{% case %}` reverts it.
+- **Both font stacks are loading right now** - the old Outfit / Plus Jakarta / JetBrains request and
+  the new IBM Plex / Caveat / M PLUS one. Additive by design; the old one comes out with the old
+  partials.
+
+## Still could not be verified, by anything, all night
+
+**`requestAnimationFrame` does not fire while the automated browser pane is hidden.** Nothing
+per-frame was ever confirmed: the drift and magnetism on the nav and favicon, the scene actually
+animating, fireworks reaching the top, the achievement wall's orbiting glow, the tilt, the portal
+windows drifting. What was confirmed instead is that the state each one needs exists - the magnet
+engine registered its elements, the scene graph is populated, `window.__fireworkReach.applied` is
+true, the boil built its glyph cells.
+
+**You are the only one who can confirm those move.**
 
 ## The shared page chrome (top bar, footer, scene) - landed
 
