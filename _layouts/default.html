@@ -82,7 +82,7 @@ layout: compress
       field's own width for the bounce edges, so a container puts a wall in the middle of the page.
       A layout joins this list when its markup is ported, not before.
     {% endcomment %}
-    {% assign full_bleed = 'portal,section-about,ramblings,section-projects' | split: ',' %}
+    {% assign full_bleed = 'portal,section-about,ramblings,section-projects,post' | split: ',' %}
     {% if full_bleed contains page.layout %}
       <main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% endif %}>{{ content }}</main>
     {% else %}

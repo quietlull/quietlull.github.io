@@ -1,206 +1,160 @@
 ---
 layout: default
 refactor: true
-panel_includes:
-  - related-posts
-  - toc
-tail_includes:
-  - post-nav
-script_includes:
-  - comment
 ---
 
 {% include lang.html %}
 
 {% comment %}
-  THE SCENE MOVED TO `_layouts/default.html` (2026-08-25). It is chrome now: one tag, one tier
-  per layout, so nothing can double-init and no layout can drift from the others. The old tag is
-  left here, commented out, because it is the record of what this layout used to load - which is
-  not the same bundle the shared one loads. To go back, delete the include from default.html and
-  uncomment this.
-    was: three-background-minimal.min.js
+  A post, ported from `redesign-lab/final-post.html` on 2026-08-25. A 24-column spine: a header box
+  across the top, a sticky rail on the left carrying metadata, contents, tags and socials, and the
+  reading well on the right.
+
+  `panel_includes` and `tail_includes` are gone. Both put their content in the Bootstrap grid this
+  page no longer uses - the rail replaces the panel, and post-nav and the comments are placed
+  explicitly at the foot of the article instead.
+
+  `.prose` ALSO CARRIES `.content`. tocbot reads `contentSelector: '.content'` for the headings, and
+  `post-enhance.js` and `clipboard.js` bind to it for image popups and code copying. One element
+  keeps all three working while `.prose > * + *` still reaches the post's own paragraphs.
+
+  Dropped with the lab page: `#state`, `.labtag`, every `data-slot` / `data-state`, and its
+  hand-written article - callouts, code blocks, figures and pull quotes are all things a Markdown
+  post cannot emit today, so the slots for them are not carried as empty furniture. The takeaway
+  stamp is the one that has real data behind it, and it stays.
 {% endcomment %}
 
 {% include toc-status.html %}
 
-<article class="px-1" data-toc="{{ enable_toc }}">
-  <header>
-    <h1 data-toc-skip>{{ page.title }}</h1>
-    {% if page.description %}
-      <p class="post-desc fw-light mb-4">{{ page.description }}</p>
-    {% endif %}
+{% comment %}
+  An <article>, and a DIRECT child of <main>, because `toc.js` gates the whole TOC on
+  `main > article[data-toc="true"]` and returns early otherwise. That module is Rollup input and
+  its bundle is gitignored build output, so the markup meets the JS rather than the other way round.
+{% endcomment %}
+<article id="post-page" class="page" data-toc="{{ enable_toc }}">
+  <div class="spine">
 
-    {% if page.engine or page.role %}
-    <div class="post-project-meta mb-4">
-      {% if page.engine %}
-        <span class="meta-chip">
-          {% assign eng = page.engine | downcase %}
-          {% if eng contains 'unity' %}
-            <img src="{{ '/assets/img/icons/unity.svg' | absolute_url }}" alt="Unity" class="meta-chip-icon">
-          {% elsif eng contains 'unreal' %}
-            <img src="{{ '/assets/img/icons/unreal.svg' | absolute_url }}" alt="Unreal Engine" class="meta-chip-icon">
-          {% elsif eng contains 'godot' %}
-            <img src="{{ '/assets/img/icons/godot.svg' | absolute_url }}" alt="Godot" class="meta-chip-icon">
-          {% elsif eng contains 'blender' %}
-            <i class="fas fa-cube" style="color: #f5792a;"></i>
-          {% else %}
-            <i class="fas fa-gamepad"></i>
-          {% endif %}
-          {{ page.engine }}
-        </span>
-      {% endif %}
-      {% if page.role %}
-        <span class="meta-chip">
-          <i class="fas fa-user-tag"></i>
-          {{ page.role }}
-        </span>
-      {% endif %}
-      {% include tag-badges.html tags=page.tags %}
-    </div>
-    {% endif %}
+    <header class="posthead">
+      <h1 data-toc-skip>{{ page.title }}</h1>
+    </header>
 
-    <div class="post-meta text-muted">
-      <div class="post-meta-row">
-        <!-- published date -->
-        <span>
-          {{ site.data.locales[lang].post.posted }}
-          {% include datetime.html date=page.date tooltip=true lang=lang %}
-        </span>
+    <aside class="rail">
 
-        <!-- lastmod date -->
+      <div class="railblock">
+        <div class="raillabel">Metadata</div>
+        <div class="mrow"><span>Date</span><span>{{ page.date | date: '%Y.%m.%d' }}</span></div>
         {% if page.last_modified_at and page.last_modified_at != page.date %}
-          <span class="post-meta-sep">&middot;</span>
-          <span>
-            {{ site.data.locales[lang].post.updated }}
-            {% include datetime.html date=page.last_modified_at tooltip=true lang=lang %}
-          </span>
+          <div class="mrow"><span>Updated</span><span>{{ page.last_modified_at | date: '%Y.%m.%d' }}</span></div>
         {% endif %}
-
-        <span class="post-meta-sep">&middot;</span>
-
-        <!-- read time -->
-        {% include read-time.html content=content prompt=true lang=lang %}
-
-        <!-- pageviews -->
+        <div class="mrow"><span>Reading time</span><span>{% include read-time.html content=content lang=lang %}</span></div>
+        {% if page.categories.size > 0 %}
+          <div class="mrow"><span>Categories</span><span>{{ page.categories | join: ', ' }}</span></div>
+        {% endif %}
+        {% if page.engine %}<div class="mrow"><span>Engine</span><span>{{ page.engine }}</span></div>{% endif %}
+        {% if page.role %}<div class="mrow"><span>Role</span><span>{{ page.role }}</span></div>{% endif %}
         {% if site.pageviews.provider and site.analytics[site.pageviews.provider].id %}
-          <span class="post-meta-sep">&middot;</span>
-          <span>
-            <em id="pageviews">
-              <i class="fas fa-spinner fa-spin small"></i>
-            </em>
-            {{ site.data.locales[lang].post.pageview_measure }}
-          </span>
-        {% endif %}
-      </div>
-    </div>
-
-    {% if page.image %}
-      {% assign img_path = page.image.path | default: page.image %}
-      {% assign img_alt = page.image.alt | xml_escape | default: "Preview Image" %}
-      {% assign _preview_class = 'preview-img' %}
-      {% if page.image.no_bg %}{% assign _preview_class = 'preview-img no-bg' %}{% endif %}
-      <div class="mt-3 mb-3 preview-img-wrap">
-        {% include post-media.html src=img_path alt=img_alt class=_preview_class width="1200" height="630" lqip=page.image.lqip %}
-        {%- if page.image.alt -%}
-          <figcaption class="text-center pt-2 pb-2">{{ page.image.alt }}</figcaption>
-        {%- endif -%}
-      </div>
-    {% endif %}
-  </header>
-
-  {% if enable_toc %}
-    <div id="toc-bar" class="d-flex align-items-center justify-content-between invisible">
-      <span class="label text-truncate">{{ page.title }}</span>
-      <button type="button" class="toc-trigger btn me-1">
-        <i class="fa-solid fa-list-ul fa-fw"></i>
-      </button>
-    </div>
-
-    <button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm">
-      <span class="label ps-2 pe-1">{{- site.data.locales[lang].panel.toc -}}</span>
-      <i class="fa-solid fa-angle-right fa-fw"></i>
-    </button>
-
-    <dialog id="toc-popup" class="p-0">
-      <div class="header d-flex flex-row align-items-center justify-content-between">
-        <div class="label text-truncate py-2 ms-4">{{- page.title -}}</div>
-        <button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75">
-          <i class="fas fa-close"></i>
-        </button>
-      </div>
-      <div id="toc-popup-content" class="px-4 py-3 pb-4"></div>
-    </dialog>
-  {% endif %}
-
-  {% if page.description and page.tags contains 'project' %}
-  <div class="post-tldr">
-    <div class="tldr-label"><i class="fas fa-bolt me-2"></i>TL;DR</div>
-    <p>{{ page.description }}</p>
-  </div>
-  {% endif %}
-
-  {% assign visible_content = content | strip_html | strip %}
-  {% if page.wip and visible_content == '' %}
-    <div class="post-content-container">
-      <div class="content wip-placeholder text-center">
-        <p class="mb-0">
-          <i class="fas fa-hard-hat me-2"></i>
-          <strong>Full write-up coming soon.</strong>
-        </p>
-        <p class="wip-placeholder-subtitle mb-0 mt-2">
-          This project has a working build — the technical breakdown is still being written. Check back soon, or peek at the preview above.
-        </p>
-      </div>
-    </div>
-  {% else %}
-    <div class="post-content-container">
-      <div class="content">
-        {{ content }}
-      </div>
-    </div>
-  {% endif %}
-
-  {% if page.takeaway %}
-  <div class="post-takeaway">
-    <div class="takeaway-label"><i class="fas fa-lightbulb me-2"></i>What I Learned</div>
-    <p>{{ page.takeaway }}</p>
-  </div>
-  {% endif %}
-
-    <!-- tags -->
-    {% if page.tags.size > 0 %}
-      <div class="post-tags">
-        <i class="fa fa-tags fa-fw me-1"></i>
-        {% for tag in page.tags %}
-          <a
-            href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/"
-            class="post-tag no-text-decoration"
-          >
-            {{- tag -}}
-          </a>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <div
-      class="
-        post-tail-bottom
-        d-flex justify-content-between align-items-center mt-5 pb-2
-      "
-    >
-      <div class="license-wrapper">
-        {% if site.data.locales[lang].copyright.license.template %}
-          {% capture _replacement %}
-        <a href="{{ site.data.locales[lang].copyright.license.link }}">
-          {{ site.data.locales[lang].copyright.license.name }}
-        </a>
-        {% endcapture %}
-
-          {{ site.data.locales[lang].copyright.license.template | replace: ':LICENSE_NAME', _replacement }}
+          <div class="mrow"><span>Views</span><span><em id="pageviews"><i class="fas fa-spinner fa-spin small"></i></em></span></div>
         {% endif %}
       </div>
 
-      {% include post-sharing.html lang=lang %}
+      {% if enable_toc %}
+        {% comment %} tocbot fills this from the headings in `.content`. {% endcomment %}
+        {% comment %} `toc.js` also un-hides `#toc-wrapper` by id. It is NOT given the `invisible`
+          class the old layout used: if the bundle ever fails the TOC should be a beat late, not gone. {% endcomment %}
+        <div class="railblock" id="toc-wrapper">
+          <div class="raillabel">Contents</div>
+          <nav id="toc" class="toc toc--v3"></nav>
+        </div>
+      {% endif %}
+
+      {% if page.tags.size > 0 %}
+        <div class="railblock">
+          <div class="raillabel">Tags</div>
+          <div class="kit-tag-row">
+            {% for tag in page.tags %}
+              <a class="kit-tag" href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/">{{ tag }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      <nav class="railblock" aria-label="Socials">
+        <div class="raillabel">Socials</div>
+        <div class="dm-row">
+          <a class="dm-social" href="https://github.com/quietlull" aria-label="GitHub"><span class="dm-social__fill" aria-hidden="true"></span><span class="dm-social__glyph" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-github"/></svg></span></a>
+          <a class="dm-social" href="https://www.artstation.com/rodneyfan" aria-label="ArtStation"><span class="dm-social__fill" aria-hidden="true"></span><span class="dm-social__glyph" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-artstation"/></svg></span></a>
+          <a class="dm-social" href="https://rodneyfan.itch.io/" aria-label="itch.io"><span class="dm-social__fill" aria-hidden="true"></span><span class="dm-social__glyph" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-itch"/></svg></span></a>
+          <a class="dm-social" href="https://www.linkedin.com/in/rodneyfan/" aria-label="LinkedIn"><span class="dm-social__fill" aria-hidden="true"></span><span class="dm-social__glyph" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-linkedin"/></svg></span></a>
+        </div>
+      </nav>
+
+    </aside>
+
+    <div class="article">
+      <div class="prose content">
+
+        {% if page.image %}
+          {% assign hero = page.image.path | default: page.image %}
+          {% assign hero_ext = hero | split: '.' | last | downcase %}
+          <figure class="posthero">
+            {% if hero_ext == 'mp4' or hero_ext == 'webm' %}
+              <video src="{{ hero | relative_url }}" muted loop autoplay playsinline preload="metadata"></video>
+            {% else %}
+              <img src="{{ hero | relative_url }}" alt="{{ page.image.alt | default: page.title }}">
+            {% endif %}
+            {% if page.image.alt %}<figcaption>{{ page.image.alt }}</figcaption>{% endif %}
+          </figure>
+        {% endif %}
+
+        {% if page.description %}<p class="lead">{{ page.description }}</p>{% endif %}
+
+        {% assign visible_content = content | strip_html | strip %}
+        {% if page.wip and visible_content == '' %}
+          <p><strong>Full write-up coming soon.</strong></p>
+          <p>This project has a working build, the technical breakdown is still being written. Check back soon, or peek at the preview above.</p>
+        {% else %}
+          {{ content }}
+        {% endif %}
+
+        {% comment %} Rod's own stamp, the one callout on this page with real data behind it. {% endcomment %}
+        {% if page.takeaway %}
+          <aside class="stamp-callout">
+            <b class="stamp-callout__title">Takeaway</b> {{ page.takeaway }}
+          </aside>
+        {% endif %}
+
+        {% include related-posts.html lang=lang variant='rc' %}
+
+        <div class="post-foot">
+          {% include post-nav.html %}
+          {% include comment.html %}
+        </div>
+
+      </div>
     </div>
-    <!-- .post-tail-bottom -->
+
+  </div>
 </article>
+
+{% include social-sprite.html %}
+
+{% if enable_toc %}
+  {% comment %} The narrow-width TOC. `toc-mobile.js` fills the dialog and the site's own JS opens it. {% endcomment %}
+  <div id="toc-bar" class="d-flex align-items-center justify-content-between invisible">
+    <span class="label text-truncate">{{ page.title }}</span>
+    <button type="button" class="toc-trigger btn me-1"><i class="fa-solid fa-list-ul fa-fw"></i></button>
+  </div>
+
+  <button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm">
+    <span class="label ps-2 pe-1">{{- site.data.locales[lang].panel.toc -}}</span>
+    <i class="fa-solid fa-angle-right fa-fw"></i>
+  </button>
+
+  <dialog id="toc-popup" class="p-0">
+    <div class="header d-flex flex-row align-items-center justify-content-between">
+      <div class="label text-truncate py-2 ms-4">{{- page.title -}}</div>
+      <button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75"><i class="fas fa-close"></i></button>
+    </div>
+    <div id="toc-popup-content" class="px-4 py-3 pb-4"></div>
+  </dialog>
+{% endif %}

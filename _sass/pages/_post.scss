@@ -3,335 +3,270 @@
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/placeholders';
 
-%-btn-post-nav {
-  width: 50%;
+// A post, ported 2026-08-25 from the inline <style> of `redesign-lab/final-post.html`.
+// The old page's 990 lines came down to the eight blocks at the foot of this file, which are the
+// only ones whose markup survived the port - the TOC bar and solo trigger, post-nav, and the four
+// things `post-enhance.js` builds at runtime. Everything else styled markup that is now gone.
+// WHAT THE PAGE DELIBERATELY DOES NOT DECLARE. `base/_decisions.scss` owns `.prose`, its measure,
+// and `.prose p` / `.prose li` weight, leading and tracking. The lab page restated all of them and
+// won silently, because a page style is unlayered. Only the font-size and the rhythm are here,
+// because the ladder sets neither. The lab's `.prose h3` block is gone for the same reason plus a
+// second one: it re-implemented the ladder's own numbered-heading device one rung down, and the
+// article it was written for contains no h3 at all, so it never rendered.
+
+#post-page {
   position: relative;
-  border-color: var(--btn-border-color);
-}
+  z-index: var(--z-content);
+  width: min(1401px, calc(100% - 4rem));
+  margin: 0 auto;
+  padding: 56px 0 0;
 
-@mixin -dot($pl: 0.25rem, $pr: 0.25rem) {
-  content: '\2022';
-  padding-left: $pl;
-  padding-right: $pr;
-}
+  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered and beats the ladder.
+  .posthead h1 { margin: 0; }
 
-// TL;DR callout — hooks the reader before the content
-.post-tldr {
-  @include mx.glass;
-  border-radius: v.$radius-lg;
-  padding: 1.25rem 1.5rem;
-  margin-top: 1rem;
-  --glow-hue: 249, 115, 22; --glow-border-hue: 234, 88, 12;
-  .tldr-label {
+  .spine {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    gap: 0;
+  }
+
+  // The header box. `isolation` keeps the ::after panel behind the text but in front of the page.
+  .posthead {
+    position: relative;
+    grid-column: 1 / -1;
+    isolation: isolate;
+    margin: 0 0 64px;
+  }
+
+  .posthead::after,
+  .prose::before,
+  .rail::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    border: 1px solid var(--color-line-panel);
+    background: var(--color-panel-blue);
+    box-shadow: 0 4px 40px rgb(0 0 0 / 40%);
+    pointer-events: none;
+  }
+
+  .posthead::after { inset: -2rem -1.25rem; }
+
+  .prose::before { inset: -12px -1rem -2rem; }
+
+  .rail::before { inset: -12px -24px; }
+
+  .rail {
+    position: sticky;
+    grid-column: 1 / span 6;
+    align-self: start;
+    top: calc(var(--top-bar-height, 5.875rem) + var(--top-bar-border, 1px) * 2 + 20px);
+  }
+
+  .article {
+    display: grid;
+    grid-template-columns: repeat(17, 1fr);
+    grid-column: 8 / 25;
+    gap: 0;
+  }
+
+  .prose {
+    position: relative;
+    grid-column: 1 / 16;
+    isolation: isolate;
+
+    // `.content` in base/_base.scss puts 2rem above the first block. The panel starts at the text.
+    margin-top: 0;
+  }
+
+  // The ladder sets no prose font-size, so it is the page's.
+  .prose p,
+  .prose li { font-size: 16px; margin: 0; }
+
+  @media (min-width: 960px) {
+    .prose p,
+    .prose li { font-size: 18px; }
+  }
+
+  // Rhythm is margin-TOP only, never bottom, so nothing has to cancel a trailing margin.
+  .prose > * + * { margin-top: 24px; }
+
+  .prose > h1,
+  .prose > h2,
+  .prose > h3,
+  .prose > .figmat,
+  .prose > .cb { margin-top: 40px; }
+
+  .prose > :first-child { margin-top: 0; }
+
+  .prose code {
+    display: inline-block;
+    border-radius: 3px;
+    background: var(--color-code-bg);
+    color: var(--color-code-text);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--gold-80);
-    margin-bottom: 0.4rem;
+    font-size: 16px;
+    text-wrap: pretty;
   }
 
-  p {
-    margin: 0;
-    color: var(--text-color);
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-}
+  .lead { color: var(--color-warm-muted); }
 
-// What I Learned — takeaway at the bottom
-.post-takeaway {
-  @include mx.glass;
-  border-radius: v.$radius-lg;
-  padding: 1.25rem 1.5rem;
-  margin-top: 1.5rem;
-  border-left: 3px solid var(--orange-a50);
-  --glow-hue: 249, 115, 22; --glow-border-hue: 234, 88, 12;
-  .takeaway-label {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--orange-a80);
-    margin-bottom: 0.4rem;
-  }
-
-  p {
-    margin: 0;
-    color: var(--text-color);
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-}
-
-// Reading well — nearly opaque, calm reading environment
-.post-content-container {
-  background: rgba(8, 15, 27, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  box-shadow: var(--glass-shadow), 0 4px 40px rgba(0, 0, 0, 0.4);
-  border-radius: v.$radius-xl;
-  padding: 0.75rem 3rem 2.5rem;
-  margin-top: 0.25rem;
-
-  @include bp.lte(bp.get(md)) {
-    padding: 0.5rem 1.25rem 1.5rem;
-    border-radius: v.$radius-lg;
-  }
-
-  // Constrain line length for optimal readability
-  .content {
-    max-width: 75ch;
-    margin: 0 auto;
-
-    > h2:first-child,
-    > h3:first-child,
-    > h4:first-child {
-      margin-top: 0;
-    }
-
-    /* Typographic rhythm — more breathing room around sections */
-    h2 {
-      margin-top: 3rem;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    p {
-      margin-bottom: 1.5rem;
-    }
-  }
-
-  // Image treatment — framed and grounded
-  .content img:not(.emoji),
+  // Markdown-emitted media, which arrives at its intrinsic size - a 1920px video overhung the
+  // 747px column by 1173px, hidden only by the page's own overflow clip. This constrains it and
+  // nothing more: the redesign's mat and caption treatments (.figmat, figure-real) need markup a
+  // Markdown post cannot emit yet, so the LOOK of body media is still owed.
+  // Declared before `.posthero`, which needs its own height and wins on source order.
+  .content img,
   .content video {
+    display: block;
     max-width: 100%;
     height: auto;
+  }
+
+  .posthero {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    margin: 0 0 32px;
+  }
+
+  .posthero video,
+  .posthero img {
     display: block;
-    margin: 2rem auto;
-    border-radius: v.$radius-lg;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.2);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  // WIP placeholder — shown on posts with wip: true and no rendered body content
-  .content.wip-placeholder {
-    padding: 3rem 1.5rem;
+  // ---- the rail ------------------------------------------------------------------------------
 
-    p:first-child {
-      font-size: 1.1rem;
-      color: var(--text-color);
-
-      .fas.fa-hard-hat {
-        color: var(--gold-80, #e0b050);
-      }
-    }
-
-    .wip-placeholder-subtitle {
-      color: var(--text-muted-color);
-      font-size: 0.95rem;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.55;
-    }
-  }
-}
-
-header {
-  .post-desc {
-    font-size: 1.125rem;
-    line-height: 1.6;
+  .raillabel {
+    margin: 0 0 12px;
+    border-bottom: 0.5px solid color-mix(in srgb, var(--h2-color, #fbbf24) 45%, transparent);
+    color: var(--h2-color, #fbbf24);
+    padding-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 300;
+    letter-spacing: -0.012em;
+    text-transform: uppercase;
   }
 
-  .post-project-meta {
+  .raillabel::before { content: "/ "; }
+
+  .mrow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px dotted var(--color-line-soft);
+    color: var(--color-muted);
+    padding: 8px 0;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .mrow:last-of-type { border-bottom: 0; }
+
+  .railblock { margin-top: 12px; }
+
+  .kit-tag-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-
-    .meta-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding: 0.35rem 0.85rem;
-      border-radius: 2rem;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 500;
-      background: var(--glow-subtle);
-      border: 1px solid var(--glass-border);
-      color: var(--text-color);
-
-
-      .meta-chip-icon {
-        width: 1.1rem;
-        height: 1.1rem;
-      }
-
-      i {
-        font-size: 0.9rem;
-        opacity: 0.8;
-      }
-
-      &:hover {
-        border-color: rgba(var(--glow-border-hue), 0.45) !important;
-        box-shadow:
-          0 0 14px rgba(var(--glow-hue), 0.20),
-          inset 0 0 10px rgba(var(--glow-hue), 0.08) !important;
-      }
-    }
-
-    .tag-badges {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-left: 0.25rem;
-
-      .tag-badge {
-        opacity: 0.75;
-
-        .badge-icon {
-          width: 1.1rem;
-          height: 1.1rem;
-        }
-
-        i {
-          font-size: 0.95rem;
-        }
-      }
-    }
+    gap: 6px;
+    margin-top: 10px;
   }
 
-  .post-meta {
-    span + span::before {
-      @include -dot;
-    }
-
-    em,
-    time {
-      @extend %text-highlight;
-    }
-
-    em {
-      a {
-        color: inherit;
-      }
-    }
+  .dm-social__mark {
+    display: block;
+    width: 20px;
+    height: 20px;
+    fill: currentcolor;
   }
 
-  h1 + .post-meta {
-    margin-top: 1.5rem;
+  // tocbot nests a <ul> per level and marks the current link with a class. The component reads
+  // `--depth` off the link and `[aria-current]`, so the two are bridged here rather than in the
+  // component, which knows nothing about tocbot.
+  .toc ul ul { --depth: 1; }
+
+  .toc ul ul ul { --depth: 2; }
+
+  .toc a.is-active-link {
+    border-left-color: var(--color-gold);
+    color: var(--color-gold);
+  }
+
+  // ---- the foot ------------------------------------------------------------------------------
+
+  .post-related { margin-top: 28px; }
+
+  .post-related .raillabel { border: 0; }
+
+  .post-foot { margin-top: 64px; }
+
+  // ---- narrow ---------------------------------------------------------------------------------
+
+  @media (max-width: 1000px) {
+    .spine { display: block; }
+
+    .rail {
+      position: static;
+      margin-bottom: 48px;
+    }
+
+  }
+
+  // 1200px is `toc.js`'s own switch: below it tocbot fills the popup instead, so the rail would
+  // hold an empty Contents box. The component hides `.toc--v3` at 1152px, which is a third number
+  // for the same decision - flagged, not silently equalised.
+  @media (max-width: 1199px) {
+    #toc-wrapper { display: none; }
+  }
+
+  @media (max-width: 959px) {
+    .prose { --char-w: 7.25px; }
   }
 }
 
-.post-tail-wrapper {
-  @extend %text-sm;
-
-  margin-top: 6rem;
-  border-bottom: 1px double var(--main-border-color);
-
-  .license-wrapper {
-    line-height: 1.2rem;
-
-    > a {
-      @extend %text-highlight;
-
-      &:hover {
-        @extend %link-hover;
-      }
-    }
-
-    span:last-child {
-      @extend %text-sm;
-    }
-  } /* .license-wrapper */
-
-  .post-meta a:not(:hover) {
-    @extend %link-underline;
-  }
-
-  .share-wrapper {
-    vertical-align: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-    %icon-size {
-      font-size: 1.125rem;
-    }
-
-    .share-icons {
-      display: flex;
-
-      i {
-        color: var(--btn-share-color);
-
-        @extend %icon-size;
-      }
-
-      > * {
-        @extend %icon-size;
-
-        margin-left: 0.5rem;
-
-        &:hover {
-          i {
-            @extend %btn-share-hover;
-          }
-        }
-      }
-
-      button {
-        padding: 0;
-        border: none;
-        line-height: inherit;
-
-        @extend %cursor-pointer;
-      }
-    } /* .share-icons */
-  } /* .share-wrapper */
+// The code block and figure treatments the lab wrote for hand-authored markup. A Markdown post
+// cannot emit either yet, so they are kept as the styles the port owes rather than deleted.
+.figmat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid var(--color-line-soft);
+  border-radius: 4px;
+  background: var(--color-surface);
+  padding: 8px;
+  margin: 24px 0 0;
 }
 
-.post-tail-bottom {
-  @include bp.lte(bp.get(sm)) {
-    flex-wrap: wrap-reverse !important;
-
-    > div:first-child {
-      width: 100%;
-      margin-top: 1rem;
-    }
-  }
+@media (min-width: 760px) {
+  .figmat { padding: 16px; }
 }
 
-.share-mastodon {
-  /* See: https://github.com/justinribeiro/share-to-mastodon#properties */
-  --wc-stm-font-family: var(--font-body);
-  --wc-stm-dialog-background-color: var(--card-bg);
-  --wc-stm-form-button-border: 1px solid var(--btn-border-color);
-  --wc-stm-form-submit-background-color: var(--button-bg);
-  --wc-stm-form-cancel-background-color: var(--button-bg);
-  --wc-stm-form-button-background-color-hover: var(--link-hover-color);
-  --wc-stm-form-button-color-hover: var(--heading-color);
-
-  font-size: 1rem;
+.figmat video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  background: var(--color-black);
 }
 
-.post-tags {
-  line-height: 2rem;
-
-  .post-tag {
-    &:hover {
-      @extend %tag-hover;
-    }
-  }
+.figcap {
+  margin-top: 9px;
+  color: var(--color-text-quiet);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
 }
+
+$toc-bar-height: 3rem;   // declared in the old file's body; the blocks below still read it
+
+// ================================================================================================
+// WHAT SURVIVED FROM THE OLD POST PAGE. Everything below styles markup that is still rendered:
+// the TOC bar and its solo trigger, post-nav, and the four elements `post-enhance.js` builds at
+// runtime - the reading progress bar, the fireflies, and GLightbox's overlay and controls.
+// ================================================================================================
 
 .post-navigation {
   margin-top: 3rem;
@@ -348,6 +283,7 @@ header {
 
   .post-nav-card {
     @include mx.glass;
+
     border-radius: v.$radius-lg;
     padding: 1.25rem 1.5rem;
     text-decoration: none;
@@ -355,20 +291,22 @@ header {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+
     @include mx.transition(border-color, transform, box-shadow);
 
     &.post-nav-next {
       --glow-hue: 249, 115, 22; --glow-border-hue: 234, 88, 12;
+
       animation-duration: 6.3s;
       animation-delay: 1.8s;
     }
 
     &:hover:not(.disabled) {
-      border-color: rgba(var(--glow-border-hue), 0.45) !important;
+      border-color: rgb(var(--glow-border-hue), 0.45) !important;
       transform: translateY(-2px);
       box-shadow: 0 4px 16px var(--shadow-a15),
-        0 0 18px rgba(var(--glow-hue), 0.22),
-        inset 0 0 12px rgba(var(--glow-hue), 0.08) !important;
+        0 0 18px rgb(var(--glow-hue), 0.22),
+        inset 0 0 12px rgb(var(--glow-hue), 0.08) !important;
       color: inherit;
       text-decoration: none;
     }
@@ -405,111 +343,6 @@ header {
   }
 }
 
-
-
-/* TOC panel */
-
-%top-cover {
-  content: '';
-  display: block;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 3rem;
-  background: linear-gradient(var(--main-bg) 50%, transparent);
-}
-
-#toc-wrapper {
-  top: 0;
-  transition: top 0.2s ease-in-out;
-  overflow-y: auto;
-  max-height: 100vh;
-  scrollbar-width: none;
-  margin-top: 2rem;
-
-  &:not(.invisible) {
-    animation: fade-up 0.8s;
-  }
-
-  ul {
-    list-style: none;
-    font-size: 0.85rem;
-    line-height: 1.25;
-    padding-left: 0;
-
-    li {
-      a {
-        padding: 0.4rem 0 0.4rem 1.25rem;
-      }
-    }
-
-    /* Overwrite TOC plugin style */
-
-    .toc-link {
-      display: block;
-
-      @extend %text-ellipsis;
-
-      @include mx.transition(color);
-
-      &:hover {
-        color: var(--toc-highlight);
-        text-decoration: none;
-      }
-
-      &::before {
-        display: none;
-      }
-    }
-
-    .is-active-link {
-      color: var(--toc-highlight) !important;
-      font-weight: 600;
-
-      &::before {
-        display: inline-block;
-        width: 1px;
-        height: 1.25rem;
-        background-color: var(--toc-highlight) !important;
-        box-shadow: var(--glow-ring-small);
-      }
-    }
-
-    ul {
-      padding-left: 0.75rem;
-    }
-  }
-
-  @at-root .toc-border-cover {
-    @extend %top-cover;
-
-    margin-bottom: -4rem;
-  }
-
-  &::before {
-    @extend %top-cover;
-  }
-
-  &::after {
-    content: '';
-    position: fixed;
-    bottom: 0;
-    width: 15%;
-    height: 2.25rem;
-    margin-left: -1px;
-    background: linear-gradient(transparent, var(--main-bg) 70%);
-  }
-
-  > * {
-    @extend %panel-border;
-  }
-}
-
-/* --- TOC button, bar and popup in mobile/tablet --- */
-
-$toc-bar-height: 3rem;
-
 #toc-bar {
   position: -webkit-sticky;
   position: sticky;
@@ -517,7 +350,9 @@ $toc-bar-height: 3rem;
   z-index: 1;
   margin: 0 -1rem;
   height: $toc-bar-height;
+
   @include mx.glass;
+
   border-bottom: none;
   transition: all var(--transition-fast) ease-in-out;
 
@@ -563,294 +398,6 @@ $toc-bar-height: 3rem;
   }
 }
 
-@mixin slide-in {
-  from {
-    opacity: 0.7;
-    transform: translateY(-#{$toc-bar-height});
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@mixin slide-out {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(-#{$toc-bar-height});
-    opacity: 0;
-  }
-}
-
-@-webkit-keyframes slide-in {
-  @include slide-in;
-}
-
-@keyframes slide-in {
-  @include slide-in;
-}
-
-@-webkit-keyframes slide-out {
-  @include slide-out;
-}
-
-@keyframes slide-out {
-  @include slide-out;
-}
-
-/* --- Related Posts --- */
-
-#related-posts {
-  > h3 {
-    @include mx.label(1.1rem, 600);
-    margin-bottom: 1.5rem;
-  }
-
-  nav.row {
-    margin: 0;
-  }
-
-  article.col {
-    flex: 0 0 100%;
-    max-width: 100%;
-    padding: 0;
-    margin-bottom: 1rem;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  a.post-preview {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-
-    @include mx.glass;
-    @include mx.card-hover;
-    border-radius: 12px;
-    overflow: hidden;
-
-    &:nth-child(3) { animation-duration: 7.1s; animation-delay: 0.6s; }
-
-    &::before {
-      display: none !important;
-    }
-
-    .related-thumb {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-    }
-  }
-
-  .card-body {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-  }
-
-  time {
-    @extend %normal-font-style;
-    @extend %text-xs;
-    color: var(--text-muted-color);
-    display: block;
-    margin-bottom: 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  h4 {
-    color: var(--heading-color);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0 0 0.75rem 0;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .text-muted {
-    margin-top: auto;
-    color: var(--text-muted-color);
-
-    p {
-      font-size: 0.95rem;
-      margin: 0;
-      line-height: 1.6;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
-
-/* stylelint-disable-next-line selector-id-pattern */
-#disqus_thread {
-  min-height: 8.5rem;
-}
-
-.utterances {
-  max-width: 100%;
-  min-height: 269px;
-}
-
-%btn-share-hover {
-  color: var(--btn-share-hover-color) !important;
-}
-
-.share-label {
-  @include mx.label(inherit, 400, inherit);
-
-  &::after {
-    content: ':';
-  }
-}
-
-.content > p > img {
-  @include bp.lte(bp.get(md)) {
-    max-width: calc(100% + 1rem);
-  }
-}
-
-h2,
-h3,
-h4 {
-  @include bp.xl {
-    scroll-margin-top: 2rem;
-  }
-}
-
-// ============================================================================
-// POST ENHANCEMENTS - Sections, scroll reveal, progress bar, hero header
-// ============================================================================
-
-// --- Post hero header ---
-article > header {
-  @include mx.glass;
-  border-radius: v.$radius-xl;
-  padding: 1.25rem 2.5rem 2rem;
-  margin-bottom: 0.5rem;
-  --glow-hue: 249, 115, 22; --glow-border-hue: 234, 88, 12;
-
-  @include bp.lte(bp.get(md)) {
-    padding: 1rem 1.25rem 1.5rem;
-    border-radius: v.$radius-lg;
-  }
-
-  h1 {
-    font-size: 2.25rem;
-    line-height: 1.2;
-    margin-top: 0;
-    margin-bottom: 0.75rem;
-
-    @include bp.lte(bp.get(md)) {
-      font-size: 1.75rem;
-    }
-  }
-
-  .preview-img,
-  .preview-img-wrap img,
-  .preview-img-wrap video {
-    max-height: 280px;
-    width: 100%;
-    object-fit: cover;
-    margin: 0.5rem auto;
-    display: block;
-  }
-
-  // Consolidated metadata row — dates + read time on one line
-  .post-meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .post-meta-sep {
-    opacity: 0.4;
-  }
-}
-
-// --- Section cards split at h2 boundaries ---
-.post-section {
-  background: rgba(8, 15, 27, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: v.$radius-lg;
-  padding: 2rem 2.5rem;
-  margin-bottom: 1.5rem;
-
-  // The breathing half of this composed animation is gone (D43), and with it the per-nth-child
-  // retiming that only existed to keep neighbouring sections out of sync.
-  animation: fade-in-up 0.5s ease-out both;
-  &:nth-child(3n)   { animation-duration: 0.5s, 8.7s; animation-delay: 0s, 2.3s; }
-
-  @include bp.lte(bp.get(md)) {
-    padding: 1.25rem 1rem;
-    border-radius: v.$radius-md;
-    margin-bottom: 1rem;
-  }
-
-  // Constrain line length within sections
-  > p, > ul, > ol, > blockquote {
-    max-width: 75ch;
-  }
-
-  // First section gets no top margin for its heading
-  &:first-child > h2:first-child {
-    margin-top: 0;
-  }
-
-  // Section heading accent
-  > h2:first-child {
-    margin-top: 0;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 1.25rem;
-  }
-
-  // Image framing within sections
-  img:not(.emoji) {
-    border-radius: v.$radius-lg;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.2);
-    margin: 2rem 0;
-  }
-
-  // Paragraph rhythm
-  p {
-    margin-bottom: 1.5rem;
-  }
-}
-
-// When sections exist, the outer container doesn't need its own glass
-.post-content-container:has(.post-section) {
-  background: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-}
-
 // --- Reading progress bar ---
 .reading-progress-bar {
   position: fixed;
@@ -863,7 +410,7 @@ article > header {
     var(--accent-color, var(--gold-80)),
     var(--accent-warm, var(--orange-a90))
   );
-  box-shadow: 0 0 8px rgba(var(--glow-hue), 0.40);
+  box-shadow: 0 0 8px rgb(var(--glow-hue), 0.40);
   z-index: 9999;
   pointer-events: auto;
   cursor: pointer;
@@ -872,10 +419,9 @@ article > header {
 
   &:hover {
     height: 6px;
-    box-shadow: 0 0 12px rgba(var(--glow-hue), 0.55);
+    box-shadow: 0 0 12px rgb(var(--glow-hue), 0.55);
   }
 }
-
 
 // --- Post ambient fireflies ---
 .post-firefly {
@@ -890,91 +436,30 @@ article > header {
   animation: firefly-drift var(--fly-dur, 12s) ease-in-out var(--fly-delay, 0s) infinite;
 }
 
-@keyframes firefly-drift {
-  0%, 100% {
-    opacity: 0;
-    transform: translate(0, 0);
-  }
-  20% {
-    opacity: var(--fly-opacity, 0.12);
-  }
-  50% {
-    opacity: var(--fly-opacity, 0.12);
-    transform: translate(var(--fly-dx, 30px), var(--fly-dy, -40px));
-  }
-  80% {
-    opacity: 0.03;
-  }
-}
-
-// --- Post tech strip styling ---
-.post-tech-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-
-  .tag-badge {
-    opacity: 0.8;
-
-    .badge-icon {
-      width: 1.2rem;
-      height: 1.2rem;
-    }
-
-    i {
-      font-size: 1rem;
-    }
-  }
-}
-
-// --- Images centered within reading column ---
-.post-content-container .content {
-  p:has(> img:not(.emoji)) {
-    text-align: center;
-  }
-
-  img:not(.emoji) {
-    max-width: 100%;
-    max-height: 500px;
-    display: inline-block;
-    object-fit: contain;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    cursor: zoom-in;
-
-    &:hover {
-      transform: translateY(-2px);
-      border-color: rgba(245, 158, 11, 0.25);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 15px var(--gold-10);
-    }
-  }
-}
-
 // ============================================================================
 // R4: GLightbox glass overlay — amber themed image zoom
 // ============================================================================
 .goverlay {
-  background: rgba(8, 15, 27, 0.85) !important;
+  background: rgb(8 15 27 / 85%) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 .glightbox-clean .gslide-media {
-  background: rgb(128, 128, 128);
+  background: rgb(128 128 128);
 
   img {
     image-rendering: pixelated;
   }
+
   box-shadow:
-    0 0 0 1px rgba(var(--glow-hue), 0.20),
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    0 0 40px rgba(var(--glow-hue), 0.08);
+    0 0 0 1px rgb(var(--glow-hue), 0.20),
+    0 20px 60px rgb(0 0 0 / 60%),
+    0 0 40px rgb(var(--glow-hue), 0.08);
   border-radius: v.$radius-lg;
   overflow: hidden;
 }
 
-.glightbox-clean .gclose,
-.glightbox-clean .gnext,
 .glightbox-clean .gprev {
   background: var(--bg-glass);
   border: 1px solid var(--glass-border);
@@ -984,7 +469,7 @@ article > header {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
-    border-color: rgba(var(--glow-hue), 0.40);
-    box-shadow: 0 0 12px rgba(var(--glow-hue), 0.15);
+    border-color: rgb(var(--glow-hue), 0.40);
+    box-shadow: 0 0 12px rgb(var(--glow-hue), 0.15);
   }
 }
