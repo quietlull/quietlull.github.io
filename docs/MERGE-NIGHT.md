@@ -379,3 +379,46 @@ are any of those now on a public page?
 `bundle exec jekyll build` green, and `npm run build` for the JS bundles and the CSS purge, in that
 order - PurgeCSS reads the built HTML, so it has to run after Jekyll or it purges against a stale
 page and strips classes that are in use.
+
+---
+
+# The bench: 51 of 51 render in one gallery
+
+All 18 standalone component pages are now fragments in the gallery that already existed, at
+`extracted/index.html?c=<id>`. A headless sweep of every id reports **51/51, no failures**. Page
+prose came across verbatim, so no provenance needed rescuing.
+
+**It refused to retire `component-review.html`, and it was right.** My instruction said it was a link
+list. It is not: it renders four components INLINE with variant comparisons, and it is the only home
+of the per-component "reserved vs measured fit" verdicts, about 20 pick badges, and the Minecraft
+advancement research - all cited by `final-projects`, `final-ramblings`, `REVIEW.md`, `BACKLOG.md`,
+`COMPONENT-TABLE.md`, `HANDOFF.md` and two component files. Retiring it would have destroyed decision
+provenance. It repointed the 14 outbound links instead and wrote down why it stays.
+
+**That is the second refusal tonight**, and both were the same shape: I marked something superseded
+that was still the CITATION for something that shipped.
+
+## Two pre-existing defects it surfaced
+
+- **`magnetic` is broken in the bench right now.** `registry.js` says `hasJs: true` but
+  `components/magnetic/magnetic.js` no longer exists - it was deleted as dead earlier tonight, and
+  nothing updated the registry. Every visit 404s and throws. One line.
+- **`callout-family`'s bloom never worked.** It loads `hana-bloom.js`, which bakes two canvases, but
+  the `.bgcanvas` / `@keyframes bgfade` rules its own header requires exist on **no stylesheet that
+  page ever linked** - they live in `a3-assembly.html` and archived files. The canvases bake; the
+  crossfade and blur never ran. Predates tonight.
+
+## Three bench mechanics worth knowing
+
+- `mount()` now **unloads** the previous component's stylesheets. Without that, `decisions.css`
+  restyles bare `h1`/`h2`/`h3` and follows you onto every component you look at afterwards.
+- **The bench stage is not 1440.** Fixed reservations still draw true, but any readout comparing
+  against the VIEWPORT now reads the stage. `prevnext-real` measures 281px here where the page gave
+  it much more.
+- Eleven of these components design in font weight 100/300, and the bench asks Google for 400/500/700.
+  Rather than change the shared link - which would have silently moved `merged-card` and
+  `section-head` - each affected fragment carries its own font link that dies with it on unmount.
+
+**Nothing here is in git.** `redesign-lab/` is gitignored, so reversibility for all of it is the
+trash directory plus `RESTORE.sh`. That script now covers the bench work too, and carries a warning
+that its newest entries are backups of files still IN USE, not retired ones.
