@@ -1,6 +1,10 @@
+// abstracts FIRST as of 2026-08-25: it now carries `_tokens.scss`, and a custom property has to be
+// declared before the rules that read it are evaluated by the cascade. It was last, which was
+// harmless while abstracts held only mixins and functions (compile-time) and is not harmless now
+// that it holds :root declarations (run-time).
+@forward 'abstracts';
 @forward 'base';
 @forward 'components';
 @forward 'layout';
 @forward 'pages';
-@forward 'abstracts';
 
