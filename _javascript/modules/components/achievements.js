@@ -109,7 +109,6 @@ const DEFAULT_STATE = {
   avatarHoverTime: 0,
   nightOwl: false,
   earlyBird: false,
-  breathingEnabled: false,  // kept for backwards compat
   toolsHoveredSet: [],      // which tools have been hovered on current page
   rewardsSeen: [],          // reward IDs the user has "seen" (visited About page)
 };
@@ -447,16 +446,6 @@ function setupTrackers(state) {
     // Also flush on click (avatar is a link — navigates away before mouseleave fires)
     avatar.addEventListener('click', flushAvatarHover);
     window.addEventListener('beforeunload', flushAvatarHover);
-  }
-
-  // ── Breathing toggle (legacy, kept for Lantern Keeper if re-added) ──
-  const breathingToggle = document.getElementById('breathing-toggle');
-  if (breathingToggle) {
-    breathingToggle.addEventListener('change', () => {
-      if (breathingToggle.checked && !state.breathingEnabled) {
-        bump(state, (s) => { s.breathingEnabled = true; });
-      }
-    });
   }
 }
 

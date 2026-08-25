@@ -18,7 +18,7 @@ const DRAG = 0.92;
 const GRAVITY = 0.15;
 const BURST_SPEED = 5;
 const TOUCH_BURST = 20;
-const INTERACTIVE_SELECTOR = '.card, a, button, .tool-icon, .breathe-switch, .fireworks-switch, .sparkler-switch, .post-tag, .pin-tag, .badge';
+const INTERACTIVE_SELECTOR = '.card, a, button, .tool-icon, .fireworks-switch, .sparkler-switch, .post-tag, .pin-tag, .badge';
 
 // Default amber theme — hot stays warm gold, never white
 const THEME_DEFAULT = {
@@ -26,29 +26,14 @@ const THEME_DEFAULT = {
   tipColor: [255, 210, 100],
 };
 
-// Breathing animation names — used to auto-detect breathing elements for sparkler color
-const BREATHE_PATTERN = /breathe|throb/;
-
 // ── Color sampling utilities (shared via utils/color-utils) ──
 import { parseRGB, isWarmColor } from '../utils/color-utils';
 
 function findWarmColor(el) {
   if (!el) return null;
 
-  // 1. Walk up the DOM looking for any breathing element — its animated
-  //    borderColor is the strongest color signal. This auto-detects ALL
-  //    breathing elements (current + future) without maintaining a list.
-  let current = el;
-  while (current && current !== document.documentElement) {
-    const style = getComputedStyle(current);
-    if (BREATHE_PATTERN.test(style.animationName)) {
-      const rgb = parseRGB(style.borderColor);
-      if (rgb && isWarmColor(rgb)) return rgb;
-    }
-    current = current.parentElement;
-  }
-
-  // 2. Fallback: check interactive ancestors (buttons, links, cards)
+  // 1. Check interactive ancestors (buttons, links, cards). This used to be step 2, behind a
+  //    walk that sniffed for a breathing animation; breathing is gone, so the walk went with it.
   const interactive = el.closest(INTERACTIVE_SELECTOR);
   if (interactive) {
     const style = getComputedStyle(interactive);
@@ -58,7 +43,7 @@ function findWarmColor(el) {
     }
   }
 
-  // 3. Finally check the element itself
+  // 2. Finally check the element itself
   const style = getComputedStyle(el);
   for (const prop of ['borderColor', 'backgroundColor', 'color']) {
     const rgb = parseRGB(style[prop]);
