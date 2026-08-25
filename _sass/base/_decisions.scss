@@ -77,6 +77,7 @@ h1, .d-h1, .prose > h1 {
    what a sub-break actually is. See redesign-lab/decisions.md. */
 h2, .prose h2, .d-h2 {
   color: var(--h2-color);
+  line-height: 1.7;   // Bootstrap gives headings 1.2 and the ladder has to say otherwise
   font-size: 2.4rem;
   font-weight: 300;
   margin: 4.5rem 0 2.25rem;
@@ -126,6 +127,7 @@ h2, .prose h2, .d-h2 {
    heading-order failure D31 ordered fixed on the post. See redesign-lab/decisions.md. */
 h3, .prose h3, .d-h3, .er-ttl {
   color: var(--h3-color);
+  line-height: 1.7;   // Bootstrap gives headings 1.2 and the ladder has to say otherwise
   font-size: 1.5rem;
   font-weight: 300;
   margin: 2.75rem 0 1.25rem;
@@ -144,6 +146,7 @@ h3, .prose h3, .d-h3, .er-ttl {
    bio heading was pinned to H4 and the page had to restate a size to escape it. */
 h4, .d-h4, .card-title {
   color: var(--h4-color);
+  line-height: 1.7;   // Bootstrap gives headings 1.2 and the ladder has to say otherwise
   font-size: 0.9375rem;
   font-weight: 300;
   letter-spacing: 0;
