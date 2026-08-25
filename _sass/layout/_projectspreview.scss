@@ -64,7 +64,6 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
 
 @for $i from 1 through 6 {
   .posts-grid > :nth-child(6n+#{$i}) .card {
-    animation: breathe-slow nth($proj-durations, $i) ease-in-out infinite;
     animation-delay: nth($proj-delays, $i);
     --orb-x: #{nth($proj-orb-x, $i)};
     --orb-y: #{nth($proj-orb-y, $i)};

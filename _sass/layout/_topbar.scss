@@ -8,7 +8,6 @@
 
 #topbar {
   @include mx.glass-lantern;
-  @include mx.breathing(breathe-ember, 6s);
   transition: backdrop-filter 0.15s ease-out, -webkit-backdrop-filter 0.15s ease-out;
 
   // Reduce backdrop-filter cost during active scroll
@@ -61,7 +60,6 @@
       border-radius: 0.75rem;
       border: 1px solid var(--amber-a10);
       box-shadow: var(--shadow-md);
-      animation: breathe-beacon 6.5s ease-in-out infinite;
       
       &:hover {
         transform: scale(1.02);
@@ -89,7 +87,7 @@
       
       .site-title {
         @include mx.label(1.5rem, 400, var(--site-title-color));
-        font-family: v.$font-family-heading;
+        font-family: var(--font-display);
         line-height: 1.2;
         margin-bottom: 0.25rem;
         letter-spacing: -0.02em;
@@ -133,7 +131,6 @@
           backdrop-filter: blur(var(--blur-sm));
           -webkit-backdrop-filter: blur(var(--blur-sm));
           transition: backdrop-filter 0.15s ease-out, -webkit-backdrop-filter 0.15s ease-out;
-          animation: breathe-glow 8.9s ease-in-out infinite;
 
           .is-scrolling & {
             backdrop-filter: none;
@@ -172,7 +169,6 @@
 
         // Stagger breathing across nav items — irregular durations like fireflies
         &:nth-child(1) .nav-link { animation-delay: 0s; }
-        &:nth-child(2) .nav-link { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; animation-duration: 7.1s; animation-delay: 1.2s; }
         &:nth-child(3) .nav-link { animation-duration: 9.7s; animation-delay: 2.5s; }
 
         // Reward sash — small diagonal "NEW" folded into top-right corner
@@ -191,7 +187,6 @@
           pointer-events: none;
           z-index: 3;
           box-shadow: 0 0 8px rgba(var(--breathe-hue), 0.30);
-          animation: throb-dot 2s ease-in-out infinite;
         }
 
         // Active state
@@ -200,7 +195,6 @@
           // ✨ FIXED: Using CSS variables
           background: var(--glow-medium);
           box-shadow: var(--btn-hover-glow);
-          animation: throb-glow 6.3s ease-in-out infinite;
 
           &::before {
             opacity: 0.5;
@@ -263,12 +257,9 @@
 
     a {
       @extend %btn;
-      animation: breathe-ember 8.3s ease-in-out infinite;
 
       &:nth-child(1) { animation-delay: 0.3s; }
-      &:nth-child(2) { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; animation-duration: 6.9s; animation-delay: 1.5s; }
       &:nth-child(3) { animation-duration: 7.7s; animation-delay: 2.8s; }
-      &:nth-child(4) { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; animation-duration: 9.1s; animation-delay: 0.8s; }
     }
 
     #mode-toggle {
@@ -277,75 +268,7 @@
       cursor: pointer;
     }
 
-    // Breathing toggle switch
-    .breathe-switch {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-      gap: 6px;
-
-      input { display: none; }
-
-      .breathe-switch-icon {
-        font-size: 0.75rem;
-        color: var(--white-a40);
-        transition: color 300ms ease;
-      }
-
-      input:checked ~ .breathe-switch-icon,
-      &:has(input:checked) .breathe-switch-icon {
-        color: var(--gold-80);
-      }
-
-      .breathe-switch-track {
-        position: relative;
-        width: 38px;
-        height: 20px;
-        border-radius: 10px;
-        background: var(--white-a08);
-        border: 1px solid var(--glass-border-strong);
-        @include mx.transition(background, border-color, box-shadow);
-      }
-
-      .breathe-switch-thumb {
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: var(--white-a35);
-        transition: transform 300ms ease, background 300ms ease, box-shadow 300ms ease;
-      }
-
-      // Checked (breathing ON) — thumb right, amber glow + synced breathing
-      input:checked ~ .breathe-switch-track {
-        background: rgba(var(--breathe-hue), 0.20);
-        border-color: rgba(var(--breathe-border-hue), 0.45);
-        box-shadow:
-          0 0 12px rgba(var(--breathe-hue), 0.25),
-          0 0 24px rgba(var(--breathe-hue), 0.10);
-        animation: breathe-toggle-glow 5s ease-in-out infinite;
-
-        .breathe-switch-thumb {
-          transform: translateX(18px);
-          background: rgba(var(--breathe-hue), 0.95);
-          box-shadow:
-            0 0 10px rgba(var(--breathe-hue), 0.70),
-            0 0 20px rgba(var(--breathe-hue), 0.30);
-        }
-      }
-
-      &:hover .breathe-switch-track {
-        border-color: rgba(var(--breathe-border-hue), 0.50);
-        box-shadow:
-          0 0 12px rgba(var(--breathe-hue), 0.20),
-          0 0 24px rgba(var(--breathe-hue), 0.12);
-      }
-    }
-
-    // Sparkler cursor toggle switch
+        // Sparkler cursor toggle switch
     .sparkler-switch {
       display: flex;
       align-items: center;
@@ -394,7 +317,6 @@
         box-shadow:
           0 0 12px rgba(var(--breathe-hue), 0.25),
           0 0 24px rgba(var(--breathe-hue), 0.10);
-        animation: breathe-ember 7.9s ease-in-out 0.8s infinite;
 
         .sparkler-switch-thumb {
           transform: translateX(18px);
@@ -456,7 +378,6 @@
         --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
         background: rgba(var(--breathe-hue), 0.15);
         border-color: rgba(var(--breathe-border-hue), 0.30);
-        animation: breathe-ember 8.3s ease-in-out 1.5s infinite;
 
         .fireworks-switch-thumb {
           transform: translateX(18px);

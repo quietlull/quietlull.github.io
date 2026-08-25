@@ -10,21 +10,13 @@
   padding: 0.5rem 0 0.5rem;
 
   // ── Entrance stagger: title → tagline → tools strip ──
+  // Size, weight, tracking and colour come from the h1 rung in base/_decisions.scss now. The old
+  // gold gradient fill went with them: it painted the text with -webkit-text-fill-color, which
+  // masked the ladder's colour outright. Its drop-shadow and title-glow were breathing (D43).
+  // What is left is the entrance stagger, which is this file's actual job.
   .landing-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f97316 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 2px 8px rgba(var(--breathe-hue), 0.15));
-    animation: fade-in-up 0.6s ease-out 0.15s both, title-glow 4s ease-in-out 1s infinite;
-
-    @include bp.lte(bp.get(md)) {
-      font-size: 2rem;
-    }
+    animation: fade-in-up 0.6s ease-out 0.15s both;
   }
 
   .landing-tagline {
@@ -89,11 +81,9 @@
       opacity: 0.6;
       position: relative;
       overflow: visible;
-      animation: breathe-ember 8.7s ease-in-out infinite;
       @include mx.transition(opacity, transform, border-color, box-shadow, filter);
 
       // Firefly stagger — color alternation + irregular timing
-      &:nth-child(even) { --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12; }
       &:nth-child(3n+1) { animation-duration: 8.7s; animation-delay: 0.3s; }
       &:nth-child(3n+2) { animation-duration: 6.9s; animation-delay: 1.5s; }
       &:nth-child(3n)   { animation-duration: 7.7s; animation-delay: 2.1s; }
@@ -177,7 +167,6 @@
     border-radius: 50%;
     background: var(--link-hover-color);
     box-shadow: 0 0 8px var(--glow-color, var(--gold-40));
-    animation: throb-dot 2s ease-in-out infinite;
   }
 }
 
@@ -230,7 +219,6 @@
     @include mx.glass;
     border-radius: v.$radius-lg;
     overflow: hidden;
-    animation: breathe-glow 7.3s ease-in-out infinite;
 
     iframe {
       border: none;
@@ -242,7 +230,6 @@
     border-radius: v.$radius-lg;
     color: var(--text-muted-color);
     --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
-    animation: breathe-glow 8.1s ease-in-out 0.5s infinite;
     @include mx.transition(box-shadow);
 
     i {
@@ -268,7 +255,3 @@
   }
 }
 
-@keyframes title-glow {
-  0%, 100% { filter: drop-shadow(0 2px 8px rgba(var(--breathe-hue), 0.15)); }
-  50% { filter: drop-shadow(0 2px 16px rgba(var(--breathe-hue), 0.40)); }
-}

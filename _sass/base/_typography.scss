@@ -72,7 +72,7 @@ blockquote {
 }
 
 kbd {
-  font-family: v.$font-family-mono;
+  font-family: var(--font-mono);
   display: inline-block;
   vertical-align: middle;
   line-height: 1.3rem;

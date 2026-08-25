@@ -94,14 +94,12 @@
   {% endcomment %}
   <link rel="stylesheet" href="{{ '/assets/css/chrome-scene.css' | relative_url }}">
 
-  <!-- Web Font -->
-  <link rel="stylesheet" href="{{ site.data.origin[type].webfonts | relative_url }}">
 
   {% comment %}
-    REDESIGN WEB FONTS. Lifted verbatim from the `final-*` pages, which all load this one line.
-    ADDED alongside the old link rather than replacing it: the old design's partials are still on
-    disk and still referenced, so pulling Outfit / Plus Jakarta / JetBrains out tonight would leave
-    every unported surface rendering in a system fallback. The old link goes when those partials do.
+    THE WEB FONTS. Lifted verbatim from the `final-*` pages, which all load this one line.
+    This is the only font request now. The old Outfit / Plus Jakarta Sans / JetBrains Mono link
+    used to sit above it, and both shipped on every page; every reader of the old stack has been
+    repointed at --font-body / --font-display / --font-mono, so it went.
 
     The six LINE BOIL faces are NOT here - they are local TTFs, declared with @font-face by
     `line-boil.css` and served from /assets/fonts/. See docs/MERGE-NIGHT.md.

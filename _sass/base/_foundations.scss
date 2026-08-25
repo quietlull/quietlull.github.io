@@ -23,21 +23,19 @@ body{
   color:var(--text);min-height:100vh;overflow-x:hidden;
   font-size:calc(1.02rem * var(--type-scale));line-height:1.65;
 }
-/* breathing, shifting saturated-orange glow across the whole page (like hana's drifting red) */
-body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+/* The saturated-orange glow across the whole page. It used to breathe on a 16s cycle; breathing
+   is dead (D43), so the cycle is gone and the glow holds still at the .8 opacity the
+   reduced-motion branch below had already settled on. The glow itself is the page ground and
+   stays. THIS IS THE ONE PLACE THIS FILE DIVERGES FROM THE LAB ORIGINAL. */
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;opacity:.8;
   background:
     radial-gradient(34% 26% at 22% 26%, var(--color-glow-drift-left), transparent 62%),
     radial-gradient(30% 24% at 80% 56%, var(--color-glow-drift-right), transparent 64%),
-    radial-gradient(42% 32% at 52% 98%, var(--color-glow-drift-bottom), transparent 60%);
-  animation:breathe-bg 16s ease-in-out infinite}
-@keyframes breathe-bg{
-  0%{opacity:.5;transform:translate3d(0,0,0) scale(1)}
-  50%{opacity:1;transform:translate3d(1.6%,-1.1%,0) scale(1.07)}
-  100%{opacity:.5;transform:translate3d(0,0,0) scale(1)}}
+    radial-gradient(42% 32% at 52% 98%, var(--color-glow-drift-bottom), transparent 60%)}
 /* card-in reveal (IntersectionObserver adds .in, in sliders.js) */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){body::before{animation:none;opacity:.8}.reveal{opacity:1;transform:none;transition:none}}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 .wrap{max-width:var(--measure);margin:0 auto;padding:0 2.5rem}
 /* THE LITERAL COLOURS BELOW ARE LEFT AS LITERALS, ON PURPOSE. Everything from here down - the
    `.ph` greybox placeholder, the `.lantern` demo, and the `.lab` / `.labtag` slider panel - is

@@ -18,16 +18,6 @@
 
 // --- Ambient opacity/scale ---
 
-@keyframes breathing {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-@keyframes breathe {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.15); opacity: 1; }
-}
-
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -85,154 +75,12 @@
 }
 
 // ==========================================================================
-// BREATHING TIERS — color-adaptive via --breathe-hue / --breathe-border-hue
-// Default hue: gold (251,191,36) / amber (245,158,11).
-// Override per-element for warm/orange/any color.
-//
-// STACKING BANDS — each tier's resting glow ≥ the tier below's peak,
-// so the visual hierarchy holds at every frame of the cycle.
-//   T1 Ember:   outer 0.06→0.20 | inner 0.04→0.12 | border 0.10→0.20
-//   T2 Glow:    outer 0.18→0.35 | inner 0.10→0.25 | border 0.18→0.28
-//   T3 Lantern: outer 0.30→0.50 | inner 0.22→0.40 | border 0.25→0.35
-//   T4 Beacon:  outer 0.45→0.70 | inner 0.35→0.55 | border 0.30→0.40
+// REDUCED-MOTION KILL SWITCH
+// This list used to be shared with the breathing toggle. Breathing is gone (D43), so it now has
+// one job: honour prefers-reduced-motion for everything on the site that still animates.
 // ==========================================================================
 
-// T1 EMBER
-@keyframes breathe-ember {
-  0%, 100% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 6px rgba(var(--breathe-hue), 0.06),
-      inset 0 0 4px rgba(var(--breathe-hue), 0.04);
-    border-color: rgba(var(--breathe-border-hue), 0.10);
-  }
-  50% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 12px rgba(var(--breathe-hue), 0.20),
-      inset 0 0 8px rgba(var(--breathe-hue), 0.12);
-    border-color: rgba(var(--breathe-border-hue), 0.20);
-  }
-}
-
-// T2 GLOW
-@keyframes breathe-glow {
-  0%, 100% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 10px rgba(var(--breathe-hue), 0.18),
-      inset 0 0 8px rgba(var(--breathe-hue), 0.10);
-    border-color: rgba(var(--breathe-border-hue), 0.18);
-  }
-  50% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 16px rgba(var(--breathe-hue), 0.35),
-      inset 0 0 16px rgba(var(--breathe-hue), 0.25);
-    border-color: rgba(var(--breathe-border-hue), 0.28);
-  }
-}
-
-// T3 LANTERN
-@keyframes breathe-slow {
-  0%, 100% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 14px rgba(var(--breathe-hue), 0.30),
-      inset 0 0 14px rgba(var(--breathe-hue), 0.22);
-    border-color: rgba(var(--breathe-border-hue), 0.25);
-  }
-  50% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 22px rgba(var(--breathe-hue), 0.50),
-      inset 0 0 24px rgba(var(--breathe-hue), 0.40);
-    border-color: rgba(var(--breathe-border-hue), 0.35);
-  }
-}
-
-// T4 BEACON
-@keyframes breathe-beacon {
-  0%, 100% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 18px rgba(var(--breathe-hue), 0.45),
-      inset 0 0 18px rgba(var(--breathe-hue), 0.35);
-    border-color: rgba(var(--breathe-border-hue), 0.30);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 28px rgba(var(--breathe-hue), 0.70),
-      inset 0 0 30px rgba(var(--breathe-hue), 0.55);
-    border-color: rgba(var(--breathe-border-hue), 0.40);
-    transform: scale(1.03);
-  }
-}
-
-// --- Throb / heartbeat variants ---
-
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  10% { transform: scale(1.2); }
-  20% { transform: scale(1); }
-  30% { transform: scale(1.15); }
-  40% { transform: scale(1); }
-}
-
-@keyframes throb-dot {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 8px rgba(var(--breathe-hue), 0.30);
-    background: rgba(var(--breathe-hue), 0.40);
-  }
-  50% {
-    transform: scale(1.5);
-    box-shadow: 0 0 30px rgba(var(--breathe-hue), 0.90), 0 0 55px rgba(var(--breathe-hue), 0.40);
-    background: rgba(var(--breathe-hue), 0.95);
-  }
-}
-
-// Throb glow — T4-level pulse for active nav, breathing toggle
-@keyframes throb-glow {
-  0%, 100% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 18px rgba(var(--breathe-hue), 0.45),
-      inset 0 0 18px rgba(var(--breathe-hue), 0.35);
-    border-color: rgba(var(--breathe-border-hue), 0.30);
-  }
-  50% {
-    box-shadow:
-      0 4px 16px var(--shadow-a40),
-      0 0 28px rgba(var(--breathe-hue), 0.70),
-      inset 0 0 30px rgba(var(--breathe-hue), 0.55);
-    border-color: rgba(var(--breathe-border-hue), 0.40);
-  }
-}
-
-// Toggle glow — wide spread, no base shadow, designed for small elements
-@keyframes breathe-toggle-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 12px rgba(var(--breathe-hue), 0.30),
-      0 0 24px rgba(var(--breathe-hue), 0.12);
-    border-color: rgba(var(--breathe-border-hue), 0.45);
-  }
-  50% {
-    box-shadow:
-      0 0 20px rgba(var(--breathe-hue), 0.55),
-      0 0 40px rgba(var(--breathe-hue), 0.25);
-    border-color: rgba(var(--breathe-border-hue), 0.65);
-  }
-}
-
-// ==========================================================================
-// BREATHING KILL SWITCH — shared between no-breathe toggle and reduced-motion
-// ==========================================================================
-
-$breathe-selectors:
+$motion-selectors:
   '#topbar', '#avatar', '.nav-item .nav-link', '.topbar-bottom a',
   '.text-container', '#landing-box::before', '#landing-box::after',
   '.post-vertical-bar .vertical-bar-container',
@@ -245,7 +93,6 @@ $breathe-selectors:
   '.card-icon-box', '.card-icon-box .card-icon-dot',
   '.tool-icon', '.demo-reel-embed', '.demo-reel-placeholder', '.demo-reel-placeholder i',
   '#back-to-top.show',
-  '.breathe-switch input:checked ~ .breathe-switch-track',
   '.sparkler-switch input:checked ~ .sparkler-switch-track',
   '.fireworks-switch input:checked ~ .fireworks-switch-track',
   '.meta-chip', '#toc-solo-trigger', '.post-firefly',
@@ -253,20 +100,15 @@ $breathe-selectors:
   '.btn.btn-outline-primary', '.access > section',
   '.year::after', '.steam-line';
 
-html.no-breathe {
-  @each $sel in $breathe-selectors {
-    #{$sel} { animation: none !important; }
-  }
-}
 
-// Extra selectors killed only by reduced-motion (not the breathing toggle)
+// Selectors that only reduced-motion needs to quiet.
 $reduced-motion-extras:
   '.ambient-orb', '#section-landing::before',
   '#main-wrapper', '#main-wrapper.page-exit';
 
 @media (prefers-reduced-motion: reduce) {
-  html:not(.breathe-override) {
-    @each $sel in join($breathe-selectors, $reduced-motion-extras) {
+  html {
+    @each $sel in join($motion-selectors, $reduced-motion-extras) {
       #{$sel} { animation: none !important; }
     }
   }

@@ -10,7 +10,6 @@
 // FEATURE TOGGLES
 // ============================================================================
 
-$enable-breathing: true !default;
 
 // ============================================================================
 // BLUR VALUES - Backdrop filters and effects
@@ -42,7 +41,6 @@ $ease-in: cubic-bezier(0.4, 0, 1, 1) !default;
 
 $float-duration: 10s !default;
 $float-gentle-duration: 8s !default;
-$breathing-duration: 4s !default;
 $pulse-duration: 2s !default;
 $shimmer-duration: 1s !default;
 $spin-duration: 1s !default;
@@ -138,9 +136,6 @@ $code-icon-width: 1.75rem !default;
 // ============================================================================
 
 // Font families
-$font-family-base: 'Plus Jakarta Sans', 'Microsoft Yahei', sans-serif !default;
-$font-family-heading: 'Outfit', 'Microsoft Yahei', sans-serif !default;
-$font-family-mono: 'JetBrains Mono', 'Monaco', 'Courier New', monospace !default;
 
 // Font weights (matching light/extralight from React)
 $font-weight-extralight: 200 !default;

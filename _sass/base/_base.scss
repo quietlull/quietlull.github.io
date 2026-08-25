@@ -21,7 +21,7 @@ body {
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
   -webkit-font-smoothing: antialiased;
-  font-family: v.$font-family-base;
+  font-family: var(--font-body);
 }
 
 // F3: Custom amber scrollbar — global
@@ -250,7 +250,7 @@ main {
   border: 1px solid var(--btn-border-color);
   padding: 0 0.4rem;
   color: var(--text-muted-color);
-  font-family: v.$font-family-mono;
+  font-family: var(--font-mono);
   font-size: 0.85em;
   line-height: 1.3rem;
 
@@ -342,7 +342,6 @@ main {
   border-color: var(--btn-border-color);
   background: var(--button-bg);
   @include mx.shimmer-effect;
-  animation: breathe-slow 8s ease-in-out infinite;
 
   &:not(.disabled):hover {
     color: var(--amber-300);
@@ -528,7 +527,6 @@ mjx-container {
   cursor: pointer;
   @include mx.transition(transform, border-color, box-shadow);
   // Tier 4 (Beacon) — strongest breathing with scale pulse
-  animation: breathe-beacon 4.5s ease-in-out infinite;
 
   // Blurred orb behind the box — Tier 4 (largest)
   &::before {
@@ -560,7 +558,6 @@ mjx-container {
     border-radius: 50%;
     background: var(--gold-80);
     box-shadow: 0 0 15px var(--gold-60);
-    animation: throb-dot 2s ease-in-out infinite;
   }
 }
 
@@ -574,7 +571,6 @@ mjx-container {
   height: 48px;
   margin-bottom: 0.75rem;
   flex-shrink: 0;
-  animation: breathe 4s ease-in-out infinite;
 
   // Blurred glow behind the box
   .card-icon-glow {
@@ -606,7 +602,6 @@ mjx-container {
     border-radius: 50%;
     background: var(--icon-dot-color, var(--gold-80));
     box-shadow: 0 0 12px var(--icon-dot-glow, var(--gold-60));
-    animation: heartbeat 2.5s ease-in-out infinite;
   }
 }
 

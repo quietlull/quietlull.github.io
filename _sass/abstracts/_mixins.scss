@@ -230,14 +230,6 @@
   }
 }
 
-// Breathing animation for ambient elements
-@mixin breathing($animation, $duration, $delay: 0s) {
-  @if v.$enable-breathing {
-    animation: $animation $duration ease-in-out infinite;
-    animation-delay: $delay;
-    will-change: box-shadow, border-color;
-  }
-}
 
 // Pulse animation for indicators
 @mixin pulse-glow($duration: 2s) {

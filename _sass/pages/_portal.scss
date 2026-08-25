@@ -27,14 +27,14 @@
     letter-spacing: 0.05em;
     text-transform: lowercase;
     margin-bottom: 0.75rem;
-    font-family: v.$font-family-mono;
+    font-family: var(--font-mono);
     animation: fade-in-up 0.6s ease-out 0.1s both;
   }
 
   .portal-title {
     font-size: 3rem;
     font-weight: 700;
-    font-family: v.$font-family-heading;
+    font-family: var(--font-display);
     letter-spacing: -0.02em;
     margin-bottom: 0.5rem;
     animation: fade-in-up 0.6s ease-out 0.25s both;
@@ -172,7 +172,6 @@
     border-radius: 2rem;
     border: 1px solid var(--glass-border);
     background: rgba(15, 23, 42, 0.9);
-    animation: breathe-glow 7.7s ease-in-out 1.8s infinite;
     @include mx.transition(color, border-color, background-color);
 
     .coffee-steam-wrap {
