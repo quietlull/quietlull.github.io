@@ -1,0 +1,166 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/button-kit/button-kit.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* button-kit - the buttons, the tags and the inline link.
+   SLOP UNTIL RESOURCED. The shapes cite rework-stephan.html, which is our own build, so this
+   component has no external provenance yet. A citation pointing inside this repo is not a source.
+   Real outside sources: the hover ripple is phojanecki (codepen.io/phojanecki/pen/vwyZpY) and the
+   rising fill is dennissnellenberg .btn-fill. See button-kit.md. */
+.kit-button {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 0;
+  text-decoration: none;
+}
+
+.kit-button--primary {
+  background: var(--color-gold);
+  color: var(--color-ink);
+  font-weight: 600;
+  outline: 1px solid color-mix(in srgb, var(--color-glow) 50%, transparent);
+  transition: all 0.35s;
+}
+
+/* phojanecki ripple: the outline floats outward and fades while the core lights up. */
+.kit-button--primary:hover {
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-glow) 50%, transparent);
+  box-shadow:
+    inset 0 0 16px color-mix(in srgb, var(--color-glow) 20%, transparent),
+    0 0 16px color-mix(in srgb, var(--color-glow) 45%, transparent);
+  outline-offset: 8px;
+  outline-color: transparent;
+}
+
+.kit-button--outline,
+.kit-button--pill {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  background: transparent;
+  color: var(--color-gold);
+  border: 1px solid color-mix(in srgb, var(--color-glow) 50%, transparent);
+}
+
+.kit-button--pill {
+  border-radius: 999px;
+}
+
+.kit-button__label {
+  position: relative;
+  z-index: 5;
+  transition: color 0.35s ease;
+}
+
+.kit-button--outline:hover .kit-button__label,
+.kit-button--pill:hover .kit-button__label {
+  color: var(--color-night);
+}
+
+/* dennissnellenberg .btn-fill: an oversized circle parked below that rises on hover.
+   overflow:hidden on the button is what clips it into shape. */
+.kit-button__fill {
+  position: absolute;
+  top: -50%;
+  left: -25%;
+  width: 150%;
+  height: 200%;
+  border-radius: 50%;
+  background: var(--color-gold-deep);
+  transform: translate3d(0, 76%, 0);
+  transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  z-index: 0;
+}
+
+.kit-button--outline:hover .kit-button__fill,
+.kit-button--pill:hover .kit-button__fill {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Tags: stephan chip geometry, phojanecki ripple on hover.
+   `border: 0` IS LOAD-BEARING. This rule draws the edge with `outline` and never touches
+   `border`, so a <button> keeps the browser's 2px outset bevel and a <span> does not - the same
+   class rendering two different boxes, 44 of them on one page. See button-kit.md. */
+.kit-tag {
+  border: 0;
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  border-radius: 6px;
+  padding: 0.3rem 0.65rem;
+  outline: 1px solid color-mix(in srgb, var(--color-glow) 40%, transparent);
+  transition: all 0.35s;
+  cursor: default;
+}
+
+// A selected filter pill keeps the hover look. Rod could not tell which filters were on, because
+// .is-active was being set with nothing styling it - the class and aria-pressed were both correct
+// and the pill looked identical either way.
+.kit-tag:hover,
+.kit-tag.is-active {
+  color: var(--color-gold);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-glow) 60%, transparent);
+  box-shadow:
+    inset 0 0 12px color-mix(in srgb, var(--color-glow) 15%, transparent),
+    0 0 12px color-mix(in srgb, var(--color-glow) 30%, transparent);
+  outline-offset: 6px;
+  outline-color: transparent;
+}
+
+// Selected goes a step further than hover so the two never read the same. The gold wash fills the
+// pill, the icon stops being greyscale, and the edge lights up.
+.kit-tag.is-active {
+  background: color-mix(in srgb, var(--color-glow) 22%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  outline-offset: 0;
+}
+
+.kit-tag.is-active .badge-icon {
+  filter: none;
+  opacity: 1;
+}
+
+.inline-link {
+  /* Body font, not the hand: T0-B reserves the hand for the logo. Rod picked the grow-underline. */
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  color: var(--color-gold);
+  text-decoration: none;
+  position: relative;
+}
+
+.inline-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 2px;
+  background: var(--color-gold-deep);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
+.inline-link:hover {
+  color: var(--color-glow-soft);
+}
+
+.inline-link:hover::after {
+  width: 100%;
+}
+
+.button-kit-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+}
+}

@@ -1,0 +1,9 @@
+{% comment %}
+  Ramblings' own JS. The magnets on the tag chips already run from `assets/js/chrome.js`, so the
+  search field is the only thing this page adds.
+{% endcomment %}
+
+<script type="module">
+  import { init as initSearch } from '{{ '/assets/js/components/search-field.js' | relative_url }}';
+  initSearch(document);
+</script>

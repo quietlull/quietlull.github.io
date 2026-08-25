@@ -1,4 +1,4 @@
-import { basic, initSearchbar } from './modules/layouts';
+import { basic } from './modules/layouts';
 
 import {
   loadImg,

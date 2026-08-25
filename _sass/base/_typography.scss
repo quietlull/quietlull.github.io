@@ -3,54 +3,48 @@
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/placeholders';
 
+// The type ladder moved to base/_decisions.scss, so the old sizes, weights, colours and margins
+// are gone from here and the ladder now reaches bare headings.
+// What stays is Chirpy's heading ANCHOR, whose markup refactor-content.html still emits, and the
+// scroll offset that keeps a jumped-to heading clear of the sticky bar.
 @for $i from 1 through 5 {
   h#{$i} {
-    @extend %heading;
+    scroll-margin-top: 3.5rem;
 
     @if $i > 1 {
       @extend %anchor;
     }
-
-    @if $i < 5 {
-      $size-factor: 0.25rem;
-
-      @if $i > 1 {
-        $size-factor: 0.18rem;
-
-        main & {
-          @if $i == 2 {
-            margin: 2.5rem 0 1.25rem;
-          } @else {
-            margin: 2rem 0 1rem;
-          }
-        }
-      }
-
-      & {
-        font-size: 1rem + (5 - $i) * $size-factor;
-      }
-    } @else {
-      font-size: 1.05rem;
-    }
   }
 }
 
-a {
-  @extend %link-color;
-
-  text-decoration: none;
+// Layered, because unlayered beats every layer and this was quietly repainting components. The
+// active nav link came out gold on its own gold pill - same colour as its background, invisible.
+@layer reset {
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-transition: all var(--transition-normal) ease-in-out;
+// LAYERED 2026-08-26, and it is the only layered rule in this file. `height: auto` is a RESET -
+// it stops a shrunk image distorting against its own `height` attribute - but unlayered it also
+// beat every ported component that sizes an image, and collapsed the ramblings thumbnail from
+// 170px to 0. In `reset` it still does its job and components can now win.
 
-  .blur & {
-    $blur: 20px;
+@layer reset, tokens, prose, components, overrides;
 
-    -webkit-filter: blur($blur);
-    filter: blur($blur);
+@layer reset {
+  img {
+    max-width: 100%;
+    height: auto;
+    transition: all var(--transition-normal) ease-in-out;
+
+    .blur & {
+      $blur: 20px;
+
+      -webkit-filter: blur($blur);
+      filter: blur($blur);
+    }
   }
 }
 
@@ -90,7 +84,7 @@ blockquote {
 }
 
 kbd {
-  font-family: v.$font-family-mono;
+  font-family: var(--font-mono);
   display: inline-block;
   vertical-align: middle;
   line-height: 1.3rem;
@@ -108,31 +102,6 @@ kbd {
 hr {
   border-color: var(--main-border-color);
   opacity: 1;
-}
-
-footer {
-  background-color: var(--main-bg);
-  height: v.$footer-height;
-  border-top: 1px solid var(--main-border-color);
-
-  @extend %text-xs;
-
-  a {
-    @extend %text-highlight;
-
-    &:hover {
-      @extend %link-hover;
-    }
-  }
-
-  em {
-    @extend %text-highlight;
-  }
-
-  p {
-    text-align: center;
-    margin-bottom: 0;
-  }
 }
 
 /* fontawesome icons */

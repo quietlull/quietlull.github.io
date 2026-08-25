@@ -1,0 +1,51 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/section-head/section-head.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* section-head - a centred label with an ornament each side and a hairline under.
+   The flanking-ornament idea is harumakigohan.com's; theirs are drawn PNGs, ours is a typed `~`
+   standing in until the artwork exists. Remixed, idea-origin Rod.
+   Rod picked candidate C on 2026-08-22, minus the number, plus the hairline.
+   The container is an <h2> on purpose - a 2.4rem label outside the heading outline is invisible
+   to anyone navigating by headings. See section-head.md. */
+
+.section-head {
+  text-align: center;
+  margin: 0 0 1.8rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+}
+
+.section-head__name {
+  font-family: var(--font-display, "M PLUS Rounded 1c", sans-serif);
+  /* Looks half-empty on purpose. font-weight, font-size and color all lived here and all beat
+     the type ladder in decisions.scss, which owns this class. The ladder is the system, the
+     component defers. Do not put them back. See section-head.md. */
+}
+
+/* The flanking ornament, a typed stand-in for harumaki's drawn wave. No screen reader reads
+   generated content as text, so the label still comes through clean. */
+.section-head__name::before {
+  content: "~ ";
+  color: var(--color-gold, #fbbf24);
+}
+
+.section-head__name::after {
+  content: " ~";
+  color: var(--color-gold, #fbbf24);
+}
+
+/* The label links to its own section (Rod 2026-08-22). It inherits colour and ornament, so it
+   reads as a heading until you touch it, not as navigation. */
+.section-head__name {
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.section-head__name:hover,
+.section-head__name:focus-visible {
+  color: var(--color-gold, #fbbf24);
+}
+}

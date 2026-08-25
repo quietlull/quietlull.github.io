@@ -1,0 +1,42 @@
+{% comment %}
+  ============================================================================================
+  THE PORTAL'S OWN JS, ported from the tail of `redesign-lab/final-portal.html` on 2026-08-26.
+  Reached through `script_includes` in `_layouts/portal.html`, so `_layouts/default.html` emits it
+  before the shared chrome scripts, exactly as the lab page ordered them.
+
+  `assets/js/chrome.js` already runs drift-magnet page-wide and boils the top bar's wordmark. The
+  portal carries no top bar, so the mark below is the only thing on the page that boils, and it has
+  to ask for itself.
+  ============================================================================================
+{% endcomment %}
+
+<script type="module" src="{{ '/assets/js/effects/portal-windows.js' | relative_url }}"></script>
+
+<script>
+  /* THE TEXT FILL - a PLACEHOLDER, and deliberately a small one. Rod 2026-08-23: "do a spam of
+     repeated text of what the header says inside the box for now."
+
+     It is generated from each window's OWN title rather than written into the markup, for two
+     reasons: eight windows times forty repeats is 300+ lines of noise in a file people have to
+     read, and a baked copy would drift the moment a title changed.
+
+     The fill is aria-hidden and each link carries a `.pwin__sr` label instead. Repeating a word
+     forty times is texture to look at and pure noise to listen to, so a screen reader gets the name
+     once. Deleting this script and the two spans is the whole removal when real content arrives. */
+  (function () {
+    var REPEATS = 40;
+    document.querySelectorAll('.pwin').forEach(function (win) {
+      var title = win.querySelector('.pwin__title');
+      var fill = win.querySelector('.pwin__fill');
+      if (!title || !fill) return;
+      var word = title.textContent.trim();
+      fill.textContent = new Array(REPEATS).fill(word).join(' ');
+    });
+  })();
+</script>
+
+<script type="module">
+  /* The centre identity mark boils like the landing's H0 - same component, same picked pattern. */
+  import { initLineBoil } from '{{ '/assets/js/components/line-boil.js' | relative_url }}';
+  initLineBoil(document.querySelector('.centre__mark'));
+</script>

@@ -1,0 +1,310 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/top-bar/top-bar.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* top-bar - the norikura shell, restructured by Rod 2026-06-14 into three zones:
+   [mark + name] | [nav centred] | [toggles]. The nav pill is invisible at rest and lit by
+   dennissnellenberg's rising-circle fill, the same one the buttons use.
+   THESE TOKENS ARE ON :root, NOT ON .top-bar, and that matters. The hero sizes itself as "the
+   viewport minus the bar", so the height cannot be private to the bar. It was hard-coded 96px
+   once and broke the moment the bar stacked to two rows. See top-bar.md. */
+:root {
+  --top-bar-height: 5.875rem; /* 94px, the padding box */
+  --top-bar-padding-block: 1rem;
+  --top-bar-padding-inline: 2rem;
+  --top-bar-border: 1px; /* the mark has to clear this too, or it stops 1px short of the edge */
+}
+
+/* STICKY BELONGS TO THE BAR, not to the page hosting it. All four lab pages declared their own
+   identical copy, so when this was ported the live bar just scrolled away. Sticky also occupies
+   real layout space, which the pages below it depend on. See top-bar.md. */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-chrome, 60);
+  display: grid;
+  /* 1fr auto 1fr, NOT auto 1fr auto. The old version centred the nav inside its own column, and
+     that column only sits centre-page when the two outer zones match - they do not, so the nav
+     sat 44px left of centre. Equal outer columns centre it by construction. Rod 2026-08-18. */
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  row-gap: 0;
+  /* The 1fr columns make the breathing room, so this only has to guarantee a minimum. The old flat
+     100px is what read as lopsided - it was being added to columns that were already unequal. */
+  column-gap: clamp(1rem, 4vw, 3rem);
+  width: 100%;
+  min-height: var(--top-bar-height);
+  padding: var(--top-bar-padding-block) var(--top-bar-padding-inline);
+  backdrop-filter: blur(5px);
+  background: var(--color-glass);
+  border: var(--top-bar-border) solid var(--color-line-faint);
+}
+
+/* The mark is unbundled from the name (Rod 2026-08-16): it is the way back to the landing pages,
+   so it gets its own place rather than reading as one logo lockup. The gap and the size do it. */
+.top-bar__left {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  gap: 2.4rem;
+}
+
+/* FULL BLEED, and the negative margins are how. The mark fills the bar's whole height and hugs
+   its left edge by escaping the bar's own padding - it does NOT make the bar taller. An earlier
+   pass capped it at the wordmark's line box to avoid growing the bar, which solved the wrong
+   problem. Rod 2026-08-16. */
+.top-bar__left .favicon {
+  width: calc(var(--top-bar-height) + var(--top-bar-border) * 2);
+  height: calc(var(--top-bar-height) + var(--top-bar-border) * 2);
+  margin-top: calc((var(--top-bar-padding-block) + var(--top-bar-border)) * -1);
+  margin-bottom: calc((var(--top-bar-padding-block) + var(--top-bar-border)) * -1);
+  margin-left: calc((var(--top-bar-padding-inline) + var(--top-bar-border)) * -1);
+  border-radius: 0;
+  flex: none;
+}
+
+/* Larger than the favicon component's own 62.5%, so it reads as artwork rather than an icon
+   floating in a field. Rod 2026-08-16. */
+.top-bar__left .favicon__img {
+  width: 4.6rem; /* ~77% of the 96px mark */
+  height: 4.6rem;
+}
+
+.top-bar__logo {
+  font-family: var(--font-hand); /* the harumaki hero font (Rod) */
+  font-weight: 700;
+  font-size: 2.2rem; /* Rod: the name was too small at 1.6rem */
+  letter-spacing: 0; /* the hand font wants no tracking */
+  color: var(--color-gold-deep);
+  white-space: nowrap;
+}
+
+.top-bar__nav {
+  display: flex;
+  justify-self: center;
+  gap: 10px;          /* baked from the bench tune */
+  margin-bottom: 2px; /* baked from the bench tune */
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  --bloom: 4.25;   /* hover glow size, still tunable from the bench Tune panel */
+  --tspeed: 480ms; /* state transition speed, same */
+}
+
+/* An invisible pill at rest, lit by a rising circle from below on hover. overflow:hidden is what
+   clips that circle into a pill. */
+.top-bar__link {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  color: var(--color-muted);
+  text-decoration: none;
+  padding: 0.45rem 1rem; /* T3-D: keeps the tap target at 24px or more */
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition:
+    color var(--tspeed, 0.35s) ease,
+    border-color var(--tspeed, 0.35s) ease,
+    box-shadow var(--tspeed, 0.35s) ease;
+}
+
+/* The fill: an oversized circle parked below that rises on hover. */
+.top-bar__link::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -25%;
+  width: 150%;
+  height: 200%;
+  border-radius: 50%;
+  background: var(--color-gold);
+  transform: translate3d(0, 76%, 0);
+  transition: transform var(--tspeed, 0.5s) cubic-bezier(0.7, 0, 0.3, 1);
+  z-index: -1;
+}
+
+.top-bar__link:hover::before,
+.top-bar__link.is-active::before {
+  transform: translate3d(0, 0, 0);
+}
+
+.top-bar__link:hover,
+.top-bar__link.is-active {
+  color: var(--color-night);
+  box-shadow: 0 0 calc(14px * var(--bloom, 1)) color-mix(in srgb, var(--color-glow) 35%, transparent);
+}
+
+.top-bar__toggles {
+  display: flex;
+  justify-self: end;
+  gap: 0.7rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+/* THE SCALING LADDER. Every tier DERIVES --top-bar-height from its rows plus the block padding,
+   so the full-bleed mark still matches the bar edge to edge however the zones stack. Rows are
+   fixed, never auto - an auto row that grows when a zone wraps is the exact bug this fixes.
+     >=781  one row     [mark+name | nav]                 96px
+     <=780  two rows    [mark+name] / [nav]              108px
+     <=720  as above, type and inline padding tightened
+     <=560  three rows  [mark+name] / [toggles] / [nav]  124px, mark goes inset
+   780 IS MEASURED, NOT GUESSED: the bar needs 710px on one row, so 780 leaves about 70px of slack.
+   It was 1200 until 2026-08-22, and that was stacking for the toggle zone D20 had already
+   removed - which is what Rod saw as "weird scaling". See top-bar.md. */
+@media (max-width: 780px) {
+  :root {
+    --top-bar-row-1: 3.4rem; /* the name, and the toggles on bench copies that still have them */
+    --top-bar-row-2: 2.2rem; /* the nav */
+    --top-bar-padding-block: 0.5rem; /* two rows carry the height now, so the padding gives way */
+    --top-bar-height: calc(
+      var(--top-bar-row-1) + var(--top-bar-row-2) + var(--top-bar-padding-block) * 2
+    );
+  }
+
+  .top-bar {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: var(--top-bar-row-1) var(--top-bar-row-2);
+    column-gap: 1rem;
+  }
+  /* The name stacks on top of the nav (Rod 2026-08-22). `display: contents` is what makes that
+     possible with no markup change: it promotes the mark and the name out of .top-bar__left so
+     each takes its own grid cell. The mark keeps column 1 across both rows and stays full-bleed. */
+  .top-bar__left {
+    display: contents;
+  }
+  .top-bar__left .favicon {
+    grid-column: 1;
+    grid-row: 1 / -1;
+  }
+  .top-bar__logo {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    justify-self: start;
+  }
+  .top-bar__toggles {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .top-bar__nav {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    margin-bottom: 0;
+  }
+  .top-bar__logo {
+    font-size: 1.9rem; /* it has to sit inside row 1 */
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --top-bar-padding-inline: 1rem;
+  }
+  .top-bar__left {
+    gap: 1.2rem;
+  }
+  .top-bar__logo {
+    font-size: 1.6rem;
+  }
+  .top-bar__nav {
+    gap: 6px;
+    font-size: 0.62rem;
+  }
+  .top-bar__link {
+    padding: 0.4rem 0.55rem;
+  }
+  .top-bar .slap-toggle__label {
+    padding: 4px 7px;
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --top-bar-row-1: 2.6rem;
+    --top-bar-row-2: 2rem;
+    --top-bar-row-3: 2rem;
+    --top-bar-height: calc(
+      var(--top-bar-row-1) + var(--top-bar-row-2) + var(--top-bar-row-3) +
+        var(--top-bar-padding-block) * 2
+    );
+  }
+
+  .top-bar {
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--top-bar-row-1) var(--top-bar-row-2) var(--top-bar-row-3);
+  }
+  /* The smallest tier is a centred stack: mark, name, nav, top to bottom (Rod 2026-08-22).
+     THE NAV DEFINES THE WIDTH - it stretches the full content box and spreads its links, and the
+     other two centre on that same axis. See top-bar.md. */
+  .top-bar {
+    justify-items: center;
+  }
+  .top-bar__left .favicon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 2.6rem;
+    height: 2.6rem;
+    margin: 0;
+  }
+  .top-bar__left .favicon__img {
+    width: 2rem;
+    height: 2rem;
+  }
+  .top-bar__logo {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 1.4rem;
+    justify-self: center;
+  }
+  .top-bar__toggles {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: end;
+  }
+  .top-bar__nav {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: stretch;
+    justify-content: space-between;
+  }
+}
+
+/* T3-A: the toggles are ghosted at rest and only an ON feature glows.
+   D20 removed the toggles from the design, so this block styles a zone the layout no longer
+   uses. It is on the merge cleanup list. */
+.top-bar .slap-toggle__control {
+  border-color: var(--color-line-soft);
+}
+
+.top-bar .slap-toggle__flap {
+  background: color-mix(in srgb, var(--color-text) 16%, transparent);
+}
+
+.top-bar .slap-toggle__flap-text {
+  color: var(--color-text);
+}
+
+.top-bar .slap-toggle__label {
+  color: var(--color-muted);
+}
+
+.top-bar .slap-toggle__control.is-on {
+  border-color: var(--color-glow);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 35%, transparent);
+}
+
+.top-bar .slap-toggle__control.is-on .slap-toggle__flap {
+  background: var(--color-glow);
+}
+
+.top-bar .slap-toggle__control.is-on .slap-toggle__flap-text {
+  color: var(--color-night);
+}
+}

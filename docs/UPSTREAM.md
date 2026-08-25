@@ -31,3 +31,23 @@ knows they are not ours. None recorded yet.)
 
 (Places where we changed what stock Chirpy does and a theme update would silently revert us.
 Fill during the Phase 1 diff.)
+
+## media-url.html prepends a folder to paths that are already absolute (PATCHED 2026-08-26)
+
+**Upstream file:** `_includes/media-url.html`, Chirpy 7.3.1.
+
+It guards with `unless url contains ':'`, which catches `http://` but not a root-relative path. So a
+post that declares `media_subpath` and points at a shared asset gets the subpath prepended to a path
+that was already resolved:
+
+    /assets/img/placeholder-wip.svg  ->  /assets/media/ComputeGrass/assets/img/placeholder-wip.svg
+
+**21 broken images across 8 posts, and html-proofer fails on every one**, which blocks the deploy
+workflow. Found while reproducing CI locally before the merge to main.
+
+**D2 says flag upstream bugs rather than fix them silently. This is flagged AND fixed**, because it
+blocked a merge and the fix is a two-line guard that cannot be wrong: an absolute path is already
+resolved, so nothing may be prepended to it. Patch is commented in place and points here.
+
+**If Chirpy is ever updated, re-apply this.** The symptom is doubled path segments in `<img src>` and
+it does not error - the page renders with broken images and nothing in the console.

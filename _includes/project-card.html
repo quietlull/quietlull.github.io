@@ -1,0 +1,80 @@
+{% comment %}
+  One project card, ported from `redesign-lab/final-projects.html` on 2026-08-25. The projects grid
+  and the landing's featured block both render this, so there is one card on the site.
+
+  Takes: post, section, hue ('a' or 'b'), and variant. The cover, the flip and the tilt are the
+  `project-cards-expensive` component; everything here is the markup it drives.
+
+  TWO VARIANTS, because the two pages ask the card for different things.
+    (default) projects  a `.pv2-cell` in a fixed three-up grid, with a description, a meta rule and
+                        an icon tag row. `data-tags` is what the search field filters on.
+    landing             a `[data-column-span]` cell in the merged grid, title and tech line only.
+                        Takes `span` and `rowspan`.
+{% endcomment %}
+
+{% assign post = include.post %}
+{% assign card_tags = post.tags | where_exp: 't', 't != "project"' %}
+{% assign cover = post.image.path | default: post.image %}
+{% assign words = post.content | number_of_words %}
+{% assign minutes = words | divided_by: 200 | plus: 1 %}
+
+{% comment %} A WIP stub with no post behind it yet goes to the placeholder page, not to an empty post. {% endcomment %}
+{% if post.wip and words < 20 %}
+  {% capture card_url %}/{{ include.section }}/under-construction/?title={{ post.title }}&tags={{ card_tags | join: ',' }}{% endcapture %}
+{% else %}
+  {% assign card_url = post.url %}
+{% endif %}
+
+{% if include.variant == 'landing' %}
+<div data-column-span="{{ include.span | default: 6 }}"{% if include.rowspan %} data-row-span="{{ include.rowspan }}"{% endif %} class="posts-grid-hue-{{ include.hue | default: 'a' }}">
+{% else %}
+<div class="pv2-cell posts-grid-hue-{{ include.hue | default: 'a' }}" data-tags="{{ card_tags | join: ',' | downcase }}">
+{% endif %}
+  <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+    <a href="{{ card_url | relative_url }}" class="card-link"><div class="card-tilt"><div class="card-flipper">
+      <div class="card-front">
+        <div class="card-cover z-layer">
+          {%- if cover -%}
+            {%- assign ext = cover | split: '.' | last | downcase -%}
+            {%- if ext == 'mp4' or ext == 'webm' -%}
+              {%- comment -%} No autoplay: project-cards-expensive.js starts the cover on hover. {%- endcomment -%}
+              <video loop muted playsinline preload="metadata"><source src="{{ cover | relative_url }}" type="video/{{ ext }}"></video>
+            {%- else -%}
+              <img src="{{ cover | relative_url }}" alt="">
+            {%- endif -%}
+          {%- endif -%}
+        </div>
+        {% if post.pin %}<span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>{% endif %}
+        {% if post.wip %}<span class="card-pin card-pin--wip z-layer">WIP</span>{% endif %}
+        <div class="glass-plane z-layer"></div>
+        <div class="card-body z-layer">
+          <h3 class="card-title z-layer">{{ post.title }}</h3>
+          {% if include.variant == 'landing' %}
+            {% comment %} The tech line, from the post's own tags rather than a hand-written string. {% endcomment %}
+            {% assign tech = card_tags | slice: 0, 3 %}
+            <p class="card-meta">{{ tech | join: ' &middot; ' }}</p>
+          {% else %}
+            <p class="card-meta">{{ post.role }}{% if post.role and post.engine %} &middot; {% endif %}{{ post.engine }}</p>
+            <div class="pv2-descbox"><p class="pv2-desc">{{ post.description }}</p></div>
+            <div class="pv2-metabox z-layer">
+              <p class="pv2-date">{{ post.date | date: '%b %d, %Y' }} &middot; {{ minutes }} min</p>
+              {% include tag-badges.html tags=post.tags variant='kit' %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% comment %}
+        `.takeaway-quote` is drawn by the component and is NOT emitted: the lab's pull quotes were
+        hand-written per card and no front-matter field holds one. It is copy Rod owes, not markup.
+      {% endcomment %}
+      <div class="card-back">
+        {% if post.takeaway %}
+          <p class="takeaway-text">{{ post.takeaway }}</p>
+        {% else %}
+          <p class="takeaway-text takeaway-text--none">Nothing to see here.</p>
+        {% endif %}
+        <span class="back-read">Read the post &rarr;</span>
+      </div>
+    </div></div></a>
+  </article>
+</div>

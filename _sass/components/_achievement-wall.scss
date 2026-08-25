@@ -1,0 +1,366 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/achievement-wall/achievement-wall.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+
+/* ACHIEVEMENT WALL - the catalogue and its detail panel, built to Rod's spec of 2026-08-24.
+   THE RIM IS THE BEST-SOURCED THING ON THE PROJECT CARD, not the worst, and the Slop banner on
+   project-cards-expensive is wrong for THIS technique. The real source is
+   codepen.io/john_r_muir/pen/ExzJjqL (sources/john-r-muir-glow-border.md, pasted by Rod), and
+   D1266 records him withdrawing the circular-citation objection. Remixed, theirs.
+   STILL OWED: nobody has pinned a byte-verified capture of yannesidibe's CSS.
+   ONE HONEST DIFFERENCE: john_r_muir's is a HOVER effect. The card build lights from cursor
+   PROXIMITY instead, which is why `.aw--trigger` exists - it goes back to the source, and it is
+   what makes the tiles legible to a keyboard.
+   THE ORBIT RUNS FROM JS, NOT KEYFRAMES, and the CSS version looks correct while doing nothing:
+   animating a custom property needs it REGISTERED with a type, and @property does not take in
+   this Chrome. Measured - the glow sat at the 0% stop and never moved. See achievement-wall.md. */
+
+@keyframes aw-prism { to { background-position: 300% 0; } }
+
+@layer components {
+
+  /* Every tunable is a custom property holding its own real value, so the component renders the
+     same with no tuner attached and the tuner just writes the inputs the CSS already reads. */
+  .aw { display: flex; gap: var(--aw-gap, 20px); align-items: flex-start; }
+
+  /* ROD'S TUNE, 2026-08-24, pasted from the bench. 8 of 11 dials moved.
+     WORTH NAMING: the panel is now 620 against the catalogue's ~360, so the DETAIL BOX sets this
+     section's height, not the wall. Every earlier measurement of this row assumed the opposite.
+     See achievement-wall.md for the full dial list. */
+  .aw {
+    --aw-glow-r: 170px;
+    --aw-orbit: 5s;
+    --aw-icon: 27px;
+    --aw-star: 1.7rem;
+    --aw-dw: 373px;
+    --aw-dh: 620px;
+    --aw-dpad: 24px;
+    --aw-gap: 12px;
+  }
+
+  /* The catalogue. Klubnika's geometry from the approved blockout: 64px tiles at a 72px pitch,
+     which is 64 plus the 4px margin each side. */
+  .aw__cat { flex: 1; min-width: 0; }
+
+  .aw__group + .aw__group { margin-top: 12px; }
+  .aw__grouplbl {
+    display: block;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 11.2px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--color-muted-warm, #9c8f7d);
+    margin: 0 0 4px 4px;
+  }
+  .aw__groupgrid { display: flex; flex-wrap: wrap; }
+
+  /* THE HIDDEN LABEL, AND IT HAS TO LIVE IN THIS FILE. It used to be `.visually-hidden`, which
+     is defined in the bench page's chrome and in no stylesheet the real page loads - so on port,
+     all 29 labels rendered as body text, spilling out of 64px squares and over the panel. Every
+     computed-style check came back clean, because no box was wrong: the text was simply visible.
+     A COMPONENT MAY NOT DEPEND ON A CLASS IT DOES NOT DEFINE.
+     clip-path and the legacy clip, never display:none or visibility:hidden - those would take the
+     name away from a screen reader too. See achievement-wall.md. */
+  .aw__sr {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* A tile is a REAL <button>, not a span with a role. Enter and Space come free, aria-pressed is
+     real, and the global focus ring reaches it without a line of CSS. The older achievement-tile
+     uses a span, which is why its own :focus-visible rule there can never fire. */
+  .aw__tile {
+    position: relative;
+    /* `flex: none` or these squash instead of wrapping. Measured: a 64px tile rendering at 39px
+       and every tile in the row a different size, below about 1100px. */
+    flex: none;
+    width: var(--aw-tile, 64px); height: var(--aw-tile, 64px); margin: var(--aw-tilegap, 4px);
+    display: grid; place-items: center;
+    padding: 0;
+    font: inherit;
+    font-size: var(--aw-icon, 25.6px);   /* the live site's own 1.6rem */
+    line-height: 1;
+  /* Warm grey, and it stays warm. This briefly went blue when Rod said "achievements still have
+     bronze glow under them" - I read that as the fill and it was not, it was an EDGE glow, and he
+     said so the same day: "the color was fine before now its too blue."
+     The detail panel keeps a DIFFERENT value from the tiles, which is the one thing worth keeping
+     from that wrong turn: when they shared a fill the panel vanished into its container. */
+    background: var(--color-panel-solid, #1c1a18);
+    border: 1px solid var(--color-line-faint, #2c2c2c);
+    border-radius: 0;               /* square by default, Rod's 2026-08-11 shape pass */
+    cursor: pointer;
+    -webkit-appearance: none; appearance: none;
+    transition: border-color .18s ease, transform .18s cubic-bezier(.22,1,.36,1);
+  }
+
+  /* THE RIM, lifted from project-cards-expensive unchanged: a 1.5px ring made by masking the
+     padding box out of the border box, blurred, composited plus-lighter, and lit by a gradient
+     whose centre the JS writes as --mx/--my. The soft layer becomes a variable here, which is the
+     one deviation - the source hard-codes it, and at 64px the reach has to be tunable. */
+  .aw__tile::before,
+  .aw__tile::after {
+    content: ''; position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    pointer-events: none;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    filter: blur(2.5px);
+    mix-blend-mode: plus-lighter;
+  }
+  /* THE NAME IS `--aw-glow-r`, NOT `--glow-r`, and getting that wrong was a live defect: the
+     tune block Rod approved writes --aw-glow-r, nothing read it, and the gradient fell through to
+     its 90px fallback so his value never rendered once. --glow-r is the project card's own name.
+     The reach is deliberately much weaker than the cards'. Their 220px is 3.4x a tile, so the
+     falloff across 64px was flat and every tile in range lit the same. Rod 2026-08-24. */
+  .aw__tile::before {
+    background: radial-gradient(var(--aw-glow-r, 90px) var(--aw-glow-r, 90px)
+                at var(--mx, -9999px) var(--my, -9999px),
+                var(--aw-tier-glow, var(--color-glow, #ff6a00)), transparent 100%);
+  }
+  .aw__tile::after {
+    background: radial-gradient(var(--aw-glow-r-soft, 58px) var(--aw-glow-r-soft, 58px)
+                at var(--mx, -9999px) var(--my, -9999px),
+                var(--aw-tier-glow-soft, var(--color-glow-soft, #ffd9a8)), transparent 100%);
+  }
+
+  /* HOVER READS, CLICK ACTIVATES - two different gestures, so you can read every achievement
+     without changing what the scene is doing. Rod 2026-08-24. The panel keeps the LAST hovered
+     one rather than blanking on mouseout; his word was "last hovered". */
+
+  /* ACTIVE runs the SAME machinery as hover, on a timer instead of a mouse: the rim's light
+     position is already two custom properties, so an active tile just drives them from an
+     animation. No second effect, no extra element, no JS. Rod 2026-08-24. */
+  .aw__tile[aria-pressed="true"] {
+    background: color-mix(in srgb, var(--color-gold, #fbbf24) 14%, var(--color-panel-solid, #1c1a18));
+  }
+  /* It has to survive the trigger reading too, where the rim is dark at rest. */
+  .aw--trigger .aw__tile[aria-pressed="true"]::before,
+  .aw--trigger .aw__tile[aria-pressed="true"]::after { opacity: 1; }
+
+  /* The uniform reading, kept switchable so the two can be compared instead of described. */
+  .aw--uniform .aw__tile[aria-pressed="true"] {
+    --mx: 50%; --my: 50%;
+    --aw-glow-r: 78px; --aw-glow-r-soft: 62px;
+  }
+
+  /* THE STAR IS THE PROJECT CARD'S PINNED BADGE, REUSED, not redrawn - 1.7rem square, 5px
+     radius, gold on night, same shadow, carried verbatim from merged-card. Only the corner moves
+     and the glyph gets bigger, which is what Rod asked for 2026-08-24.
+     Gold, not the pink that badge used to paint from a token defined nowhere. */
+  .aw__on {
+    position: absolute; top: 3px; right: 3px;
+    min-width: var(--aw-star, 1.7rem); height: var(--aw-star, 1.7rem);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 5px;
+    background: var(--color-gold, #fbbf24);
+    color: var(--color-night, #070c23);
+    font-size: calc(var(--aw-star, 1.7rem) * .62); line-height: 1;
+    box-shadow: 0 4px 10px var(--color-shadow);
+    opacity: 0; transform: scale(.6);
+    transition: opacity .18s ease, transform .18s cubic-bezier(.22,1,.36,1);
+    pointer-events: none;
+  }
+  .aw__tile[aria-pressed="true"] .aw__on { opacity: 1; transform: scale(1); }
+
+  /* LOCKED TILES STAY REAL BUTTONS. `disabled` would take them out of the tab order and kill
+     their hover, which removed 15 of 29 tiles from the keyboard entirely. `aria-disabled` tells a
+     screen reader the control is unavailable while leaving it focusable, so nothing activates
+     that should not and nothing becomes unreadable. Rod's call 2026-08-24, and it reversed mine.
+     Locked marks grey with a FILTER, not `color`, because emoji ignore colour. */
+  /* RARITY EDGES: HOVER OR PINNED, NEVER AT REST. A permanently shimmering edge was doing the
+     same job as the pinned state, so five tiles looked switched on when nothing was. Rarity is
+     information you go looking for; pinned is a state you set. Rod 2026-08-25.
+     A border cannot be a gradient, so this is the two-layer background trick: the fill is clipped
+     to the PADDING box, the gradient to the BORDER box, and the border itself is transparent.
+     Focus is grouped with hover deliberately - dropping it breaks the rarest tiles first. */
+
+  /* EACH TIER DECLARES ITS COLOUR EXACTLY ONCE, into --aw-tier-grad, and no state rule below
+     ever names a colour - they only decide the fill behind it and whether it is lit.
+     That is structural, not tidying: the old version wrote a gradient into every state rule, and
+     the pinned rule listed prismatic and silver together while painting prismatic, so pinning a
+     silver tile turned it prismatic. Four tiers times three states is twelve places to drift.
+     Rod 2026-08-25. See achievement-wall.md. */
+  .aw__tile[data-tier] {
+    border-width: 2px;
+    border-color: var(--color-line-faint, #2c2c2c);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-size: auto, 300% 100%;
+    background-image: none, none;
+  }
+
+  /* The four palettes, and the only place any of them appears. The cursor RIM takes the tier
+     colour here too - it was left on the orange glow for all 29 tiles, so a silver tile still got
+     a bronze edge. Measured at 170px: 13 of 29 tiles lit from one cursor position, all orange. */
+  .aw__tile[data-tier="bronze"]    { --aw-tier-grad: linear-gradient(90deg, var(--tier-bronze-dark), var(--tier-bronze), var(--tier-bronze-light), var(--tier-bronze), var(--tier-bronze-dark));
+                                     --aw-tier-glow: var(--tier-bronze); --aw-tier-glow-soft: var(--tier-bronze-light); }
+  .aw__tile[data-tier="silver"]    { --aw-tier-grad: linear-gradient(90deg, var(--tier-silver-dark), var(--tier-silver), var(--tier-silver-light), var(--tier-silver), var(--tier-silver-dark));
+                                     --aw-tier-glow: var(--tier-silver); --aw-tier-glow-soft: var(--tier-silver-light); }
+  .aw__tile[data-tier="gold"]      { --aw-tier-grad: linear-gradient(90deg, var(--tier-gold-dark), var(--color-gold), var(--tier-gold-light), var(--color-gold), var(--tier-gold-dark));
+                                     --aw-tier-glow: var(--color-gold); --aw-tier-glow-soft: var(--tier-gold-light); }
+  /* Prismatic is the only one that is not a single hue, because in TFT prismatic is the absence
+     of one. Its cool stops are a deliberate exception to the palette law, flagged not hidden. */
+  .aw__tile[data-tier="prismatic"] { --aw-tier-grad: linear-gradient(90deg, var(--color-gold), var(--color-glow), var(--tier-prismatic-pink), var(--tier-prismatic-sky), var(--tier-prismatic-green), var(--color-gold));
+                                     /* a rim is one colour, so this takes a near-white rather than
+                                        picking one hue and calling it prismatic */
+                                     --aw-tier-glow: var(--tier-prismatic-rim); --aw-tier-glow-soft: var(--color-white); }
+
+  /* Lit on hover, focus or pinned. Never at rest. */
+  .aw__tile[data-tier]:hover,
+  .aw__tile[data-tier]:focus-visible,
+  .aw__tile[data-tier][aria-pressed="true"] {
+    border-color: transparent;
+    background-image: linear-gradient(var(--color-panel-solid, #1c1a18) 0 0), var(--aw-tier-grad);
+    animation: aw-prism 3.4s linear infinite;
+  }
+
+  /* Pinned differs from hovered by its FILL, not its edge, so no second tier colour is invented
+     for it. */
+  .aw__tile[data-tier][aria-pressed="true"] {
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--color-gold, #fbbf24) 14%, var(--color-panel-solid, #1c1a18)) 0 0),
+      var(--aw-tier-grad);
+  }
+
+  /* Locked wins over rarity, whatever the tier, or an unearned achievement advertises that it is
+     one of the rare ones. */
+  .aw__tile[data-tier][aria-disabled="true"] {
+    border-width: 1px;
+    background-image: none;
+    background-color: var(--color-panel-solid, #1c1a18);
+    animation: none;
+    /* The GLOW goes neutral too. If locked hides rarity on the border and not on the rim, the
+       wall just announces rarity through the glow instead - and every bronze achievement is
+       locked, so that was 10 tiles glowing bronze wherever the pointer went. */
+    --aw-tier-glow: var(--color-muted-warm, #9c8f7d);
+    --aw-tier-glow-soft: var(--color-muted-warm, #9c8f7d);
+  }
+
+  /* Pure black, not the usual faint grey, and that is what makes it read as locked: a black edge
+     is DARKER than the surface, so the tile reads as a hole. Every other tile's hairline is
+     lighter than its fill, so the two states differ in direction, not just amount. Rod. */
+  .aw__tile[aria-disabled="true"] { cursor: default; border-color: var(--color-black); }
+  .aw__tile[aria-disabled="true"] > span[aria-hidden] { filter: grayscale(1) brightness(.6); opacity: .8; }
+
+  /* Progress tiers, bronze to prismatic like TFT (Rod 2026-08-24). Prismatic is a moving
+     multi-stop gradient rather than a static rainbow, so it reads as a material and not a fifth
+     hue - in TFT prismatic is the absence of a colour, not one more.
+     Its cool hues are a flagged exception to the palette law. Say the word and it goes warm-only. */
+  .aw__bar i { transition: width .3s ease; }
+  .aw__bar--bronze i { background: var(--tier-bronze); }
+  .aw__bar--silver i { background: var(--tier-silver); }
+  .aw__bar--gold   i { background: var(--color-gold, #fbbf24); }
+  .aw__bar--prismatic i {
+    background: linear-gradient(90deg, var(--color-gold), var(--color-glow), var(--tier-prismatic-pink), var(--tier-prismatic-sky), var(--tier-prismatic-green), var(--color-gold));
+    background-size: 300% 100%;
+    animation: aw-prism 3.4s linear infinite;
+  }
+  .aw__tier {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+    margin-left: 8px;
+  }
+  .aw__tier--bronze { color: var(--tier-bronze); }
+  .aw__tier--silver { color: var(--tier-silver); }
+  .aw__tier--gold   { color: var(--color-gold, #fbbf24); }
+  .aw__tier--prismatic {
+    background: linear-gradient(90deg, var(--color-gold), var(--color-glow), var(--tier-prismatic-pink), var(--tier-prismatic-sky), var(--tier-prismatic-green), var(--color-gold));
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: aw-prism 3.4s linear infinite;
+  }
+
+  /* Redacted, not blank. A locked field shows the SHAPE of what is hidden, so it reads as
+     withheld rather than unwritten. Rod's ask. */
+  .aw__crit { display: block; margin: 6px 0 0; font-size: 13.12px; line-height: 1.6; color: var(--color-muted-warm, #9c8f7d); }
+
+  .aw__val--masked {
+    color: var(--color-muted-warm, #9c8f7d);
+    opacity: .55;
+    letter-spacing: .06em;
+    word-break: break-word;
+  }
+
+  /* The blockout's hover scale, off by default because Rod took the rim instead. Kept switchable
+     so the substitution is visible rather than assumed.
+     USE `scale`, NOT `transform`. This and the tilt used to write the same property, so whichever
+     ran last erased the other. `scale` is its own property and composes with the tilt for free. */
+  .aw--scale .aw__tile:not([disabled]):hover { scale: 1.3; z-index: 2; }
+
+  /* The john_r_muir reading: the rim is dark until the tile is actually hovered or focused,
+     instead of lighting from proximity. */
+  .aw--trigger .aw__tile::before,
+  .aw--trigger .aw__tile::after { opacity: 0; transition: opacity .5s ease; }
+  .aw--trigger .aw__tile:hover::before,
+  .aw--trigger .aw__tile:hover::after,
+  .aw--trigger .aw__tile:focus-visible::before,
+  .aw--trigger .aw__tile:focus-visible::after { opacity: 1; }
+
+  /* THE DETAIL PANEL. 333 wide is Klubnika's exactly. The HEIGHT IS A DEVIATION from the
+     blockout's 250, recorded rather than slipped in: five labelled fields need about 328px once
+     Flavor and Effect carry real sentences, so 250 overflows by ~78 the moment Rod fills in the
+     two he called "empty for now". It costs no page height - the catalogue beside it is already
+     360 tall. Rod 2026-08-24: "yes extend the panel". */
+  .aw__detail {
+    width: var(--aw-dw, 333px); flex: none;
+    min-height: var(--aw-dh, 360px);
+    box-sizing: border-box;
+    padding: var(--aw-dpad, 16px) calc(var(--aw-dpad, 16px) + 2px);
+    /* One step DARKER than both the section it sits in and the tiles beside it, so it separates
+       from both without restating either. It used to be the exact fill of the section it sits
+       inside, which made it an invisible box - and it read fine on the bench only because the
+       bench stage is a different colour. */
+    background: color-mix(in srgb, var(--color-panel-solid) 78%, var(--color-black));
+    border: 1px solid var(--color-line-panel);
+  }
+  /* The blockout's original 250, kept switchable so the overflow is demonstrable. */
+  .aw--short .aw__detail { min-height: 250px; }
+
+  .aw__dttl {
+    font-family: var(--font-display, inherit);
+    font-size: 1.5rem; font-weight: 300; line-height: 1.25;
+    color: var(--h3-color, #fbbf24);
+    margin: 0 0 14px;
+  }
+
+  .aw__field + .aw__field { margin-top: 10px; }
+  .aw__lbl {
+    display: block;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 11.2px; letter-spacing: .09em; text-transform: uppercase;
+    /* Not .tagline's colour: it computes to #9aa3bd, the blue D31 bans. Warm muted instead. */
+    color: var(--color-muted-warm, #9c8f7d);
+    margin-bottom: 2px;
+  }
+  /* THESE ARE DIVS, NOT PARAGRAPHS, on purpose. About's page rule restyles every <p> to 16px
+     body copy, so every value and label in this panel came out as body text - the 11.2px category
+     label measured 16. A component that only works on pages which happen not to style `p` is not
+     finished. */
+  .aw__val { display: block; margin: 0; font-size: 16.32px; line-height: 1.7; color: var(--color-text, #f5f3ef); }
+  .aw__val--empty { color: var(--color-muted-warm, #9c8f7d); font-style: italic; opacity: .75; }
+
+  .aw__bar { height: 4px; background: var(--color-line-faint, #2c2c2c); margin-top: 6px; }
+  .aw__bar i { display: block; height: 100%; background: var(--color-gold, #fbbf24); }
+
+  .aw__state { display: inline-flex; align-items: center; gap: 7px; }
+  .aw__dot { width: 8px; height: 8px; background: var(--color-line, #3a3a3a); }
+  .aw__state.is-on .aw__dot { background: var(--color-gold, #fbbf24); }
+
+  /* There is deliberately no activate button here. The tile is the control, and a second one
+     would be two ways to reach one state. The panel reports the state, which is its whole job.
+
+     Nothing hovered yet. Whatever sits here sets the panel's RESTING height, so it is a real
+     state, not a blank. */
+  .aw__empty { display: block; color: var(--color-muted-warm, #9c8f7d); font-size: 16.32px; line-height: 1.7; margin: 0; }
+
+  @media (max-width: 820px) {
+    .aw { flex-direction: column; }
+    .aw__detail { width: 100%; }
+  }
+}

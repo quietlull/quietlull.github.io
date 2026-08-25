@@ -51,7 +51,6 @@ $blog-orb-delay:  0s,    1s,    0.5s,  1.5s,  0.8s,  2s;
 
 @for $i from 1 through 6 {
   .post-vertical-bar:nth-child(6n+#{$i}) .vertical-bar-container {
-    animation: breathe-slow nth($blog-durations, $i) ease-in-out infinite;
     animation-delay: nth($blog-delays, $i);
     --orb-x: #{nth($blog-orb-x, $i)};
     --orb-y: #{nth($blog-orb-y, $i)};
@@ -59,8 +58,8 @@ $blog-orb-delay:  0s,    1s,    0.5s,  1.5s,  0.8s,  2s;
     --orb-delay: #{nth($blog-orb-delay, $i)};
 
     @if $i % 2 == 0 {
-      --breathe-hue: 249, 115, 22;
-      --breathe-border-hue: 234, 88, 12;
+      --glow-hue: 249, 115, 22;
+      --glow-border-hue: 234, 88, 12;
       --glow-color: var(--orange-a22);
       --glow-color-hover: var(--orange-a50);
       --glow-border: var(--orange-red-a25);

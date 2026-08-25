@@ -1,5 +1,5 @@
 ---
-title: "Snatchems — A Dive into the Internet"
+title: "Snatchems, A Dive into the Internet"
 description: "Snatchems: exploring the depths of the internet."
 author: Rod
 date: 2026-03-13 12:00:00 +0800

@@ -6,9 +6,8 @@
   padding: 2rem 0;
 }
 
+// Colour and weight come from the h2 rung in base/_decisions.scss now.
 .section-title {
-  color: var(--heading-color);
-  font-weight: 600;
   margin-bottom: 1.5rem;
 }
 
@@ -65,7 +64,6 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
 
 @for $i from 1 through 6 {
   .posts-grid > :nth-child(6n+#{$i}) .card {
-    animation: breathe-slow nth($proj-durations, $i) ease-in-out infinite;
     animation-delay: nth($proj-delays, $i);
     --orb-x: #{nth($proj-orb-x, $i)};
     --orb-y: #{nth($proj-orb-y, $i)};
@@ -73,8 +71,8 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
     --orb-delay: #{nth($proj-orb-delay, $i)};
 
     @if $i % 2 == 0 {
-      --breathe-hue: 249, 115, 22;
-      --breathe-border-hue: 234, 88, 12;
+      --glow-hue: 249, 115, 22;
+      --glow-border-hue: 234, 88, 12;
       --glow-color: var(--orange-a22);
       --glow-color-hover: var(--orange-a50);
       --glow-border: var(--orange-red-a25);
@@ -197,9 +195,8 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
   box-shadow: 0 2px 8px var(--shadow-a30);
 }
 
+// Colour and weight come from the h4 rung in base/_decisions.scss now.
 .card-title {
-  color: var(--heading-color);
-  font-weight: 600;
   line-height: 1.3;
   margin-bottom: 0.5rem;
   @include mx.transition(color, text-shadow);
@@ -222,7 +219,8 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
   padding-top: 0.5rem;
   border-top: 1px solid var(--main-border-color);
   margin-top: auto;
-  color: var(--text-muted-color);
+  // No colour here. This file is unlayered so it beat merged-card's gold, and the Role / Engine
+  // line came out muted stone instead. Everything else about these cards already matched.
 }
 
 // Takeaway overlay — covers entire card body on hover
@@ -315,7 +313,7 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
 
 
 // ============================================================================
-// WIP cards — disable breathing shimmer (placeholder images make it obnoxious)
+// WIP cards — no shimmer, placeholder images make it obnoxious
 // ============================================================================
 .post-card .card:has(.badge-wip) {
   animation: none !important;

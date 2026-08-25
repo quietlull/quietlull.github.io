@@ -1,0 +1,67 @@
+// Ported 2026-08-25 from redesign-lab/foundations.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer reset {
+/* The ground every page is painted on. Palette locked 2026-06-04: night behind everything, amber
+   for warm fills, gold for the bright accent, and a hotter SATURATED orange for the glow halos -
+   like hana's saturated red, never pale cream. No pink.
+
+   THE SHORT NAMES BELOW ARE A DELIBERATE SECOND SET, NOT A LEFTOVER. --night, --panel, --gold,
+   --text and --muted hold the same values as --color-night, --color-panel-solid, --color-gold,
+   --color-text and --color-muted in abstracts/_tokens.scss. Both sets are live and both are read.
+   DO NOT DELETE EITHER ONE - dropping the short names takes the page ground with them. */
+:root{
+  --night:#070C23; --night2:#0a1030; --panel:#1c1a18;  /* the warm grey, Rod 2026-08-23 */
+  --gold:#FBBF24; --gold-deep:#F59E0B; --glow:#FF6A00; --glow-soft:#FFD9A8; --pink:#FF3DA1;
+  --text:#F5F3EF; --muted:#9aa3bd;
+  --type-scale:1; --head-scale:1; --space-scale:1; --measure:64rem;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(70% 50% at 50% 108%, var(--color-ground-warm), var(--color-ground-warm-0) 60%),
+    radial-gradient(100% 70% at 72% -10%,var(--color-ground-sky) 0%,var(--color-ground-sky-0) 55%),
+    linear-gradient(180deg,var(--night),var(--night2) 60%,var(--night));
+  color:var(--text);min-height:100vh;overflow-x:hidden;
+  font-size:calc(1.02rem * var(--type-scale));line-height:1.65;
+}
+/* The saturated-orange glow across the page. It used to breathe on a 16s cycle; breathing is
+   dead (D43), so it holds still at the .8 the reduced-motion branch had already settled on.
+   THE ONE PLACE THIS FILE DIVERGES FROM THE LAB ORIGINAL. */
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;opacity:.8;
+  background:
+    radial-gradient(34% 26% at 22% 26%, var(--color-glow-drift-left), transparent 62%),
+    radial-gradient(30% 24% at 80% 56%, var(--color-glow-drift-right), transparent 64%),
+    radial-gradient(42% 32% at 52% 98%, var(--color-glow-drift-bottom), transparent 60%)}
+/* The card-in reveal. An IntersectionObserver in sliders.js adds .in. */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+.wrap{max-width:var(--measure);margin:0 auto;padding:0 2.5rem}
+/* EVERYTHING BELOW THIS LINE IS BENCH FURNITURE, not the design, and it goes when the lab chrome
+   comes out (docs/MERGE-WORKLIST.md). Its colours stay literals on purpose: tokenising them would
+   mint names whose only consumers are already scheduled for deletion.
+   Everything ABOVE this line is the real ground and is fully tokenised. */
+.ph{position:relative;background-color:#0d1430;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 10px,rgba(255,255,255,0) 10px 20px);border:1px solid rgba(255,255,255,.10)}
+.ph::after{content:attr(data-label);position:absolute;inset:0;display:grid;place-items:center;color:rgba(245,243,239,.32);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase}
+/* The lantern demo: stacked drop-shadows making a saturated-orange halo. */
+.lantern{width:108px;text-align:center}
+.lantern .cap{width:32px;height:8px;background:var(--gold-deep);border-radius:3px;margin:0 auto 3px}
+.lantern .body{width:92px;height:118px;margin:0 auto;border-radius:50% 50% 46% 46%/42% 42% 58% 58%;
+  background:radial-gradient(58% 52% at 50% 42%,var(--glow-soft),var(--gold) 46%,var(--gold-deep));
+  filter:drop-shadow(0 0 10px rgba(255,106,0,.3)) drop-shadow(0 0 24px rgba(255,106,0,.22)) drop-shadow(0 0 44px rgba(255,106,0,.14));
+  animation:lantern 6s ease-in-out infinite}
+.lantern .tassel{width:2px;height:24px;background:linear-gradient(var(--gold-deep),transparent);margin:2px auto 0}
+@keyframes lantern{0%,100%{filter:drop-shadow(0 0 10px rgba(255,106,0,.3)) drop-shadow(0 0 24px rgba(255,106,0,.22)) drop-shadow(0 0 44px rgba(255,106,0,.14))}
+  50%{filter:drop-shadow(0 0 14px rgba(255,106,0,.7)) drop-shadow(0 0 30px rgba(255,106,0,.5)) drop-shadow(0 0 58px rgba(255,106,0,.34))}}
+/* The lab's own slider panel. */
+.lab{position:fixed;right:14px;bottom:14px;z-index:200;background:rgba(8,12,30,.93);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:12px 14px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--text);backdrop-filter:blur(6px);width:212px}
+.lab h4{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.lab label{margin:9px 0 2px;color:var(--muted);display:flex;justify-content:space-between}
+.lab input[type=range]{width:100%;accent-color:var(--gold)}
+.lab .reset{margin-top:11px;width:100%;background:none;border:1px solid rgba(255,255,255,.18);color:var(--text);font-family:inherit;font-size:10px;padding:5px;border-radius:5px;cursor:pointer;letter-spacing:.12em}
+.labtag{position:fixed;left:14px;bottom:14px;z-index:200;font-family:"IBM Plex Mono",monospace;font-size:10px;color:rgba(245,243,239,.4)}
+.labtag a{color:var(--gold);text-decoration:none}
+}

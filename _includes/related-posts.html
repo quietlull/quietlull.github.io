@@ -71,6 +71,27 @@
 {% endfor %}
 
 {% if relate_posts.size > 0 %}
+  {% if include.variant == 'rc' %}
+    {% comment %} The redesign's related grid. Same scoring above, different card. {% endcomment %}
+    <div class="post-related">
+      <div class="raillabel">Related</div>
+      <div class="rc-grid">
+        {% for post in relate_posts %}
+          <a class="rc rc--v2" href="{{ post.url | relative_url }}">
+            <div class="rc__cover">
+              {% assign rc_img = post.image.path | default: post.image %}
+              {%- comment -%} post-media branches on the extension. A bare img here rendered .mp4 covers as broken images. {%- endcomment -%}
+              {% if rc_img %}{% include post-media.html src=rc_img alt="" %}{% endif %}
+            </div>
+            <div class="rc__body">
+              <div class="rc__title">{{ post.title }}</div>
+              <div class="rc__meta">{{ post.section | default: 'writing' }} &middot; {% include read-time.html content=post.content lang=include.lang %}</div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
   <aside id="related-posts" aria-labelledby="related-label">
     <h3 class="mb-4" id="related-label">
       {{- site.data.locales[include.lang].post.relate_posts -}}
@@ -96,4 +117,5 @@
     </nav>
   </aside>
   <!-- #related-posts -->
+  {% endif %}
 {% endif %}

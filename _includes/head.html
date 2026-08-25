@@ -69,15 +69,49 @@
   {% endunless %}
 
   <!-- Bootstrap -->
+  {% comment %}
+    Imported into the `vendor` cascade layer rather than linked, because a <link> cannot name a
+    layer and unlayered CSS beats every layer. Left unlayered, Bootstrap outranked the whole
+    ported redesign on anything they both set - the body colour and the entire type ladder.
+    `vendor` is the first layer the page sees, which makes it the lowest-priority one.
+    Production gets the same wrapper from purgecss.js instead, around the purged copy.
+    An @import blocks on its own request where a <link> would not; that cost is dev-only.
+  {% endcomment %}
   {% unless jekyll.environment == 'production' %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
+    <style>
+      @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css') layer(vendor);
+    </style>
   {% endunless %}
 
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ '/assets/css/:THEME.css' | replace: ':THEME', site.theme | relative_url }}">
 
-  <!-- Web Font -->
-  <link rel="stylesheet" href="{{ site.data.origin[type].webfonts | relative_url }}">
+  {% comment %}
+    The scene backdrop - #hana-bg, #scrim and the bloom's baked canvases. A plain stylesheet
+    rather than a `_sass/` partial only because a second agent owns that tree tonight; it is
+    layered, so folding it in later changes nothing. Loaded AFTER the theme so a bare `body`
+    background in the theme cannot outrank it on specificity alone.
+  {% endcomment %}
+  <link rel="stylesheet" href="{{ '/assets/css/chrome-scene.css' | relative_url }}">
+
+
+  {% comment %}
+    THE WEB FONTS. Lifted verbatim from the `final-*` pages, which all load this one line.
+    This is the only font request now. The old Outfit / Plus Jakarta Sans / JetBrains Mono link
+    used to sit above it, and both shipped on every page; every reader of the old stack has been
+    repointed at --font-body / --font-display / --font-mono, so it went.
+
+    The six LINE BOIL faces are NOT here - they are local TTFs, declared with @font-face by
+    `line-boil.css` and served from /assets/fonts/. See docs/MERGE-NIGHT.md.
+
+    `font-display: swap` is Google's default here and is right for these three: a fallback flash
+    costs a reflow. The line boil deliberately uses `block` instead, because a flash there would
+    show the WRONG letterforms, not just the wrong metrics.
+  {% endcomment %}
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap"
+  >
 
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{{ site.data.origin[type].fontawesome.css | relative_url }}">

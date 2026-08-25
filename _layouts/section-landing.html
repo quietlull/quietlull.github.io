@@ -1,214 +1,121 @@
 ---
 layout: default
 refactor: true
+script_includes:
+  - landing-scripts
 ---
 
 {% include lang.html %}
 
-<!-- Three.js ambient background — lanterns + fireworks, no water/dock -->
-<script defer src="{{ '/assets/js/dist/three-background-minimal.min.js' | relative_url }}"></script>
+{% comment %}
+  A section landing, ported from `redesign-lab/final-landing.html` on 2026-08-25. A full-screen hero
+  with the name set vertically down the right, then Featured Projects, Skills, the reel, and a
+  screen of clear page for the scene.
+
+  The old landing - centred title, tagline, tools strip, scroll indicator, YouTube embed - is gone,
+  and `_sass/pages/_section-landing.scss` was rewritten from the lab page's own rules.
+
+  THE HERO SUBTRACTS THE BAR, which About deliberately does not: the bar is sticky on both, but this
+  hero is meant to end exactly at the fold.
+
+  Dropped with the lab page: `#state`, `.labtag`, every `data-slot` / `data-state`, `.slot-lite`,
+  and its own footer copy, which `_layouts/default.html` already renders.
+{% endcomment %}
 
 {% assign section = page.section %}
 {% assign all_projects = site.posts | where: 'section', section | where: 'tags', 'project' %}
 {% assign pinned = all_projects | where: 'pin', true | sort: 'priority' | reverse %}
 {% assign normal = all_projects | where_exp: 'item', 'item.pin != true' | sort: 'priority' | reverse %}
-{% assign projects = pinned | concat: normal %}
+{% assign featured = pinned | concat: normal %}
+
+{% comment %}
+  The grid rhythm, read off the lab page cell by cell: a tall lead card, a full-width break at
+  position four, pairs after that. It is a layout, not data, so it is a list rather than a rule.
+{% endcomment %}
+{% assign spans = '6,6,6,12,6,6,6,6' | split: ',' %}
 
 <div id="section-landing" class="section-{{ section }}">
 
-  <header class="landing-hero text-center mb-3">
-    <h1 class="landing-title">{{ page.heading | default: page.title }}</h1>
-    {% if page.tagline %}
-      <p class="landing-tagline">
-{{ page.tagline }}
-      </p>
-    {% endif %}
+  <section class="h">
+    {% comment %} The visible mark is the vertical columns, so these two carry the heading for anyone reading the page rather than looking at it. {% endcomment %}
+    <h1 class="h__name">{{ site.social.name | default: site.title }}</h1>
+    <p class="h__role">{{ page.heading | default: page.title }}</p>
 
-    {% if page.tools_strip %}
-    <div class="tools-strip mt-4">
-      {% for tool in page.tools_strip %}
-        {% assign t = tool | downcase %}
-        {% if t == 'unity' %}
-          <span class="tool-icon" data-tool-desc="Realtime VFX & Shader Development"><img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="Unity"></span>
-        {% elsif t == 'unreal' %}
-          <span class="tool-icon" data-tool-desc="Procedural Animation, Blueprints, & Post Process Effects"><img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="Unreal Engine"></span>
-        {% elsif t == 'maya' %}
-          <span class="tool-icon" data-tool-desc="Modeling & Custom Rigging Tools"><i class="fas fa-vector-square" style="color: #37a5cc;"></i></span>
-        {% elsif t == 'blender' %}
-          <span class="tool-icon" data-tool-desc="Modeling, Scripting, & Custom Tools"><i class="fas fa-cube" style="color: #f5792a;"></i></span>
-        {% elsif t == 'python' %}
-          <span class="tool-icon" data-tool-desc="Pipeline Tools & Automation"><i class="fab fa-python" style="color: #3776ab;"></i></span>
-        {% elsif t == 'hlsl' %}
-          <span class="tool-icon" data-tool-desc="Post Processing, VFX, & Compute"><i class="fas fa-code" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
-        {% elsif t == 'glsl' %}
-          <span class="tool-icon" data-tool-desc="Three.js & Godot Visual Work"><i class="fas fa-terminal" style="background: linear-gradient(135deg, #4d96ff, #6bcb77, #ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
-        {% elsif t == 'compute' %}
-          <span class="tool-icon" data-tool-desc="GPU Particle Systems & Simulation"><i class="fas fa-microchip" style="color: #a78bfa;"></i></span>
-        {% elsif t == 'shader graphs' %}
-          <span class="tool-icon" data-tool-desc="Visual Shader Authoring"><i class="fas fa-diagram-project" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
-        {% elsif t == 'rigging' %}
-          <span class="tool-icon" data-tool-desc="Character Rigs, Blend Shapes, & Animation Transfer"><i class="fas fa-bone" style="color: #9b59b6;"></i></span>
-        {% elsif t == 'substance' %}
-          <span class="tool-icon" data-tool-desc="Texturing, Mask Making, & Packing Data"><i class="fas fa-fill-drip" style="color: #1a8c3c;"></i></span>
-        {% elsif t == 'houdini' %}
-          <span class="tool-icon" data-tool-desc="Alembic Baking, Procedural FX, & Simulations"><i class="fas fa-fire" style="color: #ff6b35;"></i></span>
-        {% endif %}
-      {% endfor %}
+    <div class="h__vert">
+      <div class="h__vert__cols" aria-hidden="true">
+        {% assign columns = page.hero_columns | default: page.title | split: ',' %}
+        {% for column in columns %}<span class="h__col lb">{{ column | strip }}</span>{% endfor %}
+      </div>
+
+      <nav class="h__social" aria-label="Elsewhere">
+        <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="https://github.com/quietlull" aria-label="GitHub">
+          <span class="dm-social__fill" aria-hidden="true"></span>
+          <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-github"/></svg></span>
+        </a>
+        <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="https://www.artstation.com/rodneyfan" aria-label="ArtStation">
+          <span class="dm-social__fill" aria-hidden="true"></span>
+          <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-artstation"/></svg></span>
+        </a>
+        <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="https://rodneyfan.itch.io/" aria-label="itch.io">
+          <span class="dm-social__fill" aria-hidden="true"></span>
+          <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-itch"/></svg></span>
+        </a>
+        <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="https://www.linkedin.com/in/rodneyfan/" aria-label="LinkedIn">
+          <span class="dm-social__fill" aria-hidden="true"></span>
+          <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-linkedin"/></svg></span>
+        </a>
+      </nav>
     </div>
-    {% endif %}
-  </header>
 
-  <div class="scroll-indicator" aria-hidden="true">
-    <i class="fas fa-chevron-down"></i>
-  </div>
-
-  <!-- Demo Reel (opt-in via page.show_reel) — compact square, centered -->
-  {% if page.show_reel %}
-  <section class="demo-reel mb-4">
-    <div class="demo-reel-embed">
-      {% if page.demo_reel %}
-        <div class="ratio ratio-16x9">
-          <iframe src="https://www.youtube.com/embed/{{ page.demo_reel }}"
-                  title="Demo Reel"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                  loading="lazy"></iframe>
-        </div>
-      {% else %}
-        <div class="demo-reel-placeholder ratio ratio-16x9">
-          <div class="d-flex flex-column align-items-center justify-content-center">
-            <i class="fas fa-play-circle fa-3x mb-2"></i>
-            <p class="mb-0">Demo reel coming soon</p>
-          </div>
-        </div>
-      {% endif %}
-    </div>
+    <p class="h__clock lb" aria-hidden="true">--:--:--</p>
   </section>
+
+  {% if featured.size > 0 %}
+    <div class="col sec sec--head">
+      <h2 class="section-head"><span class="section-head__name">Featured Projects</span></h2>
+      <div class="viewall-row">
+        <a class="kit-button kit-button--pill js-magnetic" data-strength="55" data-strength-text="27"
+           data-drift="4" href="{{ '/' | append: section | append: '/projects/' | relative_url }}">
+          <span class="kit-button__fill" aria-hidden="true"></span>
+          <span class="kit-button__label js-magnetic-inner">View projects</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="col sec">
+      <div class="merged-cards merged-cards--square epx-cards">
+        {% for post in featured limit: 8 %}
+          {% assign parity = forloop.index0 | modulo: 2 %}
+          {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
+          {% assign span = spans[forloop.index0] %}
+          {% if forloop.first %}
+            {% include project-card.html post=post section=section hue=hue variant='landing' span=span rowspan=2 %}
+          {% else %}
+            {% include project-card.html post=post section=section hue=hue variant='landing' span=span %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
   {% endif %}
 
-  <section class="landing-projects">
-    <div class="section-header d-flex justify-content-between align-items-center mb-4">
-      <div class="d-flex align-items-center gap-3">
-        <div class="section-icon-box">
-          <span class="icon-dot"></span>
-        </div>
-        <h2 class="section-title">Featured Projects</h2>
+  <div class="col sec">
+    <h2 class="section-head"><span class="section-head__name">Skills</span></h2>
+    {% include skills-row.html skills=page.skills %}
+  </div>
+
+  {% comment %} The reel plays one post hero at a time; `landing-scripts.html` builds the list from front matter. {% endcomment %}
+  {% if page.show_reel %}
+    <div class="col sec">
+      <h2 class="section-head"><span class="section-head__name">Reel</span></h2>
+      <div class="reel">
+        <video class="reel__bar" id="reel-bar" muted playsinline autoplay preload="auto"></video>
       </div>
-      <a href="{{ '/' | append: section | append: '/projects/' | relative_url }}" class="btn btn-outline-primary btn-sm">
-        View All <i class="fas fa-arrow-right ms-1"></i>
-      </a>
     </div>
+  {% endif %}
 
-    <div class="posts-grid row g-4">
-      {% for post in projects limit: 6 %}
-        <div class="col-12 col-md-6 col-lg-4">
-          <article class="post-card h-100{% if post.pin %} pinned{% endif %}">
-            {% assign wip_tags = post.tags | where_exp: 't', 't != "project"' | join: ',' %}
-            {% assign word_count = post.content | number_of_words %}
-            {% if post.wip and word_count < 20 %}
-              {% assign uc_url = '/' | append: section | append: '/under-construction/?title=' | append: post.title | append: '&tags=' | append: wip_tags %}
-              <a href="{{ uc_url | relative_url }}" class="card-link">
-            {% else %}
-              <a href="{{ post.url | relative_url }}" class="card-link">
-            {% endif %}
-              <div class="card h-100 shadow-sm">
-                {% if post.image %}
-                  <div class="card-img-wrapper">
-                    {% assign post_image = post.image.path | default: post.image %}
-                    {% assign _card_alt = post.image.alt | default: post.title %}
-                    {% include post-media.html src=post_image alt=_card_alt class="card-img-top" %}
-                    {% if post.pin %}
-                      <span class="badge-pinned">
-                        <i class="fas fa-thumbtack"></i> Pinned
-                      </span>
-                    {% endif %}
-                    {% if post.wip %}
-                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
-                    {% endif %}
-                  </div>
-                {% else %}
-                  <div class="card-img-wrapper placeholder-img">
-                    <div class="placeholder-content">
-                      <i class="fas fa-image fa-3x text-muted"></i>
-                    </div>
-                    {% if post.pin %}
-                      <span class="badge-pinned">
-                        <i class="fas fa-thumbtack"></i> Pinned
-                      </span>
-                    {% endif %}
-                    {% if post.wip %}
-                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
-                    {% endif %}
-                  </div>
-                {% endif %}
-
-                <div class="card-body d-flex flex-column">
-                  <h3 class="card-title h5">{{ post.title }}</h3>
-                  {% if post.description %}
-                    <p class="card-text text-muted small">
-                      {{ post.description | truncate: 100 }}
-                    </p>
-                  {% endif %}
-                  {% if post.role or post.engine %}
-                    <p class="card-role small mb-2">
-                      {% if post.role %}{{ post.role }}{% endif %}
-                      {% if post.role and post.engine %} · {% endif %}
-                      {% if post.engine %}{{ post.engine }}{% endif %}
-                    </p>
-                  {% endif %}
-                  <div class="card-meta mt-auto">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <small class="text-muted">
-                        <i class="far fa-calendar-alt me-1"></i>
-                        {{ post.date | date: "%b %d, %Y" }}
-                        {% assign words = post.content | number_of_words %}
-                        {% assign minutes = words | divided_by: 200 | plus: 1 %}
-                        <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>{{ minutes }} min</span>
-                      </small>
-                      {% include tag-badges.html tags=post.tags %}
-                    </div>
-                  </div>
-                </div>
-                {% if post.takeaway %}
-                  <div class="card-takeaway-overlay">
-                    <p class="takeaway-text">
-                      <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
-                    </p>
-                  </div>
-                {% endif %}
-              </div>
-            </a>
-          </article>
-        </div>
-      {% endfor %}
-    </div>
-
-    {% if projects.size == 0 %}
-      <div class="no-posts text-center py-5">
-        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-        <p class="text-muted">Projects coming soon!</p>
-      </div>
-    {% endif %}
-  </section>
+  {% comment %} A screen of clear page so the dock and the water get one to themselves. {% endcomment %}
+  <div class="scene-space" aria-hidden="true"></div>
 
 </div>
 
-<script>
-/* Fade out scroll indicator after first scroll */
-(function() {
-  var el = document.querySelector('.scroll-indicator');
-  if (!el) return;
-  /* Wait for entrance animation (1.2s delay + 0.6s anim) before listening */
-  setTimeout(function() {
-    /* If already scrolled past threshold, hide immediately */
-    if (window.scrollY > 80) { el.classList.add('hidden'); return; }
-    var done = false;
-    window.addEventListener('scroll', function() {
-      if (!done && window.scrollY > 80) {
-        done = true;
-        el.classList.add('hidden');
-      }
-    }, { passive: true });
-  }, 2000);
-})();
-</script>
+{% include social-sprite.html %}

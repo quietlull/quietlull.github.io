@@ -1,61 +1,165 @@
 ---
 layout: default
-refactor: true
+script_includes:
+  - portal-scripts
 ---
 
 {% include lang.html %}
 
-<!-- P1: Three.js ambient background — lanterns + fireworks + mouse avoidance -->
-<script defer src="{{ '/assets/js/dist/three-background-minimal.min.js' | relative_url }}"></script>
+{% comment %}
+  The portal, ported from `redesign-lab/final-portal.html`. It is a viewport-locked field of
+  draggable windows: sizes and positions come from spacejam.com/1996 (D15), the frame ratios from
+  zutomayo's served CSS, and the drag, throw, bounce and lean are ours. Full provenance lives in
+  `_sass/components/_portal-window.scss` and `assets/js/effects/portal-windows.js`.
 
-<div id="portal-page">
-  <div class="portal-header text-center mb-5">
-    <!-- P7: Time-of-day greeting -->
-    <p class="portal-greeting" id="portal-greeting"></p>
-    <script>
-      /* P7: Set greeting based on time of day */
-      (function() {
-        var h = new Date().getHours();
-        var g = '';
-        if (h >= 5 && h < 12) g = 'Good morning — welcome to my page.';
-        else if (h >= 12 && h < 17) g = 'Good afternoon — welcome to my page.';
-        else if (h >= 17 && h < 21) g = 'Good evening — welcome to my page.';
-        else g = 'Welcome to my page.';
-        document.getElementById('portal-greeting').textContent = g;
-      })();
-    </script>
-    <h1 class="portal-title">Rodney Fan</h1>
-    <p class="portal-subtitle">Technical Artist &amp; Game Designer</p>
-  </div>
+  It carries no top bar and no footer (Rod, 2026-08-23) and it does not scroll - `default.html`
+  handles both. `data-x/y/w/h` are Space Jam's measurements in its own 500x520 stage, not pixels on
+  this page; the JS rescales them. Do not correct them against what you measure here.
+{% endcomment %}
 
-  <div class="portal-doors">
-    <a href="{{ '/tech-art/' | relative_url }}" class="portal-door portal-door-tech-art">
-      <div class="door-content">
-        <div class="door-icon">
-          <i class="fas fa-palette"></i>
+<div class="pground">
+  <div class="field">
+
+    <div class="pwin pwin--door pwin--lead" data-x="97" data-y="3" data-w="231" data-h="150">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">Tech Art</span>
+          <button class="pwin__close" type="button" aria-label="Close Tech Art"><span class="pwin__x"></span></button>
         </div>
-        <h2 class="door-title">Technical Art</h2>
-        <p class="door-description">Shaders, tools, rendering pipelines, and visual problem solving.</p>
-        <span class="door-cta">View Portfolio <i class="fas fa-arrow-right ms-1"></i></span>
-      </div>
-    </a>
-
-    <a href="{{ '/game-design/' | relative_url }}" class="portal-door portal-door-game-design">
-      <div class="door-content">
-        <div class="door-icon">
-          <i class="fas fa-gamepad"></i>
+        <div class="pwin__body">
+          <a href="{{ '/tech-art/' | relative_url }}">
+            <span class="pwin__fill" aria-hidden="true"></span>
+            <span class="pwin__enter kit-button kit-button--outline" aria-hidden="true">
+              <span class="kit-button__fill" aria-hidden="true"></span>
+              <span class="kit-button__label">Enter</span>
+            </span>
+            <span class="pwin__sr">Tech Art</span>
+          </a>
         </div>
-        <h2 class="door-title">Game Design</h2>
-        <p class="door-description">Mechanics, systems, game feel, and interactive experiences.</p>
-        <span class="door-cta">View Portfolio <i class="fas fa-arrow-right ms-1"></i></span>
       </div>
-    </a>
-  </div>
+    </div>
 
-  <div class="portal-extras text-center mt-5">
-    <a href="{{ '/ramblings/' | relative_url }}" class="portal-side-link">
-      <span class="coffee-steam-wrap me-2"><i class="fas fa-coffee"></i><svg class="steam-svg" viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><g class="steam-lines"><path class="steam-line s1" d="M13,40 Q16,35 13,30 T13,20 T13,10 T13,0 T13,-10" /><path class="steam-line s2" d="M20,40 Q23,35 20,30 T20,20 T20,10 T20,0 T20,-10" /><path class="steam-line s3" d="M27,40 Q30,35 27,30 T27,20 T27,10 T27,0 T27,-10" /></g></svg></span>Ramblings &amp; Personal Work
-      <i class="fas fa-arrow-right ms-2"></i>
-    </a>
+    <div class="pwin pwin--door" data-x="254" data-y="247" data-w="146" data-h="149">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">Ramblings</span>
+          <button class="pwin__close" type="button" aria-label="Close Ramblings"><span class="pwin__x"></span></button>
+        </div>
+        <div class="pwin__body">
+          <a href="{{ '/ramblings/' | relative_url }}">
+            <span class="pwin__fill" aria-hidden="true"></span>
+            <span class="pwin__enter kit-button kit-button--outline" aria-hidden="true">
+              <span class="kit-button__fill" aria-hidden="true"></span>
+              <span class="kit-button__label">Enter</span>
+            </span>
+            <span class="pwin__sr">Ramblings</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pwin pwin--door pwin--lead" data-x="17.3" data-y="242" data-w="170" data-h="230">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">Game Design</span>
+          <button class="pwin__close" type="button" aria-label="Close Game Design"><span class="pwin__x"></span></button>
+        </div>
+        <div class="pwin__body">
+          <a href="{{ '/game-design/' | relative_url }}">
+            <span class="pwin__fill" aria-hidden="true"></span>
+            <span class="pwin__enter kit-button kit-button--outline" aria-hidden="true">
+              <span class="kit-button__fill" aria-hidden="true"></span>
+              <span class="kit-button__label">Enter</span>
+            </span>
+            <span class="pwin__sr">Game Design</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Inline SVG, not Font Awesome - the portal loads no icon font, and `.pwin__icon` styles a real svg. {% endcomment %}
+
+    <div class="pwin pwin--social" data-x="224" data-y="388" data-w="62" data-h="62">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">GitHub</span>
+          <button class="pwin__close" type="button" aria-label="Close GitHub"><span class="pwin__x"></span></button>
+        </div>
+        <div class="pwin__body">
+          <a href="https://github.com/quietlull" target="_blank" rel="noopener noreferrer">
+            <svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span class="pwin__sr">GitHub</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pwin pwin--social" data-x="136" data-y="343" data-w="68" data-h="68">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">Twitter</span>
+          <button class="pwin__close" type="button" aria-label="Close Twitter"><span class="pwin__x"></span></button>
+        </div>
+        <div class="pwin__body">
+          <a href="https://twitter.com/AQuietLull" target="_blank" rel="noopener noreferrer">
+            <svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+            <span class="pwin__sr">Twitter</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pwin pwin--social" data-x="293" data-y="74" data-w="58" data-h="58">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">LinkedIn</span>
+          <button class="pwin__close" type="button" aria-label="Close LinkedIn"><span class="pwin__x"></span></button>
+        </div>
+        <div class="pwin__body">
+          <a href="https://www.linkedin.com/in/rodneyfan/" target="_blank" rel="noopener noreferrer">
+            <svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            <span class="pwin__sr">LinkedIn</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pwin pwin--social" data-x="97.5" data-y="201" data-w="72" data-h="72">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">ArtStation</span>
+          <button class="pwin__close" type="button" aria-label="Close ArtStation"><span class="pwin__x"></span></button>
+        </div>
+        <div class="pwin__body">
+          <a href="https://www.artstation.com/rodneyfan" target="_blank" rel="noopener noreferrer">
+            <svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M0 17.723l2.027 3.505h.001a2.424 2.424 0 0 0 2.164 1.333h13.457l-2.792-4.838H0zm24 .025c0-.484-.143-.935-.388-1.314L15.728 2.728a2.424 2.424 0 0 0-2.142-1.289H9.419L21.598 22.54l1.92-3.325c.378-.637.482-.919.482-1.467zm-11.129-3.462L7.428 4.858l-5.444 9.428h10.887z"/></svg>
+            <span class="pwin__sr">ArtStation</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pwin pwin--social" data-x="417" data-y="353" data-w="54" data-h="54">
+      <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
+        <div class="pwin__bar">
+          <span class="pwin__title">itch.io</span>
+          <button class="pwin__close" type="button" aria-label="Close itch.io"><span class="pwin__x"></span></button>
+        </div>
+        <div class="pwin__body">
+          <a href="https://rodneyfan.itch.io/" target="_blank" rel="noopener noreferrer">
+            <svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M3.13 1.338C2.08 1.96.02 4.328 0 4.95v1.03c0 1.303 1.22 2.45 2.325 2.45 1.33 0 2.436-1.102 2.436-2.41 0 1.308 1.07 2.41 2.4 2.41 1.328 0 2.362-1.102 2.362-2.41 0 1.308 1.137 2.41 2.466 2.41h.024c1.33 0 2.466-1.102 2.466-2.41 0 1.308 1.034 2.41 2.363 2.41 1.33 0 2.4-1.102 2.4-2.41 0 1.308 1.106 2.41 2.435 2.41C22.78 8.43 24 7.282 24 5.98V4.95c-.02-.62-2.082-2.99-3.13-3.612-3.253-.114-5.508-.134-8.87-.133-3.362 0-7.945.053-8.87.133zm6.376 6.477a2.74 2.74 0 0 1-.468.602c-.5.49-1.19.795-1.947.795a2.786 2.786 0 0 1-1.95-.795c-.182-.178-.32-.37-.446-.59-.127.222-.303.412-.486.59a2.788 2.788 0 0 1-1.95.795c-.092 0-.187-.025-.264-.052-.107 1.113-.152 2.176-.168 2.95v.005l-.006 1.167c.02 2.334-.23 7.564 1.03 8.85 1.952.454 5.545.662 9.15.663 3.605 0 7.198-.21 9.15-.664 1.26-1.284 1.01-6.514 1.03-8.848l-.006-1.167v-.004c-.016-.775-.06-1.838-.168-2.95-.077.026-.172.052-.263.052a2.788 2.788 0 0 1-1.95-.795c-.184-.178-.36-.368-.486-.59-.127.22-.265.412-.447.59a2.786 2.786 0 0 1-1.95.794c-.76 0-1.446-.303-1.948-.793a2.74 2.74 0 0 1-.468-.602 2.738 2.738 0 0 1-.463.602 2.787 2.787 0 0 1-1.95.794h-.16a2.787 2.787 0 0 1-1.95-.793 2.738 2.738 0 0 1-.464-.602zm-2.004 2.59v.002c.795.002 1.5 0 2.373.953.687-.072 1.406-.108 2.125-.107.72 0 1.438.035 2.125.107.873-.953 1.578-.95 2.372-.953.376 0 1.876 0 2.92 2.934l1.123 4.028c.832 2.995-.266 3.068-1.636 3.07-2.03-.075-3.156-1.55-3.156-3.025-1.124.184-2.436.276-3.748.277-1.312 0-2.624-.093-3.748-.277 0 1.475-1.125 2.95-3.156 3.026-1.37-.004-2.468-.077-1.636-3.072l1.122-4.027c1.045-2.934 2.545-2.934 2.92-2.934zM12 12.714c-.002.002-2.14 1.964-2.523 2.662l1.4-.056v1.22c0 .056.56.033 1.123.007.562.026 1.124.05 1.124-.008v-1.22l1.4.055C14.138 14.677 12 12.713 12 12.713z"/></svg>
+            <span class="pwin__sr">itch.io</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} The mark doubles as the reset control - clicking it restores every closed window. {% endcomment %}
+    {% comment %} The welcome line is a SIBLING: inside `.centre` the button's aria-label would swallow it. {% endcomment %}
+    <div class="centre" role="button" tabindex="0" aria-label="Restore all closed windows">
+      <span class="centre__mark lb">rodney fan</span>
+    </div>
+    <h3 class="centre__welcome">welcome to my page</h3>
+
   </div>
 </div>

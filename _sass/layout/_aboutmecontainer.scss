@@ -7,8 +7,6 @@
   @include mx.card-hover;
   padding: 25px;
   border-radius: v.$radius-lg;
-  // Default breathe — overridden per nth-of-type below
-  animation: breathe-slow 6.5s ease-in-out infinite;
 
   > *:first-child { margin-top: 0; }
   > *:last-child { margin-bottom: 0; }
@@ -123,7 +121,6 @@
 // Vary rhythm, color, and orb position per text container for organic feel
 // First panel is a direct child; others are nested inside .about-text / .additional-content
 #landing-box > .text-container {
-  animation: breathe-slow 6.5s ease-in-out infinite;
   animation-delay: 0s;
   --glow-color: var(--gold-22);
   --glow-color-hover: var(--gold-50);
@@ -134,8 +131,7 @@
   --orb-delay: 0s;
 }
 .about-text .text-container {
-  --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
-  animation: breathe-slow 5.5s ease-in-out infinite;
+  --glow-hue: 249, 115, 22; --glow-border-hue: 234, 88, 12;
   animation-delay: 0.8s;
   --glow-color: var(--orange-a22);
   --glow-color-hover: var(--orange-a50);
@@ -146,7 +142,6 @@
   --orb-delay: 1.2s;
 }
 .additional-content .text-container {
-  animation: breathe-slow 7s ease-in-out infinite;
   animation-delay: 1.5s;
   --glow-color: var(--gold-22);
   --glow-color-hover: var(--gold-50);
@@ -167,7 +162,6 @@
   width: 100%;
 
   .text-container {
-    animation: breathe-slow 7.5s ease-in-out infinite;
     animation-delay: 2s;
     --glow-color: var(--gold-22);
     --glow-color-hover: var(--gold-50);
@@ -240,8 +234,8 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: rgba(var(--breathe-border-hue), 0.25);
-    box-shadow: 0 4px 16px rgba(var(--breathe-hue), 0.12);
+    border-color: rgba(var(--glow-border-hue), 0.25);
+    box-shadow: 0 4px 16px rgba(var(--glow-hue), 0.12);
   }
 
   .badge-icon {
@@ -269,8 +263,8 @@
 
   // ── Unlocked ──
   &.unlocked {
-    border-color: rgba(var(--breathe-border-hue), 0.18);
-    background: rgba(var(--breathe-hue), 0.05);
+    border-color: rgba(var(--glow-border-hue), 0.18);
+    background: rgba(var(--glow-hue), 0.05);
 
     .badge-icon { filter: none; }
   }

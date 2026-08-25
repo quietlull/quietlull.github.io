@@ -1,0 +1,46 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/stamp-callout/stamp-callout.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* stamp-callout - the TAKEAWAY block, kept deliberately unlike the TL;DR.
+   Rod's own stamp CSS, recoloured amber-on-night in rework-harumaki. Remixed.
+   --stamp-paper is one property, not two literals, because the paper and the perforated dots
+   have to be the exact same colour. See stamp-callout.md. */
+.stamp-callout {
+  /* Mixed off --h1-color so the stamp follows when Rod retunes the signature orange.
+     Opaque on purpose: it sits over a live scene and any alpha muddied the paper.
+     Rod 2026-08-24, replacing #1e160e which read as a hole. See stamp-callout.md. */
+  --stamp-paper: color-mix(in srgb, var(--h1-color, #f86a03) 26%, var(--color-black));
+
+  position: relative;
+  background: var(--stamp-paper);
+  padding: 1.4rem 1.6rem;
+  margin: 1.9rem 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  color: color-mix(in srgb, var(--color-text) 92%, transparent);
+  max-width: 60ch;
+}
+
+.stamp-callout::before {
+  content: '';
+  position: absolute;
+  /* The perforation only shows where it overhangs, so a bottom inset of 0 flattens that edge
+     and leaves the torn fringe on the other three. Rod 2026-08-24. See stamp-callout.md. */
+  inset: -7px -7px 0;
+  z-index: -1;
+  background: radial-gradient(transparent 0 3.5px, var(--stamp-paper) 4px);
+  background-size: 15px 15px;
+  background-position: -7px -7px;
+}
+
+.stamp-callout__title {
+  font-family: var(--font-display); /* T0-B: serif display */
+  color: var(--color-gold-deep);
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+}

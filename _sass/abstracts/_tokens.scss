@@ -1,0 +1,274 @@
+// =============================================================================================
+// TOKENS - the redesign's canonical set (D42, Rod 2026-08-25)
+//
+//   "please just remove the live tokens for now and use our new ones assume everything style
+//    related in the old site is now dead. also make sure you keep all colors to have tokens so we
+//    can return later if need be."
+//
+// Lifted verbatim from `redesign-lab/extracted/styles/settings.css`, comments included, because
+// those comments are the design record - which value came from where, and which of Rod's calls
+// changed it. Losing them would make the palette unauditable.
+//
+// WHAT THIS REPLACES. The old site defined 303 custom properties across `themes/_dark.scss` and
+// `themes/_light.scss`, of which **117 were never referenced by anything**.
+//
+// CORRECTION, 2026-08-25, and the first version of this comment had it wrong. It said the heaviest
+// consumer of those tokens was `vendors/_bootstrap.scss` at 167. **Bootstrap references 167 custom
+// properties and every one of them is a `--bs-*` that Bootstrap defines in that same file. The
+// intersection with the theme's 270 is ZERO** - measured, not assumed. The original claim came from
+// counting `var(--...)` occurrences per file without checking whether the names matched.
+//
+// The true picture is better than the wrong one: of the 270 theme tokens, **155 are read only by our
+// own `_sass/` partials, 25 only by other tokens in the same file, and 108 by nothing at all.**
+// `_includes/`, `_layouts/`, `_javascript/` and `assets/` reference them **zero** times - verified,
+// no `var(--)` and no `setProperty`. So the vendored Chirpy does not read them either.
+//
+// That answers the question this port was most afraid of. Removing the old tokens cannot break
+// Chirpy, because Chirpy never read them. The blast radius is exactly the old design's own partials,
+// which D42 already declares dead.
+//
+// ONLY TWO NAMES EVER OVERLAPPED between the two sets - `--z-content` and `--z-overlay`, both
+// z-index plumbing, neither a colour. There was no shared vocabulary to preserve.
+//
+// EVERY COLOUR IS A TOKEN AND MUST STAY ONE. Rod's reason is reversibility: "so we can return later
+// if need be". A hard-coded colour anywhere in ported code is a defect, not a shortcut - it is a
+// value that cannot be found, changed, or reverted.
+//
+// THE FAILURE MODE TO WATCH, because it happened four times on 2026-08-25 alone: a token name that
+// does not resolve renders its FALLBACK and is wrong WITHOUT ERRORING. `--color-pink` was defined
+// in no stylesheet and rendered a fallback pink for weeks. So every token that moves gets MEASURED
+// on the rendered page, never grepped.
+// =============================================================================================
+
+:root {
+  /* === core palette (foundations.css values) === */
+  --color-night: #070c23;
+  --color-night-2: #0a1030;
+  --color-text: #f5f3ef;
+  --color-muted: #9aa3bd;
+  /* warm lantern ramp (value tiers: highlight -> gold -> deep -> ember glow) */
+  --color-glow-soft: #ffd9a8; /* warm highlight (foundations #FFD9A8) */
+  --color-gold: #fbbf24; /* primary accent */
+  --color-gold-deep: #f59e0b; /* headers, deep accent */
+  --color-glow: #ff6a00; /* ember glow / ignite */
+
+  /* ONE cool accent = the "top note" that replaces pink (T0-A, Rod 2026-06-12: warm + 1 cool).
+     The cool sky the warm lanterns hang in (Shinsekai/Shinkai twilight origin). Spend it RARELY
+     on the single most-important mark per view (active state / one focal point) — decided
+     per-surface in Tiers 1-4, not blanket-applied.
+     SOURCED 2026-06-12 from harumaki Gen'eiten flyers (sources/harumaki-palette.md): the teal-cyan
+     disc/link accent. Alt = cobalt #1830a8 (the glowing-figures blue). Brighten toward #78c0c0 on
+     the Palette page for more pop. */
+  --color-accent-cool: #3090a8;
+
+  /* === surfaces & lines === */
+  /* WARM GREY - Rod picked it 2026-08-23 from card-greys-tests.html ("Warm grey is the
+     winner"). Was rgba(12,16,38,.55), a real blue: 38 blue against 12 red. ORIGIN: ROD - this
+     swatch is ours, not sourced, and was labelled so on the page when he chose it.
+     Alpha held at .55 so only the hue moved and no box changed size. */
+  --color-panel: rgba(28, 26, 24, 0.55);
+  --color-panel-solid: #1c1a18; /* the same warm grey, opaque. Was #161d39. */
+  --color-glass: rgba(7, 12, 35, 0.4); /* top-bar backdrop glass */
+  --color-line: rgba(251, 191, 36, 0.26); /* gold hairline (norikura) */
+  --color-line-soft: rgba(255, 255, 255, 0.1); /* neutral UI hairline */
+  --color-line-faint: rgba(255, 255, 255, 0.06); /* whisper hairline (bands, bar edge) */
+  --color-surface: rgba(255, 255, 255, 0.05); /* subtle chip/input fill */
+  --color-surface-faint: rgba(255, 255, 255, 0.03);
+
+  /* === component-anchored colors === */
+  --color-ink: #1a1a1a; /* text on gold fills (buttons, badges) */
+  --color-cover-hi: #1b2452; /* card cover gradient top (also reel band kin) */
+  --color-cover-lo: #0b1024; /* card cover gradient bottom / reel band ground */
+  --color-warm-muted: rgba(245, 232, 208, 0.72); /* cream body text on card covers */
+  --color-stamp-paper: #1e160e; /* stamp callout paper (dots must match exactly) */
+  --color-code-bg: #0a0e22;
+  --color-code-text: #cdd3e8;
+  --color-code-green: #9bdc8a; /* code symbol accent */
+  --color-icon-stroke: var(--color-gold-deep); /* draw-in icons resting stroke — orange (Rod 2026-08-11; was pale #cdd8f0 from the stephan source) */
+
+  /* type (hybrid fork: hand logo / display headers / body / mono workhorse) */
+  --font-hand: "Caveat", cursive;
+  /* TYPE DECISION LOCKED 2026-08-18 (ROD): "rounded gothic is fine and we should use it for the
+     project cards and headers as well." So DISPLAY is no longer a serif - the site has one text
+     face plus the hand face plus mono, and nothing reaches for a mincho any more.
+     This settles the open problem that had run since the font audit: four of the five harumaki
+     sites render in mincho/serif, which contradicted the locked "hand-drawn name + clean mono,
+     no serif" call. Rod picked the /ndt/ side, so the original call survives intact.
+     Changing the TOKEN rather than each page is deliberate - card titles, section heads, the post
+     header, the dated timeline, the quote block and the stamp callout all reach for --font-display,
+     so they move together and cannot drift apart later. */
+  --font-display: "M PLUS Rounded 1c", sans-serif;
+  --font-body: "M PLUS Rounded 1c", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  /* ===========================================================================================
+     PROMOTED DURING THE PORT (2026-08-25) - Rod: "make sure you keep all colors to have tokens so
+     we can return later if need be."
+
+     Everything below was a HARD-CODED COLOUR in the lab CSS this port brought over. None of it is
+     new paint: every value is byte-identical to what the bench already rendered. What changed is
+     that it now has a name, so it can be found and changed in one place, which is the whole of
+     Rod's stated reason.
+
+     Grouped by what the colour does, not by which file happened to hold it.
+     =========================================================================================== */
+
+  /* --- the rarity ladder on the achievement wall ---------------------------------------------
+     `achievement-wall.css` carried four tier palettes as raw hex, five stops each, restated in
+     four places (the tile gradient, the tile's cursor rim, the counter bar, the tier label). The
+     component's own comment insists "a tier declares its gradient ONCE ... the state rules never
+     name a colour at all" - which was true INSIDE the file and false across it, because the bar
+     and the label each spelled the metals out again. Named here, they are declared once for real.
+     The bronze/silver/gold ramps run dark -> base -> light; the base of the gold ramp is the
+     site's own --color-gold, so gold gets no base token of its own. */
+  --tier-bronze-dark: #8a5222;
+  --tier-bronze: #b87333;
+  --tier-bronze-light: #d99a5c;
+  --tier-silver-dark: #8f9096;
+  --tier-silver: #c9cbd1;
+  --tier-silver-light: #f2f3f5;
+  --tier-gold-dark: #a9740f;
+  --tier-gold-light: #ffe6a3;
+
+  /* Prismatic is the only tier that is not one hue - in TFT prismatic is the ABSENCE of one. Its
+     ramp is gold -> ember -> pink -> sky -> green -> gold, and the first two ARE --color-gold and
+     --color-glow, spelled out as #fbbf24 and #ff6a00 in the lab; they now reference the tokens.
+     These three cool stops are the deliberate, flagged exception to the palette law that otherwise
+     keeps cool colour in the sky. */
+  --tier-prismatic-pink: #e879a6;
+  --tier-prismatic-sky: #7dd3fc;
+  --tier-prismatic-green: #86efac;
+
+  /* A rim is ONE colour, so the prismatic tile cannot be prismatic at its edge. It takes the
+     brightest pair on the ladder instead of pretending one of its hues is the whole thing. */
+  --tier-prismatic-rim: #eaf4ff;
+
+  /* --- hairlines ------------------------------------------------------------------------------
+     TWO amber hairlines, ONE ALPHA STEP APART, and that is almost certainly an accident rather
+     than a decision: .14 edges the cards (merged-card, project cards, related card, portal window)
+     and .15 edges the section panels and text boxes (achievement wall, and the three final pages).
+     FLAGGED, NOT UNIFIED. Collapsing them would change what renders, and nobody asked for that.
+     Now that both have names, deciding they are the same colour is a one-line change. */
+  --color-line-card: rgba(245, 158, 11, 0.14);
+  --color-line-panel: rgba(245, 158, 11, 0.15);
+
+  /* About's own edge, and it is a THIRD step rather than a fourth hairline: Rod tuned the two About
+     panels up to a visible amber rule on 2026-08-24, where post and ramblings keep the .15 whisper.
+     About is the only consumer. Collapsing it onto --color-line-panel would undo that tune. */
+  --color-line-panel-strong: rgba(245, 158, 11, 0.5);
+
+  /* The panel fill that pairs with --color-line-panel. NOT YET REFERENCED by anything in _sass:
+     its three consumers (final-about, final-post, final-ramblings) are page-level CSS that this
+     port did not cover. Named now because it is the single most-copied literal in the lab. */
+  --color-panel-blue: rgba(8, 15, 27, 0.92);
+
+  /* The same blue, fully opaque. About's two panels sit over the full three.js scene, so they run
+     solid where post and ramblings let 8% of the page through. About is the only consumer. */
+  --color-panel-blue-solid: rgb(8, 15, 27);
+
+  /* --- black ----------------------------------------------------------------------------------
+     Only for colour that is genuinely black: the disabled tile's border, and the operand that
+     darkens a hue in color-mix. Deliberately NOT used for the `linear-gradient(#000 0 0)` inside
+     -webkit-mask, where the black is not paint - it is "fully opaque", and any opaque colour does
+     the same job. Naming it there would invite someone to change it and quietly break six masks. */
+  --color-black: #000000;
+
+  /* White, and only where white is the point: the favicon's backing plate (so the black
+     lantern-cluster icon reads on the dark bar) and the softer half of the prismatic rim. */
+  --color-white: #ffffff;
+
+  /* THESE TWO ARE THE ONLY NAMES IN THIS PROMOTED BLOCK THAT THE OLD SITE ALSO DEFINES -
+     themes/_dark.scss:506-507 and themes/_light.scss:361-362, as #000000 and #ffffff. Same colours,
+     so nothing renders differently whichever wins, and this `:root` outranks their `html` selector
+     anyway. Defined here regardless, deliberately: when the old 303 come out, the redesign set has
+     to stand on its own, and a token that disappears with them would take six components with it.
+     Checked the other 43 names in this block against every stylesheet - no other collisions. */
+
+  /* --- shadows ---------------------------------------------------------------------------------
+     Four black shadows at four opacities, spread across five files with no name between them.
+     Named by the job, not the number, because the number is the thing most likely to be tuned:
+       shadow       the ordinary drop shadow under a small object (tape, chips, tiles)
+       shadow-card  a card at rest
+       shadow-lift  the same card lifted on hover - deeper, which is the whole effect
+       shadow-text  behind text sitting on a photo, where 0.9 is doing legibility work
+     The warm one is separate and stays separate: washi-tape's own comment says the black is a
+     placeholder that "becomes rgba(88,70,48,.5) when colour lands (D18)", and callout-family has
+     already made that move. Same name, so finishing D18 is now a swap of one token reference. */
+  --color-shadow: rgba(0, 0, 0, 0.45);
+  --color-shadow-card: rgba(0, 0, 0, 0.55);
+  --color-shadow-lift: rgba(0, 0, 0, 0.6);
+  --color-shadow-text: rgba(0, 0, 0, 0.9);
+  --color-shadow-warm: rgba(88, 70, 48, 0.5);
+
+  /* --- the glass plane -------------------------------------------------------------------------
+     The lit pane over a card. merged-card and portal-window carried the SAME four values in two
+     syntaxes - rgba() in one, `rgb(255 232 176 / 4%)` in the other - which is how a shared surface
+     drifts apart without anyone editing it twice. One set of names, both files. */
+  --color-glass-sheen-lo: rgba(255, 232, 176, 0.04);
+  --color-glass-sheen-hi: rgba(255, 232, 176, 0.12);
+  --color-glass-edge: rgba(251, 191, 36, 0.5); /* the bright left edge */
+  --color-glass-edge-soft: rgba(251, 191, 36, 0.16); /* the dim bottom edge */
+  --color-window-bar: rgba(0, 0, 0, 0.3); /* the portal window's title bar */
+
+  /* --- card covers -----------------------------------------------------------------------------
+     The midpoint of the scrim that fades a cover image into the card body. --color-cover-hi and
+     --color-cover-lo above are its ends; this was the only stop left unnamed. Two of them because
+     merged-card fades to the blue and related-card to the warm grey, which is the same open
+     blue-vs-grey question card-greys-tests.html is still holding. */
+  --color-cover-mid: rgba(11, 16, 36, 0.62);
+  --color-cover-mid-warm: rgba(28, 26, 24, 0.62);
+
+  /* --- the dwell ring --------------------------------------------------------------------------
+     The countdown ring on a card: gold sweeps around a track, and a disc punches the middle out. */
+  --color-ring-track: rgba(255, 255, 255, 0.16);
+  --color-ring-hole: rgba(8, 12, 30, 0.9);
+
+  /* --- tags, marks and quiet text --------------------------------------------------------------
+     --color-line-tag is a THIRD amber hairline, at .2, on the prose tag chip. Left at its own value
+     for the same reason as the other two: flagged, not quietly merged.
+     --color-highlight is the del/ins mark. It is the source's own dark-mode value (#411 widened),
+     a warm near-black that survived the palette law almost unchanged; Rod confirmed the highlight
+     stays ("my problem isnt with highlights per se"). */
+  --color-line-tag: rgba(245, 158, 11, 0.2);
+  --color-tag-text: rgba(232, 224, 212, 0.78);
+  --color-highlight: #412c11;
+  --color-line-grey: #383838; /* the bio panel's 2px border, transcribed verbatim from its source */
+  --color-text-quiet: rgba(245, 243, 239, 0.45); /* --color-text at 45%: the footer's fine print */
+
+  /* --- the tape hues ---------------------------------------------------------------------------
+     D27: the striped washi tape is the site's ONE loud object, in four section colours. Two of the
+     four were already tokens (--color-glow for tldr, --color-accent-cool for quote) and two were
+     bare hex, restated in both washi-tape and decisions. Provenance is unchanged and still recorded
+     in `_washi-tape.scss`: pink is MEASURED off harumakigohan's own section-header PNGs, and green
+     is origin ROD - D27's condition was "sampled from a real asset OR Rod picking it", and he
+     picked it. */
+  --tape-pink: #f078f0;
+  --tape-green: #6fbf73;
+
+  /* --- the page ground -------------------------------------------------------------------------
+     What every page is painted on, from `foundations`: a warm wash rising off the floor, a blue
+     wash falling from the top right, and three saturated-orange blobs. They used to drift.
+     Each gradient needs its transparent end named too, because a gradient to plain `transparent`
+     fades through grey in some engines - it has to fade to the SAME hue at zero alpha. That is why
+     the `-0` tokens exist and why they must keep matching their partner's rgb triplet. */
+  --color-ground-warm: rgba(245, 158, 11, 0.1);
+  --color-ground-warm-0: rgba(245, 158, 11, 0);
+  --color-ground-sky: #16224a;
+  --color-ground-sky-0: rgba(22, 34, 74, 0);
+  --color-glow-drift-left: rgba(255, 106, 0, 0.13);
+  --color-glow-drift-right: rgba(255, 140, 0, 0.1); /* the only one that is not #ff6a00 */
+  --color-glow-drift-bottom: rgba(255, 106, 0, 0.12);
+
+  /* z-index scale */
+  --z-content: 1;
+  --z-chrome: 60;
+  --z-overlay: 200;
+}

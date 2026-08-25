@@ -1,0 +1,164 @@
+// About, ported 2026-08-26 from the inline <style> of `redesign-lab/final-about.html`.
+// The lab scoped all of this under `body.spacious`, its variant switch. There is one About design
+// now, so the scope is the page root instead - and it has to stay scoped, because `.col`, `.band`,
+// `.hero` and `.sect` are names other pages and Bootstrap also use.
+// Rod's model, 2026-08-23: "about page is the landing page except the about me is the hero, the
+// achievements are the project cards." The numbers come from his own landing, not a reference site.
+
+#about-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+
+  // The content column. 60.063rem is the landing's own width.
+  .col {
+    width: 100%;
+    max-width: 60.063rem;
+    padding: 0 30px;
+    border: 0;
+    background: none;
+  }
+
+  // The landing's rhythm: 20px above and below every band.
+  .band {
+    width: 100%;
+    padding-block: 20px;
+  }
+
+  // Rod's tune. It does not subtract the top bar - the bar is sticky and takes real layout space.
+  .hero {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 50vh;
+    min-height: 590px;
+  }
+
+  // `flex: 1` lives HERE and not on the panel, which is what keeps the hero a full first screen
+  // while the panel still sizes to its content. Merging the two moves the block 32px (measured).
+  .hero__fill {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  // The panel hugs its content. Stretching it to the hero made it read as a huge box, not a full one.
+  .hero .sect {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    padding-inline: 21px;
+  }
+
+  // Solid blue with an amber rule, Rod 2026-08-24: the grey "doesnt match any other backing element".
+  .sect,
+  .textbox {
+    --char-w: 8.13px;
+    --measure-ch: 94;
+
+    width: 100%;
+    border: 1px solid var(--color-line-panel-strong);
+    background: var(--color-panel-blue-solid);
+  }
+
+  .sect { padding: 40px 30px; }
+
+  .textbox { padding: 30px; }
+
+  // dimden's horizontal spacing: a 225px portrait rail with the gutter coming from the panel padding.
+  .biorow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .pf--window { width: 199px; }
+
+  .biocol {
+    flex: 1;
+    min-width: 260px;
+  }
+
+  // Type is the post's, so the two pages read the same. The measure is px x count, never `ch`,
+  // because `ch` resolves against the element's own font-size and drifts (docs/TRAPS.md).
+  .sect p,
+  .textbox p {
+    max-width: calc(var(--measure-ch) * var(--char-w));
+    margin: 0;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: -0.18px;
+    line-height: 127%;
+  }
+
+  @media (min-width: 960px) {
+    .sect p,
+    .textbox p { font-size: 22px; }
+  }
+
+  .sect p + p,
+  .textbox p + p { margin-top: 20px; }
+
+  // Only font-family and margin are page-local. Size, weight and colour come from the ladder.
+  .bio-h {
+    margin: 0 0 0.1em;
+    font-family: var(--font-display);
+    line-height: 1.5;
+  }
+
+  // OVERRIDES `.lb` in `@layer components`, and each line fixes a measured defect. The boil faces
+  // carry a 143% ascent/descent that grew the heading 2px, `.lb` paints H0 orange inside a gold
+  // heading, and every boiled glyph is a break opportunity so "Rod" broke as "Ro / d".
+  .bio-h .lb {
+    color: inherit;
+    font-family: var(--font-display);
+    white-space: nowrap;
+  }
+
+  .sect a,
+  .textbox a {
+    border-bottom: 1px solid currentcolor;
+    color: var(--color-gold);
+    text-decoration: none;
+  }
+
+  .sect a:hover,
+  .textbox a:hover { color: var(--color-glow-soft); }
+
+  .band--tight {
+    padding-block: 80px 60px;
+
+    .textbox { padding-inline: 15px; }
+  }
+
+  // OVERRIDES the `section-head` component's 1.8rem. Rod's spacing, 2026-08-25.
+  .section-head { margin: 0 0 0.05rem; }
+
+  .tagline {
+    margin: -1.5rem 0 1.4rem;
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+
+  // `width: 100%` of a stacked full-width wrapper, never `100vw` - that includes the scrollbar
+  // and opens a horizontal overflow.
+  .scenewide {
+    width: 100%;
+    padding-block: 30px 60px;
+  }
+
+  // 85vh is the landing's own reservation, so the scene gets the same room on both pages.
+  .scenewide__hole { height: 85vh; }
+
+  @media (max-width: 820px) {
+    .sect { padding: 22px 20px; }
+  }
+}

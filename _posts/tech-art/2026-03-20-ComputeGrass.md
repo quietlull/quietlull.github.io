@@ -32,7 +32,7 @@ The pipeline works as follows:
 - A final per-blade buffer stores smoothed tip offsets, preventing jitter as blades return to resting. 
 
 
-### The Compute Pipeline
+## The Compute Pipeline
 
 As mentioned there are two compute shaders that this system uses one is the grass compute which does most of the calculations for the grass and one that does the RT decay. 
 
@@ -45,8 +45,8 @@ To start off this is how i cull and create grass as you can see in the RT the al
 ``` hlsl
 float4 rt = _GrassRT.SampleLevel(sampler_linear_clamp, uv, 0);
 
-bool inCreation = rt.a > 0.5; // A channel — does grass exist here at all?
-bool isCulled   = rt.b > 0.5; // B channel — is a structure suppressing it?
+bool inCreation = rt.a > 0.5; // A channel, does grass exist here at all?
+bool isCulled   = rt.b > 0.5; // B channel, is a structure suppressing it?
 
 if (!inCreation || isCulled)
 {
@@ -116,10 +116,10 @@ Lastly I add some noise, and offsets to the blade orientation to make it feel a 
     // Blade Orientation 
     float  angle  = Hash(bladePos.xz) * 6.28318;
     float2 rightA = float2( cos(angle), sin(angle));
-    float2 rightB = float2(-sin(angle), cos(angle)); // 90° — only used in X mode
+    float2 rightB = float2(-sin(angle), cos(angle)); // 90°, only used in X mode
     float  halfW  = _BladeWidth * 0.5;
 ```
-### Fixing the Twitching
+## Fixing the Twitching
 
 As for the other compute its short but sweet. It converts a 2D texel texture into a 1D array for storage and pretty much does what a ping pong would but just for the R channel, the GBA channel remain untouched.
 ``` hlsl
@@ -148,13 +148,13 @@ void UpdateDecay(uint3 id : SV_DispatchThreadID)
 This is the end result:
 <video src="{{ '/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Overview of the grass rendering"></video>
 
-### Render Texture Control
+## Render Texture Control
 
 A camera renders only the GrassRT layer into _camRT each frame this way is easy to influence and test in the scene and very simple to add to objects to the RenderTexture. In hindsight I probably could have rendered the objects directly into a render texture however since this second camera will only be drawing very minor geometry in a fixed space i figured this would work well. For an example that does something similar but adds camera culling for a moving character you can check out [Cyanilux](https://www.cyanilux.com/tutorials/gpu-instanced-grass-breakdown/) which made a system just like that but for my use case this was not needed and I figured this brought the highest detail for the grass interactions. 
 
 Originally used a ping-pong to decay the render texture but that didn't give me the control I wanted so I decided to go with this method which I don't think I've seen in anyone else's grass shader implementation
 
-### Three Variants: X, Quad, and Triangle
+## Three Variants: X, Quad, and Triangle
 
 After all of that I decided to try out some different types of grass, originally I liked the triangular grass but my partner on the project asked me for "softer" "fluffier" grass this led me to try out some different methods. I ended up doing some quick changes and tested it all out and my final preference was the Quads although most commonly people use the X cross version.  
 
@@ -167,7 +167,7 @@ Quad: 6 verts, correct rect UV
 X Cross: 12 verts, visible from all angles, full texture support, the standard
 <video src="{{ '/assets/media/GrassCompute/XCrossGrassCompare.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="X Cross grass variant"></video>
 
-### What I Learned
+## What I Learned
 
 Throughout this project even though it was about a week of time spent I would say it was pretty productive reading all these different ways to render grass really opened my eyes on how many different methods can provide similar results with different benefits and trade offs.
 

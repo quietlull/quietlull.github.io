@@ -38,11 +38,8 @@
 //   add an alternative for keyboard users. This adds a visible, on-brand ring
 //   whenever any element is focused via keyboard (not mouse).
 // ============================================================================
-:focus-visible {
-  outline: 2px solid var(--gold-80, #e0b050);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
+// Removed 2026-08-26. focus-ring.scss owns this, and being unlayered meant this one won and put a
+// gold ring on top of components that draw their own.
 
 // Don't double up when the element already has its own clear focus style
 // (e.g. nav links use their own gold ring). The CSS cascade handles this:
@@ -99,7 +96,6 @@ a.btn.btn-outline-primary.btn-sm {
 }
 
 #topbar .topbar-bottom {
-  .breathe-switch,
   .sparkler-switch,
   .fireworks-switch {
     position: relative;

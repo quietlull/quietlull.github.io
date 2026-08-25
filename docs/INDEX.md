@@ -7,6 +7,7 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
 - [CONVENTIONS.md](CONVENTIONS.md) - house rules: philosophy layer + concrete web rules.
 - [PAGE-PROCESS.md](PAGE-PROCESS.md) - how a surface goes from nothing to a locked layout. Read BEFORE building any blockout.
 - [ARCHITECTURE.md](ARCHITECTURE.md) - subsystem map, build pipelines, file pointers.
+- [ARCHITECTURE-HANDOFF.md](ARCHITECTURE-HANDOFF.md) - **start here for the optimization / restructure**: every file with who loads it, the layer model and its live collisions, the 84 tokens, ranked duplication, and what is deliberately unfinished.
 - [BREATHING.md](BREATHING.md) - the ambient glow system: tiers, hue variables, kill switch, sparkler hook.
 - [THEME-BOUNDARY.md](THEME-BOUNDARY.md) - stock vs modified vs custom; the known couplings.
 - [REQUESTS.md](REQUESTS.md) - Rod's request queue with statuses. Read the OPEN table; done rows are phantoms.

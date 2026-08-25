@@ -1,0 +1,43 @@
+// Ramblings, ported 2026-08-26 from the inline <style> of `redesign-lab/final-ramblings.html`.
+// Almost everything on this page is a component - page-title-desc, search-field, entry-row,
+// button-kit, empty-state - so what is left here is only the column and the gaps between them.
+// Scoped to the page root, because `.wf`, `.titlebar` and `.searchrow` are names nothing else on
+// the site owns yet and that is exactly how a collision starts.
+
+// The lab called this `.wrap` and then had to write `max-width: none` to beat `foundations`, which
+// gives every `.wrap` a 64rem cap. Not taking the class is the same fix with nothing to explain.
+#ramblings-page {
+  position: relative;
+  z-index: var(--z-content);
+  width: min(1180px, 92vw);
+
+  // 120px of the bottom padding is the lab's; the other 80 was a spacer div under the empty state.
+  margin: 0 auto;
+  padding: 56px 0 200px;
+
+  // 92vw, matching the wrapper. At 4vw wider it overhung the wrapper's left gutter by 7.5px at
+  // every width below ~1113px, and `overflow-x: clip` hid it by cutting the right hairline off.
+  .wf {
+    width: 1170px;
+    max-width: 92vw;
+    margin: 0 auto;
+  }
+
+  .titlebar {
+    padding: 37px 0;
+    text-align: center;
+  }
+
+  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the ladder's
+  // own `h1 { margin: 0 }` and pushed the title 48px down. Restated here rather than deleted -
+  // that rule still spaces the h1 on 60 pages whose markup has not been ported yet.
+  .ptd__title { margin: 0; }
+
+  .searchrow { margin-bottom: 20px; }
+
+  // The component draws the box; the height is this page's.
+  .sf--ronja { height: 50px; }
+
+  // Was a spacer div between the list and the empty state.
+  .er-list { margin-bottom: 24px; }
+}

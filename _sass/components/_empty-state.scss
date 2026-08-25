@@ -1,0 +1,130 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/empty-state/empty-state.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* empty-state - the "your search returned nothing" block. Three versions, 930x60 and 1351x60.
+   PatternFly's EmptyState, fetched and token-resolved to literals rather than trusted. Remixed,
+   all three: their box is a 2rem-padded centred stack and squeezing it into a 60px band is ours.
+   The title copy is the LIVE SITE'S own sentence (post-filter.js), origin Rod. The second line is
+   Claude's and still wants Rod's voice.
+   No icon on purpose - theirs is Font Awesome, which is not shipping, and drawing one would be
+   unsourced. See empty-state.md. */
+
+/* The container is PatternFly's `.pf-v6-c-empty-state` verbatim EXCEPT padding-block, which is
+   the biggest departure in the file: theirs is 1rem, and 1rem of it plus the two lines comes to
+   90px in a 60px box. So vertical padding goes to 0 and min-height plus align-items do the
+   centring. min-height, not height, so it can grow when the row versions wrap. */
+/* KEEP THIS LINE. `.es` below sets display:flex, which beats the browser's own [hidden] rule,
+   so without this the empty state renders on top of a full list. It did, on final-ramblings. */
+.es[hidden] { display: none; }
+
+.es {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-inline: 1rem;
+  padding-block: 0;
+  min-height: 60px;
+  font-family: var(--font-body, "M PLUS Rounded 1c", sans-serif);
+}
+
+/* PatternFly's 350px max-width, verbatim. The row versions override it to their own `none`. */
+.es__content {
+  max-width: 21.875rem;
+}
+
+/* Their `__title-text`, size and line-height verbatim. Weight is the one departure: theirs is
+   600 and nothing on this site is bold, because hierarchy here is size and tracking. */
+.es__title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: 300;
+  color: var(--color-text, #f5f3ef);
+}
+
+/* The echoed tag and query. Colour carries the emphasis, not weight - hence 300 again. */
+.es__title b {
+  color: var(--emphasis-color, #fbbf24);
+  font-weight: 300;
+}
+
+/* Their `__body`, stepped down one of their own sizes so the two-line stack fits 60px.
+   Silver, never --color-muted: that is the last blue in the set and the palette law bans it. */
+.es__body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  font-weight: 300;
+  letter-spacing: -0.18px;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* PatternFly's `__actions` slot, but their action is a Button and this site does not put a
+   button in a list index. So the look is decisions.scss `.prose a` copied verbatim, duplicated
+   on purpose: an empty state is not inside `.prose`, and `.prose` carries a 767px measure that
+   would fight the 930px box. Adding `.es__action` to that selector list deletes this block. */
+.es__action {
+  color: var(--color-text, #f5f3ef);
+  border-bottom: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
+  text-decoration: none;
+  transition: background-color 0.1s linear;
+}
+.es__action:hover,
+.es__action:focus-visible {
+  background-color: var(--color-gold, #fbbf24);
+  color: var(--color-panel-solid, #1c1a18);
+}
+
+/* No focus ring here on purpose - the global one in _focus-ring.scss covers it (D5). */
+
+@media (prefers-reduced-motion: reduce) {
+  .es__action { transition: none; }
+}
+
+/* V1 - CENTRED STACK. The closest thing to PatternFly that fits: two lines in a 350px column.
+   The action sits inside the second sentence rather than in their separate footer, which is ours
+   and is forced - their footer costs a third line and the box only has 60px.
+   Measures 43.0px of content inside 60. */
+
+/* Their smallest spacer, not their 1rem: 1rem leaves 2.5px of air in a 60px box. */
+.es--stack .es__body {
+  margin-block-start: 0.25rem;
+}
+
+/* V2 - CENTRED ROW. Title, next step and action on one line. The flex rule is PatternFly's own
+   `__actions` block verbatim, applied to the whole content instead of just the buttons.
+   `align-items: baseline` is TheRealMJP's list row, borrowed because it is the same situation:
+   text at two sizes that has to sit on one line. 20.8px, or 47 if it wraps. See empty-state.md. */
+.es--row .es__content {
+  max-width: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  align-items: baseline;
+}
+
+/* V3 - SPLIT ROW. Message hard left, action hard right, and the only version that uses the
+   width. Geometry is TheRealMJP's list row, taken from their LIST rather than their prev/next
+   because an empty state sits in a list. Their `opacity: .6` is NOT taken - opacity over a live
+   scene is a window, not a colour. text-align: left is ours; PatternFly centres. 44.8px. */
+.es--split {
+  text-align: left;
+  padding-block: 12px;
+}
+.es--split .es__content {
+  flex: 1;
+  max-width: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.es--split .es__action {
+  flex-shrink: 0;
+  margin-left: 1em;
+}
+}

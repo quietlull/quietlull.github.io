@@ -1,6 +1,6 @@
 ---
 title: "Portal Shaders in Godot"
-description: "Stencil-based portal rendering in Godot — see-through doorways, recursive reflections, and seamless world transitions using Godot's shader language."
+description: "Stencil-based portal rendering in Godot, see-through doorways, recursive reflections, and seamless world transitions using Godot's shader language."
 author: Rod
 date: 2026-03-16 12:00:00 +0800
 categories: [project]

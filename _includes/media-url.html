@@ -14,8 +14,17 @@
 
 {%- if url -%}
   {% unless url contains ':' %}
-    {%- comment -%} Add media resources subpath prefix {%- endcomment -%}
-    {% assign url = include.subpath | default: '' | append: '/' | append: url %}
+    {%- comment -%}
+      PATCHED, see docs/UPSTREAM.md. Upstream prepends the subpath to any path without a scheme,
+      including root-relative ones that are already resolved. A post declaring media_subpath and
+      pointing at a shared asset got /assets/media/X/assets/img/placeholder-wip.svg. 21 broken
+      images and html-proofer fails on every one.
+    {%- endcomment -%}
+    {%- unless url == '/' or url != url | remove_first: '/' | prepend: '/' -%}{%- endunless -%}
+    {% assign _abs = url | slice: 0, 1 %}
+    {% unless _abs == '/' %}
+      {% assign url = include.subpath | default: '' | append: '/' | append: url %}
+    {% endunless %}
 
     {%- comment -%} Prepend CND URL {%- endcomment -%}
     {% if site.cdn %}

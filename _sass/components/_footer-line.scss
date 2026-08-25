@@ -1,0 +1,85 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/footer-line/footer-line.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* footer-line - the whole footer as one quiet line.
+   OURS, not sourced. It is the lab pages' own `.labtag`, which Rod promoted to a real element on
+   2026-08-22: "i actually really like the way we do our lab footers". Never file it as a
+   reference site's. It reads as a footnote, not a second nav, because the top bar already has
+   the nav. The one deliberate change from the lab tag: that one is fixed-position, this one sits
+   at the end of the document. See footer-line.md. */
+
+/* EVERY NUMBER BELOW WAS MEASURED OFF `.labtag`, not guessed, after Rod asked three times for
+   an exact match. It computes 10px / ui-monospace / weight 400 / tracking normal / warm
+   rgba(245,243,239,.45). The old version missed on all four, and the colour was the tell: it used
+   the blue-grey --color-muted on a surface the palette law keeps warm.
+   Sizes are flat px on purpose - the tag is 10px flat and a rem would rescale it.
+   THIS FILE IS THE ONLY COPY. All six pages used to carry their own, and one drifted.
+   See footer-line.md. */
+.footer-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  /* Spacing measured off the tag too. The footer was 57.8px with 44.8 of it padding, so it read
+     as a bar where the tag reads as a line. 29px now. See footer-line.md. */
+  gap: 0.3rem 4px;
+  /* 14px because the lab tag is `left: 14px`. It belongs on the COMPONENT, not the wrapper -
+     the wrapper WAS the problem, four pages had one and two did not. Flat px, not vw. */
+  padding: 8px 14px;
+  border-top: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: normal;
+  line-height: normal;
+  color: var(--color-text-quiet);
+}
+
+/* The footer spans the page and anchors left, not to the content column (Rod). The inset lives
+   on .footer-line, so a page can skip this wrapper entirely and still look the same. */
+.footer-wrap { width: 100%; }
+
+/* The name is the way home, and it reads as a signature only because it is the one full-opacity
+   thing on the line. Keep the doubled selector: plain `.footer-line a` outranks the single class
+   and would paint the name gold like every other link. */
+.footer-line .footer-line__name {
+  color: var(--color-text, #f5f3ef);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.footer-line a.footer-line__name:hover,
+.footer-line a.footer-line__name:focus-visible { color: var(--color-gold, #fbbf24); }
+
+/* Generated separators, so the markup stays a plain list and no middot can orphan at a wrap. */
+.footer-line__item + .footer-line__item::before {
+  content: "\00b7";
+  /* 4px each side lands on the tag's 11px separator. It used to be 24. */
+  margin-right: 4px;
+  color: var(--color-line-soft, rgba(255, 255, 255, 0.25));
+}
+
+/* No uppercase, no tracking: the lab tag has neither, and "exactly" meant the name too. */
+.footer-line__name {
+  color: var(--color-text, #f5f3ef);
+}
+
+.footer-line a {
+  color: var(--color-gold, #fbbf24);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-line a:hover,
+.footer-line a:focus-visible {
+  color: var(--color-glow-soft, #ffd9a8);
+}
+
+/* Pushed to the far end rather than given its own row, so the line stays one line. */
+.footer-line__end {
+  margin-left: auto;
+}
+
+.footer-line__end::before {
+  content: none;
+}
+}

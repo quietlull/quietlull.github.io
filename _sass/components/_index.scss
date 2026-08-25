@@ -1,2 +1,47 @@
+// COMPONENTS
+//
+// `buttons` and `popups` are the OLD site's and stay put - this port is additive.
+// Under them, the redesign's 26 stylesheets, ported 2026-08-25 from
+// redesign-lab/extracted/components/<name>/<name>.css, one partial each.
+//
+// EVERY PORTED FILE OPENS WITH THE @layer ORDER STATEMENT AND WRAPS ITS BODY IN
+// `@layer components`. Repeating it 26 times is correct, not redundant - it is idempotent, so
+// each file is right on its own whatever loads it. The footgun: unlayered CSS beats every layer,
+// so a file that loses its wrapper silently wins over everything (D36, docs/TRAPS.md).
+//
+// ORDER IS ALPHABETICAL, and that is a choice rather than a default: the six final-* lab pages
+// disagree about load order, so there is no single lab order to reproduce. Verified it does not
+// matter - no top-level selector is declared by two of these 26 files, so nothing here can shadow
+// anything else whatever the order.
+//
+// `cursor-coords` is in the closure but ships JS only; there is no CSS to port.
+
 @forward 'buttons';
 @forward 'popups';
+
+@forward 'achievement-wall';
+@forward 'bio-block';
+@forward 'button-kit';
+@forward 'callout-family';
+@forward 'cursor-glow';
+@forward 'drift-magnet';
+@forward 'empty-state';
+@forward 'entry-row';
+@forward 'favicon';
+@forward 'figure-real';
+@forward 'footer-line';
+@forward 'line-boil';
+@forward 'merged-card';
+@forward 'page-title-desc';
+@forward 'portal-window';
+@forward 'portrait-frame';
+@forward 'project-cards-expensive';
+@forward 'reference-links';
+@forward 'related-card-real';
+@forward 'search-field';
+@forward 'section-head';
+@forward 'slap-toggle';
+@forward 'stamp-callout';
+@forward 'toc-real';
+@forward 'top-bar';
+@forward 'washi-tape';

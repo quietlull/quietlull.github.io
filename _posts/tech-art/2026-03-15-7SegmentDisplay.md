@@ -14,6 +14,6 @@ priority: 4
 wip: true
 image:
   path: assets/media/UnfinishedProjects/SegmentDisplay_Idle.mp4
-  alt: 7-segment display shader — idle glow state
+  alt: 7-segment display shader, idle glow state
 ---
 Coming soon.

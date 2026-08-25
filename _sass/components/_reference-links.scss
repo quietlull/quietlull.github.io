@@ -1,0 +1,40 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/reference-links/reference-links.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* reference-links - the end-of-article reading list. No box, just a label and a list.
+   From ronja-tutorials.com `.nested-links` (sources/ronja-tutorials-prose.md). Remixed, theirs.
+   Rod picked it 2026-08-24: "A Ronja Tutorials, colour-only links". See reference-links.md. */
+
+.reference-links {
+  margin: 2.25rem 0 0;
+}
+
+.reference-links__label {
+  display: block;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-silver, #a3a19d);
+  margin-bottom: 0.7rem;
+}
+
+.reference-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reference-links li + li {
+  margin-top: 0.5rem;
+}
+
+/* Deliberately no colour or hover here - decisions.scss already styles every `.prose a`, and
+   restating it is how two pages ended up with different link styles. This one line stays because
+   spacing is ours and reference lists are where bare URLs turn up. See reference-links.md. */
+.reference-links a {
+  word-wrap: break-word;
+}
+}

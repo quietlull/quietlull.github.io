@@ -1,97 +1,91 @@
 ---
 layout: default
 refactor: true
+script_includes:
+  - ramblings-scripts
 ---
 
 {% include lang.html %}
 
-{% assign all_posts = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'personal' %}
+{% comment %}
+  Ramblings, ported from `redesign-lab/final-ramblings.html`. A fixed centred column of hairline
+  entry rows, read from eveofficial.com/news/ (D15): the one layout of the four that handles a mix
+  of illustrated and text-only rows without moving the row's left edge.
+
+  THE QUERY CHANGED, and it is the one thing here that is not a straight port. It filtered
+  Rod 2026-08-26: filter on `tags: ramblings`. Nothing carries that tag yet and that is fine - the
+  page renders empty until a post opts in, which is the right way round. It used to filter on
+  `tags: personal`, which also matched nothing, but by accident rather than on purpose.
+  tag it reads now. Its other six rows are marked `data-placeholder` and were never real.
+
+  The tag chips are still on every row and still searchable, but there is no filter row: Rod
+  2026-08-24, "for ramblings we can have tags but not show them let them search it up using the box."
+
+  Dropped with the lab page: `#state`, `.labtag`, the `.gb` outlines, every `data-slot` /
+  `data-state`, the two spacer divs (now margins in the stylesheet), and its own footer copy.
+{% endcomment %}
+
+{% assign all_posts = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'ramblings' %}
 {% assign all_pinned = all_posts | where_exp: 'item', 'item.pin == true' %}
 {% assign all_normal = all_posts | where_exp: 'item', 'item.pin != true' %}
 {% assign posts = all_pinned | concat: all_normal %}
 
-<div id="blog-page">
-  <header class="blog-header mb-4">
-    <h1 class="page-title">{{ page.title | default: "Ramblings" }}</h1>
-    {% if page.description %}
-      <p class="page-description text-muted">{{ page.description }}</p>
-    {% endif %}
-  </header>
+<div id="ramblings-page">
+  <div class="wf">
 
-  <!-- Search -->
-  <div class="blog-controls mb-4">
-    <div class="search-wrapper">
-      <div class="input-group">
-        <span class="input-group-text"><i class="fas fa-search"></i></span>
-        <input type="text"
-               class="form-control"
-               id="post-search"
-               placeholder="Search posts...">
+    <div class="titlebar">
+      <div class="ptd ptd--ramblings ptd--sub">
+        <h1 class="ptd__title d-h1">{{ page.title | default: 'Ramblings' }}</h1>
+        {% if page.description %}<p class="ptd__desc">{{ page.description }}</p>{% endif %}
       </div>
     </div>
-  </div>
 
-  <div id="post-list" class="flex-grow-1 px-xl-1">
-    <div class="posts-vertical" id="posts-container">
-      {% for post in posts %}
-        <div class="post-vertical-bar post-item"
-             data-post-item
-             data-title="{{ post.title }}"
-             data-date="{{ post.date | date: '%s' }}">
-          <a href="{{ post.url | relative_url }}" class="vertical-bar-link">
-            <div class="vertical-bar-container d-flex align-items-stretch shadow-sm rounded-end">
-
-              {% if post.image %}
-                <div class="vertical-bar-img-wrapper flex-shrink-0">
-                  {% assign post_image = post.image.path | default: post.image %}
-                  <img src="{{ post_image }}"
-                       class="vertical-bar-img"
-                       alt="{{ post.image.alt | default: post.title }}"
-                       loading="lazy">
-                  {% if post.pin %}
-                    <span class="vertical-badge-pinned badge bg-warning text-dark position-absolute top-0 end-0 m-1">
-                      <i class="fas fa-thumbtack"></i> Pinned
-                    </span>
-                  {% endif %}
-                </div>
-              {% else %}
-                <div class="vertical-bar-img-wrapper vertical-bar-placeholder flex-shrink-0 d-flex align-items-center justify-content-center border-end">
-                  <div class="text-muted">
-                    <i class="fas fa-image fa-lg"></i>
-                  </div>
-                  {% if post.pin %}
-                    <span class="vertical-badge-pinned badge bg-warning text-dark position-absolute top-0 end-0 m-1">
-                      <i class="fas fa-thumbtack"></i> Pinned
-                    </span>
-                  {% endif %}
-                </div>
-              {% endif %}
-
-              <div class="vertical-bar-content flex-grow-1 p-3 d-flex flex-column justify-content-center">
-                <h3 class="h5 mb-2">{{ post.title }}</h3>
-
-                {% if post.description %}
-                  <p class="text-muted small mb-2">
-                    {{ post.description | truncate: 120 }}
-                  </p>
-                {% endif %}
-
-                <div class="text-muted small">
-                  <i class="far fa-calendar-alt me-1"></i>
-                  {% include datetime.html date=post.date lang=lang %}
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      {% endfor %}
+    {% comment %} The same field the projects page uses, spanning the column so it matches a row's width. {% endcomment %}
+    <div class="searchrow">
+      <div class="sf sf--ronja">
+        <input class="sf__input" type="text" placeholder="search ramblings &amp; tags"
+               aria-label="Filter ramblings by title, blurb or tag">
+      </div>
     </div>
 
     {% if posts.size == 0 %}
-      <div class="no-posts text-center py-5">
-        <i class="fas fa-coffee fa-3x text-muted mb-3"></i>
-        <p class="text-muted">Nothing here yet. Check back later!</p>
+      <div class="es es--stack">
+        <div class="es__content">
+          <p class="es__title">Nothing here yet</p>
+          <p class="es__body">Check back later.</p>
+        </div>
+      </div>
+    {% else %}
+      <ul class="er-list">
+        {% for post in posts %}
+          {% assign chips = post.tags | where_exp: 't', 't != "ramblings"' %}
+          {% assign thumb = post.image.path | default: post.image %}
+          <li class="er-row{% if thumb %} er-row--media{% endif %}">
+            <div class="er-body">
+              <div class="er-strip">
+                <span class="er-date">{{ post.date | date: '%Y.%m.%d' }}</span>
+                {% for tag in chips %}
+                  <a class="kit-tag js-magnetic" data-strength="25" href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/">{{ tag }}</a>
+                {% endfor %}
+              </div>
+              <h2 class="er-ttl"><a class="er-link" href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+              {% if post.description %}<p class="er-blurb">{{ post.description }}</p>{% endif %}
+              {% comment %} `image.path` is written from the site root, so it does not take `media_subpath`. {% endcomment %}
+              {% if thumb %}{% include post-media.html src=thumb alt='' class='er-thumb' %}{% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% comment %} A no-RESULTS state, so it stays hidden until a search matches nothing. The JS writes the query into `.es__q`. {% endcomment %}
+      <div class="es es--stack" role="status" hidden>
+        <div class="es__content">
+          <p class="es__title">No ramblings matching <b class="es__q"></b></p>
+          <p class="es__body">Try a shorter word, or
+            <a class="es__action" href="{{ page.url | relative_url }}">show all {{ posts.size }} ramblings</a>.</p>
+        </div>
       </div>
     {% endif %}
+
   </div>
 </div>

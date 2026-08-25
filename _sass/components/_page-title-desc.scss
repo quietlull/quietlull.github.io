@@ -1,0 +1,108 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/page-title-desc/page-title-desc.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* page-title-desc - the title and description block on the projects and ramblings indexes.
+   potg.art (sources/potg-typography.md, tier True, re-verified live 2026-08-23). Remixed, theirs.
+   It is the right parent because it actually has this component: a page title with a sub line,
+   plus two more title+sub arrangements on the same site. Three versions, three of theirs.
+   THE TITLE IS NOT STYLED HERE. decisions.scss owns .d-h1 and this file only gives it a width,
+   because the two blockouts reserve different ones.
+   THEIR REMS ARE OUR PIXELS. potg sets 1rem = 1px at a 1440 viewport, so every value came across
+   as px, unrounded and unscaled. Do not read them as rems.
+   Nothing here animates, so there is no reduced-motion block. See page-title-desc.md. */
+
+/* Two children and a gap. The gap is a variable because the two blockouts reserve different
+   ones, and the blockout is the contract. */
+.ptd {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  row-gap: var(--ptd-gap, 11px);
+}
+.ptd__title { width: var(--ptd-title-w, 100%); max-width: 100%; }
+.ptd__desc {
+  width: var(--ptd-desc-w, 100%);
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--font-body, sans-serif);
+}
+
+/* V1 - THE SUB LINE. potg's own page-header, geometry verbatim. Remixed, theirs.
+   Their margin-top of 11px is the gap between title and sub. It is the default --ptd-gap above
+   rather than a declaration here, because both blockouts reserve their own gap and the blockout
+   outranks it.
+   The colour is a REUSE, not a new decision: potg softens secondary text by mixing the primary
+   colour with the ground, and --color-silver already IS that operation on our side. Their
+   `transparent` half is not copied - see-through text over a live scene loses legibility.
+   FLAGGED: their sub is ONE line and line-height 1 is drawn for one line. The projects blockout
+   reserves TWO. V2 exists because of this. See page-title-desc.md. */
+.ptd--sub .ptd__desc {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* V2 - THE SOFTENED PARAGRAPH. potg's own multi-line secondary text, same stylesheet.
+   Remixed, theirs. This is their real answer for a secondary block that WRAPS, which is what a
+   two-line page description is. Same size and weight as V1; only the leading moves, 1 to 1.7.
+   Ours is the colour token, the same reuse as V1. */
+.ptd--para .ptd__desc {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: 0.05em;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* V3 - THE RULED TITLE OVER A LEDE. TWO PARENTS, so neither citation carries the other.
+   THE RULE is acegikmo's `border-bottom: solid 1px` with NO border-color, and the missing colour
+   IS the device: the rule inherits the heading's own colour, so title and rule move together.
+   THE LEDE is potg's `.first__text-en`, the one text on their page that is NOT softened - their
+   lede runs at full colour while the line under it is mixed down. So this description takes
+   --color-text and becomes the brightest thing in the block, which agrees with the type ladder.
+   Not taken: their typeface, their weight, their #ff1155, their margins, and potg's
+   margin-left:auto, because both blockouts centre this block.
+   WATCH AT BUILD: .d-h1 runs line-height .92, which crops the em box tighter than the glyphs, so
+   the j in "Projects" may cross the rule. The demo draws it. See page-title-desc.md. */
+.ptd--ruled .ptd__title { border-bottom: solid 1px; }
+.ptd--ruled .ptd__desc {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.8;
+  letter-spacing: -0.02em;
+  max-width: 640px;
+  color: var(--color-text, #f5f3ef);
+}
+
+/* THE TWO PAGES DISAGREE AND ARE NOT UNIFIED HERE. Both are approved blockout geometry and
+   layout is Rod's alone (D25).
+   PROJECTS is full width: title box and description box are both the panel's 930px and only the
+   copy is centred. RAMBLINGS is a narrow title over a wider description, the exact inverse.
+   They differ because they are transcriptions of two different sites, not two goes at one idea -
+   projects is MinionsArt's boxed panel where everything shares one width, ramblings is a blog
+   index where the title is sized to the WORD and the description to the SENTENCE.
+   See page-title-desc.md. */
+.ptd--projects {
+  --ptd-gap: 18px;        /* projects-blockout.html:232, the literal <div style="height:18px"> */
+}
+.ptd--ramblings {
+  --ptd-gap: 12px;        /* ramblings-blockout.html:126 / final-ramblings.html:110 gap:12px */
+  --ptd-title-w: 380px;   /* ramblings-blockout.html:125 */
+  --ptd-desc-w: 520px;    /* ramblings-blockout.html:126 */
+}
+
+/* TWO ROD-APPROVED ARTEFACTS DISAGREE HERE AND IT IS NOT RESOLVED. The reservation handed to
+   this build is variant `?v=rulelog`, which is what the blockout page loads by default, so any
+   pass that opened it without a ?v= measured that one. But final-ramblings.html names
+   `?v=hairline` as the CHOSEN blockout, and hairline reserves 220x26 over 560x20 instead.
+   Both are drawn in the demo. Picking one is Rod's call. See page-title-desc.md. */
+.ptd--ramblings-hairline {
+  --ptd-gap: 12px;        /* ramblings-blockout.html:165 / final-ramblings.html:110 */
+  --ptd-title-w: 220px;   /* ramblings-blockout.html:164 */
+  --ptd-desc-w: 560px;    /* ramblings-blockout.html:165 */
+}
+}

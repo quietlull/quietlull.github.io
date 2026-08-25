@@ -1,0 +1,87 @@
+{% comment %}
+  The landing's own JS. `assets/js/chrome.js` already runs the top bar, the magnets and the bar's
+  wordmark boil, so what is here is the three things only this page has.
+{% endcomment %}
+
+<script type="module">
+  /* initCards also runs merged-card and drift-magnet internally. */
+  import { init as initCards } from '{{ '/assets/js/components/project-cards-expensive.js' | relative_url }}';
+  initCards(document);
+
+  /* Each vertical column is its own mark, so each gets its own boil and its own starting phase.
+     The clock boils too - Rod's three number faces are attached to the same family names by
+     unicode-range, so nothing here has to know they exist. */
+  import { initLineBoil } from '{{ '/assets/js/components/line-boil.js' | relative_url }}';
+  document.querySelectorAll('.h__vert .h__col').forEach((column) => initLineBoil(column));
+  const clock = document.querySelector('.h__clock');
+  if (clock) initLineBoil(clock);
+</script>
+
+<script>
+  /* WRITE INTO THE CELLS, never back over textContent. Once the boil has run the clock's characters
+     live in pinned spans that each carry their own face and phase, and assigning textContent would
+     delete all eight every second. Before the boil resolves there are no cells and the plain
+     assignment is right, which is what the length check picks. */
+  (function () {
+    var el = document.querySelector('.h__clock');
+    if (!el) return;
+    function tick() {
+      var d = new Date();
+      var p = function (n) { return String(n).padStart(2, '0'); };
+      var now = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+      var cells = el.querySelectorAll('.lb__g');
+      if (cells.length !== now.length) { el.textContent = now; return; }
+      for (var i = 0; i < cells.length; i++) {
+        if (cells[i].textContent !== now[i]) cells[i].textContent = now[i];
+      }
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>
+
+{% if page.show_reel %}
+  {% comment %}
+    ONE bar that keeps playing: a hero clip runs and on `ended` another takes over.
+
+    THE LIST IS THE POSTS' OWN HEROES. Rod 2026-08-22: "maybe limit it to hero project videos for
+    project posts" - a full sweep of assets/media was pulling clips of BUGS. The lab baked this
+    array by hand; here it is generated from each post's own `image.path`, so it cannot drift.
+    WIP posts and non-video heroes are excluded.
+  {% endcomment %}
+  {% assign reel_posts = site.posts | where: 'section', page.section | where: 'tags', 'project' %}
+  {% assign clips = '' | split: '' %}
+  {% for post in reel_posts %}
+    {% assign src = post.image.path | default: post.image %}
+    {% if src and post.wip != true %}
+      {% assign ext = src | split: '.' | last | downcase %}
+      {% if ext == 'mp4' or ext == 'webm' %}
+        {% capture one %}{"src":{{ src | relative_url | jsonify }},"title":{{ post.title | jsonify }}}{% endcapture %}
+        {% assign clips = clips | push: one %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  <script>
+    (function () {
+      var CLIPS = [{{ clips | join: ',' }}];
+      var bar = document.getElementById('reel-bar');
+      if (!bar || !CLIPS.length) return;
+      var last = -1;
+
+      function next() {
+        var i = Math.floor(Math.random() * CLIPS.length);
+        if (CLIPS.length > 1 && i === last) { i = (i + 1) % CLIPS.length; }
+        last = i;
+        bar.src = CLIPS[i].src;
+        bar.setAttribute('aria-label', CLIPS[i].title);
+        var play = bar.play();
+        if (play && play.catch) { play.catch(function () {}); }   /* blocked autoplay must not break it */
+      }
+
+      bar.addEventListener('ended', next);
+      bar.addEventListener('error', next);   /* a bad file would otherwise stall it forever */
+      next();
+    })();
+  </script>
+{% endif %}

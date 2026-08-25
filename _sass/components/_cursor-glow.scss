@@ -1,0 +1,51 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/cursor-glow/cursor-glow.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* cursor-glow - a warm lantern vignette that follows the pointer.
+   brittanychiang / merodev `.cursorglow`, recoloured purple to gold. Remixed, theirs.
+   Swap --cursor-glow-tint to --color-accent-cool for a cool wash. See cursor-glow.md. */
+.cursorglow {
+  --cursor-glow-radius: 350px; /* Rod 2026-08-25. merodev shipped 520px */
+  --cursor-glow-tint: color-mix(in srgb, var(--color-gold) 15%, transparent);
+  position: fixed;
+  inset: 0;
+  /* 600 puts the glow OVER the sparkler canvas at 500. Rod swapped it there on the bench. */
+  z-index: 600;
+  /* This layer covers the whole viewport, so dropping this swallows every click on the site. */
+  pointer-events: none;
+  background: radial-gradient(
+    var(--cursor-glow-radius) circle at var(--cx, -700px) var(--cy, -700px),
+    var(--cursor-glow-tint),
+    transparent 15%
+  );
+}
+
+/* LAB DEMO ONLY, never ships. Gives the glow something to wash across so you can see it. */
+.cursor-glow-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  min-height: 70vh;
+  padding: var(--space-6) var(--space-4);
+}
+.cursor-glow-demo__hint {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+.cursor-glow-demo__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 160px);
+  gap: var(--space-4);
+}
+.cursor-glow-demo__panel {
+  height: 120px;
+  border-radius: 14px;
+  background: var(--color-panel);
+  box-shadow: inset 0 0 0 1px var(--color-line-faint);
+}
+}

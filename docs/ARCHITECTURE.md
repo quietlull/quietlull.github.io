@@ -30,7 +30,7 @@ relying on them. If this disagrees with the code, this is stale - fix it.
   `pin`, `engine`, `role`, `team_size`, `duration`.
 - **Custom layouts** (no Chirpy equivalent): `portal`, `section-landing`, `section-projects`,
   `section-about`, `ramblings`, `under-construction`.
-- **Typography:** Outfit (headings) / Plus Jakarta Sans (body) / JetBrains Mono (code, tags).
+- **Typography:** M PLUS Rounded 1c (headings) / M PLUS Rounded 1c (body) / IBM Plex Mono (code, tags).
 
 ## Custom JS subsystems (`_javascript/`, 48 files)
 
@@ -70,7 +70,7 @@ relying on them. If this disagrees with the code, this is stale - fix it.
 - Bundle selection: `_includes/js-selector.html` maps layout name -> bundle. A named contract -
   renaming layouts breaks JS loading, not just styling.
 
-## SCSS (`_sass/`, 38 files)
+## SCSS (`_sass/`, 69 files)
 
 Custom 7-bucket layout replacing Chirpy's stock structure: `abstracts/ base/ components/ layout/
 pages/ themes/ vendors/`, composed with `@forward` index files. `themes/_dark.scss` and

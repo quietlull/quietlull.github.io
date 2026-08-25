@@ -1,0 +1,59 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/figure-real/figure-real.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* figure-real - catlikecoding's figure geometry, no mat, caption pushed LEFT (Rod's change).
+   Six declarations transcribed verbatim, one flipped. Remixed, geometry theirs, left-align Rod's.
+   THE TRAP: their `figure { text-align: center }` centres the caption AND the image, because an
+   <img> is inline. Flipping it would drag the image flush left too, which Rod did not ask for.
+   So the media is centred by its own rule and text-align: left goes on the figcaption only.
+   See figure-real.md. */
+
+/* Their geometry, verbatim. The caption is 0.875em rather than 14px because what they picked is
+   the RATIO against 16px prose - copy the ratio, never the pixels. */
+.fig {
+  display: block;
+  margin: 2em auto;
+  padding: 0;
+}
+.fig > img,
+.fig > video {
+  max-width: 100%;
+  height: auto;
+  /* The split: centre the media here so the caption can go left without dragging it along. */
+  display: block;
+  margin-inline: auto;
+}
+.fig figcaption {
+  font-size: 0.875em;
+  font-style: italic;
+  text-align: left;          /* ours; theirs inherits center */
+  margin-top: 0.5rem;
+}
+@media print {
+  /* theirs, verbatim, and it costs nothing */
+  .fig { page-break-inside: avoid; }
+}
+
+/* Video is SLOP - catlikecoding has no video rules at all, so none of this is sourced. It still
+   has to exist: our videos ship without width or height, so without a ratio the page jumps on
+   load. See figure-real.md. */
+.fig > video {
+  aspect-ratio: 16 / 9;      /* a guess, until something reads each clip's real ratio */
+  width: 100%;
+}
+
+/* Three versions, and they differ on one thing: how far the caption recedes. Still open.
+   catlikecoding never colours its caption in either theme, which argues for V1.
+   See figure-real.md. */
+
+/* V1 - faithful. Body colour, separated by italic and size alone, like the source. */
+.fig--v1 figcaption { color: var(--color-text, #f5f3ef); }
+
+/* V2 - what ships today. Silver, so it recedes on colour too. A departure from the source. */
+.fig--v2 figcaption { color: var(--color-silver, #a3a19d); }
+
+/* V3 - quietest. Silver and a size step down. Ours; the source has no third degree. */
+.fig--v3 figcaption { color: var(--color-silver, #a3a19d); font-size: 0.8em; }
+}

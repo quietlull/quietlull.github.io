@@ -1,0 +1,405 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/merged-card/merged-card.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* merged-card - the flip-tile LOOK with the merged-card FUNCTION. merged-card.js owns the tilt,
+   the gyro and the dwell-flip; project-cards-expensive adds the cursor glow on top.
+   Both citations route through rework-harumaki, which is a file in this repo, so treat the
+   provenance the way project-cards-expensive's banner says to.
+   THE INNER CLASS NAMES ARE THE SOURCE'S, NOT BEM, on purpose: the CSS and the JS are coupled and
+   renaming one side is how they drift apart.
+   The --z-* tokens below are the per-layer depths Rod tunes. `no-glass` on the body or the grid
+   hides the glass plane for judging. See merged-card.md. */
+.merged-cards {
+  /* z-depth per layer, at rest and on hover. Rod tunes these. */
+  --z-cover: 2;
+  --z-glass: 26;
+  --z-glass-hover: 36;
+  --z-body: 32;
+  --z-body-hover: 42;
+  --z-title: 12;
+  --z-title-hover: 26;
+  --z-pin: 36;
+  --z-pin-hover: 72;
+
+  --text-muted: var(--color-warm-muted);
+  --cover-hi: var(--color-cover-hi);
+  --cover-lo: var(--color-cover-lo);
+  --gold-35: rgba(251, 191, 36, 0.35);
+  --gold-40: rgba(251, 191, 36, 0.4);
+  --gold-60: rgba(251, 191, 36, 0.6);
+  --gold-80: rgba(251, 191, 36, 0.8);
+
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(6, 1fr);
+  perspective: 80rem;
+}
+
+@media (min-width: 760px) {
+  .merged-cards {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+.merged-cards [data-column-span='6'] {
+  grid-column: span 6;
+}
+
+.merged-cards [data-column-span='12'] {
+  grid-column: span 12;
+}
+
+.merged-cards [data-row-span='2'] {
+  grid-row: span 2;
+}
+
+.merged-cards .post-card {
+  perspective: 1000px;
+  --depth: 1;
+  height: 100%;
+  min-height: 14rem; /* the flip-tile cell height */
+}
+
+.merged-cards [data-row-span='2'] .post-card {
+  min-height: calc(28rem + 0.9rem);
+}
+
+@media (hover: none) {
+  .merged-cards .post-card {
+    --depth: 0;
+  }
+}
+
+.merged-cards .card-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+  transform-style: preserve-3d;
+}
+
+.merged-cards .card-tilt {
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+}
+
+.merged-cards .card-flipper {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.merged-cards .card-flipper.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.merged-cards .z-layer {
+  transform: translateZ(calc(var(--z, 0) * var(--depth, 1) * 1px));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  backface-visibility: hidden;
+}
+
+.merged-cards .post-card:hover .z-layer {
+  --z: var(--z-hover, var(--z, 0));
+}
+
+.merged-cards .card-front {
+  position: relative;
+  height: 100%;
+  display: flex;
+  transform-style: preserve-3d;
+}
+
+/* The cover IS the whole tile: media fills the cell and the gradient seats the text on it. */
+.merged-cards .card-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  /* No top hotspot here on purpose. There used to be a radial gradient at 50% 0% burning at rest
+     on every card, and the card is meant to be lit BY the cursor. Rod 2026-08-18. */
+  background: linear-gradient(160deg, var(--cover-hi), var(--cover-lo));
+  border: 1px solid var(--color-line-card);
+  box-shadow: 0 10px 26px -10px var(--color-shadow-card);
+  transition: border-color 0.5s ease, box-shadow 0.4s ease;
+  --z: var(--z-cover);
+}
+
+.merged-cards .card-cover img,
+.merged-cards .card-cover video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.merged-cards .post-card:hover .card-cover img,
+.merged-cards .post-card:hover .card-cover video {
+  transform: scale(1.05);
+}
+
+.merged-cards .card-cover::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 62%;
+  background: linear-gradient(180deg, transparent 0%, var(--color-cover-mid) 55%, var(--cover-lo) 100%);
+  pointer-events: none;
+}
+
+.merged-cards .posts-grid-hue-a {
+  --glow-hue: 251, 191, 36;
+  --glow-border-hue: 245, 158, 11;
+}
+
+.merged-cards .posts-grid-hue-b {
+  --glow-hue: 255, 106, 0;
+  --glow-border-hue: 234, 88, 12;
+}
+
+.merged-cards .post-card:hover .card-cover {
+  border-color: rgba(var(--glow-border-hue, 245, 158, 11), 0.45);
+  box-shadow:
+    0 14px 30px -10px var(--color-shadow-lift),
+    0 0 24px rgba(var(--glow-hue, 251, 191, 36), 0.3);
+}
+
+.merged-cards .glass-plane {
+  /* The sheen is a token so the expensive card can slide its cursor spill under it without
+     copying this gradient and drifting from it. */
+  --glass-sheen: linear-gradient(0deg, var(--color-glass-sheen-lo) 0%, var(--color-glass-sheen-hi) 100%);
+  position: absolute;
+  inset: 8px;
+  border-radius: 12px;
+  background: var(--glass-sheen);
+  border-left: 1px solid var(--color-glass-edge);
+  border-bottom: 1px solid var(--color-glass-edge-soft);
+  pointer-events: none;
+  --z: var(--z-glass);
+  --z-hover: var(--z-glass-hover);
+  transition-delay: 0.05s;
+}
+
+body.no-glass .glass-plane,
+.merged-cards.no-glass .glass-plane {
+  display: none;
+}
+
+/* The body overlays the cover at the bottom, flip-tile style. */
+.merged-cards .card-body {
+  position: relative;
+  align-self: flex-end;
+  width: 100%;
+  padding: 1.3rem 1.5rem;
+  transform-style: preserve-3d;
+  text-shadow: 0 1px 6px var(--color-shadow-text);
+  --z: var(--z-body);
+  --z-hover: var(--z-body-hover);
+  transition-delay: 0.08s;
+}
+
+.merged-cards .card-title {
+  font-family: var(--font-display);
+  /* Half-empty on purpose. font-weight, font-size and color were deleted 2026-08-23 because
+     decisions.scss owns this class and the component was restating all three. They only ever
+     resolved right by accident of load order. Do not put them back. See merged-card.md. */
+  line-height: 1;
+  margin-bottom: 0.2rem;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  --z: var(--z-title);
+  --z-hover: var(--z-title-hover);
+  transition-delay: 0.06s;
+}
+
+// Underline on hover, not glow. Rod wants links behaving the same way everywhere, and the glow was
+// the odd one out. The old rule also painted a different amber, which is why the yellow looked off.
+.merged-cards .post-card:hover .card-title {
+  color: var(--color-gold);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-shadow: 0 1px 6px var(--color-shadow-text);
+}
+
+// Weight 400, not the ladder's 300. Thin type over a moving scene shimmers, and Rod could see it.
+// This is a deliberate step off the ladder for text that sits on top of animation.
+.merged-cards .card-title {
+  font-weight: 400;
+}
+
+.merged-cards .card-meta {
+  font-family: var(--font-body);
+  font-size: 0.7rem; /* T3-E: the floor for small text */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold-deep);
+  opacity: 0.85;
+}
+
+.merged-cards .card-pin {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--color-gold);
+  color: var(--color-night);
+  box-shadow: 0 4px 10px var(--color-shadow);
+  --z: var(--z-pin);
+  --z-hover: var(--z-pin-hover);
+  transition-delay: 0.1s;
+}
+
+.merged-cards .card-pin--wip {
+  background: var(--color-glow);
+}
+
+/* The star pin. Rod's own gallery tier-badge shape, a rounded square holding one star glyph.
+   GOLD, BECAUSE PINK RESOLVED TO NOTHING. `--color-pink` is defined in no stylesheet anywhere, so
+   `var(--color-pink, #ff7ec8)` was painting its fallback - an off-palette pink - and nothing
+   errored. That is the whole trap: a plausible token name renders wrong in silence.
+   See merged-card.md. */
+.merged-cards .card-pin--star {
+  min-width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: var(--color-gold, #fbbf24);
+  color: var(--color-night);
+  font-size: 0.9rem;
+  letter-spacing: 0;
+}
+
+.merged-cards .card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 1.4rem 1.6rem;
+  display: grid;
+  align-content: center;
+  gap: 0.55rem;
+  text-align: left;
+  transform: rotateY(180deg) translateZ(1px);
+  backface-visibility: hidden;
+  /* The back had a twin of that top glow and it went with it. */
+  background: linear-gradient(160deg, var(--cover-hi), var(--cover-lo));
+  border: 1px solid var(--gold-35);
+}
+
+.merged-cards .card-back .takeaway-quote {
+  font-family: var(--font-display); /* T0-B: the serif display face */
+  font-weight: 700;
+  font-size: 1.35rem;
+  line-height: 1.15;
+  color: var(--color-gold-deep);
+  margin: 0;
+}
+
+.merged-cards .card-back .takeaway-text {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-glow-soft);
+  margin: 0;
+}
+
+.merged-cards .card-back .back-read {
+  margin-top: 0.4rem;
+  font-size: 0.68rem; /* T3-E: the floor for small text */
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-family: var(--font-body);
+}
+
+@property --dp {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+.dwell-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-overlay);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.15s;
+  --dp: 0;
+  background: conic-gradient(var(--color-gold) calc(var(--dp) * 1turn), var(--color-ring-track) 0);
+}
+
+.dwell-ring::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: var(--color-ring-hole);
+}
+
+.dwell-ring.is-on {
+  opacity: 1;
+}
+
+.dwell-ring.is-filling {
+  --dp: 1;
+  transition: opacity 0.15s, --dp 0.9s linear;
+}
+
+.merged-cards-glass-toggle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-glow) 45%, transparent);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  margin-bottom: var(--space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dwell-ring.is-filling {
+    transition: opacity 0.15s;
+  }
+}
+
+/* The square variant, Rod's 2026-08-11 shape pass. IT HAS TO STAY LAST IN THE FILE: it must
+   out-cascade every radius above it, and the first draft sat before .card-back, lost the tie, and
+   left the card backs rounded. The star pin keeps its 5px on purpose. */
+.merged-cards--square .card-cover,
+.merged-cards--square .card-back,
+.merged-cards--square .glass-plane {
+  border-radius: 0;
+}
+
+.merged-cards--square .card-pin {
+  border-radius: 0;
+}
+
+.merged-cards--square .card-pin--star {
+  border-radius: 5px;
+}
+}

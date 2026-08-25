@@ -5,14 +5,6 @@
 // TYPOGRAPHY PLACEHOLDERS
 // ============================================================================
 
-%heading {
-  color: var(--heading-color);
-  font-weight: 400;
-  font-family: v.$font-family-heading;
-  letter-spacing: -0.02em;
-  scroll-margin-top: 3.5rem;
-}
-
 %text-highlight {
   color: var(--text-muted-highlight-color);
   font-weight: 600;

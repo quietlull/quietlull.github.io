@@ -1,6 +1,15 @@
-@forward 'search';
 @forward 'home';
 @forward 'post';
 @forward 'projects';
 @forward 'portal';
-@forward 'section-landing'
+@forward 'about';
+@forward 'ramblings';
+@forward 'section-landing';
+// RE-ADDED 2026-08-25. These four partials exist and were never forwarded, so their CSS has not
+// compiled into the site at all. It is a live bug, not dead code: `#page-tag` renders on **20 of 53
+// pages** (jekyll-archives, `_config.yml:256-260`) and `#archives` on one more, both with no styles.
+// Found during the pre-merge audit while looking for things to DELETE - the opposite answer.
+@forward 'archives';
+@forward 'categories';
+@forward 'category-tag';
+@forward 'tags';

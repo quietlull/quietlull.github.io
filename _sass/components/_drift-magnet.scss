@@ -1,0 +1,159 @@
+// Ported 2026-08-25 from redesign-lab/extracted/components/drift-magnet/drift-magnet.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
+@layer reset, tokens, prose, components, overrides;
+@layer components {
+/* drift-magnet - the drifting social circles. drift-magnet.js owns the motion, this owns shape.
+   Rising fill from dennissnellenberg.com/work .btn-fill (sources/dennissnellenberg-buttons.md),
+   recoloured to tokens. See drift-magnet.md. */
+.dm-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.dm-row {
+  display: flex;
+  /* The percentages here and on .dm-social's width make 4 circles + 3 gaps come to exactly 100%
+     of the row, so it squeezes instead of wrapping (Rod 2026-08-24). Do not round them.
+     The wrap used to fire at viewport 1429 and cost 94.39px of rail height. See drift-magnet.md. */
+  gap: min(1.625rem, 8.7957%);
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+/* The circles, in harumaki's register: right of the hero. */
+.dm-social {
+  position: relative;
+  overflow: hidden;
+  width: min(3.4rem, 18.4032%);
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+/* The fill: an oversized circle parked below that rises to cover on hover. Geometry is verbatim. */
+.dm-social__fill {
+  position: absolute;
+  top: -50%;
+  left: -25%;
+  width: 150%;
+  height: 200%;
+  border-radius: 50%;
+  background: var(--color-gold);
+  transform: translate3d(0, 76%, 0);
+  transition: transform 0.6s cubic-bezier(0.7, 0, 0.3, 1);
+  will-change: transform;
+  z-index: 1;
+}
+
+.dm-social:hover .dm-social__fill {
+  transform: translate3d(0, 0, 0);
+}
+
+.dm-social__glyph {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--color-gold);
+  transition: color 0.3s ease;
+}
+
+/* The glyph flips to dark as the fill covers it (dennissnellenberg .btn-text-inner.change). */
+.dm-social:hover .dm-social__glyph {
+  color: var(--color-night);
+}
+
+/* favicon-style: magnetic but clamped to its box, and it spins on hover. */
+.dm-favicon {
+  position: relative;
+  width: 2.6rem;
+  height: 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-panel);
+  cursor: pointer;
+}
+
+.dm-favicon__icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, var(--color-glow), var(--color-gold-deep));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 50%, transparent);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dm-favicon:hover .dm-favicon__icon {
+  transform: rotate(360deg);
+}
+
+.dm-demo__hint {
+  max-width: 42ch;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.dm-demo__hint--small {
+  font-size: 0.56rem;
+  opacity: 0.8;
+}
+
+.dm-motion-btn {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  background: transparent;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.dm-motion-btn:hover {
+  border-color: var(--color-glow);
+}
+
+/* Click flash, and this one ships - it is not demo furniture. The border lights up, flies
+   outward and fades. Opt in with data-click-flash; drift-magnet.js toggles .dm-flash.
+   outline and box-shadow paint outside the box, so overflow:hidden does not clip them.
+   phojanecki (codepen.io/phojanecki/pen/vwyZpY), the same ripple as button-kit. */
+.dm-flash {
+  animation: dm-border-fly 0.5s ease-out;
+}
+
+@keyframes dm-border-fly {
+  0% {
+    outline: 1px solid var(--color-glow);
+    outline-offset: 0;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 45%, transparent);
+  }
+  100% {
+    outline: 1px solid transparent;
+    outline-offset: 14px;
+    box-shadow: 0 0 22px color-mix(in srgb, var(--color-glow) 0%, transparent);
+  }
+}
+}
