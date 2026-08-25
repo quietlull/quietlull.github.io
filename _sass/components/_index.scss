@@ -1,2 +1,56 @@
+// =============================================================================================
+// COMPONENTS
+//
+// The two originals (`buttons`, `popups`) are the OLD site's and stay put - this port is additive
+// and removes nothing.
+//
+// Below them: the redesign's 26 component stylesheets, ported 2026-08-25 from
+// `redesign-lab/extracted/components/<name>/<name>.css`, one partial per component, contents
+// verbatim including every comment. Those comments ARE the provenance record (which reference site
+// a technique came from, which of Rod's calls moved a value); stripping them would destroy the
+// evidence the provenance law rests on.
+//
+// CASCADE LAYERS ARE LOAD-BEARING (D36). Every ported file opens with
+// `@layer reset, tokens, prose, components, overrides;` and wraps its body in
+// `@layer components { }`. The order statement is idempotent - the first one the browser sees wins
+// and the rest are no-ops - so repeating it 26 times is correct, not redundant. The one footgun:
+// UNLAYERED CSS BEATS EVERY LAYER, so a file that loses its wrapper silently wins over everything.
+//
+// ORDER IS ALPHABETICAL, and that is a deliberate choice rather than a default. The six `final-*`
+// lab pages DISAGREE about load order (final-about loads washi-tape before favicon, final-landing
+// loads favicon before washi-tape), so there is no single lab order to reproduce. Verified it does
+// not matter: no top-level selector is declared by two of these 26 files, so nothing in
+// `@layer components` can shadow anything else here whatever the order.
+//
+// `cursor-coords` is in the closure but ships JS only - there is no `cursor-coords.css` to port.
+// =============================================================================================
+
 @forward 'buttons';
 @forward 'popups';
+
+@forward 'achievement-wall';
+@forward 'bio-block';
+@forward 'button-kit';
+@forward 'callout-family';
+@forward 'cursor-glow';
+@forward 'drift-magnet';
+@forward 'empty-state';
+@forward 'entry-row';
+@forward 'favicon';
+@forward 'figure-real';
+@forward 'footer-line';
+@forward 'line-boil';
+@forward 'merged-card';
+@forward 'page-title-desc';
+@forward 'portal-window';
+@forward 'portrait-frame';
+@forward 'project-cards-expensive';
+@forward 'reference-links';
+@forward 'related-card-real';
+@forward 'search-field';
+@forward 'section-head';
+@forward 'slap-toggle';
+@forward 'stamp-callout';
+@forward 'toc-real';
+@forward 'top-bar';
+@forward 'washi-tape';

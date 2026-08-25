@@ -1,0 +1,74 @@
+// PORTED VERBATIM from redesign-lab/extracted/components/cursor-glow/cursor-glow.css (2026-08-25).
+// Sass `//` notes only above this line so the emitted CSS stays byte-faithful to the lab file.
+// Every /* */ comment below is the lab original and is the provenance record - do not strip it.
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* cursor-glow — warm "cursor-as-lantern" vignette that follows the pointer.
+   Technique: brittanychiang / merodev `.cursorglow` fixed full-viewport radial at --cx/--cy.
+   Remix: recolored from merodev's purple to the festival gold (Rule 32 — token, no magic color);
+   swap --cursor-glow-tint to --color-accent-cool for a cool wash instead. */
+.cursorglow {
+  --cursor-glow-radius: 350px; /* Rod 2026-08-25. merodev's source value was 520px */
+  --cursor-glow-tint: color-mix(in srgb, var(--color-gold) 15%, transparent);
+  position: fixed;
+  inset: 0;
+  /* Rod 2026-08-25, tuned on the bench: 600, which is ABOVE the sparkler canvas at 500, not the
+     499 the bench proposed as "under the sparkler". A deliberate swap of the two, recorded rather
+     than assumed - the glow now paints over the sparks instead of behind them.
+     Safe at any height because `pointer-events: none` is on the next line: this element covers the
+     whole viewport, so without it a z-index this high would swallow every click on the site. */
+  z-index: 600;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--cursor-glow-radius) circle at var(--cx, -700px) var(--cy, -700px),
+    var(--cursor-glow-tint),
+    transparent 15%
+  );
+}
+
+/* --- LAB DEMO ONLY (never ships): gives the glow something to wash across so it reads --- */
+.cursor-glow-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  min-height: 70vh;
+  padding: var(--space-6) var(--space-4);
+}
+.cursor-glow-demo__hint {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+.cursor-glow-demo__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 160px);
+  gap: var(--space-4);
+}
+.cursor-glow-demo__panel {
+  height: 120px;
+  border-radius: 14px;
+  background: var(--color-panel);
+  box-shadow: inset 0 0 0 1px var(--color-line-faint);
+}
+}

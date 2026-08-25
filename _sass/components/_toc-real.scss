@@ -1,0 +1,235 @@
+// PORTED VERBATIM from redesign-lab/extracted/components/toc-real/toc-real.css (2026-08-25).
+// Sass `//` notes only above this line so the emitted CSS stays byte-faithful to the lab file.
+// Every /* */ comment below is the lab original and is the provenance record - do not strip it.
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   toc-real - Starlight's rail + mobile popup, ONE system.
+   Built 2026-08-23 from analysis/reference-briefs/brief-2.md (TOC).
+
+   PREMISE: CONFIRMED. docs.astro.build genuinely ships a desktop rail AND a <details> mobile
+   popup driven by one shared list component with an inline --depth property. The cited CSS file
+   is byte-for-byte still the served file (same content hash), so the note was not reading a stale
+   build.
+
+   TIER: Remixed. Idea-origin THEIRS for everything structural; OURS for every colour, the
+   squaring, the panel substitution, the shadow removal, and the fixed-vs-sticky choice.
+   SLOP RISK: none. Every declaration traces to a live served file.
+
+   SCOPE HASHES STRIPPED: .astro-f35rxoh7 (shared list), -gl7qdvoz (popup), -mbtvktjh / -ojrabbd2
+   (rail). All were :where()-wrapped, so removing them changes nothing about specificity.
+
+   ===== 72rem IS THE SINGLE SWITCH =====
+   `.lg\:sl-block{display:block}` lives inside @media (width>=72rem), and --sl-mobile-toc-height
+   flips 3rem -> 0rem in that SAME query. Below 1152px the popup bar is the TOC; above it, the rail
+   is. Their sl-hidden / lg:sl-block is Starlight's own mini-utility layer (NOT Tailwind) and is
+   replaced here by one media query.
+   ============================================================================================ */
+
+.toc { --pad-inline: 0.5rem; }
+.toc ul { padding: 0; list-style: none; margin: 0; }
+
+/* THE INDENT FORMULA - theirs, and the core of the treatment.
+   A single inline `style="--depth: 0|1"` drives the whole hierarchy. Confirmed in their served
+   markup: the property is written onto ul, li, a AND span alike, redundant on three of the four -
+   only `a` consumes it. We set it on `a` only. */
+.toc a {
+  padding-block: 0.25rem;
+  padding-inline: calc(1rem * var(--depth, 0) + var(--pad-inline)) var(--pad-inline);
+  border-radius: 0;                       /* theirs is .25rem; squared. See note below. */
+  line-height: 1.25;
+  display: block;
+  font-size: 0.8125rem;                   /* their --sl-text-xs */
+  color: var(--color-silver, #a3a19d);    /* theirs is --sl-color-gray-3 #888c96, a COOL grey */
+  text-decoration: none;
+  overflow-wrap: anywhere;                /* theirs - long headings must not blow the rail out */
+  border-bottom: 0;                       /* cancels the global prose-link hairline */
+}
+.toc a:hover { color: var(--color-text, #f5f3ef); background: none; }
+
+/* ── THE ACTIVE STATE, and the nuance that makes this rail read quiet ──────────────────────
+   `aria-current="true"` is their SOLE styling and a11y hook - one attribute does both jobs.
+
+   THE NUANCE THE SAVED NOTE FLATTENED: in DARK mode their active link is --sl-color-accent-high
+   #b3c7ff, a PALE blue, against --sl-color-gray-3 #888c96. So the active state is carried by a
+   LIGHTNESS STEP, NOT A HUE POP. That is precisely why the rail reads quiet rather than shouty,
+   and it maps cleanly onto --color-gold #fbbf24 against --color-silver #a3a19d.
+   Taking the hue without the lightness relationship would produce a much louder rail than theirs.
+   ────────────────────────────────────────────────────────────────────────────────────────── */
+.toc a[aria-current="true"] { color: var(--color-gold, #fbbf24); }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V1 - STARLIGHT FAITHFUL: a FIXED rail.
+   position:fixed; top:0; height:100vh with an inner scroll and a hairline inner border.
+   THE COST, which is theirs and is why V2 exists: `top:0` forces a `padding-top` equal to the nav
+   height to push the content back down under the header.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.toc--v1 {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding-top: var(--nav-h, 3.5rem);      /* the compensation their fixed rail forces */
+  border-inline-start: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V2 - STICKY instead of fixed. OURS, and it is a real simplification rather than a preference.
+   A sticky rail needs no padding-top compensation at all, because it never leaves the flow. Same
+   inner scroll, same hairline. Everything else is identical to V1.
+   Flagged as ours because it is a deviation from the source's own layout choice.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.toc--v2 {
+  position: sticky;
+  top: var(--nav-h, 3.5rem);
+  max-height: calc(100vh - var(--nav-h, 3.5rem));
+  overflow-y: auto;
+  scrollbar-width: none;
+  border-inline-start: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V3 - STICKY, PLUS A NON-COLOUR ACTIVE CHANNEL. OURS, and it exists for a real reason:
+   marking the active item by COLOUR ALONE is a WCAG 1.4.1 exposure (colour must not be the only
+   means of conveying information). Starlight has this exposure; we do not have to inherit it.
+   A left rule adds a second channel and costs no motion and no fill.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.toc--v3 {
+  position: sticky;
+  top: var(--nav-h, 3.5rem);
+  max-height: calc(100vh - var(--nav-h, 3.5rem));
+  overflow-y: auto;
+  scrollbar-width: none;
+  border-inline-start: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+}
+.toc--v3 a { border-left: 2px solid transparent; margin-left: -1px; }
+.toc--v3 a[aria-current="true"] { border-left-color: var(--color-gold, #fbbf24); }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE MOBILE POPUP - <details>/<summary>, with the active heading in the closed summary.
+   Their geometry, our surfaces.
+
+   NOT TAKEN, all three because they fight the live scene:
+     .dropdown and .toggle both use SOLID fills (--sl-color-black #17181c)
+     .dropdown adds box-shadow: var(--sl-shadow-md), which is FOUR STACKED SHADOWS
+   Replaced with --color-panel and no shadow. (No backdrop-filter anywhere in this component, so
+   there is nothing to strip on that front.)
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.toc-pop { display: block; }
+@media (width >= 72rem) { .toc-pop { display: none; } }
+@media (width < 72rem) { .toc--v1, .toc--v2, .toc--v3 { display: none; } }
+
+.toc-pop__bar {
+  position: fixed;
+  inset-inline: 0;
+  top: calc(var(--nav-h, 3.5rem) - 1px);
+  z-index: 4;                              /* their --sl-z-index-toc */
+  border-top: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  background-color: var(--color-panel, rgba(28, 26, 24, 0.55));
+}
+.toc-pop summary {
+  height: 3rem;                            /* their --sl-mobile-toc-height */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  outline-offset: -0.1875rem;              /* their --sl-outline-offset-inside */
+  border-bottom: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+}
+.toc-pop summary::marker,
+.toc-pop summary::-webkit-details-marker { display: none; }
+
+.toc-pop__toggle {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 0.5rem;
+  padding-inline: 0.75rem 0.5rem;
+  line-height: 1;
+  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  border-radius: 0;                        /* theirs is .5rem */
+  background-color: transparent;           /* theirs is solid black */
+  user-select: none;
+  cursor: pointer;
+}
+.toc-pop details[open] .toc-pop__toggle { color: var(--color-text, #f5f3ef); border-color: var(--color-gold, #fbbf24); }
+.toc-pop__toggle:hover { color: var(--color-text, #f5f3ef); border-color: var(--color-silver, #a3a19d); }
+.toc-pop details[open] .toc-pop__caret { transform: rotate(90deg); }
+
+/* .display-current: their summary shows the CURRENT heading, and it is JS-only - the served HTML
+   ships it EMPTY and a mobile subclass writes link.textContent into it. It is not free, and it
+   needs a sensible pre-JS default. Starlight ships a blank; we ship "On this page". */
+.toc-pop__current { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: var(--color-text, #f5f3ef); }
+
+.toc-pop__list {
+  max-height: calc(85vh - var(--nav-h, 3.5rem) - 3rem);   /* theirs, verbatim */
+  overflow-y: auto;
+  overscroll-behavior: contain;                            /* theirs - stops scroll chaining */
+  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  background-color: var(--color-panel, rgba(28, 26, 24, 0.55));
+  /* their box-shadow: var(--sl-shadow-md) is FOUR stacked shadows. Dropped. */
+}
+/* their mobile row treatment, which the saved note missed entirely */
+.toc-pop__list a {
+  --pad-inline: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--pad-inline);
+  border-top: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  border-radius: 0;                        /* Starlight itself ships square on mobile */
+  padding-block: 0.5rem;
+  font-size: 0.875rem;
+}
+.toc-pop__list li:first-child > a { border-top: 0; }   /* their :first-child reset */
+
+/* ANCHOR-UNDER-STICKY-HEADER FIX - theirs, and the saved note credited only MDN for the idea.
+   DELIBERATELY NOT APPLIED HERE, corrected 2026-08-23 after an audit measured the result.
+   `decisions.css` already sets `scroll-margin-top` on the heading TARGETS. Setting
+   `scroll-padding-top` on `html` as well does not override it - THE TWO ADD, and every in-page
+   jump overshot by 80 to 116px.
+   One offset, on the target, is enough. Their formula is kept here as a comment because it is the
+   better IDEA - one expression serving both layouts, since the popup height collapses to zero
+   above 72rem - and it is what to reach for if the offset ever moves off the targets:
+       html { scroll-padding-top: calc(1.5rem + var(--nav-h) + 3rem); }
+       @media (width >= 72rem) { html { scroll-padding-top: calc(1.5rem + var(--nav-h)); } }
+   This was also the only bare-element global selector in all 22 components, which is why a
+   component file could reach out and change the whole page. */
+
+/* REDUCED MOTION: Starlight's mobile caret has NO transition at all - it snaps. So as-shipped
+   this needs no reduced-motion path. The caret rotation above is therefore instant by default.
+   If motion is ever added, copy THEIR inverse gate, which is the better pattern:
+     @media (prefers-reduced-motion: no-preference) { ...transition... }
+   Opt IN to motion rather than opt out of it. */
+
+/* NOT TAKEN, needs its own source if wanted:
+   - the base64 data-URI checkmark on the active mobile row (generic; use Rod's own mark)
+   - the caret is a real inline 24x24 chevron SVG with fill:currentColor, i.e. ARTWORK, not a CSS
+     shape. The demo uses a CSS triangle so nothing unsourced ships.
+   - the SLIDING MARKER feel, if wanted instead of a colour swap, is VITEPRESS's geometry
+     (candidate 2 in the same analysis file), NOT Starlight's, and must be cited as such. */
+}
