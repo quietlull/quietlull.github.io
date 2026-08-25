@@ -3,8 +3,7 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer prose {
-/* ============================================================================================
-   decisions.css - EVERY SETTLED TEXT DECISION, in one place, imported by all six final-* pages.
+/* decisions.css - EVERY SETTLED TEXT DECISION, in one place, imported by all six final-* pages.
 
    Built 2026-08-23 from Rod's picks on text-decisions.html. This file exists so the six pages
    cannot drift from each other or from the decision page: one definition, six consumers.
@@ -13,10 +12,9 @@
    - Every block cites the source that decided it. A rule with no citation is a bug in this file.
    - Where Rod combined two sources, the block says OURS/REMIX rather than borrowing one citation.
    - It styles TYPE and TEXT only. No layout, no spacing between sections, no page structure -
-     those are each page's own business and D25 says layout is Rod's alone.
-   ============================================================================================ */
+     those are each page's own business and D25 says layout is Rod's alone. */
 
-/* ── TOKENS ADDED BY THE DECISIONS ─────────────────────────────────────────────────────────
+/* TOKENS ADDED BY THE DECISIONS
    Only ONE new token. Rod picked silver candidate ii for heading tiers 3-4; it is a derivation
    of two tokens he already approved, not a new hue, and it is named here rather than left as a
    literal so H3/H4 reference a name. Measured 7.40:1 against the reading well - the only one of
@@ -61,15 +59,13 @@
   --emphasis-color: var(--color-gold, #fbbf24); /* bold takes the H2 yellow - Rod 2026-08-23 */
 }
 
-/* ============================================================================================
-   HEADINGS - the H0-H4 ladder, ACCEPTED by Rod 2026-08-23.
+/* HEADINGS - the H0-H4 ladder, ACCEPTED by Rod 2026-08-23.
    Structure is his (H0 for the site mark). Sizes are stripe's measured scale where they exist.
    THE LADDER ITSELF IS OURS - no single source supplies it.
 
    Weight follows stripe's confirmed rule: hierarchy is size + tracking, NEVER weight. That is
    why every level below is 100-300 and nothing is bold. Landing and about currently run 700
-   everywhere, which is that rule inverted; adopting this changes them.
-   ============================================================================================ */
+   everywhere, which is that rule inverted; adopting this changes them. */
 
 /* H0 - the site mark. One per SITE, not per page. Landing hero only.
    PROVISIONAL BY DEFINITION: this is being replaced by the line boil, which is blocked on Rod's
@@ -299,9 +295,7 @@ h4, .d-h4, .card-title {
   .d-anchor { transition: none; }
 }
 
-/* ============================================================================================
-   BODY TEXT
-   ============================================================================================ */
+/* BODY TEXT */
 
 /* THE MEASURE - 94 characters, Rod's own call (P33). Body is stripe's weight 300 at 130%.
    SOURCE: sources/stripe-dev-prose.md (CONFIRMED) for the type; the width is Rod's.
@@ -484,8 +478,7 @@ h4, .d-h4, .card-title {
   padding-left: 28px;
 }
 
-/* ============================================================================================
-   FIGURES - PICKED B, catlikecoding, WITH A LEFT-ALIGNED CAPTION (Rod 2026-08-23).
+/* FIGURES - PICKED B, catlikecoding, WITH A LEFT-ALIGNED CAPTION (Rod 2026-08-23).
    SOURCE: sources/catlikecoding-prose.md (CONFIRMED) for the geometry.
    ONE DELIBERATE DEPARTURE: their figcaption is text-align:center. Rod asked for left. Dropping
    that one declaration makes this a REMIX rather than a transcription, and it is filed as one.
@@ -494,8 +487,7 @@ h4, .d-h4, .card-title {
    across the posts, that is 46 frames NOT competing with the live scene behind them.
    Paper on the mat was killed separately (D29, A0).
    Hero media takes these same rules: Rod rejected all three mask treatments, so a hero is just
-   a figure. line-height:0 borrowed from Maxime kills the inline descender gap under the image.
-   ============================================================================================ */
+   a figure. line-height:0 borrowed from Maxime kills the inline descender gap under the image. */
 .prose figure, .d-figure {
   text-align: center;
   display: block;
@@ -517,8 +509,7 @@ h4, .d-h4, .card-title {
   margin-top: 0.5rem;
 }
 
-/* ============================================================================================
-   TABLES - PICKED B squared, with an H2-yellow header row (Rod 2026-08-23).
+/* TABLES - PICKED B squared, with an H2-yellow header row (Rod 2026-08-23).
    THIS IS A REMIX and each half has a different parent:
      - iquilezles supplies the minimal body and the horizontal SCROLL WRAPPER (CONFIRMED)
      - acegikmo supplies the idea of a coloured header row. CITATION CORRECTED 2026-08-23:
@@ -530,8 +521,7 @@ h4, .d-h4, .card-title {
    border-radius:8px with 4px cells, and the shape pass squares by default.
    NOT TAKEN: acegikmo's four semantic cell states (td.on/.off/.na/.depends). They are four
    colours and the palette law bans red and cool accents.
-   The scroll wrapper is load-bearing: the measure is 767px and a feature matrix will exceed it.
-   ============================================================================================ */
+   The scroll wrapper is load-bearing: the measure is 767px and a feature matrix will exceed it. */
 .prose .table-scroll { overflow-x: auto; max-width: 100%; }
 .prose table {
   border-collapse: collapse;
@@ -551,8 +541,7 @@ h4, .d-h4, .card-title {
   padding: 0.35rem 1rem 0.35rem 0;
 }
 
-/* ============================================================================================
-   TAGS / META CHIPS - SETTLED 2026-08-21, re-confirmed 2026-08-23. TWO SHAPES, TWO JOBS.
+/* TAGS / META CHIPS - SETTLED 2026-08-21, re-confirmed 2026-08-23. TWO SHAPES, TWO JOBS.
    Rod: "squares for tags on project cards, rectangles from the buttons for the search and post
    meta data."
 
@@ -569,8 +558,7 @@ h4, .d-h4, .card-title {
         line is circular, and since we square the radius anyway the sole inherited value here is
         padding 0.7rem 1.5rem. Checking stephanewillems' live CSS would close even that.
      3. the kit's own .kit-tag uses --color-muted (#9aa3bd), which is THE BLUE the palette law
-        rules out. Not carried across; these use the warm tokens instead.
-   ============================================================================================ */
+        rules out. Not carried across; these use the warm tokens instead. */
 .d-tag {
   display: inline-block;
   border-radius: 0;
@@ -591,8 +579,7 @@ h4, .d-h4, .card-title {
   padding: 0.7rem 1.5rem;
 }
 
-/* ============================================================================================
-   RELATED POST CARDS - DECIDED 2026-08-23. The project card, stripped.
+/* RELATED POST CARDS - DECIDED 2026-08-23. The project card, stripped.
    PROVENANCE: OURS - derived from extracted/components/project-cards-expensive/, which Rod
    co-authored and whose citation objection he withdrew 2026-08-22 (origin ROD).
    Rod: "resemble the project cards without the glass and motion and glow ... keep them pretty
@@ -617,8 +604,7 @@ h4, .d-h4, .card-title {
    ONE ADDITION, and it is an accessibility requirement rather than a style choice: with hover
    gone there is no affordance that the card is clickable, and it IS a link. A border-colour
    change costs no motion and no glow, which is the cheapest thing that satisfies WCAG 2.4.7
-   without breaking "motionless".
-   ============================================================================================ */
+   without breaking "motionless". */
 .d-relcard {
   display: block;
   border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
@@ -631,8 +617,7 @@ h4, .d-h4, .card-title {
 .d-relcard:focus-visible { border-color: var(--color-gold, #fbbf24); }
 @media (prefers-reduced-motion: reduce) { .d-relcard { transition: none; } }
 
-/* ============================================================================================
-   THE CALLOUT FAMILY - DECIDED 2026-08-23. Four categories, one tape placement each.
+/* THE CALLOUT FAMILY - DECIDED 2026-08-23. Four categories, one tape placement each.
    The tape itself is extracted/components/washi-tape/washi-tape.css and is NOT redefined here -
    this file only maps categories onto its placements, so there stays one definition.
 
@@ -658,8 +643,7 @@ h4, .d-h4, .card-title {
       If they still need one, it has to come from somewhere else, and that is a new question.
 
    2. reference/links takes NO TAPE. Rod: "reference i guess should have no tape." It is end
-      matter rather than an interruption, so it stays quiet. Nothing had to be originated.
-   ============================================================================================ */
+      matter rather than an interruption, so it stays quiet. Nothing had to be originated. */
 .d-callout {
   position: relative;
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
@@ -685,9 +669,7 @@ h4, .d-h4, .card-title {
 /* The takeaway keeps the STAMP and takes no tape - Rod's own CSS and the one callout with a
    legitimate attribution. It is in extracted/components/stamp-callout/ and is not redefined. */
 
-
-/* ============================================================================================
-   PAGE MAPPING - which existing element on each page plays which ladder role.
+/* PAGE MAPPING - which existing element on each page plays which ladder role.
 
    The ladder above is generic (.d-h1 etc). The six final-* pages were built before it and use
    their own class names, so this block maps them. It exists because Rod asked to SEE the
@@ -705,8 +687,7 @@ h4, .d-h4, .card-title {
      landing  .merged-cards .card-title = the card title -> H4 role (8 of them, highest traffic)
      about    body.spacious .bio-h = a section head -> H2 role
      about    body.spacious .bio-h--lesser = the lesser one -> H3 role
-     post     .posthead h1 = the page title -> H1 role
-   ============================================================================================ */
+     post     .posthead h1 = the page title -> H1 role */
 
 /* --- LANDING --- */
 /* The h2 ELEMENT carries no role: its visible text lives in a `.section-head__name` child, so the
@@ -774,8 +755,7 @@ body.spacious .bio-h--lesser {
    orange, per Rod 2026-08-23. */
 .posthead h1 { color: var(--h1-color); }
 
-/* ============================================================================================
-   WHAT IS DELIBERATELY NOT DONE HERE, so the gap is visible rather than silent:
+/* WHAT IS DELIBERATELY NOT DONE HERE, so the gap is visible rather than silent:
 
    The post SKIPS H2 - it runs h1 straight to h3 for its five section breaks. That is a WCAG
    1.3.1 heading-order failure and Rod's accepted ladder fixes it, but the fix is a MARKUP
@@ -783,11 +763,9 @@ body.spacious .bio-h--lesser {
    look like h2, which hides the failure instead of fixing it. Left for a markup pass.
 
    Projects, ramblings and portal have no design headings at all yet, so they adopt the ladder
-   for free the moment they grow one. Nothing to map.
-   ============================================================================================ */
+   for free the moment they grow one. Nothing to map. */
 
-
-/* ── THE FOUR CALLOUT CATEGORIES, COLOUR HARD-CODED BY MEANING (Rod 2026-08-23) ──────────────
+/* THE FOUR CALLOUT CATEGORIES, COLOUR HARD-CODED BY MEANING (Rod 2026-08-23)
    Each sets --tape-hue on the HOST, which is how washi-tape.css is built to be recoloured: one
    place per card, and every strip on it follows. The hue VALUES are the four already in the
    component; only their ASSIGNMENT is new.
@@ -815,9 +793,7 @@ body.spacious .bio-h--lesser {
    Deliberately the quietest member of the family because it is end matter, not an interruption. */
 .d-callout--reference { transform: none; }
 
-
-/* ============================================================================================
-   CODE BLOCK SYNTAX COLOURS - NAMED BY ROD 2026-08-23, and he is right that he had named them.
+/* CODE BLOCK SYNTAX COLOURS - NAMED BY ROD 2026-08-23, and he is right that he had named them.
    "same as VS code orange for structs like void, const, float, etc blue for named constants and
     variables green for classes and pink for functions."
 
@@ -841,8 +817,7 @@ body.spacious .bio-h--lesser {
 
    VALUES: taken from VS Code Dark+ rather than invented, because "same as VS code" is the citation.
    They are NOT re-derived to fit the palette - a syntax theme people already read fluently is the
-   point, and re-tinting it would defeat the reason for choosing it.
-   ============================================================================================ */
+   point, and re-tinting it would defeat the reason for choosing it. */
 .prose pre code {
   --syn-type: #ce9178;      /* types + storage keywords - ROD's ORANGE. void const float float4  */
   --syn-const: #569cd6;     /* named CONSTANTS - Rod 2026-08-23 "keep dark blue for constants"   */

@@ -3,84 +3,20 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* ============================================================================================
-   empty-state - the "your search/filter returned nothing" block.
-   Built 2026-08-23. Reservation: 930 x 60 (projects) and 1351 x 60 (ramblings). Height 60 both.
+/* empty-state - the "your search returned nothing" block. Three versions, 930x60 and 1351x60.
+   PatternFly's EmptyState, fetched and token-resolved to literals rather than trusted. Remixed,
+   all three: their box is a 2rem-padded centred stack and squeezing it into a 60px band is ours.
+   The title copy is the LIVE SITE'S own sentence (post-filter.js), origin Rod. The second line is
+   Claude's and still wants Rod's voice.
+   No icon on purpose - theirs is Font Awesome, which is not shipping, and drawing one would be
+   unsourced. See empty-state.md. */
 
-   -- WHAT THE LEDGER CLAIMED, AND WHAT WAS ACTUALLY THERE ------------------------------------
-   rework-hana-ledger.md:53 files this as "Remixed / PatternFly (source pulled)". There is NO
-   sources/patternfly-*.md in the lab. The claim pointed at nothing, so it was checked instead of
-   trusted. PatternFly is a real, public, open-source design system, so the check was possible:
-
-     FETCHED 2026-08-23, 7,960 bytes:
-     https://unpkg.com/@patternfly/patternfly/components/EmptyState/empty-state.css   (v6.6.1)
-     https://unpkg.com/@patternfly/patternfly@6.6.1/base/patternfly-variables.css     (tokens)
-
-   Every PatternFly value quoted below was resolved through their token chain to a literal, not
-   guessed. The chains, so they can be re-walked:
-     spacer--md  = spacer--300           = 1rem
-     spacer--sm  = spacer--200           = 0.5rem
-     spacer--xs  = spacer--100           = 0.25rem
-     m-xs title  = heading--xs = size--md = size--300 = 1rem
-     size--sm    = size--200             = 0.875rem
-     heading line-height = line-height--100 = 1.3
-     heading weight      = weight--300      = 600
-     m-xs content MaxWidth                  = 21.875rem
-
-   THE CLAIM SURVIVED, AND ONE DETAIL OF IT WAS FALSE. The ledger's canonical note says the
-   PatternFly empty state has NO dashed border. Confirmed as REAL ABSENCE EVIDENCE, not a summary:
-   grep for border|background|radius across the whole 7,960-byte file returns ZERO hits. So
-   `list-controls.css`'s `1px dashed` box is NOT PatternFly's - it is ours, and its own header
-   already admits the component has no external provenance.
-
-   -- WHAT IS BEING REUSED RATHER THAN REBUILT ------------------------------------------------
-   `extracted/components/list-controls/` already ships `.list-controls__empty`. It is NOT reused
-   as CSS and the reasons are concrete, not stylistic:
-     1. its own header declares it CIRCULAR CITATION / Slop;
-     2. it uses --color-muted (#9aa3bd), the blue the palette law rules out;
-     3. border-radius: 10px, against the square rule;
-     4. it renders roughly 130px tall at max-width 560px. The reservation is 60 x 930/1351.
-   What IS carried over from it is the CONTENT MODEL - heading, next step, action link - and that
-   model is PatternFly's (__title-text / __body / __footer > __actions), not the bench file's.
-
-   -- WHERE THE COPY COMES FROM (this is the part the brief asked for) ------------------------
-   Not invented. The live site already writes contextual empty-state copy and branches it four
-   ways, at `_javascript/modules/components/post-filter.js:123-146`:
-     tags + query -> `No ${tags} projects matching "${query}"`
-     tags only    -> `No ${tags} projects yet - more coming soon!`
-     query only   -> `No projects matching "${query}"`
-     neither      -> `No projects match your filters.`
-   and `_layouts/ramblings.html:93` -> `Nothing here yet. Check back later!`
-   So the TITLE line in every version below is the live site's own sentence, origin ROD.
-   TWO CHANGES TO IT, both logged:
-     - the live "yet - more coming soon!" carries an em dash. House rule: no em dashes. Comma.
-     - the live copy has NO second line. The next-step sentence is NEW and is CLAUDE's words in
-       PatternFly's __body slot. Flagged in the .md for Rod to rewrite in his own voice.
-
-   -- TIER ------------------------------------------------------------------------------------
-   V1 Remixed, V2 Remixed, V3 Remixed. Nothing here is True: the source is a 2rem-padded
-   centred stack and every version had to be compressed into a 60px band, which is ours.
-
-   -- NO ICON, AND THAT IS A DELIBERATE GAP ---------------------------------------------------
-   PatternFly has an `__icon` slot (2xl, subtle colour, 1.5rem below it) and the live site fills it
-   with Font Awesome (`fa-search`, `fa-filter`, `fa-inbox`, `fa-coffee`). Neither transfers: FA is
-   not shipping with the redesign, and drawing a replacement glyph would be unsourced. No icon is
-   drawn in any version rather than inventing one. Open question in the .md.
-   ============================================================================================ */
-
-/* -- SHARED SHELL, all three versions -------------------------------------------------------
-   The four container declarations are PatternFly's `.pf-v6-c-empty-state` verbatim.
-   padding-inline is their `.pf-m-xs` value (spacer--md). padding-block is NOT: theirs is also
-   1rem, and 1rem + 1rem + a 20.8px line + a 16px body margin + an 18.2px line is 90px in a 60px
-   box. So the vertical padding is dropped to 0 and `min-height` + `align-items:center` do the
-   centring instead. THAT SUBSTITUTION IS OURS and is the single biggest departure in the file.
-   min-height, not height: the reservation is a floor measured at 1440, and below about 560px the
-   row versions wrap to a second line and the box must be allowed to grow rather than clip. */
-/* `hidden` HAS TO WIN, and it did not. The UA gives [hidden] `display:none`, but a class rule
-   with the same origin beats an attribute presentation hint, so `display:flex` here overrode it
-   and the empty state rendered ANYWAY. Measured on final-ramblings: the "no ramblings matching
-   ..." message was on screen under eight visible rows, every child visible and opaque, and
-   role="status" was announcing it. This is a correctness bug, not a look. */
+/* The container is PatternFly's `.pf-v6-c-empty-state` verbatim EXCEPT padding-block, which is
+   the biggest departure in the file: theirs is 1rem, and 1rem of it plus the two lines comes to
+   90px in a 60px box. So vertical padding goes to 0 and min-height plus align-items do the
+   centring. min-height, not height, so it can grow when the row versions wrap. */
+/* KEEP THIS LINE. `.es` below sets display:flex, which beats the browser's own [hidden] rule,
+   so without this the empty state renders on top of a full list. It did, on final-ramblings. */
 .es[hidden] { display: none; }
 
 .es {
@@ -94,18 +30,13 @@
   font-family: var(--font-body, "M PLUS Rounded 1c", sans-serif);
 }
 
-/* PatternFly `.pf-m-xs` --content--MaxWidth: 21.875rem (350px), verbatim. Overridden in the two
-   row versions to their own default `none`, which is also verbatim. */
+/* PatternFly's 350px max-width, verbatim. The row versions override it to their own `none`. */
 .es__content {
   max-width: 21.875rem;
 }
 
-/* TITLE - their `__title-text`. Size and line-height verbatim.
-   ONE DEPARTURE: their font-weight is 600. decisions.css takes stripe's confirmed rule that
-   hierarchy is size and tracking and NEVER weight, which is why nothing in that file is bold.
-   600 would be the single boldest thing on an index page, so it becomes 300.
-   COLOUR: their title takes the page's default text colour, so ours takes --color-text, measured
-   at 17.31:1 against the reading well in decisions.css. */
+/* Their `__title-text`, size and line-height verbatim. Weight is the one departure: theirs is
+   600 and nothing on this site is bold, because hierarchy here is size and tracking. */
 .es__title {
   margin: 0;
   font-size: 1rem;
@@ -114,21 +45,14 @@
   color: var(--color-text, #f5f3ef);
 }
 
-/* the echoed tag and query. --emphasis-color is decisions.css's settled name for the H2 yellow
-   that bold already takes, so this introduces no new accent. Weight held at 300 for the reason
-   directly above - the emphasis is carried by colour, not by weight. */
+/* The echoed tag and query. Colour carries the emphasis, not weight - hence 300 again. */
 .es__title b {
   color: var(--emphasis-color, #fbbf24);
   font-weight: 300;
 }
 
-/* BODY - their `__body`. Their colour role is text--color--subtle, which maps onto our silver
-   (7.40:1, measured in decisions.css). --color-muted is NOT used here: it is the last blue in the
-   token set and the palette law bans it.
-   ONE DEPARTURE: their body is 1rem (body--lg). Dropped one step to their own size--sm so the
-   two-line stack fits 60px. The step is ours; the value is theirs.
-   weight / line-height / letter-spacing are decisions.css's settled body rule (stripe, CONFIRMED)
-   so the sentence reads identically to prose body copy elsewhere on the site. */
+/* Their `__body`, stepped down one of their own sizes so the two-line stack fits 60px.
+   Silver, never --color-muted: that is the last blue in the set and the palette law bans it. */
 .es__body {
   margin: 0;
   font-size: 0.875rem;
@@ -138,15 +62,10 @@
   color: var(--color-silver, #a3a19d);
 }
 
-/* ACTION - PatternFly's `__actions` slot, but the LOOK is not theirs: their action is a Button
-   component, and this site does not put a button in a list index.
-   These four declarations are decisions.css `.prose a` copied VERBATIM (stripe.dev, CONFIRMED,
-   picked by Rod 2026-08-23) - the highlighter link that fills gold and flips the text to the
-   panel colour. Duplicated rather than referenced because an empty state is not inside `.prose`
-   and `.prose` also carries a 767px measure that would fight the 930/1351 box.
-   ANTI-BLOAT NOTE, so the duplication is a choice and not an accident: if Rod prefers, adding
-   `.es__action` to decisions.css's `.prose a` selector list deletes this whole block.
-   `position: relative` from that rule is NOT carried - it is inert there and would be inert here. */
+/* PatternFly's `__actions` slot, but their action is a Button and this site does not put a
+   button in a list index. So the look is decisions.scss `.prose a` copied verbatim, duplicated
+   on purpose: an empty state is not inside `.prose`, and `.prose` carries a 767px measure that
+   would fight the 930px box. Adding `.es__action` to that selector list deletes this block. */
 .es__action {
   color: var(--color-text, #f5f3ef);
   border-bottom: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
@@ -159,46 +78,26 @@
   color: var(--color-panel-solid, #1c1a18);
 }
 
-/* FOCUS RING: deliberately not declared. The global ring already exists at
-   extracted/styles/generic.css:25 and is sourced in sources/focus-ring.md. Re-declaring it would
-   be duplicate code for no gain (D5). Same call prevnext-real.css made. */
+/* No focus ring here on purpose - the global one in _focus-ring.scss covers it (D5). */
 
 @media (prefers-reduced-motion: reduce) {
   .es__action { transition: none; }
 }
 
+/* V1 - CENTRED STACK. The closest thing to PatternFly that fits: two lines in a 350px column.
+   The action sits inside the second sentence rather than in their separate footer, which is ours
+   and is forced - their footer costs a third line and the box only has 60px.
+   Measures 43.0px of content inside 60. */
 
-/* ==========================================================================================
-   V1 - CENTRED STACK.  The closest thing to PatternFly that fits.
-   Two lines in a 350px centred column, exactly their shape, vertically compressed.
-   The action lives INSIDE the second sentence rather than in their separate `__footer`, because
-   `__footer` costs its own 1rem top margin plus a third line and the box only has 60px. Putting
-   it inline is OURS.
-   MEASURED CONTENT HEIGHT: 20.8 (title) + 4 (margin) + 18.2 (body) = 43.0px inside 60px.
-   ========================================================================================== */
-
-/* their `__body--MarginBlockStart` is spacer--md (1rem). Stepped down to spacer--xs (0.25rem),
-   which is PatternFly's own smallest spacer, so the value is still theirs and only the STEP is
-   ours. 1rem here would push the stack to 55px of content and leave 2.5px of air. */
+/* Their smallest spacer, not their 1rem: 1rem leaves 2.5px of air in a 60px box. */
 .es--stack .es__body {
   margin-block-start: 0.25rem;
 }
 
-
-/* ==========================================================================================
-   V2 - CENTRED ROW.  Title, next step and action on ONE centred line.
-   The layout rule is PatternFly's own `__actions` block, verbatim, applied to the whole content
-   instead of just the buttons:
-       display:flex; flex-wrap:wrap; gap:<RowGap> <ColumnGap>; justify-content:center;
-   with RowGap = spacer--gap--group--vertical = spacer--sm = 0.5rem and
-        ColumnGap = spacer--gap--action-to-action--default = spacer--md = 1rem.
-   `max-width:none` is their own default `__content--MaxWidth`, also verbatim.
-   align-items:baseline is NOT theirs - it is TheRealMJP's list row
-   (`.posts-group .post-item a{...align-items:baseline...}`, read live from
-   therealmjp.github.io/css/style.min.4bc5....css this session). Borrowed because this is the same
-   situation: a row of text at two different sizes that has to sit on one line.
-   MEASURED CONTENT HEIGHT: one line, 20.8px inside 60px. If it wraps to two, 47px. Still inside.
-   ========================================================================================== */
+/* V2 - CENTRED ROW. Title, next step and action on one line. The flex rule is PatternFly's own
+   `__actions` block verbatim, applied to the whole content instead of just the buttons.
+   `align-items: baseline` is TheRealMJP's list row, borrowed because it is the same situation:
+   text at two sizes that has to sit on one line. 20.8px, or 47 if it wraps. See empty-state.md. */
 .es--row .es__content {
   max-width: none;
   display: flex;
@@ -208,25 +107,10 @@
   align-items: baseline;
 }
 
-
-/* ==========================================================================================
-   V3 - SPLIT ROW.  Message hard left, action hard right. The only version that uses the width.
-   GEOMETRY IS TheRealMJP'S LIST ROW, read live this session and quoted here in full:
-       .posts-group .post-item a{display:flex;justify-content:space-between;align-items:baseline;
-                                 padding:12px 0}
-       .posts-group .post-day{flex-shrink:0;margin-left:1em;opacity:.6}
-   Taken from their LIST, not their prev/next - the empty state sits in a list and inherits the
-   list's rhythm, which is the whole argument for this version.
-   TWO THINGS NOT TAKEN:
-     - their `opacity:.6` on the right-hand item. Opacity over a live three.js scene is not a
-       colour, it is a window onto whatever is behind. The silver token carries the same role at a
-       contrast that was actually measured.
-     - their `border-bottom:1px #7d828a dashed` row rule. It is a real external dashed hairline and
-       it is the closest thing in the set to the dashed box Rod liked in rework-hana, but it is a
-       ROW SEPARATOR on their site, not a box around an empty state. Noted in the .md, not built.
-   text-align:left is OURS: PatternFly centres, and a split row cannot be centred.
-   MEASURED CONTENT HEIGHT: 12 + 20.8 + 12 = 44.8px, and min-height 60 wins. Inside 60px.
-   ========================================================================================== */
+/* V3 - SPLIT ROW. Message hard left, action hard right, and the only version that uses the
+   width. Geometry is TheRealMJP's list row, taken from their LIST rather than their prev/next
+   because an empty state sits in a list. Their `opacity: .6` is NOT taken - opacity over a live
+   scene is a window, not a colour. text-align: left is ours; PatternFly centres. 44.8px. */
 .es--split {
   text-align: left;
   padding-block: 12px;

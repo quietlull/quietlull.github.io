@@ -17,7 +17,7 @@
    The palette exception is therefore SPENT: these windows go back to site colours. Two rounds of
    chasing an external look ended with the answer being a component we already had.
 
-   ── PROVENANCE: THIS IS INTERNAL REUSE, NOT AN EXTERNAL BORROW ────────────────────────────────
+   ── PROVENANCE: THIS IS INTERNAL REUSE, NOT AN EXTERNAL BORROW
    The surface is our own APPROVED project card, taken from `merged-card.css` and
    `project-cards-expensive.css`. That is not a citation of anything outside this repo, and it is
    not claimed as one - it is the ordinary and correct thing to do: two objects that should feel
@@ -30,7 +30,7 @@
    That asymmetric bright-left / faint-bottom edge is the whole reason the cards read as lit from
    one side, so it is reproduced rather than flattened into a uniform border.
 
-   ── OPAQUE, AND THE CARD'S OWN DEEP BLUE ──────────────────────────────────────────────────────
+   ── OPAQUE, AND THE CARD'S OWN DEEP BLUE
    Rod asked for OPAQUE, then for the blue: "the cards themselves should be the deep blues of the
    site btw." So the ground is the card's actual gradient, `--color-cover-hi` #1b2452 ->
    `--color-cover-lo` #0b1024, at full opacity. Not an approximation - the same two tokens the
@@ -42,16 +42,16 @@
    (`card-greys-tests.html` is still open on exactly that). Rod's answer is that these windows follow
    the CARDS. If he later greys the cards, this follows automatically through the same tokens.
 
-   ── WHAT OPAQUE COSTS ─────────────────────────────────────────────────────────────────────────
+   ── WHAT OPAQUE COSTS
    The lantern scene no longer reads through the windows. That is what "opaque" means and it was
    asked for directly, but it is the single biggest change to how the page reads and it is not a
    detail.
 
-   ── THE DIAMOND IS GONE ───────────────────────────────────────────────────────────────────────
+   ── THE DIAMOND IS GONE
    `.pwin__mark` is deleted, markup and CSS. It began as a stand-in for zutomayo's drawn heart and
    survived into two later passes it never belonged to. Rod: "i really dont like the diamonds".
 
-   ── THE CLOSE BUTTON ──────────────────────────────────────────────────────────────────────────
+   ── THE CLOSE BUTTON
    Rod reported some windows had the X cut off. I could not reproduce it: measured at 1588, 1280,
    1100 and 980 every button rendered at full size inside its bar with room to spare, and none sat
    under the state panel. So rather than patch a symptom I could not see, the button is now sized so
@@ -61,10 +61,9 @@
    The 2x invisible hit area (109ichiki) stays: WCAG 2.2 target size (2.5.8) wants 24x24 and the
    drawn button is smaller than that on every window.
 
-   ── THE CLASS PREFIX IS `pwin`, NOT `portal-window` ───────────────────────────────────────────
+   ── THE CLASS PREFIX IS `pwin`, NOT `portal-window`
    Deliberate, against convention: `effects/portal-windows.js` addresses these nodes by name and is
-   verified working, so renaming them would edit behaviour-bearing code for a cosmetic reason.
-*/
+   verified working, so renaming them would edit behaviour-bearing code for a cosmetic reason. */
 
 .pwin {
   /* On the portal, final-portal.html overrides this with the absolute positioning the drag engine
@@ -289,16 +288,14 @@
   transform: none !important;
 }
 
-/* =================================================================================================
-   THE TEXT FILL. Rod 2026-08-23: "do a spam of repeated text of what the header says inside the box
+/* THE TEXT FILL. Rod 2026-08-23: "do a spam of repeated text of what the header says inside the box
    for now." Explicitly a PLACEHOLDER - it exists so the boxes are not empty while the real content
    is undecided, and it is generated from each window's own title so it can never drift out of sync
    with the header above it.
 
    IT IS `aria-hidden`, and that is not incidental. Repeating a word forty times is texture to look
    at and noise to listen to, so the visible fill is hidden from assistive tech and `.pwin__sr`
-   carries the single real label instead. A screen reader hears "Tech Art", not "Tech Art" x40.
-   ============================================================================================== */
+   carries the single real label instead. A screen reader hears "Tech Art", not "Tech Art" x40. */
 .pwin__fill {
   position: absolute;
   inset: 0;
@@ -334,8 +331,7 @@
   border: 0;
 }
 
-/* =================================================================================================
-   SOCIAL ICONS. Rod 2026-08-23: "for the socials inside the window can you put a icon of the social
+/* SOCIAL ICONS. Rod 2026-08-23: "for the socials inside the window can you put a icon of the social
    place they bring you?" The mark replaces the repeated-text fill on those five - a logo says what
    the window is far faster than its own name spammed forty times, and the two together would just
    be noise.
@@ -343,8 +339,7 @@
    Marks are Simple Icons, fetched verbatim (references/social-icons/SOURCES.md). INLINED rather
    than <img> for the reason skills-row already gives: an <img> cannot take colour from outside, and
    these have to follow the window's own. Geometry is byte-identical to the saved files; only the
-   brand fill is dropped so `currentColor` can supply it.
-   ============================================================================================== */
+   brand fill is dropped so `currentColor` can supply it. */
 .pwin__icon {
   width: 42%;
   max-width: 46px;
@@ -358,17 +353,14 @@
   color: var(--color-gold, #fbbf24);
 }
 
-
-/* =================================================================================================
-   THE SOCIALS ARE DEMOTED. Rod: "for tech art, game design, and rambling can you make them slightly
+/* THE SOCIALS ARE DEMOTED. Rod: "for tech art, game design, and rambling can you make them slightly
    larger and lets demote the social windows to be smaller than they are now."
 
    Size alone could not do it. Every window is grown to fit its own header (P153), so the header sets
    a hard FLOOR on width - "ArtStation" at the door's 19.2px needs ~178px no matter how small the
    window is asked to be. Demoting them therefore means demoting their TYPE first, which is also the
    more honest reading of the ask: the three doors should read as louder, not merely bigger.
-   Header ratio drops 0.48 -> 0.34 and the cap 21px -> 13px, which lets the width floor fall with it.
-   ============================================================================================== */
+   Header ratio drops 0.48 -> 0.34 and the cap 21px -> 13px, which lets the width floor fall with it. */
 .pwin--social .pwin__bar {
   font-size: clamp(9px, calc(var(--bar-h, 26px) * 0.34), 13px);
   letter-spacing: 0.04em;
@@ -380,8 +372,7 @@
   height: clamp(11px, calc(var(--bar-h, 26px) * 0.42), 16px);
 }
 
-/* =================================================================================================
-   THE ENTER AFFORDANCE. Rod 2026-08-23: "Enter button is unsourced and i want it to be bottom
+/* THE ENTER AFFORDANCE. Rod 2026-08-23: "Enter button is unsourced and i want it to be bottom
    center instead of center center. can you make the button one of the sourced buttons in the
    button toolkit?"
 
@@ -411,8 +402,7 @@
    IT IS STILL NOT A BUTTON: a `<span>` marked `aria-hidden` inside the link that already covers the
    card. `<button>` inside `<a>` is invalid and nested interactive content adds a second tab stop
    for one destination. Rod's framing - the card navigates, this "draws their attention" - describes
-   an affordance.
-   ============================================================================================== */
+   an affordance. */
 .pwin__enter {
   position: relative;
   z-index: 2;
@@ -435,8 +425,7 @@
   margin-bottom: 0.55em;
 }
 
-/* =================================================================================================
-   THE FILL IS REVERSED ON THIS PAGE. Rod 2026-08-23: "lets do a reversal for the buttons on this
+/* THE FILL IS REVERSED ON THIS PAGE. Rod 2026-08-23: "lets do a reversal for the buttons on this
    page they start off orange and fill transparent the text is black and make it as big as the
    header."
 
@@ -482,14 +471,12 @@
   padding-bottom: 0;
 }
 
-/* =================================================================================================
-   HOVER IS THE WHOLE CARD, TITLE BAR INCLUDED. Rod 2026-08-23: "hovering over the top of the card
+/* HOVER IS THE WHOLE CARD, TITLE BAR INCLUDED. Rod 2026-08-23: "hovering over the top of the card
    should count as hovering over the box as well."
    These were keyed to `.pwin a:hover`, and the link only covers the BODY - so the bar, which is a
    sibling of the body rather than a child of the link, lit nothing. Keying them to `.pwin:hover`
    makes the whole window one hover target, which is also what the card already behaves like: the
-   entire thing is one destination.
-   ============================================================================================== */
+   entire thing is one destination. */
 
 /* with the fill gone the label has to carry itself, so it takes the orange the fill just vacated */
 .pwin:hover .pwin__enter .kit-button__label,

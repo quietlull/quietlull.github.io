@@ -3,8 +3,7 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* ============================================================================================
-   bio-block - the ABOUT page's two prose blocks: bio_intro and bio_more.
+/* bio-block - the ABOUT page's two prose blocks: bio_intro and bio_more.
    Built 2026-08-23.
 
    Rod: "about page is the landing page except the about me is the hero, the achievements are the
@@ -14,7 +13,7 @@
    ONE mechanical change, house rule only: his two em dashes become commas (CONVENTIONS: no em
    dashes in written content). Nothing else in his words is touched. Flagged in the .md.
 
-   -- THE MEASURED RESERVATION --------------------------------------------------------------
+   -- THE MEASURED RESERVATION
    Read off about-blockout.html?v=panels at viewport 1440 with getBoundingClientRect, 2026-08-23.
    Variant `panels` is the right one to measure: its portrait renders 191x200, its status chip
    100x20 and its locked state 641x40, which are exactly the three ABOUT rows in
@@ -34,7 +33,7 @@
    THREE paragraphs, which set ten lines at the decided type. Measured overflow is in the .md and
    is drawn in the demo. Nothing here shrinks the type or cuts his words to make a number fit.
 
-   -- WHAT IS REUSED RATHER THAN REBUILT (D5) -----------------------------------------------
+   -- WHAT IS REUSED RATHER THAN REBUILT (D5)
    decisions.css does the TYPE. This file does not restate it:
      .prose            the 94ch measure + the white body colour           decisions.css:189-194
      .prose p          weight 300 / 130% / -0.18px                        decisions.css:195-200
@@ -52,10 +51,9 @@
    because it does fire the moment the block is used anywhere wider.
 
    NOTHING IN THIS FILE ANIMATES, so there is no prefers-reduced-motion path to write. The one
-   transition anywhere near it is decisions.css's link hover, which is that file's business.
-   ============================================================================================ */
+   transition anywhere near it is decisions.css's link hover, which is that file's business. */
 
-/* -- SHARED: the parts all three versions agree on ------------------------------------------
+/* SHARED: the parts all three versions agree on
    The width is the reservation's, verbatim. Everything else here is type plumbing. */
 .bio {
   width: 675px;
@@ -89,9 +87,7 @@
 @media (min-width: 960px) { .bio .prose p { font-size: 18px; } }
 .bio .prose > * + * { margin-top: 24px; }
 
-
-/* ============================================================================================
-   V1 - PANEL.  The whole block is one translucent panel; the heading is plain inside it.
+/* V1 - PANEL.  The whole block is one translucent panel; the heading is plain inside it.
    TIER: Remixed.   IDEA-ORIGIN: theirs (dimden), picked for this page by Rod.
 
    SOURCE: dimden.dev `.box`, https://dimden.dev/css/main.css?9 lines 168-180, read from source
@@ -117,8 +113,7 @@
    the ONLY translucent fill. Every other boxed option is opaque and would sit on top of the live
    scene instead of letting it through.
    Rod's own gallery note on this exact page (reference-gallery.html:221): "stacked bordered
-   panels ... personality through framing rather than typography."
-   ============================================================================================ */
+   panels ... personality through framing rather than typography." */
 .bio--panel {
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
   border: 2px solid var(--color-line-grey);
@@ -126,9 +121,7 @@
   padding: 10px 15px;
 }
 
-
-/* ============================================================================================
-   V2 - HEADING CARD.  The HEADING is the box; the prose sits bare underneath it.
+/* V2 - HEADING CARD.  The HEADING is the box; the prose sits bare underneath it.
    TIER: Remixed.   IDEA-ORIGIN: theirs (cyanilux).
 
    SOURCE: cyanilux `h2, h3, h4`, https://www.cyanilux.com/css/style.css?v=12 lines 817-832, read
@@ -157,8 +150,7 @@
    had anywhere to fire. Dropped rather than carried as a rule that never runs.
    NOT TAKEN: their nesting-by-fill (#282828 -> #303030 one step lighter per level of
    containment). It is a real device but it keys off CONTAINMENT, and these two blocks are
-   siblings - reusing it here would be borrowing the look and dropping the meaning.
-   ============================================================================================ */
+   siblings - reusing it here would be borrowing the look and dropping the meaning. */
 .bio--headcard .bio__h {
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
   border-left: 10px solid var(--h2-color, #fbbf24);
@@ -166,7 +158,6 @@
   padding: 7px 20px;
 }
 .bio--headcard .bio__h--lesser { border-left-color: var(--h3-color, #a3a19d); }
-
 
 // COMMENT DELIMITERS CHANGED HERE, AND ONLY THE DELIMITERS - every character of the text below is
 // the lab original. The block nests a second `/* ... */` inside itself (the `grep -c 'hr{'` aside),
@@ -176,7 +167,7 @@
 // why `.bio--bare { padding: 0 }` has been DEAD in the lab, silently, since it was written.
 // Re-flagged as a lab defect in the port report. Rewritten as Sass line comments so the text
 // survives intact and the rule below it comes back to life.
-// /* ============================================================================================
+// /*
 //    V3 - BARE.  No box anywhere. The heading recedes, the prose leads, one rule between blocks.
 //    TIER: Remixed.   IDEA-ORIGIN: theirs (iquilezles), kept in the set on the source note's own
 //    instruction rather than on a hunch.
@@ -206,9 +197,7 @@
 //    ============================================================================================ */
 .bio--bare { padding: 0; }
 
-
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   *** PICKED 2026-08-23: V4 = V1's PANEL + V2's HEADING LINE. ***
+/* *** PICKED 2026-08-23: V4 = V1's PANEL + V2's HEADING LINE. ***
    Rod: "bio block do v1 but the header has the line from v2"
 
    So the block keeps V1's single translucent panel, and the heading gains cyanilux's 10px left
@@ -225,8 +214,7 @@
 
    THE LEVEL COLOUR IS THE LADDER'S, not cyanilux's #00aabb, which is a cool cyan the palette law
    rules out. h2 gets the H2 yellow, the lesser head gets the H3 silver - the level already has a
-   decided colour, so the edge just uses it rather than introducing a new one.
-   ══════════════════════════════════════════════════════════════════════════════════════════ */
+   decided colour, so the edge just uses it rather than introducing a new one. */
 .bio--v4 {
   /* V1's panel, unchanged */
   background: var(--color-panel, rgba(28, 26, 24, 0.55));

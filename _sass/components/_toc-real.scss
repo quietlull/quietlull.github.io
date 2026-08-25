@@ -3,8 +3,7 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* ============================================================================================
-   toc-real - Starlight's rail + mobile popup, ONE system.
+/* toc-real - Starlight's rail + mobile popup, ONE system.
    Built 2026-08-23 from analysis/reference-briefs/brief-2.md (TOC).
 
    PREMISE: CONFIRMED. docs.astro.build genuinely ships a desktop rail AND a <details> mobile
@@ -19,12 +18,11 @@
    SCOPE HASHES STRIPPED: .astro-f35rxoh7 (shared list), -gl7qdvoz (popup), -mbtvktjh / -ojrabbd2
    (rail). All were :where()-wrapped, so removing them changes nothing about specificity.
 
-   ===== 72rem IS THE SINGLE SWITCH =====
+   ===== 72rem IS THE SINGLE SWITCH
    `.lg\:sl-block{display:block}` lives inside @media (width>=72rem), and --sl-mobile-toc-height
    flips 3rem -> 0rem in that SAME query. Below 1152px the popup bar is the TOC; above it, the rail
    is. Their sl-hidden / lg:sl-block is Starlight's own mini-utility layer (NOT Tailwind) and is
-   replaced here by one media query.
-   ============================================================================================ */
+   replaced here by one media query. */
 
 .toc { --pad-inline: 0.5rem; }
 .toc ul { padding: 0; list-style: none; margin: 0; }
@@ -47,23 +45,20 @@
 }
 .toc a:hover { color: var(--color-text, #f5f3ef); background: none; }
 
-/* ── THE ACTIVE STATE, and the nuance that makes this rail read quiet ──────────────────────
+/* THE ACTIVE STATE, and the nuance that makes this rail read quiet
    `aria-current="true"` is their SOLE styling and a11y hook - one attribute does both jobs.
 
    THE NUANCE THE SAVED NOTE FLATTENED: in DARK mode their active link is --sl-color-accent-high
    #b3c7ff, a PALE blue, against --sl-color-gray-3 #888c96. So the active state is carried by a
    LIGHTNESS STEP, NOT A HUE POP. That is precisely why the rail reads quiet rather than shouty,
    and it maps cleanly onto --color-gold #fbbf24 against --color-silver #a3a19d.
-   Taking the hue without the lightness relationship would produce a much louder rail than theirs.
-   ────────────────────────────────────────────────────────────────────────────────────────── */
+   Taking the hue without the lightness relationship would produce a much louder rail than theirs. */
 .toc a[aria-current="true"] { color: var(--color-gold, #fbbf24); }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   V1 - STARLIGHT FAITHFUL: a FIXED rail.
+/* V1 - STARLIGHT FAITHFUL: a FIXED rail.
    position:fixed; top:0; height:100vh with an inner scroll and a hairline inner border.
    THE COST, which is theirs and is why V2 exists: `top:0` forces a `padding-top` equal to the nav
-   height to push the content back down under the header.
-   ══════════════════════════════════════════════════════════════════════════════════════════ */
+   height to push the content back down under the header. */
 .toc--v1 {
   position: fixed;
   top: 0;
@@ -75,12 +70,10 @@
   border-inline-start: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   V2 - STICKY instead of fixed. OURS, and it is a real simplification rather than a preference.
+/* V2 - STICKY instead of fixed. OURS, and it is a real simplification rather than a preference.
    A sticky rail needs no padding-top compensation at all, because it never leaves the flow. Same
    inner scroll, same hairline. Everything else is identical to V1.
-   Flagged as ours because it is a deviation from the source's own layout choice.
-   ══════════════════════════════════════════════════════════════════════════════════════════ */
+   Flagged as ours because it is a deviation from the source's own layout choice. */
 .toc--v2 {
   position: sticky;
   top: var(--nav-h, 3.5rem);
@@ -90,12 +83,10 @@
   border-inline-start: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   V3 - STICKY, PLUS A NON-COLOUR ACTIVE CHANNEL. OURS, and it exists for a real reason:
+/* V3 - STICKY, PLUS A NON-COLOUR ACTIVE CHANNEL. OURS, and it exists for a real reason:
    marking the active item by COLOUR ALONE is a WCAG 1.4.1 exposure (colour must not be the only
    means of conveying information). Starlight has this exposure; we do not have to inherit it.
-   A left rule adds a second channel and costs no motion and no fill.
-   ══════════════════════════════════════════════════════════════════════════════════════════ */
+   A left rule adds a second channel and costs no motion and no fill. */
 .toc--v3 {
   position: sticky;
   top: var(--nav-h, 3.5rem);
@@ -107,16 +98,14 @@
 .toc--v3 a { border-left: 2px solid transparent; margin-left: -1px; }
 .toc--v3 a[aria-current="true"] { border-left-color: var(--color-gold, #fbbf24); }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   THE MOBILE POPUP - <details>/<summary>, with the active heading in the closed summary.
+/* THE MOBILE POPUP - <details>/<summary>, with the active heading in the closed summary.
    Their geometry, our surfaces.
 
    NOT TAKEN, all three because they fight the live scene:
      .dropdown and .toggle both use SOLID fills (--sl-color-black #17181c)
      .dropdown adds box-shadow: var(--sl-shadow-md), which is FOUR STACKED SHADOWS
    Replaced with --color-panel and no shadow. (No backdrop-filter anywhere in this component, so
-   there is nothing to strip on that front.)
-   ══════════════════════════════════════════════════════════════════════════════════════════ */
+   there is nothing to strip on that front.) */
 .toc-pop { display: block; }
 @media (width >= 72rem) { .toc-pop { display: none; } }
 @media (width < 72rem) { .toc--v1, .toc--v2, .toc--v3 { display: none; } }

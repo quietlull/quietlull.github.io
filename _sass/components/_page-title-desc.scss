@@ -3,12 +3,11 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* ============================================================================================
-   page-title-desc - the PAGE TITLE + DESCRIPTION block for the projects and ramblings indexes.
+/* page-title-desc - the PAGE TITLE + DESCRIPTION block for the projects and ramblings indexes.
    Built 2026-08-23 for the SOURCING PASS. This slot was on the unsourced list: final-projects.html
    says of it, verbatim, "no source. \"Section title + tagline\" is on the unsourced list."
 
-   ── THE TITLE IS NOT DEFINED HERE, ON PURPOSE ──────────────────────────────────────────────
+   ── THE TITLE IS NOT DEFINED HERE, ON PURPOSE
    The H1 is already decided in decisions.css (.d-h1: signature orange --h1-color, weight 300,
    clamp(2.75rem, 7vw, 101px), line-height .92, letter-spacing -.06em, margin 0). This file does
    NOT restate any of it. The title element in the demo carries .d-h1 and the demo LINKS the real
@@ -16,7 +15,7 @@
    The only thing this file gives the title is a WIDTH, because the two blockouts reserve
    different widths for it, and one border-bottom in V3.
 
-   ── PRIMARY SOURCE ─────────────────────────────────────────────────────────────────────────
+   ── PRIMARY SOURCE
    potg.art - https://potg.art/about/ , stylesheet https://potg.art/_astro/about.DQG1MDvI.css
    Held in the lab as sources/potg-typography.md, tier True, captured 2026-06-11.
    In Rod's own gallery at reference-gallery.html:559-564, tiered A-, his tags include
@@ -30,31 +29,30 @@
    an <hgroup class="page-header"> holding a page title with a sub line under it, plus two other
    real title+sub arrangements on the same site. Three versions, three of THEIR arrangements.
 
-   ── UNIT CONVERSION, STATED BECAUSE IT IS A REAL DECISION ──────────────────────────────────
+   ── UNIT CONVERSION, STATED BECAUSE IT IS A REAL DECISION
    potg sets html{font-size:calc(100 / var(--base-vw) * 1vw)} with --base-vw:1440, so 1rem on
    that site is 1px at a 1440 viewport (sources/potg-typography.md:61,68-72). Our root is the
    default 16px. Their values are therefore carried across AS PIXELS, not as rems:
    16rem -> 16px, 11rem -> 11px, 12rem -> 12px, 22rem -> 22px, 23rem -> 23px, 640rem -> 640px.
    Nothing is rounded and nothing is re-scaled to taste.
 
-   ── WHAT COULD NOT TRANSFER ────────────────────────────────────────────────────────────────
+   ── WHAT COULD NOT TRANSFER
    Their typefaces (Dahlia, Hellix, Hiragino ProN) are commercial or Japanese-only and are not
    carried. The description takes --font-body, which is what the six final pages already load.
    Their #28224D-on-white scheme is inverted here by the palette, so their color-mix softening
    becomes --color-silver - see the colour note at V1.
 
-   ── PALETTE ────────────────────────────────────────────────────────────────────────────────
+   ── PALETTE
    --color-muted (#9aa3bd) is not used anywhere in this file. The description takes
    --color-silver (#a3a19d) in V1 and V2 and --color-text in V3.
    No blur, no backdrop-filter, no shadow, no fill: this block sits straight on the live scene.
    Square by default and nothing here rounds anything.
 
-   ── MOTION ─────────────────────────────────────────────────────────────────────────────────
+   ── MOTION
    Nothing in this component animates or transitions, so there is no prefers-reduced-motion
-   block. That is a statement, not an omission.
-   ============================================================================================ */
+   block. That is a statement, not an omission. */
 
-/* ── THE BLOCK ─────────────────────────────────────────────────────────────────────────────
+/* THE BLOCK
    Two children and a gap. The gap is a variable because the two blockouts reserve DIFFERENT
    gaps and the blockout is the contract - see the page arrangements at the bottom. */
 .ptd {
@@ -71,8 +69,7 @@
   font-family: var(--font-body, sans-serif);
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   V1 - THE SUB LINE.  potg's own page-header, geometry verbatim.
+/* V1 - THE SUB LINE.  potg's own page-header, geometry verbatim.
    TIER: Remixed.  IDEA-ORIGIN: theirs.
 
    VERBATIM from https://potg.art/_astro/about.DQG1MDvI.css, re-verified live 2026-08-23:
@@ -103,8 +100,7 @@
   color: var(--color-silver, #a3a19d);
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   V2 - THE SOFTENED PARAGRAPH.  potg's own multi-line secondary text.
+/* V2 - THE SOFTENED PARAGRAPH.  potg's own multi-line secondary text.
    TIER: Remixed.  IDEA-ORIGIN: theirs.
 
    VERBATIM from the same stylesheet, re-verified live 2026-08-23:
@@ -124,8 +120,7 @@
   color: var(--color-silver, #a3a19d);
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   V3 - THE RULED TITLE OVER A LEDE.  TWO PARENTS, so it is filed as a REMIX and neither
+/* V3 - THE RULED TITLE OVER A LEDE.  TWO PARENTS, so it is filed as a REMIX and neither
    citation is allowed to carry the other.
    TIER: Remixed.  IDEA-ORIGIN: theirs (both halves).  No source does both.
 
@@ -169,8 +164,7 @@
   color: var(--color-text, #f5f3ef);
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   THE TWO PAGE ARRANGEMENTS - THIS IS WHERE THE BLOCKOUT WINS.
+/* THE TWO PAGE ARRANGEMENTS - THIS IS WHERE THE BLOCKOUT WINS.
 
    The two pages disagree structurally and they are NOT unified here, because both are approved
    blockout geometry and D25 says layout is Rod's alone:
@@ -203,7 +197,7 @@
   --ptd-desc-w: 520px;    /* ramblings-blockout.html:126 */
 }
 
-/* ── THE OTHER RAMBLINGS RESERVATION. READ THE NOTE. ───────────────────────────────────────
+/* THE OTHER RAMBLINGS RESERVATION. READ THE NOTE.
    The reservation handed to this build for ramblings (380 x 100 title, 520 x 44 description) is
    variant 1, `?v=rulelog`, the dimden transcription. That is the variant ramblings-blockout.html
    loads BY DEFAULT (line 89, <body class="rulelog">, and line 252, show(m?m[1]:'rulelog')), so a

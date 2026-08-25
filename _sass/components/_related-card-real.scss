@@ -3,8 +3,7 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* ============================================================================================
-   related-card-real - the project card, stripped for reading focus.
+/* related-card-real - the project card, stripped for reading focus.
    Built 2026-08-23 from analysis/reference-briefs/related-post-card.md.
 
    TIER: OURS. IDEA-ORIGIN: ROD. Not "Remixed", not "True" - there is no external parent.
@@ -47,10 +46,9 @@
    yannesidibe.com/about `.glow`. Fetched this session:
      /about -> HTTP 404 (the page is gone). Root -> 200, Tailwind/Next.
      grep glow 0 - mask-composite 0 - plus-lighter 0 - --mx/--my/--mouse/--cursor 0
-   Nothing on the live site matches. LIVE SITE WINS: the citation is DEAD, not merely unread.
-   ============================================================================================ */
+   Nothing on the live site matches. LIVE SITE WINS: the citation is DEAD, not merely unread. */
 
-/* ── the grid. From `.epx-cards.is-regular`, 3-up for related (P9). ─────────────────────────
+/* the grid. From `.epx-cards.is-regular`, 3-up for related (P9).
    `min-height: 14rem` from the parent is a flip-tile leftover that FIGHTS aspect-ratio, and
    scaling is Rod's one named open complaint about the parent - so it is deliberately not
    carried forward. */
@@ -63,7 +61,7 @@
 }
 @media (max-width: 760px) { .rc-grid { grid-template-columns: 1fr; } }
 
-/* ── the card. Square from the start rather than relying on a modifier a host might forget:
+/* the card. Square from the start rather than relying on a modifier a host might forget:
    the parent's base is border-radius 1rem on the cover and 12px on the glass plane, with a
    `--square` modifier placed last in the file to out-cascade them. Building square avoids that. */
 .rc {
@@ -106,8 +104,7 @@
   opacity: 0.85;
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   FOCUS - the one part with real external provenance, and it fixes a bug that exists TODAY.
+/* FOCUS - the one part with real external provenance, and it fixes a bug that exists TODAY.
 
    SOURCE: sources/focus-ring.md (Bootstrap 5.3 focus-ring helper; dev.to hybrid_alex "Better CSS
    outlines with box-shadows"; darekkay). TIER: Remixed, idea-origin theirs.
@@ -123,8 +120,7 @@
    Their Option B is a GLOW and is out here on Rod's instruction. The border-colour change costs
    no motion and no glow, and it is measurable: rest is rgba(245,158,11,0.14), so moving to
    --color-gold #fbbf24 is a large delta against the fill and clears the 3:1 non-text bar
-   comfortably. One rule, three declarations, zero motion.
-   ══════════════════════════════════════════════════════════════════════════════════════════ */
+   comfortably. One rule, three declarations, zero motion. */
 .rc:focus-visible {
   outline: 2px solid transparent;    /* HCM survival - do not replace with outline:none */
   outline-offset: 2px;
@@ -151,15 +147,13 @@
    switching it off moves no layout. */
 .rc::after { content: none; }
 
-/* ══════════════════════════════════════════════════════════════════════════════════════════
-   THE THREE VERSIONS - how much of the parent's visual identity survives the strip.
+/* THE THREE VERSIONS - how much of the parent's visual identity survives the strip.
 
    THE BLUE PROBLEM, which decides V2. The parent's cover fill is
    --color-cover-hi #1b2452 / --color-cover-lo #0b1024, both MIDNIGHT BLUE, plus a
    rgba(11,16,36,.62) seating gradient. Those are among the LAST BLUE FILLS LEFT IN THE BENCH,
    and D27 already replaced blue with warm grey on every other surface. Building the new component
-   on them would re-import a dead palette - so V2 uses the warm tokens and the swap is stated.
-   ══════════════════════════════════════════════════════════════════════════════════════════ */
+   on them would re-import a dead palette - so V2 uses the warm tokens and the swap is stated. */
 
 /* V1 - TEXT ONLY. No cover, no image, no gradient. The quietest possible answer to "focus on the
    text", and the cheapest to maintain. */

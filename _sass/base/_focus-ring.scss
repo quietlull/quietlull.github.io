@@ -3,8 +3,7 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer overrides {
-/* ============================================================================================
-   focus-ring.css - the global :focus-visible indicator, extracted 2026-08-23.
+/* focus-ring.css - the global :focus-visible indicator, extracted 2026-08-23.
 
    WHY THIS FILE EXISTS. An audit found that `extracted/styles/generic.css` - which holds this
    rule - is linked by ZERO of the six final pages and zero of the component demos. Verified.
@@ -25,8 +24,7 @@
    `outline: 2px solid transparent` IS NOT DECORATION and must not be "cleaned up" to
    `outline: none`. Windows High Contrast Mode drops box-shadows entirely; the transparent outline
    is what survives there and becomes a real ring. Removing it makes the site unusable for HCM
-   users while looking identical to everyone else.
-   ============================================================================================ */
+   users while looking identical to everyone else. */
 
 :focus-visible {
   outline: 2px solid transparent;

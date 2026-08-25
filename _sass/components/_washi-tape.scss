@@ -27,7 +27,7 @@
 
    STATE: greybox. `--tape-img` is the hatch stand-in; it takes the real photographed tape asset
    when that exists. Everything else is final geometry.
-   ── THE TIPS: SOLVED 2026-08-22, ROD PICKED CASE D ──────────────────────────
+   ── THE TIPS: SOLVED 2026-08-22, ROD PICKED CASE D
    Rod 2026-08-22, after judging washi-tape-tests.html: "washi tape d remix".
 
    D = winterwind.com/tutorials/css/29, an IRREGULAR clip-path tear. Source saved verbatim to
@@ -77,7 +77,7 @@
    NOT YET TUNED: tape width, corner overhang, and the top strip's off-centre position, which is
    still gneiss's left:38-40% rather than a measured choice of ours. */
 
-/* ── STRIPED, AND COLOURED PER SECTION (2026-08-22, ROD) ──────────────────────────────────────
+/* STRIPED, AND COLOURED PER SECTION (2026-08-22, ROD)
    Rod: "we will have the fun striped washi tape in the blue, green, pink, and orange for different
    sections and i think that will be fine and good." The tape stops being a greybox stand-in and
    becomes the site's one piece of loud colour.
@@ -177,7 +177,7 @@
 .tape--tl { top: calc(var(--tape-bite) - var(--tape-w)); left:  calc(var(--tape-bite) - var(--tape-w)); }
 .tape--br { bottom: calc(var(--tape-bite) - var(--tape-w)); right: calc(var(--tape-bite) - var(--tape-w)); }
 
-/* ── DIAGONAL CORNER STRIPS ────────────────────────────────────────────────────────────────
+/* DIAGONAL CORNER STRIPS
    Rod 2026-08-23: "for the green one the tape should have 4 diagonal strips on each corner."
    One strip laid ACROSS each corner at 45 degrees - the way tape actually holds a photo down,
    rather than the two-strip L the blue card uses. Four of them, one per corner.
@@ -235,7 +235,7 @@
 }
 .tape-card p { margin: 0; font-size: 0.86rem; line-height: 1.7; }
 
-/* ── the four section tapes. Set one on the HOST, not on the .tape itself, so a section can be
+/* the four section tapes. Set one on the HOST, not on the .tape itself, so a section can be
    recoloured in one place and every strip on it follows. ── */
 .tape--orange {
   --tape-hue: var(--color-glow, #ff6a00);

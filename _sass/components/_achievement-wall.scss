@@ -3,8 +3,7 @@
 // Every /* */ comment below is the lab original and is the provenance record - do not strip it.
 @layer reset, tokens, prose, components, overrides;
 
-/* ================================================================================================
-   ACHIEVEMENT WALL - catalogue + detail, built to Rod's spec of 2026-08-24:
+/* ACHIEVEMENT WALL - catalogue + detail, built to Rod's spec of 2026-08-24:
 
      "For the achievements use the same thing as the project cards with the hover rim reveal. they
       will keep the emojis as images for now. when clicking on them they will 'activate' which for
@@ -38,8 +37,7 @@
    over 0.5s. Our project-card build removed the trigger entirely - no :hover, no transition - and
    lights from global cursor PROXIMITY, so a card glows when the pointer is merely near it (measured:
    2 of 16 at once). Giving the tiles a real hover/focus trigger moves BACK toward the source, and
-   it is what makes them legible to a keyboard. Both are built here so Rod can see the difference.
-   ============================================================================================== */
+   it is what makes them legible to a keyboard. Both are built here so Rod can see the difference. */
 
 /* THE ORBIT IS DRIVEN FROM JS, NOT FROM KEYFRAMES, and the reason is worth recording because the
    CSS version looks correct and silently does not work.
@@ -87,7 +85,7 @@
     --aw-gap: 12px;
   }
 
-  /* ---- the catalogue ------------------------------------------------------------------------
+  /* ---- the catalogue
      Klubnika's geometry, from the approved blockout (`about-blockout.html:69-71`, provenance note
      at `:255`): "64x64 tiles at 72px pitch, hover scale 1.3, selected gets a ring, and a 333x250
      DETAIL PANEL that swaps contents from the tile". 64 + 4 + 4 margin = that 72 pitch. */
@@ -124,7 +122,7 @@
     white-space: nowrap;
   }
 
-  /* ---- a tile -------------------------------------------------------------------------------
+  /* ---- a tile
      A REAL <button>, not a span with a role. WCAG 2.1.1 comes free (Enter and Space both), 4.1.2
      gets a real `aria-pressed`, and `focus-ring.css` reaches it without a line of new CSS. The
      older `achievement-tile` component renders `<span role="img">`, which is exactly why its own
@@ -274,7 +272,7 @@
      screen reader the control is unavailable while leaving it focusable.
      The live site greys locked marks with a FILTER, not `color`, because emoji ignore `color`
      entirely - `achievement-tile.css:176-179` already flags that. */
-  /* ---- RARITY EDGES: HOVER OR PINNED, NEVER AT REST ------------------------------------------
+  /* ---- RARITY EDGES: HOVER OR PINNED, NEVER AT REST
      Rod 2026-08-25: "prismatic is glowing even though it isnt in the pinned unlocked state when not
      pinned the prismatic should be hover only do the same for silver borders as well."
      He is right and the reason is worth naming: a permanently shimmering edge was doing the SAME
@@ -367,7 +365,6 @@
     --aw-tier-glow-soft: var(--color-muted-warm, #9c8f7d);
   }
 
-
   /* BLACK EDGE ON A LOCKED TILE. Rod 2026-08-24: "make it so the locked cards have a black border."
      Pure black rather than the panel's usual faint grey, which is what makes it read as locked: on
      this ground a black edge is DARKER than the surface it sits on, so the tile reads as a hole
@@ -376,7 +373,7 @@
   .aw__tile[aria-disabled="true"] { cursor: default; border-color: var(--color-black); }
   .aw__tile[aria-disabled="true"] > span[aria-hidden] { filter: grayscale(1) brightness(.6); opacity: .8; }
 
-  /* ---- progress tiers -----------------------------------------------------------------------
+  /* ---- progress tiers
      Rod 2026-08-24: "i also plan on making it so the progress tracker keeps going right now its
      bronze but make it go silver > gold > prismatic like in TFT."
      Four rungs. Bronze, silver and gold are flat fills; PRISMATIC is the odd one and has to be,
@@ -441,7 +438,7 @@
   .aw--trigger .aw__tile:focus-visible::before,
   .aw--trigger .aw__tile:focus-visible::after { opacity: 1; }
 
-  /* ---- the detail panel ---------------------------------------------------------------------
+  /* ---- the detail panel
      333 wide is Klubnika's, exact. The HEIGHT is 360, not the blockout's 250 - Rod 2026-08-24:
      "yes extend the panel".
      WHY IT HAD TO GROW, and why it was free: five labelled fields at the ladder's own body size
