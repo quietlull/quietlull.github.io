@@ -3,11 +3,9 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* drift-magnet — demo styles + the dennissnellenberg rising-circle FILL (pure CSS).
-   The motion (drift + magnet) is owned by drift-magnet.js; CSS here is the shape/fill only.
-   PROVENANCE: rising fill = dennissnellenberg.com/work .btn-fill (150%x200% circle parked below,
-   slides to 0 on hover; overflow:hidden clips it) -> sources/dennissnellenberg-buttons.md, recolored
-   to tokens. */
+/* drift-magnet - the drifting social circles. drift-magnet.js owns the motion, this owns shape.
+   Rising fill from dennissnellenberg.com/work .btn-fill (sources/dennissnellenberg-buttons.md),
+   recoloured to tokens. See drift-magnet.md. */
 .dm-demo {
   display: flex;
   flex-direction: column;
@@ -17,15 +15,9 @@
 
 .dm-row {
   display: flex;
-  /* SQUEEZE AND SHRINK INSTEAD OF STACKING (Rod 2026-08-24): "lower the gap for these when
-     scaling make them squeeze together and shrink instead of stacking."
-     11.8483% is 40/337.56 and the 16.1137% below is 54.39/337.56, so 4 circles + 3 gaps come to
-     exactly 100% of the row. Below the crossover the row is precisely full width and CANNOT wrap
-     at any size. Percentages resolve against the flex container, which IS the rail, so this tracks
-     the rail rather than the viewport and is not fooled by the 1401px page cap or the scrollbar.
-     Measured: the wrap used to fire between viewport 1430 and 1429 and cost +94.39px of rail
-     height; it no longer fires at any width. Circle floor 37.70px in the sticky band, comfortably
-     clear of the 24px minimum for a link target. */
+  /* The percentages here and on .dm-social's width make 4 circles + 3 gaps come to exactly 100%
+     of the row, so it squeezes instead of wrapping (Rod 2026-08-24). Do not round them.
+     The wrap used to fire at viewport 1429 and cost 94.39px of rail height. See drift-magnet.md. */
   gap: min(1.625rem, 8.7957%);
   align-items: center;
   flex-wrap: wrap;
@@ -33,7 +25,7 @@
   padding: 8px 0;
 }
 
-/* circular social (harumaki register: right of the hero, circle buttons) */
+/* The circles, in harumaki's register: right of the hero. */
 .dm-social {
   position: relative;
   overflow: hidden;
@@ -49,7 +41,7 @@
   background: var(--color-panel);
 }
 
-/* the fill: oversized circle parked below, rises to cover on hover (verbatim geometry) */
+/* The fill: an oversized circle parked below that rises to cover on hover. Geometry is verbatim. */
 .dm-social__fill {
   position: absolute;
   top: -50%;
@@ -78,12 +70,12 @@
   transition: color 0.3s ease;
 }
 
-/* text inverts as the fill covers (dennissnellenberg .btn-text-inner.change) */
+/* The glyph flips to dark as the fill covers it (dennissnellenberg .btn-text-inner.change). */
 .dm-social:hover .dm-social__glyph {
   color: var(--color-night);
 }
 
-/* favicon-style: magnetic but CLAMPED to its box + spins on hover */
+/* favicon-style: magnetic but clamped to its box, and it spins on hover. */
 .dm-favicon {
   position: relative;
   width: 2.6rem;
@@ -144,11 +136,10 @@
   border-color: var(--color-glow);
 }
 
-/* --- BASE behavior (not demo-only): click border-flash ---
-   the border ignites then flies outward and fades (phojanecki outline-ripple, on CLICK). Opt-in via
-   data-click-flash; drift-magnet.js toggles .dm-flash. outline/box-shadow paint outside the box, so a
-   social's own overflow:hidden does NOT clip them.
-   PROVENANCE: phojanecki (codepen.io/phojanecki/pen/vwyZpY) — same ripple as button-kit/tags. */
+/* Click flash, and this one ships - it is not demo furniture. The border lights up, flies
+   outward and fades. Opt in with data-click-flash; drift-magnet.js toggles .dm-flash.
+   outline and box-shadow paint outside the box, so overflow:hidden does not clip them.
+   phojanecki (codepen.io/phojanecki/pen/vwyZpY), the same ripple as button-kit. */
 .dm-flash {
   animation: dm-border-fly 0.5s ease-out;
 }

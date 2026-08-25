@@ -3,21 +3,17 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* cursor-glow — warm "cursor-as-lantern" vignette that follows the pointer.
-   Technique: brittanychiang / merodev `.cursorglow` fixed full-viewport radial at --cx/--cy.
-   Remix: recolored from merodev's purple to the festival gold (Rule 32 — token, no magic color);
-   swap --cursor-glow-tint to --color-accent-cool for a cool wash instead. */
+/* cursor-glow - a warm lantern vignette that follows the pointer.
+   brittanychiang / merodev `.cursorglow`, recoloured purple to gold. Remixed, theirs.
+   Swap --cursor-glow-tint to --color-accent-cool for a cool wash. See cursor-glow.md. */
 .cursorglow {
-  --cursor-glow-radius: 350px; /* Rod 2026-08-25. merodev's source value was 520px */
+  --cursor-glow-radius: 350px; /* Rod 2026-08-25. merodev shipped 520px */
   --cursor-glow-tint: color-mix(in srgb, var(--color-gold) 15%, transparent);
   position: fixed;
   inset: 0;
-  /* Rod 2026-08-25, tuned on the bench: 600, which is ABOVE the sparkler canvas at 500, not the
-     499 the bench proposed as "under the sparkler". A deliberate swap of the two, recorded rather
-     than assumed - the glow now paints over the sparks instead of behind them.
-     Safe at any height because `pointer-events: none` is on the next line: this element covers the
-     whole viewport, so without it a z-index this high would swallow every click on the site. */
+  /* 600 puts the glow OVER the sparkler canvas at 500. Rod swapped it there on the bench. */
   z-index: 600;
+  /* This layer covers the whole viewport, so dropping this swallows every click on the site. */
   pointer-events: none;
   background: radial-gradient(
     var(--cursor-glow-radius) circle at var(--cx, -700px) var(--cy, -700px),
@@ -26,7 +22,7 @@
   );
 }
 
-/* --- LAB DEMO ONLY (never ships): gives the glow something to wash across so it reads --- */
+/* LAB DEMO ONLY, never ships. Gives the glow something to wash across so you can see it. */
 .cursor-glow-demo {
   display: flex;
   flex-direction: column;

@@ -3,8 +3,8 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* favicon — magnetic-but-clamped icon that spins on hover; navigates home.
-   overflow:hidden on the box visually enforces the clamp ("the icon can't escape its box"). */
+/* favicon - the home link. It leans toward the pointer, spins on hover, and overflow:hidden
+   is what stops it escaping its box. See favicon.md. */
 .favicon-demo {
   display: flex;
   justify-content: center;
@@ -20,11 +20,11 @@
   height: 3.2rem;
   border-radius: 9px;
   border: 1px solid color-mix(in srgb, var(--color-glow) 45%, transparent);
-  background: var(--color-white); /* white backing so the black lantern-cluster icon reads on the dark bar */
+  background: var(--color-white); /* the lantern icon is black, so it needs white behind it */
   overflow: hidden;
 }
 
-/* SQUARE variant (Rod 2026-08-11 shape pass: square by default, round only by exception) */
+/* Rod's 2026-08-11 shape pass: square by default, round only by exception. */
 .favicon--square {
   border-radius: 0;
 }
@@ -41,14 +41,9 @@
   height: 2rem;
 }
 
-/* spin ONLY on hover by default (counter-clockwise, continuous while hovered). The ALWAYS-ON continuous
-   spin is the ACHIEVEMENT state — the achievement system flips .is-earned on the .favicon.
-
-   ROTATION IS REMEMBERED (Rod 2026-08-18). The spin is not applied on hover and removed on
-   hover-off — it is always attached and PAUSED, and hover only sets it running. A paused animation
-   holds its current computed transform, so the mark keeps the angle it reached and the next hover
-   carries on from there instead of snapping upright. The magnet POSITION still springs back to
-   centre like every other magnetic element; only the rotation persists. */
+/* Always attached and PAUSED, never added on hover, because a paused animation keeps the angle
+   it reached - so the mark carries on from there instead of snapping upright (Rod 2026-08-18).
+   .is-earned is the achievement state and spins without hover. See favicon.md. */
 .favicon__img {
   animation: favicon-spin 1.4s linear infinite;
   animation-play-state: paused;
@@ -58,7 +53,7 @@
   animation-play-state: running;
 }
 
-/* the shorthand resets play-state to running, so the earned state spins unconditionally */
+/* The shorthand resets play-state to running, which is what makes this one spin on its own. */
 .favicon.is-earned .favicon__img {
   animation: favicon-spin 5s linear infinite;
 }

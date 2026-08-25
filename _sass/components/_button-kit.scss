@@ -3,22 +3,11 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* !! CIRCULAR CITATION - CORRECTED 2026-08-16 !!
-   The "PROVENANCE" line below points at a `rework-*.html` / `ref-*.html` page in THIS repo.
-   Those are OUR OWN BUILDS, named after the sites that inspired them. They are source
-   CANDIDATES, not sources. This component therefore has NO EXTERNAL PROVENANCE and is Slop
-   until a real live site is found and its CSS read from source.
-   Rod caught this on the callouts: "you are confidently lying because these are not anywhere
-   to be found on hana, unless you mean our AI generated hana copy."
-   A provenance comment is a CLAIM, not evidence. Check what it points AT. */
-/* button-kit — KIT pick from final-picks.md: stephan SHAPES x hana BEHAVIOR x magnetic cursor-stick.
-   PROVENANCE:
-   - shapes (radius, padding, chip tags): rework-stephan.html (stephan rework, amber-mapped)
-   - primary hover ripple: phojanecki (codepen.io/phojanecki/pen/vwyZpY), recolored
-   - outline/pill fill-sweep: nfranciosi (codepen.io/nfranciosi/pen/eGRKON -> sources/nfranciosi-button-fill.md)
-   - inline link: harumaki rework (Caveat + grow underline)
-   - magnetic: ../magnetic/magnetic.js (sources/magnetic-buttons.md)
-   Font is the body token, not stephan's Inter — type is owned by the cohesion pass. */
+/* button-kit - the buttons, the tags and the inline link.
+   SLOP UNTIL RESOURCED. The shapes cite rework-stephan.html, which is our own build, so this
+   component has no external provenance yet. A citation pointing inside this repo is not a source.
+   Real outside sources: the hover ripple is phojanecki (codepen.io/phojanecki/pen/vwyZpY) and the
+   rising fill is dennissnellenberg .btn-fill. See button-kit.md. */
 .kit-button {
   font-family: var(--font-body);
   font-size: 0.82rem;
@@ -38,7 +27,7 @@
   transition: all 0.35s;
 }
 
-/* phojanecki ripple: the outline floats outward and fades while the core ignites */
+/* phojanecki ripple: the outline floats outward and fades while the core lights up. */
 .kit-button--primary:hover {
   text-shadow: 0 0 8px color-mix(in srgb, var(--color-glow) 50%, transparent);
   box-shadow:
@@ -73,8 +62,8 @@
   color: var(--color-night);
 }
 
-/* rising-circle fill (dennissnellenberg .btn-fill): an oversized circle parked below, slides up on
-   hover; overflow:hidden on the button clips it. Replaces the old nfranciosi left->right sweep. */
+/* dennissnellenberg .btn-fill: an oversized circle parked below that rises on hover.
+   overflow:hidden on the button is what clips it into shape. */
 .kit-button__fill {
   position: absolute;
   top: -50%;
@@ -93,16 +82,10 @@
   transform: translate3d(0, 0, 0);
 }
 
-/* tags: stephan chip geometry + hana BEHAVIOR (phojanecki ripple — outline floats out and
-   fades while the chip ignites), per Rod's batch-1 feedback. */
-/* BORDER RESET IS LOAD-BEARING. Rod 2026-08-24: "tags are weird amalgams".
-   Measured on final-projects-v2: `button.kit-tag` rendered 52.22x28.59 WITH a 2px black outset
-   bevel, `span.kit-tag` rendered 47.27x27.55 without - the SAME CLASS, two different boxes, 44
-   instances of the bevel on one page. Cause: this rule styles the edge with `outline` and never
-   touches `border`, so a <button> keeps the browser's default 2px outset while a <span> has none,
-   and foundations' `*` reset only handles box-sizing/margin/padding.
-   Declared here rather than in the page because the component owns its own shape - a page-local
-   fix would have to be repeated on every page that uses a tag as a control. */
+/* Tags: stephan chip geometry, phojanecki ripple on hover.
+   `border: 0` IS LOAD-BEARING. This rule draws the edge with `outline` and never touches
+   `border`, so a <button> keeps the browser's 2px outset bevel and a <span> does not - the same
+   class rendering two different boxes, 44 of them on one page. See button-kit.md. */
 .kit-tag {
   border: 0;
   font-family: var(--font-body);
@@ -128,7 +111,7 @@
 }
 
 .inline-link {
-  /* T0-B: hand reserved for the logo; behavior (underline-grow) is what Rod picked, font -> body */
+  /* Body font, not the hand: T0-B reserves the hand for the logo. Rod picked the grow-underline. */
   font-family: var(--font-body);
   font-size: 1.2rem;
   color: var(--color-gold);

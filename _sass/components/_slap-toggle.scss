@@ -3,12 +3,9 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* slap-toggle — the hana/Technology-Personal switch.
-   PROVENANCE (Remixed): EXACT copy of YarivFrd's slap toggle (codepen.io/YarivFrd/pen/PEOJLj),
-   from rework-hana: scaled down, animation reduced, full pill (radius 40px so it never breaks
-   on compress), recolored to the harumaki orange per Rod's tools-slot spec.
-   State: `.is-on` is set by JS — the `:checked ~` sibling selector proved unreliable on
-   display:none radios (rework-hana finding). */
+/* slap-toggle - the Technology / Personal switch.
+   YarivFrd's slap toggle (codepen.io/YarivFrd/pen/PEOJLj), scaled down and recoloured. Remixed.
+   JS sets `.is-on`; the `:checked ~` selector was unreliable here. See slap-toggle.md. */
 .slap-toggle {
   perspective: 800px;
   display: inline-block;
@@ -17,7 +14,7 @@
 .slap-toggle__control {
   position: relative;
   display: inline-grid;
-  grid-template-columns: 1fr 1fr; /* equal columns -> flap (50%) lands exactly on the boundary */
+  grid-template-columns: 1fr 1fr; /* equal columns, so the 50% flap lands on the boundary */
   align-items: center;
   border: solid 2px var(--color-glow);
   border-radius: 40px;
@@ -26,10 +23,8 @@
 }
 
 .slap-toggle__radio {
-  /* B1 fix (2026-06-12): focusable-but-invisible, NOT display:none. display:none removed the
-     radios from the tab order, making the toggle keyboard-dead. The YarivFrd source uses real
-     focusable radios; this returns to it. Labels drive pointer selection (for=), so the radios
-     take pointer-events:none and the visible flap reads through. */
+  /* Invisible but still focusable. display:none took these out of the tab order and left the
+     toggle keyboard-dead (B1, 2026-06-12). See slap-toggle.md. */
   position: absolute;
   inset: 0;
   width: 100%;
@@ -39,10 +34,9 @@
   pointer-events: none;
 }
 
-/* scoped focus ring (Rule 76): amber :focus-visible recipe from the live site's _a11y.scss.
-   Scoped to the slap control only — the GLOBAL focus treatment (report B2) is still parked. */
+/* Scoped focus ring (Rule 76), the amber recipe from the live site's _a11y.scss. */
 .slap-toggle__control:has(.slap-toggle__radio:focus-visible) {
-  outline: 2px solid transparent; /* HCM */
+  outline: 2px solid transparent; /* Windows High Contrast Mode drops box-shadows; this survives */
   outline-offset: 3px;
   box-shadow:
     0 0 0 2px var(--color-gold),
@@ -98,7 +92,7 @@
   transform: rotateY(-180deg);
 }
 
-/* small variant — fits the top bar (Rod: "top bar should use slap toggle") */
+/* Small variant, sized for the top bar (Rod: "top bar should use slap toggle"). */
 .slap-toggle--small .slap-toggle__label {
   padding: 4px 10px;
   font-size: 0.56rem;
@@ -108,8 +102,8 @@
   font-size: 0.56rem;
 }
 
-/* SQUARE variant (Rod 2026-08-11 shape pass: square by default, round only by exception).
-   The flap's right corners follow the control so the flipped flap still seats flush. */
+/* Rod's 2026-08-11 shape pass: square by default, round only by exception.
+   The flap's corners follow the control so the flipped flap still seats flush. */
 .slap-toggle--square .slap-toggle__control {
   border-radius: 0;
 }
