@@ -340,3 +340,42 @@ A bug that would have shipped silently: the new per-window size state was named 
 `windows()` already had a local `var size = P.sizes()` shadowing it. `size[slot]` on an array returns
 `undefined` **without erroring**, so every per-window size did nothing at all. Same failure family as
 the four token misses - a name that resolves to the wrong thing and stays quiet about it.
+
+---
+
+# The audit sequence
+
+Rod, 2026-08-26: *"before the anti ai audit make an audit for things working and a code audit after
+that one. come up with any additional multi agent audits you deem necessary. also make sure the site
+builds at the end."*
+
+**Order matters and it is not arbitrary.** Each gate answers a question the next one assumes.
+
+| # | audit | the question it answers | why it goes here |
+|---|---|---|---|
+| 1 | **Does it work** | every page loads, every link resolves, every interaction fires | auditing the code of a broken site tells you about the wrong problem |
+| 2 | **The code** | duplication, dead paths, hierarchy, consistent rules | now that it works, is it built well |
+| 3 | **Anti-AI** | does anything read as machine-made | last, because it judges taste, and taste on top of a broken build is noise |
+
+## Three more I am adding, and why each earns its place
+
+**4. Accessibility.** The project already has hard rules - WCAG 2.4.7 focus visible, 2.5.8 pointer
+targets 24x24, 1.3.1 heading order - and `STYLE.md` Section J is an executable procedure for exactly
+this. **Everything just moved**, so every one of those is now unverified. The achievement wall alone
+changed from `disabled` tiles to `aria-disabled` ones, which moved 15 elements in and out of the tab
+order.
+
+**5. Payload.** The site gained a Three.js scene tier on every page and lost a 245-line search
+subsystem that shipped to all 53 pages for a UI that rendered on none. Nobody has measured what a
+page actually downloads now. Rod cares about this - the scene has a hard perf constraint.
+
+**6. Provenance.** This is the project's actual shipping gate and it is the one most likely to be
+skipped in a rush. `element-tracker.md` carries Slop rows, and Slop cannot ship by the ledger's own
+rule. **Components went live tonight.** Which of them carry an unsourced or circular citation, and
+are any of those now on a public page?
+
+## Then the build
+
+`bundle exec jekyll build` green, and `npm run build` for the JS bundles and the CSS purge, in that
+order - PurgeCSS reads the built HTML, so it has to run after Jekyll or it purges against a stale
+page and strips classes that are in use.
