@@ -3,28 +3,15 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer overrides {
-/* focus-ring.css - the global :focus-visible indicator, extracted 2026-08-23.
-
-   WHY THIS FILE EXISTS. An audit found that `extracted/styles/generic.css` - which holds this
-   rule - is linked by ZERO of the six final pages and zero of the component demos. Verified.
-   So the ring did not exist anywhere, and every component that declined to write its own on the
-   grounds that it "inherits the global ring" was inheriting nothing.
-
-   `prevnext-real.css:96-99` says exactly that, in good faith. It was wrong through no fault of its
-   own, and so were five others. THAT IS A WCAG 2.4.7 AND 2.4.11 FAILURE ON ALL SIX PAGES.
-
-   WHY NOT JUST LINK generic.css. Because it also sets `body { background }`, which would flatten
-   the scene ground the whole design sits on. Lifting the one rule is the smaller change and does
-   not drag a page-level paint along with it.
-
-   SOURCE: sources/focus-ring.md - Bootstrap 5.3's focus-ring helper, dev.to hybrid_alex "Better
-   CSS outlines with box-shadows", darekkay. TIER: Remixed. IDEA-ORIGIN: theirs.
-   Rule copied verbatim from generic.css:25-32, which is where it was already approved.
-
-   `outline: 2px solid transparent` IS NOT DECORATION and must not be "cleaned up" to
-   `outline: none`. Windows High Contrast Mode drops box-shadows entirely; the transparent outline
-   is what survives there and becomes a real ring. Removing it makes the site unusable for HCM
-   users while looking identical to everyone else. */
+/* THE GLOBAL FOCUS RING. Bootstrap 5.3's focus-ring helper plus dev.to hybrid_alex's
+   box-shadow outlines (sources/focus-ring.md). Remixed, theirs.
+   It lives in its own file because the lab kept it in generic.css, which ZERO of the six final
+   pages linked - so the ring did not exist anywhere, and six components that declined to write
+   their own on the grounds that they "inherit the global ring" were inheriting nothing. That was
+   a WCAG 2.4.7 and 2.4.11 failure on every page.
+   `outline: 2px solid transparent` IS NOT DECORATION. Windows High Contrast Mode drops
+   box-shadows entirely, and the transparent outline is what survives there and becomes the real
+   ring. Never "clean it up" to outline: none. */
 
 :focus-visible {
   outline: 2px solid transparent;
@@ -34,12 +21,10 @@
     0 0 12px 2px color-mix(in srgb, var(--color-glow) 45%, transparent);
 }
 
-/* --nav-h - ADDED 2026-08-23. It was USED nine times in toc-real.css and DEFINED NOWHERE, so every
-   use silently fell back to 3.5rem (56px) while the real bar is 96px, and 107.6px at <=780px.
-   Measured consequence: the mobile TOC bar sat UNDER the top bar, entirely hidden at <=780px, and
-   the sticky rail parked 40px beneath it. Same failure shape as --color-muted-warm: a plausible
-   name that resolves to a fallback and renders wrong without erroring.
-   Derived from the real bar rather than restated, so it cannot drift again. */
+/* --nav-h was USED nine times in toc-real and DEFINED NOWHERE, so every use fell back to 56px
+   while the real bar is 96, and 107.6 at <=780px. The mobile TOC bar ended up UNDER the top bar,
+   entirely hidden, with the sticky rail 40px below it.
+   DERIVED from the real bar rather than restated, so it cannot drift again. */
 :root {
   --nav-h: calc(var(--top-bar-height, 5.875rem) + var(--top-bar-border, 1px) * 2);
 }

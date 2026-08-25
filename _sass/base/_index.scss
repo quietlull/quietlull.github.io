@@ -4,22 +4,19 @@
 @forward 'syntax';
 @forward 'a11y';
 
-// The redesign's three page-wide stylesheets, ported 2026-08-25. They are not components, they are
-// the ground everything else stands on, so they live in `base` next to the old site's equivalents
-// rather than in `components`.
+// The redesign's three page-wide stylesheets, ported 2026-08-25. They are the ground everything
+// else stands on, not components, so they live here next to the old site's equivalents.
+//   foundations - @layer reset      the palette shorthands and the page ground
+//   decisions   - @layer prose      the type ladder and every settled text decision
+//   focus-ring  - @layer overrides  the global :focus-visible ring (WCAG 2.4.7 / 2.4.11)
 //
-//   foundations - `@layer reset`    the palette shorthands, the page ground, the glow
-//   decisions   - `@layer prose`    the type ladder and every settled text decision, in one file
-//   focus-ring  - `@layer overrides` the global :focus-visible indicator (WCAG 2.4.7 / 2.4.11)
+// SOURCE ORDER BETWEEN THESE THREE MEANS NOTHING and must not be read as a cascade - each sits in
+// a different layer, and layer order decides who wins, not who loaded last.
 //
-// SOURCE ORDER BETWEEN THESE THREE DOES NOT MATTER and must not be read as a cascade. Each sits in
-// a different cascade layer, and layer order - fixed by the `@layer reset, tokens, prose,
-// components, overrides;` statement each file repeats - decides who wins, not who was loaded last.
-//
-// They are listed AFTER the old site's partials for one reason that does matter: the old partials
-// are UNLAYERED, and unlayered CSS beats every layer no matter the order. So where these three and
-// the old site both style the same thing, the old site still wins and the live pages keep rendering
-// as they do today. That is the intended behaviour for tonight's merge, not an accident.
+// They are listed AFTER the old site's partials for one reason that DOES matter: the old partials
+// are UNLAYERED, and unlayered CSS beats every layer. So where these three and the old site style
+// the same thing, the old site still wins and the live pages keep rendering as they do today.
+// That is intended for the merge, not an accident.
 @forward 'foundations';
 @forward 'decisions';
 @forward 'focus-ring';
