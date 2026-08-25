@@ -1464,3 +1464,53 @@ surface with a list, not a thing to discover during the port.
   is wrong **without erroring** - four instances on 2026-08-25 alone. Whichever direction the rename
   runs, every token gets measured on the rendered page afterwards, never grepped.
 
+## D43 - Breathing is dead. Drift and magnetism are what replace it (2026-08-26, ROD)
+
+*"breathing is dead its listed in memory many times. the successor if you can call it that is the
+light drifting and magnet components."*
+
+Closes the question the audit raised. `--breathe-hue` and `--breathe-border-hue` are 144 references
+across 12 partials and 6 keyframes - the largest style subsystem on the old site - and they go.
+
+**It is not a straight swap and Rod's "if you can call it that" is the honest part.** Breathing was
+AMBIENT: everything pulsed on a shared clock whether you touched it or not. Drift and magnetism are
+RESPONSIVE - drift moves an element on its own slow loop, magnetism answers the cursor. The site
+stops having a heartbeat and starts having reflexes. That is a different feeling, chosen on purpose.
+
+- REJECTED: porting breathing forward. It has no place in the new design and nothing in the lab ever
+  reached for it in four months of building.
+- REJECTED: leaving the tokens defined but unused. A token nothing reads is the exact condition that
+  produced `--color-pink` rendering a fallback for weeks.
+
+## D44 - Delete the old rather than working around it (2026-08-26, ROD)
+
+*"delete the old its in the repo always prioritise making the new work correctly since old can
+always be recovered."*
+
+Ends the additive phase. The old design's partials, tokens and includes come out, and where the new
+and the old disagree the new wins by deletion rather than by specificity.
+
+**The reason this is safe here and was not safe in the lab:** `_sass/` is tracked. Every deletion is
+one `git revert` away. `redesign-lab/` is gitignored, which is why THAT cleanup moved files to a
+holding directory instead - the same instruction produces different mechanics depending on whether
+git is watching.
+
+- This resolves the six layered/unlayered collisions directly. The ported components are wrapped in
+  `@layer components`; the old partials are unlayered and beat them. Deleting the old partial is the
+  only fix that does not involve adding an exception.
+
+## D45 - Comments are one spoken line (2026-08-26, ROD)
+
+*"try to trim comments deeply one line no convoluted wording single line of comments like spoken
+language and no scientific prose and try to use active voice instead of passive voice."*
+
+He is going to read every script after the refactor, and he cannot do that through the current
+comment blocks - many run 10-20 lines of reasoning above three lines of code.
+
+The rule: **one line, spoken, active voice.** "This sits above the fold" not "It should be noted
+that this element is positioned such that it remains within the viewport."
+
+**What this costs, stated so the trade is deliberate:** those long comments carry the WHY - which
+reference a technique came from, which of Rod's calls changed a value, what was measured. Losing
+that wholesale would gut the provenance record. So: the reasoning moves to the component's `.md`
+where prose belongs, and the code keeps one line pointing at it. **Trim the file, not the record.**
