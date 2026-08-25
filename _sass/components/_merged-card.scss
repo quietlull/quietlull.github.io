@@ -217,9 +217,20 @@ body.no-glass .glass-plane,
   transition-delay: 0.06s;
 }
 
+// Underline on hover, not glow. Rod wants links behaving the same way everywhere, and the glow was
+// the odd one out. The old rule also painted a different amber, which is why the yellow looked off.
 .merged-cards .post-card:hover .card-title {
   color: var(--color-gold);
-  text-shadow: 0 1px 6px var(--color-shadow-text), 0 0 14px rgba(var(--glow-hue, 251, 191, 36), 0.35);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-shadow: 0 1px 6px var(--color-shadow-text);
+}
+
+// Weight 400, not the ladder's 300. Thin type over a moving scene shimmers, and Rod could see it.
+// This is a deliberate step off the ladder for text that sits on top of animation.
+.merged-cards .card-title {
+  font-weight: 400;
 }
 
 .merged-cards .card-meta {
