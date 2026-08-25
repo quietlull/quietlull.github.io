@@ -36,7 +36,17 @@
   --top-bar-border: 1px; /* the mark has to clear this too, or it stops 1px short of the edge */
 }
 
+/* STICKY LIVES HERE NOW, 2026-08-25. All four lab pages that carry this bar declared
+   `.top-bar{position:sticky;top:0;z-index:60}` in their OWN page style - four identical copies of
+   one behaviour, none of them in the component. Ported that way, the live bar scrolled off the top
+   because nothing on the live site repeated the incantation.
+   It belongs to the bar, not to whatever page hosts it. `sticky` also occupies real layout space,
+   which the pages below it depend on - `final-landing` subtracts the bar's height from its hero,
+   and About did not, which is why About's hero currently runs past the fold. */
 .top-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-chrome, 60);
   display: grid;
   /* NAV CENTRING FIX (Rod 2026-08-18: "the nav isnt centered"). It was not, and the old
      `auto 1fr auto` is exactly why: the nav was centred inside its own middle COLUMN, and that
