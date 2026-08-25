@@ -76,11 +76,15 @@ layout: compress
     {% endif %}
 
     {% comment %}
-      The portal skips the content column. Its drag engine reads the field's own width for the
-      bounce edges, so a 1140px container would put a wall in the middle of the page.
+      THE PORTED PAGES SKIP THE BOOTSTRAP CONTENT COLUMN. Each one carries its own column width -
+      961px on About, 1170px on Ramblings - so the container only fights them. Ramblings measured a
+      12px horizontal overflow at a 1200px viewport with it, and the portal's drag engine reads the
+      field's own width for the bounce edges, so a container puts a wall in the middle of the page.
+      A layout joins this list when its markup is ported, not before.
     {% endcomment %}
-    {% if page.layout == 'portal' %}
-      <main id="main-content" aria-label="Main Content">{{ content }}</main>
+    {% assign full_bleed = 'portal,section-about,ramblings' | split: ',' %}
+    {% if full_bleed contains page.layout %}
+      <main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% endif %}>{{ content }}</main>
     {% else %}
 
     <div id="main-wrapper" class="d-flex justify-content-center">

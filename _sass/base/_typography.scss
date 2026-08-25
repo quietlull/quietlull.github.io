@@ -23,16 +23,25 @@ a {
   text-decoration: none;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-transition: all var(--transition-normal) ease-in-out;
+// LAYERED 2026-08-26, and it is the only layered rule in this file. `height: auto` is a RESET -
+// it stops a shrunk image distorting against its own `height` attribute - but unlayered it also
+// beat every ported component that sizes an image, and collapsed the ramblings thumbnail from
+// 170px to 0. In `reset` it still does its job and components can now win.
 
-  .blur & {
-    $blur: 20px;
+@layer reset, tokens, prose, components, overrides;
 
-    -webkit-filter: blur($blur);
-    filter: blur($blur);
+@layer reset {
+  img {
+    max-width: 100%;
+    height: auto;
+    transition: all var(--transition-normal) ease-in-out;
+
+    .blur & {
+      $blur: 20px;
+
+      -webkit-filter: blur($blur);
+      filter: blur($blur);
+    }
   }
 }
 
