@@ -422,3 +422,43 @@ that was still the CITATION for something that shipped.
 **Nothing here is in git.** `redesign-lab/` is gitignored, so reversibility for all of it is the
 trash directory plus `RESTORE.sh`. That script now covers the bench work too, and carries a warning
 that its newest entries are backups of files still IN USE, not retired ones.
+
+---
+
+# Two lab traps, both fixed, both worse than described
+
+## The ramblings tuner was rewriting its own page just by opening
+
+Measured rather than assumed: loading `rambling-ratios.html` injected all 19 knobs and produced
+**116 computed-style and geometry differences** against the untouched page - it grew from **2188px
+to 2281px** and shifted all 8 rows down. You would open it to tune one number and silently revert
+eleven others.
+
+Eleven dials were stale, and **one on my list was not** - `ts` reads 24px because `decisions.css`
+puts `.er-ttl` on the h3 rung, so the hand-typed 24 happened to still be right. That is the danger
+of a transcribed table: it is not wrong everywhere, so it does not look wrong.
+
+Rebuilt on the newer pattern - derive from the frame, emit only what moved, write nothing until a
+dial moves. **Verified with a full dump: ~340 properties across 17 elements plus every row offset
+and the page height, tuner open versus page alone - 0 differences.** The old localStorage key is
+cleared on boot so its hand-typed numbers cannot come back.
+
+One thing nobody predicted: `border-top: 1px solid var(--color-line-soft, ...)` is a shorthand
+containing a `var()`, and the CSSOM refuses to decompose it - `border-top-width` comes back empty.
+Two dials read those hairlines off the rendered element instead.
+
+## A nested comment had been eating a rule for months
+
+`bio-block.css:196` had a `/* */` inside a `/* */`. CSS comments do not nest, so the inner `*/`
+closed the outer one and the prose after it parsed as CSS - the browser swallowed it plus the next
+selector as one invalid rule. **Confirmed dead before the fix: the file parsed 13 rules and
+`.bio--bare` was absent. After: 14 rules, and it applies.** Fixed by deleting two delimiters; every
+word survives.
+
+The sweep found three hits, all the same line of the same file in three places. Two were left
+deliberately: the `original-css/` copy is the frozen baseline `layer-diff.html` diffs against, and
+editing it would corrupt the comparison; the third is my own backup.
+
+**It also declined to trim `bio-block.css`'s comments**, correctly citing D45 back at me - the rule
+says the reasoning moves to the component's `.md` first, and that component has no `.md` yet. Trim
+the file, not the record.
