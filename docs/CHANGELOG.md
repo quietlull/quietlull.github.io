@@ -1,3 +1,83 @@
+# 2026-08-24, late - THE TUNING HANDOVER, AND FIVE OF SIX PAGES BUILT
+
+**Rod took the numbers.** Three tuners were built and he is now tuning his own pages and pasting the
+result back: the landing hero, the post rail and the ramblings rows. Every tuner drives the REAL
+page through a same-origin iframe rather than a copy, keeps its panel in the parent document so it
+cannot contribute layout, and emits paste-ready CSS naming the file and line for each block. The
+shape came from `hero-ratios.html`, which already existed; the rule is one tuner idiom in this lab,
+not three.
+
+**The single most useful thing found:** the hero's vertical sliders had been frozen since they were
+built. `line-boil.js` pins every glyph's advance to a fixed px at load and only re-measures on a
+window resize, and in `writing-mode: vertical-rl` **that pin IS the vertical length**. Sweeping the
+size slider from 2 to 9 moved the block 646.9px to 646.9px, ie not at all. One synthetic resize per
+apply fixed it; the same sweep now moves it to 900.
+
+**A tuner whose defaults have drifted from its page is tuning a composition nobody approved.** The
+hero's trench default was `.684`, a pre-hoist number the landing had already corrected to `.428`, so
+Rod's first export carried it back in and would have silently opened the trench 60%. Held and
+flagged. The tuners are synced value-for-value to their pages now, and the exports warn.
+
+## What the pages gained
+
+**Projects** is at zero greybox. The search field landed (candidate A, ronja - and the pick is
+unusual in that ronja supplies a MECHANISM and no look at all, so the box is ours and labelled so).
+The card tags became the live site's own symbols, glyph for glyph, which shrank the tag run enough
+for the date to move into it, which freed the description's third line at **zero change in card
+height** - truncation went 9 of 16 to 2. Those two asks turned out to be one change; the date move
+alone spilled the row out of its box on 8 cards. The filter pills gained icons and **kept their
+words**, because the live site's pills are icon-and-word while its card badges are the icon-only
+ones - two components differing on exactly that axis. Icon-only there would have been a defect, not
+a preference: stripped, those buttons measure 16px tall against a 24px minimum for a pointer target.
+
+**Ramblings** was rebuilt on real post data, got the same search field at full column width, and had
+its off-centre column fixed. Its entry titles joined the ladder at the H3 rung, keeping their `<h2>`
+tag so the page does not skip a heading level.
+
+**The portal** got sideways drift and a welcome line.
+
+## Three of Rod's own reports were right where my first diagnosis was wrong
+
+- **"tags on the projects page have a weird silver border."** I named an orange outline in
+  `button-kit`; composited readback said that edge is a rust brown at 91% saturation, identical on
+  all four pages. The real edge was a SECOND one I never looked for: `.gb`'s dashed `#4a4a4a` at 0%
+  saturation, 2px off every tag - lab chrome that was never cleared after the real tags landed.
+- **"its really not identical to the A in search-field.html."** My comparison checked the box and
+  not what was inside it. The page's own unlayered rule added 16px of padding on top of the field's
+  12px, so the text started at 17px against 1px.
+- **"they seem to now intersect with the heading."** My fix set 20px between the BOXES; the visible
+  gap is between the PANELS, which bleed past their boxes by different amounts. Real overlap was
+  24px into the rail and 44px into the article, and at 1280 the article panel was drawn over the
+  last 40px of the title.
+
+**The pattern is one thing: I measured the mechanism I expected and not the one on screen.** Rod is
+the eyes and in all three cases his report was accurate as given.
+
+## Two copy errors found by re-reading the source
+
+- **The entry-row underline marked only the last line.** Eve's own `.ttl` is a `<span>` with no
+  `display` declared, so it is `display: inline` and their bar paints per line fragment - verified
+  by forcing a wrap on their live page and pixel-scanning it. Ours was `inline-block`, which the
+  component's own notes flagged as INFERRED. **A faithful-copy bug, not a remix**, so fixing it
+  restores the source rather than departing from it.
+- **`drift-magnet` could not be told to move on one axis.** `Number("0") || base` reads a deliberate
+  zero as "unset", and the collector selector only looked for `[data-drift]` while its own reader
+  had understood `data-drift-x` all along. Both fixed; the portal's horizontal-only drift is what
+  surfaced them.
+
+## Process, at Rod's instruction
+
+Three rules are now in `docs/CONVENTIONS.md` and in memory: **every task gets a logged row AND an
+agent**; **a task is not finished until its review row exists** on the todo page; and **a question
+that blocks work goes on that page too, but only after every unblocked part is done.** That last one
+is the expensive failure: a six-question report on the search field stopped all of it, including the
+half that had no questions at all.
+
+`todo.html` was rebuilt as a four-state board - done and waiting on his eye, blocked on a word from
+him, running now, queued with nothing on it. The version it replaced stated its own slot counts
+three different ways in one file and had silently discarded four of his ticks when someone renamed
+the storage keys.
+
 # Changelog
 
 Append-only. Entry format, ported from the Underworld convention: date, SHORT-CAPS-TITLE, then

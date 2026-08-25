@@ -11,18 +11,40 @@ Last compiled 2026-08-24. Every number below was measured that day, not estimate
 
 ## Where the six pages are: 25 of 102 slots approved
 
-| page | slots | approved | greybox left | components | state |
-|---|---|---|---|---|---|
-| `final-portal` | 9 | **8** | 0 | 4 | Approved by Rod. The one unapproved slot is the centre mark, which is BUILT (the line boil), so it is a judgement not a job |
-| `final-landing` | 12 | **9** | 1 | 10 | Built out. Pending: top bar, view all button, project cards |
-| `final-post` | 19 | **4** | 0 | 13 | Fully built out. Everything on it is real and waiting on Rod's eye |
-| `final-projects` | 24 | **2** | 1 | 10 | Rebuilt from the LIVE page and promoted. Cards carry real fields on the front |
-| `final-ramblings` | 12 | **1** | 0 | 7 | Built out, on real post data |
-| `final-about` | 26 | **1** | 24 | 5 | **The only surface still needing real construction.** Carries two parallel slot sets, which is why it reads as 26 |
+| page | slots | approved | greybox left | state |
+|---|---|---|---|---|
+| `final-portal` | 9 | **8** | 0 | Approved. The centre mark is built (line boil); drift and a welcome line landed 2026-08-24 |
+| `final-landing` | 12 | **9** | 1 | Built out. Carries Rod's own hero tune |
+| `final-post` | 19 | **4** | 0 | Fully built. Carries Rod's own rail tune |
+| `final-projects` | 24 | **2** | **0** | Rebuilt from the live page. Cards, search and filter pills all real |
+| `final-ramblings` | 12 | **1** | 0 | Real post data, real search, Rod's own tune |
+| `final-about` | 26 | **1** | **24** | **THE ONLY SURFACE STILL NEEDING CONSTRUCTION** |
 
-**"Pending" mostly means built but not approved, not empty.** Only about still carries real greybox.
-That distinction decides what to do next: post, ramblings, projects and portal need Rod's judgement;
-about needs work.
+**Five of the six are built and waiting on judgement, not on work.** Rod, 2026-08-24: *"after all
+these changes about me is the main thing that needs to be fixed."* A full assembly spec for it
+already exists and is unused - collapse the two parallel slot sets onto the 3b (`?v=spacious`)
+variant, portrait uses the favicon as a marked placeholder, and the backing wraps portrait + bio
+with the section head bare (his pick). The trophy WALL stays unbuilt: no source, and he has said it
+needs a design conversation first.
+
+## The three tuners, and why they exist
+
+Rod tunes his own numbers now. Each drives the REAL page through a same-origin iframe rather than a
+copy, keeps its panel in the parent document so it cannot affect the design, and emits paste-ready
+CSS naming the file and line for each block.
+
+- **`hero-ratios.html`** - the landing hero. Its vertical sliders were frozen for months: the line
+  boil pins each glyph's advance in px at load and only re-measures on a window resize, and in a
+  vertical writing mode that pin IS the vertical length.
+- **`rail-ratios.html`** - the post rail. The prose measure is a live tripwire: rail plus gap over
+  8 columns silently drops it from 767 to 759.
+- **`rambling-ratios.html`** - the ramblings rows. The gap under the search field is a permanent
+  readout because it is not independent - it, the panel's top bleed and the list's own hairline all
+  resolve to one clearance number, and that number was **-7px** with the panel sitting on the field.
+
+**A tuner whose defaults have drifted from its page is tuning a composition nobody approved**, and
+every export carries the drift into the paste. That happened once (the hero's trench) and is worth
+checking before trusting any export.
 
 ## The bench: 58 components, 25 in use
 
@@ -67,10 +89,16 @@ prose device, not the h2 scale.
 
 The only surviving `font-weight: 100` in `decisions.css` is `.prose th`, deliberately.
 
-**Three sizes still sit off the ladder** and are Rod's call: ramblings entry titles at 20px/400
-(`entry-row.css`, outside `decisions.css` entirely), About's bio headings at 20px and 16.8px, and
-card titles pulled to the H4 size by a component rule, which is why nothing anywhere renders at the
-H3 size.
+**H3 IS GOLD as of 2026-08-24** (Rod: "H3 should be yellow too i feel"). Taken as the rung rather
+than carved out for one page. Nearly free: the card titles look like they would follow and do not,
+because they name `--h4-color` explicitly and only LOOKED like they came from H3 while both tokens
+were the same silver. Two things moved - the ramblings entry titles and About's lesser bio heading.
+It softens half of D31's colour argument ("headings recede, prose leads") since a third level now
+shares H2's gold; H4 stays silver, so the recession happens one rung later.
+
+**The ramblings entry titles are ON the ladder now**, at the H3 rung, keeping their `<h2>` tag on
+purpose - retagging would leave the page running h1 straight to h3, the WCAG heading-order failure
+D31 ordered fixed on the post. **About's bio headings at 20px and 16.8px are the last ones off it.**
 
 ## The fault that keeps recurring
 
@@ -86,11 +114,23 @@ Six separate bugs in one session were this shape. Rod named the rule:
 **Delete the page's copy. Do not add an exception.** Two live instances were deleted from
 `final-post.html` when the H1 landed; every other declaration they carried was already the ladder's.
 
-Two siblings of the same fault:
-- **A partially restated shorthand reads as ownership and is not.** The projects page sat 76px off
-  centre because its inline `.wrap` restated `padding` but not `width`.
+Three siblings of the same fault, all of which bit again on 2026-08-24:
+- **A partially restated shorthand reads as ownership and is not.** Ramblings sat **58px off
+  centre** because the page restated `width` while `max-width` was the binding term - they are
+  different properties and restating one does not beat the other. **`final-projects.html` still has
+  this, 76px off**, and a note there claims it was fixed. It was not, for the same reason.
 - **A CSS name that resolves to a FALLBACK renders wrong without erroring.** `--color-pink` was
   defined in no stylesheet and rendered its hard-coded fallback for weeks. Grep the definition.
+- **A GREYBOX'S OWN PADDING SURVIVES THE THING THAT REPLACES IT.** The projects search slot kept
+  `padding: 0 16px` from when it was a placeholder mimicking a field's inner inset; a real field
+  brought its own 12px, so the text sat 17px in against 1px on the reference page. Rod spotted it by
+  eye. **When a component fills a slot, strip the slot's own geometry with it (D36).**
+
+And one that is not a cascade problem at all but cost the same time: **the visible gap is between
+the PANELS, not the boxes.** Setting a 20px margin between the post header and its columns produced
+a 24px overlap into the rail and 44px into the article, because all three carry `::before` panels
+that bleed past their own boxes by different amounts. On this page they bleed 32/20, 12/24 and
+32/16 - no two agree on either axis. Every spacing request here will hit it until they are unified.
 
 ---
 

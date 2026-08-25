@@ -137,3 +137,61 @@ and the rule gets rewritten.
   the final gate.
 - **Docs are part of done** - touched note + STATUS + CHANGELOG entry before a change batch is
   finished.
+
+## How work is run (Rod, 2026-08-24)
+
+**The priority order, in his own words:**
+
+```
+1  Create Agent For New Task
+2  Update To Do
+3  Implement Follow up from finished agent
+```
+
+Read it in order every time. **A new ask from Rod outranks finishing what an agent just sent back**,
+because the agent's findings are already captured and will keep, whereas an unlogged, undispatched
+ask is the thing that gets lost.
+
+### The loop
+
+1. **Rod asks.** The row goes into [REQUESTS.md](REQUESTS.md) immediately, before any work, one row
+   per ask and not per message - his messages routinely carry four or five. Quote him, trimmed.
+2. **Dispatch an agent.** Every task, not just the big ones. "It is only a grep" is not a reason to
+   skip it: work handled inline exists only in one session's head, and when that context clears it
+   is gone. This is the failure Rod got tired of.
+3. **An agent reports.** Update `redesign-lab/todo.html` **yourself, immediately** - never dispatch
+   an agent for a todo update and never queue it as its own row. It is bookkeeping that rides along
+   with every agent result.
+4. **Then implement** that agent's findings.
+5. **When the work lands, write its review row** on `redesign-lab/todo.html` in the same turn.
+   **A task is not finished when the code works, it is finished when its review row exists.** Rod
+   works by looking; a change he cannot find is one he cannot judge, and he will go on assuming it
+   is still pending. The row carries four things and nothing else: the request id, his words
+   verbatim and trimmed, one plain past-tense line on what changed, and the `localhost:4000` link
+   to the thing to look at.
+6. **A question that blocks work goes on the todo page too**, in its "needs a word from you"
+   group, with the options and their numbers. **Chat is not a queue.** A question raised only in
+   chat scrolls away and the work then sits blocked with no visible trace, which reads as the task
+   being silently dropped. And before parking anything: **do every part that is NOT blocked first.**
+   A question about one half is never a reason to stop on the other half - that is what actually
+   costs time. Never let a question be the reason nothing shipped.
+7. **An interrupt spawns another agent and never derails the current job.** Queue it, dispatch it,
+   continue.
+
+### The two limits that bind it
+
+- **Agents do analysis, extraction and measurement. They do not produce finished visual design and
+  they do not apply pixel changes.** That guardrail comes from the 2026-08-09 mishap, where a
+  screenshot-blind multi-agent fan-out produced ten pages of slop. Multi-agent dilutes coherence
+  because the agents cannot see either. Rod is the eyes; agents measure; the main session assembles.
+- **Agent output is a claim, not a result.** Verify before applying. One seven-agent audit produced
+  a finding that was checked and turned out to be wrong, and a "0 changed" result on a page that
+  loads one component is close to no evidence at all.
+
+### What the two lists are for
+
+- **[REQUESTS.md](REQUESTS.md)** is the queue: everything asked, with status. Read the OPEN table
+  only; done rows are phantoms and reading them wastes the context the open ones need.
+- **`redesign-lab/todo.html`** is the review queue: things that are FINISHED and waiting on Rod's
+  eye, each with the `localhost:4000` link to look at. Not a second copy of REQUESTS - two
+  hand-maintained lists of the same thing drift, and this repo has been bitten by exactly that.
