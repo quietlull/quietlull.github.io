@@ -15,30 +15,24 @@
   --slate-950: #020617;         // rgb(2, 6, 23) - darkest bg
   --slate-900: #0f172a;         // rgb(15, 23, 42) - main bg
   --slate-800: #1e293b;         // rgb(30, 41, 59) - elevated surfaces
-  --slate-700: #334155;         // rgb(51, 65, 85) - borders/muted
   
   --amber-500: #f59e0b;         // rgb(245, 158, 11) - primary glow
   --amber-400: #fbbf24;         // rgb(251, 191, 36) - bright accents
   --amber-300: #fcd34d;         // rgb(252, 211, 77) - highlights
-  --amber-200: #fde68a;         // rgb(253, 230, 138) - subtle tints
   --amber-100: #fef3c7;         // rgb(254, 243, 199) - text base
   --amber-50: #fffbeb;          // rgb(255, 251, 235) - lightest
   
-  --orange-500: #f97316;        // rgb(249, 115, 22) - warm accent
-  --orange-400: #fb923c;        // rgb(251, 146, 60) - secondary glow
 
   // ==========================================================================
   // BACKGROUNDS - Layered depth with gradients
   // ==========================================================================
   --main-bg: var(--slate-950);
-  --bg-primary: var(--slate-950);
   --bg-secondary: var(--slate-900);
   --bg-tertiary: var(--slate-800);
   
   // Glass morphism
   --bg-glass: rgba(15, 23, 42, 0.4);
   --bg-glass-strong: rgba(15, 23, 42, 0.6);
-  --mask-bg: rgba(15, 23, 42, 0.8);
   
   // Gradients
   --bg-gradient: linear-gradient(to bottom, 
@@ -54,7 +48,6 @@
   --text-color: #E8E0D4;                                // warm stone - less saturated for long reading
   --text-muted-color: rgba(232, 224, 212, 0.78);       // warm stone/78 — bumped from 0.6 for card + caption readability
   --text-muted-highlight-color: rgba(232, 224, 212, 0.7);
-  --text-very-muted: rgba(232, 224, 212, 0.3);         // subtle hints
   --heading-color: #FFF9F0;                             // lantern paper off-white - crisp
   --label-color: rgba(232, 224, 212, 0.7);
 
@@ -62,8 +55,6 @@
   // ICON COLORS - Add after text colors section (~line 60)
   // ============================================================================
 
-  --icon-muted-color: var(--text-muted-color);
-  --icon-hover-color: var(--link-hover-color);
 
   // ==========================================================================
   // BORDERS & GLASS EFFECTS - Subtle amber glow
@@ -94,7 +85,6 @@
   --glow-subtle: rgba(251, 191, 36, 0.03);
   --glow-medium: rgba(251, 191, 36, 0.06);
   --glow-strong: rgba(251, 191, 36, 0.1);
-  --glow-intense: rgba(251, 191, 36, 0.15);
   
   // Glow shadows for dot/orb elements
   --glow-ring: 
@@ -106,17 +96,8 @@
   0 0 20px 4px rgba(251, 191, 36, 0.2);
   
   // Orange variants (matching amber structure)
-  --orange-glow-subtle: rgba(251, 146, 60, 0.02);
-  --orange-glow-medium: rgba(251, 146, 60, 0.05);
-  --orange-glow-strong: rgba(251, 146, 60, 0.08);
-  --orange-border: rgba(249, 115, 22, 0.1);
-  --orange-border-strong: rgba(249, 115, 22, 0.2);
   
   // Yellow variants
-  --yellow-glow-subtle: rgba(250, 204, 21, 0.02);
-  --yellow-glow-medium: rgba(250, 204, 21, 0.05);
-  --yellow-glow-strong: rgba(250, 204, 21, 0.08);
-  --yellow-border: rgba(250, 204, 21, 0.1);
 
   // ==========================================================================
   // GLOW TIER SYSTEM — ember / candle / lantern / bonfire / star
@@ -127,11 +108,6 @@
   // Tier 3 (Bonfire): emphasized/pinned, 0.30-0.50, 12-36px, 2-3 layers
   // Tier 4 (Star):   indicator dots/orbs, 0.40-0.70, 8-20px, dual ring
 
-  --glow-tier0: 0 0 60px var(--gold-06);
-  --glow-tier1: 0 0 12px var(--gold-30);
-  --glow-tier2: 0 0 18px var(--gold-50);
-  --glow-tier2-hover: 0 0 24px var(--gold-70);
-  --glow-tier3: 0 0 18px var(--gold-60), 0 0 36px var(--gold-30);
   --glow-tier3-hover: 0 0 24px var(--gold-80), 0 0 36px var(--gold-40);
 
   // ==========================================================================
@@ -146,51 +122,37 @@
 
   // -- Gold (251, 191, 36) — primary glow/accent family --
   --gold-03: rgba(251, 191, 36, 0.03);
-  --gold-04: rgba(251, 191, 36, 0.04);
   --gold-05: rgba(251, 191, 36, 0.05);
   --gold-06: rgba(251, 191, 36, 0.06);
   --gold-08: rgba(251, 191, 36, 0.08);
   --gold-10: rgba(251, 191, 36, 0.1);
   --gold-12: rgba(251, 191, 36, 0.12);
-  --gold-14: rgba(251, 191, 36, 0.14);
   --gold-15: rgba(251, 191, 36, 0.15);
   --gold-20: rgba(251, 191, 36, 0.2);
   --gold-22: rgba(251, 191, 36, 0.22);
-  --gold-25: rgba(251, 191, 36, 0.25);
   --gold-30: rgba(251, 191, 36, 0.3);
   --gold-35: rgba(251, 191, 36, 0.35);
   --gold-40: rgba(251, 191, 36, 0.4);
-  --gold-45: rgba(251, 191, 36, 0.45);
   --gold-50: rgba(251, 191, 36, 0.50);
   --gold-60: rgba(251, 191, 36, 0.6);
   --gold-70: rgba(251, 191, 36, 0.7);
   --gold-80: rgba(251, 191, 36, 0.8);
   --gold-90: rgba(251, 191, 36, 0.9);
-  --gold-95: rgba(251, 191, 36, 0.95);
 
   // -- Amber (245, 158, 11) — border/accent family --
   --amber-a10: rgba(245, 158, 11, 0.1);
-  --amber-a12: rgba(245, 158, 11, 0.12);
-  --amber-a15: rgba(245, 158, 11, 0.15);
   --amber-a16: rgba(245, 158, 11, 0.16);
   --amber-a20: rgba(245, 158, 11, 0.2);
   --amber-a25: rgba(245, 158, 11, 0.25);
   --amber-a30: rgba(245, 158, 11, 0.3);
-  --amber-a35: rgba(245, 158, 11, 0.35);
   --amber-a45: rgba(245, 158, 11, 0.45);
 
   // -- Orange (249, 115, 22) — warm secondary accent --
-  --orange-a04: rgba(249, 115, 22, 0.04);
-  --orange-a06: rgba(249, 115, 22, 0.06);
-  --orange-a08: rgba(249, 115, 22, 0.08);
   --orange-a10: rgba(249, 115, 22, 0.10);
-  --orange-a12: rgba(249, 115, 22, 0.12);
   --orange-a14: rgba(249, 115, 22, 0.14);
   --orange-a15: rgba(249, 115, 22, 0.15);
   --orange-a20: rgba(249, 115, 22, 0.2);
   --orange-a22: rgba(249, 115, 22, 0.22);
-  --orange-a25: rgba(249, 115, 22, 0.25);
-  --orange-a30: rgba(249, 115, 22, 0.3);
   --orange-a35: rgba(249, 115, 22, 0.35);
   --orange-a40: rgba(249, 115, 22, 0.4);
   --orange-a50: rgba(249, 115, 22, 0.50);
@@ -209,21 +171,12 @@
   --red-a10: rgba(239, 68, 68, 0.1);
 
   // -- White highlights --
-  --white-a04: rgba(255, 255, 255, 0.04);
   --white-a08: rgba(255, 255, 255, 0.08);
-  --white-a35: rgba(255, 255, 255, 0.35);
-  --white-a40: rgba(255, 255, 255, 0.4);
 
   // -- Orange-red (234, 88, 12) — warm deep accent --
-  --orange-red-a12: rgba(234, 88, 12, 0.12);
-  --orange-red-a15: rgba(234, 88, 12, 0.15);
-  --orange-red-a20: rgba(234, 88, 12, 0.20);
   --orange-red-a25: rgba(234, 88, 12, 0.25);
-  --orange-red-a30: rgba(234, 88, 12, 0.30);
-  --orange-red-a35: rgba(234, 88, 12, 0.35);
 
   // -- Shadow/depth (0, 0, 0) --
-  --shadow-a10: rgba(0, 0, 0, 0.1);
   --shadow-a15: rgba(0, 0, 0, 0.15);
   --shadow-a25: rgba(0, 0, 0, 0.25);
   --shadow-a30: rgba(0, 0, 0, 0.3);
@@ -232,63 +185,32 @@
 
   // -- Slate backgrounds (15, 23, 42) --
   --slate-a40: rgba(15, 23, 42, 0.4);
-  --slate-a60: rgba(15, 23, 42, 0.6);
-  --slate-a80: rgba(15, 23, 42, 0.8);
   --slate-a95: rgba(15, 23, 42, 0.95);
   
   // ==========================================================================
   // BLUR VALUES - Matching variables.scss
   // ==========================================================================
   --blur-sm: 4px;
-  --blur-md: 12px;
-  --blur-lg: 16px;
-  --blur-xl: 24px;
-  --blur-2xl: 48px;
-  --blur-3xl: 80px;
   
   // ==========================================================================
   // TRANSITION TIMINGS
   // ==========================================================================
   --transition-fast: 300ms;
   --transition-normal: 500ms;
-  --transition-slow: 1000ms;
   
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.0, 0, 0.2, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
   
   // ==========================================================================
   // ANIMATION DURATIONS
   // ==========================================================================
-  --float-duration: 10s;
-  --float-gentle-duration: 8s;
-  --pulse-duration: 2s;
-  --shimmer-duration: 1s;
   
   // ==========================================================================
   // Z-INDEX LAYERS
   // ==========================================================================
-  --z-background: -1;
-  --z-base: 0;
-  --z-content: 10;
-  --z-dropdown: 50;
-  --z-sticky: 100;
-  --z-header: 200;
   --z-overlay: 500;
-  --z-modal: 1000;
-  --z-toast: 2000;
   
   // ==========================================================================
   // SPACING SCALE
   // ==========================================================================
-  --spacing-xs: 0.5rem;
-  --spacing-sm: 0.75rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-  --spacing-3xl: 4rem;
-  --spacing-4xl: 6rem;
   
   // ==========================================================================
   // LINKS - Amber with glow on hover
@@ -317,9 +239,6 @@
   --btn-paginator-hover-color: var(--button-hover-bg);
   
   // Primary action buttons (optional - for future use)
-  --btn-primary-bg: var(--amber-500);
-  --btn-primary-hover-bg: var(--amber-600);
-  --btn-primary-text: var(--text-color);
 
   // Badge colors (pinned posts, etc.)
 // NOTE: Badge stays RED for maximum visibility on any image background
@@ -329,29 +248,16 @@
   // ==========================================================================
   // TOPBAR - Navigation with lantern aesthetic
   // ==========================================================================
-  --topbar-bg: var(--bg-glass);
   --topbar-text-color: rgba(254, 243, 199, 0.6);
-  --topbar-border-color: var(--glass-border);
-  --topbar-hover-bg: var(--button-hover-bg);
   --topbar-active-color: rgba(254, 243, 199, 0.95);
-  --topbar-btn-bg: rgba(245, 158, 11, 0.05);
-  --topbar-btn-color: rgba(254, 243, 199, 0.6);
-  --topbar-glow: 0 0 15px rgba(251, 191, 36, 0.2);
   
   // Avatar
-  --avatar-bg-color: rgba(255, 255, 255, 0.9);
-  --avatar-border-color: rgba(251, 191, 36, 0.3);
   
   // Site titles
-  --site-title-color: #FFF9F0;
-  --site-subtitle-color: rgba(232, 224, 212, 0.6);
   
   // ==========================================================================
   // SEARCH/INPUT
   // ==========================================================================
-  --search-border-color: var(--glass-border);
-  --search-icon-color: rgba(254, 243, 199, 0.5);
-  --search-tag-bg: rgba(245, 158, 11, 0.05);
   --input-focus-border-color: rgba(251, 191, 36, 0.3);
   --input-focus-glow: 0 0 12px rgba(251, 191, 36, 0.3);
 
@@ -360,8 +266,6 @@
   // ==========================================================================
   --card-bg: rgba(15, 23, 42, 0.6);
   --card-hover-bg: rgba(245, 158, 11, 0.08);
-  --card-border: rgba(245, 158, 11, 0.1);
-  --card-hover-border: rgba(245, 158, 11, 0.2);
   
   --card-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.6), 
@@ -384,7 +288,6 @@
   // ==========================================================================
   // TAGS
   // ==========================================================================
-  --tag-bg: rgba(255, 255, 255, 0.1);
   --tag-border: rgba(245, 158, 11, 0.2);
   --tag-hover: rgba(245, 158, 11, 0.15);
   --tag-shadow: rgba(0, 0, 0, 0.4);
@@ -394,7 +297,6 @@
   // ==========================================================================
   --blockquote-border-color: rgba(251, 191, 36, 0.3);
   --blockquote-text-color: rgba(254, 243, 199, 0.7);
-  --blockquote-bg: rgba(251, 191, 36, 0.03);
 
   // ==========================================================================
   // PROMPTS/ALERTS
@@ -470,8 +372,6 @@
   );
 
   // Floating animation for ambient glows
-  --float-y-offset: -30px;
-  --float-x-offset: 10px;
 
   // ==========================================================================
   // MISSING / SUPPLEMENTAL VARS
@@ -490,18 +390,13 @@
   );
 
   // Section title accent line
-  --section-accent: rgba(251, 191, 36, 0.5);
 
   // Ambient orb colors
-  --orb-amber: rgba(251, 191, 36, 0.07);
-  --orb-orange: rgba(251, 146, 60, 0.05);
 
   // ==========================================================================
   // UTILITY COLORS - For avoiding hard-coding
   // ==========================================================================
-  --color-gray: var(--text-muted-color);
   --color-gray-light: rgba(254, 243, 199, 0.3);
-  --color-gray-dark: rgba(254, 243, 199, 0.1);
   --color-white: #ffffff;
   --color-black: #000000;
 
