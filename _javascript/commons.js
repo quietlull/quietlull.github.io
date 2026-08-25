@@ -1,6 +1,5 @@
-import { basic, initSearchbar } from './modules/layouts';
+import { basic } from './modules/layouts';
 import { initPostFilter } from './modules/components';
 
-initSearchbar();
 initPostFilter();
 basic();

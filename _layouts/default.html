@@ -121,7 +121,6 @@ layout: compress
           </div>
         </div>
 
-        {% include_cached search-results.html lang=lang %}
       </div>
 
       <aside aria-label="Scroll to Top">
@@ -155,7 +154,6 @@ layout: compress
       {% include {{ _include_path }} %}
     {% endfor %}
 
-    {% include_cached search-loader.html lang=lang %}
 
     {% comment %}
       Last, so the scene bundle is requested after the page's own scripts rather than ahead of

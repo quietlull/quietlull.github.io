@@ -1,8 +1,10 @@
 <!-- JS selector for site. -->
 
-<!-- commons -->
-
-{% assign urls = site.data.origin[type].search.js %}
+{% comment %}
+  `urls` used to be seeded with SimpleJekyllSearch, which meant every page fetched the library.
+  Nothing rendered a search input, so it drove nothing. It starts empty now.
+{% endcomment %}
+{% assign urls = '' %}
 
 <!-- layout specified -->
 
@@ -56,7 +58,7 @@
 {% case page.layout %}
   {% when 'home', 'section-about' %}
     {% assign js = 'home' %}
-  {% when 'categories', 'post', 'page' %}
+  {% when 'post', 'page' %}
     {% assign js = page.layout %}
   {% when 'section-landing' %}
     {% assign js = 'page' %}

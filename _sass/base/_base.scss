@@ -470,9 +470,7 @@ mjx-container {
 
 /* --- basic wrappers --- */
 
-#topbar-wrapper.row,
-#main-wrapper > .container > .row,
-#search-result-wrapper > .row {
+#main-wrapper > .container > .row {
   @include mx.ml-mr(0);
 }
 
