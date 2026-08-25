@@ -170,7 +170,7 @@ within 24px, and the closest pair here is 45.6px apart.
 | Portal window close buttons | **16x16** and **22x22** | 64 and 219.7 | Pass by spacing, hard to hit |
 | Blogs tag buttons | 74 to 116 **x 23** | 45.6 to 102.9 | Pass by spacing, 1px under |
 | Projects filter pills | 63.3 to 77.4 **x 25.6** | n/a | **Pass outright.** The 13.6px regression is gone |
-| Card tag chips | not focusable, they are not targets | n/a | Not applicable |
+| Card tag chips, 42 of them | 10.9 to 17.2 **x 14.6 to 17.2** | n/a | **Not applicable.** They are `<span>`s, not focusable and not clickable. The whole card is the target |
 | Top bar nav links | 67 to 108 **x 34.9** | n/a | **Pass outright** |
 | Achievement tiles | **64x64** | n/a | **Pass outright** |
 
@@ -235,7 +235,15 @@ into a defect. The element's own level and its size agree on every page I measur
 | Portal window close buttons | Pass, `aria-label="Close Tech Art"` and so on |
 | Favicon home link | Pass, `aria-label="Home"` |
 | Pinned card star | Pass, `role="img"` with `aria-label="Pinned"` |
+| Card tag chips, the tech icons | **Pass.** Each is `role="img"` with an `aria-label` and a `title`, for example `Unity`, `Shader`, `3D`. The inner icon is `aria-hidden`, so the name is said once, not twice |
 | Images missing `alt` | **None**, across all nine pages |
+
+One knock-on worth knowing, though it is not a failure. Because the tag chips are labelled and
+sit **inside** the card's `<a>`, their labels fold into the link's name. The first card on the
+projects page announces as *"star, Compute Grass, Artist, Unity, GPU-driven grass rendering in
+Unity using compute shaders..."*, the whole card body read as one link name. That is legal under
+2.4.4, the destination is certainly described, but it is a long thing to sit through 16 times.
+Worth a look when the cards next get touched.
 
 ### WCAG 1.4.3 contrast
 
