@@ -48,6 +48,47 @@ holding directory you can approve or reverse in one command.
 So the feared "deleting live tokens shatters Chirpy" is mostly not real. The genuinely hand-written
 surface that needs care is `_base.scss` and `_mixins.scss`.
 
+## The lab cleanup: 69 files, 33.9 MB, all reversible
+
+Moved to `redesign-lab/_TRASH-2026-08-25/`, nothing deleted. The lab drops from 141.6 MB to about
+106 MB - **25%** - once you approve. Biggest single item was 16.8 MB of `_ref-emissive-dissolve/.git`,
+a clone of a public repo that was never lab history.
+
+**To accept:** `rm -rf redesign-lab/_TRASH-2026-08-25`
+**To reverse everything:** `bash redesign-lab/_TRASH-2026-08-25/RESTORE.sh` - it moves all 69 files
+back, reverts the 7 edited blocks in `index.html`, and restores `STYLE.md`. It was dry-run first: all
+7 anchors matched and all 69 paths resolved.
+
+Verified after every step: **all 25 pages return 200** - six finals, six tuners, seven blockouts,
+the index and the rest - every stylesheet link on the finals and tuners resolves, and a lab-wide
+sweep finds zero dead links.
+
+### FIVE THINGS THE DELETE LIST CALLED DEAD AND WERE NOT
+
+This is the part worth your attention, because I wrote that list and I was wrong five times:
+
+- **`a3-assembly.html`** - `section-head-tests.html` cites it as the VERBATIM source for two of its
+  variants, and the worklist cites it twice as where to see open items. Same circular-citation
+  entanglement that protects the `rework-*` pages.
+- **`post-aggregate.html`** - it is an OPEN worklist item: the greybox spec for six post components
+  that have not been built yet.
+- **`archive/2026-08-24-projects-superseded/`** - `final-projects.html:6` carries an explicit
+  keep-decision saying it is the only record of that blockout and its slot notes carry provenance
+  the ledger still cites.
+- **`archive/2026-08-18-retired/aggregate.html` + `final-landing-v1.html`** - the verbatim sources
+  for three more `section-head-tests` variants. `aggregate.html` is also the target of the STYLE.md
+  pointer I had it fix, so moving it would have re-broken the thing being fixed.
+- **`archive/2026-08-16-rejected-subpage-tests/README.md`** - four active analysis docs quote it, and
+  one says outright that the 65-75ch prose rule "survives only as a quotation inside" it.
+
+**The pattern in all five: a rejected artefact is still the CITATION for something that shipped.**
+"Superseded" and "deletable" are not the same word in this repo, and the provenance law is what makes
+them different.
+
+Three names on my list did not exist at all (`section-landing-A/-A2/-B1` are really `-A-japanese`,
+`-A2-japanese`, `-B1-western`). They were left alone rather than guessed at; they are referenced only
+from `index.html` and can go on your word.
+
 ## Still open at the time of writing
 
 Filled in as the night goes.

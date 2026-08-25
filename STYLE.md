@@ -359,7 +359,8 @@ Read before analyzing, in this order:
 4. This file, Sections H and I.
 
 ### Step 1 — Hard pass (Section H), page by page
-- Scope (current phase): `redesign-lab/aggregate.html`, each component at
+- Scope (current phase): `redesign-lab/archive/2026-08-18-retired/aggregate.html` (retired
+  2026-08-18, kept as the verbatim source for section-head variant C), each component at
   `redesign-lab/extracted/?c=<id>`. (Post-assembly: every real page template.)
 - **The bench's own chrome (menu, tuner column, stage labels) is lab tooling — exclude it from
   findings; analyze only the mounted component.**
