@@ -1,61 +1,85 @@
 ---
 layout: default
 refactor: true
+script_includes:
+  - about-scripts
 ---
 
 {% include lang.html %}
 
 {% comment %}
-  THE SCENE MOVED TO `_layouts/default.html` (2026-08-25). It is chrome now: one tag, one tier
-  per layout, so nothing can double-init and no layout can drift from the others. The old tag is
-  left here, commented out, because it is the record of what this layout used to load - which is
-  not the same bundle the shared one loads. To go back, delete the include from default.html and
-  uncomment this.
-    was: three-background-scene.min.js
+  About, ported from `redesign-lab/final-about.html`. Rod's model, 2026-08-23: "about page is the
+  landing page except the about me is the hero, the achievements are the project cards."
+
+  Three bands in a column, then the scene gets the bottom of the page. The old `#home-page` markup -
+  landing box, profile container, trophy grid - is gone, and `_sass/pages/_about.scss` replaces the
+  `body.spacious` rules the lab page carried inline.
+
+  Dropped with the lab page: the `.gb` greybox wrappers, `.slot__tag`, `.slot__wait`, the `#state`
+  counter, the `.labtag`, and its own copies of the top bar and footer, which are shared includes.
+
+  THE HERO IS 50vh WITH A 590px FLOOR, Rod's own tune. It does NOT subtract the top bar the way the
+  landing does - the bar is `position: sticky` and takes real layout space, so About starts below it.
 {% endcomment %}
 
-<div id="home-page" class="home-content">
+<div id="about-page" class="wrapper">
+  <div class="col">
 
-  <section id="landing-box" class="flex-grow-1 px-xl-1">
-    <div class="text-container">
-      <h1 id="landing-title" class="landing-box-title">{{ page.section_title }}</h1>
-    </div>
+    <section class="band hero">
+      {% comment %} `.hero__fill` is what holds the hero to a full first screen - layout, not decoration. {% endcomment %}
+      <div class="hero__fill">
+        <div class="sect">
+          <h1 class="section-head"><span class="section-head__name">About me</span></h1>
 
-    <div class="landing-content">
-      <div id="about-me-image" class="profile-container"></div>
+          <div class="biorow">
+            {% comment %} No portrait exists yet, so the frame shows the favicon and says so with `data-placeholder`. {% endcomment %}
+            <div class="pf pf--window">
+              <div class="pf__inner">
+                <div class="pf__bar"><span class="pf__name">Rod</span></div>
+                <div class="pf__body">
+                  <div class="pf__media" data-placeholder="true">
+                    <span class="favicon favicon--square">
+                      <img class="favicon__img" src="{{ '/assets/img/favicons/favicon.svg' | relative_url }}" alt="" width="26" height="26">
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      <div class="about-text">
-        <div class="text-container">
-          {{ page.bio_intro | markdownify }}
+            {% comment %} An h2, not an h3: this is a section head, and the tag has to match the role (WCAG 1.3.1). {% endcomment %}
+            <div class="biocol">
+              <h2 class="bio-h">Hey There, I'm <span class="boil-word">Rod</span></h2>
+              {{ page.bio_intro | markdownify }}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    {% if page.bio_more %}
-      <div class="additional-content">
-        <div class="text-container">
-          {{ page.bio_more | markdownify }}
+    {% comment %} No big header here - Rod 2026-08-23: "second about me doesnt need a header maybe it can use a lesser header". {% endcomment %}
+    <section class="band band--tight">
+      <div class="textbox">
+        <h3 class="bio-h bio-h--lesser">More About Me</h3>
+        {{ page.bio_more | markdownify }}
+      </div>
+    </section>
+
+    {% comment %} The wall builds its own 29 tiles from the real achievement list, so the page hands it a root and nothing else. {% endcomment %}
+    <section class="band">
+      <h2 class="section-head"><span class="section-head__name">Achievements</span></h2>
+      <div class="tagline">yours, not mine</div>
+      <div class="sect">
+        <div class="aw">
+          <div class="aw__cat"></div>
+          <div class="aw__detail"></div>
         </div>
       </div>
-    {% endif %}
+    </section>
 
-    <!-- Trophy Case — populated by achievements.js -->
-    <div class="trophy-case">
-      <div class="text-container">
-        <h3 class="trophy-title">Achievements</h3>
-        <p class="trophy-subtitle">No, these aren't mine, they're yours. Keep exploring my site to earn more.</p>
-        <div id="trophy-grid" class="trophy-grid"></div>
-      </div>
-    </div>
-
-    {% comment %}
-      Legacy: pages that still write raw HTML into the body render here.
-      Converting to the bio_intro/bio_more frontmatter fields is recommended.
-    {% endcomment %}
+    {% comment %} Pages that still write raw HTML into the body render here. {% endcomment %}
     {{ content }}
-  </section>
+  </div>
 
-  <!-- Empty spacer — lets the lakeview/dock scene breathe at the bottom -->
-  <div class="scene-spacer" aria-hidden="true"></div>
-
+  {% comment %} 85vh of clear page so the dock and the water get a screen of their own, same as the landing reserves. {% endcomment %}
+  <div class="scenewide" aria-hidden="true"><div class="scenewide__hole"></div></div>
 </div>

@@ -2,6 +2,7 @@
 @forward 'post';
 @forward 'projects';
 @forward 'portal';
+@forward 'about';
 @forward 'section-landing';
 // RE-ADDED 2026-08-25. These four partials exist and were never forwarded, so their CSS has not
 // compiled into the site at all. It is a live bug, not dead code: `#page-tag` renders on **20 of 53

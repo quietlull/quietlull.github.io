@@ -1,0 +1,15 @@
+{% comment %}
+  About's own JS. `assets/js/chrome.js` already runs the top bar, the magnets and the wordmark boil,
+  so only the two things this page alone has are here.
+{% endcomment %}
+
+<script type="module">
+  /* One word inside the bio heading. The boil is a per-glyph font swap, not an overlay, so an
+     inline span is a legal host and the text stays real selectable text. */
+  import { initLineBoil } from '{{ '/assets/js/components/line-boil.js' | relative_url }}';
+  initLineBoil(document.querySelector('.bio-h .boil-word'));
+
+  /* The wall builds all 29 tiles and owns its own hover, click and persistence. */
+  import { init as initAchievementWall } from '{{ '/assets/js/components/achievement-wall.js' | relative_url }}';
+  initAchievementWall(document);
+</script>
