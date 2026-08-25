@@ -3,72 +3,20 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* portal-window — the draggable window on the portal. Our own project-card surface, made opaque.
-
-   Rod, 2026-08-23: "Honestly i think this is ok just reconstruct these opaque cards in the site
-   colors", after "try to make a version where they look a little more like our current project
-   cards?" and "i also really dont like the diamonds remove those."
-
-   That RETIRES two earlier passes on this component and it is worth saying why, because the trail
-   matters more than the result:
-     - the WINDOWS-98 chrome ("make it kinda look like old windows tabs") - did not land.
-     - the ZUTOMAYO copy ("copy zutomayo exactly") - their real pink and purple, which only became
-       possible once Rod lifted the palette law here. It was faithful and he still did not want it.
-   The palette exception is therefore SPENT: these windows go back to site colours. Two rounds of
-   chasing an external look ended with the answer being a component we already had.
-
-   ── PROVENANCE: THIS IS INTERNAL REUSE, NOT AN EXTERNAL BORROW
-   The surface is our own APPROVED project card, taken from `merged-card.css` and
-   `project-cards-expensive.css`. That is not a citation of anything outside this repo, and it is
-   not claimed as one - it is the ordinary and correct thing to do: two objects that should feel
-   related are built from the same rules rather than from two independent readings of a reference.
-       hairline     `1px solid rgba(245, 158, 11, 0.14)`      (.card-cover)
-       drop shadow  `0 10px 26px -10px rgba(0, 0, 0, 0.55)`   (.card-cover)
-       glass plane  `inset: 8px`, sheen `linear-gradient(0deg, rgba(255,232,176,.04),
-                    rgba(255,232,176,.12))`, `border-left: 1px solid rgba(251,191,36,.5)`,
-                    `border-bottom: 1px solid rgba(251,191,36,.16)`   (.glass-plane)
-   That asymmetric bright-left / faint-bottom edge is the whole reason the cards read as lit from
-   one side, so it is reproduced rather than flattened into a uniform border.
-
-   ── OPAQUE, AND THE CARD'S OWN DEEP BLUE
-   Rod asked for OPAQUE, then for the blue: "the cards themselves should be the deep blues of the
-   site btw." So the ground is the card's actual gradient, `--color-cover-hi` #1b2452 ->
-   `--color-cover-lo` #0b1024, at full opacity. Not an approximation - the same two tokens the
-   project cards read, so if those tokens ever move, both move together.
-
-   THIS SETTLES A QUESTION THIS FILE PREVIOUSLY HAD TO FLAG. An earlier pass used the warm grey
-   `--color-panel-solid` instead, reasoning that the 2026-08-23 warm-grey lock had removed blue from
-   every surface except the sky, and noted that the cards were still blue and the two would disagree
-   (`card-greys-tests.html` is still open on exactly that). Rod's answer is that these windows follow
-   the CARDS. If he later greys the cards, this follows automatically through the same tokens.
-
-   ── WHAT OPAQUE COSTS
-   The lantern scene no longer reads through the windows. That is what "opaque" means and it was
-   asked for directly, but it is the single biggest change to how the page reads and it is not a
-   detail.
-
-   ── THE DIAMOND IS GONE
-   `.pwin__mark` is deleted, markup and CSS. It began as a stand-in for zutomayo's drawn heart and
-   survived into two later passes it never belonged to. Rod: "i really dont like the diamonds".
-
-   ── THE CLOSE BUTTON
-   Rod reported some windows had the X cut off. I could not reproduce it: measured at 1588, 1280,
-   1100 and 980 every button rendered at full size inside its bar with room to spare, and none sat
-   under the state panel. So rather than patch a symptom I could not see, the button is now sized so
-   clipping is STRUCTURALLY impossible - a hard `flex: 0 0 auto` so it can never be compressed by a
-   long title, and explicit min dimensions so it cannot shrink below a legible size on the smallest
-   windows. If an X is still cut off, the viewport width would pin it down immediately.
-   The 2x invisible hit area (109ichiki) stays: WCAG 2.2 target size (2.5.8) wants 24x24 and the
-   drawn button is smaller than that on every window.
-
-   ── THE CLASS PREFIX IS `pwin`, NOT `portal-window`
-   Deliberate, against convention: `effects/portal-windows.js` addresses these nodes by name and is
-   verified working, so renaming them would edit behaviour-bearing code for a cosmetic reason. */
+/* portal-window - the draggable window on the portal. Our own project card, made opaque.
+   Rod 2026-08-23: "just reconstruct these opaque cards in the site colors". That retired two
+   earlier passes, a Windows-98 chrome and a faithful zutomayo copy, and it SPENDS the palette
+   exception these windows had: they are back on site colours.
+   THE SURFACE IS INTERNAL REUSE, not an external borrow - the hairline, the shadow and the glass
+   plane come from merged-card and project-cards-expensive, through the same tokens, so the two
+   objects move together instead of drifting.
+   THE CLASS PREFIX IS `pwin` ON PURPOSE. effects/portal-windows.js addresses these nodes by name,
+   so renaming them would edit working behaviour for a cosmetic reason.
+   See portal-window.md, which holds the full trail. */
 
 .pwin {
-  /* On the portal, final-portal.html overrides this with the absolute positioning the drag engine
-     drives, and the JS sets --win-w / --win-h / --bar-h from the live field. On the BENCH none of
-     that exists, so these fallbacks are what let the component render on its own. */
+  /* Fallbacks for the bench. On the real portal the page positions these absolutely and the JS
+     sets --win-w / --win-h / --bar-h from the live field. */
   position: relative;
   width: var(--win-w, 300px);
   height: var(--win-h, 190px);
@@ -82,9 +30,8 @@
   display: grid;
   grid-template-rows: var(--bar-h, 26px) 1fr;
 
-  /* OPAQUE, in the card's own deep blue. Rod 2026-08-23: "the cards themselves should be the deep
-     blues of the site btw." That closes the question flagged in the header - this is now the SAME
-     gradient the project cards use, not an approximation of it, so the two genuinely match. */
+  /* The SAME gradient the project cards use, not an approximation, so if those tokens move both
+     move together. Opaque, which means the lantern scene no longer reads through. Rod's call. */
   background: linear-gradient(160deg, var(--color-cover-hi, #1b2452), var(--color-cover-lo, #0b1024));
   border: 1px solid var(--color-line-card);
   box-shadow: 0 10px 26px -10px var(--color-shadow-card);
@@ -98,21 +45,13 @@
   background: var(--color-window-bar);
   border-bottom: 1px solid var(--color-line-card);
 
-  /* THE BAR IS A GRID ITEM, and a grid item's `min-width` defaults to AUTO - so it refuses to
-     shrink below its own content and grows straight past the window, which has `overflow: hidden`.
-     The close button sits at the far right of the bar, so it was the first thing clipped away.
-     Measured before the fix: itch.io's window was 86px wide and its bar 135.7px. Rod: "the itch.io
-     and art station still have their X missing."
-     This is a SAFETY NET, not the fix he asked for - portal-windows.js now grows each window to fit
-     its header, so the title should never need to ellipsise. This only guarantees that when a title
-     cannot fit, the TITLE gives way rather than the control. */
+  /* KEEP THIS. A grid item's min-width is auto, so the bar refused to shrink below its content
+     and grew straight past a window that clips. Measured: an 86px window with a 135.7px bar, and
+     the close button was the first thing cut off. This makes the TITLE give way, not the control. */
   min-width: 0;
 
-  /* ORANGE, and BIGGER. Rod 2026-08-23: "do the Orange header text" and "honestly most of the
-     window text doesnt read as header anyways". It was 40% of bar height capped at 14px, which on
-     the smaller windows sat at the floor and read as a label rather than a heading. Now 48% of a
-     taller bar with the cap lifted to 21px, and weight 700 - a header should be the loudest thing
-     in its own window, and it was competing with body text at nearly the same size. */
+  /* Orange and bigger, Rod 2026-08-23. At 40% capped at 14px it sat on the floor on small
+     windows and read as a label. A header should be the loudest thing in its own window. */
   color: var(--color-glow, #ff6a00);
   cursor: grab;
   touch-action: none;
@@ -139,8 +78,8 @@
   min-width: 0;
 }
 
-/* `flex: 0 0 auto` plus the min sizes are what make clipping impossible: a long title can never
-   compress this, and it can never shrink below a legible glyph on the smallest window. */
+/* `flex: 0 0 auto` and the clamp floors are what make clipping structurally impossible: a long
+   title can never compress this, and it can never shrink below a legible glyph. */
 .pwin__close {
   position: relative;
   flex: 0 0 auto;
@@ -157,7 +96,7 @@
   color: var(--color-glow-soft, #ffd9a8);
 }
 
-/* 109ichiki's 2x invisible target — WCAG 2.2 target size (2.5.8) */
+/* 109ichiki's 2x invisible target. The drawn button is under the 24x24 WCAG 2.5.8 wants. */
 .pwin__close::before {
   content: '';
   position: absolute;
@@ -216,9 +155,8 @@
   color: var(--color-muted, #9aa3bd);
 }
 
-/* THE CARD'S GLASS PLANE, on the BODY rather than the whole window. The card has no title bar, so
-   its pane spans the whole tile; here a full-window pane would cross the bar and read as a mistake.
-   The body is the card-equivalent region, so the pane lives there. */
+/* The card's glass plane, on the BODY rather than the whole window - a full-window pane would
+   cross the title bar and read as a mistake. The body is the card-equivalent region. */
 .pwin__body::after {
   content: '';
   position: absolute;
@@ -232,15 +170,13 @@
 .pwin--door .pwin__body {
   color: var(--color-gold-deep, #f59e0b);
 
-  /* no bottom padding, so the Enter button can reach the window's own bottom edge rather than
-     stopping at the padding (Rod: "anchored to window bottom") */
+  /* No bottom padding, so the Enter button can reach the window's own edge (Rod). */
   padding-bottom: 0;
 }
 
-/* `<a>` is natively draggable and this link fills the whole body, so a real press-and-drag near the
-   centre started a LINK drag (the browser's own drag-and-drop, which pointer events do not drive)
-   and the window never moved. Rod: "make it so windows can be dragged from the center too".
-   NOTE a synthetic PointerEvent test cannot reproduce this — it reported the centre drag as fine. */
+/* `user-drag: none` IS THE FIX FOR CENTRE DRAGGING. An <a> is natively draggable and this link
+   fills the body, so a real press-and-drag started the browser's own drag-and-drop and the window
+   never moved. A synthetic PointerEvent test cannot reproduce it - it reports centre drag fine. */
 .pwin a {
   position: relative;
   z-index: 1;
@@ -254,8 +190,8 @@
   user-select: none;
 }
 
-/* keyed to the CARD, not the link. The link only covers the body, so hovering the title bar lit
-   nothing - Rod: "hovering over the top of the card should count as hovering over the box as well". */
+/* Keyed to the CARD, not the link: the link only covers the body, so hovering the title bar used
+   to light nothing. Rod asked for the whole window to be one target. */
 .pwin:hover a {
   color: var(--color-glow-soft, #ffd9a8);
 }
@@ -265,15 +201,14 @@
   outline-offset: -2px;
 }
 
-/* CLOSING. Rod: "if we are including the X they should be able to close/remove them until they
-   refresh the page at least or maybe clicking the name card at the center resets them?" Both. A
-   control that draws an X and does nothing is the dead-control problem, and this one had it. */
+/* Closing, and clicking the centre mark brings them back. Both, Rod's call. An X that draws and
+   does nothing is a dead control, and this one was. */
 .pwin.is-closed {
   display: none;
 }
 
-/* the identity mark only advertises itself once there is something to bring back — otherwise it
-   would be a second dead control, which is the problem being fixed */
+/* The centre mark only advertises itself once there is something to bring back, or it becomes a
+   second dead control. */
 .centre.can-reset {
   cursor: pointer;
 }
@@ -283,19 +218,15 @@
   outline-offset: 3px;
 }
 
-/* the drift wobble must not fight the drag — a held window tracks the cursor exactly */
+/* The drift wobble must not fight the drag: a held window tracks the cursor exactly. */
 .pwin.is-dragging .pwin__inner {
   transform: none !important;
 }
 
-/* THE TEXT FILL. Rod 2026-08-23: "do a spam of repeated text of what the header says inside the box
-   for now." Explicitly a PLACEHOLDER - it exists so the boxes are not empty while the real content
-   is undecided, and it is generated from each window's own title so it can never drift out of sync
-   with the header above it.
-
-   IT IS `aria-hidden`, and that is not incidental. Repeating a word forty times is texture to look
-   at and noise to listen to, so the visible fill is hidden from assistive tech and `.pwin__sr`
-   carries the single real label instead. A screen reader hears "Tech Art", not "Tech Art" x40. */
+/* THE TEXT FILL IS A PLACEHOLDER, Rod 2026-08-23: "do a spam of repeated text of what the header
+   says inside the box for now." Generated from each window's own title so it cannot drift.
+   IT IS aria-hidden, and that is not incidental: forty repeats are texture to look at and noise to
+   listen to. `.pwin__sr` carries the one real label, so a screen reader hears "Tech Art" once. */
 .pwin__fill {
   position: absolute;
   inset: 0;
@@ -308,17 +239,14 @@
   overflow-wrap: anywhere;
   pointer-events: none;
 
-  /* THE H2 COLOUR. Rod 2026-08-23: "backing text doesnt need to be that light i asked you to make
-     it the secondary h2 color." `--color-gold-deep` is the token whose own comment reads "headers,
-     deep accent", and it is what `.prose h2` uses on final-post. This was `--color-muted` at 0.22,
-     which is why it read as almost nothing. Colour carries it now; the opacity only softens it
-     enough that the Enter button still wins the eye. */
+  /* The secondary H2 colour, Rod's ask. It was --color-muted at 0.22 and read as nothing.
+     Colour carries it now and the opacity only softens it enough that Enter still wins. */
   color: var(--color-gold-deep, #f59e0b);
   opacity: 0.6;
 }
 
-/* the real label, for assistive tech only. Not `display:none` - that would remove it from the
-   accessibility tree too, leaving the link with no name at all. */
+/* The real label, for assistive tech. NOT display:none - that would drop it from the
+   accessibility tree too and leave the link with no name at all. */
 .pwin__sr {
   position: absolute;
   width: 1px;
@@ -331,15 +259,11 @@
   border: 0;
 }
 
-/* SOCIAL ICONS. Rod 2026-08-23: "for the socials inside the window can you put a icon of the social
-   place they bring you?" The mark replaces the repeated-text fill on those five - a logo says what
-   the window is far faster than its own name spammed forty times, and the two together would just
-   be noise.
-
-   Marks are Simple Icons, fetched verbatim (references/social-icons/SOURCES.md). INLINED rather
-   than <img> for the reason skills-row already gives: an <img> cannot take colour from outside, and
-   these have to follow the window's own. Geometry is byte-identical to the saved files; only the
-   brand fill is dropped so `currentColor` can supply it. */
+/* SOCIAL ICONS replace the repeated-text fill on those five - a logo says what the window is
+   faster than its own name forty times, and both together would be noise. Rod 2026-08-23.
+   Simple Icons, fetched verbatim (references/social-icons/SOURCES.md). INLINED, not <img>, because
+   an <img> cannot take colour from outside and these have to follow the window's. Geometry is
+   byte-identical; only the brand fill is dropped so currentColor can supply it. */
 .pwin__icon {
   width: 42%;
   max-width: 46px;
@@ -353,14 +277,10 @@
   color: var(--color-gold, #fbbf24);
 }
 
-/* THE SOCIALS ARE DEMOTED. Rod: "for tech art, game design, and rambling can you make them slightly
-   larger and lets demote the social windows to be smaller than they are now."
-
-   Size alone could not do it. Every window is grown to fit its own header (P153), so the header sets
-   a hard FLOOR on width - "ArtStation" at the door's 19.2px needs ~178px no matter how small the
-   window is asked to be. Demoting them therefore means demoting their TYPE first, which is also the
-   more honest reading of the ask: the three doors should read as louder, not merely bigger.
-   Header ratio drops 0.48 -> 0.34 and the cap 21px -> 13px, which lets the width floor fall with it. */
+/* DEMOTING THE SOCIALS MEANT DEMOTING THEIR TYPE FIRST. Every window grows to fit its own header
+   (P153), so the header sets a hard floor on width - "ArtStation" at the door's size needs about
+   178px no matter what. Dropping the ratio and the cap is what lets that floor fall. It is also
+   the more honest reading of Rod's ask: the three doors should read louder, not just be bigger. */
 .pwin--social .pwin__bar {
   font-size: clamp(9px, calc(var(--bar-h, 26px) * 0.34), 13px);
   letter-spacing: 0.04em;
@@ -372,80 +292,45 @@
   height: clamp(11px, calc(var(--bar-h, 26px) * 0.42), 16px);
 }
 
-/* THE ENTER AFFORDANCE. Rod 2026-08-23: "Enter button is unsourced and i want it to be bottom
-   center instead of center center. can you make the button one of the sourced buttons in the
-   button toolkit?"
-
-   HE IS RIGHT AND THE CORRECTION IS THE POINT. The previous version was built from zutomayo's
-   `.btn-round` - which I HAD read from their live CSS, so it was not invented - but that is not the
-   same as being one of the site's OWN sourced buttons. The portal was about to ship a fourth
-   unrelated button shape onto a site that already has an approved button kit. "Sourced" and
-   "consistent with what we already picked" are different tests and it only passed the first.
-
-   SO IT IS NOW `button-kit`'s PRIMARY, unchanged. That component's own provenance:
-       shapes            rework-stephan (flagged in its header as having NO external source)
-       primary hover     phojanecki, codepen.io/phojanecki/pen/vwyZpY - the ripple where the
-                         outline floats outward and fades while the core ignites
-       magnetic          sources/magnetic-buttons.md
-   Nothing here restyles it. The kit's CSS is linked and the markup follows its own contract
-   (`.kit-button.kit-button--primary` wrapping a `.kit-button__label`), so if the kit is retuned
-   this follows automatically instead of drifting.
-
-   WHAT THIS FILE ADDS is placement only - where the button sits, never how it looks.
-
-   **FLAGGED, and it is the kit's own flag:** `.kit-button` ships `border-radius: 8px`, which is
-   against the site's locked square-by-default rule. `final-landing.html` already records this
-   ("it is kept because it is what Rod pointed at on the bench; say if the shape pass should reach
-   it"). Inheriting the kit means inheriting that too, and it is the one place these windows are
-   not square.
-
-   IT IS STILL NOT A BUTTON: a `<span>` marked `aria-hidden` inside the link that already covers the
-   card. `<button>` inside `<a>` is invalid and nested interactive content adds a second tab stop
-   for one destination. Rod's framing - the card navigates, this "draws their attention" - describes
-   an affordance. */
+/* THE ENTER AFFORDANCE IS button-kit's PRIMARY, UNCHANGED, and this file adds placement only.
+   Rod 2026-08-23 caught the previous one: it was built from zutomayo's .btn-round, which I had
+   genuinely read from their CSS, but that is not the same as being one of the site's OWN sourced
+   buttons. The portal was about to ship a fourth button shape onto a site with an approved kit.
+   FLAGGED: the kit ships border-radius 8px against the locked square rule, so inheriting the kit
+   inherits that too. This file overrides it below.
+   IT IS NOT A BUTTON. It is an aria-hidden <span> inside the link that already covers the card -
+   a <button> inside an <a> is invalid and adds a second tab stop for one destination.
+   See portal-window.md. */
 .pwin__enter {
   position: relative;
   z-index: 2;
 
-  /* SQUARE. Rod 2026-08-23: "make sure the button isnt rounded". The kit ships
-     `border-radius: 8px`, which `final-landing.html` already flags as against the locked
-     square-by-default rule. This is one of three overrides of the kit in this file, and it is a
+  /* Square, Rod 2026-08-23. The kit's own 8px is against the locked square rule, so this is a
      correction toward a site rule rather than a restyle away from one. */
   border-radius: 0;
 
-  /* black on orange at rest, and the label sized to match the window's own header
-     (Rod: "the text is black and make it as big as the header") */
+  /* Black on orange at rest, and the label sized to the window's own header (Rod). */
   border-color: var(--color-glow, #ff6a00);
   color: var(--color-ink, #1a1a1a);
   font-size: clamp(11px, calc(var(--bar-h, 26px) * 0.48), 21px);
 
-  /* LIFTED OFF THE EDGE. Rod: "bottom centered but should go above the window edge so nudge the
-     enter button up very slightly." It was flush at 0px from the body's bottom; this floats it just
-     clear so the window's own frame reads as a frame rather than as the button's bottom border. */
+  /* Lifted just clear of the edge (Rod), so the window's frame reads as a frame rather than as
+     the button's bottom border. */
   margin-bottom: 0.55em;
 }
 
-/* THE FILL IS REVERSED ON THIS PAGE. Rod 2026-08-23: "lets do a reversal for the buttons on this
-   page they start off orange and fill transparent the text is black and make it as big as the
-   header."
-
-   The kit's outline button is EMPTY at rest and fills on hover. Here it is FULL at rest and drains
-   on hover, so the button is the loudest thing in the window before you touch it - which is the
-   whole reason it exists ("the button just draws their attention").
-
-   Mechanically this is one number. The kit parks its ellipse below at `translate3d(0, 76%, 0)` and
-   raises it to `0`; this parks it at `0` and pushes it back down to `76%`. Nothing about the shape,
-   the easing or the geometry changes, so it is still dennissnellenberg's rising circle - just
-   entered from the other end. The curved edge now reads as the fill DRAINING away.
-
-   The kit's own `--outline:hover` rules still fire when the cursor is over the button itself rather
-   than the card, and they would fight this. They are neutralised below so the behaviour is
-   identical wherever on the card you hover. */
+/* THE FILL IS REVERSED HERE, and it is one number. The kit parks its ellipse below and raises it
+   on hover; this parks it covering the button and pushes it down. Nothing about the shape or the
+   easing changes, so it is still dennissnellenberg's rising circle entered from the other end -
+   the curved edge now reads as the fill DRAINING.
+   Rod 2026-08-23 wanted the button loud before you touch it, which is the whole reason it exists.
+   The kit's own :hover rules are neutralised below, or they fight this when the cursor is over the
+   button rather than the card. */
 .pwin__enter .kit-button__fill {
   border-radius: 50%;
   background: var(--color-glow, #ff6a00);
 
-  /* REST = covering the button */
+  /* At rest it covers the button. */
   transform: translate3d(0, 0, 0);
 }
 
@@ -454,31 +339,23 @@
   font-size: inherit;
 }
 
-/* HOVER = the fill drains downward, leaving the outline empty over the card */
+/* On hover it drains downward, leaving the outline empty over the card. */
 .pwin:hover .pwin__enter .kit-button__fill,
 .pwin__enter.kit-button--outline:hover .kit-button__fill {
   transform: translate3d(0, 76%, 0);
 }
 
-/* ANCHORED TO THE WINDOW BOTTOM, not floating above it. Rod: "it needs to be lower and anchored to
-   window bottom". The alignment belongs on the LINK, which is the grid that holds the button - the
-   body also holds the absolutely-positioned text fill, which has to stay at inset 0. Killing the
-   body's bottom padding on doors is what lets the button reach the window's own bottom edge
-   instead of stopping at the padding. */
+/* The alignment belongs on the LINK, not the body: the body also holds the absolutely-positioned
+   text fill, which has to stay at inset 0. Rod asked for the button anchored to the window bottom. */
 .pwin--door a {
   align-content: end;
   justify-items: center;
   padding-bottom: 0;
 }
 
-/* HOVER IS THE WHOLE CARD, TITLE BAR INCLUDED. Rod 2026-08-23: "hovering over the top of the card
-   should count as hovering over the box as well."
-   These were keyed to `.pwin a:hover`, and the link only covers the BODY - so the bar, which is a
-   sibling of the body rather than a child of the link, lit nothing. Keying them to `.pwin:hover`
-   makes the whole window one hover target, which is also what the card already behaves like: the
-   entire thing is one destination. */
-
-/* with the fill gone the label has to carry itself, so it takes the orange the fill just vacated */
+/* Every hover below is keyed to `.pwin`, never to the link. The link only covers the body, so the
+   title bar is a sibling of it and lit nothing. The whole window is one destination.
+   With the fill gone the label has to carry itself, so it takes the orange the fill vacated. */
 .pwin:hover .pwin__enter .kit-button__label,
 .pwin__enter.kit-button--outline:hover .kit-button__label {
   color: var(--color-glow, #ff6a00);
@@ -493,16 +370,8 @@
   color: var(--color-glow-soft, #ffd9a8);
 }
 
-/* THE WAVE FILL. Rod 2026-08-23: "do the wave fill like the nav buttons instead."
-   The nav's fill and the kit's OUTLINE variant are the same device, so this is not a restyle - it
-   is the right variant. Both are dennissnellenberg's rising-circle
-   (sources/dennissnellenberg-wave-button.md, tier True): an oversized ellipse parked below the
-   button that slides to 0 on hover. `top:-50%; left:-25%; 150% x 200%; border-radius:50%;
-   translate3d(0,76%,0)` in `.top-bar__link::before` and in `.kit-button__fill` alike - identical
-   numbers, which is why swapping variants gets the nav's behaviour for free.
-   The CURVED leading edge is the whole "wave": because the top of the ellipse is round, the fill
-   enters with a bulge rather than a flat line.
-
-   It normally fires on the button. The button is decorative here and the CARD is the real target,
-   so the card's hover drives it - same reason every other hover in this file is keyed to `.pwin`. */
+/* THE WAVE FILL is the kit's OUTLINE variant, not a restyle - the nav's fill and the kit's are
+   the same device, dennissnellenberg's rising circle, with identical numbers. That is why swapping
+   variants gets the nav's behaviour for free. The curved leading edge IS the "wave": the top of
+   the ellipse is round, so the fill enters with a bulge rather than a flat line. Rod 2026-08-23. */
 }
