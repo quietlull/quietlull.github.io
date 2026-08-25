@@ -36,18 +36,18 @@
 html{scroll-behavior:smooth}
 body{
   background:
-    radial-gradient(70% 50% at 50% 108%, rgba(245,158,11,.10), rgba(245,158,11,0) 60%),
-    radial-gradient(100% 70% at 72% -10%,#16224a 0%,rgba(22,34,74,0) 55%),
-    linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+    radial-gradient(70% 50% at 50% 108%, var(--color-ground-warm), var(--color-ground-warm-0) 60%),
+    radial-gradient(100% 70% at 72% -10%,var(--color-ground-sky) 0%,var(--color-ground-sky-0) 55%),
+    linear-gradient(180deg,var(--night),var(--night2) 60%,var(--night));
   color:var(--text);min-height:100vh;overflow-x:hidden;
   font-size:calc(1.02rem * var(--type-scale));line-height:1.65;
 }
 /* breathing, shifting saturated-orange glow across the whole page (like hana's drifting red) */
 body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
   background:
-    radial-gradient(34% 26% at 22% 26%, rgba(255,106,0,.13), transparent 62%),
-    radial-gradient(30% 24% at 80% 56%, rgba(255,140,0,.10), transparent 64%),
-    radial-gradient(42% 32% at 52% 98%, rgba(255,106,0,.12), transparent 60%);
+    radial-gradient(34% 26% at 22% 26%, var(--color-glow-drift-left), transparent 62%),
+    radial-gradient(30% 24% at 80% 56%, var(--color-glow-drift-right), transparent 64%),
+    radial-gradient(42% 32% at 52% 98%, var(--color-glow-drift-bottom), transparent 60%);
   animation:breathe-bg 16s ease-in-out infinite}
 @keyframes breathe-bg{
   0%{opacity:.5;transform:translate3d(0,0,0) scale(1)}
@@ -58,13 +58,20 @@ body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none
 .reveal.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){body::before{animation:none;opacity:.8}.reveal{opacity:1;transform:none;transition:none}}
 .wrap{max-width:var(--measure);margin:0 auto;padding:0 2.5rem}
+/* THE LITERAL COLOURS BELOW ARE LEFT AS LITERALS, ON PURPOSE. Everything from here down - the
+   `.ph` greybox placeholder, the `.lantern` demo, and the `.lab` / `.labtag` slider panel - is
+   BENCH FURNITURE, not the design. It is on the merge cleanup list (docs/MERGE-WORKLIST.md) to be
+   deleted outright when the lab chrome comes out. Giving it tokens would mint names whose only
+   consumers are already scheduled for removal, and every one of those names would then have to be
+   deleted too. Reported rather than done. Everything ABOVE this line, which is the ground every
+   real page is painted on, is fully tokenised. */
 .ph{position:relative;background-color:#0d1430;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 10px,rgba(255,255,255,0) 10px 20px);border:1px solid rgba(255,255,255,.10)}
 .ph::after{content:attr(data-label);position:absolute;inset:0;display:grid;place-items:center;color:rgba(245,243,239,.32);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase}
 /* lantern: stacked drop-shadow, saturated-orange halo */
 .lantern{width:108px;text-align:center}
 .lantern .cap{width:32px;height:8px;background:var(--gold-deep);border-radius:3px;margin:0 auto 3px}
 .lantern .body{width:92px;height:118px;margin:0 auto;border-radius:50% 50% 46% 46%/42% 42% 58% 58%;
-  background:radial-gradient(58% 52% at 50% 42%,#ffd9a8,var(--gold) 46%,var(--gold-deep));
+  background:radial-gradient(58% 52% at 50% 42%,var(--glow-soft),var(--gold) 46%,var(--gold-deep));
   filter:drop-shadow(0 0 10px rgba(255,106,0,.3)) drop-shadow(0 0 24px rgba(255,106,0,.22)) drop-shadow(0 0 44px rgba(255,106,0,.14));
   animation:lantern 6s ease-in-out infinite}
 .lantern .tassel{width:2px;height:24px;background:linear-gradient(var(--gold-deep),transparent);margin:2px auto 0}

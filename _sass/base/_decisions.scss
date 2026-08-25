@@ -445,7 +445,7 @@ h4, .d-h4, .card-title {
    near-black and survives the palette law almost unchanged.
    Rod confirmed the highlight stays: "my problem isnt with highlights per se". */
 .prose del, .prose ins {
-  background-color: #412c11;
+  background-color: var(--color-highlight);
   color: inherit;
   font-style: inherit;
   font-weight: inherit;
@@ -593,8 +593,8 @@ h4, .d-h4, .card-title {
 .d-tag {
   display: inline-block;
   border-radius: 0;
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  color: rgba(232, 224, 212, 0.78);
+  border: 1px solid var(--color-line-tag);
+  color: var(--color-tag-text);
   font-size: 0.75rem;
   line-height: 1;
   padding: 0.35rem 0.6rem;
@@ -696,7 +696,7 @@ h4, .d-h4, .card-title {
      SIGN KEPT NEGATIVE: theirs is positive 0.05deg. The magnitude was the error; the direction is
      a mirror and was already ours. Flagged rather than silently flipped. */
   transform: rotate(-0.05deg);
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 3px 5px var(--color-shadow);
 }
 .d-callout > p { margin: 0; line-height: 1.7; }
 .d-callout--quote > p { font-style: italic; }
@@ -815,10 +815,10 @@ body.spacious .bio-h--lesser {
    as origin ROD - D27's own condition was "sampled from a real asset OR Rod picking it", and he
    picked it. The tape's MECHANISM is sourced (gneiss + winterwind); only the colour VALUE is his
    choice, and "Rod chose it" is a legitimate tracked origin, not a gap. */
-.d-callout--warning { --tape-hue: #f078f0; --tape-hue-2: color-mix(in srgb, #f078f0 62%, #000); }
-.d-callout--note    { --tape-hue: #6fbf73; --tape-hue-2: color-mix(in srgb, #6fbf73 62%, #000); }
+.d-callout--warning { --tape-hue: var(--tape-pink); --tape-hue-2: color-mix(in srgb, var(--tape-pink) 62%, var(--color-black)); }
+.d-callout--note    { --tape-hue: var(--tape-green); --tape-hue-2: color-mix(in srgb, var(--tape-green) 62%, var(--color-black)); }
 .d-callout--quote   { --tape-hue: var(--color-accent-cool, #3090a8);
-                      --tape-hue-2: color-mix(in srgb, var(--color-accent-cool, #3090a8) 62%, #000); }
+                      --tape-hue-2: color-mix(in srgb, var(--color-accent-cool, #3090a8) 62%, var(--color-black)); }
 .d-callout--tldr    { --tape-hue: var(--color-glow, #ff6a00);
                       --tape-hue-2: color-mix(in srgb, var(--color-glow, #ff6a00) 62%, #000); }
 

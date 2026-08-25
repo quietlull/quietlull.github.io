@@ -137,7 +137,7 @@
   /* HARD offset shadow, zero blur - gneiss `.pinned-note`, verbatim geometry.
      A blurred shadow smears the live three.js scene behind the card; a hard offset does not.
      Their colour #bda77d is a light-paper value and becomes our warm line token. */
-  box-shadow: 3px 3px 0 rgba(88, 70, 48, 0.5);
+  box-shadow: 3px 3px 0 var(--color-shadow-warm);
 }
 /* The four corner tabs on the warning variant overhang all four corners, so text has to be kept
    out from under them. This is the only place a category changes the BOX in v1. */
@@ -212,7 +212,7 @@
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
   border: 2px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
   padding: 1rem 1rem 3rem 1rem;       /* theirs, verbatim - the sill is the device */
-  box-shadow: 0 3px 5px rgba(88, 70, 48, 0.5);
+  box-shadow: 0 3px 5px var(--color-shadow-warm);
   margin-block: 1.9rem;
 }
 .co--v3.co--warning { padding: calc(1rem + 8px) calc(1rem + 8px) 3rem; }

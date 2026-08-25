@@ -140,7 +140,7 @@
    ============================================================================================ */
 .bio--panel {
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
-  border: 2px solid #383838;
+  border: 2px solid var(--color-line-grey);
   border-radius: 0;
   padding: 10px 15px;
 }

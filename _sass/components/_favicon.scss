@@ -39,7 +39,7 @@
   height: 3.2rem;
   border-radius: 9px;
   border: 1px solid color-mix(in srgb, var(--color-glow) 45%, transparent);
-  background: #fff; /* white backing so the black lantern-cluster icon reads on the dark bar */
+  background: var(--color-white); /* white backing so the black lantern-cluster icon reads on the dark bar */
   overflow: hidden;
 }
 

@@ -37,7 +37,7 @@
      signature orange the stamp follows instead of drifting away from it.
      Fully opaque on purpose - it sits over a live scene, and any alpha let the background
      through and muddied both the paper and its perforated edge, which share this one value. */
-  --stamp-paper: color-mix(in srgb, var(--h1-color, #f86a03) 26%, #000);
+  --stamp-paper: color-mix(in srgb, var(--h1-color, #f86a03) 26%, var(--color-black));
 
   position: relative;
   background: var(--stamp-paper);

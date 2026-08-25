@@ -240,7 +240,7 @@
      SIGN KEPT NEGATIVE: theirs is positive 0.05deg. The magnitude was the error; the direction is
      a mirror and was already ours. Flagged rather than silently flipped. */
   transform: rotate(-0.05deg);
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.45); /* becomes rgba(88,70,48,.5) when colour lands (D18) */
+  box-shadow: 0 3px 5px var(--color-shadow); /* becomes rgba(88,70,48,.5) when colour lands (D18) */
 }
 
 /* ---- bench-only framing, so the three placements can be seen and tuned in isolation.
@@ -258,23 +258,23 @@
    recoloured in one place and every strip on it follows. ── */
 .tape--orange {
   --tape-hue: var(--color-glow, #ff6a00);
-  --tape-hue-2: color-mix(in srgb, var(--color-glow, #ff6a00) 62%, #000);
+  --tape-hue-2: color-mix(in srgb, var(--color-glow, #ff6a00) 62%, var(--color-black));
 }
 
 .tape--pink {
-  --tape-hue: #f078f0;
-  --tape-hue-2: color-mix(in srgb, #f078f0 62%, #000);
+  --tape-hue: var(--tape-pink);
+  --tape-hue-2: color-mix(in srgb, var(--tape-pink) 62%, var(--color-black));
 }
 
 .tape--blue {
   --tape-hue: var(--color-accent-cool, #3090a8);
-  --tape-hue-2: color-mix(in srgb, var(--color-accent-cool, #3090a8) 62%, #000);
+  --tape-hue-2: color-mix(in srgb, var(--color-accent-cool, #3090a8) 62%, var(--color-black));
 }
 
 /* the one unsourced colour of the four — see the header */
 .tape--green {
-  --tape-hue: #6fbf73;
-  --tape-hue-2: color-mix(in srgb, #6fbf73 62%, #000);
+  --tape-hue: var(--tape-green);
+  --tape-hue-2: color-mix(in srgb, var(--tape-green) 62%, var(--color-black));
 }
 
 /* The hue-matched border rule that used to live here is DELETED, not commented out. Case D carries

@@ -212,7 +212,7 @@
    3. the front's spill rides the glass plane at inset 8px, the back's ran to the edge at 0.
    All three are matched below. */
 .epx-cards .ct-glow-card .card-back {
-  border-color: rgba(245, 158, 11, 0.14);
+  border-color: var(--color-line-card);
 }
 
 /* the back's inward spill. z-index:-1 keeps it above the back's own background but UNDER the
@@ -232,7 +232,7 @@
 
 /* keep the card's own static cover hover-glow out of the way so the cursor reveal is the star */
 .epx-cards .ct-glow-card:hover .card-cover {
-  border-color: rgba(245, 158, 11, 0.14);
-  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.6);
+  border-color: var(--color-line-card);
+  box-shadow: 0 14px 30px -10px var(--color-shadow-lift);
 }
 }

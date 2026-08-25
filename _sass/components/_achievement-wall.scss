@@ -255,7 +255,7 @@
     background: var(--color-gold, #fbbf24);
     color: var(--color-night, #070c23);
     font-size: calc(var(--aw-star, 1.7rem) * .62); line-height: 1;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, .45);
+    box-shadow: 0 4px 10px var(--color-shadow);
     opacity: 0; transform: scale(.6);
     transition: opacity .18s ease, transform .18s cubic-bezier(.22,1,.36,1);
     pointer-events: none;
@@ -317,20 +317,20 @@
      cursor position**, all of them orange, so the wall washed bronze wherever the pointer went.
      Declared here beside each tier's gradient, so a tier's colour is still stated in exactly one
      place and the rim rules never name a colour - same rule as the borders. */
-  .aw__tile[data-tier="bronze"]    { --aw-tier-grad: linear-gradient(90deg, #8a5222, #b87333, #d99a5c, #b87333, #8a5222);
-                                     --aw-tier-glow: #b87333; --aw-tier-glow-soft: #d99a5c; }
-  .aw__tile[data-tier="silver"]    { --aw-tier-grad: linear-gradient(90deg, #8f9096, #c9cbd1, #f2f3f5, #c9cbd1, #8f9096);
-                                     --aw-tier-glow: #c9cbd1; --aw-tier-glow-soft: #f2f3f5; }
-  .aw__tile[data-tier="gold"]      { --aw-tier-grad: linear-gradient(90deg, #a9740f, var(--color-gold, #fbbf24), #ffe6a3, var(--color-gold, #fbbf24), #a9740f);
-                                     --aw-tier-glow: var(--color-gold, #fbbf24); --aw-tier-glow-soft: #ffe6a3; }
+  .aw__tile[data-tier="bronze"]    { --aw-tier-grad: linear-gradient(90deg, var(--tier-bronze-dark), var(--tier-bronze), var(--tier-bronze-light), var(--tier-bronze), var(--tier-bronze-dark));
+                                     --aw-tier-glow: var(--tier-bronze); --aw-tier-glow-soft: var(--tier-bronze-light); }
+  .aw__tile[data-tier="silver"]    { --aw-tier-grad: linear-gradient(90deg, var(--tier-silver-dark), var(--tier-silver), var(--tier-silver-light), var(--tier-silver), var(--tier-silver-dark));
+                                     --aw-tier-glow: var(--tier-silver); --aw-tier-glow-soft: var(--tier-silver-light); }
+  .aw__tile[data-tier="gold"]      { --aw-tier-grad: linear-gradient(90deg, var(--tier-gold-dark), var(--color-gold), var(--tier-gold-light), var(--color-gold), var(--tier-gold-dark));
+                                     --aw-tier-glow: var(--color-gold); --aw-tier-glow-soft: var(--tier-gold-light); }
   /* prismatic is the only one that is not a single hue, because in TFT prismatic is the ABSENCE of
      one. It carries cool stops the palette law otherwise keeps to the sky - a deliberate exception
      for the top rung of a rarity ladder, flagged rather than hidden. */
-  .aw__tile[data-tier="prismatic"] { --aw-tier-grad: linear-gradient(90deg, #fbbf24, #ff6a00, #e879a6, #7dd3fc, #86efac, #fbbf24);
+  .aw__tile[data-tier="prismatic"] { --aw-tier-grad: linear-gradient(90deg, var(--color-gold), var(--color-glow), var(--tier-prismatic-pink), var(--tier-prismatic-sky), var(--tier-prismatic-green), var(--color-gold));
                                      /* a rim is one colour, so prismatic cannot be prismatic here - it takes a
                                         near-white, the brightest thing on the ladder, rather than picking one of
                                         its own hues and pretending that is prismatic. */
-                                     --aw-tier-glow: #eaf4ff; --aw-tier-glow-soft: #ffffff; }
+                                     --aw-tier-glow: var(--tier-prismatic-rim); --aw-tier-glow-soft: var(--color-white); }
 
   /* LIT: hover, focus, or pinned. Rod 2026-08-25 - a rarity edge is never on at rest, because a
      permanently glowing edge was doing the same job as the pinned state. */
@@ -373,7 +373,7 @@
      this ground a black edge is DARKER than the surface it sits on, so the tile reads as a hole
      rather than as a card that happens to be dim. The grey hairline every other tile carries is
      lighter than the fill, so the two states now differ in direction, not just in amount. */
-  .aw__tile[aria-disabled="true"] { cursor: default; border-color: #000; }
+  .aw__tile[aria-disabled="true"] { cursor: default; border-color: var(--color-black); }
   .aw__tile[aria-disabled="true"] > span[aria-hidden] { filter: grayscale(1) brightness(.6); opacity: .8; }
 
   /* ---- progress tiers -----------------------------------------------------------------------
@@ -388,11 +388,11 @@
      ladder and rarity ladders are read by hue, so it is a deliberate exception rather than drift -
      say the word and it becomes a warm-only shimmer instead. */
   .aw__bar i { transition: width .3s ease; }
-  .aw__bar--bronze i { background: #b87333; }
-  .aw__bar--silver i { background: #c9cbd1; }
+  .aw__bar--bronze i { background: var(--tier-bronze); }
+  .aw__bar--silver i { background: var(--tier-silver); }
   .aw__bar--gold   i { background: var(--color-gold, #fbbf24); }
   .aw__bar--prismatic i {
-    background: linear-gradient(90deg, #fbbf24, #ff6a00, #e879a6, #7dd3fc, #86efac, #fbbf24);
+    background: linear-gradient(90deg, var(--color-gold), var(--color-glow), var(--tier-prismatic-pink), var(--tier-prismatic-sky), var(--tier-prismatic-green), var(--color-gold));
     background-size: 300% 100%;
     animation: aw-prism 3.4s linear infinite;
   }
@@ -401,11 +401,11 @@
     font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
     margin-left: 8px;
   }
-  .aw__tier--bronze { color: #b87333; }
-  .aw__tier--silver { color: #c9cbd1; }
+  .aw__tier--bronze { color: var(--tier-bronze); }
+  .aw__tier--silver { color: var(--tier-silver); }
   .aw__tier--gold   { color: var(--color-gold, #fbbf24); }
   .aw__tier--prismatic {
-    background: linear-gradient(90deg, #fbbf24, #ff6a00, #e879a6, #7dd3fc, #86efac, #fbbf24);
+    background: linear-gradient(90deg, var(--color-gold), var(--color-glow), var(--tier-prismatic-pink), var(--tier-prismatic-sky), var(--tier-prismatic-green), var(--color-gold));
     background-size: 300% 100%;
     -webkit-background-clip: text; background-clip: text; color: transparent;
     animation: aw-prism 3.4s linear infinite;
@@ -463,8 +463,8 @@
        It is now `--color-night`, one step DARKER than both the section it sits in and the tiles
        beside it, so it separates from both without restating either. (It briefly used the tiles'
        own fill, which was the warm grey - see the note at the top of the tile block.) */
-    background: color-mix(in srgb, var(--color-panel-solid, #1c1a18) 78%, #000);
-    border: 1px solid rgba(245, 158, 11, .15);
+    background: color-mix(in srgb, var(--color-panel-solid) 78%, var(--color-black));
+    border: 1px solid var(--color-line-panel);
   }
   /* the blockout's original reservation, kept switchable so the overflow is demonstrable */
   .aw--short .aw__detail { min-height: 250px; }

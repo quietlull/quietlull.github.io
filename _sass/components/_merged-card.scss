@@ -149,8 +149,8 @@
      lit BY the cursor, so a permanent hot edge was competing with the thing that does the lighting.
      The linear cover ramp stays; only the always-on hotspot goes. */
   background: linear-gradient(160deg, var(--cover-hi), var(--cover-lo));
-  border: 1px solid rgba(245, 158, 11, 0.14);
-  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--color-line-card);
+  box-shadow: 0 10px 26px -10px var(--color-shadow-card);
   transition: border-color 0.5s ease, box-shadow 0.4s ease;
   --z: var(--z-cover);
 }
@@ -174,7 +174,7 @@
   position: absolute;
   inset: auto 0 0 0;
   height: 62%;
-  background: linear-gradient(180deg, transparent 0%, rgba(11, 16, 36, 0.62) 55%, var(--cover-lo) 100%);
+  background: linear-gradient(180deg, transparent 0%, var(--color-cover-mid) 55%, var(--cover-lo) 100%);
   pointer-events: none;
 }
 
@@ -191,20 +191,20 @@
 .merged-cards .post-card:hover .card-cover {
   border-color: rgba(var(--glow-border-hue, 245, 158, 11), 0.45);
   box-shadow:
-    0 14px 30px -10px rgba(0, 0, 0, 0.6),
+    0 14px 30px -10px var(--color-shadow-lift),
     0 0 24px rgba(var(--glow-hue, 251, 191, 36), 0.3);
 }
 
 .merged-cards .glass-plane {
   /* the sheen is a token so a component that adds a layer UNDER it (the expensive card's cursor
      spill) can restate the stack without duplicating this gradient and drifting from it */
-  --glass-sheen: linear-gradient(0deg, rgba(255, 232, 176, 0.04) 0%, rgba(255, 232, 176, 0.12) 100%);
+  --glass-sheen: linear-gradient(0deg, var(--color-glass-sheen-lo) 0%, var(--color-glass-sheen-hi) 100%);
   position: absolute;
   inset: 8px;
   border-radius: 12px;
   background: var(--glass-sheen);
-  border-left: 1px solid rgba(251, 191, 36, 0.5);
-  border-bottom: 1px solid rgba(251, 191, 36, 0.16);
+  border-left: 1px solid var(--color-glass-edge);
+  border-bottom: 1px solid var(--color-glass-edge-soft);
   pointer-events: none;
   --z: var(--z-glass);
   --z-hover: var(--z-glass-hover);
@@ -223,7 +223,7 @@ body.no-glass .glass-plane,
   width: 100%;
   padding: 1.3rem 1.5rem;
   transform-style: preserve-3d;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 6px var(--color-shadow-text);
   --z: var(--z-body);
   --z-hover: var(--z-body-hover);
   transition-delay: 0.08s;
@@ -244,7 +244,7 @@ body.no-glass .glass-plane,
 
 .merged-cards .post-card:hover .card-title {
   color: var(--color-gold);
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9), 0 0 14px rgba(var(--glow-hue, 251, 191, 36), 0.35);
+  text-shadow: 0 1px 6px var(--color-shadow-text), 0 0 14px rgba(var(--glow-hue, 251, 191, 36), 0.35);
 }
 
 .merged-cards .card-meta {
@@ -269,7 +269,7 @@ body.no-glass .glass-plane,
   text-transform: uppercase;
   background: var(--color-gold);
   color: var(--color-night);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 10px var(--color-shadow);
   --z: var(--z-pin);
   --z-hover: var(--z-pin-hover);
   transition-delay: 0.1s;
@@ -367,7 +367,7 @@ body.no-glass .glass-plane,
   opacity: 0;
   transition: opacity 0.15s;
   --dp: 0;
-  background: conic-gradient(var(--color-gold) calc(var(--dp) * 1turn), rgba(255, 255, 255, 0.16) 0);
+  background: conic-gradient(var(--color-gold) calc(var(--dp) * 1turn), var(--color-ring-track) 0);
 }
 
 .dwell-ring::after {
@@ -375,7 +375,7 @@ body.no-glass .glass-plane,
   position: absolute;
   inset: 5px;
   border-radius: 50%;
-  background: rgba(8, 12, 30, 0.9);
+  background: var(--color-ring-hole);
 }
 
 .dwell-ring.is-on {
