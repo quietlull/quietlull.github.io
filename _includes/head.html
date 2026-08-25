@@ -79,6 +79,24 @@
   <!-- Web Font -->
   <link rel="stylesheet" href="{{ site.data.origin[type].webfonts | relative_url }}">
 
+  {% comment %}
+    REDESIGN WEB FONTS. Lifted verbatim from the `final-*` pages, which all load this one line.
+    ADDED alongside the old link rather than replacing it: the old design's partials are still on
+    disk and still referenced, so pulling Outfit / Plus Jakarta / JetBrains out tonight would leave
+    every unported surface rendering in a system fallback. The old link goes when those partials do.
+
+    The six LINE BOIL faces are NOT here - they are local TTFs, declared with @font-face by
+    `line-boil.css` and served from /assets/fonts/. See docs/MERGE-NIGHT.md.
+
+    `font-display: swap` is Google's default here and is right for these three: a fallback flash
+    costs a reflow. The line boil deliberately uses `block` instead, because a flash there would
+    show the WRONG letterforms, not just the wrong metrics.
+  {% endcomment %}
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap"
+  >
+
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{{ site.data.origin[type].fontawesome.css | relative_url }}">
 
