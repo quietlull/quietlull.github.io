@@ -1,26 +1,7 @@
-// PORTED VERBATIM from redesign-lab/extracted/components/top-bar/top-bar.css (2026-08-25).
-// Sass `//` notes only above this line so the emitted CSS stays byte-faithful to the lab file.
-// Every /* */ comment below is the lab original and is the provenance record - do not strip it.
+// Ported 2026-08-25 from redesign-lab/extracted/components/top-bar/top-bar.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
-/* ==========================================================================================
-   CASCADE LAYER: components
-   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
-   better ... i mean this is how CSS is intended to be used to begin with."
-
-   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
-   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
-   compare and whichever file the browser happened to load first. That is the whole fix: components
-   no longer have to know that prose exists, and 53 losing declarations across 8 components were
-   left exactly as they were written.
-
-   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
-   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
-   no matter which bench page loads it or in what order.
-
-   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
-   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
-   no visible reason, check that its file is wrapped.
-   ========================================================================================== */
 @layer components {
 /* top-bar — CHROME pick: norikura shell, RESTRUCTURED 2026-06-14 (Rod): 3-zone grid
    [favicon + name] | [nav centered] | [slap toggles]. Nav = transparent pill, lit only on

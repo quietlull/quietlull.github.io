@@ -1,12 +1,7 @@
-// PORTED VERBATIM from redesign-lab/extracted/components/reference-links/reference-links.css (2026-08-25).
-// Sass `//` notes only above this line so the emitted CSS stays byte-faithful to the lab file.
-// Every /* */ comment below is the lab original and is the provenance record - do not strip it.
+// Ported 2026-08-25 from redesign-lab/extracted/components/reference-links/reference-links.css.
+// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
+// even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
-/* ==========================================================================================
-   CASCADE LAYER: components
-   See D36. Unlayered CSS beats every layer - if this component ever stops applying, check the
-   page is not restating these rules in an unlayered inline <style>.
-   ========================================================================================== */
 @layer components {
 /* reference-links - the end-of-article reading list.
 
