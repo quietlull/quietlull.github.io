@@ -13,15 +13,67 @@ layout: compress
 {% endif %}
 
 <!-- `site.alt_lang` can specify a language different from the UI -->
+{% comment %}
+  ============================================================================================
+  THE SHARED CHROME, ported from the redesign 2026-08-25. Everything below that is new is
+  gathered here so it can be read - and reverted - as a unit.
+
+  THE SCENE TIER. Rod, P72 (2026-08-22): "for projects, portal, and ramblings please do a scene
+  with only lanterns, the fireflies, and post processes this will become our minimal so about
+  and landing have full ... and none will be the blobs."
+
+    full     lanterns + fireflies + post-processing + dock + water
+    minimal  the same, with dock and water hidden by assets/js/effects/scene-mode.js
+    none     no three.js at all; the hana bloom is the whole background
+
+  KEYED ON THE LAYOUT, not on the URL. The lab's scene-mode.js keys a hardcoded map on
+  `location.pathname`, which is fine for six fixed lab files and wrong here - posts, tags and
+  archives multiply the URL space and everything unlisted would silently default to `full`.
+  The layout is the thing the tier is actually a property of.
+
+  `post` -> none is Rod's call from 2026-08-21, and it is the one tier that CHANGES what a live
+  page loads rather than just what it shows: post pages currently pull
+  `three-background-minimal.min.js` and will now pull nothing. That is the deliberate 525 KB
+  saving. One word in the list below puts it back.
+  ============================================================================================
+{% endcomment %}
+{% case page.layout %}
+  {% when 'section-landing', 'section-about' %}{% assign scene_tier = 'full' %}
+  {% when 'post' %}{% assign scene_tier = 'none' %}
+  {% else %}{% assign scene_tier = 'minimal' %}
+{% endcase %}
+
+{% comment %}
+  THE PORTAL CARRIES NO BAR AND NO FOOTER. Rod 2026-08-23: "no footer on the portal." It is a
+  full-bleed page that never scrolls, so there is nowhere for either to sit, and
+  `final-portal.html` has neither. Every other layout gets both.
+{% endcomment %}
+{% if page.layout == 'portal' %}{% assign has_chrome = false %}{% else %}{% assign has_chrome = true %}{% endif %}
+
 <html lang="{{ page.lang | default: site.alt_lang | default: site.lang }}" {{ prefer_mode }}>
   {% include head.html %}
 
-  <body>
+  <body data-scene-tier="{{ scene_tier }}">
 
     <!-- Skip link — visible only when focused via keyboard -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    {% include topbar.html lang=lang %}
+    {% comment %}
+      The backdrop, on every page. `#hana-bg` holds the bloom's two baked canvases and is hidden
+      by `assets/css/chrome-scene.css` wherever the three.js scene runs; `#scrim` is the gradient
+      that keeps text readable over both. Markup only - the rules live in that stylesheet.
+    {% endcomment %}
+    <div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
+    <div id="scrim"></div>
+
+    {% comment %}
+      REPLACES `{% raw %}{% include topbar.html %}{% endraw %}`, which is left on disk untouched and is one line
+      away from being restored. See the header of `_includes/top-bar.html` for the full list of
+      controls the old bar carried that this one does not.
+    {% endcomment %}
+    {% if has_chrome %}
+      {% include top-bar.html lang=lang %}
+    {% endif %}
 
     <div id="main-wrapper" class="d-flex justify-content-center">
       <div class="container d-flex flex-column px-xxl-5">
@@ -61,7 +113,15 @@ layout: compress
               {% include {{ _include_path }} lang=lang %}
             {% endfor %}
 
-            {% include_cached footer.html lang=lang %}
+            {% comment %}
+              REPLACES `{% raw %}{% include_cached footer.html %}{% endraw %}` - the copyright line - which is left on
+              disk untouched. `include_cached` is not used here: this footer's links are
+              section-scoped, so caching one render would serve tech-art's links on game-design.
+              Note the copyright notice itself is gone; see `_includes/footer-line.html`.
+            {% endcomment %}
+            {% if has_chrome %}
+              {% include footer-line.html lang=lang %}
+            {% endif %}
           </div>
         </div>
 
@@ -86,6 +146,11 @@ layout: compress
 
     {% include_cached search-loader.html lang=lang %}
 
+    {% comment %}
+      Last, so the scene bundle is requested after the page's own scripts rather than ahead of
+      them, and so the chrome's module runs against markup that already exists.
+    {% endcomment %}
+    {% include chrome-scripts.html tier=scene_tier %}
 
   </body>
 </html>

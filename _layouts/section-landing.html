@@ -5,8 +5,14 @@ refactor: true
 
 {% include lang.html %}
 
-<!-- Three.js ambient background — lanterns + fireworks, no water/dock -->
-<script defer src="{{ '/assets/js/dist/three-background-minimal.min.js' | relative_url }}"></script>
+{% comment %}
+  THE SCENE MOVED TO `_layouts/default.html` (2026-08-25). It is chrome now: one tag, one tier
+  per layout, so nothing can double-init and no layout can drift from the others. The old tag is
+  left here, commented out, because it is the record of what this layout used to load - which is
+  not the same bundle the shared one loads. To go back, delete the include from default.html and
+  uncomment this.
+    was: three-background-minimal.min.js
+{% endcomment %}
 
 {% assign section = page.section %}
 {% assign all_projects = site.posts | where: 'section', section | where: 'tags', 'project' %}

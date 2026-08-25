@@ -1,0 +1,83 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   THE SCENE BACKDROP - #hana-bg and #scrim, plus the hana bloom's baked canvases.
+
+   PORTED 2026-08-25 from the inline <style> of the six `final-*` pages. It is here rather than
+   in `_sass/` because a second agent owns that tree tonight; it is a normal stylesheet, linked
+   from `_includes/head.html`, and it can be folded into `_sass/base/` at any later pass with no
+   change to the rules.
+
+   LAYERED, on purpose. The lab carries these rules unlayered in a page <style>, where they beat
+   every layer (D36). Nothing else on this site selects #hana-bg, #scrim or .bgcanvas, so the
+   layer costs nothing and removes the one way this file could silently outrank the ported
+   component sheets.
+   ========================================================================================== */
+@layer components {
+
+/* The bloom backdrop. `background` is the night, so on a `none`-tier page this is the whole
+   background and there is nothing behind it. */
+#hana-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: var(--color-night, #070c23);
+  pointer-events: none;
+  transition: opacity 0.5s;
+  -webkit-mask-image: radial-gradient(115% 80% at 50% 40%, #000 26%, transparent 80%);
+  mask-image: radial-gradient(115% 80% at 50% 40%, #000 26%, transparent 80%);
+}
+
+/* HIDDEN WHEREVER THE THREE.JS SCENE RUNS, which is what all five scene-carrying final pages do
+   with an inline `style="opacity:0"`. The scene draws its own night and this would only sit
+   between it and the page. `final-post.html` is the one that leaves it visible, and it is also
+   the one page that loads no three.js at all - the bloom IS its background.
+   The tier attribute is written by `_layouts/default.html`, so the two can never disagree. */
+body[data-scene-tier="full"] #hana-bg,
+body[data-scene-tier="minimal"] #hana-bg {
+  opacity: 0;
+}
+
+#scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0 14%,
+    rgba(6, 10, 28, 0.5) 40%,
+    rgba(6, 10, 28, 0.72) 100%
+  );
+}
+
+/* The two baked canvases hana-bloom.js appends. It bakes a 32x18 luminance grid (hana's real
+   topology) up to 1024px and cross-fades the pair - canvas + CSS, no WebGL, drawn once rather
+   than per frame. The blur is what turns 32x18 into a lava lamp; without these rules the script
+   appends two unstyled canvases and they render as nothing, which is exactly what happened on
+   all six lab pages before this block was written. */
+.bgcanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(20px) brightness(0.6) saturate(1.03);
+}
+
+.bg-1 { opacity: 1; }
+.bg-2 { opacity: 0; animation: bgfade 12s ease-in-out infinite; }
+
+@keyframes bgfade {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Held at a fixed mix rather than stopped at one end: the cross-fade is the entire effect, so
+   pausing it on frame 1 would show half of a two-image composition. */
+@media (prefers-reduced-motion: reduce) {
+  .bg-2 { animation: none; opacity: 0.6; }
+}
+
+}

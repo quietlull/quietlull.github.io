@@ -76,6 +76,14 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ '/assets/css/:THEME.css' | replace: ':THEME', site.theme | relative_url }}">
 
+  {% comment %}
+    The scene backdrop - #hana-bg, #scrim and the bloom's baked canvases. A plain stylesheet
+    rather than a `_sass/` partial only because a second agent owns that tree tonight; it is
+    layered, so folding it in later changes nothing. Loaded AFTER the theme so a bare `body`
+    background in the theme cannot outrank it on specificity alone.
+  {% endcomment %}
+  <link rel="stylesheet" href="{{ '/assets/css/chrome-scene.css' | relative_url }}">
+
   <!-- Web Font -->
   <link rel="stylesheet" href="{{ site.data.origin[type].webfonts | relative_url }}">
 
