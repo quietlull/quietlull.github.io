@@ -3,34 +3,16 @@
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/placeholders';
 
+// The type ladder moved to base/_decisions.scss, so the old sizes, weights, colours and margins
+// are gone from here and the ladder now reaches bare headings.
+// What stays is Chirpy's heading ANCHOR, whose markup refactor-content.html still emits, and the
+// scroll offset that keeps a jumped-to heading clear of the sticky bar.
 @for $i from 1 through 5 {
   h#{$i} {
-    @extend %heading;
+    scroll-margin-top: 3.5rem;
 
     @if $i > 1 {
       @extend %anchor;
-    }
-
-    @if $i < 5 {
-      $size-factor: 0.25rem;
-
-      @if $i > 1 {
-        $size-factor: 0.18rem;
-
-        main & {
-          @if $i == 2 {
-            margin: 2.5rem 0 1.25rem;
-          } @else {
-            margin: 2rem 0 1rem;
-          }
-        }
-      }
-
-      & {
-        font-size: 1rem + (5 - $i) * $size-factor;
-      }
-    } @else {
-      font-size: 1.05rem;
     }
   }
 }

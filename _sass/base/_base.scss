@@ -16,14 +16,12 @@ html {
   }
 }
 
+// Background, colour and overflow-x are the redesign's now - base/_foundations.scss paints them.
 body {
-  background: var(--main-bg);
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
-  color: var(--text-color);
   -webkit-font-smoothing: antialiased;
   font-family: v.$font-family-base;
-  overflow-x: hidden;
 }
 
 // F3: Custom amber scrollbar — global
