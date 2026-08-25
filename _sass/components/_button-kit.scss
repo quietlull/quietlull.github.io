@@ -100,7 +100,11 @@
   cursor: default;
 }
 
-.kit-tag:hover {
+// A selected filter pill keeps the hover look. Rod could not tell which filters were on, because
+// .is-active was being set with nothing styling it - the class and aria-pressed were both correct
+// and the pill looked identical either way.
+.kit-tag:hover,
+.kit-tag.is-active {
   color: var(--color-gold);
   text-shadow: 0 0 8px color-mix(in srgb, var(--color-glow) 60%, transparent);
   box-shadow:
@@ -108,6 +112,19 @@
     0 0 12px color-mix(in srgb, var(--color-glow) 30%, transparent);
   outline-offset: 6px;
   outline-color: transparent;
+}
+
+// Selected goes a step further than hover so the two never read the same. The gold wash fills the
+// pill, the icon stops being greyscale, and the edge lights up.
+.kit-tag.is-active {
+  background: color-mix(in srgb, var(--color-glow) 22%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  outline-offset: 0;
+}
+
+.kit-tag.is-active .badge-icon {
+  filter: none;
+  opacity: 1;
 }
 
 .inline-link {
