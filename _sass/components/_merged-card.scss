@@ -217,14 +217,31 @@ body.no-glass .glass-plane,
   transition-delay: 0.06s;
 }
 
-// Underline on hover, not glow. Rod wants links behaving the same way everywhere, and the glow was
-// the odd one out. The old rule also painted a different amber, which is why the yellow looked off.
+// The same grow-from-left underline .inline-link uses, so links behave one way across the site.
+// A plain text-decoration appeared all at once from both ends, which read as a different thing.
+.merged-cards .card-title {
+  position: relative;
+}
+
+.merged-cards .card-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 2px;
+  background: var(--color-gold-deep);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
 .merged-cards .post-card:hover .card-title {
   color: var(--color-gold);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
   text-shadow: 0 1px 6px var(--color-shadow-text);
+}
+
+.merged-cards .post-card:hover .card-title::after {
+  width: 100%;
 }
 
 // Weight 400, not the ladder's 300. Thin type over a moving scene shimmers, and Rod could see it.
