@@ -195,3 +195,18 @@ ask is the thing that gets lost.
 - **`redesign-lab/todo.html`** is the review queue: things that are FINISHED and waiting on Rod's
   eye, each with the `localhost:4000` link to look at. Not a second copy of REQUESTS - two
   hand-maintained lists of the same thing drift, and this repo has been bitten by exactly that.
+
+## Two rules for how agents and risk are handled (Rod, 2026-08-26)
+
+**A dangerous change gets a backup in `redesign-lab/` first.** Not instead of git - as well as it.
+Git answers "undo this"; a snapshot answers "what did it look like before", and the second question
+is the one that comes up when you are staring at a page wondering what moved. Name it
+`_BACKUP-<what>-<date>` with a README saying why it exists.
+
+**Reactivate a dead agent rather than spawning a fresh one.** An interrupted agent still holds
+everything it measured. Sending it a message resumes it from its own transcript; a new agent starts
+by re-deriving what the old one already knew, and re-derivation is where numbers drift. Spawn a new
+one only when the task is genuinely new.
+
+**When the queue empties, find the next thing rather than stopping.** Rod, 2026-08-26: *"if your
+done with tasks try to come up with new ones and utilise agents."*
