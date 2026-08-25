@@ -284,3 +284,59 @@ they need exists - the magnet engine registered its elements (5 on projects, 3 o
 scene graph is fully populated, `window.__fireworkReach.applied` is `true` - and that the wordmark
 pinned to the REAL faces rather than a fallback: per-glyph advances came back varied, with "F" at
 23.2px, which is the lab's own measured value for face 3.
+
+---
+
+# The portal tuner, and why that gap kept coming back
+
+**The dial was honest; its label was not.** `.centre__welcome{top:calc(50% + 3.2rem)}` is 51.2px, and
+the gap you SEE is more than twice that - and a different multiple at every window size, with the
+dial constant throughout:
+
+| 895x419 | 1280x900 | 1440x900 | 1920x1080 |
+|---|---|---|---|
+| 109px | 138px | 132px | 144px |
+
+**The cause is structural and it is not the line-height or the clamp.** `.centre` is a fixed
+`165px x --pscale` box with the name at its TOP, while the welcome line is measured from `50%` - the
+MIDDLE. So 46-76px of the gap is the empty lower half of a box, and `--pscale` is the engine's
+`min(fw/500, fh/520)`, **so that block grows with the window while a rem `top` cannot.** That is
+exactly why you tune it, resize, and it is wrong again.
+
+Two things checked and cleared:
+- **Your clamp change made the gap SMALLER, not bigger** - 141px before, 138px after at 1280x900. A
+  bigger mark has a taller line box, so its baseline drops and the gap closes.
+- **`line-height` is not the fix and the obvious direction is backwards** - `1.0` makes it *worse* by
+  3px. Only about 4px is reachable either way against a 46-76px problem.
+
+**If you want the structural fix it is `.centre`'s fixed height, not the mark.** Not changed - that
+is a layout call.
+
+What was built instead: a **"gap under the name"** dial where you ask for the gap you want and it
+works out the offset, measuring against the real ink rather than modelling the geometry - so it
+self-corrects when anything else moves the gap. Added ALONGSIDE the old dial rather than repurposing
+it, so nothing existing changed meaning.
+
+**Per-window sizing** follows the same "last touched" selection as the drag. Group and per-window
+**multiply**, so 1.00 means "whatever the group says" and drops out of the export for free. A social
+gets one dial because the engine squares socials from their width - the height dial is disabled with
+the reason printed on it.
+
+## A pre-existing portal defect, found and NOT fixed
+
+**The preview counts a size dial twice on the width.** The engine sizes a window from
+`title.scrollWidth`, but `.pwin__title` is `flex:1 1 auto` - so when the title fits, that reads back
+the box it was just *given*. A width multiplier widens the box, the engine adopts the widened box as
+the window's size, then the multiplier applies again. Measured: the door dial at 1.30x draws Tech Art
+at **394px** where its own numbers say **300**. Height is faithful.
+
+Inherited, not introduced - the group dial has always done this. Left alone because every fix changes
+what the preview draws, which is the thing you judge by. The readout now prints drawn vs
+"paste draws about" in amber whenever they disagree.
+
+## One more from the same pass
+
+A bug that would have shipped silently: the new per-window size state was named `size`, and
+`windows()` already had a local `var size = P.sizes()` shadowing it. `size[slot]` on an array returns
+`undefined` **without erroring**, so every per-window size did nothing at all. Same failure family as
+the four token misses - a name that resolves to the wrong thing and stays quiet about it.
