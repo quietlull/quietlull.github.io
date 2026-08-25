@@ -413,7 +413,7 @@ export function init(root = document) {
   /* THE RIM. One shared window pointermove + one rAF via cursor-coords, the same broadcaster the
      project cards use, rather than a second listener and loop of our own. */
   let stop = () => {};
-  import('../cursor-coords/cursor-coords.js').then(({ onCursor }) => {
+  import('./cursor-coords.js').then(({ onCursor }) => {
     const tiles = [...cat.querySelectorAll('.aw__tile')];
     stop = onCursor((cx, cy) => {
       for (const tile of tiles) {

@@ -1,286 +1,180 @@
-@use '../abstracts/variables' as v;
-@use '../abstracts/mixins' as mx;
-@use '../abstracts/breakpoints' as bp;
+// Projects, ported 2026-08-25 from the inline <style> of `redesign-lab/final-projects.html`.
+// The old Bootstrap card grid it replaced is gone; nothing here is shared with it.
+// Scoped to the page root - `.col` is Bootstrap's too, and `.pv2-*` is only unique by luck.
 
-// ============================================================================
-// BLOG/PROJECTS PAGE - Filter & Search Controls
-// ============================================================================
+#projects-page {
+  position: relative;
+  z-index: var(--z-content);
+  width: min(1180px, 92vw);
+  margin: 0 auto;
+  padding: 48px 0 200px;
 
-#blog-page {
-  
-  // ============================================================================
-  // PAGE HEADER
-  // ============================================================================
-  .blog-header {
-    .page-title {
-      color: var(--heading-color);
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .page-description {
-      color: var(--text-muted-color);
-      font-size: 1.1rem;
-    }
+  .col {
+    width: 1176px;
+    max-width: 92vw;
+    margin: 0 auto;
   }
 
-  // ============================================================================
-  // FILTER & SEARCH CONTROLS
-  // ============================================================================
-  .blog-controls {
-    // Glass effect container
-    @include mx.glass;
-    padding: 1.25rem;
-    border-radius: v.$radius-lg;
-    margin-bottom: 2rem;
-    animation-delay: 0.5s;
+  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered and beats the ladder's
+  // own `h1 { margin: 0 }`. Same restatement as ramblings, same reason: that rule still spaces
+  // the h1 on the pages whose markup is not ported yet.
+  .ptd__title { margin: 0; }
 
-    .row {
-      align-items: center;
-    }
+  .pv2-head { margin-bottom: 24px; }
+
+  .pv2-controls {
+    margin-bottom: 0;
+    border: 1px solid var(--color-line);
+    background: var(--color-panel);
+    padding: 20px;
   }
 
-  // ============================================================================
-  // SEARCH BAR - Lantern styled
-  // ============================================================================
-  .search-wrapper {
-    .input-group {
-      // ✨ Glass effect on input group
-      backdrop-filter: blur(var(--blur-sm));
-      -webkit-backdrop-filter: blur(var(--blur-sm));
-      border-radius: v.$radius-lg;
-      overflow: hidden;
-      border: 1px solid var(--glass-border);
-      will-change: transform;
-      contain: layout style paint;
-      @include mx.transition(border-color, box-shadow);
-
-      &:focus-within {
-        border-color: var(--glass-border-strong);
-        box-shadow: var(--input-focus-glow);
-      }
-
-      .input-group-text {
-        background: var(--glow-subtle);
-        border: none;
-        color: var(--text-muted-color);
-        border-right: 1px solid var(--glass-border);
-        padding: 0.75rem 1rem;
-        @include mx.transition(color);
-      }
-
-      .form-control {
-        background: transparent;
-        border: none;
-        color: var(--text-color);
-        padding: 0.75rem 1rem;
-        @include mx.transition(background-color);
-
-        &::placeholder {
-          color: var(--text-muted-color);
-          opacity: 0.7;
-        }
-
-        &:focus {
-          background: var(--glow-subtle);
-          box-shadow: none;
-          outline: none;
-          
-          ~ .input-group-text {
-            color: var(--link-hover-color);
-          }
-        }
-      }
-    }
+  .pv2-search {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    margin-bottom: 16px;
   }
 
-  // ============================================================================
-  // FILTER PILLS - Tag toggle buttons
-  // ============================================================================
-  .filter-pills {
-    .filter-pill {
+  .pv2-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+
+    // `line-height: 1` is live-only. Bootstrap's reboot makes a button inherit line-height, so
+    // `main { line-height: 1.75 }` reached in and made every pill 2.5px taller than the bench's.
+    // The 16px icon is what sets the row height, exactly as it does on the bench.
+    .kit-tag {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      border-radius: 2rem;
-      padding: 0.5rem 1.15rem;
+      line-height: 1;
+    }
+
+    .badge-icon {
+      display: block;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .kit-tag .fas {
       font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      border: 1px solid var(--glass-border);
-      color: var(--text-muted-color);
-      background: transparent;
-      cursor: pointer;
-      @include mx.transition(background-color, color, border-color, box-shadow);
-
-      .pill-icon {
-        width: 1.25rem;
-        height: 1.25rem;
-        opacity: 0.8;
-        @include mx.transition(opacity);
-      }
-
-      i {
-        font-size: 1.1rem;
-        @include mx.transition(opacity);
-      }
-
-      &:hover {
-        background: var(--glow-subtle);
-        border-color: var(--glass-border-strong);
-        color: var(--text-color);
-
-        .pill-icon {
-          opacity: 1;
-        }
-      }
-
-      &.active {
-        background: var(--glow-strong);
-        border-color: var(--link-hover-color);
-        color: var(--link-hover-color);
-        box-shadow: var(--glow-ring-small);
-
-        .pill-icon {
-          opacity: 1;
-        }
-      }
-
-      &.pill-empty {
-        opacity: 0.4;
-        pointer-events: none;
-      }
-
-      .pill-count {
-        font-size: 0.7rem;
-        opacity: 0.6;
-        margin-left: -0.15rem;
-      }
-
-      &.filter-clear {
-        border-color: var(--glass-border-strong);
-        color: var(--text-muted-color);
-
-        &:hover {
-          color: var(--amber-400);
-          border-color: var(--amber-400);
-        }
-      }
+      line-height: 1;
     }
   }
 
-  // ============================================================================
-  // PINNED SECTION
-  // ============================================================================
-  .pinned-section {
-    .section-title {
-      color: var(--heading-color);
-      display: flex;
-      align-items: center;
-      font-weight: 600;
-
-      i {
-        // Keep the thumbtack red for consistency with badge
-        color: rgba(220, 53, 69, 0.9);
-      }
-    }
-
-    hr {
-      border-color: var(--main-border-color);
-      opacity: 0.5;
-    }
+  .pv2-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
   }
 
-  // ============================================================================
-  // POSTS GRID - Already styled by _projectspreview.scss
-  // ============================================================================
-  .posts-grid {
-    // Card styling comes from _projectspreview.scss
-    // This ensures consistency
+  @media (max-width: 991px) {
+    .pv2-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
-  // ============================================================================
-  // NO POSTS MESSAGE
-  // ============================================================================
-  .no-posts {
-    padding: 3rem 0;
-    
-    i {
-      color: var(--text-muted-color);
-      opacity: 0.5;
-    }
-
-    p {
-      color: var(--text-muted-color);
-      font-size: 1.1rem;
-    }
+  @media (max-width: 767px) {
+    .pv2-grid { grid-template-columns: 1fr; }
   }
 
-  // ============================================================================
-  // LOAD MORE BUTTON
-  // ============================================================================
-  .pagination-wrapper {
-    #load-more {
-
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      
-      i {
-        @include mx.transition(transform);
-      }
-
-      &:hover i {
-        transform: translateY(3px);
-      }
-    }
+  .pv2-cell {
+    display: grid;
+    grid-template-rows: 421px;
   }
 
-  // ============================================================================
-  // RESPONSIVE ADJUSTMENTS
-  // ============================================================================
-  @include bp.lte(bp.get(md)) {
-    .blog-controls {
-      padding: 1rem;
-
-      .col-md-6 {
-        &:first-child {
-          margin-bottom: 1rem;
-        }
-      }
-    }
-  }
-}
-
-// Post item animations now handled by scroll-reveal.js via [data-reveal]
-
-// ============================================================================
-// F4 - Filter pill ripple
-// ============================================================================
-
-// ============================================================================
-// G4/G5 - Search feedback styling
-// ============================================================================
-.search-results-count {
-  font-size: 0.8rem;
-  color: var(--text-muted-color);
-  padding: 0.5rem 0;
-  transition: opacity 0.3s ease;
-}
-
-.no-results-message {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--text-muted-color);
-
-  i {
-    font-size: 2.5rem;
-    display: block;
-    margin-bottom: 0.75rem;
-    opacity: 0.3;
+  // A fixed box with a three-line clamp, so a long blurb cannot push the meta row off the card.
+  .pv2-descbox {
+    height: 73.5px;
+    overflow: hidden;
   }
 
-  p {
+  .pv2-desc,
+  .pv2-date {
     margin: 0;
-    font-size: 0.95rem;
+    color: var(--color-warm-muted);
+    font-size: 14px;
+    line-height: 1.75;
   }
+
+  .pv2-desc {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .pv2-grid .card-front .card-meta {
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 8px;
+  }
+
+  // The cover and its glass sheet are shorter here than the component's default, so the body has
+  // room for a description and a meta rule the bench card does not carry.
+  .pv2-grid .card-cover {
+    bottom: auto;
+    height: 285px;
+  }
+
+  .pv2-grid .glass-plane {
+    bottom: auto;
+    height: 277px;
+  }
+
+  .pv2-grid .card-front { background: var(--cover-lo); }
+
+  .pv2-metabox {
+    --z: 36;
+    --z-hover: 52;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 28px;
+    margin-top: 16px;
+  }
+
+  .pv2-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.4rem;
+
+    .kit-tag {
+      display: inline-flex;
+      align-items: center;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      opacity: 0.65;
+      outline: 0;
+      padding: 0;
+      font-size: 0.85rem;
+      line-height: 1;
+      transition: opacity 0.35s;
+    }
+
+    .badge-icon {
+      display: block;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .pv2-grid .post-card:hover .pv2-tags .kit-tag { opacity: 1; }
+
+  .pv2-grid .takeaway-text--none {
+    opacity: 0.55;
+    font-style: normal;
+  }
+
+  .pv2-rule {
+    border: 0;
+    border-top: 1px solid var(--color-line-faint);
+    margin: 24px 0;
+  }
+
+  .pv2-pinned { margin-bottom: 0; }
 }

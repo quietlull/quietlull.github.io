@@ -1,36 +1,57 @@
 {% comment %}
-  Tag badges for project cards.
-  Usage: {% include tag-badges.html tags=post.tags engine=post.engine %}
-  Renders small icon badges for recognized tags (engine brands + categories).
-  Skips the generic "project" tag.
+  Tag badges for project cards. One icon table for the whole site.
+  Usage: {% include tag-badges.html tags=post.tags %}                 the old design's `.tag-badge`
+         {% include tag-badges.html tags=post.tags variant='kit' %}   the redesign's `.kit-tag`
+  Both wrap the same icons; only the element and its classes differ. The generic "project" tag
+  never gets a badge. The icon colours are inline because they were, on both sides - they are
+  brand hues with no token, and minting seven names for them is a separate call.
 {% endcomment %}
 
 {% assign badge_tags = include.tags | where_exp: 't', 't != "project"' %}
 {% if badge_tags.size > 0 %}
-<div class="tag-badges">
+{% if include.variant == 'kit' %}<span class="pv2-tags">{% else %}<div class="tag-badges">{% endif %}
   {% for tag in badge_tags %}
     {% assign t = tag | downcase %}
+    {% assign label = '' %}
+    {% assign icon = '' %}
     {% if t == 'unity' %}
-      <span class="tag-badge" title="Unity"><img src="{{ '/assets/img/icons/unity.svg' | absolute_url }}" alt="" class="badge-icon"></span>
+      {% assign label = 'Unity' %}
+      {% capture icon %}<img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="" class="badge-icon">{% endcapture %}
     {% elsif t == 'unreal' %}
-      <span class="tag-badge" title="Unreal Engine"><img src="{{ '/assets/img/icons/unreal.svg' | absolute_url }}" alt="" class="badge-icon"></span>
+      {% assign label = 'Unreal Engine' %}
+      {% capture icon %}<img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="" class="badge-icon">{% endcapture %}
     {% elsif t == 'godot' %}
-      <span class="tag-badge" title="Godot"><img src="{{ '/assets/img/icons/godot.svg' | absolute_url }}" alt="" class="badge-icon"></span>
+      {% assign label = 'Godot' %}
+      {% capture icon %}<img src="{{ '/assets/img/icons/godot.svg' | relative_url }}" alt="" class="badge-icon">{% endcapture %}
     {% elsif t == 'shader' %}
-      <span class="tag-badge" title="Shader"><i class="fas fa-brush" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i></span>
+      {% assign label = 'Shader' %}
+      {% capture icon %}<i class="fas fa-brush" aria-hidden="true" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>{% endcapture %}
     {% elsif t == 'tool' %}
-      <span class="tag-badge" title="Tool"><i class="fas fa-wrench" style="color: #b0b8c4;"></i></span>
+      {% assign label = 'Tool' %}
+      {% capture icon %}<i class="fas fa-wrench" aria-hidden="true" style="color: #b0b8c4;"></i>{% endcapture %}
     {% elsif t == 'vfx' %}
-      <span class="tag-badge" title="VFX"><i class="fas fa-wand-magic-sparkles" style="color: #4d96ff;"></i></span>
+      {% assign label = 'VFX' %}
+      {% capture icon %}<i class="fas fa-wand-magic-sparkles" aria-hidden="true" style="color: #4d96ff;"></i>{% endcapture %}
     {% elsif t == 'rigging' %}
-      <span class="tag-badge" title="Rigging"><i class="fas fa-bone" style="color: #9b59b6;"></i></span>
+      {% assign label = 'Rigging' %}
+      {% capture icon %}<i class="fas fa-bone" aria-hidden="true" style="color: #9b59b6;"></i>{% endcapture %}
     {% elsif t == '2d' %}
-      <span class="tag-badge" title="2D"><i class="fas fa-image" style="color: #6bcb77;"></i></span>
+      {% assign label = '2D' %}
+      {% capture icon %}<i class="fas fa-image" aria-hidden="true" style="color: #6bcb77;"></i>{% endcapture %}
     {% elsif t == '3d' %}
-      <span class="tag-badge" title="3D"><i class="fas fa-cube" style="color: #f0a500;"></i></span>
+      {% assign label = '3D' %}
+      {% capture icon %}<i class="fas fa-cube" aria-hidden="true" style="color: #f0a500;"></i>{% endcapture %}
     {% elsif t == 'study' %}
-      <span class="tag-badge" title="Study"><i class="fas fa-book" style="color: #e8a87c;"></i></span>
+      {% assign label = 'Study' %}
+      {% capture icon %}<i class="fas fa-book" aria-hidden="true" style="color: #e8a87c;"></i>{% endcapture %}
+    {% endif %}
+    {% if label != '' %}
+      {%- if include.variant == 'kit' -%}
+        <span class="kit-tag" role="img" aria-label="{{ label }}" title="{{ label }}">{{ icon }}</span>
+      {%- else -%}
+        <span class="tag-badge" title="{{ label }}">{{ icon }}</span>
+      {%- endif -%}
     {% endif %}
   {% endfor %}
-</div>
+{% if include.variant == 'kit' %}</span>{% else %}</div>{% endif %}
 {% endif %}

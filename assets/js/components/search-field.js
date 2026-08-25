@@ -1,9 +1,17 @@
 /* ================================================================================================
    SEARCH FIELD - the filter behaviour, from ronja-tutorials.com.
 
-   Ported from `redesign-lab/extracted/components/search-field/` on 2026-08-26. One change: the
-   query is written into `.es__q` so the empty state says what was searched for. The lab set it
-   on a `data-q` attribute that no stylesheet ever read, under a hard-coded example query.
+   Ported from `redesign-lab/extracted/components/search-field/` on 2026-08-26. Three changes, all
+   because the lab page did less than the live page has to:
+     - the query is written into `.es__q`, so the empty state says what was searched for. The lab
+       set it on a `data-q` attribute no stylesheet ever read, under a hard-coded example query.
+     - the corpus reads `aria-label` as well as text, because the projects tags are icon-only and
+       their `textContent` is empty - searching "unity" matched nothing.
+     - THE TAG PILLS FILTER. The lab drew them and wired nothing, and the live page's own
+       `post-filter.js` has been filtering those tags for months. An item must carry EVERY active
+       tag, which is `post-filter.js`'s own AND semantics, so the behaviour does not change.
+       Deliberately NOT ported with it: the results counter, the per-pill match counts and the
+       empty-pill dimming. The lab lists all three as things the redesign does not have.
 
    Rod picked candidate A on `search-field.html` 2026-08-24. What that pick actually buys is stated
    plainly because it is unusual: **ronja supplies a MECHANISM and no look at all.** Both of its
@@ -45,7 +53,8 @@ const HOSTS = [
     text: ['.card-title', '.pv2-desc', '.pv2-tags .kit-tag'],
     /* the pinned grid has its own heading and rule above it. Hide all three pinned cards and the
        heading is left sitting over nothing, so the group goes with them. */
-    groups: [{ items: '.pv2-pinned .pv2-cell', also: ['.pv2-pinned', '.pv2-rule'] }]
+    groups: [{ items: '.pv2-pinned .pv2-cell', also: ['.pv2-pinned', '.pv2-rule'] }],
+    pills: '.pv2-filters'
   },
   {
     item: '.er-list .er-row',
@@ -58,7 +67,7 @@ const HOSTS = [
 
 const corpus = (el, sel) =>
   sel.flatMap(s => [...el.querySelectorAll(s)])
-     .map(n => n.textContent)
+     .map(n => n.textContent + ' ' + (n.getAttribute('aria-label') || ''))
      .join(' ')
      .toLowerCase();
 
@@ -72,17 +81,31 @@ export function init(root = document) {
 
   /* Built once. Re-reading the DOM on every keystroke would be O(n) DOM work per character on a
      page with 16 cards and 45 tags. */
-  const items = [...root.querySelectorAll(host.item)].map(el => ({ el, hay: corpus(el, host.text) }));
+  const items = [...root.querySelectorAll(host.item)].map(el => ({
+    el,
+    hay: corpus(el, host.text),
+    /* Jekyll writes the real tag list onto the cell, so a tag with an icon and no text still
+       filters. Reading it from the markup rather than from the chips keeps the two in step. */
+    tags: (el.dataset.tags || '').toLowerCase().split(',').filter(Boolean)
+  }));
   const empty = root.querySelector('.es');
+
+  const pillBox = host.pills ? root.querySelector(host.pills) : null;
+  const pills = pillBox ? [...pillBox.querySelectorAll('[data-tag]')] : [];
+  const clear = pillBox ? pillBox.querySelector('[data-clear]') : null;
+  const active = new Set();
 
   const run = (raw) => {
     const q = raw.trim().toLowerCase();
     let shown = 0;
-    items.forEach(({ el, hay }) => {
-      const hit = !q || hay.includes(q);
+    items.forEach(({ el, hay, tags }) => {
+      const hit = (!q || hay.includes(q))
+        && (active.size === 0 || [...active].every(t => tags.includes(t)));
       el.style.display = hit ? '' : 'none';
       if (hit) shown++;
     });
+
+    if (clear) clear.hidden = active.size === 0 && q === '';
 
     host.groups.forEach(g => {
       const gone = [...root.querySelectorAll(g.items)].every(el => el.style.display === 'none');
@@ -105,6 +128,21 @@ export function init(root = document) {
   };
 
   input.addEventListener('input', () => run(input.value));
+
+  pills.forEach(pill => pill.addEventListener('click', () => {
+    const tag = pill.dataset.tag.toLowerCase();
+    if (active.has(tag)) active.delete(tag); else active.add(tag);
+    pill.classList.toggle('is-active', active.has(tag));
+    pill.setAttribute('aria-pressed', String(active.has(tag)));
+    run(input.value);
+  }));
+
+  if (clear) clear.addEventListener('click', () => {
+    active.clear();
+    pills.forEach(p => { p.classList.remove('is-active'); p.setAttribute('aria-pressed', 'false'); });
+    input.value = '';
+    run('');
+  });
 
   /* ronja's own rehydrate: a filtered list is linkable, so the param has to come back in. */
   const initial = new URL(window.location.href).searchParams.get(PARAM);

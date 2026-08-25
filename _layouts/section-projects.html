@@ -1,225 +1,96 @@
 ---
 layout: default
 refactor: false
+script_includes:
+  - projects-scripts
 ---
 
 {% include lang.html %}
 
 {% comment %}
-  THE SCENE MOVED TO `_layouts/default.html` (2026-08-25). It is chrome now: one tag, one tier
-  per layout, so nothing can double-init and no layout can drift from the others. The old tag is
-  left here, commented out, because it is the record of what this layout used to load - which is
-  not the same bundle the shared one loads. To go back, delete the include from default.html and
-  uncomment this.
-    was: three-background-minimal.min.js
+  Projects, ported from `redesign-lab/final-projects.html` on 2026-08-25. A 1176px column: title,
+  a controls panel holding the search field and the tag row, the pinned grid, a rule, then the rest.
+
+  THE CARDS ARE `.merged-cards` NOW, which is the point of this commit beyond the look. Five old
+  class rules - `post-card`, `card-body`, `card-meta`, `card-link`, `takeaway-text` - could not be
+  deleted while their replacements only existed under a class no live page carried. This page
+  carries it.
+
+  Dropped with the lab page: `#state`, `.labtag`, every `data-slot` / `data-state`, and the trailing
+  spacer div. Dropped with the OLD page: the Bootstrap card grid, the results counter, the per-pill
+  match counts and the empty-pill dimming - the lab lists all three as things the redesign does not
+  have, and the approved `.es` empty state replaces the injected one.
+
+  There is no `description` on either projects page, so the title stands alone. Rod, 2026-08-24:
+  "we dont need a tagline under tech art projects."
 {% endcomment %}
 
 {% assign section = page.section %}
 {% assign all_projects = site.posts | where: 'section', section | where: 'tags', 'project' %}
-{% assign all_pinned = all_projects | where_exp: 'item', 'item.pin == true' | sort: 'priority' | reverse %}
-{% assign all_normal = all_projects | where_exp: 'item', 'item.pin != true' | sort: 'priority' | reverse %}
+{% assign pinned = all_projects | where_exp: 'item', 'item.pin == true' | sort: 'priority' | reverse %}
+{% assign normal = all_projects | where_exp: 'item', 'item.pin != true' | sort: 'priority' | reverse %}
 
-<div id="blog-page">
-  <header class="blog-header mb-4">
-    <h1 class="page-title">{{ page.title | default: "Projects" }}</h1>
-    {% if page.description %}
-      <p class="page-description text-muted">{{ page.description }}</p>
-    {% endif %}
-  </header>
+<div id="projects-page">
+  <div class="col">
 
-  <!-- Search and Filter -->
-  <div class="blog-controls mb-4">
-    <div class="search-wrapper mb-3">
-      <div class="input-group">
-        <span class="input-group-text"><i class="fas fa-search"></i></span>
-        <input type="text"
-               class="form-control"
-               id="post-search"
-               placeholder="Search projects...">
+    <div class="pv2-head">
+      <div class="ptd ptd--projects ptd--sub">
+        <h1 class="ptd__title d-h1">{{ page.title | default: 'Projects' }}</h1>
+        {% if page.description %}<p class="ptd__desc">{{ page.description }}</p>{% endif %}
       </div>
     </div>
 
-    {% if section == 'tech-art' %}
-      {% include filter-pills.html %}
+    <div class="pv2-controls">
+      <div class="pv2-search sf sf--ronja">
+        <input class="sf__input" type="text" placeholder="search projects &amp; tags"
+               aria-label="Filter projects by title, description or tag">
+      </div>
+      {% include kit-filter-pills.html %}
+    </div>
+
+    {% if pinned.size > 0 %}
+      <section class="pv2-pinned">
+        <h2>Pinned Posts</h2>
+        <div class="merged-cards merged-cards--square epx-cards pv2-grid">
+          {% for post in pinned %}
+            {% assign parity = forloop.index0 | modulo: 2 %}
+            {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
+            {% include project-card.html post=post section=section hue=hue %}
+          {% endfor %}
+        </div>
+      </section>
+
+      <hr class="pv2-rule">
     {% endif %}
+
+    <section class="all-posts-section">
+      <div class="merged-cards merged-cards--square epx-cards pv2-grid">
+        {% comment %} The a/b alternation runs across both grids, so this one picks up where the pinned grid stopped. {% endcomment %}
+        {% for post in normal %}
+          {% assign parity = forloop.index0 | plus: pinned.size | modulo: 2 %}
+          {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
+          {% include project-card.html post=post section=section hue=hue %}
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if all_projects.size == 0 %}
+      <div class="es es--stack">
+        <div class="es__content">
+          <p class="es__title">Projects coming soon</p>
+          <p class="es__body">Nothing to show in this section yet.</p>
+        </div>
+      </div>
+    {% else %}
+      {% comment %} A no-RESULTS state: hidden until a search or a tag matches nothing. {% endcomment %}
+      <div class="es es--stack" role="status" hidden>
+        <div class="es__content">
+          <p class="es__title">No projects matching <b class="es__q"></b></p>
+          <p class="es__body">Try a shorter word, or
+            <a class="es__action" href="{{ page.url | relative_url }}">show all {{ all_projects.size }} projects</a>.</p>
+        </div>
+      </div>
+    {% endif %}
+
   </div>
-
-  <!-- Pinned Posts Section -->
-  {% if all_pinned.size > 0 %}
-  <section class="pinned-section mb-5">
-    <h2 class="section-title h4 mb-3">
-      <i class="fas fa-thumbtack text-danger me-2"></i>Pinned Posts
-    </h2>
-    <div class="posts-grid row g-4 mb-4">
-      {% for post in all_pinned %}
-        {% assign post_tags = post.tags | where_exp: 't', 't != "project"' | join: ',' %}
-        <div class="col-12 col-md-6 col-lg-4 post-item"
-             data-post-item             data-date="{{ post.date | date: '%s' }}"
-             data-title="{{ post.title }}"
-             data-tags="{{ post_tags }}">
-          <article class="post-card h-100 pinned">
-            {% assign word_count = post.content | number_of_words %}
-            {% if post.wip and word_count < 20 %}
-              {% assign uc_url = '/' | append: section | append: '/under-construction/?title=' | append: post.title | append: '&tags=' | append: post_tags %}
-              <a href="{{ uc_url | relative_url }}" class="card-link">
-            {% else %}
-              <a href="{{ post.url | relative_url }}" class="card-link">
-            {% endif %}
-              <div class="card h-100 border-danger">
-                {% if post.image %}
-                  <div class="card-img-wrapper">
-                    {% assign post_image = post.image.path | default: post.image %}
-                    {% assign _card_alt = post.image.alt | default: post.title %}
-                    {% include post-media.html src=post_image alt=_card_alt class="card-img-top" %}
-                    <span class="badge-pinned">
-                      <i class="fas fa-thumbtack"></i> Pinned
-                    </span>
-                    {% if post.wip %}
-                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
-                    {% endif %}
-                  </div>
-                {% else %}
-                  <div class="card-img-wrapper placeholder-img">
-                    <div class="placeholder-content">
-                      <i class="fas fa-image fa-3x text-muted"></i>
-                    </div>
-                    <span class="badge-pinned">
-                      <i class="fas fa-thumbtack"></i> Pinned
-                    </span>
-                    {% if post.wip %}
-                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
-                    {% endif %}
-                  </div>
-                {% endif %}
-
-                <div class="card-body d-flex flex-column">
-                  <h3 class="card-title h5">{{ post.title }}</h3>
-                  {% if post.description %}
-                    <p class="card-text text-muted small">
-                      {{ post.description | truncate: 120 }}
-                    </p>
-                  {% endif %}
-                  {% if post.role or post.engine %}
-                    <p class="card-role small mb-2">
-                      {% if post.role %}{{ post.role }}{% endif %}
-                      {% if post.role and post.engine %} · {% endif %}
-                      {% if post.engine %}{{ post.engine }}{% endif %}
-                    </p>
-                  {% endif %}
-                  <div class="card-meta mt-auto">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <small class="text-muted">
-                        <i class="far fa-calendar-alt me-1"></i>
-                        {{ post.date | date: "%b %d, %Y" }}
-                        {% assign words = post.content | number_of_words %}
-                        {% assign minutes = words | divided_by: 200 | plus: 1 %}
-                        <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>{{ minutes }} min</span>
-                      </small>
-                      {% include tag-badges.html tags=post.tags %}
-                    </div>
-                  </div>
-                </div>
-                {% if post.takeaway %}
-                  <div class="card-takeaway-overlay">
-                    <p class="takeaway-text">
-                      <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
-                    </p>
-                  </div>
-                {% endif %}
-              </div>
-            </a>
-          </article>
-        </div>
-      {% endfor %}
-    </div>
-    <hr class="my-4">
-  </section>
-  {% endif %}
-
-  <!-- All Posts Grid -->
-  <section class="all-posts-section">
-    <div class="posts-grid row g-4" id="posts-container">
-      {% for post in all_normal %}
-        {% assign post_tags = post.tags | where_exp: 't', 't != "project"' | join: ',' %}
-        <div class="col-12 col-md-6 col-lg-4 post-item"
-             data-post-item             data-date="{{ post.date | date: '%s' }}"
-             data-title="{{ post.title }}"
-             data-tags="{{ post_tags }}">
-          <article class="post-card h-100">
-            {% assign word_count = post.content | number_of_words %}
-            {% if post.wip and word_count < 20 %}
-              {% assign uc_url = '/' | append: section | append: '/under-construction/?title=' | append: post.title | append: '&tags=' | append: post_tags %}
-              <a href="{{ uc_url | relative_url }}" class="card-link">
-            {% else %}
-              <a href="{{ post.url | relative_url }}" class="card-link">
-            {% endif %}
-              <div class="card h-100">
-                {% if post.image %}
-                  <div class="card-img-wrapper">
-                    {% assign post_image = post.image.path | default: post.image %}
-                    {% assign _card_alt = post.image.alt | default: post.title %}
-                    {% include post-media.html src=post_image alt=_card_alt class="card-img-top" %}
-                    {% if post.wip %}
-                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
-                    {% endif %}
-                  </div>
-                {% else %}
-                  <div class="card-img-wrapper placeholder-img">
-                    <div class="placeholder-content">
-                      <i class="fas fa-image fa-3x text-muted"></i>
-                    </div>
-                    {% if post.wip %}
-                      <span class="badge-wip"><i class="fas fa-hard-hat"></i> WIP</span>
-                    {% endif %}
-                  </div>
-                {% endif %}
-
-                <div class="card-body d-flex flex-column">
-                  <h3 class="card-title h5">{{ post.title }}</h3>
-                  {% if post.description %}
-                    <p class="card-text text-muted small">
-                      {{ post.description | truncate: 120 }}
-                    </p>
-                  {% endif %}
-                  {% if post.role or post.engine %}
-                    <p class="card-role small mb-2">
-                      {% if post.role %}{{ post.role }}{% endif %}
-                      {% if post.role and post.engine %} · {% endif %}
-                      {% if post.engine %}{{ post.engine }}{% endif %}
-                    </p>
-                  {% endif %}
-                  <div class="card-meta mt-auto">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <small class="text-muted">
-                        <i class="far fa-calendar-alt me-1"></i>
-                        {{ post.date | date: "%b %d, %Y" }}
-                        {% assign words = post.content | number_of_words %}
-                        {% assign minutes = words | divided_by: 200 | plus: 1 %}
-                        <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>{{ minutes }} min</span>
-                      </small>
-                      {% include tag-badges.html tags=post.tags %}
-                    </div>
-                  </div>
-                </div>
-                {% if post.takeaway %}
-                  <div class="card-takeaway-overlay">
-                    <p class="takeaway-text">
-                      <i class="fas fa-lightbulb me-1"></i>{{ post.takeaway }}
-                    </p>
-                  </div>
-                {% endif %}
-              </div>
-            </a>
-          </article>
-        </div>
-      {% endfor %}
-    </div>
-
-    {% if all_normal.size == 0 and all_pinned.size == 0 %}
-      <div class="no-posts text-center py-5">
-        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-        <p class="text-muted">Projects coming soon!</p>
-      </div>
-    {% endif %}
-  </section>
 </div>

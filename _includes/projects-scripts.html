@@ -1,0 +1,13 @@
+{% comment %}
+  Projects' own JS. A component is its markup AND its container AND its JS - the lab shipped these
+  cards without this block once and Rod called the page "clearly broken": nothing magnetic
+  initialised, no card could flip, and no cover video played.
+{% endcomment %}
+
+<script type="module">
+  /* initCards also runs merged-card and drift-magnet internally. */
+  import { init as initCards } from '{{ '/assets/js/components/project-cards-expensive.js' | relative_url }}';
+  import { init as initSearch } from '{{ '/assets/js/components/search-field.js' | relative_url }}';
+  initCards(document);
+  initSearch(document);
+</script>
