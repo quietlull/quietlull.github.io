@@ -3,59 +3,17 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* portrait-frame - the ABOUT rail portrait. Three frames, one measured box.
-   Built 2026-08-23.
+/* portrait-frame - the portrait in the About rail. Three frames, one measured box.
+   THE BOX IS A MEASUREMENT, NOT A CHOICE: 191 x 200, and 191 is the 225px rail minus the panel's
+   own 2px borders and 15px padding. Confirmed against the rendered page. Every version fits by
+   construction on both axes, so nothing here can overflow.
+   V1 and V2 are `.fig` elements and the caption is figure-real's, not restated here. Their
+   overrides use `.fig.pf` so they beat figure-real without depending on load order.
+   Nothing animates, so there is no reduced-motion block; two source motions were dropped and both
+   are recorded. THE REAL IMAGE DOES NOT EXIST YET. See portrait-frame.md. */
 
-   THE BOX IS A MEASUREMENT, NOT A CHOICE.
-   Reservation: 191 x 200, inside the 225px rail of about-blockout.html (body.panels .rail).
-   Where 191 comes from, so nobody re-derives it wrong later: the rail is 225px
-   (about-blockout.html:40) and the portrait sits inside a `.p` panel that is
-   `border:2px solid; padding:10px 15px` (about-blockout.html:41). 225 - (2 x 2) - (2 x 15) = 191.
-   The 200 is the box() call at about-blockout.html:170. Both were confirmed against the rendered
-   page in analysis/2026-08-23-blockout-contract.md line 39.
-   So `.pf` is `width:191px; height:200px; box-sizing:border-box` and the fit is exact BY
-   CONSTRUCTION on both axes, in all three versions. Nothing here can overflow the reservation.
-
-   WHAT WAS CHECKED FIRST, AND WHY IT WAS NOT REUSED
-   extracted/components/picture-frame/ does NOT fit and is not rebuilt here. It is 109ichiki's
-   OUTER frame: `position:fixed; inset:20px; z-index:45; pointer-events:none` plus a
-   `box-shadow: 0 0 0 100vmax` mask (picture-frame.css:22-31). It rings the VIEWPORT. To make it
-   frame a 191px image in a rail every one of those declarations has to go, plus its
-   `border-radius:8px` is the opposite of the shape pass. That is a rewrite, not a reuse.
-
-   WHAT IS REUSED, GENUINELY
-   V1 and V2 are `.fig` elements. The caption comes from
-   extracted/components/figure-real/figure-real.css and is NOT redefined here - one definition,
-   several consumers. A portrait IS a figure and the figure decision (catlikecoding geometry, no
-   mat, no border, no fill, LEFT caption) is already made, so V1 is that decision applied to this
-   box rather than a new idea. Overrides below use `.fig.pf` (0,2,0) rather than `.pf` (0,1,0) so
-   they beat figure-real's single-class rules WITHOUT depending on stylesheet load order.
-   The demo also carries figure-real's own `fig--v2` modifier, which is the SILVER caption - the
-   one decisions.css:358 ships. figure-real deliberately left "how far the caption recedes" open
-   (its v1 is the faithful catlikecoding reading, where the caption is body colour in BOTH their
-   themes). That question is still open and is not re-decided here; this component just follows
-   what ships, and follows it by reusing their modifier rather than restating a colour.
-
-   PALETTE
-   No red, no cool accent, no --color-muted. Warm tokens only, every one with a literal fallback.
-   No backdrop-filter and no blur anywhere - the live scene sits behind this rail.
-   Square everywhere. The two source radii (109ichiki's .1875rem and 2px) are deliberately
-   flattened to 0; see V3.
-
-   MOTION
-   NOTHING IN THIS FILE ANIMATES OR TRANSITIONS. There is no prefers-reduced-motion block because
-   there is nothing to reduce, and an empty guard is bloat. Two motions were available in the
-   sources and both were dropped on purpose - see V2 and V3.
-
-   THE IMAGE DOES NOT EXIST. `_sass/layout/_aboutmecontainer.scss` has `.profile-container` at
-   `flex:0 0 300px` with `&:empty{display:none}`, so the slot collapses today, and a search of the
-   repo turns up no portrait asset. `.pf__media--empty` is the honest stand-in and says so in
-   words. The moment a real <img class="pf__media"> exists it drops straight in. */
-
-/* SHARED: the reservation, and nothing else
-   `position:relative` is load-bearing for V2 only (it is the containing block the four corner
-   divs pin to), but it costs nothing on the other two so it lives here rather than being
-   repeated. */
+/* The reservation, and nothing else. `position: relative` is load-bearing for V2 only, where the
+   four corner divs pin to it, but it costs nothing on the other two. */
 .pf,
 .pf * {
   box-sizing: border-box;
@@ -66,11 +24,9 @@
   position: relative;
 }
 
-/* The media fills its cell and CROPS. This is a real departure and it is forced by the fixed
-   reservation: catlikecoding's whole figure premise is that an image renders at its intrinsic
-   size, and figure-real.css carries that as `height:auto`. A 191 x 200 hole cannot honour an
-   intrinsic size, so `object-fit:cover` decides what gets cut. Selector is (0,2,0) so it beats
-   figure-real's `.fig > img` at (0,1,1) without an !important and without a load-order rule. */
+/* The media CROPS, which is a real departure: catlikecoding's figure premise is that an image
+   renders at its intrinsic size, and a fixed 191x200 hole cannot honour one. The doubled selector
+   is what beats figure-real without an !important or a load-order rule. */
 .pf .pf__media {
   display: block;
   width: 100%;
@@ -78,8 +34,7 @@
   object-fit: cover;
 }
 
-/* No asset exists yet, so the placeholder states that rather than pretending. --color-panel is
-   the house translucent panel, so the scene still reads through it. */
+/* No asset exists yet, so the placeholder says so rather than pretending. */
 .pf .pf__media--empty {
   display: grid;
   place-items: center;
@@ -94,26 +49,18 @@
   text-transform: uppercase;
 }
 
-/* The caption is figure-real's and is not restated. ONE declaration is added: a pinned
-   line-height, because with `normal` the caption block height is font-dependent and the image
-   cell height stops being a number anyone can state. 1.3 is the house body line-height
-   (decisions.css:198, `.prose p, .prose li`). OURS, and a derivation rather than a source value.
-   At 0.875em of a 16px root that makes the caption block 8px margin + 18.2px line = 26.2px. */
+/* The caption is figure-real's. The one thing added is a pinned line-height, because with
+   `normal` the caption height is font-dependent and the image cell stops being a number anyone
+   can state. This makes the caption block exactly 26.2px. */
 .fig.pf figcaption {
   line-height: 1.3;
 }
 
-/* V1 - NO FRAME. The figure decision, applied.
-   SOURCE: catlikecoding tutorials.css, via extracted/components/figure-real/ and
-   decisions.css:342-361 (FIGURES - PICKED B, catlikecoding, left caption - Rod 2026-08-23).
-   TIER: Remixed. IDEA-ORIGIN: theirs (geometry, italic caption device) + ROD (left align).
-   Nothing new is invented; this is the settled decision sized to the measured box.
-
-   `margin:0` cancels figure-real's `margin: 2em auto`. That margin is the rhythm between figures
-   in a prose column; in a rail slot the panel above owns the spacing, and 2em would push the
-   component out of its own reservation.
-
-   MEASURES: caption block 26.2px, so the image cell is 191 x 173.8. */
+/* V1 - NO FRAME, just the settled figure decision sized to the box (catlikecoding, via
+   figure-real, Rod picked it 2026-08-23). Nothing new is invented here.
+   `margin: 0` cancels figure-real's `2em auto`, which is the rhythm between figures in a prose
+   column - in a rail slot it would push the component out of its own reservation.
+   Image cell 191 x 173.8. */
 .fig.pf--plain {
   display: grid;
   grid-template-rows: 1fr auto;
@@ -121,47 +68,14 @@
   padding: 0;
 }
 
-/* V2 - CORNER BRACKETS. A frame that is not a box.
-   SOURCE: filipporuffini.com, main Webflow sheet
-     https://cdn.prod.website-files.com/643d4a3e40f13a5d541373e9/css/filippo-ruffini.webflow.98e69a3e9.css
-   PREMISE RE-VERIFIED LIVE 2026-08-23 against that URL, not taken on the saved note's word. The
-   note at sources/filipporuffini-corner-brackets.md matches the live file on every rule quoted
-   below, and `--grey-tertiary:#333` / `--grey-secondary:#777` are confirmed.
-   ONE THING THE RE-FETCH CHANGES, and it improved the provenance rather than breaking it: the
-   live main sheet contains NO `.corners__top::before` pseudo-element rules and NO
-   `--corners-large / --corners-small / --corner-style` properties. The note says so itself - that
-   half lives in an inline <style> / `.custom-corners.w-embed` block on the page, which this fetch
-   could not read. So this build uses the half I could verify myself: their FOUR-DIV variant
-   (`.p-corners` / `.p-corner.is--tl|tr|br|bl`), which hard-codes `1px solid var(--grey-tertiary)`
-   and needs none of the unverified variables.
-
-   TIER: Remixed. IDEA-ORIGIN: theirs.
-   VERBATIM: the elbow mechanism (a square box painting exactly two adjacent borders, no
-   background, pinned flush into a corner of a positioned parent), the four `is--tl/tr/br/bl`
-   inset patterns, the `.p-corners` absolute inset-0 overlay, the 2.5rem arm, the 1px stroke, and
-   `.corners`'s `padding: .9375rem`.
-   REMIX: `.corners`'s padding and `.p-corner`'s arms are two different rules from the same
-   stylesheet, composed here. Their own DOM pairs `.corners` with the pseudo-element variant.
-
-   WHY 2.5rem AND NOT THEIR BIG ARM: `--corners-large` is 6.25rem = 100px. On a 191 wide box the
-   top-left and top-right arms would need 200px and OVERLAP by 9px, and on the 200 tall box they
-   would meet exactly. `.p-corner`'s 2.5rem = 40px leaves a 111px gap across the top and 120px
-   down the side, so the elbows still read as elbows. The value is theirs; only the choice between
-   their sizes is ours, and it was made by arithmetic, not taste.
-
-   COLOUR: their `1px solid #333` is a deliberately quiet neutral on `#101010`. Mapped to
-   `--color-line` (the gold hairline, rgba(251,191,36,.26)) - the source note's own de-glow
-   paragraph recommends "a dim ember tone" for this palette, so the warm map is theirs too.
-
-   NOT CARRIED, both stated rather than silently dropped:
-     - their `.cursor-corners` hover-grow (arms expand 0.5rem -> 1rem on `.is--hovering`). That is
-       their CURSOR behaviour, not their picture-frame behaviour. Putting it on a portrait would
-       be inventing an interaction and citing a different element for it.
-     - their `<=768px` arm shrink (--corners-large 6.25 -> 3.75rem). There is no MEASURED mobile
-       reservation for this slot, so a breakpoint here would be a guess about a box nobody has
-       drawn yet.
-
-   MEASURES: padding 15px all round leaves 161 x 170; caption block 26.2px; image cell 161 x 143.8. */
+/* V2 - CORNER BRACKETS, a frame that is not a box. filipporuffini.com, re-verified live
+   2026-08-23. Remixed, theirs. Their four-div variant, because the pseudo-element half of their
+   system lives in an inline style block the fetch could not read - so this uses only what was
+   actually verified.
+   THE ARM IS 2.5rem BY ARITHMETIC, NOT TASTE: their large arm is 100px, and on a 191-wide box two
+   of those would overlap by 9px. 40px leaves a 111px gap and the elbows still read as elbows.
+   Their hover-grow is not carried - that is their CURSOR behaviour, not their frame's.
+   Image cell 161 x 143.8. See portrait-frame.md. */
 .fig.pf--brackets {
   display: grid;
   grid-template-rows: 1fr auto;
@@ -169,16 +83,15 @@
   padding: 0.9375rem;              /* verbatim, their .corners */
 }
 
-/* their .p-corners - the overlay is the full box, so the brackets sit on the OUTER edges while
-   the media stays inset by the padding above. `inset:0` resolves to the padding box of `.pf`,
-   which has no border, so it is exactly 191 x 200. */
+/* Their .p-corners. The overlay is the full box, so the brackets sit on the outer edges while
+   the media stays inset by the padding above. */
 .pf__corners {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-/* their .p-corner - 2.5rem square, no background, two adjacent borders only */
+/* Their .p-corner: a square with no background, painting two adjacent borders only. */
 .pf__corner {
   position: absolute;
   width: 2.5rem;
@@ -209,48 +122,17 @@
   border-left: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
 }
 
-/* V3 - NAMED WINDOW. The portrait as an object with a title bar.
-   SOURCE: 109ichiki.com, https://109ichiki.com/_astro/style.COBHKi4A.css
-   PREMISE RE-VERIFIED LIVE 2026-08-23. Every declaration in sources/109ichiki-dialog-window.md
-   matches the served file. The re-fetch also CLOSED A GAP the note left open: the note records
-   `font-size: var(--font-size-base-en)` without its value. It is `.9375rem` (15px), and that is
-   used verbatim below instead of a number I would otherwise have had to choose.
-
-   TIER: Remixed. IDEA-ORIGIN: theirs (Rod named 109ichiki's popup windows himself in D15/P64).
-   VERBATIM: the double border, `grid-template-rows: 2rem 1fr`, the header's
-   `display:flex; align-items:center; justify-content:space-between; padding: 0 .5rem 1px .625rem`
-   plus its 1px bottom rule, the title's `.9375rem` and `padding-bottom:1px` and
-   `pointer-events:none`, and the body's `position:relative; height:100%; overflow:hidden;
-   contain:paint`.
-
-   THE GRID ROW IS THE POINT, per the source note: `2rem 1fr` means the bar takes its height and
-   the body takes the rest at any window size, with no padding number to keep in sync. zutomayo
-   does the same job with an absolute bar plus a matching padding-top - two numbers that can drift.
-
-   FOUR DEPARTURES, all stated:
-     1. RADIUS SQUARED. Theirs is `.1875rem` outer and `2px` inner. Zero here, per the shape pass
-        (D20) - the same squaring decisions.css already applies to .kit-button and inline code.
-     2. THEIR PAGE IS LIGHT, OURS IS DARK. Their `--color-border` is a near-black on a white
-        `--color-bg`, and their inner border is `#fff` on that same white - so the outer line
-        READS and the inner line WHISPERS. That RELATIONSHIP is what transfers, not the values:
-        outer takes --color-line-soft, inner takes --color-line-faint.
-     3. NO SOLID GROUND. Their header and body both take `--color-bg`, which is their page ground.
-        Ours is a live three.js scene, so copying that would paint a fake ground over a real one.
-        The bar takes --color-panel (the house translucent panel, same token .d-relcard and
-        .d-callout use) and the body takes no fill at all - the image is the fill.
-     4. NO CLOSE BUTTON. Theirs is a real control on a real dismissible dialog, with a genuinely
-        good 2x invisible hit area. A portrait pinned in an About rail cannot be closed, so the X
-        would be an affordance that lies. Dropped rather than drawn as decoration.
-
-   ALSO NOT CARRIED: `cursor: grab` / `:active grabbing` (nothing drags in a fixed 225px rail),
-   and `[data-blink=true] { animation: blinking .1s step-end infinite }`, which is a 10Hz flash
-   and exceeds STYLE.md Section J's 3/sec cap. The source note flags that one itself.
-
-   NO CAPTION HERE, and that is the version's whole argument: the title bar already names the
-   subject, so a caption underneath would say it twice. That also buys the image 26.2px back.
-
-   MEASURES: 200 - 2 (outer borders) - 2 (inner borders) - 32 (the 2rem bar) = image cell
-   187 x 164 - the largest image of the three. */
+/* V3 - NAMED WINDOW, the portrait as an object with a title bar. THIS IS THE ONE ROD PICKED.
+   109ichiki.com, re-verified live 2026-08-23. Remixed, theirs, and Rod named their popup windows
+   himself (D15/P64). It is the portal's own dialog frame, so the portrait speaks the portal's
+   language instead of inventing a second frame vocabulary.
+   THE GRID ROW `2rem 1fr` IS THE POINT: the bar takes its height and the body takes the rest, at
+   any size, with no padding number to keep in sync.
+   Four departures: squared, their light-page border relationship remapped rather than their
+   values, no solid ground because ours is a live scene, and no close button because a portrait
+   pinned in a rail cannot be closed and the X would lie.
+   No caption, and that is the version's argument: the bar already names the subject.
+   Image cell 187 x 164, the largest of the three. See portrait-frame.md. */
 .pf--window {
   border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
   border-radius: 0;
@@ -273,13 +155,12 @@
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
 }
 .pf__name {
-  font-size: 0.9375rem;            /* verbatim - their --font-size-base-en, read live */
+  font-size: 0.9375rem;            /* verbatim; their --font-size-base-en, read live */
   padding-bottom: 1px;             /* verbatim */
   pointer-events: none;            /* verbatim */
   color: var(--color-text, #f5f3ef);
-  /* OURS. The usable title width is 191 - 2 - 2 - 10 - 8 = 169px. Their windows are 280-340 wide
-     so they never needed this; at 169px a longer name has to end somewhere chosen rather than
-     wherever the box happens to cut. */
+  /* Ours. The usable title width is 169px and their windows are 280-340, so they never needed
+     this. At 169 a long name has to end somewhere chosen. */
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -292,47 +173,24 @@
   contain: paint;                  /* verbatim */
 }
 
-/* *** PICKED 2026-08-23: V3, THE NAMED WINDOW, with the favicon standing in. ***
-   Rod: "portrait should just be named window use my fav icon for now I need to make an image at
-   some point."
-
-   So the FRAME is decided and the CONTENT is explicitly a placeholder. Those are two different
-   states and the component says so rather than letting a stand-in quietly become the design.
-
-   THE FAVICON IS AN APPROVED COMPONENT, not a new asset: extracted/components/favicon/, and it is
-   one of the very few things already approved on final-landing. Reusing it costs nothing and adds
-   no sourcing debt - which is exactly why it is the right stand-in.
-
-   THE WINDOW comes from the portal's own dialog frame (109ichiki), which Rod approved for the
-   portal on 2026-08-23. Reusing it here means the portrait speaks the same language as the portal
-   windows rather than inventing a second frame vocabulary for one image.
-
-   MARKED AS PROVISIONAL IN THE MARKUP, not just in a comment: `data-placeholder="true"` on the
-   image, so anything auditing the page can see the portrait is not final. A stand-in that looks
-   finished is how a placeholder ships by accident. */
+/* THE FRAME IS DECIDED AND THE CONTENT IS NOT. Rod 2026-08-23: "portrait should just be named
+   window use my fav icon for now I need to make an image at some point."
+   The favicon is an already-approved component, which is exactly why it is the right stand-in -
+   it adds no sourcing debt. `data-placeholder="true"` in the markup is what actually stops it
+   shipping by accident. See portrait-frame.md. */
 .pf--window .pf__media[data-placeholder="true"] {
   display: grid;
   place-items: center;
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
 }
-/* the favicon sits at a size that reads as a mark, not as a portrait - deliberately, so it cannot
-   be mistaken for the real image. */
-/* THE FAVICON FILLS THE WINDOW. Rod 2026-08-24: "make fav icon same size as the window".
-   The comment that used to sit above this said the favicon should read "as a mark, not as a
-   portrait - deliberately, so it cannot be mistaken for the real image", and pinned it to 64px in
-   a 221x164 hole. Rod has now asked for the opposite, and the later call wins: the stand-in should
-   occupy the frame the real portrait will occupy, so the composition he is judging is the one that
-   ships. It stays marked provisional by `data-placeholder="true"`, which is what actually stops it
-   shipping by accident - the small size was never the safeguard.
-   A first pass read "match the size" as matching the TOP BAR's chip-to-mark ratio and set 40px in
-   a 64px chip. Wrong reading, corrected here.
-   The mark keeps that 0.625 against the window's SHORT side, so it scales with the frame instead
-   of being a second number to maintain. `width:auto` because the source viewBox is 520x546, very
-   slightly taller than square - forcing both axes would squash it. */
+/* THE FAVICON FILLS THE WINDOW, Rod 2026-08-24: "make fav icon same size as the window". It used
+   to be pinned small so it could not be mistaken for the real portrait; the later call wins, and
+   the stand-in now occupies the frame the real image will. data-placeholder is the safeguard, not
+   the size. 62.5% is measured against the window's SHORT side so it scales with the frame.
+   `width: auto` because the source viewBox is 520x546 and forcing both axes would squash it. */
 .pf--window .pf__media[data-placeholder="true"] .favicon { width: 100%; height: 100%; }
 .pf--window .pf__media[data-placeholder="true"] .favicon__img { width: auto; height: 62.5%; }
 
-/* OPEN, and it is Rod's: the real portrait image does not exist yet. He said "I need to make an
-   image at some point." Until it does, this component is FRAME-APPROVED and CONTENT-PENDING, and
-   the two should not be conflated when the slot is marked on final-about. */
+/* STILL OPEN, and it is Rod's: the real portrait does not exist. Frame approved, content
+   pending, and the two must not be conflated when the slot is marked done. */
 }

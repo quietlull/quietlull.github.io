@@ -3,13 +3,12 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* top-bar — CHROME pick: norikura shell, RESTRUCTURED 2026-06-14 (Rod): 3-zone grid
-   [favicon + name] | [nav centered] | [slap toggles]. Nav = transparent pill, lit only on
-   active/hover (button-kit-primary "lit" look). Favicon styling = favicon component (dep). */
-/* DECLARED ON :root, NOT ON .top-bar (2026-08-18). The bar's height is not private to the bar -
-   the hero sizes itself as "the viewport minus the bar", and when that was a hard-coded 96px it
-   went wrong the moment the bar stacked to two rows. One source of truth, read by both.
-   Full bar height including its border = calc(var(--top-bar-height) + var(--top-bar-border) * 2). */
+/* top-bar - the norikura shell, restructured by Rod 2026-06-14 into three zones:
+   [mark + name] | [nav centred] | [toggles]. The nav pill is invisible at rest and lit by
+   dennissnellenberg's rising-circle fill, the same one the buttons use.
+   THESE TOKENS ARE ON :root, NOT ON .top-bar, and that matters. The hero sizes itself as "the
+   viewport minus the bar", so the height cannot be private to the bar. It was hard-coded 96px
+   once and broke the moment the bar stacked to two rows. See top-bar.md. */
 :root {
   --top-bar-height: 5.875rem; /* 94px, the padding box */
   --top-bar-padding-block: 1rem;
@@ -17,34 +16,22 @@
   --top-bar-border: 1px; /* the mark has to clear this too, or it stops 1px short of the edge */
 }
 
-/* STICKY LIVES HERE NOW, 2026-08-25. All four lab pages that carry this bar declared
-   `.top-bar{position:sticky;top:0;z-index:60}` in their OWN page style - four identical copies of
-   one behaviour, none of them in the component. Ported that way, the live bar scrolled off the top
-   because nothing on the live site repeated the incantation.
-   It belongs to the bar, not to whatever page hosts it. `sticky` also occupies real layout space,
-   which the pages below it depend on - `final-landing` subtracts the bar's height from its hero,
-   and About did not, which is why About's hero currently runs past the fold. */
+/* STICKY BELONGS TO THE BAR, not to the page hosting it. All four lab pages declared their own
+   identical copy, so when this was ported the live bar just scrolled away. Sticky also occupies
+   real layout space, which the pages below it depend on. See top-bar.md. */
 .top-bar {
   position: sticky;
   top: 0;
   z-index: var(--z-chrome, 60);
   display: grid;
-  /* NAV CENTRING FIX (Rod 2026-08-18: "the nav isnt centered"). It was not, and the old
-     `auto 1fr auto` is exactly why: the nav was centred inside its own middle COLUMN, and that
-     column is only centred on the page when the left and right zones are the same width. They are
-     not - at 1440 the left zone measures 341px and the toggles 429px, so the middle column ran
-     473..879, centre 676, against a viewport centre of 720. The nav sat 44px left of centre.
-     `1fr auto 1fr` makes the outer columns share the free space equally, so the auto middle column
-     is centred on the BAR by construction at every width. */
+  /* 1fr auto 1fr, NOT auto 1fr auto. The old version centred the nav inside its own column, and
+     that column only sits centre-page when the two outer zones match - they do not, so the nav
+     sat 44px left of centre. Equal outer columns centre it by construction. Rod 2026-08-18. */
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  /* SCALING (Rod 2026-08-18): the 100px gap is by far the widest thing in the bar, so it is the
-     first thing that gives. It holds at the baked 100px from 1440 up and then closes at 0.4x the
-     rate the viewport narrows, which keeps all three zones on ONE row down to ~1120px. */
   row-gap: 0;
-  /* the 1fr outer columns now create the breathing room, so the explicit gap only has to guarantee
-     a minimum separation. The old 100px is what made the spacing read as lopsided: it was added to
-     unequal columns. */
+  /* The 1fr columns make the breathing room, so this only has to guarantee a minimum. The old flat
+     100px is what read as lopsided - it was being added to columns that were already unequal. */
   column-gap: clamp(1rem, 4vw, 3rem);
   width: 100%;
   min-height: var(--top-bar-height);
@@ -54,10 +41,8 @@
   border: var(--top-bar-border) solid var(--color-line-faint);
 }
 
-/* UNBUNDLED 2026-08-16 (Rod): the mark is the click target that returns you to the landing pages,
-   so it gets its own place in the hierarchy instead of reading as one logo lockup with the name.
-   Two levers do that — distance and size contrast — so the gap opens and the mark scales up.
-   The name stays (Rod's call); only the pairing is broken. */
+/* The mark is unbundled from the name (Rod 2026-08-16): it is the way back to the landing pages,
+   so it gets its own place rather than reading as one logo lockup. The gap and the size do it. */
 .top-bar__left {
   display: flex;
   align-items: center;
@@ -65,13 +50,10 @@
   gap: 2.4rem;
 }
 
-/* FULL-BLEED MARK (Rod 2026-08-16): the favicon fills the bar's ENTIRE vertical height and is
-   anchored hard to the bar's left edge — no inset, no padding, no gap before it.
-   It does NOT make the bar taller. The bar's height is unchanged; the mark escapes the bar's own
-   padding with negative margins, so it spans edge to edge inside a 94px bar rather than sitting
-   in the 62px content box. An earlier pass capped the mark at the wordmark's line box to avoid
-   growing the bar — that cap was solving the wrong problem.
-   Square, per the 2026-08-11 shape pass. Image keeps the favicon component's 62.5% ratio. */
+/* FULL BLEED, and the negative margins are how. The mark fills the bar's whole height and hugs
+   its left edge by escaping the bar's own padding - it does NOT make the bar taller. An earlier
+   pass capped it at the wordmark's line box to avoid growing the bar, which solved the wrong
+   problem. Rod 2026-08-16. */
 .top-bar__left .favicon {
   width: calc(var(--top-bar-height) + var(--top-bar-border) * 2);
   height: calc(var(--top-bar-height) + var(--top-bar-border) * 2);
@@ -82,18 +64,18 @@
   flex: none;
 }
 
-/* The icon runs larger inside the white box than the favicon component's own 62.5% (Rod
-   2026-08-16), so the mark reads as artwork rather than an icon floating in a field. */
+/* Larger than the favicon component's own 62.5%, so it reads as artwork rather than an icon
+   floating in a field. Rod 2026-08-16. */
 .top-bar__left .favicon__img {
   width: 4.6rem; /* ~77% of the 96px mark */
   height: 4.6rem;
 }
 
 .top-bar__logo {
-  font-family: var(--font-hand); /* harumaki hero font (Rod) */
+  font-family: var(--font-hand); /* the harumaki hero font (Rod) */
   font-weight: 700;
-  font-size: 2.2rem; /* baked: name was too small (Rod) — was 1.6rem */
-  letter-spacing: 0; /* hand font wants no tracking */
+  font-size: 2.2rem; /* Rod: the name was too small at 1.6rem */
+  letter-spacing: 0; /* the hand font wants no tracking */
   color: var(--color-gold-deep);
   white-space: nowrap;
 }
@@ -101,36 +83,35 @@
 .top-bar__nav {
   display: flex;
   justify-self: center;
-  gap: 10px; /* baked from bench tune (was 0.4rem) */
-  margin-bottom: 2px; /* baked from bench tune */
+  gap: 10px;          /* baked from the bench tune */
+  margin-bottom: 2px; /* baked from the bench tune */
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  --bloom: 4.25; /* baked: nav-link hover glow size */
-  --tspeed: 480ms; /* baked: nav-link state transition speed */
+  --bloom: 4.25;   /* hover glow size, still tunable from the bench Tune panel */
+  --tspeed: 480ms; /* state transition speed, same */
 }
 
-/* invisible pill at rest; lit by a RISING-CIRCLE FILL from the bottom (dennissnellenberg .btn-fill,
-   the same as the buttons) on hover/active. overflow:hidden clips the circle to the pill. */
+/* An invisible pill at rest, lit by a rising circle from below on hover. overflow:hidden is what
+   clips that circle into a pill. */
 .top-bar__link {
   position: relative;
   overflow: hidden;
   z-index: 0;
   color: var(--color-muted);
   text-decoration: none;
-  padding: 0.45rem 1rem; /* T3-D: >=24px tap target */
+  padding: 0.45rem 1rem; /* T3-D: keeps the tap target at 24px or more */
   border-radius: 999px;
   border: 1px solid transparent;
   background: transparent;
-  /* --tspeed (transition speed) + --bloom (glow size) are tunable from the bench Tune panel */
   transition:
     color var(--tspeed, 0.35s) ease,
     border-color var(--tspeed, 0.35s) ease,
     box-shadow var(--tspeed, 0.35s) ease;
 }
 
-/* the fill: an oversized circle parked below, rises to 0 on hover/active */
+/* The fill: an oversized circle parked below that rises on hover. */
 .top-bar__link::before {
   content: '';
   position: absolute;
@@ -164,31 +145,21 @@
   flex-wrap: nowrap;
 }
 
-/* THE SCALING LADDER (Rod 2026-08-18). One rule holds at every tier: --top-bar-height is DERIVED
-   from the rows plus the block padding, so the full-bleed mark (a square of exactly that height)
-   matches the bar edge to edge no matter how the zones are stacked. Rows are fixed, never auto -
-   an auto row that grows when the toggles wrap is precisely the bug this fixes.
-
-   >=781px   one row     [mark+name | nav]               bar 96px
-   <=780px   two rows    [mark+name] / [nav]              bar 108px; block padding halves so the
-                                                          second row costs 12px, not 34
-   <=720px   as above, type and inline padding tightened
-   <=560px   three rows  [mark+name] / [toggles] / [nav]  bar 124px, mark goes INSET
-
-   BREAKPOINT MOVED 1200 -> 780 on 2026-08-22 (Rod: "the top bar has a bit of weird scaling where
-   when the tab is scaled down horizontally the top bar moves down a bit").
-   It was not scaling weirdly, it was STACKING for a zone that no longer exists. This ladder was
-   written while the bar still carried the three toggles - row 1 was literally "name + toggles".
-   D20 removed them, and nothing here was updated, so from 1200px down the nav dropped to its own
-   row and the bar grew 96 -> 108px, pushing every page's content down 12px.
-   780 is measured, not guessed: with the toggles gone the bar needs
-   264 (mark + name) + 382 (nav) + 64 (inline padding) = 710px on one row, so 780 leaves ~70px of
-   slack before the stack is genuinely required. */
+/* THE SCALING LADDER. Every tier DERIVES --top-bar-height from its rows plus the block padding,
+   so the full-bleed mark still matches the bar edge to edge however the zones stack. Rows are
+   fixed, never auto - an auto row that grows when a zone wraps is the exact bug this fixes.
+     >=781  one row     [mark+name | nav]                 96px
+     <=780  two rows    [mark+name] / [nav]              108px
+     <=720  as above, type and inline padding tightened
+     <=560  three rows  [mark+name] / [toggles] / [nav]  124px, mark goes inset
+   780 IS MEASURED, NOT GUESSED: the bar needs 710px on one row, so 780 leaves about 70px of slack.
+   It was 1200 until 2026-08-22, and that was stacking for the toggle zone D20 had already
+   removed - which is what Rod saw as "weird scaling". See top-bar.md. */
 @media (max-width: 780px) {
   :root {
-    --top-bar-row-1: 3.4rem; /* name (and toggles, on the bench copy that still has them) */
-    --top-bar-row-2: 2.2rem; /* nav */
-    --top-bar-padding-block: 0.5rem; /* two rows already carry the height; the padding gives way */
+    --top-bar-row-1: 3.4rem; /* the name, and the toggles on bench copies that still have them */
+    --top-bar-row-2: 2.2rem; /* the nav */
+    --top-bar-padding-block: 0.5rem; /* two rows carry the height now, so the padding gives way */
     --top-bar-height: calc(
       var(--top-bar-row-1) + var(--top-bar-row-2) + var(--top-bar-padding-block) * 2
     );
@@ -199,16 +170,9 @@
     grid-template-rows: var(--top-bar-row-1) var(--top-bar-row-2);
     column-gap: 1rem;
   }
-  /* THE NAME STACKS ON TOP OF THE NAV. Rod 2026-08-22: "once it runs out of space to place the
-     name and the nav bar side by side the name should just stack on top of the nav".
-     Before this the whole left zone spanned both rows, so the name sat vertically centred against
-     the full bar while the nav sat bottom-right, with column 2 row 1 empty. That empty cell was
-     the toggles' slot, and D20 took the toggles - so the layout was holding a gap for a thing that
-     no longer exists, which is what read as the weird spacing.
-
-     `display: contents` promotes the mark and the name out of .top-bar__left so each can take its
-     own grid cell, with no markup change. The mark keeps column 1 and still spans both rows, so it
-     stays full-bleed; the name and the nav stack in column 2, left-aligned to each other. */
+  /* The name stacks on top of the nav (Rod 2026-08-22). `display: contents` is what makes that
+     possible with no markup change: it promotes the mark and the name out of .top-bar__left so
+     each takes its own grid cell. The mark keeps column 1 across both rows and stays full-bleed. */
   .top-bar__left {
     display: contents;
   }
@@ -234,7 +198,7 @@
     margin-bottom: 0;
   }
   .top-bar__logo {
-    font-size: 1.9rem; /* has to sit inside row 1 */
+    font-size: 1.9rem; /* it has to sit inside row 1 */
   }
 }
 
@@ -276,20 +240,9 @@
     grid-template-columns: 1fr;
     grid-template-rows: var(--top-bar-row-1) var(--top-bar-row-2) var(--top-bar-row-3);
   }
-  /* THE SMALLEST TIER IS A CENTRED STACK: mark / name / nav, top to bottom.
-     Rod 2026-08-22: "minimum size should be nav bar with name above it and fav icon above that,
-     both should try to take up all the horizontal space that the nav bar gives."
-
-     What was here before was also toggle-era: its own comment reasoned about "the toggles need 356
-     of the 358px left on a 390px screen", and it put the MARK AND NAME together in row 1 with the
-     toggles in row 2. D20 removed the toggles, so row 2 was reserved for nothing and the name had
-     no row of its own. Every tier of this ladder was laid out around a zone that no longer exists.
-
-     .top-bar__left is display:contents from the 780 tier up, so the mark and the name are already
-     separate grid items and can each take a row without any markup change.
-
-     The NAV defines the width: it stretches the full content box and spreads its links, and the
-     mark and name centre on that same axis. */
+  /* The smallest tier is a centred stack: mark, name, nav, top to bottom (Rod 2026-08-22).
+     THE NAV DEFINES THE WIDTH - it stretches the full content box and spreads its links, and the
+     other two centre on that same axis. See top-bar.md. */
   .top-bar {
     justify-items: center;
   }
@@ -323,7 +276,9 @@
   }
 }
 
-/* T3-A: ghost the bar toggles at rest; only an ON feature glows (quiets design-report D2). */
+/* T3-A: the toggles are ghosted at rest and only an ON feature glows.
+   D20 removed the toggles from the design, so this block styles a zone the layout no longer
+   uses. It is on the merge cleanup list. */
 .top-bar .slap-toggle__control {
   border-color: var(--color-line-soft);
 }
