@@ -46,9 +46,16 @@
    makes them tabular at runtime. See pinGlyphAdvance.
    ─────────────────────────────────────────────────────────────────────────────────────────── */
 
+// FONT PATHS REPOINTED 2026-08-25, from `/redesign-lab/assets/fonts/` to `/assets/fonts/`. The lab
+// directory is gitignored, so the ported rules resolved on the machine that wrote them and 404'd
+// everywhere else. That is worse here than an ordinary missing asset: the boil pins each glyph's
+// advance in PIXELS at load and only re-measures on a window resize, so a face that fails to load
+// does not render as missing - it pins FALLBACK metrics and the wordmark stays permanently
+// mis-spaced, with nothing in the console to say why. Verify with
+// `document.fonts.check('1em Lineboil1')` in the page, never by reading this file.
 @font-face {
   font-family: "Lineboil1";
-  src: url("/redesign-lab/assets/fonts/Lineboil1-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/Lineboil1-Regular.ttf") format("truetype");
   font-display: block;
   ascent-override: 105%;
   descent-override: 38%;
@@ -56,7 +63,7 @@
 }
 @font-face {
   font-family: "Lineboil2";
-  src: url("/redesign-lab/assets/fonts/Lineboil2-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/Lineboil2-Regular.ttf") format("truetype");
   font-display: block;
   ascent-override: 105%;
   descent-override: 38%;
@@ -64,7 +71,7 @@
 }
 @font-face {
   font-family: "Lineboil3";
-  src: url("/redesign-lab/assets/fonts/Lineboil3-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/Lineboil3-Regular.ttf") format("truetype");
   font-display: block;
   ascent-override: 105%;
   descent-override: 38%;
@@ -88,7 +95,7 @@
    ─────────────────────────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: "Lineboil1";
-  src: url("/redesign-lab/assets/fonts/Numberboil1-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/Numberboil1-Regular.ttf") format("truetype");
   unicode-range: U+0030-0039;
   font-display: block;
   ascent-override: 105%;
@@ -97,7 +104,7 @@
 }
 @font-face {
   font-family: "Lineboil2";
-  src: url("/redesign-lab/assets/fonts/Numberboil2-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/Numberboil2-Regular.ttf") format("truetype");
   unicode-range: U+0030-0039;
   font-display: block;
   ascent-override: 105%;
@@ -106,7 +113,7 @@
 }
 @font-face {
   font-family: "Lineboil3";
-  src: url("/redesign-lab/assets/fonts/Numberboil3-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/Numberboil3-Regular.ttf") format("truetype");
   unicode-range: U+0030-0039;
   font-display: block;
   ascent-override: 105%;
