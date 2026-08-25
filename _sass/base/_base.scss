@@ -324,9 +324,13 @@ main {
   box-shadow: var(--card-shadow);
 }
 
-/* overwrite bootstrap muted */
-.text-muted {
-  color: var(--text-muted-color) !important;
+/* Feed Bootstrap our colour instead of fighting it. Its .text-muted is
+   `color: var(--bs-secondary-color) !important`, and since Bootstrap moved into a layer, important
+   declarations invert layer order and its !important now beats ours. Setting the variable it reads
+   wins without a specificity war, and it fixes every other Bootstrap utility that reads the same
+   name. Measured before: post descriptions at 1.16:1 against a 4.5 bar. */
+:root {
+  --bs-secondary-color: var(--text-muted-color);
 }
 
 /* Overwrite bootstrap tooltip */
