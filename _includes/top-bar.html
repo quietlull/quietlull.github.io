@@ -85,7 +85,9 @@
       {% endif %}
     {% endif %}
 
-    <a class="top-bar__link js-magnetic{% if page.url == '/ramblings/' %} is-active{% endif %}"
-       data-strength="40" href="{{ '/ramblings/' | relative_url }}">Ramblings</a>
+    {%- comment -%}
+      Ramblings came out of the bar 2026-08-26. Rod: it should be reached from the portal, not from
+      inside a section. The bar is for moving around the section you are already in.
+    {%- endcomment -%}
   </nav>
 </header>

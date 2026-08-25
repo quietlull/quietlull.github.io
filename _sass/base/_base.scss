@@ -55,11 +55,8 @@ body {
   color: var(--heading-color);
 }
 
-// F5: Amber focus outlines
-:focus-visible {
-  outline: 2px solid var(--gold-50);
-  outline-offset: 2px;
-}
+// The redesign owns the focus ring now - see base/_focus-ring.scss. This one was unlayered, so it
+// beat the layered version and drew a second gold ring outside the search field's own border.
 
 h1.dynamic-title {
   @include bp.lt(bp.get(lg)) {

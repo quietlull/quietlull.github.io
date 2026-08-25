@@ -224,8 +224,11 @@ function loadActive() {
   try {
     const raw = localStorage.getItem(ACTIVE_KEY);
     const ids = raw ? JSON.parse(raw) : [];
-    /* filtered against the real list, so a renamed or deleted achievement cannot resurrect itself */
-    return new Set(Array.isArray(ids) ? ids.filter((id) => ACHIEVEMENTS.some((a) => a.id === id)) : []);
+    /* Must be earned as well as real. Pins were saved against the lab's demo unlock set; live reads
+       the visitor's own, so a pin can outlive the unlock that allowed it and come back on a locked
+       tile. A locked achievement is never active. */
+    if (!Array.isArray(ids)) return new Set();
+    return new Set(ids.filter((id) => ACHIEVEMENTS.some((a) => a.id === id) && earnedSet.has(id)));
   } catch (e) {
     return new Set();   /* private mode, disabled storage, or corrupt JSON - degrade to nothing on */
   }

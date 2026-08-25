@@ -17,10 +17,13 @@
   }
 }
 
-a {
-  @extend %link-color;
-
-  text-decoration: none;
+// Layered, because unlayered beats every layer and this was quietly repainting components. The
+// active nav link came out gold on its own gold pill - same colour as its background, invisible.
+@layer reset {
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+  }
 }
 
 // LAYERED 2026-08-26, and it is the only layered rule in this file. `height: auto` is a RESET -
