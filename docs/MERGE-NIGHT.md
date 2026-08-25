@@ -462,3 +462,78 @@ editing it would corrupt the comparison; the third is my own backup.
 **It also declined to trim `bio-block.css`'s comments**, correctly citing D45 back at me - the rule
 says the reasoning moves to the component's `.md` first, and that component has no `.md` yet. Trim
 the file, not the record.
+
+---
+
+# The deletion: ~2,770 lines out, and Bootstrap was the real culprit
+
+12 commits. `_light.scss` gone entirely, breathing gone, the search subsystem gone, 8 dead includes,
+2 dead layouts, the old font stack repointed across 17 readers.
+
+## The blocker nobody had found
+
+**Step 1 could not have worked as written, and the reason was Bootstrap.** The ported components sit
+in `@layer components`. **Bootstrap is unlayered and emitted before us**, so IT was winning `body`
+colour and every rung of the type ladder - not the old partials I had blamed. Deleting the old rules
+alone just handed the win to Bootstrap: body text went to Bootstrap's `#212529` on a dark ground.
+
+Fixed by wrapping Bootstrap in a `vendor` layer rather than deleting anything, and by editing
+`purgecss.js` - the generator - rather than the machine-owned output it writes. Utilities keep
+`!important`, which inverts layer order, so `.d-none` and `.col-*` still win: measured `.col-lg-4` at
+392px and `.d-none` at `display:none` after the change.
+
+**Measured on real markup at 1440, not injected probes:** h1 **61.44**, h2 **38.4**, h3 **24**,
+h4 **15**, all weight 300, h2/h3 gold, everything in M PLUS Rounded 1c. Body `#F5F3EF` on the
+gradient ground. Zero elements running a breathe animation, and zero occurrences of the string in the
+built CSS. All 11 page types return 200 with bar and footer; only the portal has neither, by design.
+
+## MY SECOND MEASUREMENT ERROR OF THE NIGHT, and the agent caught it
+
+I told it six names in `foundations` were "genuinely undefined" - `--glow`, `--glow-soft`,
+`--gold-deep`, `--measure`, `--muted`, `--night2` - and that every rule reading them was dead.
+**All six are defined**, at `_foundations.scss:11-14`. They sit on multi-token lines
+(`--night:#070C23; --night2:#0a1030; --panel:#1c1a18;`) and my regex matched only the first name on
+each line.
+
+Same shape as the `backgroundColor` mistake an hour earlier: **I trusted one measurement without
+checking what it actually measured.** Six times tonight a wrong value stayed silent; twice tonight I
+invented a problem that was not there. Both come from the same place.
+
+## Four more "dead" things that are alive
+
+The audit's line counts were wrong and the agent measured rather than trusting them:
+
+- **`_blogspreview.scss`, `_aboutmecontainer.scss`, `_projectspreview.scss` are LIVE** - 11, 23 and
+  25 classes rendering in built HTML, against a claim of "301 of 325 dead". Left alone.
+- **`_home.scss` is live** - its `#post-list` renders on 2 pages, even though `_layouts/home.html`
+  is dead.
+- **`mode-toggle.js` is on the hot path**, called in every bundle. Not deleted - though with
+  `_light.scss` gone it is now a no-op in a second way, since there is no light theme to flip to.
+- **The 8 `--prompt-*` tokens look dead to any literal search** because `mixins.scss` builds their
+  names by interpolation. Kept.
+
+## Three judgement calls to overturn if you disagree
+
+- **The page glow lost its 16s cycle, not its existence.** Held at the `.8` opacity its own
+  reduced-motion branch already used. Deleting it outright would strip the redesign's atmosphere, and
+  drift-magnet is the social circles, not a page ground.
+- **`--breathe-hue` was RENAMED, not deleted.** 64 live glow declarations read it; deleting the name
+  would have dropped every one of those shadows silently. Now `--glow-hue`.
+- **`.landing-title` lost its gold gradient fill.** It used `-webkit-text-fill-color: transparent`,
+  which masked the ladder's colour outright - the ladder could not reach h1 while it stood.
+
+## Deliberately not done
+
+- **`_post.scss`** (claimed "489 of 1011 dead") untouched. Given how wrong the other counts proved,
+  it needs the same per-selector measurement first.
+- **Five of the six card collisions untouched, and this is the important one.** `post-card`,
+  `card-body`, `card-meta`, `card-link`, `takeaway-text` have replacements only under `.merged-cards`
+  - **which appears in zero live markup.** Deleting the old rules now would leave `/tech-art/` and
+  `/game-design/` cards **unstyled, not redesigned.** Only `card-title` had a live-reaching
+  replacement, so only that one moved. The rest need the markup port first.
+
+## One thing about the history
+
+Two agents committed to this branch at once. My `367d748` swept up eight of the deletion agent's file
+removals under a message about fonts. **Nothing is missing from the tree, but a few commits contain
+more than their messages say.** Worth knowing before reading the log as a narrative.
