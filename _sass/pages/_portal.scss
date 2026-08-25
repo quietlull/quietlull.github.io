@@ -1,212 +1,77 @@
-@use '../abstracts/variables' as v;
-@use '../abstracts/breakpoints' as bp;
-@use '../abstracts/mixins' as mx;
+// The portal at `/`, ported 2026-08-26 from the inline <style> of `redesign-lab/final-portal.html`.
+// The old glass-door page it replaced is gone; nothing here is shared with it.
+// UNLAYERED, like every other page partial, so it beats `@layer components` (P200 - pages may
+// override). Only two rules use that: `.pwin` and `.centre__mark`, and both say so below.
 
-// ============================================================================
-// PORTAL PAGE
-// ============================================================================
-
-#portal-page {
+// The page is a viewport-locked column: the field takes whatever the page does not.
+.pground {
   display: flex;
+  overflow: hidden;
   flex-direction: column;
-  align-items: center;
-  min-height: 60vh;
-  padding: 2rem 0;
-
+  height: 100svh;
 }
 
-// ============================================================================
-// PORTAL HEADER — title, subtitle, greeting
-// ============================================================================
-
-.portal-header {
-  // P7: Time-of-day greeting
-  .portal-greeting {
-    font-size: 0.85rem;
-    color: var(--text-muted-color);
-    letter-spacing: 0.05em;
-    text-transform: lowercase;
-    margin-bottom: 0.75rem;
-    font-family: var(--font-mono);
-    animation: fade-in-up 0.6s ease-out 0.1s both;
-  }
-
-  .portal-title {
-    font-size: 3rem;
-    font-weight: 700;
-    font-family: var(--font-display);
-    letter-spacing: -0.02em;
-    margin-bottom: 0.5rem;
-    animation: fade-in-up 0.6s ease-out 0.25s both;
-
-    @include bp.lte(bp.get(md)) {
-      font-size: 2.25rem;
-    }
-  }
-
-  .portal-subtitle {
-    font-size: 1.25rem;
-    color: var(--text-muted-color);
-    margin-bottom: 0;
-    animation: fade-in-up 0.6s ease-out 0.45s both;
-  }
-}
-
-// ============================================================================
-// PORTAL DOORS — two glass cards
-// ============================================================================
-
-.portal-doors {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  width: 100%;
-  max-width: 900px;
-
-  @include bp.lte(bp.get(md)) {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-}
-
-.portal-door {
-  @include mx.glass;
-  border-radius: v.$radius-xl;
-  padding: 3rem 2.5rem;
-  text-decoration: none;
-  color: inherit;
-  display: block;
+// `min-height: 0` or the flex item refuses to shrink past its content and the scrollbar comes back.
+.field {
   position: relative;
-  overflow: visible;
-  @include mx.transition(transform, border-color, box-shadow);
-
-  // P5: Entrance stagger — doors appear after header
-  animation: fade-in-up 0.6s ease-out 0.7s both;
-
-  // The game-design door keeps its warm glow; both doors lost the breathing half of their
-  // animation (D43) and kept the entrance stagger.
-  &.portal-door-game-design {
-    --glow-hue: 249, 115, 22; --glow-border-hue: 234, 88, 12;
-    animation: fade-in-up 0.6s ease-out 0.9s both;
-  }
-
-  &:hover {
-    transform: translateY(-4px);
-    border-color: rgba(var(--glow-border-hue), 0.45) !important;
-    box-shadow: var(--glass-shadow), 0 8px 32px var(--shadow-a30),
-      0 0 18px rgba(var(--glow-hue), 0.20) !important;
-    color: inherit;
-    text-decoration: none;
-  }
-
-
-  @include bp.lte(bp.get(md)) {
-    padding: 2rem 1.5rem;
-  }
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  margin: 51px 0 0;
 }
 
-.door-content {
+// The portal is the one page with no glow behind it - the three.js scene is the whole background.
+body:has(.pground)::before {
+  content: none;
+}
+
+// OVERRIDES the component. `_portal-window.scss` sets `position: relative` and fixed fallback sizes
+// so the window can render alone on the bench; here the drag engine owns the position and the size.
+.pwin {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: var(--win-w);
+  height: var(--win-h);
+  will-change: transform;
+}
+
+// 272x165 is the area the Space Jam layout reserves for the centre. `--pscale` comes from the JS.
+.centre {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(272px * var(--pscale, 1));
+  height: calc(165px * var(--pscale, 1));
+  transform: translate(-50%, -50%);
+}
+
+// OVERRIDES `.lb` in `@layer components`, which would otherwise pick the boil's own colour.
+.centre__mark {
+  display: block;
+  color: var(--h0-color);
+  font-size: clamp(1.6rem, 3.5vw, 6rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   text-align: center;
+  text-transform: uppercase;
 }
 
-.door-icon {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  opacity: 0.9;
-
-  .portal-door-tech-art & {
-    color: var(--accent-color, var(--gold-90));
-  }
-
-  .portal-door-game-design & {
-    color: var(--accent-warm, var(--orange-a90));
-  }
+// Absolutely positioned against the same centre point, so it costs the window field zero height.
+// 500px is measured: at 600px it collides with the ArtStation window at 1280 and 1440x900.
+.centre__welcome {
+  position: absolute;
+  top: calc(50% + 3.2rem);
+  left: calc(50% + 2px);
+  width: max-content;
+  max-width: 500px;
+  margin: 0;
+  color: var(--h3-color);
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.35;
+  pointer-events: none;
+  text-align: center;
+  transform: translateX(-50%);
 }
-
-.door-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.door-description {
-  color: var(--text-muted-color);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.door-cta {
-  display: inline-block;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--link-color);
-  @include mx.transition(color);
-
-  .portal-door:hover & {
-    color: var(--link-hover-color);
-  }
-}
-
-// ============================================================================
-// PORTAL EXTRAS — ramblings link
-// ============================================================================
-
-.portal-extras {
-  // P5: Entrance stagger — ramblings link last
-  animation: fade-in-up 0.6s ease-out 1.1s both;
-
-  .portal-side-link {
-    display: inline-flex;
-    align-items: center;
-    color: var(--text-muted-color);
-    text-decoration: none;
-    font-size: 0.9rem;
-    padding: 1.3rem 1.5rem;
-    border-radius: 2rem;
-    border: 1px solid var(--glass-border);
-    background: rgba(15, 23, 42, 0.9);
-    @include mx.transition(color, border-color, background-color);
-
-    .coffee-steam-wrap {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-
-      .fa-coffee {
-        font-size: 1.4rem;
-        z-index: 2;
-      }
-
-      .steam-svg {
-        position: absolute;
-        bottom: 80%;
-        left: 50%;
-        transform: translateX(-55%);
-        width: 30px;
-        height: 20px;
-        overflow: hidden;
-        mask-image: linear-gradient(to top, transparent, black 20%, black 80%, transparent);
-
-        .steam-line {
-          fill: none;
-          stroke: var(--text-color);
-          stroke-width: 1.5px;
-          stroke-linecap: round;
-          opacity: 0.4;
-          animation: steam-flow-infinite 2s linear infinite;
-
-          &.s1 { animation-duration: 2s; }
-          &.s2 { animation-duration: 2s; }
-          &.s3 { animation-duration: 2s; }
-        }
-      }
-    }
-  }
-}
-
-@keyframes steam-flow-infinite {
-  from { transform: translateY(0); }
-  to { transform: translateY(-20px); }
-}
-

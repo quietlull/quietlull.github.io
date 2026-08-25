@@ -75,6 +75,14 @@ layout: compress
       {% include top-bar.html lang=lang %}
     {% endif %}
 
+    {% comment %}
+      The portal skips the content column. Its drag engine reads the field's own width for the
+      bounce edges, so a 1140px container would put a wall in the middle of the page.
+    {% endcomment %}
+    {% if page.layout == 'portal' %}
+      <main id="main-content" aria-label="Main Content">{{ content }}</main>
+    {% else %}
+
     <div id="main-wrapper" class="d-flex justify-content-center">
       <div class="container d-flex flex-column px-xxl-5">
         <div class="row flex-grow-1" id="main-content">
@@ -123,12 +131,21 @@ layout: compress
 
       </div>
 
-      <aside aria-label="Scroll to Top">
-        <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow" aria-label="Scroll to top">
-          <i class="fas fa-angle-up"></i>
-        </button>
-      </aside>
     </div>
+
+    {% endif %}
+
+    {% comment %}
+      Every page needs this button, even the portal, which never scrolls. `back2top()` in
+      `commons.min.js` reads it with no null guard, and it throws before `initMouseTrail()` runs, so
+      a page without it loses the sparkler too. It is `position: fixed` and hidden until you scroll,
+      so it costs the portal nothing. Moved out of `#main-wrapper` so there is one copy.
+    {% endcomment %}
+    <aside aria-label="Scroll to Top">
+      <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow" aria-label="Scroll to top">
+        <i class="fas fa-angle-up"></i>
+      </button>
+    </aside>
 
     {% comment %}
       THE FOOTER SITS OUTSIDE THE CONTENT COLUMN, on Rod's direct instruction 2026-08-23: "it
