@@ -1,0 +1,67 @@
+{% comment %}
+  ============================================================================================
+  FOOTER-LINE - ported from redesign-lab/extracted/components/footer-line/ on 2026-08-25.
+
+  Rod 2026-08-22: "i actually really like the way we do our lab footers i think we should do
+  them all like this." ORIGIN: ROD. It is the lab's `.labtag` treatment promoted from tooling
+  into a real element - ours, not sourced, and it must never be filed as though a reference
+  site supplied it.
+
+  A FOOTNOTE, NOT A SECOND NAVIGATION. The top bar already carries the nav, so columns and
+  headings here would only duplicate it. That is the reason it is one quiet line.
+
+  ONE COPY, WHICH IS THE POINT OF THE INCLUDE. Six inline copies used to exist in the lab, one
+  per final page, and they had already drifted - the landing was still on the old padding at
+  .66rem while the other five were on the corrected values. Rod 2026-08-23: "for the footer put
+  it in the workbench so we can get it right across the site." Do not inline a variant of this
+  in a layout; change it here.
+
+  It REPLACES `_includes/footer.html` (the copyright line), which is left on disk untouched.
+  THE COPYRIGHT NOTICE IS GONE WITH IT and that is a real loss, not a tidy-up - it was
+  `© <year> <name>` plus the locale copyright tooltip. The lab footer has no slot for it and
+  inventing one is a layout decision. Flagged for Rod rather than quietly restored.
+  ============================================================================================
+{% endcomment %}
+
+{% assign nav_section = page.section | default: '' %}
+
+{% if nav_section != '' %}
+  {% assign landing_url = '/' | append: nav_section | append: '/' %}
+  {% assign projects_url = landing_url | append: 'projects/' %}
+  {% assign about_url = landing_url | append: 'about/' %}
+{% else %}
+  {% assign landing_url = '/' %}
+{% endif %}
+
+<div class="footer-wrap">
+  <footer class="footer-line">
+    {% comment %}
+      The way back, first item, exactly where the lab tag puts its own "&larr; lab".
+      Rod 2026-08-23: "for pages that arent the landing add the back arrow to landing too."
+      The landing does not get one - it would link to itself.
+    {% endcomment %}
+    {% if page.url != landing_url %}
+      <a class="footer-line__item footer-line__back" href="{{ landing_url | relative_url }}">&larr;
+        {%- if nav_section != '' %} Landing{% else %} Home{% endif -%}
+      </a>
+      <a class="footer-line__item footer-line__name" href="{{ landing_url | relative_url }}">Rodney Fan</a>
+    {% else %}
+      <span class="footer-line__item footer-line__name">Rodney Fan</span>
+    {% endif %}
+
+    {% comment %}
+      Same section-scoping as the bar: there is no site-wide /projects/ or /about/, so off a
+      section page those two have no destination and are left out rather than pointed at a guess.
+      The three social links the landing once carried are NOT here - Rod 2026-08-22 (P106): "not
+      to have all these links". All three were href="#", which is a dead control in a costume.
+      The socials live on the portal.
+    {% endcomment %}
+    {% if nav_section != '' %}
+      <a class="footer-line__item" href="{{ projects_url | relative_url }}">Projects</a>
+      <a class="footer-line__item" href="{{ about_url | relative_url }}">About</a>
+    {% endif %}
+    <a class="footer-line__item" href="{{ '/ramblings/' | relative_url }}">Ramblings</a>
+
+    <span class="footer-line__item footer-line__end">Built by hand</span>
+  </footer>
+</div>

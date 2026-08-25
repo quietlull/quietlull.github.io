@@ -1,0 +1,92 @@
+{% comment %}
+  ============================================================================================
+  TOP BAR - the redesign's, ported from redesign-lab/extracted/components/top-bar/ on 2026-08-25.
+
+  Structure is the component's, unchanged: favicon + name LEFT, nav CENTRED, nothing right.
+  The toggles the lab component still carries are NOT here - they were removed 2026-08-18
+  (D20/D21), one combined control is to govern scene + motion and where it lives is still open.
+  Their absence is what makes the nav genuinely centred, so this is not a trim, it is the layout.
+
+  IT REPLACES `_includes/topbar.html`, which is left on disk untouched. That file renders a
+  261.61px three-row Chirpy header - avatar, site title, tagline, icon nav, four switches, the
+  contact row. Restoring it is one line in `_layouts/default.html`.
+
+  WHAT WENT WITH THE OLD BAR, said out loud because each is a control that no longer exists:
+    #mode-toggle       light/dark flip. `modeWatcher()` no-ops without it (mode-toggle.js:8).
+    #breathe-toggle    `breatheToggle()` returns early (breathe-toggle.js:13), so a saved
+                       "breathing off" preference is no longer applied. Anyone who had it off
+                       gets breathing back until the combined control lands.
+    #sparkler-toggle   the sparkler itself still runs - it is `initMouseTrail()` in every
+                       bundle - but it can no longer be switched off from the page.
+    #fireworks-toggle  already section-about-only, and already `.reward-locked`. Rod retired
+                       unlocks outright (P77), so nothing is lost.
+    contact icons      the socials. They live on the portal, which is where Rod put them.
+  All four JS entry points were checked and every one is null-safe, so nothing throws.
+
+  THE JS IS NOT OPTIONAL. `assets/js/chrome.js` runs the magnets and boils the wordmark.
+  Shipping this markup without it is exactly how the lab's projects page once rendered a bar
+  Rod called "clearly broken".
+  ============================================================================================
+{% endcomment %}
+
+{% assign nav_section = page.section | default: '' %}
+
+{% if nav_section != '' %}
+  {% assign home_url = '/' | append: nav_section | append: '/' %}
+  {% assign projects_url = home_url | append: 'projects/' %}
+  {% assign about_url = home_url | append: 'about/' %}
+{% else %}
+  {% assign home_url = '/' %}
+{% endif %}
+
+<header class="top-bar">
+  <div class="top-bar__left">
+    <a class="favicon favicon--square" href="{{ home_url | relative_url }}" aria-label="Home">
+      <span class="favicon__magnet js-magnetic" data-strength="50" data-magnet-clamp="6">
+        <img class="favicon__img" src="{{ '/assets/img/favicons/favicon.svg' | relative_url }}" alt="" width="24" height="24">
+      </span>
+    </a>
+    {% comment %}
+      The wordmark boils - it is the site mark at a smaller size (Rod 2026-08-23: "add the line
+      boil text to the top bar as well"). `.lb` is what line-boil.js adds itself; it is written
+      here too so the pinned-glyph CSS applies on the first paint rather than one frame late.
+
+      It stays a <span>, not a link, because that is what the component is and the ported CSS is
+      written against it. Making it an <a> would hand it the site's link colour and hover from a
+      rule nobody wrote for it. The favicon beside it is already the way home.
+    {% endcomment %}
+    <span class="top-bar__logo lb">RODNEY FAN</span>
+  </div>
+
+  <nav class="top-bar__nav" aria-label="Primary">
+    <a class="top-bar__link js-magnetic{% if page.url == home_url %} is-active{% endif %}"
+       data-strength="40" href="{{ home_url | relative_url }}">Home</a>
+
+    {% if nav_section != '' %}
+      {% comment %}
+        Projects and About are SECTION-SCOPED on this site - there is a /tech-art/projects/ and a
+        /game-design/projects/ and no /projects/ at all. Off a section page there is no single
+        destination for either, and picking one would be inventing a link. So outside a section
+        the bar carries Home and Ramblings only, and the section doors on the portal are how you
+        get to the other two. The lab's four-item bar is the IN-SECTION case.
+      {% endcomment %}
+      <a class="top-bar__link js-magnetic{% if page.url == projects_url or page.url contains '/posts/' %} is-active{% endif %}"
+         data-strength="40" href="{{ projects_url | relative_url }}">Projects</a>
+      <a class="top-bar__link js-magnetic{% if page.url == about_url %} is-active{% endif %}"
+         data-strength="40" href="{{ about_url | relative_url }}">About</a>
+
+      {% if nav_section == 'game-design' %}
+        {% comment %}
+          A fifth item, only here. `_tabs/blogs.md` is a real page at /game-design/blogs/ and the
+          old bar was its only route in - dropping it to keep the lab's tidy four would orphan it.
+          Rod gets to decide whether the page stays; silently stranding it is not that decision.
+        {% endcomment %}
+        <a class="top-bar__link js-magnetic{% if page.url == '/game-design/blogs/' %} is-active{% endif %}"
+           data-strength="40" href="{{ '/game-design/blogs/' | relative_url }}">Blogs</a>
+      {% endif %}
+    {% endif %}
+
+    <a class="top-bar__link js-magnetic{% if page.url == '/ramblings/' %} is-active{% endif %}"
+       data-strength="40" href="{{ '/ramblings/' | relative_url }}">Ramblings</a>
+  </nav>
+</header>
