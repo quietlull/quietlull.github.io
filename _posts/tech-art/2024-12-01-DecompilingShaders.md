@@ -22,7 +22,7 @@ At this point in time it's becoming increasingly easy to decompile shaders with 
 
 With that being said let's look at ZZZ and their toon shader implementation and see how we can implement some parts of their shader for ourselves. 
 
-### So where do we start?
+## So where do we start?
 
 ![ShaderDumps](FirstImage.jpg)
 
@@ -96,7 +96,7 @@ r11.yzw = r0.xxx * r11.yzw + float3(0.0399999991,0.0399999991,0.0399999991);
 
 For `t6` we can figure out each channel by tracing where they end up in the final output. The shader I got doesn’t use transparency but if it did, `t6.r` would be opacity, this is obvious if you look at the texture itself but this post assumes that we don't. `t6.g` acts as an anti-specular mask, zeroing out specular wherever it’s applied. `t6.b` marks where rimlight appears, deduced from how it’s multiplied into the rim lighting calculations at the end of the shader.
 
-### What I Learned
+## What I Learned
 
 Putting it all together, here’s what each texture slot does:
 

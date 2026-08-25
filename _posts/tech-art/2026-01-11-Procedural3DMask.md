@@ -26,7 +26,7 @@ Then I thought what if I added more? What if instead of just a single mask I mad
 A system that can be used easily in ShaderGraph, can pass arbitrary values, can be animated, can be scaled, can be used for basically whatever you need and can be added to any ShaderGraph or .shader material you would like.
 
 
-### How It Works
+## How It Works
 
 The basic premise is devilishly simple: three steps.
 
@@ -61,7 +61,7 @@ Here's an example using some Voronoi noise fed into the rim output
 
 Here are some quick examples of what I used this system for in this specific project
 
-### Wall Transparency
+## Wall Transparency
 
 ![Wall transparency using P3DM mask](MaskTransparency.gif)
 
@@ -71,7 +71,7 @@ You can see how this effect is just a couple of nodes!
 
 ![ShaderGraph sphere mask nodes](Sphere.jpg)
 
-### Terrain Blending
+## Terrain Blending
 
 For my terrain system I added something called type, effectively type is just a float value but when 2 types of differing value overlap they pass another type value into the shader. Using this I'm able to pass zone information and determine which index from the 2D texture array I want to use. Here's a showcase of the 5 zone types in the game and how they can form a different zone and use a different texture index for each zone.
 
@@ -82,7 +82,7 @@ Here you can see a little example of using it with my grass system as well, This
 <video src="{{ '/assets/media/P3DM/P3DMHero.mp4' | relative_url }}" autoplay muted loop playsinline aria-label="Using the zones to drive reveals, color changes and more!"></video>
 
 
-### Other Use Cases
+## Other Use Cases
 
 It's an understatement to say this tool is flexible. If you watch some of Sakura Rabbit's videos you'll see it everywhere. Here's a few ideas that you could use it for but I haven't tried personally yet. 
 - Want to create a path that floats up as you go near it? use P3DM as a lerp for vertex offsets and attach the P3DMObject to the player. 
@@ -93,6 +93,6 @@ It's an understatement to say this tool is flexible. If you watch some of Sakura
 
 Honestly there are so many uses for this system that the question becomes what isn't this useful for? I would implore those who try this for themselves to see what other additions you could make to the system for extra effects and use cases that I never thought of. 
 
-### What I Learned
+## What I Learned
 
 It's not always the crazy ultra specific tools that bring the most value to the table. It's often something small that lets you do a lot of different specific things that ends up being the most useful. Also sometimes it's good to think about how else a particular tool can be used and how it fits into a toolbox rather than looking at it alone. Sometimes a hammer is just a hammer but look a bit closer and one might find a nail remover, crowbar, nutcracker and all sorts of use cases packed into one.
