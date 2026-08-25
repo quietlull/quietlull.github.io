@@ -16,6 +16,7 @@
 import { init as initTopBar } from './components/top-bar.js';
 import { init as initMagnetic } from './components/drift-magnet.js';
 import { initLineBoil } from './components/line-boil.js';
+import { init as initCursorGlow } from './components/cursor-glow.js';
 
 /* Both, deliberately. `initTopBar` reaches `initMagnetic` through the slap-toggle chain today, but
    drift-magnet is a PAGE-level engine - every `.js-magnetic` and `[data-drift]` element on any
@@ -30,3 +31,7 @@ initMagnetic(document);
    that away: it pins each glyph's advance in px from a real measurement, and measuring before the
    faces arrive pins the FALLBACK's metrics, permanently, with no error anywhere. */
 document.querySelectorAll('.top-bar__logo').forEach((mark) => initLineBoil(mark));
+
+/* The glow follows the cursor. It needs the .cursorglow div in default.html - the CSS shipped
+   without it, so Rod's tuned values were styling an element that did not exist. */
+initCursorGlow(document);
