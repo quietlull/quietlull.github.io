@@ -566,3 +566,50 @@ Five of the six known class collisions cannot be resolved until the markup lands
 
 **So the projects and landing ports are what unblock the last of the old CSS.** Until they land, the
 old card rules have to stay, and the port is not finishable.
+
+---
+
+# The comment trim: 7,362 lines to 4,821, and not one byte of CSS moved
+
+**35% out, rendered output byte-identical.** Verified per-file rather than project-wide - each
+stylesheet compiled alone at the pre-trim commit and again now, `--style=compressed` so comments are
+stripped and only real CSS is compared, then `cmp`. All 29 reported identical. Per-file was necessary
+because other agents were editing concurrently and a global baseline would have been polluted by
+their work.
+
+| | before | after | saved |
+|---|---|---|---|
+| 26 ported components | 6,250 | 4,127 | 2,123 |
+| `_decisions.scss` | 932 | 574 | 358 |
+| foundations + focus-ring | 155 | 98 | 57 |
+| index headers | 81 | 69 | 12 |
+
+**The single biggest win was one paragraph repeated 27 times.** An identical 24-line lecture about
+cascade layers opened every ported file - saying nothing D36 and `TRAPS.md` do not already say. Each
+file now keeps its `@layer` order statement plus one line saying never to drop it. **That alone was
+485 lines.**
+
+## Where the reasoning went
+
+**All 26 components now have a `.md`. Fourteen were created** - the brief named three as missing and
+eleven more had none either. `decisions.css` got its own note with all 56 comment blocks verbatim, in
+file order, each headed by the rule it sat above. No citation was deleted anywhere.
+
+## What stayed in the code, at one line each
+
+Anything that stops the next person breaking something. The load-bearing ones are worth knowing they
+exist: `min-width:0` on the portal title bar is the only thing stopping the close button being
+clipped; `user-drag:none` on the portal link is what allows centre-dragging; `.kit-tag { border: 0 }`
+prevents 44 double bevels on one page; `.es[hidden]` stops the empty state rendering over a full
+list; `--aw-glow-r` not `--glow-r`, because reading the wrong name silently ate Rod's tuned 170px.
+
+Deliberate ABSENCES stayed flagged too. `section-head`, `merged-card` and `entry-row` all look
+half-empty because size, weight and colour were removed so the ladder could reach them. Each now says
+"do not put them back" in one line.
+
+## A citation is not just circular, it is dead
+
+`project-cards-expensive` cites yannesidibe's `.glow`. **That page returns 404 and the live site has
+nothing matching.** It affects three components. `achievement-wall` partly rescues it - the RIM
+technique has a real, Rod-pasted source at `codepen.io/john_r_muir/pen/ExzJjqL` - so the blanket Slop
+stamp is wrong for that one technique. **Needs a decision.**
