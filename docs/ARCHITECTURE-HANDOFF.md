@@ -1,5 +1,11 @@
 # Architecture handoff
 
+> **UPDATED 2026-08-26, after the markup port.** All six pages are ported. Component reachability
+> went **8 of 26 to 19 of 26**. The seven still unreachable need markup that does not exist yet:
+> `bio-block`, `callout-family`, `figure-real`, `reference-links`, `slap-toggle`, `washi-tape`,
+> `cursor-glow`. Any line below claiming 18 stylesheets render nowhere is stale.
+
+
 Written for the agent who picks up the optimization and architecture restructure cold, with no
 memory of the merge nights. Everything here was measured against the repo, not recalled.
 
@@ -38,7 +44,7 @@ M PLUS Rounded 1c / Caveat / IBM Plex Mono), and it says `_sass/` holds 38 files
    `card-meta`, `card-link`, `takeaway-text`. The old side wins all six.
 5. The element-level collisions (`body`, `h1`-`h4`) were fixed tonight in `61ede67` and `9f6d826`.
    The type ladder now reaches the page. Do not re-break it.
-6. 18 of the 26 ported component stylesheets style markup that exists on **zero** live pages. They
+6. 7 of the 26 ported component stylesheets style markup that exists on **zero** live pages. They
    compile into every page and paint nothing. That is the port being half done, not dead code.
 7. The six `final-*` pages in `redesign-lab/` are the design. Their components and chrome are
    ported. The pages themselves are not.
@@ -725,7 +731,7 @@ These are not preferences. Each one is written because breaking it cost a sessio
 `chrome.js` module) and their **tokens**. The pages themselves have not been turned into Jekyll
 layouts.
 
-That is why 18 of the 26 ported component stylesheets currently paint nothing. The CSS is waiting
+That is why 7 of the 26 ported component stylesheets currently paint nothing. The CSS is waiting
 for markup that only exists inside those six HTML files.
 
 Each page also carries page-level CSS in its own `<style>` block that the port did not cover.
