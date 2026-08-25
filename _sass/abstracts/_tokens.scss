@@ -137,6 +137,7 @@
   --tier-silver-light: #f2f3f5;
   --tier-gold-dark: #a9740f;
   --tier-gold-light: #ffe6a3;
+
   /* Prismatic is the only tier that is not one hue - in TFT prismatic is the ABSENCE of one. Its
      ramp is gold -> ember -> pink -> sky -> green -> gold, and the first two ARE --color-gold and
      --color-glow, spelled out as #fbbf24 and #ff6a00 in the lab; they now reference the tokens.
@@ -145,6 +146,7 @@
   --tier-prismatic-pink: #e879a6;
   --tier-prismatic-sky: #7dd3fc;
   --tier-prismatic-green: #86efac;
+
   /* A rim is ONE colour, so the prismatic tile cannot be prismatic at its edge. It takes the
      brightest pair on the ladder instead of pretending one of its hues is the whole thing. */
   --tier-prismatic-rim: #eaf4ff;
@@ -157,6 +159,7 @@
      Now that both have names, deciding they are the same colour is a one-line change. */
   --color-line-card: rgba(245, 158, 11, 0.14);
   --color-line-panel: rgba(245, 158, 11, 0.15);
+
   /* The panel fill that pairs with --color-line-panel. NOT YET REFERENCED by anything in _sass:
      its three consumers (final-about, final-post, final-ramblings) are page-level CSS that this
      port did not cover. Named now because it is the single most-copied literal in the lab. */
@@ -167,10 +170,12 @@
      darkens a hue in color-mix. Deliberately NOT used for the `linear-gradient(#000 0 0)` inside
      -webkit-mask, where the black is not paint - it is "fully opaque", and any opaque colour does
      the same job. Naming it there would invite someone to change it and quietly break six masks. */
-  --color-black: #000;
+  --color-black: #000000;
+
   /* White, and only where white is the point: the favicon's backing plate (so the black
      lantern-cluster icon reads on the dark bar) and the softer half of the prismatic rim. */
   --color-white: #ffffff;
+
   /* THESE TWO ARE THE ONLY NAMES IN THIS PROMOTED BLOCK THAT THE OLD SITE ALSO DEFINES -
      themes/_dark.scss:506-507 and themes/_light.scss:361-362, as #000000 and #ffffff. Same colours,
      so nothing renders differently whichever wins, and this `:root` outranks their `html` selector
