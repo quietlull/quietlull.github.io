@@ -15,7 +15,11 @@ holding directory you can approve or reverse in one command.
 
 ## Branch
 
-`refactor/01-tokens`, cut from `main` at `019c2fa`. Your `main` is untouched.
+`refactor/01-tokens`, cut from `main` at `019c2fa`.
+
+**MERGED INTO `main` AND PUSHED on 2026-08-26 at `ff72c0e`**, after the deploy checks came back
+clean. The branch is pushed as well, so every individual step is still there to bisect. Anything
+below written as "on the branch" is now on `main` too.
 
 ## What is REVERSIBLE, and how
 

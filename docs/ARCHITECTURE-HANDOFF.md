@@ -9,7 +9,8 @@
 Written for the agent who picks up the optimization and architecture restructure cold, with no
 memory of the merge nights. Everything here was measured against the repo, not recalled.
 
-**Measured 2026-08-26 at commit `0e5b8ca` on branch `refactor/01-tokens`.**
+**Measured 2026-08-26 at commit `0e5b8ca` on branch `refactor/01-tokens`. That branch has since
+merged into `main` at `ff72c0e` and is pushed — so this describes `main` now.**
 
 **Read this before you trust a line count.** A second agent was compressing comments across
 `_sass/` while this was written, and HEAD moved five times during the measurement. The `_sass/`

@@ -5,7 +5,10 @@ was measured that morning, not recalled.
 
 ## Where things stand in one screen
 
-- **Branch `refactor/01-tokens`, 72 commits, `main` untouched.** Build green, all 53 pages 200.
+- **MERGED AND PUSHED TO `main`** at `ff72c0e`, 2026-08-26. 156 commits. `refactor/01-tokens` is
+  pushed too, so the individual steps stay available to bisect.
+- **Build green, all 53 pages 200**, and the deploy's own checks pass: 0 broken links, 0 broken
+  resources, 0 images missing alt, 0 duplicate ids.
 - **All six pages ported** - portal, landing, about, projects, post, ramblings. They are the redesign
   now, not the old site with new CSS available.
 - **The type ladder reaches real markup site-wide**: h1 61.44 / h2 38.4 / h3 24 / h4 15, weight 300,
