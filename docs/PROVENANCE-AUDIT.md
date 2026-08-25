@@ -26,10 +26,12 @@ background.**
 
 Two things make this smaller than it sounds, and both are worth saying:
 
-- **D-something on breathing already says it dies.** `docs/DECISIONS.md:509` reads "The live site's
-  breathing dies when the new theme replaces `_sass/`" and "breathing is ABSENT from everything
-  built in the lab". `_foundations.scss` reintroduced a breathing bloom on merge night. So this is
-  a decision conflict as well as a provenance gap, and the later decision says delete.
+- **Rod already killed it by name, and the deletion pass missed this copy.** `DECISIONS.md:509`
+  says "The live site's breathing dies when the new theme replaces `_sass/`", and **D43
+  (`DECISIONS.md:1467`, Rod, 2026-08-26) closes it outright**: *"breathing is dead its listed in
+  memory many times"*, with "REJECTED: porting breathing forward. It has no place in the new
+  design." Commit `0068529` then deleted the breathing **JavaScript**. The ported CSS bloom
+  survived it. So this is not an open design question, it is one file the sweep did not reach.
 - **It is one selector.** Deleting `body::before` and its reduced-motion twin clears the whole
   finding. Cheapest fix on the list.
 
@@ -295,7 +297,7 @@ circular citation pointing inside this repo".
 
 | # | debt | cheapest clear |
 |---|---|---|
-| 1 | **The breathing bloom is Slop and is on every live page** | Delete `body::before` and its `prefers-reduced-motion` twin from `_sass/base/_foundations.scss:27` and `:40`. `DECISIONS.md:509` already says breathing dies at the port, so this is executing a decision, not making one. Two rules, no design call. |
+| 1 | **The breathing bloom is Slop and is on every live page** | Delete `body::before` and its `prefers-reduced-motion` twin from `_sass/base/_foundations.scss:27` and `:40`, plus the `breathe-bg` keyframes. **D43 already decided this**, and commit `0068529` deleted the breathing JS while leaving this. Two rules, no design call. |
 | 2 | **The yannesidibe verbatim diff was never pinned, and now cannot be** | The page is 404. Stop chasing it. Retire the citation, promote `sources/john-r-muir-glow-border.md` to primary (it is already verbatim and pinned), and add brittanychiang as the second. Edit is to the ledger row and to two file headers, no code moves. |
 | 3 | **The rim material pass is idea-origin claude and is not in the Idea column** | One-word edit: `element-tracker.md:45` Idea `theirs` becomes `theirs + claude`, or split the row. Until the column carries it, the cap cannot be computed. |
 | 4 | **The cap cannot be computed at all** | Add the four admitted Claude-origin items as real rows with Idea `claude`, then recompute. The prose already exists; it just is not in the table. Half an hour of ledger work, and it turns a permanent open question into a number. |
@@ -321,6 +323,23 @@ circular citation pointing inside this repo".
 | **empty-state** | its own header corrects `rework-hana-ledger.md:53`, which filed it "Remixed / PatternFly (source pulled)" when no `sources/patternfly-*.md` existed | "Empty state \| **Slop** \| theirs? \| -" | `.md:104` "Tier: Remixed. Idea origin: theirs (PatternFly) + Rod (copy)" | **The file and the `.md`.** The claim was checked against a live fetch and survived; the ledger row predates the check. |
 | **achievement-wall** | a seven-part honest breakdown in the CSS and JS headers | **no row** | no `.md` | **The file, and it needs promoting into a row.** |
 | **`element-tracker.md` rollup** | n/a | "Total tracked elements: ~60 ... True 2 / Remixed 5 / Slop rest", self-marked STALE since 2026-06-09 | n/a | **Nothing.** Recount: 103 rows, 46 Slop / 32 Remixed / 12 True / 2 OURS. `STATUS.md:117`'s 93 rows and 30 Remixed are also behind. |
+
+---
+
+## 9. RE-VERIFIED AGAINST HEAD AFTER THE COMMENT PASS
+
+Three commits landed under this audit while it ran (`61ede67`, `9f6d826`, `389b18a`, `0068529`).
+Every finding above was re-checked against the tree afterwards. Two details moved, neither
+conclusion did.
+
+| what moved | now |
+|---|---|
+| `_button-kit.scss` lost the `!! CIRCULAR CITATION` banner block in `389b18a` | **The substance survived and improved.** The file now reads "SLOP UNTIL RESOURCED. The shapes cite rework-stephan.html, which is our own build ... A citation pointing inside this repo is not a source", and it correctly names the rising fill as dennissnellenberg rather than as button-kit's own. The banner form is gone; the honesty is not. It still counts as circular on its shapes line. |
+| Grepping `!! CIRCULAR CITATION` in the lab now returns **13 files, not 12** | `button-kit.md` carries the banner too. It is a note, not a stylesheet. **The stylesheet count is still 12** and the list in section 3 is unchanged. |
+
+`_sass/components/_project-cards-expensive.scss` is now the only file in `_sass/` carrying the
+banner block verbatim. The breathing bloom in `_foundations.scss` is still there, two references,
+after `0068529` removed the breathing JavaScript.
 
 ---
 
