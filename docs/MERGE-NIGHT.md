@@ -537,3 +537,32 @@ The audit's line counts were wrong and the agent measured rather than trusting t
 Two agents committed to this branch at once. My `367d748` swept up eight of the deletion agent's file
 removals under a message about fonts. **Nothing is missing from the tree, but a few commits contain
 more than their messages say.** Worth knowing before reading the log as a narrative.
+
+---
+
+# THE REDESIGN IS LIVE ON REAL URLS
+
+Two pages are ported and rendering, measured on the running site, not the lab:
+
+**`/tech-art/about/`** - 29 achievement tiles, the detail panel, the portrait frame, both section
+heads, and **the word "Rod" boiling across 3 glyph cells** on your own hand-drawn faces. H1 "About
+me" at **61.44px / weight 300 / M PLUS Rounded 1c**. Top bar, footer and scene present. No overflow.
+
+**`/ramblings/`** - the entry rows, the search field, and **real posts**: Umamusume and Ludum Dare.
+H1 at 61.44/300.
+
+**That second one also fixed a standing bug.** `/ramblings/` used to render **zero** posts, because
+the layout filtered on the tag `personal` and no post carries it. The port reads the tag that
+actually exists, so both real ramblings show for the first time.
+
+**Four pages left**: portal, projects, post, landing.
+
+## Why the remaining four matter more than "four of six"
+
+Five of the six known class collisions cannot be resolved until the markup lands. `post-card`,
+`card-body`, `card-meta`, `card-link` and `takeaway-text` have replacements only under
+`.merged-cards`, **which appears in zero live markup today.** Deleting the old rules now would leave
+`/tech-art/` and `/game-design/` cards **unstyled rather than redesigned.**
+
+**So the projects and landing ports are what unblock the last of the old CSS.** Until they land, the
+old card rules have to stay, and the port is not finishable.
