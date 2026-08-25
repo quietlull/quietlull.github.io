@@ -1,6 +1,6 @@
 ---
 title: "2D Physics Compute"
-description: "2D physics simulation powered by compute shaders — collision detection, spatial hashing, and particle dynamics all running on the GPU."
+description: "2D physics simulation powered by compute shaders, collision detection, spatial hashing, and particle dynamics all running on the GPU."
 author: Rod
 date: 2026-03-19 12:00:00 +0800
 categories: [project]
@@ -16,7 +16,7 @@ wip: true
 takeaway: 
 image:
   path: assets/media/UnfinishedProjects/PhysicsCompute_Crystals.mp4
-  alt: 2D Physics Compute — particle pickups scattered across dungeon
+  alt: 2D Physics Compute, particle pickups scattered across dungeon
 media_subpath: '/assets/media/2DPhysicsCompute'
 ---
 

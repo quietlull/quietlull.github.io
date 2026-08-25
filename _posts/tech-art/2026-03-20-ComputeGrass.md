@@ -45,8 +45,8 @@ To start off this is how i cull and create grass as you can see in the RT the al
 ``` hlsl
 float4 rt = _GrassRT.SampleLevel(sampler_linear_clamp, uv, 0);
 
-bool inCreation = rt.a > 0.5; // A channel — does grass exist here at all?
-bool isCulled   = rt.b > 0.5; // B channel — is a structure suppressing it?
+bool inCreation = rt.a > 0.5; // A channel, does grass exist here at all?
+bool isCulled   = rt.b > 0.5; // B channel, is a structure suppressing it?
 
 if (!inCreation || isCulled)
 {
@@ -116,7 +116,7 @@ Lastly I add some noise, and offsets to the blade orientation to make it feel a 
     // Blade Orientation 
     float  angle  = Hash(bladePos.xz) * 6.28318;
     float2 rightA = float2( cos(angle), sin(angle));
-    float2 rightB = float2(-sin(angle), cos(angle)); // 90° — only used in X mode
+    float2 rightB = float2(-sin(angle), cos(angle)); // 90°, only used in X mode
     float  halfW  = _BladeWidth * 0.5;
 ```
 ## Fixing the Twitching

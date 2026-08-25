@@ -1,6 +1,6 @@
 ---
 title: "Compute Display Shaders + Dot Matrix"
-description: "A compute-driven dot matrix display system in Unity — world-space pixel snapping, direct render texture drawing, and framerate-independent decay."
+description: "A compute-driven dot matrix display system in Unity, world-space pixel snapping, direct render texture drawing, and framerate-independent decay."
 author: Rod
 date: 2026-03-17 12:00:00 +0800
 categories: [project]
@@ -16,7 +16,7 @@ wip: true
 takeaway: 
 image:
   path: assets/media/UnfinishedProjects/DisplayShader_Interaction.mp4
-  alt: Compute Display Shader — interaction with objects
+  alt: Compute Display Shader, interaction with objects
 media_subpath: '/assets/media/ComputeDisplayShaders'
 ---
 

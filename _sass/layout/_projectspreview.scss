@@ -219,7 +219,8 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
   padding-top: 0.5rem;
   border-top: 1px solid var(--main-border-color);
   margin-top: auto;
-  color: var(--text-muted-color);
+  // No colour here. This file is unlayered so it beat merged-card's gold, and the Role / Engine
+  // line came out muted stone instead. Everything else about these cards already matched.
 }
 
 // Takeaway overlay — covers entire card body on hover

@@ -1,6 +1,6 @@
 ---
 title: "Unreal Rigging Contract"
-description: "Professional character rigging contract in Unreal Engine 5 — skeleton setup, control rigs, IK solvers, and animation blueprint integration."
+description: "Professional character rigging contract in Unreal Engine 5, skeleton setup, control rigs, IK solvers, and animation blueprint integration."
 author: Rod
 date: 2026-03-12 12:00:00 +0800
 categories: [project]
