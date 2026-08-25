@@ -445,3 +445,25 @@ keeps the UA default. `foundations.css`'s `*` reset only covers box-sizing, marg
 control styling - `border`, `background`, `font`, `appearance` - or it is two components sharing
 one class name.
 
+## A component that renders visible text where it should render nothing
+
+**Symptom:** a ported component looks catastrophic on its new page - text everywhere, overlapping,
+spilling out of small boxes - while every measurement of it comes back clean.
+
+**Cause:** the component used a utility class it did not define. `.visually-hidden` (or any
+`.sr-only`-style helper) lived in the BENCH PAGE'S own `<style>`, so on the bench it worked and on
+the destination page the rule did not exist and every hidden label rendered as body text.
+Happened 2026-08-25 with `achievement-wall` on `final-about.html`: 29 accessible labels became
+visible titles inside 64px tiles.
+
+**Why the usual checks miss it:** nothing is wrong with any box. Sizes, tiers, cascade layers and
+computed styles are all correct - the text is simply *visible*, which is a property of the rule that
+does not exist rather than of any rule that does. Three rounds of computed-style and bounding-box
+checks reported "fine".
+
+**What finds it in one call:** `document.elementFromPoint(x, y)` over the middle of the component.
+It answers "what is actually painted here", which computed styles cannot. It returned
+`SPAN.visually-hidden` and named the bug immediately.
+
+**The rule:** a component may not depend on a class it does not define. Utility classes go in the
+component's own file under its own namespace, never in the bench page's chrome.

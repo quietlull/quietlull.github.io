@@ -5,11 +5,34 @@ rather than grown. History lives in [CHANGELOG.md](CHANGELOG.md), decisions in
 [DECISIONS.md](DECISIONS.md), open work in [REQUESTS.md](REQUESTS.md) (OPEN table only, done rows
 are phantoms). If this disagrees with the code, the code wins and this file is the thing to fix.
 
-Last compiled 2026-08-24. Every number below was measured that day, not estimated.
+Last compiled 2026-08-25. Every number below was measured that day, not estimated.
 
 ---
 
-## Where the six pages are: 25 of 102 slots approved
+## MERGE PREP HAS STARTED (2026-08-25)
+
+Rod: *"Get ready to start merging to main ... we can remove most of the dead and useless pages in
+redesign lab. keep references, blockouts, finals, merge places where we test components and delete
+things we no longer need."* A branch per major refactor.
+
+**The port is blocked on one thing and it is not taste: THERE IS NO TOKEN MAPPING.** Counted
+2026-08-25, not taken from this file's older claim of 270: **39 lab tokens against 317 live, two
+names in common, no mapping file anywhere.** Every lab component names lab tokens; dropped into the
+live site those resolve to FALLBACKS and render wrong **without erroring**. That exact failure
+happened four times in one day - `--color-pink`, `--aw-orbit`, `--aw-glow-r`, and a `.visually-hidden`
+that only existed on a bench page. Porting 25 components against an unmapped token set is that
+multiplied. **Branch 1 is the token bridge**; nothing else can safely precede it.
+
+Two decisions are Rod's and gate the work: **D22 must lift** (`_sass/`, `_layouts/`, `_includes/`,
+`_javascript/`, `_config.yml` have been off limits all session, and the port is precisely the work
+that rule forbids), and **the direction of the mapping** - lab names renamed to live, or live
+replaced by lab. That one word decides whether the diff lands in `redesign-lab/` or in `_sass/`.
+
+**`redesign-lab/` is gitignored**, so nothing in it is recoverable after deletion. Every removal in
+the cleanup needs explicit sign-off, and provenance carriers (`element-tracker.md`, `sources/`,
+`reference-gallery.html`, `analysis/`, every component `.md`) are not deletion candidates at all.
+
+## Where the six pages are: 24 of 80 slots approved
 
 | page | slots | approved | greybox left | state |
 |---|---|---|---|---|
@@ -18,14 +41,51 @@ Last compiled 2026-08-24. Every number below was measured that day, not estimate
 | `final-post` | 19 | **4** | 0 | Fully built. Carries Rod's own rail tune |
 | `final-projects` | 24 | **2** | **0** | Rebuilt from the live page. Cards, search and filter pills all real |
 | `final-ramblings` | 12 | **1** | 0 | Real post data, real search, Rod's own tune |
-| `final-about` | 26 | **1** | **24** | **THE ONLY SURFACE STILL NEEDING CONSTRUCTION** |
+| `final-about` | 7 | **3** | 1 | **BUILT.** Collapsed to one page, top bar, boiling "Rod", real achievement wall, Rod's own tune |
 
 **Five of the six are built and waiting on judgement, not on work.** Rod, 2026-08-24: *"after all
 these changes about me is the main thing that needs to be fixed."* A full assembly spec for it
-already exists and is unused - collapse the two parallel slot sets onto the 3b (`?v=spacious`)
-variant, portrait uses the favicon as a marked placeholder, and the backing wraps portrait + bio
-with the section head bare (his pick). The trophy WALL stays unbuilt: no source, and he has said it
-needs a design conversation first.
+already exists and is unused - collapse onto the 3b (`?v=spacious`) variant, portrait uses the
+favicon as a marked placeholder, and the backing wraps portrait + bio with the section head bare
+(his pick). The trophy WALL stays unbuilt: no source, and he has said it needs a design
+conversation first.
+
+**ABOUT'S OWN COUNT DOES NOT MEAN WHAT THE OTHER FIVE'S MEAN, and an earlier version of this table
+took it at face value.** `final-about.html` still holds **all three variant layouts in the DOM at
+once** - `.col--panels` (13 slots), `.col--spacious` (4) and `.col--strip` (8) - with a `#vbar`
+switcher and a `?v=` script that adds the body class at runtime, so `<body>` carries no static
+class. The page's `#state` panel counts **every** `[data-slot]` in the document, so it reports "1 of
+26 approved, 24 greybox" by counting the same slots two and three times over in variants Rod already
+rejected. **The picked 3b variant has 4 slots, and two of them already carry real prose from
+`tech-art/about.md`.** What is actually unbuilt there is the achievement wall and the bottom scene
+block, and the wall is the one he parked pending a design conversation. The single "approved" slot
+is the footer, which sits outside all three subtrees.
+
+So About is one deletion away from being comparable to the other five, not twenty-four builds away.
+Collapsing it is the job; the numbers only look enormous because the page is three pages.
+
+## THE FIVE TUNERS, and why they exist
+
+Rod tunes his own numbers. Each drives the REAL page rather than a copy and emits paste-ready CSS
+naming the file and line.
+
+- **`hero-ratios.html`** - the landing hero.
+- **`rail-ratios.html`** - the post rail.
+- **`rambling-ratios.html`** - the ramblings rows.
+- **`about-ratios.html`** (2026-08-25) - 42 dials. Deliberately has NO heading-size dial: those come
+  from the ladder, and a page-level size override is the exact fault fixed on that page a day
+  earlier.
+- **`cursor-ratios.html`** (2026-08-25) - 24 dials, glow and sparkler together. **Not framed**, on
+  purpose: these follow the pointer, so inside a frame the cursor spends half its time over frame
+  chrome and the glow clips to the frame box instead of the viewport.
+- **`portal-ratios.html`** (2026-08-25) - drag-to-place. The windows are not positioned in CSS at
+  all; a script converts `data-x/-y` into a fraction of each window's travel range and writes the
+  transform every frame, so the tuner feeds the script its inputs and inverts the maths on a drop.
+
+**THE RULE ALL NEW ONES FOLLOW, because `rambling-ratios.html` breaks it:** derive every default from
+the rendered page, emit only what moved, and write nothing until a dial moves. That tuner stores
+hand-transcribed presets which have drifted - **11 of its 19 dials no longer match its page, so
+merely opening it overwrites the real page with stale numbers.** Fixing it is outstanding.
 
 ## The three tuners, and why they exist
 
@@ -98,7 +158,13 @@ shares H2's gold; H4 stays silver, so the recession happens one rung later.
 
 **The ramblings entry titles are ON the ladder now**, at the H3 rung, keeping their `<h2>` tag on
 purpose - retagging would leave the page running h1 straight to h3, the WCAG heading-order failure
-D31 ordered fixed on the post. **About's bio headings at 20px and 16.8px are the last ones off it.**
+D31 ordered fixed on the post. **About's bio headings are ON the ladder as of 2026-08-24** (Rod: "remember to make it follow the
+ladder like every other final page"), at 38.4 and 24. **The fault was in two places and the page was
+only one of them:** `decisions.css` listed `.bio-h` in the H4 rung while mapping it to the H2 role
+further down - the ladder contradicting itself in one file - and the H4 rung won on specificity, so
+deleting the page's unlayered override alone would have dropped the heading to 15px silver rather
+than raising it. Both ends fixed. The ladder's 72px heading rhythm was NOT taken: it drops the bio
+heading 72px below the portrait beside it, and that is a layout move Rod did not ask for.
 
 ## The fault that keeps recurring
 

@@ -30,10 +30,13 @@ is the single count.
 | `final-post` | **4** | 19 | Rod's eye. Zero greybox, every component real |
 | `final-projects` | **2** | 24 | Rod's eye. Rebuilt from the live page, cards carry real fields |
 | `final-ramblings` | **1** | 12 | Rod's eye. Real post data, 6 rows marked as substitutes |
-| `final-about` | **1** | 26 | **the only surface still needing construction** |
+| `final-about` | 0 | **4** | **still the 3-variant comparison page.** 26 was the counter tallying all three variants at once |
 
-**Four of the six are built and waiting on judgement, not on work.** About is the exception: 24
-greybox marks, two parallel slot sets, and only 5 component stylesheets loaded. A full assembly spec
+**Four of the six are built and waiting on judgement, not on work.** About is the exception, but by
+less than this file used to claim: it holds THREE parallel slot sets, not two, and its own `#state`
+panel counts every `[data-slot]` across all of them, so the old "24 greybox / 1 of 26" was the two
+rejected variants being counted alongside the picked one. The picked 3b set is **4 slots, two
+already carrying real copy**. A full assembly spec
 exists for it.
 
 **Count correction, 2026-08-23.** These per-page totals were briefly overwritten with an inflated set
@@ -304,6 +307,14 @@ The live site is **nine surfaces**, and three layouts each serve two subjects:
 46. Decide on the commented-out email and rss entries in `_data/contact.yml`; resolve the tech-art
     demo reel (`demo_reel` id or `show_reel: false`). *(Rod, small)*
 47. Strip em dashes from the 7 pieces of shipped user-facing copy. *(claude, small)*
+
+    **PORT HAZARD, and it will silently undo itself.** `tech-art/about.md` **lines 14 and 18** are
+    two of those seven, and the About bio on `redesign-lab/final-about.html` was transcribed from
+    them verbatim. Rod approved removing them on 2026-08-24, but D22 puts the live source off limits,
+    so **only the lab page was fixed** (`final-about.html:426`, `:428`). The two files now disagree
+    on purpose. Anyone who re-copies that bio from the source at merge time puts both dashes back and
+    nothing will error. **Fix the source in the same pass as the port, or copy the bio from the lab
+    page rather than from `about.md`.**
 
 ## Housekeeping (any time, blocks nothing)
 
