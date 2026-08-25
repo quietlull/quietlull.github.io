@@ -434,3 +434,94 @@ each file's header, because a header comment is not a checklist.
 
 **The `.slot` entries are the useful part of this list.** A slot left at port time is an element
 that was never built, so this doubles as the "what is still missing" check before the port runs.
+
+---
+
+# THE PRE-MERGE INVENTORY (2026-08-25) - measured, nothing deleted
+
+**The constraint that governs every line: `redesign-lab/` is gitignored.** No blobs, no reflog, no
+stash behind any of its 800 files. A wrong `rm` is permanent, so every DELETE needs Rod's per-line
+sign-off. `archive/versions/` (54 scene snapshots) is the ONLY version history the lab has, which is
+why it sits in ASK and not DELETE.
+
+| bucket | files | MB |
+|---|---|---|
+| KEEP | 588 | 85.84 |
+| MERGE | 38 | 0.78 |
+| DELETE | 51 | 17.29 |
+| ASK | 96 | 14.24 |
+| plus `_ref-emissive-dissolve/.git` | 27 | 16.84 |
+
+**Images are 82% of the lab** - 125 png + 60 jpg = 110.4 MB of 118. Every code file in the place is
+under 8 MB combined. Any conversation about lab size is really a conversation about screenshots.
+
+## The KEEP closure: 65 files
+
+Anchored on the six finals plus the tuners, following only real load edges. Two dependencies live
+OUTSIDE the lab and must survive the port: `/assets/js/dist/three-background-scene.min.js` (843 KB,
+5 of 6 finals) and `/assets/lib/fontawesome-subset/css/all.min.css` (projects only).
+
+**There are SIX tuners, not five.** `hero-ratios.html` is the landing-hero tuner and it is the one
+that is a REPLICA rather than an iframe - so it holds no load edge to `final-landing.html` and a
+naive reachability graph drops it. KEEP.
+
+## Three traps: files that look dead and are not
+
+1. **`extracted/bench/bench.js:209`** builds its import path by string from `registry.js`. **33
+   components are reachable only through it.** A static graph calls every one an orphan.
+2. **`layer-diff.html:137`** rewrites hrefs into `original-css/` at runtime. **All 61 frozen
+   stylesheets are reachable only that way** - zero static references exist.
+3. **`.newsecs.html`** holds two `SPLIT` sections for `text-decisions.html`. The colour one landed;
+   **the tape one never did.** It carries unmerged content.
+
+## The bench gallery ALREADY EXISTS
+
+33 components are already fragments mounted into one page by `extracted/index.html` +
+`bench/registry.js`, deep-linkable at `?c=<id>`, with the spacing tuner and palette editor attached.
+18 more are standalone pages; 9 have no HTML at all (CSS-only, exercised through the finals).
+
+**So: extend the registry, do not build a second gallery.** Convert each standalone page to a
+fragment, register it, verify at `?c=<id>`, and only THEN delete the standalone - never both in one
+step. `component-review.html` retires last.
+
+Three of the 18 have no `.md` and looked like the sole provenance record; **verified they are not** -
+each one's citation is in its `.css` header and resolves into `sources/`, which is KEEP.
+
+## `original-css/` MUST OUTLIVE THE MERGE
+
+Gate 5 lists it under "delete after the port". **That is backwards and the file's own reasoning
+proves it:** the lab has no git, so this frozen set is the only mechanism for diffing a lab
+regression - and the merge is exactly when regressions appear. Deleting it at the start of the port
+removes the rollback path at the moment of maximum need. 510 KB. Retire it only once the six ported
+surfaces render correctly live.
+
+## Corrections to this file
+
+- **14 circular-citation components, not 12.** Counted today: button-kit, card-tests, code-block,
+  draw-in-icons, empty-state, footer-line, hero, list-controls, post-header,
+  project-cards-expensive, quote-block, reel-band, site-footer, tldr-callout.
+- **`STYLE.md` points at `redesign-lab/aggregate.html`, which moved to `archive/` on 2026-08-18.**
+  Already broken, unrelated to this sweep, fix it before deleting anything else so the doc set is
+  clean going in.
+- `docs/CHANGELOG.md` references two `archive/` directories that are in DELETE. A changelog is a
+  historical record so a dangling reference there is acceptable - but decide it deliberately.
+
+## One wording ambiguity that decides 38 files
+
+Rod: *"keep references, blockouts, finals, merge places where we test components and delete things
+we no longer need."* That parses two ways - **keep** the bench, or **merge** the bench. The
+inventory assumed merge. One sentence from him settles it.
+
+## Order, safe to stop after any step
+
+1. `_ref-emissive-dissolve/.git/` - 16.84 MB, a clone of a public repo, zero risk, biggest win
+2. `_ref-emissive-dissolve/public/cubeMap*/` - 16.75 MB of demo skybox; `src/` + README stay
+3. `archive/` minus `versions/` - already-archived rejects
+4. the 20 top-level superseded pages
+5. fix the `STYLE.md` pointer
+6. consolidate the bench into the registry, one component at a time
+7. **the token mapping** - not a deletion, can run in parallel, and nothing ports without it
+8. port the six finals
+9. only now: `original-css/`, `layer-diff.html`, `prose-collisions.html`
+10. **never without a direct answer**: `archive/versions/`, the 25 unused reference shots, the
+    `rework-*`/`ref-*` pages (the circular-citation trail), `.newsecs.html`

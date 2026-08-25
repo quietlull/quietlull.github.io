@@ -1383,3 +1383,84 @@ project rather than theoretical:
 **SCOPE.** This is a REFACTOR-stage change, not a now-change. The lab is mid-merge and rewriting
 the component boundaries under it would invalidate picks Rod has already made. Recorded here so
 the refactor starts from it rather than rediscovering it. See docs/REFACTOR-PLAN.md.
+
+## D40 - D22 is LIFTED, and the port runs audit-first (2026-08-25, ROD)
+
+*"d22 is officially lifted I do want you to clean up alot of the code in a audit before doing so we
+have alot of repeated code and we should fix it for the architecture pass i talked about before."*
+
+`_sass/`, `_layouts/`, `_includes/`, `_javascript/` and `_config.yml` are back in scope. D22 held for
+the whole redesign so that lab churn could never break the shipping site; that reason expires the
+moment the port begins, because the port IS the work D22 forbade.
+
+**The order is audit -> dedupe -> port, not port -> tidy.** Rod's call, and the reason is that the
+duplication is the thing being ported. Copying 25 components onto the live site first and
+de-duplicating afterwards means de-duplicating twice the code, on a surface that is now live.
+
+- REJECTED: porting first and cleaning later. Faster to start, and every day of it makes the cleanup
+  bigger and riskier, on shipping pages rather than a gitignored lab.
+- The architecture pass is the one already specced: **one behaviour per transform lane** (movement
+  owns `translate`, size owns `scale`, anything needing perspective owns `transform` and is then the
+  only thing on that element allowed to touch it). It is a naming rule, not a framework - net
+  negative lines - and it fixes a collision that already shipped, where a tilt had to hardcode
+  knowledge of a hover scale because both wrote `transform` and the last writer silently won.
+- REJECTED, with numbers: a shared transform registry plus lifecycle contract. It adds ~75-90 lines
+  to remove ~64 of real duplication. D5 (anti-bloat) says no. It starts paying at roughly four
+  duplications; there are two.
+
+## D41 - Lab tokens are renamed to the LIVE names (2026-08-25, ROD) - **SUPERSEDED SAME DAY by D42**
+
+*"yes lab tokens get renamed to the live names."*
+
+39 lab tokens against 317 live, two names in common, no mapping file (counted 2026-08-25, not taken
+from the older note claiming 270). **The diff therefore lands in `redesign-lab/`, not in `_sass/`.**
+
+Why this direction is the safer one, beyond it being Rod's call: the live names are referenced by a
+vendored Chirpy fork with no theme/site boundary, so renaming live tokens means editing upstream
+client code - exactly what D2 exists to prevent. Renaming lab tokens touches only files that are
+gitignored and pre-release.
+
+**The hazard this creates, and it is the one to watch:** a lab token renamed to a live name that does
+not exist, or is spelled differently, resolves to its FALLBACK and renders wrong **without erroring**.
+That failure occurred four times on 2026-08-25 alone (`--color-pink`, `--aw-orbit`, `--aw-glow-r`,
+`.visually-hidden`). So the bridge is not a find-and-replace: every renamed token must be MEASURED on
+the rendered page afterwards, not grepped.
+
+- REJECTED: replacing live tokens with the lab's names. Fewer edits, but it edits upstream client
+  code and puts the risk on the shipping site instead of the lab.
+- REJECTED: an alias layer mapping one set onto the other. It would work, and it leaves two names for
+  every colour forever - which is the condition that produced `--color-pink` resolving to nothing.
+
+## D42 - The LAB tokens win; the old site's styles are dead (2026-08-25, ROD)
+
+*"please just remove the live tokens for now and use our new ones assume everything style related in
+the old site is now dead. also make sure you keep all colors to have tokens so we can return later
+if need be."*
+
+**Reverses D41 within the hour, and the reversal is the bigger call of the two.** D41 kept the live
+token names and renamed the lab to fit them, on the reasoning that the diff should stay out of a
+vendored Chirpy fork. Rod's answer removes the premise: if everything style-related in the old site
+is dead, there is nothing in `_sass/` worth preserving compatibility WITH.
+
+The 39 lab tokens become the site's canonical set. **The diff now lands in `_sass/`, not in
+`redesign-lab/`.**
+
+**EVERY COLOUR STAYS A TOKEN.** His stated reason is reversibility - "so we can return later if need
+be" - which makes this a constraint on the new code, not just a tidy-up of the old. Today the lab
+itself violates it: `rgba(8,15,27,.92)` and `rgba(245,158,11,.15)` are copied verbatim across three
+final pages, and the four tier palettes in `achievement-wall.css` are hard-coded hex. Those become
+tokens as part of the port.
+
+**The hazard, and it is the opposite of D41's:** D2 says Chirpy is upstream client code and we add in
+our own files rather than editing theirs. Chirpy's own partials reference the live tokens. Deleting
+those tokens breaks Chirpy's stylesheets, so "the old styles are dead" has to extend to the Chirpy
+partials that depend on them, or they have to be repointed. That is a real decision the audit has to
+surface with a list, not a thing to discover during the port.
+
+- REJECTED (D41, one hour old): renaming lab tokens to live names. Its virtue was keeping the diff
+  out of upstream code; its cost was carrying 317 live token names forward into a design that does
+  not use them. Rod chose the smaller surviving set.
+- KEPT FROM D41: the measurement rule. A token name that does not resolve renders its FALLBACK and
+  is wrong **without erroring** - four instances on 2026-08-25 alone. Whichever direction the rename
+  runs, every token gets measured on the rendered page afterwards, never grepped.
+
