@@ -114,14 +114,10 @@ layout: compress
             {% endfor %}
 
             {% comment %}
-              REPLACES `{% raw %}{% include_cached footer.html %}{% endraw %}` - the copyright line - which is left on
-              disk untouched. `include_cached` is not used here: this footer's links are
-              section-scoped, so caching one render would serve tech-art's links on game-design.
-              Note the copyright notice itself is gone; see `_includes/footer-line.html`.
+              THE FOOTER USED TO SIT HERE - `{% raw %}{% include_cached footer.html %}{% endraw %}`, the copyright
+              line. That file is left on disk untouched; the redesign's footer is now a sibling of
+              `#main-wrapper`, below. See there for why it is not in this column.
             {% endcomment %}
-            {% if has_chrome %}
-              {% include footer-line.html lang=lang %}
-            {% endif %}
           </div>
         </div>
 
@@ -134,6 +130,21 @@ layout: compress
         </button>
       </aside>
     </div>
+
+    {% comment %}
+      THE FOOTER SITS OUTSIDE THE CONTENT COLUMN, on Rod's direct instruction 2026-08-23: "it
+      should be left anchored". The lab hit this exact problem and wrote it down - inside the
+      column the footer "started 249px in at a 1440 viewport" on About.
+
+      Measured here before the move, on /tech-art/projects/ at an 895px viewport: the footer began
+      118.5px in and ran 648px wide, so the same defect had come back with the port. Inside
+      `#tail-wrapper` it inherits the Bootstrap container's width and gutters, which is the whole
+      cause. As a sibling of `#main-wrapper` it spans the page and takes its own 14px inset from
+      `.footer-line`, which is the number the component was measured to.
+    {% endcomment %}
+    {% if has_chrome %}
+      {% include footer-line.html lang=lang %}
+    {% endif %}
 
     <div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div>
 
