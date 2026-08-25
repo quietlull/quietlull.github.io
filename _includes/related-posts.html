@@ -80,7 +80,8 @@
           <a class="rc rc--v2" href="{{ post.url | relative_url }}">
             <div class="rc__cover">
               {% assign rc_img = post.image.path | default: post.image %}
-              {% if rc_img %}<img src="{{ rc_img | relative_url }}" alt="" loading="lazy">{% endif %}
+              {%- comment -%} post-media branches on the extension. A bare img here rendered .mp4 covers as broken images. {%- endcomment -%}
+              {% if rc_img %}{% include post-media.html src=rc_img alt="" %}{% endif %}
             </div>
             <div class="rc__body">
               <div class="rc__title">{{ post.title }}</div>

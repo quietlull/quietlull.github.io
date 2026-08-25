@@ -82,9 +82,13 @@ layout: compress
       field's own width for the bounce edges, so a container puts a wall in the middle of the page.
       A layout joins this list when its markup is ported, not before.
     {% endcomment %}
-    {% assign full_bleed = 'portal,section-about,ramblings,section-projects,post' | split: ',' %}
+    {% assign full_bleed = 'portal,section-about,ramblings,section-projects,post,section-landing' | split: ',' %}
     {% if full_bleed contains page.layout %}
-      <main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% endif %}>{{ content }}</main>
+      {%- comment -%}
+        Run refactor-content here too. It fixes image paths, and a post needs that whether or not it
+        sits in a container. Adding `post` to full_bleed skipped it and broke 46 images.
+      {%- endcomment -%}
+      <main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% endif %}>{% include refactor-content.html content=content lang=lang %}</main>
     {% else %}
 
     <div id="main-wrapper" class="d-flex justify-content-center">
