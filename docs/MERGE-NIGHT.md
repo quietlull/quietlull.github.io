@@ -92,3 +92,100 @@ from `index.html` and can go on your word.
 ## Still open at the time of writing
 
 Filled in as the night goes.
+
+## The shared page chrome (top bar, footer, scene) - landed
+
+The chrome every redesign page shares is now on every live page. Five commits, each revertible on
+its own: `61fa71e` fonts, `f19425e` chrome JS, `b2807d2` the two includes, `e4964d9` the layout
+wiring, `b93850c` the footer's placement.
+
+### Where things now live, and what replaced what
+
+| thing | new home | what it replaced |
+|---|---|---|
+| line boil faces | `assets/fonts/*.ttf` (6 files) | were only in the gitignored lab |
+| top bar markup | `_includes/top-bar.html` | `_includes/topbar.html`, left on disk |
+| footer markup | `_includes/footer-line.html` | `_includes/footer.html`, left on disk |
+| chrome JS | `assets/js/chrome.js` + `assets/js/components/` | nothing - new |
+| effects | `assets/js/effects/` | nothing - new |
+| scene backdrop CSS | `assets/css/chrome-scene.css` | was inline in the six lab pages |
+| the scene tag | `_layouts/default.html`, one per page | six per-layout tags, commented out in place |
+
+Nothing was deleted. Every replaced file is still on disk and unreferenced; each is a one-line
+restore.
+
+### The scene tier
+
+`<body data-scene-tier>` is written by the layout, and `assets/js/effects/scene-mode.js` reads it.
+Verified on the running site: `/tech-art/` **full** (41 lanterns, dock and water visible, 25
+fireflies), `/ramblings/` **minimal** (same 41 lanterns, dock and water hidden 1/1), a post page
+**none** (no three.js requested at all, the hana bloom baked its two 1024x576 canvases instead).
+
+**The post page change is the one that alters what a live page downloads.** Posts used to pull
+`three-background-minimal.min.js`; they now pull no three.js. That is Rod's call from 2026-08-21 and
+it is one word in the `{% case page.layout %}` at the top of `_layouts/default.html`.
+
+### Two lab effects were deliberately NOT ported
+
+`sparkler-init.js` and `fireworks-greeting.js` both exist because no LAB page loads
+`commons.min.js`. On this site that premise is false: `basic()` already calls `initMouseTrail()`
+and `fireworksToggle()` in every bundle, and the greeting gate is the same 0.3 fraction. Porting
+them would have double-initialised both. Measured after the port: exactly one sparkler canvas.
+
+## STILL OPEN - needs someone's hands
+
+### 1. The line boil fonts 404 in production. CSS side, one line.
+
+`_sass/components/_line-boil.scss` still points its six `@font-face` rules at
+`/redesign-lab/assets/fonts/`. That resolves **locally only**, because the lab directory is served
+in dev and is gitignored so it never deploys. Measured on the running site: all six TTFs are being
+fetched from the lab path right now.
+
+The files are already at `assets/fonts/`. The fix:
+
+    sed -i 's#/redesign-lab/assets/fonts/#/assets/fonts/#g' _sass/components/_line-boil.scss
+
+**Why this matters more than a normal 404.** The boil pins each glyph's advance in px at load, from
+a real measurement of all three faces, and only re-measures on resize. A face that never arrives
+does not fail loudly - it pins the FALLBACK's metrics and the wordmark stays permanently
+mis-spaced. It will look broken, not missing.
+
+Not done here because `_sass/` was another agent's tree tonight.
+
+### 2. Controls the old top bar carried that the new one does not
+
+Every one of these was checked in the live JS and every entry point is null-safe, so nothing
+throws. They are missing features, not errors:
+
+- **theme light/dark flip** (`#mode-toggle`) - gone. `modeWatcher()` no-ops.
+- **breathing switch** (`#breathe-toggle`) - gone, and `breatheToggle()` now returns early, so a
+  saved "breathing off" preference is no longer applied. Anyone who had it off gets it back.
+- **sparkler switch** (`#sparkler-toggle`) - the sparkler still runs, it just cannot be turned off
+  from the page any more.
+- **auto-fireworks switch** - was already section-about-only and `.reward-locked`; Rod retired
+  unlocks outright (P77), so nothing is lost.
+- **the contact icons** - the socials. They live on the portal.
+- **the copyright line** - `© <year> <name>` plus the locale tooltip. The lab footer has no slot
+  for it and inventing one is a layout call.
+
+D20/D21 says one combined control is to govern scene + motion and where it lives is still open.
+That control is now the only thing that can restore any of the first three.
+
+### 3. Two calls made in the port that are Rod's to overturn
+
+- **`final-ramblings.html` has no top bar** and the other three content finals do. The live
+  ramblings page was given one anyway - a page with no way to navigate is worse than an
+  inconsistency. If the lab was right, it is one condition in `_layouts/default.html`.
+- **game-design's bar carries a fifth "Blogs" item.** `_tabs/blogs.md` is a real page at
+  `/game-design/blogs/` and the old bar was its only route in. Dropping it to keep the lab's tidy
+  four would have orphaned it.
+
+### 4. Not verified, and cannot be from here
+
+`requestAnimationFrame` does not fire while the browser pane is hidden, so nothing per-frame was
+confirmed: the drift and cursor magnetism on the favicon and nav links, the scene actually
+rendering, the fireworks reaching the top of the viewport. What WAS confirmed is that the state
+they need exists - the magnet engine registered its elements (5 on projects, 3 on ramblings), the
+scene graph is fully populated, `window.__fireworkReach.applied` is `true` - and that the wordmark
+pinned to the REAL faces rather than a fallback: per-glyph advances came back varied, with "F" at
+23.2px, which is the lab's own measured value for face 3.
