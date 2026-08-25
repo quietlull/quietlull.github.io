@@ -467,3 +467,29 @@ It answers "what is actually painted here", which computed styles cannot. It ret
 
 **The rule:** a component may not depend on a class it does not define. Utility classes go in the
 component's own file under its own namespace, never in the bench page's chrome.
+
+## Measuring the wrong thing invents bugs that are not there
+
+Merge night, 2026-08-25/26. Seven times a value was wrong while nothing errored. **Three times I
+reported a defect that did not exist**, every one because I measured something adjacent to the
+question instead of the question.
+
+| what I asked | what I should have asked |
+|---|---|
+| `getComputedStyle(body).backgroundColor` - reported "no page ground" | the ground is painted with GRADIENTS, so it is `backgroundImage`. `backgroundColor` is transparent by definition. |
+| grepped `margin:51px` in a formatted SCSS file - reported "the tune did not port" | the lab is minified and the live file is formatted. I matched string SHAPE, not value. |
+| called `.focus()` and read the ring - reported "clean" | `:focus-visible` only matches KEYBOARD focus. The bug lives in a state a script cannot enter. It reproduced on the first real Tab. |
+| regexed `^\s*(--[a-z-]+):` - reported six tokens undefined | they sit on multi-token lines (`--night:#070C23; --night2:#0a1030;`). The regex only saw the first per line. |
+
+**The diagnostics that actually work:**
+
+- **`document.elementFromPoint(x, y)`** answers "what is painted here". It found a component
+  rendering 29 visible labels in one call, after three rounds of computed-style checks called it fine.
+- **Drive real input.** A synthetic `.focus()` or `.click()` skips the states half of CSS lives in.
+- **Compare values, never the text that spells them.** Two files can hold the same number and never
+  grep alike.
+- **Read the property the browser actually sets.** `background` is four properties; `transform`,
+  `translate` and `scale` are three separate ones now.
+
+**The rule: a single measurement is a hypothesis. Confirm it a second way before reporting it as a
+finding, and especially before telling someone else to go fix it.**

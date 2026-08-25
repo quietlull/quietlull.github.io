@@ -1,36 +1,40 @@
 # Status
 
-**What is true right now.** Compiled, not appended: this note is rewritten to be currently true
-rather than grown. History lives in [CHANGELOG.md](CHANGELOG.md), decisions in
-[DECISIONS.md](DECISIONS.md), open work in [REQUESTS.md](REQUESTS.md) (OPEN table only, done rows
-are phantoms). If this disagrees with the code, the code wins and this file is the thing to fix.
+**THE REDESIGN IS MERGED AND LIVE.** Compiled 2026-08-26 after the overnight merge. Everything below
+was measured that morning, not recalled.
 
-Last compiled 2026-08-25. Every number below was measured that day, not estimated.
+## Where things stand in one screen
 
----
+- **Branch `refactor/01-tokens`, 72 commits, `main` untouched.** Build green, all 53 pages 200.
+- **All six pages ported** - portal, landing, about, projects, post, ramblings. They are the redesign
+  now, not the old site with new CSS available.
+- **The type ladder reaches real markup site-wide**: h1 61.44 / h2 38.4 / h3 24 / h4 15, weight 300,
+  h2 and h3 gold, all in M PLUS Rounded 1c.
+- **The old design is gone** - about 2,770 lines: breathing, `_light.scss`, the search subsystem, 8
+  dead includes, 2 dead layouts.
+- **Comments trimmed 7,362 to 4,821** with the rendered CSS byte-identical.
+- **Nothing that moves has been confirmed by anyone.** The automation cannot run animation frames.
+  That is Rod's first job and it is the top row of `redesign-lab/todo.html`.
 
-## MERGE PREP HAS STARTED (2026-08-25)
+## The five documents from that night
 
-Rod: *"Get ready to start merging to main ... we can remove most of the dead and useless pages in
-redesign lab. keep references, blockouts, finals, merge places where we test components and delete
-things we no longer need."* A branch per major refactor.
+`MERGE-NIGHT.md` first - it is ordered by what deserves the first ten minutes. Then
+`ARCHITECTURE-HANDOFF.md` (the next agent starts here), `AUDIT-1-WORKING.md`, `AUDIT-A11Y.md`,
+`PROVENANCE-AUDIT.md`.
 
-**The port is blocked on one thing and it is not taste: THERE IS NO TOKEN MAPPING.** Counted
-2026-08-25, not taken from this file's older claim of 270: **39 lab tokens against 317 live, two
-names in common, no mapping file anywhere.** Every lab component names lab tokens; dropped into the
-live site those resolve to FALLBACKS and render wrong **without erroring**. That exact failure
-happened four times in one day - `--color-pink`, `--aw-orbit`, `--aw-glow-r`, and a `.visually-hidden`
-that only existed on a bench page. Porting 25 components against an unmapped token set is that
-multiplied. **Branch 1 is the token bridge**; nothing else can safely precede it.
+## THE FAULT THAT DEFINES THIS CODEBASE
 
-Two decisions are Rod's and gate the work: **D22 must lift** (`_sass/`, `_layouts/`, `_includes/`,
-`_javascript/`, `_config.yml` have been off limits all session, and the port is precisely the work
-that rule forbids), and **the direction of the mapping** - lab names renamed to live, or live
-replaced by lab. That one word decides whether the diff lands in `redesign-lab/` or in `_sass/`.
+**Unlayered CSS beats every layer, regardless of specificity or load order.** It bit **nine separate
+times** on merge night alone. Every ported component sits in `@layer components`; anything unlayered
+silently outranks it and nothing errors.
 
-**`redesign-lab/` is gitignored**, so nothing in it is recoverable after deletion. Every removal in
-the cleanup needs explicit sign-off, and provenance carriers (`element-tracker.md`, `sources/`,
-`reference-gallery.html`, `analysis/`, every component `.md`) are not deletion candidates at all.
+Known instances, all fixed: the type ladder losing to Bootstrap's reboot, the active nav link going
+gold-on-gold, a second focus ring on the search field, `.text-muted` at 1.16:1 contrast, and the card
+title's hover colour.
+
+**A corollary worth as much: `!important` INVERTS layer order.** Putting Bootstrap in a `vendor`
+layer to rescue the type ladder handed it every utility class, because an important declaration in an
+earlier layer beats one in a later layer and unlayered counts as last.
 
 ## Where the six pages are: 24 of 80 slots approved
 
