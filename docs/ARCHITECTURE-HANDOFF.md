@@ -3,10 +3,21 @@
 Written for the agent who picks up the optimization and architecture restructure cold, with no
 memory of the merge nights. Everything here was measured against the repo, not recalled.
 
-**Measured 2026-08-26 at commit `29a9ee2` on branch `refactor/01-tokens`.** A second agent was
-compressing comments in `_sass/` while this was written, so SCSS line counts drift downward by a
-few lines per file per pass. Every number below has a re-derive command next to it. Re-derive
-before you trust, and fix this file when it is wrong.
+**Measured 2026-08-26 at commit `0e5b8ca` on branch `refactor/01-tokens`.**
+
+**Read this before you trust a line count.** A second agent was compressing comments across
+`_sass/` while this was written, and HEAD moved five times during the measurement. The `_sass/`
+counts below are a stamped snapshot, not a standing fact, and they were still falling when this
+was saved (`_animations.scss` went 573 to 415 in one pass, `_topbar.scss` 494 to 427). Treat them
+as **relative size**, which is what they are useful for, and re-derive the absolute number before
+you act on it:
+
+```sh
+find _sass -name '*.scss' | sort | xargs wc -l
+```
+
+Structure, reachability, layers and tokens are stable. Line counts are not. Everything else in
+this file was verified against a real production build, not inferred.
 
 This file is the inventory and the reachability map. [ARCHITECTURE.md](ARCHITECTURE.md) is the
 subsystem map (what each thing does). They do not overlap much. Two facts in ARCHITECTURE.md are
@@ -60,9 +71,9 @@ Re-derive line counts:
 | `assets/css/jekyll-theme-chirpy.scss` | 11 | The one stylesheet the browser links. Picks `main` in dev, `main.bundle` in production. | `_includes/head.html` |
 | `_sass/main.scss` | 10 | Forwards the five buckets in order: abstracts, base, components, layout, pages. | the above |
 | `_sass/main.bundle.scss` | 2 | Production only. Bootstrap first, then `main`. | the above |
-| `rollup.config.js` | 84 | Builds 11 JS bundles into `assets/js/dist/`. | `npm run build` |
-| `purgecss.js` | 42 | Strips Bootstrap to used classes and wraps it in `@layer vendor`. | `npm run build` |
-| `_config.yml` | 232 | Jekyll config. Section routing lives in `defaults` keyed on `_posts/` subdirectories. | jekyll |
+| `rollup.config.js` | 88 | Builds 11 JS bundles into `assets/js/dist/`. | `npm run build` |
+| `purgecss.js` | 43 | Strips Bootstrap to used classes and wraps it in `@layer vendor`. | `npm run build` |
+| `_config.yml` | 261 | Jekyll config. Section routing lives in `defaults` keyed on `_posts/` subdirectories. | jekyll |
 | `_plugins/posts-lastmod-hook.rb` | 14 | Sets `last_modified_at` from git. | jekyll |
 
 ### 1b. Tokens and abstracts, all unlayered
@@ -71,25 +82,25 @@ Re-derive line counts:
 |---|---|---|---|
 | `_sass/abstracts/_tokens.scss` | 265 | **The canonical palette.** 84 custom properties on `:root`. | everything |
 | `_sass/abstracts/_index.scss` | 6 | Forwards the six abstracts. Tokens go first so `:root` exists before anything reads it. | `main.scss` |
-| `_sass/abstracts/_variables.scss` | 250 | The OLD design's Sass variables. Compile-time, not custom properties. | old partials |
-| `_sass/abstracts/_mixins.scss` | 463 | Old design mixins, glass morphism among them. | old partials |
+| `_sass/abstracts/_variables.scss` | 245 | The OLD design's Sass variables. Compile-time, not custom properties. | old partials |
+| `_sass/abstracts/_mixins.scss` | 455 | Old design mixins, glass morphism among them. | old partials |
 | `_sass/abstracts/_placeholders.scss` | 219 | Old design `%placeholder` set. | old partials |
 | `_sass/abstracts/_breakpoints.scss` | 73 | Old design media-query mixins. | old partials |
-| `_sass/abstracts/_animations.scss` | 573 | Old design keyframes plus the breathing kill-switch selector list. | old partials |
+| `_sass/abstracts/_animations.scss` | 415 | Old design keyframes plus the breathing kill-switch selector list. | old partials |
 
 ### 1c. Base, the ground every page stands on
 
 | File | Lines | Layer | What it does |
 |---|---|---|---|
 | `_sass/base/_index.scss` | 25 | mixed | Forwards the old base partials, then the three ported ones. Its header comment explains the order. |
-| `_sass/base/_foundations.scss` | 69 | `reset` | Paints the page ground: warm wash, blue wash, three drifting orange blobs. |
+| `_sass/base/_foundations.scss` | 67 | `reset` | Paints the page ground: warm wash, blue wash, three drifting orange blobs. |
 | `_sass/base/_decisions.scss` | 913 | `prose` | The type ladder H0-H4 and every settled text decision. Declares 9 heading tokens of its own. |
 | `_sass/base/_focus-ring.scss` | 48 | `overrides` | The global `:focus-visible` indicator. WCAG 2.4.7 and 2.4.11. |
 | `_sass/base/_reset.scss` | 41 | none | Old design reset. |
 | `_sass/base/_base.scss` | 650 | none | Old design page shell, `html` and `body` chrome. |
 | `_sass/base/_typography.scss` | 248 | none | Old design type. Its heading rules were removed tonight so the ladder could reach the page. |
 | `_sass/base/_syntax.scss` | 257 | none | Code highlighting. |
-| `_sass/base/_a11y.scss` | 132 | none | Old design tap targets and contrast fixes. |
+| `_sass/base/_a11y.scss` | 131 | none | Old design tap targets and contrast fixes. |
 
 ### 1d. Ported components, all in `@layer components`
 
@@ -102,9 +113,9 @@ Re-derive: build the site, then grep the rendered HTML for each file's root clas
 | File | Lines | On live pages |
 |---|---|---|
 | `_top-bar.scss` | 355 | yes |
-| `_footer-line.scss` | 137 | yes |
+| `_footer-line.scss` | 85 | yes |
 | `_favicon.scss` | 77 | yes |
-| `_line-boil.scss` | 164 | yes |
+| `_line-boil.scss` | 105 | yes |
 | `_portrait-frame.scss` | 349 | partly, only its favicon classes |
 | `_toc-real.scss` | 216 | partly |
 | `_project-cards-expensive.scss` | 219 | partly |
@@ -118,17 +129,17 @@ Re-derive: build the site, then grep the rendered HTML for each file's root clas
 | `_bio-block.scss` | 242 | no |
 | `_page-title-desc.scss` | 225 | no |
 | `_related-card-real.scss` | 215 | no |
-| `_search-field.scss` | 193 | no |
+| `_search-field.scss` | 135 | no |
 | `_drift-magnet.scss` | 159 | no |
 | `_button-kit.scss` | 149 | no |
 | `_slap-toggle.scss` | 128 | no |
-| `_figure-real.scss` | 108 | no |
+| `_figure-real.scss` | 59 | no |
 | `_cursor-glow.scss` | 51 | no |
 | `_section-head.scss` | 51 | no |
 | `_stamp-callout.scss` | 46 | no |
 | `_reference-links.scss` | 40 | no |
 
-Two components predate the port and belong to the old design: `_buttons.scss` (69) and
+Two components predate the port and belong to the old design: `_buttons.scss` (68) and
 `_popups.scss` (199). Both unlayered.
 
 ### 1e. The old design's CSS, all unlayered
@@ -139,13 +150,13 @@ most, because it owns five of the six surviving class collisions.
 | File | Lines | Styles |
 |---|---|---|
 | `_sass/pages/_post.scss` | 996 | The post page. Largest file in the tree. |
-| `_sass/layout/_topbar.scss` | 494 | The old top bar. **Its markup no longer renders.** |
-| `_sass/themes/_dark.scss` | 524 | 265 custom properties on `html`. |
-| `_sass/themes/_light.scss` | 374 | 183 custom properties on `html`. |
+| `_sass/themes/_dark.scss` | 523 | 265 custom properties on `html`. |
+| `_sass/layout/_topbar.scss` | 427 | The old top bar. **Its markup no longer renders.** |
+| `_sass/themes/_light.scss` | 373 | 183 custom properties on `html`. |
 | `_sass/layout/_projectspreview.scss` | 342 | The project cards. Owns `.post-card`, `.card-title`, `.card-body`, `.card-meta`, `.card-link`, `.takeaway-text`. |
 | `_sass/layout/_aboutmecontainer.scss` | 320 | The old about block. |
 | `_sass/pages/_projects.scss` | 285 | Projects page. |
-| `_sass/pages/_section-landing.scss` | 269 | Section landing page. |
+| `_sass/pages/_section-landing.scss` | 257 | Section landing page. |
 | `_sass/pages/_portal.scss` | 218 | The portal at `/`. |
 | `_sass/pages/_search.scss` | 186 | Search results. |
 | `_sass/pages/_archives.scss` | 180 | Archives. Was never forwarded until 2026-08-25. |
@@ -204,11 +215,11 @@ Re-derive: grep `_layouts/`, `_includes/` and `_config.yml` for each filename, a
 
 | File | Lines | What it does | Included by |
 |---|---|---|---|
-| `head.html` | 162 | The whole `<head>`. Fonts, stylesheets, the Bootstrap vendor-layer import, the JS selector. | `default` |
+| `head.html` | 160 | The whole `<head>`. Fonts, stylesheets, the Bootstrap vendor-layer import, the JS selector. | `default` |
 | `refactor-content.html` | 259 | Rewrites post HTML after Markdown: images, tables, code blocks, headings. | `default` |
 | `related-posts.html` | 99 | Scores posts by shared tags, section and category. | `post` |
 | `js-selector.html` | 94 | Maps layout name to a `dist/*.min.js` bundle. | `head`, `search-loader` |
-| `top-bar.html` | 92 | The redesign top bar. Replaced `topbar.html` on 2026-08-25. | `default` |
+| `top-bar.html` | 91 | The redesign top bar. Replaced `topbar.html` on 2026-08-25. | `default` |
 | `projectspreview.html` | 77 | The old project card grid. | `home` |
 | `blogspreview.html` | 78 | The old blog card grid. | `home` |
 | `footer-line.html` | 67 | The redesign footer. Sits outside the content column so it anchors left. | `default` |
@@ -247,7 +258,7 @@ checking the two dynamic include paths (`comments/{provider}` and `analytics/{pl
 
 | File | Lines | Why it is dead |
 |---|---|---|
-| `_includes/topbar.html` | 161 | Replaced by `top-bar.html` on 2026-08-25. Named only inside a comment now. |
+| `_includes/topbar.html` | 154 | Replaced by `top-bar.html` on 2026-08-25. Named only inside a comment now. |
 | `_includes/footer.html` | 31 | Replaced by `footer-line.html`. Named only inside a comment now. |
 | `_includes/searchbar.html` | 59 | Only `topbar.html` called it. |
 | `_includes/post-paginator.html` | 91 | Chirpy stock, never wired up. |
@@ -360,8 +371,8 @@ steps. Do that during the restructure and delete the file.
 
 | Path | What it is |
 |---|---|
-| `index.html` (1) | The root portal. Layout `portal`. |
-| `ramblings.html` (5) | Ramblings index. Layout `ramblings`. |
+| `index.html` (3) | The root portal. Layout `portal`. |
+| `ramblings.html` (6) | Ramblings index. Layout `ramblings`. |
 | `_tabs/blogs.md` (7), `_tabs/archives.md` (5) | The two Chirpy tabs still in use. |
 | `tech-art/`, `game-design/` | Four files each: `index.html`, `projects.html`, `about.md`, `under-construction.html`. |
 | `_posts/tech-art/`, `_posts/game-design/`, `_posts/blogs/` | The posts. The directory layout IS the routing contract, via `_config.yml` `defaults`. |
@@ -401,16 +412,16 @@ restructure whether to move it into `tokens` or drop the name from the statement
 
 **Rule counts in the shipping production CSS:**
 
-| Layer | Rules |
-|---|---|
-| `vendor` | 403 |
-| `reset` | 28 |
-| `prose` | 73 |
-| `components` | 482 |
-| `overrides` | 4 |
-| unlayered | 1075 |
+| Layer | Rules | Whose |
+|---|---|---|
+| `vendor` | 403 | Bootstrap, purged |
+| `reset` | 24 | ported |
+| `prose` | 73 | ported |
+| `components` | 482 | ported |
+| `overrides` | 4 | ported |
+| unlayered | 987 | the old design, and it wins |
 
-### Collisions as of `29a9ee2`
+### Collisions, measured against a real production build at `978888b`
 
 Re-derive by building, then parsing the compiled CSS with brace matching that skips strings (a
 naive matcher trips over Bootstrap's SVG data-URIs and reports false collisions).
@@ -427,7 +438,7 @@ tokens, `reset` sets `scroll-behavior`.
 | Class | Layered rule | Unlayered rule | Status |
 |---|---|---|---|
 | `card-title` | `h4,.d-h4,.card-title` in `prose`, plus 3 in `components` | `_projectspreview.scss:200`, and `#post-list .card .card-body .card-title` sets `color` | **live**, the old `color` wins on post-list pages |
-| `post-card` | 10 rules in `components`, all under `.merged-cards` | 19 rules in `_projectspreview.scss` | latent, `.merged-cards` renders nowhere |
+| `post-card` | 10 rules in `components`, all under `.merged-cards` | 18 rules in `_projectspreview.scss` | latent, `.merged-cards` renders nowhere |
 | `card-body` | 1 rule, under `.merged-cards` | 13 rules | latent |
 | `card-meta` | 1 rule, under `.merged-cards` | 1 rule | latent |
 | `card-link` | 1 rule, under `.merged-cards` | 1 rule | latent |
