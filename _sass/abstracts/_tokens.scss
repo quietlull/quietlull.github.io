@@ -246,7 +246,7 @@
 
   /* --- the page ground -------------------------------------------------------------------------
      What every page is painted on, from `foundations`: a warm wash rising off the floor, a blue
-     wash falling from the top right, and three saturated-orange blobs that breathe and drift.
+     wash falling from the top right, and three saturated-orange blobs. They used to drift.
      Each gradient needs its transparent end named too, because a gradient to plain `transparent`
      fades through grey in some engines - it has to fade to the SAME hue at zero alpha. That is why
      the `-0` tokens exist and why they must keep matching their partner's rgb triplet. */

@@ -28,7 +28,7 @@
   // FILTER & SEARCH CONTROLS
   // ============================================================================
   .blog-controls {
-    // ✨ Glass effect container with breathing
+    // Glass effect container
     @include mx.glass;
     padding: 1.25rem;
     border-radius: v.$radius-lg;

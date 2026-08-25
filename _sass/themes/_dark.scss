@@ -140,9 +140,9 @@
   // To adjust the entire site's color feel, modify these values.
   // All component files reference these instead of hardcoding rgba().
 
-  // -- Breathing hue channels (override per-element for colored breathing) --
-  --breathe-hue: 251, 191, 36;          // gold (default)
-  --breathe-border-hue: 245, 158, 11;   // amber (default)
+  // -- Glow hue channels (override per-element for a coloured glow) --
+  --glow-hue: 251, 191, 36;          // gold (default)
+  --glow-border-hue: 245, 158, 11;   // amber (default)
 
   // -- Gold (251, 191, 36) — primary glow/accent family --
   --gold-03: rgba(251, 191, 36, 0.03);

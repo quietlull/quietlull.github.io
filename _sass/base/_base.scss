@@ -510,7 +510,7 @@ mjx-container {
 }
 
 // ============================================================================
-// SECTION ICON BOX — glass box with icon + breathing dot
+// SECTION ICON BOX — glass box with icon and dot
 // ============================================================================
 
 .section-icon-box {
@@ -526,14 +526,13 @@ mjx-container {
   flex-shrink: 0;
   cursor: pointer;
   @include mx.transition(transform, border-color, box-shadow);
-  // Tier 4 (Beacon) — strongest breathing with scale pulse
 
   // Blurred orb behind the box — Tier 4 (largest)
   &::before {
     content: '';
     position: absolute;
     inset: -10px;
-    background: rgba(var(--breathe-hue), 0.50);
+    background: rgba(var(--glow-hue), 0.50);
     border-radius: 22px;
     filter: blur(20px);
     z-index: -1;
@@ -542,11 +541,11 @@ mjx-container {
 
   &:hover {
     transform: scale(1.12);
-    border-color: rgba(var(--breathe-border-hue), 0.60) !important;
-    box-shadow: 0 0 28px rgba(var(--breathe-hue), 0.40) !important;
+    border-color: rgba(var(--glow-border-hue), 0.60) !important;
+    box-shadow: 0 0 28px rgba(var(--glow-hue), 0.40) !important;
 
     &::before {
-      background: rgba(var(--breathe-hue), 0.70);
+      background: rgba(var(--glow-hue), 0.70);
       filter: blur(24px);
     }
   }
@@ -615,7 +614,7 @@ mjx-container {
 // CARD COLOR PALETTES — warm tone variance per nth-child
 // ============================================================================
 
-// Amber (default) — breathing uses default gold hue
+// Amber (default) — the glow keeps the default gold hue
 .card-palette-amber {
   --icon-glow-color: var(--gold-20);
   --icon-glow-color-hover: var(--gold-35);
@@ -625,10 +624,10 @@ mjx-container {
   --icon-dot-glow: var(--gold-60);
 }
 
-// Orange — breathing matches orange icon color
+// Orange — the glow matches the orange icon colour
 .card-palette-orange {
-  --breathe-hue: 249, 115, 22;
-  --breathe-border-hue: 234, 88, 12;
+  --glow-hue: 249, 115, 22;
+  --glow-border-hue: 234, 88, 12;
   --icon-glow-color: var(--orange-a20);
   --icon-glow-color-hover: var(--orange-a35);
   --icon-bg-gradient: linear-gradient(135deg, var(--orange-a15), var(--red-a10));
@@ -637,10 +636,10 @@ mjx-container {
   --icon-dot-glow: var(--orange-a60);
 }
 
-// Yellow / Gold — breathing matches yellow icon color
+// Yellow / Gold — the glow matches the yellow icon colour
 .card-palette-gold {
-  --breathe-hue: 234, 179, 8;
-  --breathe-border-hue: 202, 138, 4;
+  --glow-hue: 234, 179, 8;
+  --glow-border-hue: 202, 138, 4;
   --icon-glow-color: var(--yellow-a20);
   --icon-glow-color-hover: var(--yellow-a35);
   --icon-bg-gradient: linear-gradient(135deg, var(--yellow-a15), var(--gold-15));

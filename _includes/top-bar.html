@@ -13,9 +13,8 @@
 
   WHAT WENT WITH THE OLD BAR, said out loud because each is a control that no longer exists:
     #mode-toggle       light/dark flip. `modeWatcher()` no-ops without it (mode-toggle.js:8).
-    #breathe-toggle    `breatheToggle()` returns early (breathe-toggle.js:13), so a saved
-                       "breathing off" preference is no longer applied. Anyone who had it off
-                       gets breathing back until the combined control lands.
+    #breathe-toggle    gone for good. Breathing is dead (D43) and so is everything that drove
+                       this switch, so there is nothing left for it to control.
     #sparkler-toggle   the sparkler itself still runs - it is `initMouseTrail()` in every
                        bundle - but it can no longer be switched off from the page.
     #fireworks-toggle  already section-about-only, and already `.reward-locked`. Rod retired

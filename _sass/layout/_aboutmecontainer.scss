@@ -7,7 +7,6 @@
   @include mx.card-hover;
   padding: 25px;
   border-radius: v.$radius-lg;
-  // Default breathe — overridden per nth-of-type below
 
   > *:first-child { margin-top: 0; }
   > *:last-child { margin-bottom: 0; }
@@ -132,7 +131,7 @@
   --orb-delay: 0s;
 }
 .about-text .text-container {
-  --breathe-hue: 249, 115, 22; --breathe-border-hue: 234, 88, 12;
+  --glow-hue: 249, 115, 22; --glow-border-hue: 234, 88, 12;
   animation-delay: 0.8s;
   --glow-color: var(--orange-a22);
   --glow-color-hover: var(--orange-a50);
@@ -235,8 +234,8 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: rgba(var(--breathe-border-hue), 0.25);
-    box-shadow: 0 4px 16px rgba(var(--breathe-hue), 0.12);
+    border-color: rgba(var(--glow-border-hue), 0.25);
+    box-shadow: 0 4px 16px rgba(var(--glow-hue), 0.12);
   }
 
   .badge-icon {
@@ -264,8 +263,8 @@
 
   // ── Unlocked ──
   &.unlocked {
-    border-color: rgba(var(--breathe-border-hue), 0.18);
-    background: rgba(var(--breathe-hue), 0.05);
+    border-color: rgba(var(--glow-border-hue), 0.18);
+    background: rgba(var(--glow-hue), 0.05);
 
     .badge-icon { filter: none; }
   }

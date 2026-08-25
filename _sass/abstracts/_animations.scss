@@ -355,7 +355,7 @@ $reduced-motion-extras:
     font-size: 5rem;
     animation: float-gentle 5s ease-in-out infinite;
     margin-bottom: 1.5rem;
-    filter: drop-shadow(0 0 20px rgba(var(--breathe-hue), 0.4));
+    filter: drop-shadow(0 0 20px rgba(var(--glow-hue), 0.4));
   }
 
   .not-found-title {
@@ -407,8 +407,8 @@ $reduced-motion-extras:
     &:hover {
       color: var(--topbar-active-color);
       background: var(--glow-strong);
-      border-color: rgba(var(--breathe-border-hue), 0.45);
-      box-shadow: 0 0 20px rgba(var(--breathe-hue), 0.20);
+      border-color: rgba(var(--glow-border-hue), 0.45);
+      box-shadow: 0 0 20px rgba(var(--glow-hue), 0.20);
       transform: translateY(-2px);
     }
   }

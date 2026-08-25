@@ -71,8 +71,8 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
     --orb-delay: #{nth($proj-orb-delay, $i)};
 
     @if $i % 2 == 0 {
-      --breathe-hue: 249, 115, 22;
-      --breathe-border-hue: 234, 88, 12;
+      --glow-hue: 249, 115, 22;
+      --glow-border-hue: 234, 88, 12;
       --glow-color: var(--orange-a22);
       --glow-color-hover: var(--orange-a50);
       --glow-border: var(--orange-red-a25);
@@ -312,7 +312,7 @@ $proj-orb-delay:  0s,    0.8s,  1.5s,  0.3s,  2s,    1s;
 
 
 // ============================================================================
-// WIP cards — disable breathing shimmer (placeholder images make it obnoxious)
+// WIP cards — no shimmer, placeholder images make it obnoxious
 // ============================================================================
 .post-card .card:has(.badge-wip) {
   animation: none !important;
