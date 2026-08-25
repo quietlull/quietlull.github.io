@@ -3,72 +3,29 @@
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 @layer components {
-/* bio-block - the ABOUT page's two prose blocks: bio_intro and bio_more.
-   Built 2026-08-23.
+/* bio-block - the About page's two prose blocks, bio_intro and bio_more.
+   Rod: "about page is the landing page except the about me is the hero", so bio_intro is the
+   HERO, not a paragraph in a stack.
+   THE COPY IS HIS, verbatim from about.md front matter. The only change is two em dashes to
+   commas, which is the house rule.
+   RESERVATION, measured at 1440: bio_intro 675x112, bio_more 675x138, 10px between them. Do not
+   cite the blockout's own labels of 140 and 180 - they are labels, and they render 112 and 138.
+   NEITHER NUMBER HOLDS THE REAL COPY. The blockout drew six schematic rules where the real intro
+   sets ten lines. Nothing here shrinks the type or cuts his words to make a number fit.
+   decisions.scss does the TYPE and this file does not restate it. See bio-block.md. */
 
-   Rod: "about page is the landing page except the about me is the hero, the achievements are the
-   project cards." So bio_intro is the About page's HERO, not a paragraph in a stack.
-
-   COPY IS REAL AND VERBATIM from tech-art/about.md front matter (bio_intro / bio_more keys).
-   ONE mechanical change, house rule only: his two em dashes become commas (CONVENTIONS: no em
-   dashes in written content). Nothing else in his words is touched. Flagged in the .md.
-
-   -- THE MEASURED RESERVATION
-   Read off about-blockout.html?v=panels at viewport 1440 with getBoundingClientRect, 2026-08-23.
-   Variant `panels` is the right one to measure: its portrait renders 191x200, its status chip
-   100x20 and its locked state 641x40, which are exactly the three ABOUT rows in
-   analysis/2026-08-23-blockout-contract.md. The contract came off this variant.
-
-     bio_intro   OUTER 675 x 112   at x 270, y 196    content box 641 wide
-     bio_more    OUTER 675 x 138   at x 270, y 318    content box 641 wide
-     gap between them   10px   (`.p { margin-top: 10px }`)
-     panel chrome as RENDERED   border 2px - padding 10px 15px - radius 4px
-
-   THE BLOCKOUT'S OWN LABELS ARE WRONG AGAIN, the same fault the contract logged for the post:
-   the panels are labelled "BIO_INTRO - 140px" and "BIO_MORE - 180px" and they render 112 and 138.
-   The RENDERED value is used here, because that is the geometry Rod approved by eye.
-
-   *** AND NEITHER NUMBER HOLDS THE REAL COPY. This is stated, not silently absorbed. ***
-   The blockout drew bio_intro as SIX 1px schematic rules. The real bio_intro is a heading plus
-   THREE paragraphs, which set ten lines at the decided type. Measured overflow is in the .md and
-   is drawn in the demo. Nothing here shrinks the type or cuts his words to make a number fit.
-
-   -- WHAT IS REUSED RATHER THAN REBUILT (D5)
-   decisions.css does the TYPE. This file does not restate it:
-     .prose            the 94ch measure + the white body colour           decisions.css:189-194
-     .prose p          weight 300 / 130% / -0.18px                        decisions.css:195-200
-     .prose a          stripe's highlighter link + hover fill             decisions.css:210-221
-     --h2-color / --h3-color   the ladder colours                         decisions.css:31-33
-   Only two things are added, and both are house decisions that live on final-post.html rather
-   than in decisions.css, so they have to be repeated somewhere to be usable off that page:
-     font-size 16px / 18px from 960px up   final-post.html:435-436
-     rhythm: margin-TOP only, 24px         final-post.html:439
-   THAT IS A DECISION CITATION, NOT PROVENANCE. The provenance behind it is stripe.dev, cited by
-   decisions.css:184-188 (P33, Rod's own 94-character call).
-
-   MEASURE NOTE: the .prose cap is 767px (94 x 8.16). The reservation's content box is 641px, so
-   the cap never fires at this width - 641 / 8.16 = 78.5 characters. The cap is left in place
-   because it does fire the moment the block is used anywhere wider.
-
-   NOTHING IN THIS FILE ANIMATES, so there is no prefers-reduced-motion path to write. The one
-   transition anywhere near it is decisions.css's link hover, which is that file's business. */
-
-/* SHARED: the parts all three versions agree on
-   The width is the reservation's, verbatim. Everything else here is type plumbing. */
+/* Shared. The width is the reservation's, verbatim; the rest is type plumbing. */
 .bio {
   width: 675px;
   max-width: 100%;
 }
 .bio + .bio { margin-top: 10px; }        /* the blockout's own gap between the two panels */
 
-/* the heading ladder, taken from decisions.css and NOT re-decided.
-   ROLE MAPPING is decisions.css:571-578, which is explicit for this page: about's `.bio-h` plays
-   the H2 role and `.bio-h--lesser` plays the H3 role. Sizes are the ladder's own
-   (decisions.css:73-106); weight is 100 on both because the ladder's rule is that hierarchy is
+/* The ladder's own sizes, taken from decisions.scss and not re-decided. `.bio__h` plays H2 and
+   `--lesser` plays H3 (decisions.scss:571-578). Weight is 100 on both because hierarchy here is
    size and tracking, never weight.
-   DELIBERATELY NOT TAKEN: `.d-h2`'s nested COUNTER and trailing hairline. Those number a post's
-   sections; the About page has two bio blocks and would read "1" and "1.1". decisions.css's own
-   about mapping sets colour and weight only, and this follows it. Open question in the .md. */
+   The H2 counter and hairline are deliberately left out - they number a post's sections, and
+   About's two blocks would read "1" and "1.1". See bio-block.md. */
 .bio__h {
   font-size: 1.375rem;
   font-weight: 100;
@@ -82,38 +39,18 @@
   margin-bottom: 1.25rem;                /* the ladder's own, decisions.css:104 */
 }
 
-/* body size + rhythm. See the header: house decision, cited to final-post.html, not provenance. */
+/* Body size and rhythm. A house decision from final-post.html, not provenance. */
 .bio .prose p { font-size: 16px; }
 @media (min-width: 960px) { .bio .prose p { font-size: 18px; } }
 .bio .prose > * + * { margin-top: 24px; }
 
-/* V1 - PANEL.  The whole block is one translucent panel; the heading is plain inside it.
-   TIER: Remixed.   IDEA-ORIGIN: theirs (dimden), picked for this page by Rod.
-
-   SOURCE: dimden.dev `.box`, https://dimden.dev/css/main.css?9 lines 168-180, read from source
-   2026-08-22 and transcribed character for character in
-   redesign-lab/sources/section-and-heading-blocks.md section B. 17 `.box` elements on their
-   homepage, so it is their working system.
-
-     .box { background-color:#000000a8; border:2px solid #383838; border-radius:4px;
-            color:white; padding:10px 15px; margin:5px; }
-
-   VERBATIM HERE: the 2px border, its #383838, and the 10px 15px padding.
-   THREE DEPARTURES, all stated:
-     1. radius 4px -> 0. The locked shape rule (square by default, 2026-08-11).
-     2. #000000a8 -> --color-panel. Their fill is 66% pure BLACK; ours is the warm grey Rod picked
-        on card-greys-tests at 55%. The source note calls their translucency "a real precedent for
-        D27's normal transparent cards in grey" - so the mechanism is theirs and the hue is his.
-     3. margin 5px all round -> the blockout's 10px top gap (`.bio + .bio`). Recorded because
-        section-and-heading-blocks.md:107-111 already caught about-blockout mis-transcribing
-        dimden's 5px-all-sides as 10px-top-only. The blockout wins here on the "match the
-        blockout" instruction, not because the transcription was right.
-
-   WHY IT IS THE ONE THAT SUITS THE SCENE: of the six treatments in that source note, dimden's is
-   the ONLY translucent fill. Every other boxed option is opaque and would sit on top of the live
-   scene instead of letting it through.
-   Rod's own gallery note on this exact page (reference-gallery.html:221): "stacked bordered
-   panels ... personality through framing rather than typography." */
+/* V1 - PANEL. The whole block is one translucent panel, heading plain inside it.
+   dimden.dev `.box` (sources/section-and-heading-blocks.md B). Remixed, theirs, picked by Rod.
+   Verbatim: the 2px border, its #383838, the 10px 15px padding.
+   Three departures: radius 4px goes to 0 (shape rule), their 66% black fill becomes our warm
+   grey panel, and their 5px margin becomes the blockout's 10px top gap.
+   IT IS THE ONLY TRANSLUCENT OPTION in that source note, which is why it suits a live scene.
+   See bio-block.md. */
 .bio--panel {
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
   border: 2px solid var(--color-line-grey);
@@ -121,36 +58,14 @@
   padding: 10px 15px;
 }
 
-/* V2 - HEADING CARD.  The HEADING is the box; the prose sits bare underneath it.
-   TIER: Remixed.   IDEA-ORIGIN: theirs (cyanilux).
-
-   SOURCE: cyanilux `h2, h3, h4`, https://www.cyanilux.com/css/style.css?v=12 lines 817-832, read
-   from source 2026-08-22, transcribed in sources/section-and-heading-blocks.md section A. Seen
-   working on 20 h2 in one page of theirs.
-
-     h2:not(.title-no-margin):not(.title-undecorated), h3, h4 {
-       margin-top:30px; padding:7px 20px; background-color:#282828;
-       border-left:10px solid #00aabb; border-radius:7px; }
-
-   VERBATIM HERE: padding 7px 20px, and the 10px solid left edge.
-   THE IDEA WORTH HAVING, and it is theirs: h2, h3 and h4 all get the SAME box. No size or weight
-   escalation carries the hierarchy - depth comes from position in the flow. That is exactly what
-   this page needs, because bio_more's head is one rung down and does not want a second design.
-
-   THREE DEPARTURES, all stated:
-     1. radius 7px -> 0. Shape rule.
-     2. #00aabb -> the ladder colour of the level (--h2-color / --h3-color). Their accent is a
-        cool cyan and the palette law puts no cool accent outside the sky. Taking the ladder's own
-        colour rather than inventing a warm one is the smallest honest join: the level already has
-        a decided colour and the edge just uses it.
-     3. background #282828 (opaque) -> --color-panel (translucent). Same reason as V1: an opaque
-        fill sits on top of the scene.
-   ONE THING THAT COULD NOT TRANSFER: their `margin-top: 30px` above the heading. Here the heading
-   is always its block's first child and the 10px block gap is the blockout's, so their 30px never
-   had anywhere to fire. Dropped rather than carried as a rule that never runs.
-   NOT TAKEN: their nesting-by-fill (#282828 -> #303030 one step lighter per level of
-   containment). It is a real device but it keys off CONTAINMENT, and these two blocks are
-   siblings - reusing it here would be borrowing the look and dropping the meaning. */
+/* V2 - HEADING CARD. The heading is the box; the prose sits bare under it.
+   cyanilux `h2, h3, h4` (sources/section-and-heading-blocks.md A). Remixed, theirs.
+   Verbatim: padding 7px 20px and the 10px solid left edge.
+   THE IDEA WORTH HAVING is that h2, h3 and h4 all get the SAME box - depth comes from position
+   in the flow, not from size escalation. That is what this page needs.
+   Departures: radius to 0, their cool cyan to the level's own ladder colour, their opaque fill
+   to our translucent panel. Their nesting-by-fill is not taken: it keys off containment, and
+   these two blocks are siblings. See bio-block.md. */
 .bio--headcard .bio__h {
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
   border-left: 10px solid var(--h2-color, #fbbf24);
@@ -159,62 +74,29 @@
 }
 .bio--headcard .bio__h--lesser { border-left-color: var(--h3-color, #a3a19d); }
 
-// COMMENT DELIMITERS CHANGED HERE, AND ONLY THE DELIMITERS - every character of the text below is
-// the lab original. The block nests a second `/* ... */` inside itself (the `grep -c 'hr{'` aside),
-// and CSS comments do not nest: that inner `*/` CLOSES the outer comment, so everything after it
-// is parsed as CSS. Sass refuses to compile it; a browser "recovers" by treating the remaining
-// prose plus the next selector as one invalid selector and eating the rule that follows - which is
-// why `.bio--bare { padding: 0 }` has been DEAD in the lab, silently, since it was written.
-// Re-flagged as a lab defect in the port report. Rewritten as Sass line comments so the text
-// survives intact and the rule below it comes back to life.
-// /*
-//    V3 - BARE.  No box anywhere. The heading recedes, the prose leads, one rule between blocks.
-//    TIER: Remixed.   IDEA-ORIGIN: theirs (iquilezles), kept in the set on the source note's own
-//    instruction rather than on a hunch.
+// SASS LINE COMMENTS ON PURPOSE, do not convert this block back to /* */.
+// The lab original nested a second /* */ inside itself, and CSS comments do not nest: the inner
+// close ended the outer comment early, and the browser then ate the rule underneath. That is why
+// `.bio--bare { padding: 0 }` was DEAD in the lab, silently, from the day it was written.
 //
-//    SOURCE: iquilezles.org/style.css?v=2, transcribed in sources/section-and-heading-blocks.md
-//    section E and in sources/iquilezles-prose.md.
-//
-//      h3{ color:#ffffff; font-weight:normal; }  h2{ color:#ffffff; font-weight:normal; }
-//      /* there is NO hr{} rule in that stylesheet - grep -c 'hr{' returns 0 */
-//
-//    THE TRANSFERABLE LINE, quoted from the held note: "no boxes, borders, backgrounds, radii,
-//    shadows or padding are ever used to separate a component from prose. Components differ from
-//    prose only by (a) colour, (b) font family, (c) line-height."
-//    The section break is a bare `<hr>` - browser default, no rule written, which is why there is
-//    no `hr` selector below either. That absence is the transcription, not an omission.
-//
-//    WHY IT IS IN THE SET: section-and-heading-blocks.md:178-179 says it plainly - "the floor of the
-//    range. Included so the boxed options have something to be judged against; without it every
-//    variant on the page is a box and the comparison is rigged."
-//
-//    ONE DEPARTURE, and it is an inversion rather than a tweak: their heading is pure WHITE against
-//    #c0c0c0 body text. Ours is the opposite - decisions.css:186-188 makes body copy the brightest
-//    thing on the page and lets the heading recede. So the MECHANISM survives (hierarchy by colour
-//    value alone, nothing drawn) and the DIRECTION flips. That is why this is Remixed and not True.
-//
-//    There is no rule to write for the block itself. That is the version.
-//    ============================================================================================ */
+// V3 - BARE. No box anywhere; the heading recedes and the prose leads.
+// iquilezles.org (sources/iquilezles-prose.md). Remixed, theirs.
+// Their line: nothing is ever drawn to separate a component from prose - only colour, family and
+// line-height differ. The section break is a bare <hr> with no rule written, and that ABSENCE is
+// the transcription, not an omission.
+// One inversion: their heading is white against grey body. Ours is the opposite, because our body
+// copy is the brightest thing on the page. Mechanism survives, direction flips.
+// It is in the set as the floor of the range - without it every variant is a box and the
+// comparison is rigged. There is no rule to write for the block itself. That is the version.
 .bio--bare { padding: 0; }
 
-/* *** PICKED 2026-08-23: V4 = V1's PANEL + V2's HEADING LINE. ***
-   Rod: "bio block do v1 but the header has the line from v2"
-
-   So the block keeps V1's single translucent panel, and the heading gains cyanilux's 10px left
-   edge from V2. Nothing else of V2 comes across - not its box, not its padding, not its fill.
-
-   THIS IS A REMIX OF TWO SOURCED HALVES and is filed as one: dimden supplies the panel (V1),
-   cyanilux supplies the edge (V2). Neither site does both, so the COMBINATION is ours.
-
-   WHY THE EDGE STILL WORKS WITHOUT THEIR BOX: cyanilux's `border-left: 10px` is doing two jobs on
-   their site - marking the level AND terminating their fill. Here the panel already supplies a
-   ground, so the edge is left doing only the first job, which is the half Rod asked for. Their
-   padding is NOT carried, because the heading sits inside V1's panel padding already and adding
-   theirs would double it.
-
-   THE LEVEL COLOUR IS THE LADDER'S, not cyanilux's #00aabb, which is a cool cyan the palette law
-   rules out. h2 gets the H2 yellow, the lesser head gets the H3 silver - the level already has a
-   decided colour, so the edge just uses it rather than introducing a new one. */
+/* V4 IS THE ONE ROD PICKED, 2026-08-23: "bio block do v1 but the header has the line from v2".
+   So V1's panel plus V2's 10px left edge on the heading, and nothing else of V2 - not its box,
+   not its padding, not its fill. dimden supplies the panel, cyanilux supplies the edge, and the
+   COMBINATION is ours because neither site does both.
+   Their padding is not carried: the heading already sits inside the panel's padding and taking
+   theirs too would double it. The edge takes the level's ladder colour, never their cyan.
+   See bio-block.md. */
 .bio--v4 {
   /* V1's panel, unchanged */
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
