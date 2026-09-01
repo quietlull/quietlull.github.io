@@ -1,24 +1,44 @@
-@use '../abstracts/breakpoints' as bp;
-@use '../abstracts/variables' as v;
+// The tag page, 2026-08-31. This file used to hold stock Chirpy's `.tag` chip and the `#tags`
+// index grid; BOTH LOST THEIR MARKUP - `_layouts/tags.html` was deleted in the merge, and
+// `_layouts/tag.html` is now built from the same components as ramblings, so neither selector
+// matched anything on any built page.
 
-.tag {
-  border-radius: 0.7em;
-  padding: 6px 8px 7px;
-  margin-right: 0.8rem;
-  line-height: 3rem;
-  letter-spacing: 0;
-  border: 1px solid var(--tag-border) !important;
-  box-shadow: 0 0 6px 0 var(--tag-shadow);
+// Almost everything on this page is a component - page-title-desc, entry-row, button-kit,
+// empty-state - so what is left here is only the column and the gaps between things. Same shape
+// as `_ramblings.scss`, deliberately: the two pages are the same page with a different filter.
 
-  span {
-    margin-left: 0.6em;
-    font-size: 0.7em;
-    font-family: var(--font-display);
+// Page stylesheets are UNLAYERED on purpose (D36), so anything written here beats every
+// component. Keep that in mind before adding a rule: it is a page override, not a suggestion.
+
+#tag-page {
+  position: relative;
+  z-index: var(--z-content);
+  width: min(1180px, 92vw);
+
+  // 100%, NOT ramblings' 92vw, and the difference is the parent. Ramblings is in the `full_bleed`
+  // list in _layouts/default.html so its parent is the viewport; this page is not, so it sits
+  // inside the Bootstrap content column - 1140px wide at an xl viewport in production, and
+  // narrower than the 1170 below. Capping against the parent instead of the viewport means the
+  // column fits either way, and it needs no edit if tag pages join that list later.
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 56px 0 200px;
+
+  // The same 1170px column ramblings uses. The rows are the same rows, so a different width here
+  // would be a different site on two pages that link to each other.
+  .wf {
+    width: 1170px;
+    max-width: 100%;
+    margin: 0 auto;
   }
-}
 
-#tags {
-  @include bp.lt(bp.get(lg)) {
-    justify-content: center !important;
+  .titlebar {
+    padding: 37px 0;
+    text-align: center;
   }
+
+  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the ladder's
+  // own `h1 { margin: 0 }` and pushes the title down. Restated here for the same reason ramblings
+  // and projects restate it: that rule still spaces the h1 on the pages nobody has ported yet.
+  .ptd__title { margin: 0; }
 }

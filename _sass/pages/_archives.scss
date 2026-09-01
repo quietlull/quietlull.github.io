@@ -1,181 +1,48 @@
-@use '../abstracts/variables' as v;
-@use '../abstracts/breakpoints' as bp;
-@use '../abstracts/placeholders';
+// The archive, 2026-08-31. This file used to hold Chirpy's timeline: a 4px vertical rule drawn
+// with `::before` pseudo-elements at hardcoded left offsets, a pulsing dot per year, a second dot
+// per post, and a striped `nth-child(odd)` gradient on every row. All of it hung off `#archives`,
+// and that id is gone with the markup - `_layouts/archives.html` is now built from the same
+// components as the tag pages.
 
-#archives {
-  letter-spacing: 0.03rem;
+// Everything visible on this page is a component now - page-title-desc, entry-row, empty-state -
+// so what is left here is the column, the year headings and the gaps. Same shape as `_tags.scss`
+// and `_ramblings.scss`, because it is the same page with a different filter.
 
-  @include bp.lt(bp.get(sm)) {
-    margin-top: -1rem;
+// Page stylesheets are UNLAYERED on purpose (D36), so anything written here beats every
+// component. Keep that in mind before adding a rule: it is a page override, not a suggestion.
 
-    ul {
-      letter-spacing: 0;
-    }
+#archives-page {
+  position: relative;
+  z-index: var(--z-content);
+  width: min(1180px, 92vw);
+
+  // 100% rather than 92vw, for the reason written out in `_tags.scss`: this page is not in the
+  // `full_bleed` list in _layouts/default.html, so its parent is the Bootstrap content column
+  // rather than the viewport, and the cap has to be measured against the parent.
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 56px 0 200px;
+
+  .wf {
+    width: 1170px;
+    max-width: 100%;
+    margin: 0 auto;
   }
 
-  $timeline-width: 4px;
-
-  %timeline {
-    content: '';
-    width: $timeline-width;
-    position: relative;
-    float: left;
-    background-color: var(--timeline-color);
+  .titlebar {
+    padding: 37px 0;
+    text-align: center;
   }
 
-  .year {
-    height: 3.5rem;
-    font-size: 1.5rem;
-    position: relative;
-    left: 2px;
-    margin-left: -$timeline-width;
-    transition: all var(--transition-fast) ease;
+  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the ladder's
+  // own `h1 { margin: 0 }` and pushes the title down. Same restatement as ramblings and projects.
+  .ptd__title { margin: 0; }
 
-    &::before {
-      @extend %timeline;
-      height: 72px;
-      left: 79px;
-      bottom: 16px;
-    }
+  // The year takes the H2 rung whole - size, weight and colour all come from base/_decisions.scss
+  // and nothing about them is set here. Only the space around it is this page's business.
+  .arc-year { margin-bottom: 1rem; }
 
-    &:first-child::before {
-      @extend %timeline;
-      height: 32px;
-      top: 24px;
-    }
-
-    &::after {
-      content: '';
-      display: inline-block;
-      position: relative;
-      border-radius: 50%;
-      width: 12px;
-      height: 12px;
-      left: 21.5px;
-      border: 3px solid;
-      background-color: var(--timeline-year-dot-color);
-      border-color: var(--timeline-node-bg);
-
-      box-shadow:
-        0 0 2px 0 var(--color-gray-light),
-        var(--glow-ring-small);
-      z-index: 1;
-      transition:
-        box-shadow var(--transition-fast) ease,
-        transform var(--transition-fast) ease;
-      animation: pulse-slow 4s ease-in-out infinite;
-    }
-
-    &:hover::after {
-      box-shadow: 
-        0 0 4px 0 var(--color-gray-light),
-        var(--glow-ring);
-      transform: scale(1.1);
-    }
-  }
-
-  ul {
-    li {
-      font-size: 1.1rem;
-      line-height: 3rem;
-      transition: all var(--transition-fast) ease;
-
-      @extend %text-ellipsis;
-
-      /* FIXED: Use CSS variables instead of hardcoded colors */
-      &:nth-child(odd) {
-        background-color: var(--main-bg);
-        background-image: linear-gradient(
-          to left,
-          var(--main-bg),
-          var(--bg-secondary),
-          var(--bg-secondary),
-          var(--bg-secondary),
-          var(--main-bg)
-        );
-      }
-
-      &:hover {
-        background-image: linear-gradient(
-          to left,
-          var(--main-bg),
-          var(--bg-tertiary),
-          var(--bg-tertiary),
-          var(--bg-tertiary),
-          var(--main-bg)
-        );
-        box-shadow: inset 0 0 20px var(--glow-subtle);
-      }
-
-      &::before {
-        @extend %timeline;
-        top: 0;
-        left: 77px;
-        height: 3.1rem;
-      }
-    }
-
-    &:last-child li:last-child::before {
-      height: 1.5rem;
-    }
-  } /* #archives ul */
-
-  .date {
-    white-space: nowrap;
-    display: inline-block;
-    position: relative;
-    right: 0.5rem;
-
-    &.month {
-      width: 1.4rem;
-      text-align: center;
-    }
-
-    &.day {
-      font-size: 85%;
-      font-family: var(--font-display);
-    }
-  }
-
-  a {
-    /* post title in Archives */
-    margin-left: 2.5rem;
-    position: relative;
-    top: 0.1rem;
-    transition: all var(--transition-fast) ease;
-
-    &:hover {
-      border-bottom: none;
-      color: var(--link-hover-color);
-      text-shadow: 0 0 8px var(--glow-strong);
-    }
-
-    &::before {
-
-      content: '';
-      display: inline-block;
-      position: relative;
-      border-radius: 50%;
-      width: 8px;
-      height: 8px;
-      float: left;
-      top: 1.35rem;
-      left: 71px;
-      background-color: var(--timeline-node-bg);
-
-      box-shadow: 
-        0 0 3px 0 var(--color-gray-light),
-        var(--glow-ring-small);
-      z-index: 1;
-      transition: all var(--transition-fast) ease;
-    }
-
-    &:hover::before {
-
-      box-shadow: 
-        0 0 4px 0 var(--color-gray-light),
-        var(--glow-ring);
-      transform: scale(1.2);
-    }
-  }
-} /* #archives */
+  // The rung's own 4.5rem top margin is the gap BETWEEN years. The first year does not need one,
+  // because the title block above it already brings its own 37px of padding.
+  .arc-group:first-of-type .arc-year { margin-top: 0; }
+}

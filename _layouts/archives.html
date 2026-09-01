@@ -1,35 +1,70 @@
 ---
-layout: page
-# The Archives of posts.
+layout: default
+refactor: true
 ---
 
 {% include lang.html %}
 
-{% assign df_strftime_m = site.data.locales[lang].df.archives.strftime | default: '/ %m' %}
-{% assign df_dayjs_m = site.data.locales[lang].df.archives.dayjs | default: '/ MM' %}
+{% comment %}
+  The archive, every post on the site by year. Ported to the redesign 2026-08-31; before that it
+  was byte-identical stock Chirpy (docs/THEME-BOUNDARY-AUDIT.md), which drew a vertical timeline
+  with dots and a striped list, none of which exists anywhere else on the site any more.
 
-<div id="archives" class="pl-xl-3">
-  {% for post in site.posts %}
-    {% assign cur_year = post.date | date: '%Y' %}
+  SAME COMPONENTS AS THE TAG PAGE, which is the point: page-title-desc for the head, entry-row for
+  the list, empty-state if there is nothing to list. The archive is a list of posts, so it gets the
+  list-of-posts components and nothing is designed here.
 
-    {% if cur_year != last_year %}
-      {% unless forloop.first %}</ul>{% endunless %}
+  THE ROWS ARE DATE AND TITLE, NOTHING ELSE. That is entry-row's version C, which the component
+  documents as the source's own row - "Eve's real row: date, title, nothing else". No blurb, no
+  picture and no tag chips: this is the page you come to when you want to find one post, and
+  19 dense rows beat 19 tall ones. It keeps entry-row's version B markup (the link inside the
+  heading) so the hover underline still works, which version C on its own gives up.
 
-      <time class="year lead d-block">{{ cur_year }}</time>
-      {{ '<ul class="list-unstyled">' }}
+  YEARS COME FROM `group_by_exp`, replacing Chirpy's open-and-close-the-`<ul>`-by-hand loop. That
+  loop emitted an unbalanced list whenever a year boundary and the last post lined up, and it put
+  the year in a bare `<time>` element with no heading at all. Grouping first makes each year a real
+  section with a real `<h2>`, so the page has a heading outline.
 
-      {% assign last_year = cur_year %}
+  `site.posts` is already newest first, so the groups come out newest first too.
+{% endcomment %}
+
+{% assign years = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
+
+<div id="archives-page">
+  <div class="wf">
+
+    <div class="titlebar">
+      <div class="ptd ptd--sub">
+        <h1 class="ptd__title d-h1">{{ page.title | default: 'Archives' }}</h1>
+        <p class="ptd__desc">{{ site.posts.size }} post{% unless site.posts.size == 1 %}s{% endunless %}, newest first</p>
+      </div>
+    </div>
+
+    {% if site.posts.size == 0 %}
+      <div class="es es--stack">
+        <div class="es__content">
+          <p class="es__title">Nothing published yet</p>
+          <p class="es__body">Check back later.</p>
+        </div>
+      </div>
+    {% else %}
+      {% for year in years %}
+        <section class="arc-group">
+          <h2 class="arc-year">{{ year.name }}</h2>
+          <ul class="er-list">
+            {% for post in year.items %}
+              <li class="er-row">
+                <div class="er-body">
+                  {% comment %} Month and day only. The heading above the list carries the year. {% endcomment %}
+                  <span class="er-date">{{ post.date | date: '%m.%d' }}</span>
+                  <h3 class="er-ttl"><a class="er-link" href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endfor %}
     {% endif %}
 
-    <li>
-      {% assign ts = post.date | date: '%s' %}
-      <span class="date day" data-ts="{{ ts }}" data-df="DD">{{ post.date | date: '%d' }}</span>
-      <span class="date month small text-muted ms-1" data-ts="{{ ts }}" data-df="{{ df_dayjs_m }}">
-        {{ post.date | date: df_strftime_m }}
-      </span>
-      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-    </li>
-
-    {% if forloop.last %}</ul>{% endif %}
-  {% endfor %}
+  </div>
 </div>

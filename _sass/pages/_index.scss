@@ -1,15 +1,26 @@
-@forward 'home';
+@forward 'blog';
+@forward 'stub-pages';
 @forward 'post';
 @forward 'projects';
 @forward 'portal';
 @forward 'about';
 @forward 'ramblings';
 @forward 'section-landing';
+
 // RE-ADDED 2026-08-25. These four partials exist and were never forwarded, so their CSS has not
 // compiled into the site at all. It is a live bug, not dead code: `#page-tag` renders on **20 of 53
 // pages** (jekyll-archives, `_config.yml:256-260`) and `#archives` on one more, both with no styles.
 // Found during the pre-merge audit while looking for things to DELETE - the opposite answer.
+
+// TWO OF THE FOUR CAME BACK OFF 2026-08-31, when the tag pages and the archive were ported. Both
+// files style markup that no longer exists anywhere:
+//   `categories`    `.categories`, `.category-trigger` and `.rotate`, all from
+//                   `_layouts/categories.html` and `_layouts/category.html`, deleted in the merge.
+//   `category-tag`  `#page-category` (same two deleted layouts), `#access-lastmod` (the deleted
+//                   sidebar), and `#page-tag` plus `.dash`, which were stock `_layouts/tag.html`.
+// Counted by exact class token across the built site before removing them, not by substring:
+// zero pages for every selector in `categories`, and `.dash` on exactly the 20 pages this port
+// rewrote. The two files are LEFT ON DISK for the strip pass to delete; re-adding a line here is
+// all it takes to put either back.
 @forward 'archives';
-@forward 'categories';
-@forward 'category-tag';
 @forward 'tags';

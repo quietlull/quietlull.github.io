@@ -35,6 +35,13 @@
     were invisible and unstyled. Real work for no pixels on six pages" (final-post.html:96).
   {% endcomment %}
   <script src="{{ '/assets/js/effects/hana-bloom.js' | relative_url }}"></script>
+{% elsif include.tier == 'embers' %}
+  {% comment %}
+    Embers only, 525 KB instead of 843. The 404 used to load this AND the full scene, because
+    it asked for this one itself in its own front matter while the else branch below handed it
+    the big one as well. It is requested here now, so there is exactly one request.
+  {% endcomment %}
+  <script defer src="{{ '/assets/js/dist/three-background-minimal.min.js' | relative_url }}"></script>
 {% else %}
   <script defer src="{{ '/assets/js/dist/three-background-scene.min.js' | relative_url }}"></script>
 {% endif %}

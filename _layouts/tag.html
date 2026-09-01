@@ -1,23 +1,86 @@
 ---
-layout: page
-# The layout for Tag page
+layout: default
+refactor: true
 ---
 
 {% include lang.html %}
 
-<div id="page-tag">
-  <h1 class="ps-lg-2">
-    <i class="fa fa-tag fa-fw text-muted"></i>
-    {{ page.title }}
-    <span class="lead text-muted ps-2">{{ page.posts | size }}</span>
-  </h1>
-  <ul class="content ps-0">
-    {% for post in page.posts %}
-      <li class="d-flex justify-content-between px-md-3">
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-        <span class="dash flex-grow-1"></span>
-        {% include datetime.html date=post.date class='text-muted small text-nowrap' lang=lang %}
-      </li>
-    {% endfor %}
-  </ul>
+{% comment %}
+  A tag page. Ported to the redesign 2026-08-31; before that it was byte-identical stock Chirpy
+  (docs/THEME-BOUNDARY-AUDIT.md), which drew a Font Awesome tag icon, a dotted `.dash` leader and
+  a Bootstrap flex row per post. This is the layout behind 19 of the 53 built pages, so it was the
+  largest block of unported markup left on the site.
+
+  IT IS BUILT AS RAMBLINGS, on purpose and with nothing new designed. A tag page IS a filtered
+  list of posts, which is what ramblings already is, so the same three components do the whole
+  page: page-title-desc for the head, entry-row for the list, empty-state for a tag with nothing
+  in it. Keeping the two pages structurally identical is the point - it is what makes a tag page
+  look like this site instead of like Chirpy.
+
+  `layout: default` RATHER THAN `layout: page`, which is what every ported layout does. The old
+  chain went tag -> page -> default and page.html only added `<article class="px-1">`, a Bootstrap
+  class that D48 is removing anyway.
+
+  jekyll-archives supplies both variables used below: `page.title` is the tag itself and
+  `page.posts` is its post list (_config.yml, the `jekyll-archives` block).
+
+  NO SEARCH FIELD, unlike ramblings. The list is already filtered to one tag, so the field would
+  filter a filter, and it would cost a script include on 19 pages.
+
+  NO THUMBNAIL COLUMN either, unlike ramblings, and that IS a difference worth naming: the tag
+  pages are a lookup surface reached from a chip, so the rows stay dense. `er-row--media` is one
+  class away if Rod wants the pictures back.
+{% endcomment %}
+
+{% assign posts = page.posts %}
+
+<div id="tag-page">
+  <div class="wf">
+
+    <div class="titlebar">
+      {% comment %}
+        The plain `.ptd--sub` preset, not `.ptd--ramblings`: that modifier pins the title box to
+        380px and the description to 520px, both measured off the ramblings blockout. A tag name
+        is one word and has no blockout of its own, so it takes the component's own defaults.
+      {% endcomment %}
+      <div class="ptd ptd--sub">
+        <h1 class="ptd__title d-h1">{{ page.title }}</h1>
+        <p class="ptd__desc">{{ posts.size }} post{% unless posts.size == 1 %}s{% endunless %}</p>
+      </div>
+    </div>
+
+    {% if posts.size == 0 %}
+      {% comment %}
+        jekyll-archives only builds a page for a tag that has posts, so this cannot fire today.
+        It is here because the two other list pages carry it and a list page without an empty
+        state is the thing that breaks the day the generator config changes.
+      {% endcomment %}
+      <div class="es es--stack">
+        <div class="es__content">
+          <p class="es__title">Nothing tagged <b>{{ page.title }}</b> yet</p>
+          <p class="es__body">Check back later.</p>
+        </div>
+      </div>
+    {% else %}
+      <ul class="er-list">
+        {% for post in posts %}
+          {% comment %} The tag this page IS gets no chip - it would link every row back here. {% endcomment %}
+          {% assign chips = post.tags | where_exp: 't', 't != page.title' %}
+          <li class="er-row">
+            <div class="er-body">
+              <div class="er-strip">
+                <span class="er-date">{{ post.date | date: '%Y.%m.%d' }}</span>
+                {% for tag in chips %}
+                  <a class="kit-tag js-magnetic" data-strength="25" href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/">{{ tag }}</a>
+                {% endfor %}
+              </div>
+              <h2 class="er-ttl"><a class="er-link" href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+              {% if post.description %}<p class="er-blurb">{{ post.description }}</p>{% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+  </div>
 </div>

@@ -1,17 +1,42 @@
 ---
 layout: default
 ---
+
+{% comment %}
+  Under construction, ported to the redesign 2026-08-31. It is a stub with three parts and each
+  one is now a component that already shipped:
+    - the title and the line under it   -> page-title-desc  (`.ptd`, `.d-h1` off the type ladder)
+    - the way back                      -> button-kit       (`.kit-button--pill`, the landing's)
+    - the three suggestions             -> related-card-real (`.rc-grid` of `.rc--v1` text cards)
+
+  The lantern and its float are kept as they were. They are the page's one piece of character and
+  the animation is already in `_sass/abstracts/_animations.scss`.
+
+  DROPPED WITH THE OLD PAGE: `.btn.btn-outline-primary.mt-3` and the `me-1` on its icon, all four
+  of them Bootstrap classes, which D48 is deleting; and the hand-built `.recommendation-card`,
+  whose glass panel, hover lift and `.rec-label` / `.rec-title` pair the `.rc` card replaces.
+
+  THE SCRIPT IS UNCHANGED except for the markup it writes. It still reads `?title=` and `?tags=`,
+  still derives the section from the URL, and still falls back to the section's recent posts.
+{% endcomment %}
+
 <div class="under-construction">
-  <div class="construction-icon">🏮</div>
-  <h1 class="construction-title" id="construction-title">Under Construction</h1>
-  <p class="construction-subtitle">This project is still being crafted. Like a lantern waiting for its flame — check back soon!</p>
-  <a id="back-link" href="{{ '/tech-art/projects/' | relative_url }}" class="btn btn-outline-primary mt-3">
-    <i class="fas fa-arrow-left me-1"></i>Back to Projects
+  <div class="construction-icon">&#x1F3EE;</div>
+
+  <div class="ptd ptd--sub">
+    <h1 class="ptd__title d-h1" id="construction-title">{{ page.title | default: 'Under Construction' }}</h1>
+    <p class="ptd__desc">This project is still being crafted. Like a lantern waiting for its flame, check back soon!</p>
+  </div>
+
+  <a id="back-link" class="kit-button kit-button--pill js-magnetic" data-strength="55" data-strength-text="27"
+     href="{{ '/tech-art/projects/' | relative_url }}">
+    <span class="kit-button__fill" aria-hidden="true"></span>
+    <span class="kit-button__label js-magnetic-inner">Back to projects</span>
   </a>
 
-  <div id="recommendations" class="recommendations" style="display:none;">
+  <div id="recommendations" class="recommendations" hidden>
     <p class="recommendations-title">Pages you might like</p>
-    <div id="recommendations-list" class="recommendations-grid"></div>
+    <div id="recommendations-list" class="rc-grid"></div>
   </div>
 </div>
 
@@ -19,7 +44,7 @@ layout: default
 <script>
   (function() {
     var params = new URLSearchParams(window.location.search);
-    /* Derive section from URL path: /tech-art/under-construction/ → tech-art */
+    /* Derive section from URL path: /tech-art/under-construction/ -> tech-art */
     var pathParts = window.location.pathname.split('/').filter(Boolean);
     var section = pathParts.length > 1 ? pathParts[0] : null;
     var title = params.get('title');
@@ -32,6 +57,34 @@ layout: default
 
     if (title) {
       document.getElementById('construction-title').textContent = title;
+    }
+
+    /* One card, so the two branches below cannot drift apart in markup the way they used to.
+       `.rc--v1` is the text-only version of the related card: it hides the cover slot, which is
+       what this page needs, because the JSON below carries no image. */
+    function addCard(container, rec, related) {
+      var a = document.createElement('a');
+      a.href = rec.url;
+      a.className = 'rc rc--v1';
+      var body = document.createElement('div');
+      body.className = 'rc__body';
+      var ttl = document.createElement('div');
+      ttl.className = 'rc__title';
+      ttl.textContent = rec.title;
+      var meta = document.createElement('div');
+      meta.className = 'rc__meta';
+      meta.textContent = related ? 'Related project' : 'Explore';
+      body.appendChild(ttl);
+      body.appendChild(meta);
+      a.appendChild(body);
+      container.appendChild(a);
+    }
+
+    function show(top, related) {
+      if (top.length === 0) return;
+      var container = document.getElementById('recommendations-list');
+      top.forEach(function(rec) { addCard(container, rec, related); });
+      document.getElementById('recommendations').hidden = false;
     }
 
     if (tags && section) {
@@ -62,40 +115,17 @@ layout: default
         top = sectionPosts.slice(0, 3).map(function(p) { return { title: p.title, url: p.url, score: 0 }; });
       }
 
-      if (top.length > 0) {
-        var container = document.getElementById('recommendations-list');
-        top.forEach(function(rec) {
-          var a = document.createElement('a');
-          a.href = rec.url;
-          a.className = 'recommendation-card';
-          var label = rec.score > 0 ? '<i class="fas fa-fire"></i> Related Project' : '<i class="fas fa-compass"></i> Explore';
-          a.innerHTML = '<span class="rec-label">' + label + '</span><span class="rec-title">' + rec.title + '</span>';
-          container.appendChild(a);
-        });
-        document.getElementById('recommendations').style.display = '';
-      }
+      show(top, top.length > 0 && top[0].score > 0);
     }
 
-    /* Fallback: no tags param at all — show recent posts from section */
+    /* Fallback: no tags param at all - show recent posts from section */
     if (!tags && section) {
-      var allPosts = [
+      var recentPosts = [
         {% for post in site.posts %}{% unless post.wip %}
         { "title": {{ post.title | jsonify }}, "url": {{ post.url | jsonify }}, "section": {{ post.section | jsonify }}, "tags": {{ post.tags | jsonify }} },
         {% endunless %}{% endfor %}
       ];
-      var sectionPosts = allPosts.filter(function(p) { return p.section === section; });
-      var top = sectionPosts.slice(0, 3);
-      if (top.length > 0) {
-        var container = document.getElementById('recommendations-list');
-        top.forEach(function(rec) {
-          var a = document.createElement('a');
-          a.href = rec.url;
-          a.className = 'recommendation-card';
-          a.innerHTML = '<span class="rec-label"><i class="fas fa-compass"></i> Explore</span><span class="rec-title">' + rec.title + '</span>';
-          container.appendChild(a);
-        });
-        document.getElementById('recommendations').style.display = '';
-      }
+      show(recentPosts.filter(function(p) { return p.section === section; }).slice(0, 3), false);
     }
   })();
 </script>

@@ -4,17 +4,36 @@ title: "404"
 permalink: /404.html
 ---
 
-<!-- Three.js minimal background — embers only -->
-<script src="{{ '/assets/js/dist/three-background-minimal.min.js' | relative_url }}"></script>
+{% comment %}
+  The embers bundle used to be requested here. It is requested by _includes/chrome-scripts.html
+  now, under the `embers` scene tier, because asking for it here got it loaded TWICE: the layout
+  handed this page the full 843 KB scene as well, so a dead link cost about 1.4 MB of 3D.
+
+  PORTED TO THE REDESIGN 2026-08-31. The lantern, the 404 numeral and the copy are unchanged. What
+  changed is who draws the two pieces of text and the button:
+    - the title and the line under it -> page-title-desc (`.ptd`, `.d-h1` off the type ladder)
+    - the way home                    -> button-kit (`.kit-button--pill`, the landing page's)
+  Both replace hand-written rules in `_sass/abstracts/_animations.scss` that only this page used.
+  The `me-2` on the icon went with them: it is Bootstrap, which D48 is deleting.
+
+  THE PAGE FITS ONE SCREEN AND THE FIX IS IN CSS, not here. See the block at the top of
+  `_sass/pages/_home.scss`: the height was never this block, it was a `min-height: 100vh` on the
+  Bootstrap container that wraps it.
+{% endcomment %}
 
 <div class="not-found">
   <div class="not-found-lantern">&#x1F3EE;</div>
-  <h1 class="not-found-title">This lantern has drifted away...</h1>
-  <p class="not-found-subtitle">
-    The page you're looking for doesn't exist, or it floated off into the night sky.
-  </p>
+
+  <div class="ptd ptd--sub">
+    <h1 class="ptd__title d-h1">This lantern has drifted away...</h1>
+    <p class="ptd__desc">The page you're looking for doesn't exist, or it floated off into the night sky.</p>
+  </div>
+
   <div class="not-found-code">404</div>
-  <a href="{{ '/' | relative_url }}" class="not-found-btn">
-    <i class="fas fa-home me-2"></i>Back to the Night Market
+
+  <a class="kit-button kit-button--pill js-magnetic" data-strength="55" data-strength-text="27"
+     href="{{ '/' | relative_url }}">
+    <span class="kit-button__fill" aria-hidden="true"></span>
+    <span class="kit-button__label js-magnetic-inner">Back to the Night Market</span>
   </a>
 </div>

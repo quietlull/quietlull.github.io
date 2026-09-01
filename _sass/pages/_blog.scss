@@ -1,0 +1,46 @@
+// The Blogs index page, rewritten 2026-08-31 when `_layouts/blog.html` was ported to the redesign.
+
+// WHAT WAS HERE. 171 lines of rules for the old Bootstrap card row: `.posts-vertical`,
+// `.post-vertical-bar`, `.vertical-bar-link`, `.vertical-bar-container`, `.vertical-bar-img`,
+// `.vertical-bar-img-wrapper`, `.vertical-bar-content`, `.vertical-badge-pinned`, a six-step
+// firefly stagger loop, two breakpoint blocks, plus `.reading-time` and `.no-posts`, which an
+// earlier pass moved in here specifically to keep them alive for this page. The page carries none
+// of that markup any more, so all of it went. The page is components now (page-title-desc,
+// search-field, entry-row, empty-state) and what is left here is the column and the gaps between
+// its parts, which is the same job `_sass/pages/_ramblings.scss` does for Ramblings.
+
+// THE FILENAME IS NOW WRONG, and that is a handoff rather than an oversight. There is no
+// "blogs preview" on this site. It should be `_sass/pages/_blog.scss`, which means editing
+// `_sass/layout/_index.scss` and `_sass/pages/_index.scss`, and both belong to another pass.
+
+// UNLAYERED ON PURPOSE: page stylesheets sit outside the layers so a page can override a
+// component (D36). Do not wrap this in `@layer`.
+
+#blog-page {
+  position: relative;
+  z-index: var(--z-content);
+
+  // Ramblings' column, to the pixel, because it is the same list of rows read at the same measure.
+  // The page is not in `default.html`'s `full_bleed` list yet, so in production the Bootstrap
+  // container caps it a little narrower than this. That is a handoff, not a defect.
+  width: min(1170px, 92vw);
+  margin: 0 auto;
+  padding: 56px 0 200px;
+
+  .blog-titlebar {
+    padding: 37px 0;
+    text-align: center;
+  }
+
+  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the type
+  // ladder's own `h1 { margin: 0 }` and pushes the title down. Restated here, the same way
+  // Ramblings, Projects and the post page all have to restate it.
+  .ptd__title { margin: 0; }
+
+  .blog-searchrow { margin-bottom: 20px; }
+
+  // The component draws the box; the height is the page's, and it is Ramblings' 50px.
+  .sf--ronja { height: 50px; }
+
+  .er-list { margin-bottom: 24px; }
+}
