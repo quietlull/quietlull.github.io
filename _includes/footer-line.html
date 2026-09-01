@@ -41,7 +41,7 @@
       The landing does not get one - it would link to itself.
     {% endcomment %}
     {% if page.url != landing_url %}
-      <a class="footer-line__item footer-line__back" href="{{ landing_url | relative_url }}">&larr;
+      <a class="footer-line__item" href="{{ landing_url | relative_url }}">&larr;
         {%- if nav_section != '' %} Landing{% else %} Home{% endif -%}
       </a>
       <a class="footer-line__item footer-line__name" href="{{ landing_url | relative_url }}">Rodney Fan</a>

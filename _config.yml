@@ -57,21 +57,14 @@ webmaster_verifications:
 # The end of `jekyll-seo-tag` settings
 
 # Web Analytics Settings
+# GOATCOUNTER ONLY. The other five provider stanzas (google, umami, matomo, cloudflare, fathom)
+# were removed 2026-08-25 along with their include files, per Rod's strip ruling ("delete the
+# things we arent using ... we can just add back later"). THE TRAP THEIR REMOVAL SETS: head.html
+# still loops this map, so re-adding a stanza WITH AN ID now fails the build with "Could not
+# locate the included file" - restore the matching _includes/analytics/<name>.html from git first.
 analytics:
-  google:
-    id: # fill in your Google Analytics ID
   goatcounter:
     id: aquietlull
-  umami:
-    id: # fill in your Umami ID
-    domain: # fill in your Umami domain
-  matomo:
-    id: # fill in your Matomo ID
-    domain: # fill in your Matomo domain
-  cloudflare:
-    id: # fill in your Cloudflare Web Analytics token
-  fathom:
-    id: # fill in your Fathom Site ID
 
 # Page views settings
 pageviews:
@@ -108,15 +101,10 @@ social_preview_image: # string, local or CORS resources
 toc: true
 
 comments:
-  # Global switch for the post-comment system. Keeping it empty means disabled.
-  provider: giscus # [disqus | utterances | giscus]
-  # The provider options are as follows:
-  disqus:
-    shortname: # fill with the Disqus shortname. › https://help.disqus.com/en/articles/1717111-what-s-a-shortname
-  # utterances settings › https://utteranc.es/
-  utterances:
-    repo: # <gh-username>/<repo>
-    issue_term: # < url | pathname | title | ...>
+  # GISCUS ONLY. disqus and utterances were removed 2026-08-25 with their include files (same
+  # strip ruling as analytics above). comment.html builds the include path from this value, so
+  # setting a removed provider here now fails the build - restore its include from git first.
+  provider: giscus
   # Giscus options › https://giscus.app
   giscus:
     repo: quietlull/quietlull.github.io
