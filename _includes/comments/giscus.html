@@ -1,6 +1,10 @@
 <!-- https://giscus.app/ -->
 <script>
-  (function () {
+  // OURS (re-apply on Chirpy upgrade): stock runs this IIFE at parse time and anchors on
+  // document.querySelector('footer'). The redesign moved the footer BELOW main, so at parse
+  // time it did not exist yet and the mount threw on null. DOMContentLoaded is the smallest
+  // change that waits for it; everything inside is stock.
+  document.addEventListener('DOMContentLoaded', function () {
     const themeMapper = Theme.getThemeMapper('light', 'dark_dimmed');
     const initTheme = themeMapper[Theme.visualState];
 
@@ -51,5 +55,5 @@
         giscus.postMessage({ giscus: message }, 'https://giscus.app');
       }
     });
-  })();
+  });
 </script>
