@@ -51,3 +51,35 @@ resolved, so nothing may be prepended to it. Patch is commented in place and poi
 
 **If Chirpy is ever updated, re-apply this.** The symptom is doubled path segments in `<img src>` and
 it does not error - the page renders with broken images and nothing in the console.
+
+## Our lines in near-stock files (re-apply after any Chirpy upgrade)
+
+Phase 2, decision D47. These seven files are near-stock Chirpy 7.3.1. On an upgrade, overwrite
+each one with the new upstream copy, then re-apply only what is listed here. Every kept
+difference is also marked in place with an `OURS:` comment, so grepping a file for `OURS` finds
+the exact spot.
+
+- `_includes/media-url.html` (marker at line 18): absolute-path guard. Do not prepend
+  `media_subpath` to a path that already starts with `/`. This is the documented upstream-bug
+  patch from the section above; losing it breaks 21 images and fails html-proofer.
+- `_includes/refactor-content.html` (markers at lines 132 and 173): two differences.
+  1. Cover/preview images (class contains `preview-img`) resolve WITHOUT the post's
+     `media_subpath`; every other image keeps upstream's subpath handling.
+  2. Upstream's image-wrapper block is deleted: stock Chirpy wraps every post image in a
+     lightbox link (`a.popup.img-link`) or, on the home layout, a `div.preview-img`. We emit
+     the bare `<img>`. Re-apply the deletion (it is a removal, not an addition).
+- `_includes/read-time.html`: stock, byte-identical to upstream. Nothing to re-apply.
+- `_includes/pageviews/goatcounter.html` (marker at line 13): the count parser strips every
+  non-digit (`/\D/g`) instead of upstream's whitespace-only (`/\s/g`), so a formatted count
+  like "1,234" still parses.
+- `_javascript/modules/components/clipboard.js` (marker at line 94): on a successful copy,
+  dispatch the `achievement:codecopy` event and fire `window.sparklerBurst` centred on the
+  copy button. Rebuild the bundles after re-applying (`npm run build`).
+- `_javascript/modules/components/img-popup.js` (marker at line 40): dispatch the
+  `achievement:imageenlarge` event when the lightbox opens. Rebuild the bundles after
+  re-applying.
+- `_sass/base/_syntax.scss` (markers at lines 70 and 116): two differences.
+  1. Inline code uses `overflow-wrap: break-word` instead of upstream's deprecated
+     `word-break: break-word` (our stylelint rejects the old keyword; same wrapping).
+  2. Code blocks add chrome on top of upstream's 1px ring: a soft outer shadow, a faint
+     amber border, and a backdrop blur.

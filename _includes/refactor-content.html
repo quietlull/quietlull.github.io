@@ -128,13 +128,18 @@
     {% assign _final_src = null %}
     {% assign _lazyload = true %}
 
+    {%- comment -%}
+      OURS: preview images (post cover images) resolve without the post's media_subpath, so a
+      shared cover asset does not get a post folder prepended; everything else keeps upstream's
+      subpath handling (re-apply on Chirpy upgrade)
+    {%- endcomment -%}
     {%- capture _img_url -%}
-{%- if _class contains 'preview-img' -%}
-{%- include media-url.html src=_src -%}
-{%- else -%}
-{%- include media-url.html src=_src subpath=page.media_subpath -%}
-{%- endif -%}
-{%- endcapture -%}
+      {%- if _class contains 'preview-img' -%}
+        {%- include media-url.html src=_src -%}
+      {%- else -%}
+        {%- include media-url.html src=_src subpath=page.media_subpath -%}
+      {%- endif -%}
+    {%- endcapture -%}
 
     {% assign _path_prefix = _img_url | remove: _src %}
 
@@ -165,7 +170,7 @@
       {% assign _left = _left | append: ' loading="lazy"' %}
     {% endif %}
 
-
+{% comment %} OURS: upstream wrapped every post image here in a lightbox link (a.popup.img-link) or a home preview div; the wrapper block is deleted and images render unwrapped. Re-apply this deletion on a Chirpy upgrade. {% endcomment %}
 
     <!-- combine -->
     {% assign _img_content = _img_content | append: IMG_TAG | append: _left | append: _right %}

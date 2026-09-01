@@ -91,6 +91,7 @@ function setCodeClipboard() {
     setSuccessIcon(trigger);
     showTooltip(trigger);
     lock(trigger);
+    // OURS: achievement hook + sparkler burst on a successful copy (re-apply on Chirpy upgrade)
     document.dispatchEvent(new Event('achievement:codecopy'));
 
     if (typeof window.sparklerBurst === 'function') {

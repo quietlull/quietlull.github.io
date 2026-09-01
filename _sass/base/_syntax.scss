@@ -66,6 +66,9 @@ code {
   &.highlighter-rouge {
     font-size: v.$code-font-size;
     padding: 3px 5px;
+
+    // OURS: upstream has word-break: break-word, a deprecated keyword our stylelint rejects;
+    // same wrapping behaviour (re-apply on Chirpy upgrade)
     overflow-wrap: break-word;
     border-radius: v.$radius-sm;
     background-color: var(--inline-code-bg);
@@ -110,6 +113,8 @@ div[class^='language-'] {
   @extend %rounded;
   @extend %code-snippet-bg;
 
+  // OURS: code-block chrome: upstream is the 1px ring only; we add a soft outer shadow, a
+  // faint amber border, and a backdrop blur (re-apply on Chirpy upgrade)
   box-shadow: var(--language-border-color) 0 0 0 1px,
     0 4px 20px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(245, 158, 11, 0.08);
@@ -247,7 +252,7 @@ div {
     }
 
     &:not([timeout]):hover {
-      background-color: rgb(128 128 128 / 0.37);
+      background-color: rgba(128, 128, 128, 0.37);
 
       i {
         color: white;
