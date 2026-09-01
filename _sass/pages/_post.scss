@@ -202,7 +202,14 @@
      cross-origin and therefore cannot be read from script, which is why no earlier sweep of ours
      ever saw it. The rule above already paints our gold bar as the link's `border-left`, so the
      list was carrying TWO left bars in two different colours. This removes theirs and leaves ours. */
-  .toc a.is-active-link::before { display: none; }
+  /* WIDENED FROM THE ACTIVE LINK TO EVERY LINK, Rod 2026-09-01: "we already have the yellow
+     and grey lines for TOC we dont need this white one ... the main issue is its inconsistent".
+     tocbot draws its faint rail as a `::before` on EVERY link, and suppressing only the active
+     one (the first version of this fix) is exactly what made the two states disagree: with the
+     first item active its segment vanished from the top of the rail, with any later item
+     active the rail ran unbroken beside our gold bar. One selector, the whole rail gone, and
+     the yellow-active grey-rest system is the only one left drawing. */
+  .toc a::before { display: none; }
 
   // ---- the foot ------------------------------------------------------------------------------
 
