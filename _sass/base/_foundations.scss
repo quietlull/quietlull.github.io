@@ -72,3 +72,12 @@ body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none
    "redesign-lab" in other class names.
     above is deliberately KEPT: it sits above the old bench line, so it is real ground. */
 }
+
+/* THE TWO SURVIVORS OF BOOTSTRAP (D48). Everything else the framework supplied was either unused
+   or already re-specified by our own components; these two class names are toggled or carried by
+   markup and scripts we keep, so they get three lines here instead of a framework:
+     .d-none     - mermaid.js:29 hides the pre-render backup element with it
+     .invisible  - the post's #toc-bar ships with it and scripts toggle it on scroll
+   Named identically on purpose: renaming would mean editing stock Chirpy scripts (D2). */
+.d-none { display: none !important; }
+.invisible { visibility: hidden; }

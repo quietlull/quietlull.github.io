@@ -1,11 +1,9 @@
 ---
 ---
 
-/* prettier-ignore */
-@use 'main
-{%- if jekyll.environment == 'production' -%}
-  .bundle
-{%- endif -%}
-';
+/* One entry for every environment. The production build used to swap in `main.bundle`, whose
+   only job was prepending the purged Bootstrap; Bootstrap is gone (D48), so dev and prod now
+   compile the identical sheet and a whole class of dev-vs-prod layout surprises dies with it. */
+@use 'main';
 
 /* append your custom style below */

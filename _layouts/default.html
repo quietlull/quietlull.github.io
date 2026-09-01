@@ -119,46 +119,21 @@ layout: compress
       <main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% endif %}>{% include refactor-content.html content=content lang=lang %}</main>
     {% else %}
 
-    <div id="main-wrapper" class="d-flex justify-content-center">
-      <div class="container d-flex flex-column px-xxl-5">
-        <div class="row flex-grow-1" id="main-content">
-          {% if layout.panel_includes %}
-          <main aria-label="Main Content" class="col-12 col-lg-11 col-xl-10 px-md-4"{% if page.section %} data-section="{{ page.section }}"{% endif %}>
-          {% else %}
-          <main aria-label="Main Content" class="col-12 px-md-4"{% if page.section %} data-section="{{ page.section }}"{% endif %}>
-          {% endif %}
-            {% if layout.refactor or layout.layout == 'default' %}
-              {% include refactor-content.html content=content lang=lang %}
-            {% else %}
-              {{ content }}
-            {% endif %}
-          </main>
-
-          {% if layout.panel_includes %}
-          <!-- panel -->
-          <aside aria-label="Panel" id="panel-wrapper" class="col-xl-2 ps-2 text-muted">
-            {% for _include in layout.panel_includes %}
-              {% assign _include_path = _include | append: '.html' %}
-              {% include {{ _include_path }} lang=lang %}
-            {% endfor %}
-          </aside>
-          {% endif %}
-        </div>
-
-        {% comment %}
-          THE TAIL COLUMN IS GONE, 2026-08-25. It existed to render `layout.tail_includes`, and
-          NOTHING SETS THAT ANY MORE - `_layouts/post.html:13` records the removal. Verified before
-          deleting rather than after: no layout, tab, page or config sets `tail_includes` or
-          `panel_includes`, and all 25 `#tail-wrapper` divs in the built site contained nothing but
-          whitespace. So this was an empty row plus an empty column on a quarter of the site.
-          The footer used to sit in here too; it is now a sibling of `#main-wrapper` below, and that
-          move is explained where it landed.
-        {% endcomment %}
-
-      </div>
-
-    </div>
-
+    {% comment %}
+      ONE PLAIN COLUMN, no framework. The Bootstrap scaffold that stood here
+      (#main-wrapper > .container > .row > main.col-12) served exactly one page by the time it
+      went - the 404 - because every ported layout is in the full_bleed list above and skips it.
+      Its grid classes were also the last thing keeping Bootstrap in the build (D48). The panel
+      branch died with it: nothing sets `panel_includes` any more, same as the tail column that
+      left earlier. `.page-column` lives in _sass/pages/_stub-pages.scss.
+    {% endcomment %}
+    <main id="main-content" aria-label="Main Content" class="page-column"{% if page.section %} data-section="{{ page.section }}"{% endif %}>
+      {% if layout.refactor or layout.layout == 'default' %}
+        {% include refactor-content.html content=content lang=lang %}
+      {% else %}
+        {{ content }}
+      {% endif %}
+    </main>
     {% endif %}
 
     {% comment %}

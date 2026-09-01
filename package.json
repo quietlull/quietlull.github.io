@@ -15,7 +15,6 @@
   "type": "module",
   "scripts": {
     "build": "concurrently npm:build:*",
-    "build:css": "node purgecss.js",
     "build:js": "rollup -c --bundleConfigAsCjs --environment BUILD:production",
     "watch:js": "rollup -c --bundleConfigAsCjs -w",
     "lint:js": "eslint",

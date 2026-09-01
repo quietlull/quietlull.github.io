@@ -17,33 +17,19 @@
 
 // ---- 404 ---------------------------------------------------------------------------------------
 
-/* THE 404 FITS ONE SCREEN, WITHOUT CLIPPING ANYTHING. Rod 2026-08-25: "dont let it scroll down
-   anymore." The page measured 1025px in a 900px window and was being held still by an
-   `overflow: hidden` on the body, which stopped the scroll by cutting the footer off.
+/* THE 404 FITS ONE SCREEN. Rod 2026-08-25: "dont let it scroll down anymore."
+   The fix went through three shapes and the history matters enough to keep: the page measured
+   1025px in a 900px window because Bootstrap's container carried a 100vh minimum from an
+   ID-bearing rule in _base.scss, and two overrides lost to that ID before one carried the ID too.
+   THEN D48 DELETED THE WHOLE SCAFFOLD (2026-09-01), container, rule and all, so no override is
+   needed any more - the sizing below is the entire mechanism now.
 
-   THE HEIGHT WAS NEVER THE 404 BLOCK. That block is 575px and always fitted. It is
-   `#main-wrapper > .container { min-height: 100vh }` in `_sass/base/_base.scss`, so the bar's 96px
-   and the footer's 30px stacked on top of a full viewport.
-
-   AN EARLIER FIX WROTE `body[data-scene-tier='embers'] .container { min-height: 0 }` and it never
-   applied, which is why the clip was still needed. That selector scores one attribute and one
-   class; the rule it has to beat carries an ID, and an ID wins outright. The selector below
-   carries the ID too, so it actually lands. Both are unlayered, so this is specificity, not order.
-
-   `dvh`, not `vh`, so a phone's collapsing address bar cannot reintroduce the scroll. */
-body[data-scene-tier='embers'] {
-  #main-wrapper > .container { min-height: 0; }
-
-  /* The block takes the screen the bar and the footer leave, and centres its contents in it,
-     which is what the container's 100vh used to do by accident.
-     THE 40px IS A BUDGET, not one measurement: 29px of it is the footer, which
-     `_sass/components/_footer-line.scss` states as its own measured height; 2px is the bar's
-     border, which `--top-bar-height` excludes because the token is the padding box; and the last
-     9px is slack, so a rounding error cannot put the page back over the top.
-     `--top-bar-height` is on `:root` and grows when the bar stacks to two rows, so this follows
-     the bar across every breakpoint instead of hard-coding the 96 Rod measured. */
-  .not-found { min-height: calc(100dvh - var(--top-bar-height) - 40px); }
-}
+   The block takes the screen the bar and the footer leave and centres its contents in it.
+   THE 40px IS A BUDGET, not one measurement: 29px is the footer's own stated height, 2px the bar
+   border its token excludes, 9px slack so a rounding error cannot put the page back over the top.
+   `--top-bar-height` sits on `:root` and grows when the bar stacks, so this follows every
+   breakpoint. `dvh`, not `vh`, so a phone's collapsing address bar cannot reintroduce the scroll. */
+.not-found { min-height: calc(100dvh - var(--top-bar-height) - 40px); }
 
 /* The title and the line under it are `page-title-desc` now, so the geometry the old
    `.not-found-title` / `.not-found-subtitle` rules carried has to be restated on the component's
@@ -92,3 +78,12 @@ body[data-scene-tier='embers'] {
 }
 
 .under-construction .ptd__title { margin: 0; }
+
+/* The one plain column for pages outside the full-bleed list - today the 404 and
+   under-construction. Replaces Bootstrap's container: same centring, no framework, and the
+   1170px matches the ported list pages so a stub does not read narrower than a real page. */
+.page-column {
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 0 24px;
+}

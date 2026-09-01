@@ -353,6 +353,11 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
 }
 
 #toc-bar {
+  /* The row layout d-flex used to supply (D48). */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   position: -webkit-sticky;
   position: sticky;
   top: 0;
