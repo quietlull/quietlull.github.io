@@ -441,7 +441,7 @@ that was never built, so this doubles as the "what is still missing" check befor
 
 **The constraint that governs every line: `redesign-lab/` is gitignored.** No blobs, no reflog, no
 stash behind any of its 800 files. A wrong `rm` is permanent, so every DELETE needs Rod's per-line
-sign-off. `archive/versions/` (54 scene snapshots) is the ONLY version history the lab has, which is
+sign-off. `archive/versions/` WAS the only version history the lab had; Rod gave the direct answer 2026-08-25 ("keep the final and keep a list of what changed") and the 54 snapshots are gone. The finals were verified byte-identical to the live lab-root files first, and the condensed diff trail is `redesign-lab/archive/VERSIONS.md`. The old guard line continued:
 why it sits in ASK and not DELETE.
 
 | bucket | files | MB |

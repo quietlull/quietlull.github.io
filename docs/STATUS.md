@@ -1,7 +1,34 @@
 # Status
 
-**THE REDESIGN IS MERGED AND LIVE.** Compiled 2026-08-26 after the overnight merge. Everything below
-was measured that morning, not recalled.
+**THE WHOLE SITE IS PORTED AND THE STRIP PASS HAS RUN.** Compiled 2026-08-25 evening, after the
+audit-and-fix session. Everything below is measured, not recalled.
+
+## The one-screen update (2026-08-25 evening)
+
+- **All 53 pages are the redesign now.** The 25 that were still old Chirpy (19 tag pages, the
+  archive, game-design/blogs, under-construction, the 404) were ported in one pass under D46,
+  reusing only shipped components: page-title-desc, entry-row, kit buttons, empty-state.
+- **The strip pass ran under D47/his "delete the things we arent using":** both dead comment
+  providers, six unused embeds, five unused analytics providers, mode-toggle and its callers,
+  post-filter.js, the slap-toggle chain, three old layout stylesheets, the sidebar dimmer, the
+  empty tail column, four unreachable includes. The PWA stays - it is genuinely live in production.
+- **Phase 1 of the refactor is DONE**: `THEME-BOUNDARY-AUDIT.md`, every file diffed against
+  upstream 7.3.1. After the strip: 25 stock / 46 modified / 81 ours / 39 deleted.
+- **`npm test` PASSES for the first time** - eslint 0 (and it finally checks `assets/js`, which it
+  had been skipping while linting the gitignored lab), stylelint 0, and the Dart Sass 3 `join()`
+  deprecation is fixed.
+- **The lab is entering version control** (D49): cleaned 140 MB to 75 MB (WebP screenshots, the 54
+  scene snapshots condensed to `archive/VERSIONS.md` on Rod's ruling), `.gitignore` now admits it
+  while keeping the two hold piles out, and the deploy workflow deletes it from `_site` before
+  upload so it never ships.
+- **A day of measured fixes landed before that:** sticky restored site-wide (`overflow-x: clip`),
+  the boil wordmark first-paints in its own face, the cursor glow escaped `#scrim`, the rejected
+  card hover glow is gone, the mobile TOC has a background, Rouge code colours render, heading
+  weight 300 -> 500, Bootstrap-free local parity understood (dev builds `main`, prod `main.bundle`).
+- **Not committed yet.** The working tree holds all of it; committing in themed chunks is the next
+  action. Bootstrap removal (D48) and the callout decision are the two open fronts.
+
+## The previous snapshot (2026-08-26 morning), kept for contrast
 
 ## Where things stand in one screen
 

@@ -19,9 +19,12 @@ Label every file in `_layouts/`, `_includes/`, `_sass/`, `_javascript/` as one o
 - **modified** - upstream file with our logic spliced in (extraction candidates)
 - **custom** - wholly ours, no upstream equivalent
 
-| File | Label | Notes |
-| --- | --- | --- |
-| (audit pending - deferred until post-redesign) | | |
+**THE AUDIT IS DONE, 2026-08-25, and it lives in its own file because it is 165 rows:**
+[THEME-BOUNDARY-AUDIT.md](THEME-BOUNDARY-AUDIT.md).
+
+Headline after the strip pass and the tag/archive port (2026-08-25, same day): **25 stock, 46 modified, 81 ours, 39 upstream files deleted.** The stock column is the only strip-or-keep surface left, and it is mostly the live comment, analytics and TOC machinery now. Half the tree is
+wholly ours. The deferral that kept this table empty said "post-redesign", and the redesign has
+merged, so it expired rather than being waived.
 
 Known-modified from the scan: `_layouts/default.html` (skip-link, `data-section` injection),
 `_layouts/post.html` (worst offender - see below), `_includes/topbar.html`, `_includes/head.html`,

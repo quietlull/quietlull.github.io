@@ -1,3 +1,32 @@
+# 2026-08-25, evening - THE FULL PORT, THE STRIP, AND A GREEN TEST
+
+**Every page is the redesign now.** The 25 un-ported pages went in one parallel pass (D46): tag
+pages and the archive rebuilt on entry rows like ramblings, game-design/blogs likewise (its whole
+171-line stylesheet reduced to a 46-line column), under-construction and the 404 on page-title-desc
+and kit buttons. The 404 took three attempts across two sessions because an ID selector beat every
+override; the working fix carries the ID and the failed block's comment now maps the trap.
+
+**The strip ran under Rod's "delete the things we arent using ... we can just add back later":**
+14 dead Chirpy files (comment providers, embeds, analytics), mode-toggle and the dark/light half of
+theme.js, post-filter.js, the slap-toggle chain, three old layout stylesheets whose unlayered rules
+were beating the new components, the sidebar dimmer and the empty tail column from every page, and
+four unreachable includes. The PWA survived its own execution: its registration hides in a
+production-only script tag, and it is live.
+
+**`npm test` passes for the first time in the repo's history that anyone can find.** The eslint
+ignore list was inverted - shipped `assets/js` skipped, the gitignored lab linted - and a
+`.claude/worktrees` checkout supplied 3,317 of the 3,499 errors. stylelint went 1,746 -> 0 via the
+BEM pattern STYLE.md mandates, notation rules matched to the house style rather than auto-rewriting
+provenance quotes, four style-fighting rules disabled with reasons, and a small tail of real fixes
+(the Dart Sass 3 `join()` removal among them).
+
+**The lab is coming into git** (D49): 140 -> 75 MB (screenshots to verified WebP, references
+rewritten; the 54 scene snapshots deleted on Rod's direct ruling with their diff trail condensed
+into `archive/VERSIONS.md`, finals verified byte-identical first). `.gitignore` admits the lab,
+keeps the two hold piles out; the deploy workflow deletes `redesign-lab/` from `_site` after the
+build so it cannot ship. Phase 1 of the refactor is done and regenerated post-strip:
+25 stock / 46 modified / 81 ours / 39 deleted against upstream 7.3.1.
+
 # 2026-08-24, late - THE TUNING HANDOVER, AND FIVE OF SIX PAGES BUILT
 
 **Rod took the numbers.** Three tuners were built and he is now tuning his own pages and pasting the

@@ -1514,3 +1514,64 @@ that this element is positioned such that it remains within the viewport."
 reference a technique came from, which of Rod's calls changed a value, what was measured. Losing
 that wholesale would gut the provenance record. So: the reasoning moves to the component's `.md`
 where prose belongs, and the code keeps one line pointing at it. **Trim the file, not the record.**
+
+## D46 - Port all 25 un-ported pages, and accept them rough on the way (2026-08-25, ROD)
+
+Rod, asked what happens to the half of the site the redesign never reached: **"port them all Its ok
+if these pages end up a little broken we can fix it once everything lands."**
+
+The 25 are the 19 tag pages, the archive, `game-design/blogs`, `under-construction`, and the 404.
+Measured: exactly half the built site (25 of 53) still renders through old Chirpy machinery, which
+is precisely what keeps that machinery alive. An agent tonight kept `_sass/layout/_blogspreview.scss`
+for exactly one consumer, `game-design/blogs`.
+
+**What makes this a decision rather than a task:** it sets the ORDER. Porting first and stripping
+second means every strip has a smaller surface to prove safe, because the old pages stop being the
+reason to keep things. Stripping first would mean proving each removal safe against 25 pages that
+are about to be replaced anyway. His "a little broken is fine" is what makes port-first affordable.
+
+## D47 - Strip Chirpy down, do not remove it (2026-08-25, ROD)
+
+Rod: **"i don't necessarily think we NEED to remove all of chirpy but we should strip it down get
+rid of things that are unused and integrate and try to customize the things we do use."**
+
+This settles a question the plan had left open and my own notes had recorded as "strip Chirpy" with
+a `(rec)` next to it, i.e. a recommendation nobody had ruled on. **The goal is not a theme swap.**
+Phase 3 of REFACTOR-PLAN.md ("theme-swap readiness") is therefore not the target it was written as,
+and should be re-read as "own our layer" rather than "be able to swap the theme out".
+
+The Phase 1 audit makes this immediately actionable: **40 files are byte-identical to upstream** and
+are the only real strip-or-keep surface. 81 are already wholly ours and 44 are hybrids, of which the
+top five are 89 to 100 percent changed and are ours wearing an upstream filename.
+
+## D48 - Bootstrap goes, completely (2026-08-25, ROD)
+
+Rod: **"Sure lets get rid of bootstrap completely everything should be custom components anyways."**
+
+**The unusual thing here is that this has already been under test for weeks without anyone
+realising.** `assets/css/jekyll-theme-chirpy.scss` picks `main` in development and `main.bundle` in
+production, and only `main.bundle` pulls Bootstrap in. So the localhost build Rod reviews from has
+never contained Bootstrap at all. Every visual judgement he has made this session was made against a
+Bootstrap-free site, and what he reported were specific bugs rather than a broken layout.
+
+That is real evidence for the 28 ported pages. It is NOT evidence for the other 25, which lean on
+Bootstrap's grid and utilities and only look right in production. Which is why D46 comes first.
+
+Consequence to plan for: the `.container` / `.row` / `col-*` grid in `_layouts/default.html` is
+Bootstrap, so removing it is a layout change on every page, not a stylesheet swap.
+
+## D49 - The lab is kept and version-controlled, but only after it is clean and sealed (2026-08-25, ROD)
+
+Rod: **"we should actually keep it clean and un-gitignore it we actually do want to keep it provided
+its much cleaner and cant be accessed and wont be built on the main site when it ships."**
+
+Three conditions, and **the ORDER of the work is forced by a hazard rather than by preference:**
+
+1. **Seal it first.** `redesign-lab/` is in `.gitignore` but is NOT in `_config.yml`'s `exclude:`
+   list, and Jekyll is building it right now - that is why it is browsable at localhost. Un-ignoring
+   it before excluding it would publish all 294 pages on the next deploy.
+2. **Clean it second.** It is 140 MB across 294 HTML pages and 185 images.
+3. **Un-ignore it last.** Git keeps blobs forever, so committing 140 MB is close to irreversible;
+   the size has to come down BEFORE the first commit, not after.
+
+Doing these in any other order either ships the workbench publicly or bakes 140 MB into history.

@@ -10,6 +10,7 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
 - [ARCHITECTURE-HANDOFF.md](ARCHITECTURE-HANDOFF.md) - **start here for the optimization / restructure**: every file with who loads it, the layer model and its live collisions, the 84 tokens, ranked duplication, and what is deliberately unfinished.
 - [BREATHING.md](BREATHING.md) - the ambient glow system: tiers, hue variables, kill switch, sparkler hook.
 - [THEME-BOUNDARY.md](THEME-BOUNDARY.md) - stock vs modified vs custom; the known couplings.
+- [THEME-BOUNDARY-AUDIT.md](THEME-BOUNDARY-AUDIT.md) - the Phase 1 file audit, every file labelled against upstream Chirpy 7.3.1. 40 stock, 44 modified, 81 ours, 26 deleted.
 - [REQUESTS.md](REQUESTS.md) - Rod's request queue with statuses. Read the OPEN table; done rows are phantoms.
 - [MERGE-WORKLIST.md](MERGE-WORKLIST.md) - **the ROADMAP** (3 stages: finish the lab -> port -> Jekyll refactor, with where we are) + every port gate in order.
 - [REFACTOR-PLAN.md](REFACTOR-PLAN.md) - the flaws found 2026-08-11 + the phased plan (Phases 1-3 deferred until post-redesign).
