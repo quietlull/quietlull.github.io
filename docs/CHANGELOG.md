@@ -1,3 +1,34 @@
+# 2026-09-01 - THE SCENE PERF AUDIT (#52): re-profiled, five fixes landed, everything else is Rod's pick
+
+**The scene was finally re-profiled** (the D23 numbers had measured a pass that no longer exists).
+Method: headless Chrome over CDP against localhost:4000, SwiftShader (hardware accel OFF) with and
+without a 4x CPU throttle, RTX 3080 for reference, milliseconds not fps. Headlines: the About TOP
+holds 60 fps even software-rendered (the 08-22 resolution calls worked); the About BOTTOM - the
+dock and water view - runs at **30 fps** software-rendered (p50 33.3 ms; water fragments -4.1 ms,
+paper -4.4, bloom -3.2 in ablations, -10.8/-6.7 throttled); firework bursts spike frames to
+33-50 ms everywhere and hit 99.9 ms on the throttled portal; the mobile viewport pins 60 fps
+because the buffers are tiny. No memory leaks: heap flat, geometry/texture/program counts return
+to baseline after shells die. The stale "27 draw calls / 733 triangles" figure is corrected:
+38-42 calls at top, 104-118 at bottom.
+
+**Five invisible one-line fixes landed** under Rod's "minor may land" rule, bundles rebuilt:
+the water reflection no longer renders while the water's material is invisible (it was a full
+second scene render per frame on every minimal-tier page); the 404 no longer runs scene-mode's
+10-second poll it could never satisfy; fireworks-toggle stopped allocating a media query per
+scroll event; the firework fade stopped writing an opacity uniform the shader never reads (and
+the shrink now reads config.particleSize); the D-key debug listener only registers when
+CONFIG.debugEnabled asks for it.
+
+**Everything else is a coded proposal, not a change.** `redesign-lab/perf-diffs/` holds 2-3
+worked options per problem (one bundle + honest tiers, three correctness faults, the fireworks
+spike diet, the water fragment cuts, the dead-code batch including a 259 KB texture fetched and
+never sampled, the missing weak-machine/reduced-motion degrade path, bloom composite cuts), each
+with diffs, predicted savings against the measured numbers, and the exact visible change. The
+todo board's PERF AUDIT section indexes them. The character track got
+`redesign-lab/character-scene-INTEGRATION-PLAN.md`: the teleport is the dissolve cycle itself,
+and she fits a <2 ms budget only with reflection exclusion, an idle petal gate, on-screen
+culling, a low-poly export and the mobile petal cut - six questions for Rod at the end.
+
 # 2026-08-25, evening - THE FULL PORT, THE STRIP, AND A GREEN TEST
 
 **Every page is the redesign now.** The 25 un-ported pages went in one parallel pass (D46): tag
