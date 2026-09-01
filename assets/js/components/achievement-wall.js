@@ -35,23 +35,23 @@ export const ACHIEVEMENTS = [
   /* SUN, not the lantern. Rod 2026-08-24: "first light should use a sun emoji". It also clears a
      real defect: the lantern was shared with `lantern-tapper`, so on an icon-only wall those two
      tiles were pixel-identical and only the tooltip told them apart. */
-  { id: "first-light", cat: "explorer", title: "First Light", icon: '\u{2600}', desc: "Welcome to the portfolio!", hasProgress: false, reward: null },
-  { id: "explorer", cat: "explorer", title: "Explorer", icon: '\u{1F9ED}', desc: "Visited both worlds", hasProgress: false, reward: null },
-  { id: "curator", cat: "explorer", title: "Curator", icon: '\u{1F3A8}', desc: "Viewed 5 projects", hasProgress: false, reward: null },
-  { id: "cartographer", cat: "explorer", title: "Cartographer", icon: '\u{1F5FA}', desc: "Visited 10 unique pages", hasProgress: false, reward: null },
-  { id: "deep-diver", cat: "explorer", title: "Deep Diver", icon: '\u{1F9FF}', desc: "Scrolled to the bottom of 5 pages", hasProgress: false, reward: null },
-  { id: "the-nether", cat: "explorer", title: "The Nether", icon: '\u{1F30C}', desc: "Entered the portal", hasProgress: false, reward: null },
-  { id: "behind-curtain", cat: "explorer", title: "Behind the Curtain", icon: '\u{1F3AD}', desc: "Found the person behind the work", hasProgress: false, reward: null },
-  { id: "scholar", cat: "reader", title: "Scholar", icon: '\u{1F4DC}', desc: "Read an article to the end", hasProgress: false, reward: null },
-  { id: "bookworm", cat: "reader", title: "Bookworm", icon: '\u{1F4DA}', desc: "Read 3 articles to the end", hasProgress: false, reward: null },
-  { id: "well-rounded", cat: "reader", title: "Well-Rounded", icon: '\u{1F4D6}', desc: "Read posts from 5 different tags", hasProgress: true, reward: null },
-  { id: "connoisseur", cat: "reader", title: "Connoisseur", icon: '\u{1F9D0}', desc: "Read posts from 10 different tags", hasProgress: true, reward: null },
-  { id: "completionist", cat: "reader", title: "Completionist", icon: '\u{1F451}', desc: "Read a post from every tag", hasProgress: true, reward: null },
-  { id: "zoom-enhance", cat: "reader", title: "Zoom Enhance", icon: '\u{1F50D}', desc: "Clicked an image to enlarge it", hasProgress: false, reward: null },
-  { id: "pyrotechnician", cat: "interactor", title: "Pyrotechnician", icon: '\u{1F386}', desc: "Launched 50 fireworks", hasProgress: true, reward: "auto-fireworks" },
-  { id: "toolsmith", cat: "interactor", title: "Toolsmith", icon: '\u{1F6E0}', desc: "Hovered every tool on a landing page", hasProgress: false, reward: null },
-  { id: "copy-that", cat: "interactor", title: "Copy That", icon: '\u{1F4CB}', desc: "Used the code copy button", hasProgress: true, reward: null },
-  { id: "fan-club", cat: "interactor", title: "Fan Club", icon: '\u{2B50}', desc: "Spent quality time with the avatar", hasProgress: true, reward: null },
+  { id: 'first-light', cat: 'explorer', title: 'First Light', icon: '\u{2600}', desc: 'Welcome to the portfolio!', hasProgress: false, reward: null },
+  { id: 'explorer', cat: 'explorer', title: 'Explorer', icon: '\u{1F9ED}', desc: 'Visited both worlds', hasProgress: false, reward: null },
+  { id: 'curator', cat: 'explorer', title: 'Curator', icon: '\u{1F3A8}', desc: 'Viewed 5 projects', hasProgress: false, reward: null },
+  { id: 'cartographer', cat: 'explorer', title: 'Cartographer', icon: '\u{1F5FA}', desc: 'Visited 10 unique pages', hasProgress: false, reward: null },
+  { id: 'deep-diver', cat: 'explorer', title: 'Deep Diver', icon: '\u{1F9FF}', desc: 'Scrolled to the bottom of 5 pages', hasProgress: false, reward: null },
+  { id: 'the-nether', cat: 'explorer', title: 'The Nether', icon: '\u{1F30C}', desc: 'Entered the portal', hasProgress: false, reward: null },
+  { id: 'behind-curtain', cat: 'explorer', title: 'Behind the Curtain', icon: '\u{1F3AD}', desc: 'Found the person behind the work', hasProgress: false, reward: null },
+  { id: 'scholar', cat: 'reader', title: 'Scholar', icon: '\u{1F4DC}', desc: 'Read an article to the end', hasProgress: false, reward: null },
+  { id: 'bookworm', cat: 'reader', title: 'Bookworm', icon: '\u{1F4DA}', desc: 'Read 3 articles to the end', hasProgress: false, reward: null },
+  { id: 'well-rounded', cat: 'reader', title: 'Well-Rounded', icon: '\u{1F4D6}', desc: 'Read posts from 5 different tags', hasProgress: true, reward: null },
+  { id: 'connoisseur', cat: 'reader', title: 'Connoisseur', icon: '\u{1F9D0}', desc: 'Read posts from 10 different tags', hasProgress: true, reward: null },
+  { id: 'completionist', cat: 'reader', title: 'Completionist', icon: '\u{1F451}', desc: 'Read a post from every tag', hasProgress: true, reward: null },
+  { id: 'zoom-enhance', cat: 'reader', title: 'Zoom Enhance', icon: '\u{1F50D}', desc: 'Clicked an image to enlarge it', hasProgress: false, reward: null },
+  { id: 'pyrotechnician', cat: 'interactor', title: 'Pyrotechnician', icon: '\u{1F386}', desc: 'Launched 50 fireworks', hasProgress: true, reward: 'auto-fireworks' },
+  { id: 'toolsmith', cat: 'interactor', title: 'Toolsmith', icon: '\u{1F6E0}', desc: 'Hovered every tool on a landing page', hasProgress: false, reward: null },
+  { id: 'copy-that', cat: 'interactor', title: 'Copy That', icon: '\u{1F4CB}', desc: 'Used the code copy button', hasProgress: true, reward: null },
+  { id: 'fan-club', cat: 'interactor', title: 'Fan Club', icon: '\u{2B50}', desc: 'Spent quality time with the avatar', hasProgress: true, reward: null },
   /* MOSQUITO, and the choice between his two options was settled by measurement, not taste.
      Rod: "fly should use a fly or mosquito emoji". The beetle was rendering as TOFU on his own
      machine - and so does the FLY, U+1FAB0, because both are Unicode 13.0 and his Windows emoji
@@ -59,18 +59,18 @@ export const ACHIEVEMENTS = [
      fly and beetle are byte-identical to it, 0 coloured pixels, same 30.98 advance. The mosquito
      is Unicode 11.0 and renders (65.91 advance, 280 coloured px). Taking the fly would have
      swapped one empty box for another. */
-  { id: "touched-my-fly", cat: "interactor", title: "Hey, You Touched My Fly!", icon: '\u{1F99F}', desc: "Caught a firefly", hasProgress: false, reward: null },
-  { id: "lantern-tapper", cat: "interactor", title: "Lantern Tapper", icon: '\u{1F3EE}', desc: "Knocked 25 lanterns", hasProgress: true, reward: "lantern-shape" },
-  { id: "lantern-painter", cat: "interactor", title: "Lantern Painter", icon: '\u{1F308}', desc: "Knocked 50 lanterns", hasProgress: true, reward: "lantern-color" },
-  { id: "lantern-master", cat: "interactor", title: "Lantern Master", icon: '\u{1FA94}', desc: "Knocked 100 lanterns", hasProgress: true, reward: "lantern-panel" },
-  { id: "rabbit-hole", cat: "secret", title: "Down the Rabbit Hole", icon: '\u{1F407}', desc: "Discovered the ramblings", hasProgress: false, reward: null },
-  { id: "night-owl", cat: "secret", title: "Night Owl", icon: '\u{1F989}', desc: "Visited between midnight and 4am", hasProgress: false, reward: null },
-  { id: "early-bird", cat: "secret", title: "Early Bird", icon: '\u{1F426}', desc: "Visited between 5am and 7am", hasProgress: false, reward: null },
-  { id: "getting-started", cat: "meta", title: "Getting Started", icon: '\u{1F31F}', desc: "Unlocked 5 achievements", hasProgress: true, reward: null },
-  { id: "collector", cat: "meta", title: "Collector", icon: '\u{1F3C6}', desc: "Unlocked 15 achievements", hasProgress: true, reward: null },
-  { id: "section-clear", cat: "meta", title: "Section Clear", icon: '\u{1F3AE}', desc: "All achievements possible from one section", hasProgress: false, reward: null },
-  { id: "golden-god", cat: "meta", title: "Golden God", icon: '\u{1F3C5}', desc: "All section + cross-section achievements", hasProgress: false, reward: null },
-  { id: "1001-percent", cat: "meta", title: "1001%", icon: '\u{1F48E}', desc: "Every. Single. Achievement.", hasProgress: false, reward: null }
+  { id: 'touched-my-fly', cat: 'interactor', title: 'Hey, You Touched My Fly!', icon: '\u{1F99F}', desc: 'Caught a firefly', hasProgress: false, reward: null },
+  { id: 'lantern-tapper', cat: 'interactor', title: 'Lantern Tapper', icon: '\u{1F3EE}', desc: 'Knocked 25 lanterns', hasProgress: true, reward: 'lantern-shape' },
+  { id: 'lantern-painter', cat: 'interactor', title: 'Lantern Painter', icon: '\u{1F308}', desc: 'Knocked 50 lanterns', hasProgress: true, reward: 'lantern-color' },
+  { id: 'lantern-master', cat: 'interactor', title: 'Lantern Master', icon: '\u{1FA94}', desc: 'Knocked 100 lanterns', hasProgress: true, reward: 'lantern-panel' },
+  { id: 'rabbit-hole', cat: 'secret', title: 'Down the Rabbit Hole', icon: '\u{1F407}', desc: 'Discovered the ramblings', hasProgress: false, reward: null },
+  { id: 'night-owl', cat: 'secret', title: 'Night Owl', icon: '\u{1F989}', desc: 'Visited between midnight and 4am', hasProgress: false, reward: null },
+  { id: 'early-bird', cat: 'secret', title: 'Early Bird', icon: '\u{1F426}', desc: 'Visited between 5am and 7am', hasProgress: false, reward: null },
+  { id: 'getting-started', cat: 'meta', title: 'Getting Started', icon: '\u{1F31F}', desc: 'Unlocked 5 achievements', hasProgress: true, reward: null },
+  { id: 'collector', cat: 'meta', title: 'Collector', icon: '\u{1F3C6}', desc: 'Unlocked 15 achievements', hasProgress: true, reward: null },
+  { id: 'section-clear', cat: 'meta', title: 'Section Clear', icon: '\u{1F3AE}', desc: 'All achievements possible from one section', hasProgress: false, reward: null },
+  { id: 'golden-god', cat: 'meta', title: 'Golden God', icon: '\u{1F3C5}', desc: 'All section + cross-section achievements', hasProgress: false, reward: null },
+  { id: '1001-percent', cat: 'meta', title: '1001%', icon: '\u{1F48E}', desc: 'Every. Single. Achievement.', hasProgress: false, reward: null }
 ];
 
 const CAT_LABEL = { explorer: 'Explorer', reader: 'Reader', interactor: 'Interactor', secret: 'Secret', meta: 'Meta' };
@@ -90,7 +90,7 @@ function loadEarned() {
   try {
     const raw = localStorage.getItem(EARNED_KEY);
     return raw ? JSON.parse(raw) : {};
-  } catch (e) {
+  } catch {
     return {};   /* private mode, disabled storage, or corrupt JSON - show everything locked */
   }
 }
@@ -229,13 +229,13 @@ function loadActive() {
        tile. A locked achievement is never active. */
     if (!Array.isArray(ids)) return new Set();
     return new Set(ids.filter((id) => ACHIEVEMENTS.some((a) => a.id === id) && earnedSet.has(id)));
-  } catch (e) {
+  } catch {
     return new Set();   /* private mode, disabled storage, or corrupt JSON - degrade to nothing on */
   }
 }
 
 function saveActive(set) {
-  try { localStorage.setItem(ACTIVE_KEY, JSON.stringify([...set])); } catch (e) { /* nothing to do */ }
+  try { localStorage.setItem(ACTIVE_KEY, JSON.stringify([...set])); } catch { /* nothing to do */ }
 }
 
 export function init(root = document) {

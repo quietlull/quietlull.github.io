@@ -5,6 +5,5 @@
  */
 export const STORAGE_KEYS = {
   SPARKLER:     'sparkler-disabled',
-  FIREWORKS:    'auto-fireworks',
   ACHIEVEMENTS: 'rod-achievements',
 };

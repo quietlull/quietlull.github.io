@@ -26,9 +26,30 @@ function bindReveal(root) {
   });
 }
 
+/* A paused <video> shows its FIRST frame, and on these captures frame 0 is black, so a card with a
+   video cover read as an empty box until you hovered it. Seeking a tenth of a second in gives the
+   card a real still to sit on.
+
+   Seeking needs HAVE_METADATA (readyState 1): before that the assignment is silently dropped, so
+   wait for `loadedmetadata` when the metadata has not landed yet. `preload="metadata"` is enough -
+   the seekable range comes with the metadata, and this is where the byte range gets fetched.
+
+   This lives here rather than in merged-card.js because THIS is the code that runs. merged-card
+   had the same seek behind a reduced-motion guard that bailed on every ordinary visit, so it never
+   fired; the guard was deleted on 2026-08-31 and the seek moved here. */
+function showPosterFrame(video) {
+  const seek = () => { video.currentTime = 0.1; };
+  if (video.readyState >= 1) {
+    seek();
+  } else {
+    video.addEventListener('loadedmetadata', seek, { once: true });
+  }
+}
+
 function bindHoverVideo(root) {
   root.querySelectorAll('.post-card video').forEach((video) => {
     video.pause();
+    showPosterFrame(video);
     const card = video.closest('.post-card');
     if (!card) {
       return;

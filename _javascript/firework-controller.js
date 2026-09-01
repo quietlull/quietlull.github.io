@@ -10,7 +10,7 @@ export class FireworkController {
     this.scene = scene;
     this.camera = camera;
     this.fireWorkGroup = [];
-    this.maxFireworks = config.maxFireworks || 50;
+    this.maxFireworks = config.maxFireworks ?? 50;
 
     // Configuration.
     // `??` not `||` throughout: a configured 0 is a real value, and `||` silently discarded it.
@@ -56,28 +56,19 @@ export class FireworkController {
 
       // Colors
       rainbowChance: config.rainbowChance ?? 0.5,
-
-      autoFireworks: config.autoFireworks ?? false,
-      autoDelay: config.autoDelay ?? 1.0,        // Seconds between bursts
-      autoDelayVariation: config.autoDelayVariation ?? 0.5,  // Random ±variation in seconds
-      autoAmount: config.autoAmount ?? 2,        // Number of fireworks per burst
-      autoAmountVariation: config.autoAmountVariation ?? 2  // Random ±variation
     };
 
-    // Two independent auto-launch streams, each with its own timer and its own cap on how many
-    // of its shells may be in the air at once. GREETING is the calm welcome that runs while the
-    // top of the page is on screen; REWARD is the stream unlocked by the Pyrotechnician
-    // achievement. Both are live at the top once earned, so the reward makes the sky busier
-    // rather than replacing the greeting. Who is active is decided by the page, not here.
+    // The auto-launch stream: it has its own timer and its own cap on how many of its shells may
+    // be in the air at once. GREETING is the calm welcome that runs while the top of the page is
+    // on screen. Whether it is active is decided by the page, not here.
+    // A second REWARD stream used to sit beside it, unlocked by the Pyrotechnician achievement and
+    // switched on from the old top bar. Rod scrapped every reward (D28), so it was deleted on
+    // 2026-08-31 together with its `auto*` config keys. This stays a map of streams because the
+    // greeting may not be the last one this scene gets.
     this.emitters = {
       greeting: {
         active: false, timer: 0, next: 0, maxLive: 4,
         delay: 2.5, delayVariation: 1.0, amount: 1, amountVariation: 0,
-      },
-      reward: {
-        active: this.config.autoFireworks, timer: 0, next: 0, maxLive: this.maxFireworks,
-        delay: this.config.autoDelay, delayVariation: this.config.autoDelayVariation,
-        amount: this.config.autoAmount, amountVariation: this.config.autoAmountVariation,
       },
     };
     Object.assign(this.emitters.greeting, config.greeting);
@@ -508,11 +499,6 @@ export class FireworkController {
       }
     }
     this.fireWorkGroup = [];
-  }
-
-  // Enable/disable the earned auto-fireworks stream (the topbar toggle)
-  setAutoFireworks(enabled) {
-    this.emitters.reward.active = enabled;
   }
 
   // Enable/disable the top-of-page greeting stream

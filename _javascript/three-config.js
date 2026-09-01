@@ -96,10 +96,9 @@ export const CONFIG = {
     maxZ: -4500,
 
     // The permanent top-of-page GREETING (Rod 2026-08-16): calm, a few shells in the air at once.
-    // It has no off switch by design — the topbar toggle belongs to the earned reward stream,
-    // which stacks on top of this. maxLive caps only the greeting's own shells, so the reward is
-    // free to fill the rest of the sky. Note maxLive is a CEILING, not a target: a shell lives
-    // about 1.7s, so the delay is what actually decides how many are up at once.
+    // It has no off switch by design, and since the earned reward stream was scrapped (D28) it is
+    // the only automatic stream left. Note maxLive is a CEILING, not a target: a shell lives about
+    // 1.7s, so the delay is what actually decides how many are up at once.
     greeting: {
       delay: 0.85,            // Seconds between shells (3x the first pass, Rod judged it by eye)
       delayVariation: 0.35,   // Random +/- variation in seconds

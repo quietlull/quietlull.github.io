@@ -185,43 +185,17 @@ function setupGyroTilt(tiltLayers) {
   }
 }
 
-/* T2-C (2.2.2, Rod's spec): demo loops AUTOPLAY by default (the markup keeps `autoplay`).
-   ONLY when the user has reduced-motion on (or the kill-switch body.motion-off) do we pause them
-   and fall back to hover-to-play, so motion-sensitive users get a still frame + play-on-intent.
-   The default autoplay's required pause path (2.2.2) is the motion kill-switch, wired at assembly. */
-function setupCardVideos(root) {
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const motionOff = () => reduce || document.body.classList.contains('motion-off');
-  if (!motionOff()) {
-    return; /* default: leave the autoplay loops alone */
-  }
-  root.querySelectorAll('.post-card video').forEach((video) => {
-    video.removeAttribute('autoplay');
-    video.muted = true;
-    video.pause();
-    const showFrame = () => {
-      try {
-        video.currentTime = 0.1; /* still poster frame while paused */
-      } catch (e) {
-        /* metadata not ready yet */
-      }
-    };
-    if (video.readyState >= 1) {
-      showFrame();
-    } else {
-      video.addEventListener('loadedmetadata', showFrame, { once: true });
-    }
-    const card = video.closest('.post-card');
-    if (!card) {
-      return;
-    }
-    card.addEventListener('mouseenter', () => video.play().catch(() => {}));
-    card.addEventListener('mouseleave', () => video.pause());
-  });
-}
+/* CARD COVER VIDEOS ARE NOT HANDLED HERE. `setupCardVideos` used to sit at this spot: it stripped
+   `autoplay`, paused each cover, seeked it to a real poster frame and wired hover-to-play, all
+   behind `if (!motionOff()) return;`. Two things were wrong with it, and it was deleted on
+   2026-08-31. Its header claimed "the markup keeps `autoplay`" - `_includes/project-card.html:40`
+   emits no autoplay at all, so nothing was auto-playing and the 2.2.2 pause path it existed to
+   provide was already satisfied by the markup. And because it bailed whenever motion was on, the
+   poster seek never ran on an ordinary visit, which is why every card video sat on a black frame.
+   Pause, poster frame and hover-play now live in ONE place, `project-cards-expensive.js`, which is
+   the only file that reaches this one. */
 
 export function init(root = document) {
-  setupCardVideos(root); /* runs even under reduced motion (just no hover-play) */
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }

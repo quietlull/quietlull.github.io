@@ -1,12 +1,22 @@
 /**
- * Theme management class
+ * Theme state. Read-only.
  *
- * To reduce flickering during page load, this script should be loaded synchronously.
+ * The site is dark-only. `theme_mode: dark` (_config.yml:91) stamps data-mode="dark" onto <html>
+ * (_layouts/default.html:12), and _sass/themes/_light.scss was deleted in the merge, so there is
+ * no light theme left to switch to. The flip button, the mode writers, the sessionStorage cache
+ * and the system-preference listener were all removed in the D47 strip: nothing could reach them.
+ *
+ * What survives is exactly what img-popup.js and mermaid.js read. Both use the bare `Theme`
+ * identifier rather than importing it, because this file is bundled as a global
+ * (rollup.config.js:82, `outputName: 'Theme'`) and loaded on every page (_includes/head.html:136).
  */
 class Theme {
-  static #modeKey = 'mode';
   static #modeAttr = 'data-mode';
   static #darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+  /**
+   * True only if no mode is pinned on <html>. Always false while `theme_mode` is set.
+   */
   static switchable = !document.documentElement.hasAttribute(this.#modeAttr);
 
   static get DARK() {
@@ -25,36 +35,15 @@ class Theme {
   }
 
   /**
-   * Gets the current visual state of the theme.
+   * The pinned mode if there is one, otherwise whatever the system is asking for.
    *
-   * @returns {string} The current visual state, either the mode if it exists,
-   *                   or the system dark mode state ('dark' or 'light').
+   * @returns {string} 'dark' or 'light'
    */
   static get visualState() {
-    if (this.#hasMode) {
-      return this.#mode;
-    } else {
-      return this.#sysDark ? this.DARK : this.LIGHT;
-    }
-  }
-
-  static get #mode() {
     return (
-      sessionStorage.getItem(this.#modeKey) ||
-      document.documentElement.getAttribute(this.#modeAttr)
+      document.documentElement.getAttribute(this.#modeAttr) ||
+      (this.#darkMedia.matches ? this.DARK : this.LIGHT)
     );
-  }
-
-  static get #isDarkMode() {
-    return this.#mode === this.DARK;
-  }
-
-  static get #hasMode() {
-    return this.#mode !== null;
-  }
-
-  static get #sysDark() {
-    return this.#darkMedia.matches;
   }
 
   /**
@@ -69,70 +58,6 @@ class Theme {
       [this.DARK]: dark
     };
   }
-
-  /**
-   * Initializes the theme based on system preferences or stored mode
-   */
-  static init() {
-    if (!this.switchable) {
-      return;
-    }
-
-    this.#darkMedia.addEventListener('change', () => {
-      const lastMode = this.#mode;
-      this.#clearMode();
-
-      if (lastMode !== this.visualState) {
-        this.#notify();
-      }
-    });
-
-    if (!this.#hasMode) {
-      return;
-    }
-
-    if (this.#isDarkMode) {
-      this.#setDark();
-    } else {
-      this.#setLight();
-    }
-  }
-
-  /**
-   * Flips the current theme mode
-   */
-  static flip() {
-    if (this.#hasMode) {
-      this.#clearMode();
-    } else {
-      this.#sysDark ? this.#setLight() : this.#setDark();
-    }
-    this.#notify();
-  }
-
-  static #setDark() {
-    document.documentElement.setAttribute(this.#modeAttr, this.DARK);
-    sessionStorage.setItem(this.#modeKey, this.DARK);
-  }
-
-  static #setLight() {
-    document.documentElement.setAttribute(this.#modeAttr, this.LIGHT);
-    sessionStorage.setItem(this.#modeKey, this.LIGHT);
-  }
-
-  static #clearMode() {
-    document.documentElement.removeAttribute(this.#modeAttr);
-    sessionStorage.removeItem(this.#modeKey);
-  }
-
-  /**
-   * Notifies other plugins that the theme mode has changed
-   */
-  static #notify() {
-    window.postMessage({ id: this.ID }, '*');
-  }
 }
-
-Theme.init();
 
 export default Theme;

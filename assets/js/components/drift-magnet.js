@@ -31,7 +31,6 @@ const DEFAULT_DRIFT_AMP = 6;      // px
 const TWO_PI = Math.PI * 2;
 
 const entries = [];
-let hasDriftEls = false;
 let rafId = null;
 let startTime = 0;
 let cullObserver = null;
@@ -259,9 +258,6 @@ export function retune(element) {
   entry.ampY = drift.ampY;
   entry.speedX = drift.speedX;
   entry.speedY = drift.speedY;
-  if (entry.ampX > 0 || entry.ampY > 0) {
-    hasDriftEls = true;
-  }
   wake();
 }
 
@@ -314,9 +310,6 @@ export function init(root = document) {
     elementToEntry.set(el, entry);
     if (cullObserver) {
       cullObserver.observe(el);
-    }
-    if (entry.ampX > 0 || entry.ampY > 0) {
-      hasDriftEls = true;
     }
     if (entry.isMagnetic) {
       bindMagnet(entry);

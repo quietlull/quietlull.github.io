@@ -52,7 +52,7 @@ const ACHIEVEMENTS = [
 
   // ── Interactor ──
   { id: 'pyrotechnician', cat: 'interactor', scope: 'section', title: 'Pyrotechnician',  desc: 'Launched 50 fireworks',              icon: '\u{1F386}',
-    check: (s) => s.fireworkCount >= 50, progress: (s) => [s.fireworkCount, 50], reward: 'auto-fireworks' },
+    check: (s) => s.fireworkCount >= 50, progress: (s) => [s.fireworkCount, 50] },
   { id: 'toolsmith',      cat: 'interactor', scope: 'section', title: 'Toolsmith',       desc: 'Hovered every tool on a landing page', icon: '\u{1F6E0}',
     check: (s) => s.allToolsHovered },
   { id: 'copy-that',      cat: 'interactor', scope: 'section', title: 'Copy That',       desc: 'Used the code copy button',          icon: '\u{1F4CB}',
@@ -64,11 +64,11 @@ const ACHIEVEMENTS = [
 
   // ── Lantern progression ──
   { id: 'lantern-tapper',  cat: 'interactor', scope: 'section', title: 'Lantern Tapper',  desc: 'Knocked 25 lanterns',               icon: '\u{1F3EE}',
-    check: (s) => s.lanternKnocks >= 25, progress: (s) => [s.lanternKnocks, 25], reward: 'lantern-shape' },
+    check: (s) => s.lanternKnocks >= 25, progress: (s) => [s.lanternKnocks, 25] },
   { id: 'lantern-painter', cat: 'interactor', scope: 'section', title: 'Lantern Painter', desc: 'Knocked 50 lanterns',               icon: '\u{1F308}',
-    check: (s) => s.lanternKnocks >= 50, progress: (s) => [s.lanternKnocks, 50], reward: 'lantern-color' },
+    check: (s) => s.lanternKnocks >= 50, progress: (s) => [s.lanternKnocks, 50] },
   { id: 'lantern-master',  cat: 'interactor', scope: 'section', title: 'Lantern Master',  desc: 'Knocked 100 lanterns',              icon: '\u{1FA94}',
-    check: (s) => s.lanternKnocks >= 100, progress: (s) => [s.lanternKnocks, 100], reward: 'lantern-panel' },
+    check: (s) => s.lanternKnocks >= 100, progress: (s) => [s.lanternKnocks, 100] },
 
   // ── Secret ──
   { id: 'night-owl',      cat: 'secret',   scope: 'section', title: 'Night Owl',         desc: 'Visited between midnight and 4am',   icon: '\u{1F989}',
@@ -110,7 +110,6 @@ const DEFAULT_STATE = {
   nightOwl: false,
   earlyBird: false,
   toolsHoveredSet: [],      // which tools have been hovered on current page
-  rewardsSeen: [],          // reward IDs the user has "seen" (visited About page)
 };
 
 function loadState() {
@@ -120,21 +119,8 @@ function loadState() {
     const parsed = JSON.parse(raw);
     // Merge saved state over defaults (old boolean scrolledToEnd is ignored —
     // pagesScrolledToEnd array must be earned fresh)
-    const state = { ...DEFAULT_STATE, ...parsed };
-
-    // Migration: if rewardsSeen didn't exist before, seed it with all currently
-    // earned rewards so old unlocks don't trigger "NEW" ribbon
-    if (!parsed.rewardsSeen) {
-      state.rewardsSeen = [];
-      for (const a of ACHIEVEMENTS) {
-        if (a.reward && state.unlocked.includes(a.id)) {
-          state.rewardsSeen.push(a.reward);
-        }
-      }
-    }
-
-    return state;
-  } catch (_) {
+    return { ...DEFAULT_STATE, ...parsed };
+  } catch {
     return { ...DEFAULT_STATE };
   }
 }
@@ -142,7 +128,7 @@ function loadState() {
 function saveState(state) {
   try {
     localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(state));
-  } catch (_) { /* storage full */ }
+  } catch { /* storage full */ }
 }
 
 // ── Toast system ────────────────────────────────────────────────
@@ -192,11 +178,6 @@ function checkAchievements(state) {
       saveState(state);
       showToast(a);
       newUnlocks++;
-      // Apply rewards
-      if (a.reward === 'auto-fireworks') {
-        // Pyrotechnician unlocks auto-fireworks
-        document.dispatchEvent(new CustomEvent('achievement:reward', { detail: { type: 'auto-fireworks' } }));
-      }
     }
   }
   // Re-check meta achievements if we unlocked something (meta depends on unlock count)
@@ -209,9 +190,8 @@ function checkAchievements(state) {
       }
     }
   }
-  // Update trophy case + reward unlocks
+  // The trophy wall IS the payoff (D28: every reward is scrapped)
   renderTrophyCase(state);
-  applyRewards(state);
 }
 
 // ── Trophy case (About page) ──────────────────────────────────
@@ -254,56 +234,6 @@ function renderTrophyCase(state) {
   }
 
   grid.innerHTML = html;
-}
-
-// ── Reward unlock system ──────────────────────────────────────
-function applyRewards(state) {
-  // Gather all earned rewards
-  const earnedRewards = [];
-  for (const a of ACHIEVEMENTS) {
-    if (a.reward && state.unlocked.includes(a.id)) {
-      earnedRewards.push(a.reward);
-    }
-  }
-
-  // --- Apply specific feature unlocks ---
-
-  // Pyrotechnician → show auto-fireworks toggle
-  if (earnedRewards.includes('auto-fireworks')) {
-    const toggle = document.getElementById('fireworks-toggle');
-    if (toggle) toggle.classList.remove('reward-locked');
-  }
-
-  // Lantern shape/color/panel — tracked but deferred until meshes are added
-
-  // --- "NEW" ribbon on About nav ---
-  const isAboutPage = window.location.pathname.includes('/about');
-  const unseenRewards = earnedRewards.filter(r => !state.rewardsSeen.includes(r));
-
-  // On About page: auto-mark rewards as seen
-  if (isAboutPage && unseenRewards.length > 0) {
-    unseenRewards.forEach(r => {
-      if (!state.rewardsSeen.includes(r)) state.rewardsSeen.push(r);
-    });
-    saveState(state);
-    return; // No ribbon needed — user is already here
-  }
-
-  // On other pages: show/hide ribbon
-  const aboutNav = document.querySelector('[data-nav="about"]');
-  if (!aboutNav) return;
-
-  if (unseenRewards.length > 0 && !aboutNav.querySelector('.nav-ribbon')) {
-    aboutNav.classList.add('has-new-reward');
-    const ribbon = document.createElement('span');
-    ribbon.className = 'nav-ribbon';
-    ribbon.textContent = 'NEW';
-    aboutNav.querySelector('.nav-link').appendChild(ribbon);
-  } else if (unseenRewards.length === 0) {
-    aboutNav.classList.remove('has-new-reward');
-    const existing = aboutNav.querySelector('.nav-ribbon');
-    if (existing) existing.remove();
-  }
 }
 
 // Helper: update state, save, and re-check
@@ -548,7 +478,6 @@ export function initAchievements() {
   setupTrackers(state);
   checkAchievements(state);
   renderTrophyCase(state);
-  applyRewards(state);
 
   // Debug panel: Ctrl+Shift+A
   document.addEventListener('keydown', (e) => {

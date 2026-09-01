@@ -13,16 +13,21 @@
    modules need no build step, so the port can be read, judged and reverted as source.
    At the next real build pass these fold into `commons.js` and this file goes away. */
 
-import { init as initTopBar } from './components/top-bar.js';
 import { init as initMagnetic } from './components/drift-magnet.js';
 import { initLineBoil } from './components/line-boil.js';
 import { init as initCursorGlow } from './components/cursor-glow.js';
 
-/* Both, deliberately. `initTopBar` reaches `initMagnetic` through the slap-toggle chain today, but
-   drift-magnet is a PAGE-level engine - every `.js-magnetic` and `[data-drift]` element on any
-   ported component rides it, not just the bar's. Calling it here says so, and it is idempotent:
-   the engine keeps a set of the elements it has already registered. */
-initTopBar(document);
+/* THE BAR HAS NO INIT OF ITS OWN ANY MORE, and it never really needed one. `initTopBar` used to
+   be called here, but its entire body was `initSlapToggle(root)`, and slap-toggle's only live
+   effect was calling `initMagnetic` - the toggles themselves were removed from the design by D20,
+   so its element loop had nothing to iterate. Two agents checked that independently before this
+   went: `.slap-toggle__control` appears in no layout or include, so the loop body never ran on a
+   shipped page.
+   The line below already did the real work and says so in its own right: drift-magnet is a
+   PAGE-level engine, so every `.js-magnetic` and `[data-drift]` element on any ported component
+   rides it, the bar's favicon and nav links included. It is idempotent - the engine keeps a set
+   of what it has registered - which is why the old double call was harmless and why removing one
+   half changes nothing. */
 initMagnetic(document);
 
 /* The bar's wordmark IS the site mark at a smaller size, so it boils too

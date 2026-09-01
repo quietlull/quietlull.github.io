@@ -75,7 +75,7 @@ function spawnElements() {
 window.addEventListener('load', spawnElements);
 
 /* Scroll-locked camera — embers drift as user reads */
-const scrollCam = setupScrollLockedCamera(camera);
+setupScrollLockedCamera(camera);   /* side effect only, nothing reads the handle */
 
 /* Resize */
 setupResizeHandler(camera, renderer, composer, lanternController);

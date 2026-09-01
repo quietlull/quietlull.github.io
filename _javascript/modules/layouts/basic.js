@@ -1,11 +1,10 @@
 import {
   back2top, fireworksToggle,
   initAchievements, initCardTilt, initMouseTrail, initPageTransition,
-  initToolTaglines, loadTooptip, modeWatcher
+  initToolTaglines, loadTooptip
 } from '../components';
 
 export function basic() {
-  modeWatcher();
   fireworksToggle();
   back2top();
   loadTooptip();

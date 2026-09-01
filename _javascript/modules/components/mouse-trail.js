@@ -104,7 +104,6 @@ export function initMouseTrail() {
   let tipStreaks = null;
   let tipTimer = 0;
   let activeTheme = THEME_DEFAULT;
-  let hoverCheckCount = 0;
 
   function setEnabled(val) {
     enabled = val;
@@ -330,8 +329,10 @@ export function initMouseTrail() {
     const dy = mouseY - lastMouseY;
     const speed = Math.sqrt(dx * dx + dy * dy);
 
-    if (speed > 2) {
-      const count = Math.min(Math.floor(speed * 0.4), MAX_EMIT_PER_FRAME);
+    // Rod's tune, approved on the lab bench 2026-08 and ported here 2026-08-31: sparks start
+    // after 1px of movement, at 0.5 per pixel. Was 2px / 0.4.
+    if (speed > 1) {
+      const count = Math.min(Math.floor(speed * 0.5), MAX_EMIT_PER_FRAME);
       emit(mouseX, mouseY, count, 1.2);
     }
 
