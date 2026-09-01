@@ -53,6 +53,13 @@
   {% assign urls = urls | append: ',' | append: site.data.origin[type].mermaid.js %}
 {% endif %}
 
+{% comment %}
+  OURS (re-apply on Chirpy upgrade): the leading comma is stripped before the combiner sees
+  the list. `urls` starts empty since the search library left, and every append leads with a
+  comma, so the first split entry was '' and the combiner emitted a bare
+  <script defer src=""></script> on 44 pages - a no-op fetch of the page itself.
+{% endcomment %}
+{% assign urls = urls | remove_first: ',' %}
 {% include jsdelivr-combine.html urls=urls %}
 
 {% case page.layout %}
