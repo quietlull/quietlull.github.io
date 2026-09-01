@@ -523,6 +523,25 @@ h4, .d-h4, .card-title {
 
 .d-callout--quote > p { font-style: italic; }
 
+/* The category label. MOVED HERE 2026-09-01 from components/_callout-family.scss (.co__label)
+   when Rod picked this box for every category and the co shells were retired: the label was the
+   one piece of that family the winner still needed. Declarations unchanged. Free text, not a
+   fixed severity set (maxime's pattern). */
+.d-callout__label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-silver, #a3a19d);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Warning's four corner tabs overhang into the box, so the text takes the same +8px clearance
+   the retired shells gave it (old .co--v1.co--warning: padding + 8px). Base padding on
+   .d-callout is 1rem 1.25rem. */
+.d-callout--warning { padding: calc(1rem + 8px) calc(1.25rem + 8px); }
+
 /* The takeaway keeps the stamp and takes no tape. It is Rod's own CSS, lives in stamp-callout,
    and is not redefined here. */
 
