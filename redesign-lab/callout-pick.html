@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE CALLOUT PICK - one box has to win</title>
+<!-- The SITE'S OWN compiled stylesheet, not a copy: both callout families, the washi tape and the
+     type ladder are all in it, so what renders here is exactly what a post would get. If a shell
+     looks wrong here it IS wrong, not a bench artefact. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800&display=swap">
+<link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css">
+<style>
+/* Lab chrome only - nothing below styles the candidates. */
+.wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 120px; }
+.bench-h { font-size: 2rem; color: var(--color-orange, #f86a03); margin: 0 0 4px; }
+.bench-sub { color: var(--color-muted, #9aa3bd); font-size: 0.85rem; margin: 0 0 34px; }
+.cand { margin: 54px 0 0; }
+.cand-tag { font: 600 0.7rem/1 "IBM Plex Mono", monospace; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--color-gold, #fbbf24); display: block; margin: 0 0 4px; }
+.cand-note { color: var(--color-text-quiet, rgba(245, 243, 239, 0.45)); font-size: 0.8rem;
+  margin: 0 0 22px; max-width: 68ch; }
+.rowlab { font: 500 0.66rem/1 "IBM Plex Mono", monospace; letter-spacing: 0.12em;
+  color: var(--color-muted, #9aa3bd); margin: 30px 0 14px; text-transform: uppercase; }
+hr.bench { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 60px 0 0; }
+</style>
+</head>
+<body>
+<main class="wrap prose">
+  <h1 class="bench-h">The callout pick</h1>
+  <p class="bench-sub">Two systems ship and nobody has chosen between them. The words are the same
+    real paragraph from the Compute Grass post in every box, so only the SHELL differs. Whichever
+    wins, you will never type its class names: the plan is <code>{% raw %}{% callout warning %}{% endraw %}</code>
+    and the plugin writes the rest, so switching later is a one-file change.</p>
+
+  <!-- ============================ CANDIDATE A ============================ -->
+  <section class="cand">
+    <span class="cand-tag">Candidate A - the d-callout box (decisions.scss)</span>
+    <p class="cand-note">One box, colour comes from the category automatically (your D30
+      colour-by-meaning call written as CSS). Faint paper shadow, gneiss's real 0.05deg rotation,
+      the panel grey. All four categories:</p>
+
+    <div class="rowlab">note - one green strip on top</div>
+    <aside class="d-callout d-callout--note"><i class="tape tape--top"></i>
+      <span class="co__label">Note</span>
+      <p>Originally I used a ping-pong buffer to decay the render texture, but a single target with
+      framerate-independent decay in the shader turned out simpler and faster.</p>
+    </aside>
+
+    <div class="rowlab">tldr - one orange strip down the left</div>
+    <aside class="d-callout d-callout--tldr"><i class="tape tape--left"></i>
+      <span class="co__label">TL;DR</span>
+      <p>A script bakes blade positions into a buffer once; one compute pass builds the geometry
+      every frame and the camera never sees a blade it culled.</p>
+    </aside>
+
+    <div class="rowlab">warning - four pink corners</div>
+    <aside class="d-callout d-callout--warning"><i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i><i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+      <span class="co__label">Warning</span>
+      <p>Smooth the return of the grass in the shader. Without it the blades twitch every time an
+      interactor leaves, and it looks like a physics bug rather than a missing lerp.</p>
+    </aside>
+
+    <div class="rowlab">quote - blue L-corners, italic</div>
+    <aside class="d-callout d-callout--quote"><i class="tape tape--v tape--tl"></i><i class="tape tape--h tape--tl"></i><i class="tape tape--v tape--br"></i><i class="tape tape--h tape--br"></i>
+      <span class="co__label">Quote</span>
+      <p>Every tech artist worth their salt eventually makes their own grass shader.</p>
+    </aside>
+  </section>
+
+  <hr class="bench">
+
+  <!-- ============================ CANDIDATES B-D ============================ -->
+  <section class="cand">
+    <span class="cand-tag">Candidates B, C, D - the three bench shells (callout-family.scss)</span>
+    <p class="cand-note">The version family the bench built and never judged. Same note content in
+      each so the shells compare directly; each needs the tape colour named by hand
+      (<code>.tape--green</code> here), which is the system where forgetting the colour renders
+      grey tape with no error.</p>
+
+    <div class="rowlab">B - version 1 shell</div>
+    <aside class="co co--v1 co--note taped tape--green"><i class="tape tape--top"></i>
+      <span class="co__label">Note</span>
+      <p>Originally I used a ping-pong buffer to decay the render texture, but a single target with
+      framerate-independent decay in the shader turned out simpler and faster.</p>
+    </aside>
+
+    <div class="rowlab">C - version 2 shell</div>
+    <aside class="co co--v2 co--note taped tape--green"><i class="tape tape--top"></i>
+      <span class="co__label">Note</span>
+      <p>Originally I used a ping-pong buffer to decay the render texture, but a single target with
+      framerate-independent decay in the shader turned out simpler and faster.</p>
+    </aside>
+
+    <div class="rowlab">D - version 3 shell</div>
+    <aside class="co co--v3 co--note taped tape--green"><i class="tape tape--top"></i>
+      <span class="co__label">Note</span>
+      <p>Originally I used a ping-pong buffer to decay the render texture, but a single target with
+      framerate-independent decay in the shader turned out simpler and faster.</p>
+    </aside>
+
+    <div class="rowlab">and one warning in the B shell, since warning changes the padding</div>
+    <aside class="co co--v1 co--warning taped tape--pink"><i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i><i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+      <span class="co__label">Warning</span>
+      <p>Smooth the return of the grass in the shader. Without it the blades twitch every time an
+      interactor leaves, and it looks like a physics bug rather than a missing lerp.</p>
+    </aside>
+  </section>
+
+  <hr class="bench">
+  <p class="cand-note" style="margin-top:26px">Pick a letter (A / B / C / D). A is the
+    recommendation: it is the D30 decision already written as CSS, its colours cannot be forgotten,
+    and the three bench shells stay on disk if you ever want to revisit. The tape's torn ends are
+    your case-D remix and render identically in every shell.</p>
+</main>
+</body>
+</html>
