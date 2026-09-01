@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* top-bar - the norikura shell, restructured by Rod 2026-06-14 into three zones:
    [mark + name] | [nav centred] | [toggles]. The nav pill is invisible at rest and lit by
@@ -24,15 +25,16 @@
   top: 0;
   z-index: var(--z-chrome, 60);
   display: grid;
+
   /* 1fr auto 1fr, NOT auto 1fr auto. The old version centred the nav inside its own column, and
      that column only sits centre-page when the two outer zones match - they do not, so the nav
      sat 44px left of centre. Equal outer columns centre it by construction. Rod 2026-08-18. */
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  row-gap: 0;
+  gap: 0 clamp(1rem, 4vw, 3rem);
+
   /* The 1fr columns make the breathing room, so this only has to guarantee a minimum. The old flat
      100px is what read as lopsided - it was being added to columns that were already unequal. */
-  column-gap: clamp(1rem, 4vw, 3rem);
   width: 100%;
   min-height: var(--top-bar-height);
   padding: var(--top-bar-padding-block) var(--top-bar-padding-inline);
@@ -90,6 +92,23 @@
    `font-weight: 700` is likewise unchanged and is NOT a new synthetic-bold problem: the glyph cells
    already inherit it, so the boiled text has always rendered faux-bold over the Regular-only boil
    faces. This edit changes the FIRST PAINT only. */
+
+/* The wordmark is wrapped in this link so clicking the name goes home (Rod 2026-08-25). It exists
+   to carry the href and NOTHING else: the mark's own colour, size and weight stay on
+   `.top-bar__logo` inside it, so this must not introduce a colour, an underline or a hover of its
+   own. `text-decoration` is the one that would actually reach the text, because it propagates to
+   descendants where `color` does not. The focus ring is deliberately NOT touched - this is a real
+   link now and keyboard users need to see it (base/_focus-ring.scss owns that). */
+.top-bar__home {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible { text-decoration: none; }
+}
+
 .top-bar__logo {
   font-weight: 700;
   font-size: 2.2rem; /* Rod: the name was too small at 1.6rem */
@@ -107,6 +126,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+
   --bloom: 4.25;   /* hover glow size, still tunable from the bench Tune panel */
   --tspeed: 480ms; /* state transition speed, same */
 }
@@ -188,33 +208,38 @@
     grid-template-rows: var(--top-bar-row-1) var(--top-bar-row-2);
     column-gap: 1rem;
   }
+
   /* The name stacks on top of the nav (Rod 2026-08-22). `display: contents` is what makes that
      possible with no markup change: it promotes the mark and the name out of .top-bar__left so
      each takes its own grid cell. The mark keeps column 1 across both rows and stays full-bleed. */
   .top-bar__left {
     display: contents;
   }
+
   .top-bar__left .favicon {
     grid-column: 1;
     grid-row: 1 / -1;
   }
+
   .top-bar__logo {
     grid-column: 2;
     grid-row: 1;
-    align-self: center;
-    justify-self: start;
+    place-self: center start;
   }
+
   .top-bar__toggles {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
   }
+
   .top-bar__nav {
     grid-column: 2;
     grid-row: 2;
     justify-self: start;
     margin-bottom: 0;
   }
+
   .top-bar__logo {
     font-size: 1.9rem; /* it has to sit inside row 1 */
   }
@@ -224,22 +249,22 @@
   :root {
     --top-bar-padding-inline: 1rem;
   }
+
   .top-bar__left {
     gap: 1.2rem;
   }
+
   .top-bar__logo {
     font-size: 1.6rem;
   }
+
   .top-bar__nav {
     gap: 6px;
     font-size: 0.62rem;
   }
+
   .top-bar__link {
     padding: 0.4rem 0.55rem;
-  }
-  .top-bar .slap-toggle__label {
-    padding: 4px 7px;
-    font-size: 0.5rem;
   }
 }
 
@@ -258,12 +283,14 @@
     grid-template-columns: 1fr;
     grid-template-rows: var(--top-bar-row-1) var(--top-bar-row-2) var(--top-bar-row-3);
   }
+
   /* The smallest tier is a centred stack: mark, name, nav, top to bottom (Rod 2026-08-22).
      THE NAV DEFINES THE WIDTH - it stretches the full content box and spreads its links, and the
      other two centre on that same axis. See top-bar.md. */
   .top-bar {
     justify-items: center;
   }
+
   .top-bar__left .favicon {
     grid-column: 1;
     grid-row: 1;
@@ -271,21 +298,25 @@
     height: 2.6rem;
     margin: 0;
   }
+
   .top-bar__left .favicon__img {
     width: 2rem;
     height: 2rem;
   }
+
   .top-bar__logo {
     grid-column: 1;
     grid-row: 2;
     font-size: 1.4rem;
     justify-self: center;
   }
+
   .top-bar__toggles {
     grid-column: 1;
     grid-row: 2;
     justify-self: end;
   }
+
   .top-bar__nav {
     grid-column: 1;
     grid-row: 3;
@@ -294,35 +325,8 @@
   }
 }
 
-/* T3-A: the toggles are ghosted at rest and only an ON feature glows.
-   D20 removed the toggles from the design, so this block styles a zone the layout no longer
-   uses. It is on the merge cleanup list. */
-.top-bar .slap-toggle__control {
-  border-color: var(--color-line-soft);
-}
-
-.top-bar .slap-toggle__flap {
-  background: color-mix(in srgb, var(--color-text) 16%, transparent);
-}
-
-.top-bar .slap-toggle__flap-text {
-  color: var(--color-text);
-}
-
-.top-bar .slap-toggle__label {
-  color: var(--color-muted);
-}
-
-.top-bar .slap-toggle__control.is-on {
-  border-color: var(--color-glow);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 35%, transparent);
-}
-
-.top-bar .slap-toggle__control.is-on .slap-toggle__flap {
-  background: var(--color-glow);
-}
-
-.top-bar .slap-toggle__control.is-on .slap-toggle__flap-text {
-  color: var(--color-night);
-}
+/* The ghosted-toggle block that stood here is gone, 2026-08-25. It styled the bar's third
+   zone, which D20 emptied when the toggles left the design, and its own comment had said so
+   since the port: "styles a zone the layout no longer uses. It is on the merge cleanup
+   list." The component stylesheet went with it. */
 }

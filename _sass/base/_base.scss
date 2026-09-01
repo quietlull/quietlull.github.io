@@ -267,6 +267,7 @@ main {
 
 .shimmer {
   @include mx.shimmer-effect;
+
   background: var(--img-bg);
   
 
@@ -342,6 +343,7 @@ main {
   color: var(--amber-400);
   border-color: var(--btn-border-color);
   background: var(--button-bg);
+
   @include mx.shimmer-effect;
 
   &:not(.disabled):hover {
@@ -415,17 +417,17 @@ mjx-container {
   }
 }
 
-#mask {
-  inset: 0 0 0 0;
-}
+/* `#mask` and its rule are gone with the sidebar that used it, 2026-08-25. */
 
 #main-wrapper {
   position: relative;
+
   @include mx.pl-pr(0);
 
   @include bp.lt(bp.get(lg)) {
     @include mx.slide;
   }
+
 /*
   @include bp.lg {
     margin-left: v.$sidebar-width;
@@ -475,15 +477,8 @@ mjx-container {
   @include mx.ml-mr(0);
 }
 
-#tail-wrapper {
-  @include bp.xxxl {
-    padding-right: 4.5rem !important;
-  }
-
-  > :not(script) {
-    margin-top: 3rem;
-  }
-}
+/* `#tail-wrapper` and its rules are gone with the empty tail column, 2026-08-25.
+   Nothing set `tail_includes`, so the div rendered empty on 25 pages. */
 
 // ============================================================================
 // SECTION SEPARATOR
@@ -524,6 +519,7 @@ mjx-container {
   border: 1px solid var(--gold-20);
   flex-shrink: 0;
   cursor: pointer;
+
   @include mx.transition(transform, border-color, box-shadow);
 
   // Blurred orb behind the box — Tier 4 (largest)
@@ -604,8 +600,7 @@ mjx-container {
 }
 
 // Hover: glow brightens
-.post-card:hover .card-icon-glow,
-.post-vertical-bar:hover .card-icon-glow {
+.post-card:hover .card-icon-glow {
   background: var(--icon-glow-color-hover, var(--gold-35));
 }
 

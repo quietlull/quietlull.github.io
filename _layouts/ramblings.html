@@ -40,14 +40,6 @@ script_includes:
       </div>
     </div>
 
-    {% comment %} The same field the projects page uses, spanning the column so it matches a row's width. {% endcomment %}
-    <div class="searchrow">
-      <div class="sf sf--ronja">
-        <input class="sf__input" type="text" placeholder="search ramblings &amp; tags"
-               aria-label="Filter ramblings by title, blurb or tag">
-      </div>
-    </div>
-
     {% if posts.size == 0 %}
       <div class="es es--stack">
         <div class="es__content">
@@ -56,6 +48,19 @@ script_includes:
         </div>
       </div>
     {% else %}
+      {% comment %}
+        The same field the projects page uses, spanning the column so it matches a row's width.
+        It renders ONLY when there are rows to filter. Outside this branch it drew a live, styled,
+        focusable box over an empty list: `search-field.js:79-80` finds no `.er-list .er-row`, so it
+        returns before binding and typing in the field does nothing at all.
+      {% endcomment %}
+      <div class="searchrow">
+        <div class="sf sf--ronja">
+          <input class="sf__input" type="text" placeholder="search ramblings &amp; tags"
+                 aria-label="Filter ramblings by title, blurb or tag">
+        </div>
+      </div>
+
       <ul class="er-list">
         {% for post in posts %}
           {% assign chips = post.tags | where_exp: 't', 't != "ramblings"' %}

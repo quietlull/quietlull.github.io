@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* washi-tape - the site's tape marker, one definition stuck on anything, and the ONE loud
    object on the site (D27). Rod made it a convention 2026-08-21.
@@ -82,9 +83,12 @@
    markup order is how you read an L, so it should not have to encode a paint decision. */
 .tape--v  { width: var(--tape-w); height: clamp(var(--tape-min), 60%, var(--tape-max));
             clip-path: var(--tear-v); z-index: 2; }
+
 .tape--h  { height: var(--tape-w); width:  clamp(var(--tape-min), 22%, var(--tape-max));
             z-index: 1; }
+
 .tape--tl { top: calc(var(--tape-bite) - var(--tape-w)); left:  calc(var(--tape-bite) - var(--tape-w)); }
+
 .tape--br { bottom: calc(var(--tape-bite) - var(--tape-w)); right: calc(var(--tape-bite) - var(--tape-w)); }
 
 /* Diagonal corner strips, Rod 2026-08-23, the way tape really holds a photo down.
@@ -101,15 +105,20 @@
   clip-path: var(--tear-h);
   z-index: 2;
 }
+
 .tape--c-tl { top: calc(var(--tape-w) * -0.35); left:  calc(var(--tape-w) * -0.95); transform: rotate(-45deg); }
+
 .tape--c-tr { top: calc(var(--tape-w) * -0.35); right: calc(var(--tape-w) * -0.95); transform: rotate(45deg); }
+
 .tape--c-bl { bottom: calc(var(--tape-w) * -0.35); left:  calc(var(--tape-w) * -0.95); transform: rotate(45deg); }
+
 .tape--c-br { bottom: calc(var(--tape-w) * -0.35); right: calc(var(--tape-w) * -0.95); transform: rotate(-45deg); }
 
 /* The host has to leave overhang room: width: calc(100% - 2 * (tape-w - tape-bite)).
    It also needs a positioning context and, per gneiss, a sub-degree tilt and a WARM shadow. */
 .taped {
   position: relative;
+
   /* 0.05deg is gneiss's real value; we shipped -0.5, ten times too much (fixed 2026-08-23).
      On a 700px card 0.5deg lifts a corner 6.11px and reads as a tilt, 0.05deg lifts it 0.61px and
      reads as no tilt at all. So the card now looks unrotated, which is what theirs looks like.
@@ -117,16 +126,6 @@
   transform: rotate(-0.05deg);
   box-shadow: 0 3px 5px var(--color-shadow); /* becomes rgba(88,70,48,.5) when colour lands (D18) */
 }
-
-/* Bench-only framing, so the placements can be seen and tuned in isolation. */
-.tape-demo { padding: 26px 30px; }
-.tape-card {
-  width: calc(100% - 2 * (26px - 7px));
-  margin-left: 19px;
-  padding: 16px 20px;
-  background: var(--color-panel, #212121);
-}
-.tape-card p { margin: 0; font-size: 0.86rem; line-height: 1.7; }
 
 /* The four section tapes. Put one on the HOST, never on the .tape, so recolouring a section in
    one place moves every strip on it. */

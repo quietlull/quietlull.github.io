@@ -42,6 +42,21 @@ layout: compress
   {% when 'post' %}{% assign scene_tier = 'none' %}
   {% else %}{% assign scene_tier = 'minimal' %}
 {% endcase %}
+{% comment %}
+  THE 404 IS THE ONLY EMBERS-ONLY PAGE. Rod 2026-08-25: "the 404 page downloads the 3D scene
+  twice ... But why??? just make it use the minimal version and dont let it scroll down anymore."
+  THE ANSWER TO "why" is that `minimal` does not mean minimal. chrome-scripts.html only branches
+  on `none`, so EVERY other tier including `minimal` falls through to the 843 KB full scene
+  bundle. The 404 then loaded the 525 KB embers bundle itself, in its own page front matter, and
+  got both.
+  A SEPARATE TIER RATHER THAN FIXING `minimal`, on purpose: `minimal` is also portal, projects,
+  ramblings, archives, blog, page, tag and under-construction. Making it honest would change the
+  background on eight page types at once, which is a design change nobody asked for. That is
+  logged instead. This changes one page.
+  The value also reaches the CSS as `body[data-scene-tier="embers"]`, which is what stops the
+  page scrolling without needing a body class hook that does not exist.
+{% endcomment %}
+{% if page.permalink == '/404.html' %}{% assign scene_tier = 'embers' %}{% endif %}
 
 {% comment %}
   THE PORTAL CARRIES NO BAR AND NO FOOTER. Rod 2026-08-23: "no footer on the portal." It is a
@@ -64,8 +79,20 @@ layout: compress
       that keeps text readable over both. Markup only - the rules live in that stylesheet.
     {% endcomment %}
     <div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
-    <div id="scrim">
-    <div class="cursorglow"></div></div>
+    <div id="scrim"></div>
+    {% comment %}
+      THE GLOW IS A SIBLING OF #scrim, NOT ITS CHILD, and that nesting was the whole bug.
+      Rod 2026-08-25: "Cursor glow isnt always the upmost layer it should be make it go up".
+      #scrim is `position: fixed; z-index: -1`, and a positioned element with a z-index
+      starts a NEW STACKING CONTEXT - so the glow's z-index was being resolved against its
+      parent instead of the page, and no value it could name would ever have lifted it out.
+      Measured before the move: the glow asked for 600, the scene canvas sat at 500, and
+      `document.elementFromPoint` at the viewport centre never once returned the glow.
+      Raising the number alone would have changed nothing, which is why this is a markup fix.
+      `cursor-glow.js` finds it with `document.querySelector('.cursorglow')`, so moving it
+      costs the script nothing.
+    {% endcomment %}
+    <div class="cursorglow"></div>
 
     {% comment %}
       REPLACES `{% raw %}{% include topbar.html %}{% endraw %}`, which is left on disk untouched and is one line
@@ -83,7 +110,7 @@ layout: compress
       field's own width for the bounce edges, so a container puts a wall in the middle of the page.
       A layout joins this list when its markup is ported, not before.
     {% endcomment %}
-    {% assign full_bleed = 'portal,section-about,ramblings,section-projects,post,section-landing' | split: ',' %}
+    {% assign full_bleed = 'portal,section-about,ramblings,section-projects,post,section-landing,tag,archives,blog' | split: ',' %}
     {% if full_bleed contains page.layout %}
       {%- comment -%}
         Run refactor-content here too. It fixes image paths, and a post needs that whether or not it
@@ -118,25 +145,15 @@ layout: compress
           {% endif %}
         </div>
 
-        <div class="row">
-          <!-- tail -->
-          {% if layout.panel_includes %}
-          <div id="tail-wrapper" class="col-12 col-lg-11 col-xl-10 px-md-4">
-          {% else %}
-          <div id="tail-wrapper" class="col-12 px-md-4">
-          {% endif %}
-            {% for _include in layout.tail_includes %}
-              {% assign _include_path = _include | append: '.html' %}
-              {% include {{ _include_path }} lang=lang %}
-            {% endfor %}
-
-            {% comment %}
-              THE FOOTER USED TO SIT HERE - `{% raw %}{% include_cached footer.html %}{% endraw %}`, the copyright
-              line. That file is left on disk untouched; the redesign's footer is now a sibling of
-              `#main-wrapper`, below. See there for why it is not in this column.
-            {% endcomment %}
-          </div>
-        </div>
+        {% comment %}
+          THE TAIL COLUMN IS GONE, 2026-08-25. It existed to render `layout.tail_includes`, and
+          NOTHING SETS THAT ANY MORE - `_layouts/post.html:13` records the removal. Verified before
+          deleting rather than after: no layout, tab, page or config sets `tail_includes` or
+          `panel_includes`, and all 25 `#tail-wrapper` divs in the built site contained nothing but
+          whitespace. So this was an empty row plus an empty column on a quarter of the site.
+          The footer used to sit in here too; it is now a sibling of `#main-wrapper` below, and that
+          move is explained where it landed.
+        {% endcomment %}
 
       </div>
 
@@ -171,7 +188,14 @@ layout: compress
       {% include footer-line.html lang=lang %}
     {% endif %}
 
-    <div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div>
+    {% comment %}
+      THE SIDEBAR DIMMER IS GONE, 2026-08-25. It was Chirpy's overlay for dimming the page
+      behind an open sidebar, and the sidebar itself was removed in the redesign, so it
+      rendered as a bare empty div on all 53 pages. Two agents checked it independently before
+      it went: no `getElementById('mask')` anywhere in _javascript/, assets/js/, or the built
+      dist bundles, and all five of its utility classes are stripped by PurgeCSS, which left it
+      position:static with an `inset` that does nothing. Its one surviving rule went with it.
+    {% endcomment %}
 
     <!-- Embedded scripts -->
 

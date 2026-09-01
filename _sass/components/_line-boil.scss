@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* line-boil - the H0 site mark, animated by swapping between three hand-drawn faces.
    ORIGIN: ROD. The faces are his own scratch fonts. The mechanism is traditional 2D animation,
@@ -24,6 +25,7 @@
   descent-override: 38%;
   line-gap-override: 0%;   /* block, not swap: a swap flash would show the wrong letterforms */
 }
+
 @font-face {
   font-family: "Lineboil2";
   src: url("/assets/fonts/Lineboil2-Regular.ttf") format("truetype");
@@ -32,6 +34,7 @@
   descent-override: 38%;
   line-gap-override: 0%;
 }
+
 @font-face {
   font-family: "Lineboil3";
   src: url("/assets/fonts/Lineboil3-Regular.ttf") format("truetype");
@@ -57,6 +60,7 @@
   descent-override: 38%;
   line-gap-override: 0%;
 }
+
 @font-face {
   font-family: "Lineboil2";
   src: url("/assets/fonts/Numberboil2-Regular.ttf") format("truetype");
@@ -66,6 +70,7 @@
   descent-override: 38%;
   line-gap-override: 0%;
 }
+
 @font-face {
   font-family: "Lineboil3";
   src: url("/assets/fonts/Numberboil3-Regular.ttf") format("truetype");
@@ -77,6 +82,7 @@
 }
 
 /* The host. Colour comes from the H0 token so the mark cannot drift from the ladder. */
+
 /* This is the jiggle Rod reported three times, and nothing on the page was ever moving.
    Chrome's scroll anchoring watches content above the viewport and nudges scrollTop to hold the
    view steady when it changes. The boil replaces every glyph six times a second, so the browser
@@ -84,12 +90,16 @@
    the boil while every box stayed stable to three decimals. Fixed to 0. See line-boil.md. */
 .lb {
   overflow-anchor: none;
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword --
+     no generic fallback ON PURPOSE: a fallback face would paint wrong glyphs during the load
+     window, and font-display: block exists to hold the text invisible instead. */
   font-family: "Lineboil1";
   color: var(--h0-color, #f86a03);
 }
 
 /* One box per glyph, sized from font 1 and never resized. `inline-size`, not `width`, because
    the hero runs vertical-rl and width would pin the wrong axis. */
+
 /* vertical-align: top is load-bearing, not tidying. An inline-block sits on the baseline of its
    own text, and the three faces do not share one, so every swap re-seated the cell and the line
    box grew and shrank by a pixel six times a second. `top` takes them off the baseline entirely.

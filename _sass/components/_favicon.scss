@@ -2,16 +2,10 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* favicon - the home link. It leans toward the pointer, spins on hover, and overflow:hidden
    is what stops it escaping its box. See favicon.md. */
-.favicon-demo {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-}
-
 .favicon {
   display: inline-flex;
   align-items: center;
@@ -62,6 +56,7 @@
   from {
     transform: rotate(0);
   }
+
   to {
     transform: rotate(-360deg);
   }

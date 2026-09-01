@@ -10,7 +10,6 @@
    See search-field.md, which also lists the house rules they are built against. */
 
 @layer components {
-
   /* Skeleton only. Every visible decision lives in a variant, so one can be lifted out clean. */
   .sf {
     position: relative;
@@ -52,6 +51,7 @@
     background: var(--color-surface);
     border: 1px solid var(--color-line);
   }
+
   .sf--ronja .sf__input { padding: 0 12px; }
 
   /* B - paris-review desktop. `input.search-input { padding: 0 2.25em; background: #f7f7f7 }`.
@@ -62,7 +62,9 @@
     border: 0;
     border-radius: 0;
   }
+
   .sf--pr-desk .sf__input { padding: 0 2.25em 0 2.625em; }
+
   .sf--pr-desk .sf__mark  { left: 1em; }
 
   /* C - paris-review mobile. `#int-nav-search-input_mobile { background: transparent;
@@ -72,7 +74,9 @@
     background: transparent;
     border-bottom: 1px solid var(--color-line);
   }
+
   .sf--pr-mob .sf__input { padding: 0 .5rem; }
+
   .sf--pr-mob:focus-within { background: var(--color-panel); }
 
   /* D - cinra. A border that exists at rest but matches the fill, then darkens on focus, so
@@ -85,7 +89,9 @@
     border-radius: 0;
     transition: border-color .3s cubic-bezier(.4, .4, 0, 1);
   }
+
   .sf--cinra .sf__input { padding: 10px 16px; }
+
   .sf--cinra:focus-within { border-color: var(--color-gold); }
 
   /* E - craigmod. `#fastSearch input { background:#000; border-radius: 8px 8px 0 0 }`.
@@ -97,6 +103,7 @@
     border: 0;
     border-radius: 0;
   }
+
   .sf--craigmod .sf__input {
     padding: 14px 18px;
     font-size: 1.15rem;
@@ -110,6 +117,7 @@
     background: transparent;
     border: 0;
   }
+
   .sf--a24 .sf__input {
     padding: 0;
     font-family: var(--font-display);
@@ -131,5 +139,6 @@
    Deleting the ring with nothing in its place would fail 2.4.7. See search-field.md. */
 @layer overrides {
   .sf--ronja .sf__input:focus-visible { box-shadow: none; }
+
   .sf--ronja:focus-within { border-color: var(--color-gold); }
 }

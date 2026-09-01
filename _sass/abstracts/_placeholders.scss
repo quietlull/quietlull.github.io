@@ -63,6 +63,7 @@
 %nav-links {
   color: var(--topbar-text-color);
   user-select: none;
+
   @include mx.transition(color);
   
   &:hover {
@@ -92,6 +93,7 @@
 
 %tag-hover {
   @extend %link-color;
+
   background: var(--tag-hover);
   border-color: var(--tag-hover);
   transition: background 0.35s ease-in-out;
@@ -211,10 +213,12 @@
 
 %glass-panel {
   @include mx.glass;
+
   border-radius: v.$radius-lg;
 }
 
 %glass-panel-strong {
   @include mx.glass-strong;
+
   border-radius: v.$radius-lg;
 }

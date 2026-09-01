@@ -181,6 +181,7 @@
     &::before {
       background: var(--glow-strong);
     }
+
     background: var(--glow-medium);
   }
 }
@@ -240,6 +241,7 @@
       opacity: 1;
       box-shadow: var(--glow-ring);
     }
+
     50% {
       opacity: 0.7;
       box-shadow: var(--glow-ring-small);
@@ -253,9 +255,11 @@
 
 @mixin transition($props...) {
   $list: ();
+
   @each $prop in $props {
     $list: list.append($list, $prop 0.3s ease, comma);
   }
+
   transition: $list;
 }
 
@@ -336,6 +340,7 @@
       content: $fa_content;
       color: var(--prompt-#{$type}-icon-color);
       font: var(--fa-font-#{$fa_style});
+
       @if $rotate != 0 {
         transform: rotate(#{$rotate}deg);
       }
@@ -372,12 +377,14 @@
 
 @mixin card-base {
   @include glass;
+
   border-radius: v.$radius-lg;
   padding: 1.5rem;
 }
 
 @mixin card-hover {
   @include radial-hover-glow;
+
   transition: border-color 500ms ease, transform 400ms ease, box-shadow 400ms ease;
 
   &:hover {
@@ -399,6 +406,7 @@
   color: var(--text-color);
   font-weight: 300;
   cursor: pointer;
+
   @include transition(all);
   
   &:hover {

@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer overrides {
 /* THE GLOBAL FOCUS RING. Bootstrap 5.3's focus-ring helper plus dev.to hybrid_alex's
    box-shadow outlines (sources/focus-ring.md). Remixed, theirs.

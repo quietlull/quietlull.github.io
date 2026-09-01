@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* callout-family - the BOX that sits under the washi tape. Three versions for Rod to pick from.
    THE TAPE IS SOURCED, THE BOX IS NOT. gneiss.place has no callout system at all, so each version
@@ -23,8 +24,11 @@
   border-radius: 0;                   /* square by default */
   color: var(--color-text, #f5f3ef);
 }
+
 .co > :first-child { margin-top: 0; }
+
 .co > :last-child { margin-bottom: 0; }
+
 .co p { line-height: 1.7; }
 
 /* The category label. Free text, not a fixed severity set (maxime's pattern). His straddling
@@ -57,10 +61,12 @@
   padding-inline: var(--space-s-m);
   padding-block: var(--space-s-m);
   margin-block: var(--space-m-l);
+
   /* Hard offset, zero blur - gneiss `.pinned-note` geometry. A blur would smear the live
      three.js scene behind the card. v3 takes the opposite bet on purpose. */
   box-shadow: 3px 3px 0 var(--color-shadow-warm);
 }
+
 /* The warning tape has four corner tabs that overhang, so text is pushed clear of them. This is
    the only place a category changes the box in v1. */
 .co--v1.co--warning { padding: calc(var(--space-s-m) + 8px); }
@@ -81,14 +87,19 @@
   background-color: var(--color-panel, rgba(28, 26, 24, 0.55));
   padding: 0 1em;
   margin-block: 1em;
+
   /* `.taped` BRINGS ITS OWN SHADOW. Every callout carries .taped for the tape geometry, so v2
      was inheriting a shadow catlikecoding does not have - the one thing separating it from v3.
      Any box that wants a different shadow, or none, has to say so like this. */
   box-shadow: none;
 }
+
 .co--v2 p { padding: 1em 0; margin: 0; font-size: inherit; }
+
 .co--v2 .co__label { padding-top: 1em; margin-bottom: 0; font-size: 0.66rem; }
+
 .co--v2 .co__label + p { padding-top: 0.5em; }
+
 .co--v2.co--warning { padding: 0 calc(1em + 8px); }
 
 /* V3 - the tape's actual partner box.
@@ -105,6 +116,7 @@
   box-shadow: 0 3px 5px var(--color-shadow-warm);
   margin-block: 1.9rem;
 }
+
 .co--v3.co--warning { padding: calc(1rem + 8px) calc(1rem + 8px) 3rem; }
 
 /* REFERENCE / LINKS - no box at all, and the cleanest sourced answer in the set.
@@ -114,8 +126,11 @@
    Their .5px stays: it is a real sub-pixel hairline on retina, and rounding it to 1px doubles the
    weight of the only device this has. See callout-family.md. */
 .co-ref { width: 100%; margin-left: 0; margin-block: 1.9rem; }
+
 .co-ref ul { list-style: none; margin: 0; padding: 0; display: grid; }
+
 .co-ref li { border-bottom: 0.5px solid var(--color-line-soft, rgba(255, 255, 255, 0.1)); }
+
 .co-ref a {
   display: grid;
   grid-template-columns: 8px 1fr;
@@ -126,12 +141,14 @@
   color: var(--color-text, #f5f3ef);
   border-bottom: 0;                   /* cancels the prose-link hairline; the row rule is the device */
 }
+
 .co-ref a::before {
   content: "";
   width: 8px;
   height: 8px;
   background-color: var(--color-gold, #fbbf24);   /* their square marker, our accent */
 }
+
 .co-ref a:hover { background: none; color: var(--color-gold, #fbbf24); }
 
 /* THE QUOTE PROBLEM, stated here so nobody quietly resolves it.
@@ -140,7 +157,10 @@
    Rod chose tape C knowing the corners need corners to sit on, so the boxed version is SLOP,
    idea-origin Claude, drawn only because the decision requires it. `.co-quote--boxless` is the
    sourced alternative, drawn beside it so the two can be compared honestly. */
+
 /* SLOP, no source. It exists because tape C needs corners to sit on. */
+/* stylelint-disable-next-line block-no-empty -- a named marker, not a style: it records that
+   the boxed quote takes whichever version shell is picked, and the pick is still open. */
 .co-quote--boxed { }                  /* takes whichever version shell is picked; no extra rules */
 
 /* The sourced alternative: a left rule and italic, which is the one treatment all three sites
@@ -156,6 +176,7 @@
   border-top: 0; border-right: 0; border-bottom: 0;
   box-shadow: none;
 }
+
 .co-quote--boxless cite {
   display: block;
   margin-top: 0.75rem;

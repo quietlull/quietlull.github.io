@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* page-title-desc - the title and description block on the projects and ramblings indexes.
    potg.art (sources/potg-typography.md, tier True, re-verified live 2026-08-23). Remixed, theirs.
@@ -21,7 +22,9 @@
   text-align: center;
   row-gap: var(--ptd-gap, 11px);
 }
+
 .ptd__title { width: var(--ptd-title-w, 100%); max-width: 100%; }
+
 .ptd__desc {
   width: var(--ptd-desc-w, 100%);
   max-width: 100%;
@@ -69,6 +72,7 @@
    WATCH AT BUILD: .d-h1 runs line-height .92, which crops the em box tighter than the glyphs, so
    the j in "Projects" may cross the rule. The demo draws it. See page-title-desc.md. */
 .ptd--ruled .ptd__title { border-bottom: solid 1px; }
+
 .ptd--ruled .ptd__desc {
   font-size: 22px;
   font-weight: 500;
@@ -89,6 +93,7 @@
 .ptd--projects {
   --ptd-gap: 18px;        /* projects-blockout.html:232, the literal <div style="height:18px"> */
 }
+
 .ptd--ramblings {
   --ptd-gap: 12px;        /* ramblings-blockout.html:126 / final-ramblings.html:110 gap:12px */
   --ptd-title-w: 380px;   /* ramblings-blockout.html:125 */

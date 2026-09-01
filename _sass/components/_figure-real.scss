@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* figure-real - catlikecoding's figure geometry, no mat, caption pushed LEFT (Rod's change).
    Six declarations transcribed verbatim, one flipped. Remixed, geometry theirs, left-align Rod's.
@@ -17,20 +18,24 @@
   margin: 2em auto;
   padding: 0;
 }
+
 .fig > img,
 .fig > video {
   max-width: 100%;
   height: auto;
+
   /* The split: centre the media here so the caption can go left without dragging it along. */
   display: block;
   margin-inline: auto;
 }
+
 .fig figcaption {
   font-size: 0.875em;
   font-style: italic;
   text-align: left;          /* ours; theirs inherits center */
   margin-top: 0.5rem;
 }
+
 @media print {
   /* theirs, verbatim, and it costs nothing */
   .fig { page-break-inside: avoid; }

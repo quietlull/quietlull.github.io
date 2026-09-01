@@ -41,7 +41,7 @@
       border-radius: 0.5rem;
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
-      background-color: rgb(255 255 255 / 50%);
+      background-color: rgb(255 255 255 / 0.5);
       color: #1b1b1eba;
       position: fixed;
       left: 50%;
@@ -62,7 +62,7 @@
   border: 1px solid var(--toc-popup-border-color);
   border-radius: v.$radius-lg;
   color: var(--text-color);
-  background: var(--glass-bg);
+  background: var(--bg-glass);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   backdrop-filter: blur(16px) saturate(1.2);
   box-shadow:
@@ -99,7 +99,7 @@
     position: -webkit-sticky;
     position: sticky;
     top: 0;
-    background: var(--glass-bg);
+    background: var(--bg-glass);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--gold-08);
@@ -186,7 +186,7 @@
     display: flex;
     content: '';
     position: relative;
-    background: linear-gradient(transparent, var(--glass-bg) 70%);
+    background: linear-gradient(transparent, var(--bg-glass) 70%);
     height: $curtain-height;
   }
 

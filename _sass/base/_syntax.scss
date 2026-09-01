@@ -247,7 +247,7 @@ div {
     }
 
     &:not([timeout]):hover {
-      background-color: rgb(128 128 128 / 37%);
+      background-color: rgb(128 128 128 / 0.37);
 
       i {
         color: white;

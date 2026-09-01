@@ -2,19 +2,14 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* drift-magnet - the drifting social circles. drift-magnet.js owns the motion, this owns shape.
    Rising fill from dennissnellenberg.com/work .btn-fill (sources/dennissnellenberg-buttons.md),
    recoloured to tokens. See drift-magnet.md. */
-.dm-demo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-}
-
 .dm-row {
   display: flex;
+
   /* The percentages here and on .dm-social's width make 4 circles + 3 gaps come to exactly 100%
      of the row, so it squeezes instead of wrapping (Rod 2026-08-24). Do not round them.
      The wrap used to fire at viewport 1429 and cost 94.39px of rail height. See drift-magnet.md. */
@@ -102,22 +97,6 @@
   transform: rotate(360deg);
 }
 
-.dm-demo__hint {
-  max-width: 42ch;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  line-height: 1.6;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-
-.dm-demo__hint--small {
-  font-size: 0.56rem;
-  opacity: 0.8;
-}
-
 .dm-motion-btn {
   font-family: var(--font-mono);
   font-size: 0.66rem;
@@ -150,6 +129,7 @@
     outline-offset: 0;
     box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 45%, transparent);
   }
+
   100% {
     outline: 1px solid transparent;
     outline-offset: 14px;

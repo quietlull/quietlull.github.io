@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* portrait-frame - the portrait in the About rail. Three frames, one measured box.
    THE BOX IS A MEASUREMENT, NOT A CHOICE: 191 x 200, and 191 is the 225px rail minus the panel's
@@ -18,6 +19,7 @@
 .pf * {
   box-sizing: border-box;
 }
+
 .pf {
   width: 191px;
   height: 200px;
@@ -97,24 +99,28 @@
   width: 2.5rem;
   height: 2.5rem;
 }
+
 .pf__corner--tl {
   top: 0;
   left: 0;
   border-top: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
   border-left: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
 }
+
 .pf__corner--tr {
   top: 0;
   right: 0;
   border-top: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
   border-right: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
 }
+
 .pf__corner--br {
   bottom: 0;
   right: 0;
   border-bottom: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
   border-right: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
 }
+
 .pf__corner--bl {
   bottom: 0;
   left: 0;
@@ -137,6 +143,7 @@
   border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
   border-radius: 0;
 }
+
 .pf__inner {
   display: grid;
   grid-template-rows: 2rem 1fr;    /* verbatim */
@@ -145,6 +152,7 @@
   border: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
   border-radius: 0;
 }
+
 .pf__bar {
   position: relative;
   display: flex;
@@ -154,11 +162,13 @@
   border-bottom: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
 }
+
 .pf__name {
   font-size: 0.9375rem;            /* verbatim; their --font-size-base-en, read live */
   padding-bottom: 1px;             /* verbatim */
   pointer-events: none;            /* verbatim */
   color: var(--color-text, #f5f3ef);
+
   /* Ours. The usable title width is 169px and their windows are 280-340, so they never needed
      this. At 169 a long name has to end somewhere chosen. */
   min-width: 0;
@@ -166,6 +176,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
 .pf__body {
   position: relative;
   height: 100%;
@@ -183,12 +194,14 @@
   place-items: center;
   background: var(--color-panel, rgba(28, 26, 24, 0.55));
 }
+
 /* THE FAVICON FILLS THE WINDOW, Rod 2026-08-24: "make fav icon same size as the window". It used
    to be pinned small so it could not be mistaken for the real portrait; the later call wins, and
    the stand-in now occupies the frame the real image will. data-placeholder is the safeguard, not
    the size. 62.5% is measured against the window's SHORT side so it scales with the frame.
    `width: auto` because the source viewBox is 520x546 and forcing both axes would squash it. */
 .pf--window .pf__media[data-placeholder="true"] .favicon { width: 100%; height: 100%; }
+
 .pf--window .pf__media[data-placeholder="true"] .favicon__img { width: auto; height: 62.5%; }
 
 /* STILL OPEN, and it is Rod's: the real portrait does not exist. Frame approved, content

@@ -15,7 +15,6 @@
   --slate-950: #020617;         // rgb(2, 6, 23) - darkest bg
   --slate-900: #0f172a;         // rgb(15, 23, 42) - main bg
   --slate-800: #1e293b;         // rgb(30, 41, 59) - elevated surfaces
-  
   --amber-500: #f59e0b;         // rgb(245, 158, 11) - primary glow
   --amber-400: #fbbf24;         // rgb(251, 191, 36) - bright accents
   --amber-300: #fcd34d;         // rgb(252, 211, 77) - highlights
@@ -73,7 +72,6 @@
     0 8px 32px rgba(0, 0, 0, 0.6),
     0 0 80px rgba(251, 191, 36, 0.05),
     inset 0 1px 0 rgba(251, 191, 36, 0.08);
-    
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -90,7 +88,6 @@
   --glow-ring: 
   0 0 20px 4px rgba(251, 191, 36, 0.6),
   0 0 40px 8px rgba(251, 191, 36, 0.3);
-  
   --glow-ring-small: 
   0 0 10px 2px rgba(251, 191, 36, 0.5),
   0 0 20px 4px rgba(251, 191, 36, 0.2);
@@ -226,7 +223,6 @@
   --button-bg: rgba(245, 158, 11, 0.1);
   --button-hover-bg: rgba(245, 158, 11, 0.15);
   --button-active-bg: rgba(245, 158, 11, 0.2);
-  
   --btn-border-color: rgba(245, 158, 11, 0.2);
   --btn-hover-glow: 0 0 20px rgba(251, 191, 36, 0.2);
   
@@ -266,15 +262,12 @@
   // ==========================================================================
   --card-bg: rgba(15, 23, 42, 0.6);
   --card-hover-bg: rgba(245, 158, 11, 0.08);
-  
   --card-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.6), 
     0 0 60px rgba(251, 191, 36, 0.02);
-  
   --card-hover-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.6),
     0 0 80px rgba(251, 191, 36, 0.05);
-  
   --card-header-bg: var(--bg-tertiary);
 
   // Radial gradient for card hover (matching React)
@@ -381,7 +374,6 @@
     rgba(15, 23, 42, 0.6) 0%,
     rgba(30, 41, 59, 0.8) 100%
   );
-
   --separator-gradient: linear-gradient(
     to bottom,
     transparent,
@@ -408,12 +400,7 @@
   // ==========================================================================
   // COMPONENT OVERRIDES
   // ==========================================================================
-  .categories.card, 
-  .list-group-item { 
-    background-color: var(--card-bg); 
-  }
-  
-  .categories .card-header { 
-    background-color: var(--card-header-bg); 
-  }
+
+  /* The category-card and list-group rules that stood here died with the tag/archive port,
+     2026-08-25 - their markup was Chirpy's and the new pages use entry rows. */
 }

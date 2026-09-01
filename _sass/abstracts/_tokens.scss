@@ -46,6 +46,7 @@
   --color-night-2: #0a1030;
   --color-text: #f5f3ef;
   --color-muted: #9aa3bd;
+
   /* warm lantern ramp (value tiers: highlight -> gold -> deep -> ember glow) */
   --color-glow-soft: #ffd9a8; /* warm highlight (foundations #FFD9A8) */
   --color-gold: #fbbf24; /* primary accent */
@@ -62,6 +63,7 @@
   --color-accent-cool: #3090a8;
 
   /* === surfaces & lines === */
+
   /* WARM GREY - Rod picked it 2026-08-23 from card-greys-tests.html ("Warm grey is the
      winner"). Was rgba(12,16,38,.55), a real blue: 38 blue against 12 red. ORIGIN: ROD - this
      swatch is ours, not sourced, and was labelled so on the page when he chose it.
@@ -87,7 +89,15 @@
   --color-icon-stroke: var(--color-gold-deep); /* draw-in icons resting stroke — orange (Rod 2026-08-11; was pale #cdd8f0 from the stephan source) */
 
   /* type (hybrid fork: hand logo / display headers / body / mono workhorse) */
+
+  /* CAVEAT IS NO LONGER DOWNLOADED, so this token now resolves to the browser's default
+     cursive. Rod 2026-08-25: "drop caveat". Its only consumer was `.top-bar__logo`, and that
+     declaration was deleted the same day when the wordmark turned out to be painting in Caveat
+     instead of the boil face. The name is kept rather than deleted so the decision stays
+     readable, but USING IT WILL RENDER A FALLBACK WITHOUT ERRORING - re-add the family to the
+     Google Fonts request in _includes/head.html first. */
   --font-hand: "Caveat", cursive;
+
   /* TYPE DECISION LOCKED 2026-08-18 (ROD): "rounded gothic is fine and we should use it for the
      project cards and headers as well." So DISPLAY is no longer a serif - the site has one text
      face plus the hand face plus mono, and nothing reaches for a mincho any more.
@@ -241,6 +251,13 @@
   --color-tag-text: rgba(232, 224, 212, 0.78);
   --color-highlight: #412c11;
   --color-line-grey: #383838; /* the bio panel's 2px border, transcribed verbatim from its source */
+
+  /* The unlock toast, from the design Rod picked on the bench (redesign-lab/achievement-tests.html
+     `.t-pick`, dimden's box). Both values are transcribed from that source rather than chosen:
+     the fill is translucent ON PURPOSE so the live scene reads through the toast, which is the
+     whole reason the pick has no radius and no glow either. */
+  --color-toast-fill: rgba(0, 0, 0, 0.66);
+  --color-toast-desc: #8a8a8a;
   --color-text-quiet: rgba(245, 243, 239, 0.45); /* --color-text at 45%: the footer's fine print */
 
   /* --- the tape hues ---------------------------------------------------------------------------
@@ -271,4 +288,13 @@
   --z-content: 1;
   --z-chrome: 60;
   --z-overlay: 200;
+
+  /* The cursor glow rides above EVERYTHING. Rod 2026-08-25: "it should be make it go up".
+     Deliberately clear of the two highest things on the site, the skip link at 9999 and the
+     achievement toasts at 10000/10001, because "upmost" has to mean upmost or it is just a
+     bigger number that loses to the next one somebody adds. Safe to sit over both: the glow
+     is `pointer-events: none` and paints a 15%-opacity gold radial that fades out entirely,
+     so it tints those surfaces without obscuring them. Drop it below 9999 if the focused
+     skip link ever needs to be completely clear. */
+  --z-cursor: 10050;
 }

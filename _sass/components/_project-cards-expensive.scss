@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* project-cards-expensive - the cursor-tracked band reveal. merged-card.scss styles the cards
    themselves; this only adds the glow on the glass, front and back.
@@ -107,10 +108,12 @@
   .epx-cards.is-regular {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .epx-cards.is-staggered > *:nth-child(4n + 2),
   .epx-cards.is-staggered > *:nth-child(4n) {
     transform: none;
   }
+
   .epx-cards.is-staggered > *:nth-child(even) {
     transform: translateY(36px); /* 2-col zig-zag on narrow screens */
   }
@@ -141,7 +144,7 @@
   border-radius: inherit;
   padding: 1.5px;
   pointer-events: none;
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   filter: blur(2.5px);
@@ -166,9 +169,10 @@
   border-radius: inherit;
   padding: 1.5px;
   pointer-events: none;
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
+
   /* Two layers in one pseudo, matching the front's two rings. The first background layer paints
      on top, so the soft one has to lead to match the front's order. */
   background:

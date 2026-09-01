@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* bio-block - the About page's two prose blocks, bio_intro and bio_more.
    Rod: "about page is the landing page except the about me is the hero", so bio_intro is the
@@ -19,6 +20,7 @@
   width: 675px;
   max-width: 100%;
 }
+
 .bio + .bio { margin-top: 10px; }        /* the blockout's own gap between the two panels */
 
 /* The ladder's own sizes, taken from decisions.scss and not re-decided. `.bio__h` plays H2 and
@@ -33,6 +35,7 @@
   line-height: 1.25;
   margin: 0 0 2.25rem;                   /* the ladder's own bottom margin, decisions.css:77 */
 }
+
 .bio__h--lesser {
   font-size: 1.0625rem;
   color: var(--h3-color, #a3a19d);
@@ -41,7 +44,9 @@
 
 /* Body size and rhythm. A house decision from final-post.html, not provenance. */
 .bio .prose p { font-size: 16px; }
+
 @media (min-width: 960px) { .bio .prose p { font-size: 18px; } }
+
 .bio .prose > * + * { margin-top: 24px; }
 
 /* V1 - PANEL. The whole block is one translucent panel, heading plain inside it.
@@ -72,6 +77,7 @@
   border-radius: 0;
   padding: 7px 20px;
 }
+
 .bio--headcard .bio__h--lesser { border-left-color: var(--h3-color, #a3a19d); }
 
 // SASS LINE COMMENTS ON PURPOSE, do not convert this block back to /* */.
@@ -103,10 +109,12 @@
   padding: 1.25rem 1.5rem;
   border-radius: 0;
 }
+
 .bio--v4 .bio__h {
   border-left: 10px solid var(--h2-color, #fbbf24);   /* V2's edge, verbatim width */
   padding-left: 20px;                                  /* their inline padding only */
   background: none;                                    /* NOT their fill - the panel is the ground */
 }
+
 .bio--v4 .bio__h--lesser { border-left-color: var(--h3-color, #a3a19d); }
 }

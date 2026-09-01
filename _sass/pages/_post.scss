@@ -46,7 +46,7 @@
     z-index: -1;
     border: 1px solid var(--color-line-panel);
     background: var(--color-panel-blue);
-    box-shadow: 0 4px 40px rgb(0 0 0 / 40%);
+    box-shadow: 0 4px 40px rgb(0 0 0 / 0.4);
     pointer-events: none;
   }
 
@@ -194,6 +194,15 @@
     border-left-color: var(--color-gold);
     color: var(--color-gold);
   }
+
+  /* TOCBOT DRAWS ITS OWN ACTIVE BAR AND IT IS GREEN. Rod 2026-08-25: "when did this weird green
+     bar show up thats strange and not supposed to be there". Measured on the live page: a
+     `::before` on the active link, absolute, 2px wide, 121px tall, `rgb(84, 188, 75)`. That colour
+     appears NOWHERE in this repo - it is tocbot's own default stylesheet, which is served
+     cross-origin and therefore cannot be read from script, which is why no earlier sweep of ours
+     ever saw it. The rule above already paints our gold bar as the link's `border-left`, so the
+     list was carrying TWO left bars in two different colours. This removes theirs and leaves ours. */
+  .toc a.is-active-link::before { display: none; }
 
   // ---- the foot ------------------------------------------------------------------------------
 
@@ -440,7 +449,7 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
 // R4: GLightbox glass overlay — amber themed image zoom
 // ============================================================================
 .goverlay {
-  background: rgb(8 15 27 / 85%) !important;
+  background: rgb(8 15 27 / 0.85) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -454,7 +463,7 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
 
   box-shadow:
     0 0 0 1px rgb(var(--glow-hue), 0.20),
-    0 20px 60px rgb(0 0 0 / 60%),
+    0 20px 60px rgb(0 0 0 / 0.6),
     0 0 40px rgb(var(--glow-hue), 0.08);
   border-radius: v.$radius-lg;
   overflow: hidden;

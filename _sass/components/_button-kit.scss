@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* button-kit - the buttons, the tags and the inline link.
    SLOP UNTIL RESOURCED. The shapes cite rework-stephan.html, which is our own build, so this
@@ -154,13 +155,5 @@
 
 .inline-link:hover::after {
   width: 100%;
-}
-
-.button-kit-demo {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  align-items: center;
-  justify-content: center;
 }
 }

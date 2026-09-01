@@ -1,3 +1,5 @@
+@use 'sass:list';
+
 // Animations — all keyframes for the lantern theme
 
 @use 'sass:math';
@@ -5,14 +7,18 @@
 // --- Floating ---
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) translateX(0px); }
+  0%, 100% { transform: translateY(0) translateX(0); }
+
   25% { transform: translateY(-30px) translateX(10px); }
+
   50% { transform: translateY(-15px) translateX(-10px); }
+
   75% { transform: translateY(-40px) translateX(5px); }
 }
 
 @keyframes float-gentle {
-  0%, 100% { transform: translateY(0px) translateX(0px); }
+  0%, 100% { transform: translateY(0) translateX(0); }
+
   50% { transform: translateY(-20px) translateX(5px); }
 }
 
@@ -20,16 +26,19 @@
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
+
   50% { opacity: 0.5; }
 }
 
 @keyframes pulse-scale {
   0%, 100% { opacity: 1; transform: scale(1); }
+
   50% { opacity: 0.7; transform: scale(1.1); }
 }
 
 @keyframes pulse-slow {
   0%, 100% { opacity: 0.35; }
+
   50% { opacity: 0.5; }
 }
 
@@ -37,6 +46,7 @@
 
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
+
   100% { transform: translateX(100%); }
 }
 
@@ -44,16 +54,19 @@
 
 @keyframes fade-in {
   from { opacity: 0; }
+
   to { opacity: 1; }
 }
 
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(20px); }
+
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(4rem); }
+
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -61,16 +74,19 @@
 
 @keyframes spin {
   from { transform: rotate(0deg); }
+
   to { transform: rotate(360deg); }
 }
 
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
+
   to { transform: rotate(360deg); }
 }
 
 @keyframes chase-tail {
   0% { transform: rotate(0deg); }
+
   100% { transform: rotate(-360deg); }
 }
 
@@ -83,12 +99,10 @@
 $motion-selectors:
   '#topbar', '#avatar', '.nav-item .nav-link', '.topbar-bottom a',
   '.text-container', '#landing-box::before', '#landing-box::after',
-  '.post-vertical-bar .vertical-bar-container',
   '.portal-door', '.portal-side-link',
   '.posts-grid .card', '.post-card .card', '.post-nav-card',
   '#related-posts a.post-preview', 'article > header',
   '.post-content-container', '.post-section', '.post-tldr', '.post-takeaway',
-  '.blog-controls',
   '.section-icon-box', '.section-icon-box .icon-dot',
   '.card-icon-box', '.card-icon-box .card-icon-dot',
   '.tool-icon', '.demo-reel-embed', '.demo-reel-placeholder', '.demo-reel-placeholder i',
@@ -108,7 +122,7 @@ $reduced-motion-extras:
 
 @media (prefers-reduced-motion: reduce) {
   html {
-    @each $sel in join($motion-selectors, $reduced-motion-extras) {
+    @each $sel in list.join($motion-selectors, $reduced-motion-extras) {
       #{$sel} { animation: none !important; }
     }
   }
@@ -131,32 +145,55 @@ $reduced-motion-extras:
 
 // --- Achievement toast ---
 
+/* THE UNLOCK TOAST, built 2026-08-25 to the design Rod picked on the bench. Rod: "the achievement
+   popups are still the old ones ... do this when you can".
+   IT WAS PICKED LONG AGO AND NEVER BUILT, and the lab said so at the time:
+   redesign-lab/extracted/components/achievement-tile/achievement-tile.html:144 reads "Not rebuilt
+   here: the unlock toast is already picked (dimden .box at 200 x 76, achievement-tests.html
+   .t-pick)". So this is a transcription of an approved pick, not a new design.
+   Every number below comes from `.t-pick` (redesign-lab/achievement-tests.html:163-168): 200x76,
+   flex, 11px gap, 10px/15px padding, a 2px #383838 border, and the icon/title/description sizes.
+   The source's own note says why it looks like this: "translucent so the live scene reads through,
+   2px border, NO RADIUS, no glow" - so the 12px radius, the gold hairline and the two shadows the
+   old toast carried are deliberately gone rather than forgotten.
+   THIS IS EDITED IN PLACE RATHER THAN MOVED TO A COMPONENT FILE, on purpose. This file is
+   UNLAYERED, so a new `_sass/components/_achievement-toast.scss` inside `@layer components` would
+   have lost every property to the rules it was replacing - which is exactly the bug that made the
+   top-bar wordmark paint in Caveat (P457). Replacing beats overriding across that boundary.
+   THE FIXED 76px HEIGHT SUITS THE SCRIPT BETTER THAN THE OLD BOX DID: achievements.js stacks each
+   toast at `activeToasts.length * 80`, a stride that only ever really worked against a fixed
+   height, and the old toast's height varied with its text. 76 into 80 leaves a 4px gap. */
 .achievement-toast {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: var(--slate-a95);
-  border: 1px solid var(--gold-30);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  max-width: 280px;
   z-index: 10000;
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  box-shadow: 0 8px 32px var(--shadow-a40), 0 0 20px var(--gold-10);
+  align-items: center;
+  gap: 11px;
+  width: 200px;
+  height: 76px;
+  padding: 10px 15px;
+  background: var(--color-toast-fill);
+  border: 2px solid var(--color-line-grey);
   animation: toast-slide-in 0.4s ease-out;
 
   &.toast-exit { animation: toast-slide-out 0.3s ease-in forwards; }
 }
 
-.toast-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1; }
+.toast-icon { font-size: 1.35rem; line-height: 1; flex-shrink: 0; }
+
 .toast-content { min-width: 0; }
-.toast-title { color: var(--link-hover-color); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.15rem; }
-.toast-desc { color: var(--text-muted-color); font-size: 0.75rem; line-height: 1.4; }
+
+/* No colour on the title: the pick sets none, so it takes the page's own text colour the way it
+   did on the bench. The description is the one the source colours. */
+.toast-title { font-size: 0.78rem; line-height: 1.25; }
+
+.toast-desc { color: var(--color-toast-desc); font-size: 0.66rem; line-height: 1.35; margin-top: 3px; }
 
 @keyframes toast-slide-in {
   from { transform: translateX(120%); opacity: 0; }
+
   to { transform: translateX(0); opacity: 1; }
 }
 
@@ -186,12 +223,14 @@ $reduced-motion-extras:
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.75rem;
+
     h3 { font-size: 0.9rem; margin: 0; color: var(--link-hover-color); }
   }
 
   .achv-debug-actions {
     display: flex;
     gap: 0.35rem;
+
     button {
       padding: 0.2rem 0.5rem;
       border-radius: 6px;
@@ -200,6 +239,7 @@ $reduced-motion-extras:
       color: var(--text-muted-color);
       cursor: pointer;
       font-size: 0.65rem;
+
       &:hover { border-color: var(--gold-40); color: var(--heading-color); }
     }
   }
@@ -213,13 +253,17 @@ $reduced-motion-extras:
     border-radius: 8px;
     background: rgba(0,0,0,0.2);
     color: var(--text-muted-color);
+
     b { color: var(--link-hover-color); }
+
     .achv-debug-small { font-size: 0.6rem; opacity: 0.6; }
+
     > div:last-child { grid-column: 1 / -1; }
   }
 
   .achv-debug-cat {
     margin-bottom: 0.5rem;
+
     h4 {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -237,13 +281,18 @@ $reduced-motion-extras:
     gap: 0.4rem;
     padding: 0.25rem 0.35rem;
     border-radius: 6px;
+
     &:hover { background: rgba(255,255,255,0.03); }
+
     &.unlocked .achv-debug-name { color: var(--link-hover-color); }
   }
 
   .achv-debug-icon { font-size: 1rem; width: 1.25rem; text-align: center; flex-shrink: 0; }
+
   .achv-debug-name { flex: 1; color: var(--text-muted-color); }
+
   .achv-debug-prog { color: var(--gold-50); font-size: 0.65rem; }
+
   .achv-debug-toggle {
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
@@ -252,6 +301,7 @@ $reduced-motion-extras:
     color: var(--text-muted-color);
     cursor: pointer;
     font-size: 0.6rem;
+
     &:hover { border-color: var(--gold-30); }
   }
 }
@@ -269,24 +319,6 @@ $reduced-motion-extras:
 
   .construction-icon { font-size: 4rem; animation: float-gentle 4s ease-in-out infinite; margin-bottom: 1.5rem; }
 
-  .construction-title {
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f97316 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
-  }
-
-  .construction-subtitle {
-    color: var(--text-muted-color);
-    font-size: 1.1rem;
-    max-width: 500px;
-    margin-bottom: 2rem;
-    line-height: 1.6;
-  }
-
   .recommendations { margin-top: 3rem; width: 100%; max-width: 700px; }
 
   .recommendations-title {
@@ -298,53 +330,21 @@ $reduced-motion-extras:
     margin-bottom: 1rem;
   }
 
-  .recommendations-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    @media (max-width: 768px) { grid-template-columns: 1fr; }
-  }
-
-  .recommendation-card {
-    background: var(--bg-glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-
-    .rec-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted-color);
-      i { color: var(--amber-400); margin-right: 0.25rem; }
-    }
-
-    .rec-title { font-size: 0.9rem; font-weight: 600; color: var(--heading-color); line-height: 1.3; }
-
-    &:hover {
-      border-color: var(--glass-border-strong);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px var(--shadow-a15), 0 0 12px var(--gold-10);
-      color: inherit;
-      text-decoration: none;
-    }
-  }
 }
 
 // --- 404 page ---
 
+/* The embers no-scroll block that stood here NEVER WORKED and is gone, 2026-08-25. Its own
+   comment claimed "this wins on specificity", and it did not: the rule it had to beat is
+   `#main-wrapper > .container { min-height: 100vh }` (_base.scss), and the ID outscores an
+   attribute plus a class, so the height never changed and the `overflow: hidden` was doing all
+   the work by CLIPPING THE FOOTER. The working version lives in _sass/pages/_home.scss, which
+   carries the ID in its selector. Kept as a note because two attempts died in this exact spot
+   and the third person deserves the map. */
+
 .not-found {
   text-align: center;
-  padding: 4rem 1rem;
+  padding: 2rem 1rem;
   min-height: 60vh;
   display: flex;
   flex-direction: column;
@@ -358,26 +358,6 @@ $reduced-motion-extras:
     filter: drop-shadow(0 0 20px rgba(var(--glow-hue), 0.4));
   }
 
-  .not-found-title {
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f97316 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.75rem;
-    animation: fade-in-up 0.6s ease-out 0.2s both;
-  }
-
-  .not-found-subtitle {
-    color: var(--text-muted-color);
-    font-size: 1.1rem;
-    max-width: 450px;
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-    animation: fade-in-up 0.6s ease-out 0.4s both;
-  }
-
   .not-found-code {
     font-family: var(--ff-mono);
     font-size: 6rem;
@@ -389,27 +369,4 @@ $reduced-motion-extras:
     animation: fade-in-up 0.6s ease-out 0.6s both;
   }
 
-  .not-found-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    font-weight: 500;
-    color: var(--topbar-text-color);
-    text-decoration: none;
-    background: var(--glow-subtle);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--blur-sm));
-    -webkit-backdrop-filter: blur(var(--blur-sm));
-    transition: all 0.25s ease;
-    animation: fade-in-up 0.6s ease-out 0.8s both;
-
-    &:hover {
-      color: var(--topbar-active-color);
-      background: var(--glow-strong);
-      border-color: rgba(var(--glow-border-hue), 0.45);
-      box-shadow: 0 0 20px rgba(var(--glow-hue), 0.20);
-      transform: translateY(-2px);
-    }
-  }
 }

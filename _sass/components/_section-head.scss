@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* section-head - a centred label with an ornament each side and a hairline under.
    The flanking-ornament idea is harumakigohan.com's; theirs are drawn PNGs, ours is a typed `~`
@@ -19,6 +20,7 @@
 
 .section-head__name {
   font-family: var(--font-display, "M PLUS Rounded 1c", sans-serif);
+
   /* Looks half-empty on purpose. font-weight, font-size and color all lived here and all beat
      the type ladder in decisions.scss, which owns this class. The ladder is the system, the
      component defers. Do not put them back. See section-head.md. */

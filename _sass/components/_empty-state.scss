@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* empty-state - the "your search returned nothing" block. Three versions, 930x60 and 1351x60.
    PatternFly's EmptyState, fetched and token-resolved to literals rather than trusted. Remixed,
@@ -15,6 +16,7 @@
    the biggest departure in the file: theirs is 1rem, and 1rem of it plus the two lines comes to
    90px in a 60px box. So vertical padding goes to 0 and min-height plus align-items do the
    centring. min-height, not height, so it can grow when the row versions wrap. */
+
 /* KEEP THIS LINE. `.es` below sets display:flex, which beats the browser's own [hidden] rule,
    so without this the empty state renders on top of a full list. It did, on final-ramblings. */
 .es[hidden] { display: none; }
@@ -72,6 +74,7 @@
   text-decoration: none;
   transition: background-color 0.1s linear;
 }
+
 .es__action:hover,
 .es__action:focus-visible {
   background-color: var(--color-gold, #fbbf24);
@@ -115,6 +118,7 @@
   text-align: left;
   padding-block: 12px;
 }
+
 .es--split .es__content {
   flex: 1;
   max-width: none;
@@ -123,6 +127,7 @@
   align-items: baseline;
   gap: 1rem;
 }
+
 .es--split .es__action {
   flex-shrink: 0;
   margin-left: 1em;

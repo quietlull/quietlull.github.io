@@ -34,7 +34,7 @@ script_includes:
 {% endcomment %}
 {% assign spans = '6,6,6,12,6,6,6,6' | split: ',' %}
 
-<div id="section-landing" class="section-{{ section }}">
+<div id="section-landing">
 
   <section class="h">
     {% comment %} The visible mark is the vertical columns, so these two carry the heading for anyone reading the page rather than looking at it. {% endcomment %}
@@ -42,7 +42,7 @@ script_includes:
     <p class="h__role">{{ page.heading | default: page.title }}</p>
 
     <div class="h__vert">
-      <div class="h__vert__cols" aria-hidden="true">
+      <div class="h__vert-cols" aria-hidden="true">
         {% assign columns = page.hero_columns | default: page.title | split: ',' %}
         {% for column in columns %}<span class="h__col lb">{{ column | strip }}</span>{% endfor %}
       </div>
@@ -107,9 +107,7 @@ script_includes:
   {% if page.show_reel %}
     <div class="col sec">
       <h2 class="section-head"><span class="section-head__name">Reel</span></h2>
-      <div class="reel">
-        <video class="reel__bar" id="reel-bar" muted playsinline autoplay preload="auto"></video>
-      </div>
+      <video class="reel__bar" id="reel-bar" muted playsinline autoplay preload="auto"></video>
     </div>
   {% endif %}
 

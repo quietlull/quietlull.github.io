@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* stamp-callout - the TAKEAWAY block, kept deliberately unlike the TL;DR.
    Rod's own stamp CSS, recoloured amber-on-night in rework-harumaki. Remixed.
@@ -26,6 +27,7 @@
 .stamp-callout::before {
   content: '';
   position: absolute;
+
   /* The perforation only shows where it overhangs, so a bottom inset of 0 flattens that edge
      and leaves the torn fringe on the other three. Rod 2026-08-24. See stamp-callout.md. */
   inset: -7px -7px 0;

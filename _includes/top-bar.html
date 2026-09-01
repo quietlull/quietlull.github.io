@@ -50,11 +50,22 @@
       boil text to the top bar as well"). `.lb` is what line-boil.js adds itself; it is written
       here too so the pinned-glyph CSS applies on the first paint rather than one frame late.
 
-      It stays a <span>, not a link, because that is what the component is and the ported CSS is
-      written against it. Making it an <a> would hand it the site's link colour and hover from a
-      rule nobody wrote for it. The favicon beside it is already the way home.
+      IT IS NOW A LINK HOME. Rod 2026-08-25: "can you also make sure clicking on my name takes you
+      to the home landing page as well?" This comment used to argue the opposite, that it should
+      stay a bare <span> because an <a> would hand it the site's link colour and hover. That
+      hazard is real and is handled in `.top-bar__home` rather than avoided: the anchor carries no
+      decoration and inherits colour, and the mark keeps setting its own gold, so nothing about
+      the rendered wordmark changes.
+      THE SPAN IS DELIBERATELY STILL THERE, wrapped rather than replaced. `line-boil.js` rewrites
+      its host's entire contents into pinned per-glyph cells, and every ported rule for the mark is
+      written against `.top-bar__logo`. Making the anchor itself the boil host would have moved
+      both of those onto an element nobody wrote them for.
+      `home_url` is the SECTION landing when you are in a section (`/tech-art/`) and the portal
+      otherwise, which is the same destination the favicon beside it already uses.
     {% endcomment %}
-    <span class="top-bar__logo lb">RODNEY FAN</span>
+    <a class="top-bar__home" href="{{ home_url | relative_url }}">
+      <span class="top-bar__logo lb">RODNEY FAN</span>
+    </a>
   </div>
 
   <nav class="top-bar__nav" aria-label="Primary">

@@ -117,7 +117,15 @@ sup {
 }
 
 main {
-  line-height: 1.75;
+  /* NO line-height HERE. Rod 2026-08-25: "The lab wins the whole point of the
+     migration is to kill old issues like this."
+     THREE VALUES WERE FIGHTING OVER ONE PROPERTY: the body said 1.65 (layered reset), the lab
+     said 1.7 and the port dropped it, and this rule said 1.75. This one was winning, because
+     this file is UNLAYERED and unlayered CSS beats every layer - so the leading everything
+     inside <main> actually rendered at was the one nobody chose. The port had already caught
+     this once, in _sass/pages/_projects.scss, where a comment records it "reached in and made
+     every pill 2.5px taller than the bench's", and patched that ONE case rather than the cause.
+     Deleting it is the fix: body now carries the lab's 1.7 and nothing overrides it. */
 
   h1 {
     margin-top: 2rem;
@@ -207,7 +215,7 @@ main {
     border-spacing: 0;
 
     thead {
-      border-bottom: solid 2px rgb(210 215 217 / 75%);
+      border-bottom: solid 2px rgb(210 215 217 / 0.75);
 
       th {
         @extend %table-cell;

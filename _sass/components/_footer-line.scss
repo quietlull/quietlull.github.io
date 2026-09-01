@@ -2,6 +2,7 @@
 // Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
 // even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
+
 @layer components {
 /* footer-line - the whole footer as one quiet line.
    OURS, not sourced. It is the lab pages' own `.labtag`, which Rod promoted to a real element on
@@ -21,9 +22,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+
   /* Spacing measured off the tag too. The footer was 57.8px with 44.8 of it padding, so it read
      as a bar where the tag reads as a line. 29px now. See footer-line.md. */
   gap: 0.3rem 4px;
+
   /* 14px because the lab tag is `left: 14px`. It belongs on the COMPONENT, not the wrapper -
      the wrapper WAS the problem, four pages had one and two did not. Flat px, not vw. */
   padding: 8px 14px;
@@ -47,12 +50,14 @@
   text-decoration: none;
   transition: color 0.15s ease;
 }
+
 .footer-line a.footer-line__name:hover,
 .footer-line a.footer-line__name:focus-visible { color: var(--color-gold, #fbbf24); }
 
 /* Generated separators, so the markup stays a plain list and no middot can orphan at a wrap. */
 .footer-line__item + .footer-line__item::before {
   content: "\00b7";
+
   /* 4px each side lands on the tag's 11px separator. It used to be 24. */
   margin-right: 4px;
   color: var(--color-line-soft, rgba(255, 255, 255, 0.25));
