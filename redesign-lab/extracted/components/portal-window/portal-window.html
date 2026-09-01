@@ -1,0 +1,51 @@
+<!-- portal-window — one draggable window.
+
+     THE NESTING IS LOAD-BEARING, not decoration. Two engines animate this window and both write
+     `element.style.transform`, so they need separate nodes or they overwrite each other every
+     frame: the OUTER `.pwin` carries POSITION (drag / throw / bounce / proximity lean, from
+     effects/portal-windows.js) and the INNER `.pwin__inner` is the visual frame.
+
+     `data-x` / `data-y` / `data-w` / `data-h` are read by portal-windows.js. x and y are stored in
+     a 500x520 reference space and converted at runtime into a fraction of the window's own travel
+     range, which is what lets the constellation and the drag bounds grow with the page. `data-w/h`
+     are a STARTING size only — layout() grows a window to fit its header, squares the socials, and
+     floors the two lead doors against the tallest social.
+
+     NO `data-drift` and NO `.js-magnetic`. Both are drift-magnet hooks and both are deliberately
+     absent: the ambient drift was removed on 2026-08-23 (Rod: "the cards seem to be shimmering and
+     the text is moving"), and cursor attraction is the proximity LEAN in portal-windows.js, which
+     carries his "encourage, never capture" constraint. Adding `.js-magnetic` would put two magnets
+     on one window and they would fight.
+
+     THE MODIFIERS:
+       `pwin--door`    a real section. Gets the repeated-text fill and the Enter affordance.
+       `pwin--lead`    Tech Art and Game Design — floored taller than every social.
+       `pwin--social`  an external link. Squared, demoted type, icon instead of the text fill.
+
+     THE ENTER AFFORDANCE IS NOT A BUTTON. It is a `<span>` marked `aria-hidden` inside the link
+     that already covers the card: `<button>` inside `<a>` is invalid, and nested interactive
+     content adds a second tab stop for one destination. It carries button-kit's own OUTLINE
+     classes and markup contract so the kit owns how it looks — this component only places it. -->
+
+<div class="pwin pwin--door pwin--lead"
+     data-slot="door: Tech Art" data-state="pending"
+     data-x="84" data-y="42" data-w="231" data-h="150">
+  <div class="pwin__inner">
+    <div class="pwin__bar">
+      <span class="pwin__title">Tech Art</span>
+      <button class="pwin__close" type="button" aria-label="Close Tech Art">
+        <span class="pwin__x"></span>
+      </button>
+    </div>
+    <div class="pwin__body">
+      <a href="/redesign-lab/final-projects.html">
+        <span class="pwin__fill" aria-hidden="true"></span>
+        <span class="pwin__enter kit-button kit-button--outline" aria-hidden="true">
+          <span class="kit-button__fill" aria-hidden="true"></span>
+          <span class="kit-button__label">Enter</span>
+        </span>
+        <span class="pwin__sr">Tech Art</span>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+# footer-line - the whole footer as one quiet line
+
+Reasoning moved out of `_sass/components/_footer-line.scss` on 2026-08-25 under D45 (comments get
+short). Nothing here was reworded; it is the original text, kept because it is the provenance
+record. The stylesheet now points at this file.
+
+CSS: `redesign-lab/extracted/components/footer-line/footer-line.css`
+Demo: `redesign-lab/extracted/components/footer-line/footer-line.html`
+
+---
+
+## Rod's pick, and where it came from
+
+> PICKED BY ROD 2026-08-22: "i actually really like the way we do our lab footers i think we should
+> do them all like this."
+>
+> ORIGIN: ROD. This is the `.labtag` treatment from our own lab pages, promoted from tooling into
+> a real element on his call. It is OURS, not sourced, and it must never be filed as though a
+> reference site supplied it.
+>
+> That matters because there is an OLDER `site-footer` component in this folder carrying a
+> CIRCULAR CITATION banner - it cites a `rework-*.html` inside this repo. This component does not
+> replace it by fixing it; it replaces it by being a different, honestly-attributed thing. The old
+> one should be retired at port time rather than quietly kept.
+
+## Why it works
+
+> The lab footer is small mono, low contrast, one line, links separated by a middot. It reads as a
+> FOOTNOTE rather than a second navigation - which is exactly what a footer on this site should be,
+> because the top bar already carries the nav. Everything the old footer was reaching for (columns,
+> headings, a sitemap) is a duplicate of the bar.
+>
+> NOT FIXED-POSITION. The lab version is `position: fixed` because it is chrome that must stay
+> reachable while you scroll a test page. A real footer sits at the end of the document. That is
+> the one deliberate difference.
+
+## Sized like the lab tag, and this file is the only copy
+
+> "Footer doesnt match what i asked for before which is to match the lab footer's size and not to
+> have all these links", then "the footer still not matching the lab one".
+> The lab tag is `font:10px ui-monospace`. This matches its weight at .62rem with the padding cut
+> from 2.5rem/3rem to 1.2rem/1.6rem. Measured result: 63px tall against the old 107px.
+>
+> THIS FILE IS NOW THE ONLY COPY. Rod 2026-08-23: "for the footer put it in the workbench so we
+> can get it right across the site." Until now all six final-* pages carried their own inline
+> copy, five of them corrected and the landing still on the old 40/48 padding at .66rem - which is
+> exactly how one page ends up the odd one out. The pages link this file; none of them restates it.
+
+## Measured off the lab tag, not approximated
+
+> Rod 2026-08-23: "can you just measure that exactly but make it like that across the pages?"
+> `.labtag` computes: 10px / ui-monospace, monospace / weight 400 / letter-spacing NORMAL /
+> line-height NORMAL / rgba(245,243,239,.45), links rgb(251,191,36).
+> Four things were off, and the last is why it kept reading wrong:
+>   size    .62rem = 9.92px      -> 10px flat
+>   family  IBM Plex Mono        -> ui-monospace, monospace (the tag uses the SYSTEM mono)
+>   track   .08em = 0.79px       -> normal
+>   COLOUR  --color-muted #9aa3bd, a BLUE-grey, against the tag's warm rgba(245,243,239,.45).
+>           That also put a cool neutral on a surface the palette law says stays warm.
+> Sizes are flat px here on purpose: the tag is 10px flat, and a rem would re-scale it against a
+> root font-size the tag does not answer to.
+
+## The spacing was measured too
+
+> SPACING MEASURED OFF THE TAG TOO, not just the type. Rod 2026-08-23: "the footer has so much
+> spacing i dont need that."
+> The tag is 12px tall with padding 0 - it IS its line box. The footer was 57.8px, of which
+> 44.8px was padding: it was reading as a BAR where the tag reads as a line.
+> Padding cannot go to 0 - the tag is fixed-position chrome with nothing above it, while this
+> sits at the end of a document under a hairline - but 8px is enough to keep the rule off the
+> text and nothing more. Result: 29px, half of what it was, against the tag's 12.
+
+> 14px inline, because the lab tag is `left: 14px`. Rod 2026-08-23: "can you match the spacing
+> from the left too."
+> It goes on the COMPONENT, not the wrapper, because the wrapper was the problem: four pages
+> wrap the footer in `.footer-wrap` (2.5vw = 36px at 1440) and two do not (0px), so the inset
+> was 36 on four pages and 0 on two - and neither was the tag's 14. One number here and the
+> wrapper stops mattering.
+> Fixed px, not vw: the tag is `left:14px` flat and does not scale with the viewport either.
+
+> The footer spans the page and anchors LEFT rather than following the content column (Rod: "it
+> should be left anchored"). The inline padding moved onto `.footer-line` above, so the inset is
+> the same whether a page uses this wrapper or drops the footer straight into <main>.
+
+## The name
+
+> The name is the way home (Rod: "clicking my name should bring you to the landing page") and it
+> reads as the signature by being the only FULL-opacity text on the line - not by being set
+> differently, since the lab tag has no uppercase or tracking anywhere on it.
+> It must not take the gold link colour, or it becomes just another nav item; without this rule
+> `.footer-line a` at (0,1,1) beats `.footer-line__name` at (0,1,0) and does exactly that.
+
+> The uppercase and the .14em tracking are gone: the lab tag carries neither, anywhere on it, and
+> "make it like that exactly" means the name matches too. It still reads as the signature because
+> it is the only FULL-opacity text on the line - everything else sits at .45.
+
+## The separators
+
+> the middot separators are generated, so the markup stays a plain list of links and the
+> separators can never end up orphaned at a wrap point
+
+> The tag's separator - space, middot, space - measures 11px at 10px type. This was 24px:
+> a 12px column gap plus this 12px margin. 4px each side lands on the tag's number.
+
+`.footer-line__end` is pushed to the far end with `margin-left: auto` rather than given its own
+row, so the line stays one line for as long as the width allows and only wraps when it has to.

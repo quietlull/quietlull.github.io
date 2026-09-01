@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ICON WOBBLE - the handmade look, honestly</title>
+<!--
+  ===== ICON WOBBLE (2026-08-22, ROD) =====
+  Rod: "how did you make the more cartoony sort of misdraw versions of the icons before? can you
+  still do that?"
+
+  HOW THEY WERE MADE, honestly: they were AI-DRAWN APPROXIMATIONS. draw-in-icons.css says it in its
+  own header - "icon GEOMETRY is the hand-approximated placeholder set relabeled with Rod's tools -
+  official SVGs owed". Nothing was traced. A previous session drew logo paths from memory, and the
+  cartoony wobble is what that looks like when it misses. It read as handmade by ACCIDENT.
+
+  Doing that again would re-introduce exactly what the provenance law exists to stop, and it is
+  Claude-originated design, which is capped at ~25% of the work.
+
+  SO THIS PAGE DOES IT THE OTHER WAY: keep the REAL official geometry (simpleicons.org, CC0,
+  byte-identical files) and add the wobble as a PROCEDURAL EFFECT on top. Then the handmade quality
+  is deliberate rather than a failure, the citation stays true, and it lands on D10's side of the
+  line - "the handmade signature is SHADER work, not drawn art".
+
+  MECHANISM: SVG feTurbulence -> feDisplacementMap. Fractal noise displaces the rendered stroke.
+  No library, no redrawn paths, and the SAME technique the scene's paper filter uses.
+  THE BOIL rate is 3.25Hz, taken from CONFIG.lanterns.paper.boilHz (D24) so the icons breathe at
+  exactly the rate the scene's paper does rather than at some new number.
+
+  rough.js is the OTHER honest option and is already the sourced precedent in this project for
+  procedural path jitter (final-picks: the boiling clock "wants procedural path jitter - rough.js
+  is the sourced precedent"). It gives a sketchier, multi-stroke look. Not built here because it is
+  a dependency and this is not.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:center;gap:16px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+header.top button{background:none;border:1px solid #555;color:#bbb;font:9px var(--font-mono);
+  letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;cursor:pointer}
+header.top button:hover{border-color:var(--color-gold);color:var(--color-gold)}
+.spacer{flex:1}
+.wrap{width:min(1080px,92vw);margin:0 auto;padding:48px 0 140px}
+.case{margin-bottom:64px}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;background:#7ee0b8;color:#0d2a12}
+.badge--warn{background:#c9a227;color:#141414}
+.case h2{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400}
+.note{font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:8px 0 20px;max-width:80ch}
+.note b{color:var(--color-text);font-weight:500}
+.note code{color:var(--color-gold)}
+.tools{display:flex;flex-wrap:wrap;gap:32px;background:rgba(8,15,27,.6);
+  border:1px solid var(--color-line-faint);padding:30px 32px}
+.tool{display:flex;flex-direction:column;align-items:center;gap:9px;width:76px;text-align:center}
+.tool span{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--color-muted)}
+.tool svg{width:48px;height:48px;display:block;overflow:visible}
+.tool svg path{fill:none;stroke:var(--color-gold-deep);stroke-width:.7;
+  stroke-linejoin:round;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1;
+  animation:draw 1.5s ease forwards;animation-delay:var(--d,0s)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){
+  .tool svg path{animation:none;stroke-dashoffset:0}
+  .boil svg{filter:url(#wobble-mid) !important}   /* still wobbly, just not boiling */
+}
+.w-none svg{filter:none}
+.w-soft svg{filter:url(#wobble-soft)}
+.w-mid  svg{filter:url(#wobble-mid)}
+.w-hard svg{filter:url(#wobble-hard)}
+.boil   svg{filter:url(#wobble-boil)}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--font-mono);
+  font-size:10px;color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold)}
+</style>
+</head>
+<body>
+
+<!-- the filters. baseFrequency sets how FINE the wobble is, scale how FAR it pushes.
+     Low frequency + small scale = a hand that wavers. High frequency = fur, which is wrong. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="wobble-soft" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="wobble-mid" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="wobble-hard" x="-25%" y="-25%" width="150%" height="150%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="11" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.6" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <!-- THE BOIL. The seed steps rather than sweeps, so the line JUMPS between drawings the way
+       hand-drawn animation does, instead of sliding. 3.25Hz is the scene's own paper boil. -->
+  <filter id="wobble-boil" x="-25%" y="-25%" width="150%" height="150%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="1" result="n">
+      <animate attributeName="seed" values="1;2;3" dur="0.923s" calcMode="discrete" repeatCount="indefinite"/>
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<header class="top">
+  <h1>Icon wobble</h1>
+  <span class="sub">real geometry, procedural hand &middot;
+    <a href="/redesign-lab/">lab</a> &middot;
+    <a href="/redesign-lab/tool-icons-tests.html">clean set</a></span>
+  <span class="spacer"></span>
+  <button type="button" id="replay">replay draw-in</button>
+</header>
+
+<div class="wrap">
+  <div class="note">
+    <b>How the old ones were actually made:</b> they were AI-drawn approximations.
+    <code>draw-in-icons.css</code> says so in its own header - <i>"icon GEOMETRY is the
+    hand-approximated placeholder set relabeled with Rod's tools, official SVGs owed"</i>. Nothing
+    was traced. The cartoony quality was a <b>failure mode that happened to look handmade</b>.<br><br>
+    <b>What is below instead:</b> the real official marks, byte-identical, with the wobble added as
+    a procedural filter. Same look, honest provenance, and it lands on D10's side - the handmade
+    signature being shader work rather than drawn art.<br><br>
+    <code>feTurbulence</code> makes fractal noise, <code>feDisplacementMap</code> pushes the stroke
+    around with it. No library, no redrawn paths. It is the same family of technique the scene's
+    paper filter already uses.
+  </div>
+
+  <section class="case w-none">
+    <div class="tagrow"><h2>0 &middot; Control &mdash; the real marks, no wobble</h2></div>
+    <div class="tools" data-row></div>
+  </section>
+
+  <section class="case w-soft">
+    <div class="tagrow"><span class="badge">procedural</span>
+      <h2>1 &middot; Soft &mdash; scale 1.1 &middot; a steady hand</h2></div>
+    <div class="note">Barely there. Enough to kill the machine-perfect edge without reading as an
+      effect.</div>
+    <div class="tools" data-row></div>
+  </section>
+
+  <section class="case w-mid">
+    <div class="tagrow"><span class="badge">procedural</span>
+      <h2>2 &middot; Mid &mdash; scale 2.2 &middot; closest to the old ones</h2></div>
+    <div class="note">This is about where the hand-approximated set sat. Clearly drawn by a person,
+      still unmistakably the right logo.</div>
+    <div class="tools" data-row></div>
+  </section>
+
+  <section class="case w-hard">
+    <div class="tagrow"><span class="badge--warn badge">watch legibility</span>
+      <h2>3 &middot; Hard &mdash; scale 3.6 &middot; past the point</h2></div>
+    <div class="note">Included as the far end. Git and Maya start losing their corners here, which
+      is the actual limit: the wobble must not eat the thing that makes the mark recognisable.</div>
+    <div class="tools" data-row></div>
+  </section>
+
+  <section class="case boil">
+    <div class="tagrow"><span class="badge">procedural</span><span class="badge">3.25Hz</span>
+      <h2>4 &middot; Boiling &mdash; mid, re-rolled 3.25 times a second</h2></div>
+    <div class="note">The seed steps <b>discretely</b> rather than sweeping, so the line JUMPS
+      between drawings the way hand-drawn animation boils, instead of sliding around like jelly.
+      <b>3.25Hz is not a new number</b> - it is <code>CONFIG.lanterns.paper.boilHz</code>, so the
+      icons breathe at exactly the rate the scene's paper already does.<br><br>
+      <code>prefers-reduced-motion</code> stops the boil and leaves the static wobble.</div>
+    <div class="tools" data-row></div>
+  </section>
+</div>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; icon wobble &middot;
+  real CC0 geometry + feTurbulence &middot; nothing redrawn</div>
+
+<script>
+var SET = [['unity','Unity'],['unrealengine','Unreal'],['godotengine','Godot'],
+           ['blender','Blender'],['autodeskmaya','Maya'],['python','Python'],['git','Git']];
+var DIR = '/redesign-lab/references/tool-icons/';
+
+Promise.all(SET.map(function(pair){
+  return fetch(DIR + pair[0] + '.svg')
+    .then(function(r){ return r.text(); })
+    .then(function(svg){ return { label: pair[1], svg: svg }; });
+})).then(function(rows){
+  document.querySelectorAll('[data-row]').forEach(function(row){
+    rows.forEach(function(item, i){
+      var cell = document.createElement('div');
+      cell.className = 'tool';
+      cell.innerHTML = item.svg + '<span>' + item.label + '</span>';
+      var el = cell.querySelector('svg');
+      el.setAttribute('width', '48');
+      el.setAttribute('height', '48');
+      el.removeAttribute('fill');
+      el.querySelectorAll('path').forEach(function(p){ p.setAttribute('pathLength', '1'); });
+      cell.style.setProperty('--d', (i * 0.09) + 's');
+      row.appendChild(cell);
+    });
+  });
+});
+
+document.getElementById('replay').addEventListener('click', function(){
+  document.querySelectorAll('.tool svg path').forEach(function(p){
+    p.style.animation = 'none';
+    void p.offsetWidth;
+    p.style.animation = '';
+  });
+});
+</script>
+</body>
+</html>

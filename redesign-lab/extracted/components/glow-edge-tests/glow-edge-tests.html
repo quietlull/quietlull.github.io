@@ -1,0 +1,42 @@
+<div class="gedge" data-tune="glow edge tests">
+  <p class="gedge__note">
+    Move the cursor over each card. Every panel is the REAL expensive card with the REAL
+    band-reveal; only the reveal's treatment differs. The card shape is identical in all of them.
+    Baseline is first so you always have the thing you are complaining about next to the fixes.
+  </p>
+
+  <label class="gedge__sync">
+    <input type="checkbox" data-gedge-sync checked>
+    Light every card together (comparison mode). Off = real behaviour, only the hovered card lights.
+  </label>
+
+  <div class="gedge__grid" data-gedge-grid></div>
+
+  <!-- one card, cloned per treatment, so the treatments stay the only difference -->
+  <template data-gedge-card>
+    <div class="merged-cards merged-cards--square epx-cards">
+      <div class="posts-grid-hue-a">
+        <article class="post-card ct-glow-card">
+          <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer">
+                <video loop muted playsinline preload="metadata">
+                  <source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer">
+                <h3 class="card-title z-layer">Compute Grass</h3>
+                <p class="card-meta">Unity &middot; HLSL</p>
+              </div>
+            </div>
+            <div class="card-back">
+              <p class="takeaway-quote">"One gust, half a million blades."</p>
+              <span class="back-read">Read &rarr;</span>
+            </div>
+          </div></div></a>
+        </article>
+      </div>
+    </div>
+  </template>
+</div>

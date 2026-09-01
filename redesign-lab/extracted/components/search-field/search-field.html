@@ -1,0 +1,176 @@
+<!-- search-field - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=search-field can mount it. Page chrome is scoped to .cb-search-field; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: Search field &mdash; six sourced candidates -->
+<div class="cb cb-search-field">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&family=IBM+Plex+Mono:wght@300;400&display=swap">
+<style>
+.cb-search-field {
+  background:var(--color-night);color:var(--color-text);
+  font-family:var(--font-body);margin:0;padding:48px 32px 96px
+
+  /* LAB CHROME ONLY. Nothing in this block ships. It exists to label the candidates and to draw the
+   two real reservations they have to fit; it must never change how a candidate renders. */
+  & .wrap {max-width:1220px;margin:0 auto
+  }
+  & h1 {margin:0 0 6px
+  }
+  & .lede {color:var(--color-muted);max-width:767px;margin:0 0 8px;line-height:1.6
+  }
+  & .warn {color:var(--color-gold);max-width:767px;margin:0 0 40px;line-height:1.6;font-size:.9rem
+  }
+  & .cand {margin:0 0 56px;padding:0 0 40px;border-bottom:1px solid rgba(255,255,255,.07)
+  }
+  & .cand:last-child {border-bottom:0
+  }
+  & .hd {display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 4px
+  }
+  & .hd h2 {margin:0;font-size:1.3rem;color:var(--color-gold)
+  }
+  & .tier {font-family:var(--font-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--color-muted);border:1px solid var(--color-line);padding:2px 7px
+  }
+  & .src {font-family:var(--font-mono);font-size:.68rem;color:var(--color-muted);margin:0 0 4px;
+  word-break:break-all
+  }
+  & .why {color:var(--color-muted);font-size:.86rem;line-height:1.6;margin:0 0 6px;max-width:767px
+  }
+  & .cost {color:#d98b5f;font-size:.82rem;line-height:1.6;margin:0 0 22px;max-width:767px
+  }
+  & .bay {margin:0 0 18px
+  }
+  & .bay b {display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--color-muted);margin:0 0 7px
+  }
+  /* the two MEASURED reservations, drawn as dashed outlines so fit is visible rather than claimed */
+  & .res {position:relative;outline:1px dashed rgba(255,255,255,.16);outline-offset:3px
+  }
+  & .res--projects {width:1134px;height:50px;max-width:100%
+  }
+  & .res--ramblings {width:340px;height:47px
+  }
+}
+</style>
+<div class="wrap">
+
+<h1>Search field</h1>
+<p class="lede">Six candidates, each built from CSS read off the live site on 2026-08-24. Verbatim
+sources in <code>sources/search-fields-2026-08-24.md</code>. Each sits inside its two real
+reservations, drawn as dashed outlines: <b>1134&times;50</b> from the projects page and
+<b>340&times;47</b> from ramblings, both measured off the rendered pages at 1440.</p>
+
+<p class="warn">Read this before judging. Of all 102 sites in the gallery, exactly <b>two</b> have an
+always-open inline search, and <b>both are unstyled browser defaults</b>. Everything else hides
+behind a toggle, a modal, a curtain or a keyboard shortcut. Our slot is an always-open box, so A is
+the only strict drop-in and it supplies no look at all. Six further candidates were killed: stripe,
+thatskygame and unseen have no search UI at all; Aman's field is stock Drupal CSS; The Point's is a
+Codrops widget, not their work.</p>
+
+<!-- ============================================================ A -->
+<section class="cand">
+  <div class="hd"><h2>A &middot; ronja</h2><span class="tier">tier ? &middot; CUT</span></div>
+  <p class="src">https://www.ronja-tutorials.com/ &middot; always open inline</p>
+  <p class="why">Not a search, a <b>filter</b>: no form, no submit, no results page, and it mirrors
+  the query into a <code>?search=</code> param so a filtered list is linkable.</p>
+  <p class="cost">The source supplies <b>zero CSS</b>. Both stylesheets were read and nothing
+  matches its input. What you see below is a box we drew to make it legible, so adopting A means
+  adopting a mechanism and designing the box ourselves.</p>
+  <div class="bay"><b>projects &middot; 1134 &times; 50</b>
+    <div class="res res--projects"><span class="sf sf--ronja" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search projects &amp; tags"></span></div></div>
+  <div class="bay"><b>ramblings &middot; 340 &times; 47</b>
+    <div class="res res--ramblings"><span class="sf sf--ronja" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search ramblings &amp; tags"></span></div></div>
+</section>
+
+<!-- ============================================================ B -->
+<section class="cand">
+  <div class="hd"><h2>B &middot; Paris Review, desktop</h2><span class="tier">tier ? &middot; CUT</span></div>
+  <p class="src">https://www.theparisreview.org/css/screen.css &middot; behind a magnifier toggle</p>
+  <p class="why">The box has <b>no edge</b> &mdash; the fill is the box &mdash; and the icon sits in
+  an asymmetric padding well rather than as a flex sibling. Square, no blur.</p>
+  <p class="cost">Their <code>#f7f7f7</code> is a solid light fill, which competes with the scene;
+  mapped to our panel token at the same role. Their Font Awesome glyph swap could not come across,
+  so the mark is ours.</p>
+  <div class="bay"><b>projects &middot; 1134 &times; 50</b>
+    <div class="res res--projects"><span class="sf sf--pr-desk" style="height:100%">
+      <svg class="sf__mark" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input class="sf__input" type="text" placeholder="search projects &amp; tags"></span></div></div>
+  <div class="bay"><b>ramblings &middot; 340 &times; 47</b>
+    <div class="res res--ramblings"><span class="sf sf--pr-desk" style="height:100%">
+      <svg class="sf__mark" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input class="sf__input" type="text" placeholder="search ramblings"></span></div></div>
+</section>
+
+<!-- ============================================================ C -->
+<section class="cand">
+  <div class="hd"><h2>C &middot; Paris Review, mobile</h2><span class="tier">tier ? &middot; CUT</span></div>
+  <p class="src">https://www.theparisreview.org/css/screen.css &middot; the same site's other treatment</p>
+  <p class="why">Transparent at rest so the scene shows through, one rule underneath, and the fill
+  arrives <b>only on focus</b>. Click into it to see it. Equally sourced with B.</p>
+  <p class="cost">Nothing lost. This is the one candidate whose own source already satisfies the
+  scene rule, because their mobile field was designed transparent.</p>
+  <div class="bay"><b>projects &middot; 1134 &times; 50</b>
+    <div class="res res--projects"><span class="sf sf--pr-mob" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search projects &amp; tags"></span></div></div>
+  <div class="bay"><b>ramblings &middot; 340 &times; 47</b>
+    <div class="res res--ramblings"><span class="sf sf--pr-mob" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search ramblings"></span></div></div>
+</section>
+
+<!-- ============================================================ D -->
+<section class="cand">
+  <div class="hd"><h2>D &middot; CINRA</h2><span class="tier">tier ?</span></div>
+  <p class="src">https://cinra.co.jp/ &middot; inline &lt;style&gt;, 1,027 rules &middot; modal</p>
+  <p class="why">The border <b>exists at rest but matches the fill</b>, so focus costs zero layout:
+  nothing grows, nothing reflows, the edge simply becomes visible. Click into it.</p>
+  <p class="cost">Their trick depends on an <b>opaque</b> fill and ours is over the scene, so it is
+  re-derived with the resting border set to the fill's own colour. Their 4px radius is squared.</p>
+  <div class="bay"><b>projects &middot; 1134 &times; 50</b>
+    <div class="res res--projects"><span class="sf sf--cinra" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search projects &amp; tags"></span></div></div>
+  <div class="bay"><b>ramblings &middot; 340 &times; 47</b>
+    <div class="res res--ramblings"><span class="sf sf--cinra" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search ramblings"></span></div></div>
+</section>
+
+<!-- ============================================================ E -->
+<section class="cand">
+  <div class="hd"><h2>E &middot; Craig Mod</h2><span class="tier">tier ? &middot; CUT</span></div>
+  <p class="src">https://craigmod.com/css/master-1140.css &middot; Cmd + / only, no visible trigger</p>
+  <p class="why">Input and results are <b>one continuous slab</b>, which is why its top corners are
+  round and its bottom ones are not. The only candidate in the gallery shipping a
+  <code>prefers-reduced-motion</code> block.</p>
+  <p class="cost">Squaring it per the house rule costs the slab reading, which was the idea. Its
+  <code>backdrop-filter: blur(3px)</code> is not carried (the glass tell), nor is its
+  <code>&lt;mark&gt;</code> blue (a cool accent outside the sky).</p>
+  <div class="bay"><b>projects &middot; 1134 &times; 50</b>
+    <div class="res res--projects"><span class="sf sf--craigmod" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search"></span></div></div>
+  <div class="bay"><b>ramblings &middot; 340 &times; 47</b>
+    <div class="res res--ramblings"><span class="sf sf--craigmod" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search"></span></div></div>
+</section>
+
+<!-- ============================================================ F -->
+<section class="cand">
+  <div class="hd"><h2>F &middot; A24</h2><span class="tier">tier ? &middot; CUT</span></div>
+  <p class="src">https://a24films.com/assets/css/app.css &middot; header icon opens a curtain</p>
+  <p class="why"><b>No field chrome at all.</b> The input <i>is</i> the display type; the affordance
+  is the wrapping label, not a box.</p>
+  <p class="cost">Their 74px does not fit a 50px reservation, so the size is ours while their
+  proportions (line-height .92, tracking -.04em) are kept exactly. Their curtain removes the scene
+  entirely for its duration, which is a separate call and is not built here.</p>
+  <div class="bay"><b>projects &middot; 1134 &times; 50</b>
+    <div class="res res--projects"><span class="sf sf--a24" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search"></span></div></div>
+  <div class="bay"><b>ramblings &middot; 340 &times; 47</b>
+    <div class="res res--ramblings"><span class="sf sf--a24" style="height:100%">
+      <input class="sf__input" type="text" placeholder="search"></span></div></div>
+</section>
+
+</div>
+</div>

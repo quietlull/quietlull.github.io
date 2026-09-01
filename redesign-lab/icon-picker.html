@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ICON PICKER - Simple Icons, the relevant set</title>
+<!--
+  ===== ICON PICKER (2026-08-22, ROD) =====
+  Rod: "where did you find the simple icons can you show me all of them so i can maybe choose what
+  to add?" and "can you find a simple icon for C#?"
+
+  WHERE THEY COME FROM: simpleicons.org - a set of brand marks, CC0 1.0, one path each, monochrome.
+  Repo: github.com/simple-icons/simple-icons. Files fetch from cdn.simpleicons.org/<slug>.
+
+  THE C# ANSWER IS NO, AND IT IS MEASURED. Their index (data/simple-icons.json) was downloaded and
+  searched: 3,453 icons, ZERO entries matching C# / csharp / c-sharp. They do not carry it. The
+  nearest thing in the set is .NET, shown in its own group below. The only full C# mark we have is
+  devicon's, which is 3 paths and full colour.
+
+  SHOWING ALL 3,453 WOULD BE USELESS, so this is the relevant slice - 145 titles matched a
+  tech-art / game-dev / this-site filter, curated down to the ones that could plausibly earn a place
+  on the skills row. The full set is one click away at simpleicons.org.
+
+  EVERY MARK HERE IS SINGLE-PATH, so anything picked keeps the pathLength draw-in option open -
+  unlike the devicon set, which closed it.
+
+  Icons load from the CDN because this is a BROWSE tool, not a shipped page. Anything Rod picks gets
+  downloaded into references/tool-icons/ and cited, the way the four already there were.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7}
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.96);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+.wrap{width:min(1120px,92vw);margin:0 auto;padding:44px 0 140px}
+.note{font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:0 0 34px;max-width:80ch}
+.note b{color:var(--color-text);font-weight:500}
+.note code{color:var(--color-gold)}
+h2{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--color-gold-deep);font-weight:400;margin:34px 0 4px;padding-bottom:5px;
+  border-bottom:1px solid var(--color-line-faint)}
+h2 .n{color:var(--color-muted);letter-spacing:.06em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px;margin-top:14px}
+.ic{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 6px 11px;
+  border:1px solid transparent;cursor:pointer;transition:border-color .15s,background .15s}
+.ic:hover{border-color:rgba(245,158,11,.4);background:rgba(255,255,255,.03)}
+.ic.on{border-color:var(--color-gold);background:rgba(245,158,11,.1)}
+.ic img{width:34px;height:34px;display:block}
+.ic span{font-family:var(--font-mono);font-size:.54rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--color-muted);text-align:center;line-height:1.4}
+.ic.on span{color:var(--color-gold)}
+#tray{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(8,10,18,.97);
+  border-top:1px solid rgba(255,255,255,.2);padding:11px 22px;
+  font:11px var(--font-mono),ui-monospace,monospace;color:#dcdcdc;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#tray b{color:var(--color-gold);font-weight:400}
+#tray button{background:none;border:1px solid #555;color:#bbb;font:9px var(--font-mono);
+  letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;cursor:pointer}
+#tray button:hover{border-color:var(--color-gold);color:var(--color-gold)}
+#picked{color:#9a9a9a;flex:1;min-width:200px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Icon picker</h1>
+  <span class="sub">simpleicons.org &middot; CC0 &middot; single-path &middot;
+    <a href="/redesign-lab/">lab</a> &middot;
+    <a href="/redesign-lab/tool-icons-tests.html">current set</a> &middot;
+    <a href="https://simpleicons.org/" target="_blank" rel="noopener">all 3,453</a></span>
+</header>
+
+<div class="wrap">
+  <div class="note">
+    <b>Where they come from:</b> <code>simpleicons.org</code>, CC0 1.0, one path per mark, monochrome
+    by design. That single path is what keeps the <code>pathLength</code> draw-in possible - the
+    devicon set closed that door, this one leaves it open.<br><br>
+    <b>C#: they do not have it.</b> I downloaded their index and searched it - <b>3,453 icons, zero
+    matches</b> for C# / csharp / c-sharp. The nearest relative in the set is <b>.NET</b>, in the
+    first group. The only real C# mark we hold is devicon's, which is 3 paths and full colour.<br><br>
+    <b>Visual Studio and VS Code are absent too</b> - searched, zero matches. Microsoft marks are
+    thin on the ground in this set for the same trademark reason C# is missing.<br><br>
+    <b>HLSL and Compute have no mark in here either</b>, and would not - neither is a product. Your
+    "S symbol" would be a drawn glyph, which makes it ours rather than sourced, and I would want to
+    draw it to your spec rather than invent one.<br><br>
+    Click to shortlist. Anything you pick gets downloaded into <code>references/tool-icons/</code>
+    and cited properly, the way the four already there were.
+  </div>
+
+  <h2>Closest to C# <span class="n">since C# itself is absent</span></h2>
+  <div class="grid" data-icons="dotnet,cplusplus,rider,jetbrains,codeblocks"></div>
+
+  <h2>Engines &amp; DCC <span class="n">the tools a tech artist actually opens</span></h2>
+  <div class="grid" data-icons="unity,unrealengine,godotengine,blender,houdini,autodeskmaya,krita,aseprite,figma,davinciresolve"></div>
+
+  <h2>Graphics &amp; GPU <span class="n">candidates for the Compute slot</span></h2>
+  <div class="grid" data-icons="opengl,vulkan,webgl,threedotjs,nvidia,amd"></div>
+
+  <h2>Languages &amp; build</h2>
+  <div class="grid" data-icons="python,lua,rust,typescript,javascript,cmake,docker,ruby,markdown,json"></div>
+
+  <h2>Source control</h2>
+  <div class="grid" data-icons="git,github,gitlab,gitkraken,githubactions"></div>
+
+  <h2>Web &amp; this site</h2>
+  <div class="grid" data-icons="html5,css,nodedotjs,jekyll,react,tailwindcss,obsidian,notion"></div>
+
+  <h2>Places you publish</h2>
+  <div class="grid" data-icons="itchdotio,artstation,steam,youtube,twitch,discord"></div>
+</div>
+
+<div id="tray">
+  <span>shortlist <b id="count">0</b></span>
+  <span id="picked">click any icon to add it</span>
+  <button type="button" id="copy">Copy slugs</button>
+  <button type="button" id="clear">Clear</button>
+</div>
+
+<script>
+(function(){
+  var picked = [];
+  document.querySelectorAll('[data-icons]').forEach(function(grid){
+    grid.dataset.icons.split(',').forEach(function(slug){
+      var cell = document.createElement('div');
+      cell.className = 'ic';
+      cell.dataset.slug = slug;
+      var img = document.createElement('img');
+      /* the CDN serves the mark already tinted; ?viewbox=auto is not used so every mark shares a
+         24x24 box and they line up. */
+      img.src = 'https://cdn.simpleicons.org/' + slug;
+      img.alt = slug;
+      img.loading = 'lazy';
+      var name = document.createElement('span');
+      name.textContent = slug;
+      cell.appendChild(img); cell.appendChild(name);
+      cell.addEventListener('click', function(){
+        var at = picked.indexOf(slug);
+        if (at === -1) { picked.push(slug); cell.classList.add('on'); }
+        else { picked.splice(at, 1); cell.classList.remove('on'); }
+        render();
+      });
+      grid.appendChild(cell);
+    });
+  });
+
+  var count = document.getElementById('count');
+  var list = document.getElementById('picked');
+  function render(){
+    count.textContent = picked.length;
+    list.textContent = picked.length ? picked.join('  ') : 'click any icon to add it';
+  }
+
+  document.getElementById('copy').addEventListener('click', function(){
+    var btn = this;
+    if (!picked.length) { btn.textContent = 'nothing picked'; setTimeout(function(){ btn.textContent = 'Copy slugs'; }, 1500); return; }
+    var text = picked.join(' ');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        btn.textContent = 'copied ' + picked.length;
+        setTimeout(function(){ btn.textContent = 'Copy slugs'; }, 1600);
+      });
+    } else { window.prompt('Copy:', text); }
+  });
+
+  document.getElementById('clear').addEventListener('click', function(){
+    picked = [];
+    document.querySelectorAll('.ic.on').forEach(function(c){ c.classList.remove('on'); });
+    render();
+  });
+})();
+</script>
+</body>
+</html>

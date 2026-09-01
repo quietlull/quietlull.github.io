@@ -1,0 +1,114 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   image-zoom-real - the "expand this image" affordance.
+   Built 2026-08-23. SOURCE: sources/stripe-dev-prose.md (CONFIRMED), section `figure`.
+
+   ╔══════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ CORRECTION: THIS WAS FILED "NO REFERENCE, NOT YET SEARCHED" AND THAT WAS WRONG.           ║
+   ║ COMPONENT-TABLE listed the image lightbox under "C. Blocked - no source". The figure brief ║
+   ║ had already noted in passing that "Figure A (stripe) carried a zoom affordance", and it    ║
+   ║ does: `.imageExpandButton` and `.imageExpandIcon` are a complete, verified affordance that ║
+   ║ was sitting in a source file we already had. Nothing needed searching for.                 ║
+   ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+
+   TIER: Remixed. Idea-origin theirs. Ours: the squaring and the colours.
+
+   SCOPE, stated so it is not oversold: this is the AFFORDANCE - the cursor and the corner badge
+   that say "this opens". THE OVERLAY ITSELF IS NOT SOURCED and is not built here. Half a
+   lightbox with an honest label beats a whole one with an invented half.
+
+   VERBATIM, theirs:
+     .imageExpandButton { cursor: zoom-in; background: 0 0; border: none; border-radius: 4px;
+                          padding: 0; display: block; position: relative }
+     .imageExpandIcon   { color:#fff; opacity:0; pointer-events:none; background:#0009;
+                          border-radius:999px; width:26px; height:26px; top:8px; right:8px;
+                          transition: opacity .15s; display:flex; position:absolute;
+                          justify-content:center; align-items:center }
+     :hover .icon, :focus-visible .icon { opacity: 1 }
+
+   TWO THINGS GENUINELY WORTH HAVING:
+     1. `pointer-events: none` on the icon. The BUTTON takes the click, so the badge can never
+        eat it or produce a dead spot in the middle of its own affordance.
+     2. `:focus-visible` is a CO-EQUAL trigger with `:hover`, so the badge appears for keyboard
+        users too. Most implementations forget this, and stripe did not.
+
+   NOT TAKEN: `border-radius: 999px` on the icon and `4px` on the button - square by default.
+   The 999px is the one place squaring genuinely changes the read, since a round badge over a
+   corner is a different object from a square one. Flagged rather than silently squared: a
+   pill/circle exception could be argued here, as it was for the tape's tear.
+   ============================================================================================ */
+
+.iz {
+  cursor: zoom-in;                     /* theirs - the cursor IS half the affordance */
+  background: none;
+  border: none;
+  border-radius: 0;                    /* theirs is 4px */
+  padding: 0;
+  display: block;
+  position: relative;
+}
+.iz > img, .iz > video { display: block; max-width: 100%; height: auto; }
+
+.iz__icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;                          /* theirs, verbatim */
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text, #f5f3ef);   /* theirs is #fff */
+  background: rgba(28, 26, 24, 0.6);   /* theirs is #0009, a neutral black. Warmed. */
+  border-radius: 0;                    /* theirs is 999px - see the note above */
+  pointer-events: none;                /* the button takes the click, always */
+  opacity: 0;
+  transition: opacity 0.15s;           /* theirs, verbatim */
+}
+.iz:hover .iz__icon,
+.iz:focus-visible .iz__icon { opacity: 1; }   /* focus is CO-EQUAL, theirs */
+
+@media (prefers-reduced-motion: reduce) { .iz__icon { transition: none; } }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE THREE VERSIONS - when the badge is visible.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* V1 - THEIRS: hidden until hover or focus. Quietest at rest; invisible on touch. */
+.iz--v1 .iz__icon { opacity: 0; }
+
+/* V2 - ALWAYS VISIBLE at reduced opacity. OURS, and it exists for the same reason as the
+   heading anchor's V3: HOVER DOES NOT EXIST ON TOUCH, so V1's affordance is invisible on a phone
+   and the only remaining hint is a cursor that phones do not have either. Costs a permanent badge
+   on all 46 images. */
+.iz--v2 .iz__icon { opacity: 0.55; }
+.iz--v2:hover .iz__icon, .iz--v2:focus-visible .iz__icon { opacity: 1; }
+
+/* V3 - CURSOR ONLY, no badge at all. OURS by subtraction.
+   Consistent with the figure decision, which took the no-mat option precisely so 46 images would
+   not each carry a frame - by the same argument they should not each carry a badge.
+   THE COST IS REAL AND SHOULD NOT BE GLOSSED: a bare `cursor: zoom-in` is INVISIBLE to touch and
+   to keyboard users. If V3 wins, the zoom needs another affordance somewhere, or the images
+   should simply not be zoomable. */
+.iz--v3 .iz__icon { display: none; }
+}

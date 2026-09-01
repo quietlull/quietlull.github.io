@@ -1,0 +1,46 @@
+<section class="hero" data-tune="hero">
+  <h1 class="hero__logo" data-tune="hero logo">rodney fan<small class="hero__subtitle">technical artist &middot; game designer</small></h1>
+  <p class="hero__tagline" data-tune="hero tagline">// shaders, tools &amp; little worlds &mdash; a night market of tech-art experiments, lit one lantern at a time.</p>
+  <div class="hero__switch" data-tune="hero switch">
+    <!-- background switch: GOO toggle (Rod 2026-08-11 — slap moved to the bar, goo lives here).
+         checked = Lanterns (Three.js scene), unchecked = Bloom. js-scene-switch = the hook the
+         page-level bg-pair wiring listens to. Goo filter defs: ONE per document (dep goo-toggle
+         provides them in the bench; standalone pages must include the defs svg themselves). -->
+    <svg style="display: none" aria-hidden="true">
+      <defs>
+        <filter id="goo-toggle-goo" filterUnits="userSpaceOnUse" x="-24" y="-24" width="280" height="120">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+        </filter>
+      </defs>
+    </svg>
+    <label class="goo-toggle js-magnetic js-scene-switch" data-strength="40">
+      <input class="goo-toggle__input" type="checkbox" checked aria-label="Toggle Three.js lantern scene vs bloom background" />
+      <svg class="goo-toggle__frame" viewBox="0 0 232 72" aria-hidden="true">
+        <rect class="goo-toggle__track" x="2" y="2" width="228" height="68" rx="34" />
+        <g filter="url(#goo-toggle-goo)">
+          <rect class="goo-toggle__capsule" x="6" y="6" width="146" height="60" rx="30" />
+          <rect class="goo-toggle__tail" x="59" y="13" width="46" height="46" rx="23" />
+          <g class="goo-toggle__orb-shift"><rect class="goo-toggle__orb" x="166" y="6" width="60" height="60" rx="30" /></g>
+        </g>
+      </svg>
+      <span class="goo-toggle__word" aria-hidden="true">Lanterns</span>
+      <span class="goo-toggle__state" aria-hidden="true">Off</span>
+    </label>
+  </div>
+  <!-- scroll cue: chriskalafatis.com chevron (sources/chriskalafatis-chevron-divider.md, True SVG),
+       recolored white->gold via currentColor; magnetic via the drift-magnet base (hero.js inits it). -->
+  <div class="hero__scrollcue-wrap">
+    <a class="hero__scrollcue js-magnetic" data-strength="45" data-strength-text="20" href="#sec-projects" aria-label="Scroll to projects">
+      <svg class="hero__chev js-magnetic-inner" width="3rem" height="3rem" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M23.2338 12.28L14.7538 20.8V0.239998H11.3538V20.76L2.87375 12.28L0.59375 14.56L13.0738 27L25.5138 14.56L23.2338 12.28Z" fill="currentColor"/></svg>
+    </a>
+  </div>
+  <!-- social rail (harumaki ref-harumaki.html .social) — anchored to the hero's RIGHT (Rod 2026-06-15;
+       deviates from harumaki's viewport-fixed so it scrolls WITH the hero). Labels = Rod's socials. -->
+  <nav class="hero__social" data-tune="hero socials" aria-label="Social links">
+    <a href="#" aria-label="ArtStation">AS</a>
+    <a href="#" aria-label="itch.io">IO</a>
+    <a href="#" aria-label="GitHub">GH</a>
+    <a href="#" aria-label="X">X</a>
+  </nav>
+</section>

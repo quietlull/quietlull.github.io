@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RESUME BLOCKOUT — 4 variants, greybox</title>
+<!--
+  RESUME / CV — a NEW surface. No _layouts/resume.html exists, so all four are additive and
+  nothing has to be un-built. This page type has ZERO dedicated bench components today.
+  GREYBOX LAW: geometry only, one grey language, no colour.
+
+  Transcribed from four currently-live sites, each read from its own CSS:
+    CHIANG    brittanychiang.com                 compiled Tailwind /_next/static/css/1205f04d...
+    LEATHERMAN www.zachleat.com/resume/          /resume/index.css (4.1KB)
+    HOYT      benhoyt.com/cv/                    ~2.5KB, one inline <style> — the whole site
+    RASCIA    tania.dev/resume/                  /styles.b1cb92fe...css (62KB)
+
+  Frozen slots in ALL four: shell/nav · name · role+summary · experience entries with dates ·
+  skills · education · contact · download-CV · print behaviour.
+  PRINT is a real requirement here and only ONE reference actually solves it.
+-->
+<style>
+  *{box-sizing:border-box}
+  body{background:#141414;color:#d9d9d9;font-family:ui-monospace,"SF Mono",Consolas,monospace;
+    margin:0;padding-top:72px}
+  .box{border:1.5px dashed #555;background:#1b1b1b}
+  .fill{display:grid;place-items:center;height:100%;color:#666;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;text-align:center;padding:2px}
+  .yy{font-size:9px;color:#777}
+  .nav{position:fixed;top:0;left:0;right:0;height:72px;z-index:10;background:#1f1f1f;
+    border-bottom:1.5px solid #666;display:flex;align-items:center;gap:16px;padding:0 20px}
+  .nav .ico{width:44px;height:44px;border:1.5px dashed #777;display:grid;place-items:center;font-size:9px;color:#888}
+  .nav .name{border:1.5px dashed #666;padding:8px 18px;font-size:13px;color:#ccc}
+  .nav .sp{flex:1}
+  .nav .btns span{border:1.5px dashed #666;padding:7px 16px;font-size:10px;color:#999;margin-left:6px}
+
+  /* ===== V1 · CHIANG — sticky split rail ===== */
+  body.split .outer{max-width:1280px;margin-inline:auto;min-height:100vh;padding:0 48px}
+  body.split .flexrow{display:flex;justify-content:space-between;gap:16px}
+  body.split .left{width:48%;position:sticky;top:72px;max-height:100vh;padding-block:96px;align-self:flex-start}
+  body.split .right{width:52%;padding-block:96px}
+  body.split .sect{margin-bottom:144px}
+  body.split .role{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:16px;margin-bottom:48px}
+  body.split .role .d{grid-column:span 2}
+  body.split .role .b{grid-column:span 6}
+
+  /* ===== V2 · LEATHERMAN — print-first measure ===== */
+  body.print .bodygrid{display:grid;grid-template-columns:1fr 224px 40px;column-gap:16px;padding-top:16px}
+  body.print .contentgrid{display:grid;grid-template-columns:1fr minmax(auto,31em) 1fr;
+    max-width:56.5217em;margin:0 auto}
+  body.print .measure{grid-column:2}
+  body.print .toc{display:flex;gap:9.5px 19px;justify-content:center;margin-bottom:-44px;font-size:11px}
+  body.print .entry{padding:7.6px 0}
+  body.print .a4{outline:1px dashed #4a4a4a;outline-offset:6px}
+
+  /* ===== V3 · HOYT — bare document ===== */
+  body.bare .content{width:92.5%;max-width:700px;margin:34px auto}
+  body.bare .menu{width:92.5%;max-width:1000px;margin:0 auto;height:93.5px;border-bottom:1px solid #444;
+    display:flex;align-items:center}
+  body.bare h2b{display:block}
+  body.bare .h2{margin:30.6px 0 -3.4px}   /* NEGATIVE bottom tucks the h3 up under the section head */
+  body.bare .h3{margin:25.5px 0 -8.5px}
+
+  /* ===== V4 · RASCIA — doc shell + fixed date gutter ===== */
+  body.doc .shell{display:flex}
+  body.doc .side{width:260px;min-width:260px;height:calc(100vh - 72px);position:sticky;top:72px;
+    overflow-y:auto;border-right:1px solid #444;padding:24px}
+  body.doc .main{flex-grow:1;margin:0 auto;max-width:760px;padding:32px}
+  body.doc .h2{border-bottom:1px solid #444;padding-bottom:8px;margin:24px 0}
+  body.doc .trow{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+  body.doc .trow .date{width:90px;flex:none}
+
+  #prov{position:fixed;left:14px;top:88px;z-index:70;width:292px;max-height:calc(100vh - 176px);
+    overflow:auto;background:rgba(10,12,20,.96);border:1px solid rgba(255,255,255,.18);padding:12px 13px;
+    font:11px/1.55 ui-monospace,Consolas,monospace;color:#dcdcdc}
+  #prov .pv-t{font-size:12.5px;color:#fff;margin-bottom:2px}
+  #prov .pv-k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin-bottom:7px}
+  #prov a{color:#9fd0ff;word-break:break-all}
+  #prov h4{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+  #prov ul{margin:0;padding-left:14px}#prov li{margin-bottom:3px;color:#c8c8c8}
+  #prov .warn li{color:#ffb020}
+  .vbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:80;display:flex;gap:6px;
+    flex-wrap:wrap;justify-content:center;background:rgba(8,10,18,.96);border:1px solid rgba(255,255,255,.2);padding:7px 9px}
+  .vbar button{background:none;border:1px solid #555;color:#bbb;font:10px ui-monospace,monospace;
+    letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;cursor:pointer}
+  .vbar button.on{background:#ddd;border-color:#ddd;color:#141414}
+  .labtag{position:fixed;left:14px;bottom:12px;z-index:50;font:10px ui-monospace,monospace;color:rgba(245,243,239,.45)}
+  @media(max-width:1300px){#prov{position:static;width:auto;max-height:none;margin:10px 14px}}
+</style>
+</head>
+<body class="split">
+
+<div class="nav">
+  <span class="ico">MARK</span><span class="name">WORDMARK</span><span class="sp"></span>
+  <span class="btns"><span>HOME</span><span>PROJECTS</span><span>ABOUT</span><span>RAMBLINGS</span></span>
+</div>
+
+<div id="ground"></div>
+
+<aside id="prov"></aside>
+<div class="vbar">
+  <span style="color:#8e8e8e;font:9px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;align-self:center;margin-right:2px">resume</span>
+  <button data-v="split" class="on">1 &middot; brittanychiang</button>
+  <button data-v="print">2 &middot; zachleat (print-first)</button>
+  <button data-v="bare">3 &middot; ben hoyt</button>
+  <button data-v="doc">4 &middot; tania rascia</button>
+</div>
+<div class="labtag">resume-blockout &middot; NEW surface &middot; A4 live measure = 698px</div>
+
+<script>
+var ROLES=3, SKILLS=12;
+function b(w,h,label){return '<div class="box" style="width:'+w+';height:'+h+'px"><div class="fill">'+(label||'')+'</div></div>';}
+function bullets(n,fs){var s='';for(var i=0;i<n;i++)s+='<div style="margin:4px 0 0 20px">'+b((i===n-1?'62%':'100%'),fs||14,'')+'</div>';return s;}
+function skills(w){var s='<div style="display:flex;flex-wrap:wrap;gap:8px">';for(var i=0;i<SKILLS;i++)s+=b(w||'86px',24,'SKILL');return s+'</div>';}
+
+var BUILD={
+ split:function(){
+   var roles='';
+   for(var i=0;i<ROLES;i++){
+     roles+='<div class="role"><div class="d">'+b('100%',16,'2024 &mdash; NOW')+'</div>'
+       +'<div class="b">'+b('100%',20,'ROLE')+'<div style="height:4px"></div>'+b('80%',20,'COMPANY')
+       +'<div style="height:8px"></div>'+b('100%',60,'BLURB &mdash; 3 lines')
+       +'<div style="height:10px"></div><div style="display:flex;gap:8px;flex-wrap:wrap">'
+       +b('80px',22,'SKILL')+b('92px',22,'SKILL')+b('76px',22,'SKILL')+'</div></div></div>';
+   }
+   return '<div class="outer"><div class="flexrow">'
+     +'<div class="left">'+b('100%',48,'NAME &mdash; 48px')+'<div style="height:8px"></div>'
+     +b('100%',20,'ROLE SUBTITLE')+'<div style="height:12px"></div>'+b('100%',60,'SUMMARY &mdash; 3 lines')
+     +'<div style="height:48px"></div>'
+     +'<div style="margin-bottom:16px">'+b('120px',12,'EXPERIENCE')+'</div>'
+     +'<div style="margin-bottom:16px">'+b('120px',12,'SKILLS')+'</div>'
+     +'<div style="margin-bottom:16px">'+b('120px',12,'EDUCATION')+'</div>'
+     +'<div style="height:48px"></div><div style="display:flex;gap:20px">'
+     +b('24px',24,'')+b('24px',24,'')+b('24px',24,'')+b('24px',24,'')+b('24px',24,'')+'</div>'
+     +'<div style="height:24px"></div>'+b('180px',34,'DOWNLOAD CV')+'</div>'
+     +'<div class="right">'
+     +'<div class="sect">'+roles+'</div>'
+     +'<div class="sect">'+b('160px',16,'SKILLS')+'<div style="height:12px"></div>'+skills()+'</div>'
+     +'<div class="sect">'+b('160px',16,'EDUCATION')+'<div style="height:12px"></div>'+b('100%',70,'DEGREE / SCHOOL / DATES')+'</div>'
+     +'<div class="sect">'+b('100%',40,'CONTACT')+'</div>'
+     +'</div></div></div>';
+ },
+ print:function(){
+   var roles='';
+   for(var i=0;i<ROLES;i++){
+     roles+='<div class="entry">'+b('100%',24,'ROLE &mdash; 19px')
+       +'<div style="height:2px"></div>'+b('60%',20,'DATE &mdash; nested UNDER, 16px italic')
+       +'<div style="height:2px"></div>'+b('45%',18,'LOCATION &mdash; own line')
+       +'<div style="height:2px"></div>'+b('35%',15,'SUBNOTE 13px')
+       +bullets(3,20)+'</div>';
+   }
+   return '<div class="bodygrid"><div class="contentgrid" style="grid-column:1">'
+     +'<div class="measure a4">'
+     +'<div style="text-align:center">'+b('100%',44,'NAME')+'<div style="height:6px"></div>'
+     +b('100%',24,'ROLE SUBTITLE')+'<div style="height:6px"></div>'+b('100%',20,'CONTACT RUN')+'</div>'
+     +'<div class="toc"><span class="yy">EXPERIENCE</span><span class="yy">SKILLS</span>'
+     +'<span class="yy">EDUCATION</span><span class="yy">CONTACT</span></div>'
+     +'<div style="height:56px"></div>'
+     +b('100%',22,'EXPERIENCE')+roles
+     +'<div style="height:19px"></div>'+b('100%',22,'SKILLS')+'<div style="height:8px"></div>'+skills('78px')
+     +'<div style="height:19px"></div>'+b('100%',22,'EDUCATION')+'<div style="height:8px"></div>'+b('100%',60,'DEGREE / SCHOOL')
+     +'<div class="yy" style="margin-top:14px">MEASURE 31em = 589px &mdash; sits INSIDE the 698px A4 live measure with 109px to spare</div>'
+     +'</div></div>'
+     +'<div style="grid-column:2"><div class="yy" style="margin-bottom:6px">224px RAIL</div>'
+     +b('100%',34,'DOWNLOAD CV')+'<div style="height:10px"></div>'+b('100%',120,'ASIDE / META')+'</div>'
+     +'<div style="grid-column:3"></div></div><div style="height:90px"></div>';
+ },
+ bare:function(){
+   var roles='';
+   for(var i=0;i<ROLES;i++){
+     roles+='<div class="h3">'+b('100%',22,'COMPANY &mdash; ROLE &mdash; SEP 2020 TO NOW')+'</div>'
+       +bullets(3,27);
+   }
+   return '<div class="menu">'+b('320px',40,'TITLE &mdash; 38px, .15em tracking')+'</div>'
+     +'<div class="content">'
+     +b('100%',40,'H1 NAME &mdash; 34px')
+     +'<div style="height:17px"></div>'+b('100%',30,'ROLE + CONTACT RUN')
+     +'<div class="h2">'+b('100%',32,'EXPERIENCE &mdash; 27.2px SMALL-CAPS')+'</div>'
+     +roles
+     +'<div class="h2">'+b('100%',32,'SKILLS')+'</div>'+skills('74px')
+     +'<div class="h2">'+b('100%',32,'EDUCATION')+'</div>'+bullets(2,27)
+     +'<div class="h2">'+b('100%',32,'CONTACT')+'</div>'+b('100%',30,'CONTACT')
+     +'<div style="height:17px"></div>'+b('200px',32,'DOWNLOAD CV')
+     +'<div class="yy" style="margin-top:14px">700px measure &mdash; sits inside the 698px A4 live measure by construction (2px over)</div>'
+     +'<div style="height:80px"></div></div>';
+ },
+ doc:function(){
+   var roles='';
+   for(var i=0;i<ROLES;i++){
+     roles+='<div class="trow"><div class="date">'+b('100%',16,'2024')+'</div>'
+       +'<div style="flex:1">'+b('100%',20,'ROLE &mdash; COMPANY')
+       +'<div style="height:6px"></div>'+b('100%',48,'BLURB &mdash; 2 lines')
+       +'<div style="height:8px"></div><div style="display:flex;gap:8px">'
+       +b('80px',22,'SKILL')+b('88px',22,'SKILL')+'</div></div></div>';
+   }
+   var links='';
+   for(var j=0;j<6;j++) links+='<div style="margin-bottom:4px">'+b('100%',34,'SECTION LINK')+'</div>';
+   return '<div class="shell"><aside class="side">'
+     +'<div class="yy" style="margin-bottom:10px">IN-PAGE SIDEBAR &mdash; 260px, sticky, hidden below 1020px</div>'
+     +links
+     +'<div style="height:12px"></div>'+b('100%',34,'DOWNLOAD CV')+'</aside>'
+     +'<main class="main">'
+     +b('100%',40,'H1 NAME &mdash; 40px / 700')
+     +'<div style="height:6px"></div>'+b('100%',28,'ROLE SUBTITLE &mdash; 20/28')
+     +'<div style="height:6px"></div>'+b('100%',20,'CONTACT RUN &mdash; 15.2px')
+     +'<div style="height:10px"></div>'+b('100%',77,'SUMMARY &mdash; 3 lines at 16/1.6')
+     +'<div class="h2">'+b('220px',24,'EXPERIENCE')+'</div>'+roles
+     +'<div class="h2">'+b('220px',24,'SKILLS')+'</div>'+skills('84px')
+     +'<div class="h2">'+b('220px',24,'EDUCATION')+'</div>'+b('100%',70,'DEGREE / SCHOOL / DATES')
+     +'<div class="h2">'+b('220px',24,'CONTACT')+'</div>'+b('100%',40,'CONTACT')
+     +'<div style="height:90px"></div></main></div>';
+ }
+};
+
+var PROV={
+ split:{t:'1 — Brittany Chiang v5',k:'read from source · compiled Tailwind + page HTML',url:'https://brittanychiang.com/',
+  moves:['THE register Rod named. Outer max-width 1280, split 48% / 52% (614 / 666 at 1280)',
+         'LEFT RAIL IS STICKY at top:0, max-height 100vh — the identity block never scrolls, so the page is permanently two-up',
+         'Right column section gap 144px at large; roles are <li> at margin-bottom 48px',
+         'ROLE ROW is an 8-column grid: date = col-span 2 (166px), body = col-span 6 (500px)',
+         'Her hover dims ALL sibling rows to 50% and lifts the hovered one — the "card" is a pseudo-layer inset BEYOND the text bounds, not a real box',
+         'Skill pills 28px tall at radius 9999px, padding 4px 12px'],
+  warn:['Her accent is TEAL on 10% fills. The locked palette law is warm + blue DNA, blue ONLY in the sky, no cool UI accent — geometry transcribes, colour cannot.',
+         'DOES NOT PRINT. A sticky full-height rail and a 100vh split have no sensible paper form, and a resume gets printed. This variant needs variant 2&rsquo;s print sheet bolted on, or it fails a real requirement.',
+         'Her ground is flat slate; ours is the live scene. A permanently-fixed left half over moving lanterns is untested.']},
+ print:{t:'2 — Zach Leatherman',k:'read from source · /resume/index.css, 4.1KB',url:'https://www.zachleat.com/resume/',
+  moves:['THE ONLY REFERENCE THAT ACTUALLY SOLVES PRINT — same DOM is both the web page and the paper CV',
+         'Measure is a hard 31em = 589px, self-centred inside a ~1300px frame, so it sits INSIDE the 698px A4 live measure with 109px to spare',
+         'Shell grid: main / 224px rail / 40px gutter at 16px gaps',
+         'TOC is a centred flex run with margin-bottom -44px — the negative margin pulls the first section up under it. A transcribed quirk, not an invention.',
+         'Role entries have NO date gutter at all: role 19px, date nested UNDER it in italic, location its own line, then 16px bullets'],
+  warn:['If print matters at all, this is the variant, and print is a real requirement Rod named. The dashed outline in the blockout marks the A4 live measure so the fit is visible.',
+         'Least visually distinctive of the four on screen — it is a document, not a composition. That is the trade it makes deliberately.']},
+ bare:{t:'3 — Ben Hoyt CV',k:'read from source · ~2.5KB, one inline style — the WHOLE site',url:'https://benhoyt.com/cv/',
+  moves:['NO second axis at all — no rail, no sidebar, no gutter, no grid. One 700px column and three type sizes.',
+         '#content is width 92.5% capped at 700px, which is what guarantees breathing room at EVERY width without a single media query',
+         '700px sits inside the 698px A4 live measure by construction',
+         'THE TYPE IS THE LAYOUT: h2 27.2px small-caps with a NEGATIVE bottom margin that tucks the following h3 up under the section head',
+         'A role entry is ONE h3 whose text is the whole header — "Company - Role - Sep 2020 to now". The date is the last third of a STRING; zero layout code carries the timeline.'],
+  warn:['The cheapest to build and maintain by an order of magnitude, and it prints by accident rather than by effort.',
+         'The date-inside-the-heading-string trick means no date column can ever be styled, sorted or aligned. That is a real constraint, not just a look.',
+         'Closest to "conventional" of the four, which is what backlog G3 actually asked for ("clean, conventional, subtly linked").']},
+ doc:{t:'4 — Tania Rascia',k:'read from source · /styles.b1cb92fe...css, 62KB',url:'https://tania.dev/resume/',
+  moves:['The resume INHERITS THE SITE SHELL rather than getting its own layout — one extra template, not a new system',
+         'Tokens read from her custom properties: content 760px, sidebar 260px, radius 8, layout padding 24 rising to 32 above 1020',
+         'Sidebar is in-page, persistent, sticky at 100vh, and DISPLAY:NONE below 1020px',
+         'SECTION RHYTHM IS A HAIRLINE: h2 with border-bottom 1px and 8px padding-bottom — that is what replaces variant 1&rsquo;s 144px gaps, at ~57px per boundary',
+         'Timeline row is flex baseline with the date span LOCKED at width:90px'],
+  warn:['The most economical structurally: it reuses a shell the site already needs anyway.',
+         'The 90px fixed date column is the cleanest date treatment in the set — compare against variant 3, where the date cannot be styled at all.',
+         'Prints better than variant 1 and worse than variant 2. The sidebar disappears below 1020px, which is most of the way to a print sheet but not all of it.']}
+};
+
+(function(){
+  var btns=document.querySelectorAll('.vbar button'),panel=document.getElementById('prov'),g=document.getElementById('ground');
+  function show(v){
+    document.body.className=v;
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
+    g.innerHTML=BUILD[v]();
+    var p=PROV[v];
+    var h='<div class="pv-t">'+p.t+'</div><div class="pv-k">'+p.k+'</div>';
+    h+='<div style="margin-bottom:6px"><a href="'+p.url+'" target="_blank">'+p.url+'</a></div>';
+    h+='<h4>transcribed geometry</h4><ul><li>'+p.moves.join('</li><li>')+'</li></ul>';
+    h+='<h4>honest caveats</h4><ul class="warn"><li>'+p.warn.join('</li><li>')+'</li></ul>';
+    panel.innerHTML=h;
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.v);});});
+  var m=/[?&]v=(split|print|bare|doc)/.exec(location.search);
+  show(m?m[1]:'split');
+})();
+</script>
+</body>
+</html>

@@ -26,7 +26,16 @@ package-lock.json
 assets/js/dist
 
 # Redesign test environment (blockout variations, not for deploy)
-redesign-lab/
+# The lab is IN version control now (D49, Rod 2026-08-25: "we actually do want to keep it").
+# It never ships: the deploy workflow deletes it from _site after the build, before the
+# test and upload steps. Cleaned 140 MB -> 77 MB before this line changed, so history
+# starts from the small version - git keeps every committed blob forever.
+# The two hold piles below stay OUT until Rod closes the merge (his call, 2026-08-25,
+# "leave this for once we are actually finished merging completely"). The trash pile also
+# contains a nested git clone that would commit as a broken submodule pointer, and the
+# backup pile mirrors the live tree's own paths, which is a wrong-file hazard.
+redesign-lab/_TRASH-2026-08-25/
+redesign-lab/_BACKUP-pre-deletion-2026-08-26/
 
 # Reel editing source material (large MP4s, planning docs)
 .claude/reel-planning/

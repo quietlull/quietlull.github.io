@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LINE BOIL TEST - metric harness + two boil mechanisms</title>
+<!--
+  ===== LINE BOIL TEST (2026-08-23) =====
+  Rod: "i also want you to test a font change boil before I provide that to you."
+
+  SO THIS IS THE HARNESS, NOT THE EFFECT. His three scratch fonts do not exist yet, and the whole
+  approach stands or falls on ONE constraint recorded in P100:
+
+      "identical metrics across all three or the text reflows every frame"
+
+  That constraint is testable RIGHT NOW with fonts we already have, and testing it before he cuts
+  three fonts is worth more than a pretty demo of a boil we cannot yet run. If the metrics drift,
+  every glyph jitters horizontally as well as in shape, and the clock's digits shuffle every second.
+
+  WHAT IS HERE
+    1. THE METRIC HARNESS - swaps a line between three real fonts and MEASURES the width delta per
+       swap. This is the part that answers his question.
+    2. FONT-SWAP BOIL - the mechanism he described, running on those three fonts so the reflow is
+       visible rather than described.
+    3. PROCEDURAL PATH JITTER - the other route, and the one STATUS says the CLOCK must use, since
+       10 digits x 3 boil frames changing every second cannot come from traced variants.
+       PRECEDENT: rough.js (recorded in STATUS as the sourced precedent for this). The jitter here
+       is written from that idea, not copied from their code, so it is tiered REMIX and the
+       distinction is stated rather than blurred.
+
+  D10 KEEPS THIS ON THE RIGHT SIDE: the boil is SHADER/procedural work, not drawn art. That is why
+  route 3 exists at all.
+
+  NOT DECIDED HERE: which route wins, the rate, the amplitude. Those are Rod's, and route 2 cannot
+  be judged properly until his fonts exist.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+  /* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+  body{background:var(--color-night,#070C23);color:var(--color-text,#f5f3ef);
+    font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;padding:0 0 140px}
+  header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+  header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase}
+  header.top .sub{font-size:10px;color:var(--color-muted)}
+  .wrap{width:min(1100px,92vw);margin:0 auto;padding:36px 0 0}
+  .lede{font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:34px;max-width:96ch;
+    background:rgba(8,10,18,.72)}
+  .lede b{color:#e4e4e4;font-weight:500}
+  .lede code{color:var(--color-gold)}
+  h2.s{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold);font-weight:400;margin:52px 0 6px;border-top:1px solid #2c2c2c;
+    padding-top:22px}
+  .note{font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;
+    margin-bottom:18px;max-width:92ch}
+  .note b{color:#ccc;font-weight:400}
+  .panel{border:1px solid #2c2c2c;background:rgba(20,20,20,.5);padding:22px 24px}
+  /* ROD'S THREE SCRATCH FONTS, delivered 2026-08-23. All three are TrueType despite the .otf
+     twins he also sent - each .otf is byte-identical to its .ttf (same MD5), so only these three
+     files exist and the .otf copies are the same file renamed. */
+  @font-face{font-family:"Lineboil1";src:url("/redesign-lab/assets/fonts/Lineboil1-Regular.ttf") format("truetype");font-display:block}
+  @font-face{font-family:"Lineboil2";src:url("/redesign-lab/assets/fonts/Lineboil2-Regular.ttf") format("truetype");font-display:block}
+  @font-face{font-family:"Lineboil3";src:url("/redesign-lab/assets/fonts/Lineboil3-Regular.ttf") format("truetype");font-display:block}
+  /* the fix: every glyph gets a fixed box measured from font 1, so swapping the FACE cannot move
+     anything. The letter boils inside a box that never changes width. */
+  .pin{white-space:nowrap}
+  .pin span{display:inline-block;text-align:center}
+  .big{font-size:46px;line-height:1.15;color:var(--color-glow);white-space:nowrap}
+  .verdict{font-family:var(--font-mono);font-size:11px;line-height:1.9;margin-top:14px;
+    border-left:2px solid #3a3a3a;padding-left:14px;color:#9a9a9a}
+  .verdict b{color:#e4e4e4;font-weight:500}
+  .pass{color:#8fbf7a}.fail{color:#e08a5a}
+  table.m{border-collapse:collapse;font-family:var(--font-mono);font-size:11px;margin-top:12px}
+  table.m th{text-align:left;color:var(--color-gold);font-weight:400;padding:3px 18px 6px 0}
+  table.m td{padding:3px 18px 3px 0;color:#b4b4b4}
+  .ctl{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .ctl button{background:rgba(8,10,18,.9);border:1px solid #555;color:#ddd;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:8px 14px;cursor:pointer}
+  .ctl button[aria-pressed="true"]{border-color:var(--color-gold);color:var(--color-gold)}
+  svg.boil{display:block;width:100%;height:120px}
+  svg.boil path{fill:none;stroke:var(--color-glow);stroke-width:2.5;
+    stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Line boil test</h1>
+  <span class="sub">the metric harness + two mechanisms &middot; your fonts do not exist yet, so this
+    tests the CONSTRAINT</span>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <b>This is the harness, not the effect.</b> Your three scratch fonts do not exist yet, and the
+    whole approach stands or falls on one constraint already recorded in P100:
+    <b>identical metrics across all three, or the text reflows every frame.</b><br><br>
+    That is testable <b>now</b>, with fonts we already have &mdash; and testing it <b>before</b> you cut
+    three fonts is worth more than a pretty demo of a boil we cannot run yet. <b>If the metrics
+    drift, every glyph jitters sideways as well as in shape, and the clock's digits shuffle every
+    second.</b><br><br>
+    Section 3 is the other route. <b>STATUS says the CLOCK must use it</b>: 10 digits &times; 3 boil
+    frames changing every second cannot come from traced variants. Precedent is <b>rough.js</b>,
+    recorded in STATUS as the sourced precedent &mdash; the jitter below is written from that idea, not
+    copied from their code, so it is <b>Remixed</b> and says so.
+  </div>
+
+  <!-- ══════════ 1. THE METRIC HARNESS ══════════ -->
+  <h2 class="s">1 &middot; The metric harness &mdash; the test that actually matters</h2>
+  <div class="note">Renders the same string in three fonts and measures each one's width to two
+    decimals. <b>Any non-zero delta is the reflow.</b> Swap in your three scratch fonts when they
+    exist and this answers the question immediately, with no eyeballing.</div>
+  <div class="panel">
+    <div id="metricRows"></div>
+    <table class="m" id="metricTable"></table>
+    <div class="verdict" id="metricVerdict">measuring...</div>
+  </div>
+
+  <!-- ══════════ 2. FONT-SWAP BOIL ══════════ -->
+  <h2 class="s">2 &middot; Font-swap boil &mdash; the mechanism you described</h2>
+  <div class="note">Cycles the line between the three fonts on a timer. <b>Watch the right-hand
+    edge</b>: with mismatched metrics it walks back and forth, which is exactly the failure P100
+    warns about. With your fonts it should sit perfectly still.<br>
+    Rate is the one number worth arguing about &mdash; hand-drawn animation boils at <b>8&ndash;12fps</b>,
+    and the site's paper filter already runs at 3.25/sec.</div>
+  <div class="panel">
+    <div class="big" id="swapLine">rodney fan</div>
+    <div class="ctl">
+      <button id="swapToggle" aria-pressed="false">start swap</button>
+      <button class="rate" data-r="6" aria-pressed="false">6 / sec &middot; on 4s</button>
+      <button class="rate" data-r="8" aria-pressed="true">8 / sec &middot; on 3s</button>
+      <button class="rate" data-r="12" aria-pressed="false">12 / sec &middot; on 2s</button>
+    </div>
+    <div class="verdict" id="swapVerdict">stopped. The edge marker shows drift while it runs.</div>
+  </div>
+
+  <!-- ══════════ 3. PROCEDURAL PATH JITTER ══════════ -->
+  <h2 class="s">3 &middot; Procedural path jitter &mdash; the route the clock has to use</h2>
+  <div class="note"><b>Tier: Remixed. Idea-origin theirs</b> (rough.js, recorded in STATUS as the
+    precedent). Written from the idea, not lifted from their source &mdash; stated plainly rather than
+    cited as a transcription.<br>
+    The mechanism: walk a path and displace each point by a small random offset, re-rolled every
+    boil frame. <b>The width never changes</b>, because the path's anchor points do not move &mdash;
+    which is precisely why the clock can use this and cannot use font swapping.</div>
+  <div class="panel">
+    <svg class="boil" id="boilSvg" viewBox="0 0 900 120" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="ctl">
+      <button id="jitterToggle" aria-pressed="false">start jitter</button>
+      <button class="amp" data-a="1" aria-pressed="false">amp 1</button>
+      <button class="amp" data-a="2" aria-pressed="true">amp 2</button>
+      <button class="amp" data-a="4" aria-pressed="false">amp 4</button>
+    </div>
+    <div class="verdict" id="jitterVerdict">stopped.</div>
+  </div>
+
+  <div class="lede" style="margin-top:44px">
+    <b>What this cannot tell you yet, stated so it is not oversold:</b> whether the boil <i>looks</i>
+    right. That needs your three fonts for route 2, and it needs the real wordmark path for route 3
+    &mdash; the shape below is a stand-in, not your name.<br><br>
+    <b>What it can tell you today:</b> whether font-swapping is viable at all for the clock, and what
+    the metric tolerance has to be when you cut the fonts. Both answers are above.
+  </div>
+
+  <!-- ══════════ 4. THE FIX: PINNED ADVANCE ══════════ -->
+  <h2 class="s">4 &middot; The same swap, with the drift removed</h2>
+  <div class="mech">
+    <div class="note"><b>Your three fonts do NOT share metrics</b> &mdash; 55 of 68 glyphs have a
+      different advance width, and "RODNEY FAN" drifts <b>5.64%</b> (37px at 101px). Section 2 shows
+      that raw. P100's constraint was "identical metrics or the text reflows every frame", and on a
+      naive swap it does.
+      <br><br>
+      <b>But identical metrics were never the only way.</b> Below, every glyph gets a fixed box
+      measured once from font 1, and the letter boils <i>inside</i> it. The face changes; nothing
+      moves. Same three fonts, same swap rate, zero drift &mdash; the edge marker does not budge.
+      <br><br>
+      <b>The cost, stated:</b> the spacing becomes font 1's spacing for all three, so fonts 2 and 3
+      lose their own letter-fitting. On a hand-drawn face that is arguably part of the effect
+      (a real boil wobbles the letters, not the layout), but it IS a change to how 2 and 3 were
+      drawn, and it is your call whether that reads as boil or as squeezed.</div>
+
+    <div class="note" style="margin-bottom:12px"><b>How line boil is actually done, since it changes
+      the advice above.</b> The traditional recipe is <b>three drawings, cycled in sequence</b>, held
+      <b>on 2s</b> (12 changes/sec at 24fps) or <b>on 3s</b> (8/sec) - which is why the rate buttons
+      are labelled that way now. Rough Animator ships a cycle feature built on exactly this: draw 3
+      frames, cycle them across 21 more for a two-second boil.
+      <br><br>
+      <b>So three is already the canonical count, and sequential is the canonical order</b> - which
+      makes my "random beats sequential" note above only half right. The reason a traditional 3-frame
+      sequential loop does NOT read as a loop is the craft rule that comes with it:
+      <b>draw the three with as little deviation from each other as possible, or the boil looks too
+      jumpy.</b> When the drawings are near-identical the cycle reads as texture and the eye cannot
+      find the period.
+      <br><br>
+      <b>Which puts the real problem back on the fonts.</b> Random order and per-glyph phase are
+      digital patches for deviation that is too LARGE - Lineboil3 is 18% off on its A and 3.4% off
+      across the line. Bring the three closer together and plain sequential-on-3s should work, the
+      way it has for a century. Keep the toggles to compare, but the fix is in the drawings.</div>
+
+    <div class="big pin" id="pinLine"></div>
+    <div class="row">
+      <button id="pinToggle" aria-pressed="false">start pinned swap</button>
+      <label>fps <input id="pinFps" type="range" min="2" max="24" value="6"></label>
+      <button id="pinOrder" aria-pressed="false">sequential order</button>
+      <button id="pinPhase" aria-pressed="true">per-glyph phase</button>
+      <span class="edge" id="pinEdge"></span>
+    </div>
+    <div class="verdict" id="pinVerdict">stopped.</div>
+  </div>
+</div>
+
+  <!-- ══════════ 5. THE FOUR VARIANTS, RUNNING TOGETHER ══════════ -->
+  <h2 class="s">5 &middot; All four running at once, so you can compare without toggling</h2>
+  <div class="mech">
+    <div class="note"><b>Same text, same fonts, same rate &mdash; only the pattern differs.</b> The
+      top row is the traditional recipe (three drawings, sequential, whole line). Each row down adds
+      one digital departure from it. All four are pinned, so none of them drifts.
+      <br><br>
+      The three static faces are underneath for reference: that is what each frame actually looks
+      like when it is not moving, and it is where the deviation between the drawings shows.</div>
+
+    <div class="row">
+      <button id="allToggle" aria-pressed="false">start all four</button>
+      <label>fps <input id="allFps" type="range" min="2" max="16" value="6"></label>
+      <span id="allRate" style="color:var(--color-muted)">6 / sec &middot; on 4s</span>
+    </div>
+
+    <div id="variantHost"></div>
+
+    <div class="note" style="margin-top:18px"><b>The three faces, static.</b> Deviation between these
+      is what decides whether the sequential row above reads as texture or as a flicker.</div>
+    <div id="staticHost"></div>
+  </div>
+
+  <!-- ══════════ 6. THE VERTICAL CASE ══════════ -->
+  <h2 class="s">6 &middot; Vertical &mdash; what the hero actually runs</h2>
+  <div class="mech">
+    <div class="note"><b>The hero is not the horizontal case rotated, and treating it as one broke
+      it.</b> The H0 mark runs <code>writing-mode: vertical-rl; text-orientation: upright</code>,
+      and two things behave differently there:
+      <br><br>
+      <b>1. Raw drift is far worse &mdash; 70px, 29% of the column</b>, against 4.26% horizontally,
+      because the three faces have different ascent/descent. Left column below is unpinned so you
+      can see it jump.
+      <br><br>
+      <b>2. Per-glyph widths carry NO information.</b> Under <code>upright</code> every glyph
+      advances by the same em box &mdash; all ten letters measured 23.89px. So the horizontal fix,
+      a box per glyph measured from its own width, pins nothing useful. The vertical pin is ONE
+      uniform advance applied to every cell, taken from font 1.
+      <br><br>
+      <b>And a fixed <code>line-height</code> does not help</b> &mdash; measured, still 70px. In
+      upright mode the advance comes from the font's own vertical metrics, not from line-height.
+      <br><br>
+      <b>The bug this shipped with:</b> a <code>&lt;span&gt;</code> holding only a space collapses
+      and measures ZERO advance, so the word gap vanished and the mark read RODNEYFAN. The probe
+      needs <code>white-space: pre</code>.</div>
+
+    <div class="row">
+      <button id="vToggle" aria-pressed="false">start vertical</button>
+      <label>fps <input id="vFps" type="range" min="2" max="16" value="6"></label>
+      <span id="vRead" style="color:var(--color-muted)">stopped</span>
+    </div>
+
+    <div id="vStage" style="display:flex;gap:40px;align-items:flex-start;margin-top:16px;
+      min-height:300px"></div>
+  </div>
+
+<script>
+/* ---------- 1. METRIC HARNESS ---------- */
+/* ROD'S REAL SCRATCH FONTS, in since 2026-08-23. This page was built with three stand-ins and a
+   note saying nothing else would need to change when the real ones landed. Nothing else changed. */
+var FONTS=['"Lineboil1"','"Lineboil2"','"Lineboil3"'];
+var SAMPLE='rodney fan 0123456789';
+
+function measure(){
+  var host=document.getElementById('metricRows');
+  host.innerHTML='';
+  var widths=FONTS.map(function(f){
+    var s=document.createElement('span');
+    s.textContent=SAMPLE;
+    s.style.cssText='font:46px '+f+';white-space:nowrap;position:absolute;visibility:hidden';
+    document.body.appendChild(s);
+    var w=s.getBoundingClientRect().width;
+    var h=s.getBoundingClientRect().height;
+    s.remove();
+    return {font:f.split(',')[0].replace(/"/g,''), w:w, h:h};
+  });
+  var base=widths[0].w;
+  var rows='<tr><th>font</th><th>width</th><th>delta vs first</th><th>height</th></tr>';
+  widths.forEach(function(x){
+    var d=x.w-base;
+    rows+='<tr><td>'+x.font+'</td><td>'+x.w.toFixed(2)+'px</td><td class="'+(Math.abs(d)<0.5?'pass':'fail')+'">'+
+      (d===0?'0.00':(d>0?'+':'')+d.toFixed(2))+'px</td><td>'+x.h.toFixed(2)+'px</td></tr>';
+  });
+  document.getElementById('metricTable').innerHTML=rows;
+
+  var max=Math.max.apply(null,widths.map(function(x){return Math.abs(x.w-base);}));
+  var v=document.getElementById('metricVerdict');
+  if(max<0.5){
+    v.innerHTML='<b class="pass">PASS.</b> Max drift '+max.toFixed(2)+'px. Font swapping is viable: '+
+      'nothing reflows, so the clock could use this route too.';
+  }else{
+    v.innerHTML='<b class="fail">FAIL, and this is the expected result for three unrelated fonts.</b> '+
+      'Max drift <b>'+max.toFixed(2)+'px</b> on a '+base.toFixed(0)+'px line &mdash; '+
+      ((max/base)*100).toFixed(1)+'% of its width.<br><br>'+
+      '<b>What it means for your three scratch fonts:</b> they must be cut from ONE skeleton with '+
+      'identical advance widths per glyph, not drawn independently. Three separate hand-drawn '+
+      'alphabets will land here, not at zero. <b>And the clock is the hard case</b> &mdash; a digit '+
+      'changing every second on top of a boiling swap compounds both drifts, which is why STATUS '+
+      'already routes the clock to procedural jitter instead.';
+  }
+}
+/* `document.fonts.ready` is NOT enough here, and this page reported a false PASS because of it.
+   An @font-face is fetched LAZILY - only when something rendered actually uses it. At load nothing
+   on this page uses Lineboil1-3 (the swap line starts on the default), so none were fetched,
+   `fonts.ready` resolved immediately, and measure() compared three FALLBACK renderings: identical
+   widths, "PASS, max drift 0.00px". Exactly the drift it exists to detect, hidden by the thing
+   meant to prevent it. Force the faces first, then measure. */
+Promise.all(FONTS.map(function(f){ return document.fonts.load('46px ' + f, SAMPLE); }))
+  .then(function(){ return document.fonts.ready; })
+  .then(measure);
+
+/* ---------- 2. FONT-SWAP BOIL ---------- */
+var swapOn=false, swapRate=8, swapTimer=null, fi=0;
+var line=document.getElementById('swapLine');
+function swapTick(){
+  fi=(fi+1)%FONTS.length;
+  line.style.fontFamily=FONTS[fi];
+  var w=line.getBoundingClientRect().width;
+  document.getElementById('swapVerdict').innerHTML=
+    '<b>'+FONTS[fi].split(',')[0].replace(/"/g,'')+'</b> &middot; line width <b>'+w.toFixed(2)+'px</b> '+
+    '&middot; the right edge moves by exactly this much on every swap. That movement IS the reflow.';
+}
+document.getElementById('swapToggle').addEventListener('click',function(){
+  swapOn=!swapOn; this.setAttribute('aria-pressed',swapOn);
+  this.textContent=swapOn?'stop swap':'start swap';
+  clearInterval(swapTimer);
+  if(swapOn) swapTimer=setInterval(swapTick,1000/swapRate);
+  else document.getElementById('swapVerdict').textContent='stopped.';
+});
+document.querySelectorAll('.rate').forEach(function(b){
+  b.addEventListener('click',function(){
+    swapRate=+this.dataset.r;
+    document.querySelectorAll('.rate').forEach(function(x){x.setAttribute('aria-pressed',x===b);});
+    if(swapOn){clearInterval(swapTimer);swapTimer=setInterval(swapTick,1000/swapRate);}
+  });
+});
+
+/* ---------- 3. PROCEDURAL PATH JITTER ---------- */
+/* The rough.js IDEA: walk the path, displace each point by a small random offset, re-roll per
+   frame. Anchor points never move, so the advance width is constant - which is the whole reason
+   the clock can use this. */
+var BASE=[[60,86],[100,34],[140,86],[100,66],[60,66],
+          [200,86],[200,34],[240,34],[240,60],[200,60],[240,86],
+          [300,86],[300,34],[340,60],[380,34],[380,86],
+          [440,60],[470,34],[500,60],[470,86],[440,60],
+          [560,34],[560,86],[620,86],
+          [680,34],[680,86],[740,86],[740,34],
+          [800,34],[800,86]];
+var amp=2, jitterOn=false, jitterTimer=null;
+function jitterPath(){
+  var d='';
+  for(var i=0;i<BASE.length;i++){
+    var x=BASE[i][0]+(Math.random()*2-1)*amp;
+    var y=BASE[i][1]+(Math.random()*2-1)*amp;
+    d+=(i===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+  }
+  document.getElementById('boilSvg').innerHTML='<path d="'+d+'"/>';
+}
+jitterPath();
+function jitterVerdict(){
+  var p=document.querySelector('#boilSvg path');
+  var bb=p.getBBox();
+  document.getElementById('jitterVerdict').innerHTML=
+    '<b>amp '+amp+'px</b> &middot; path bounding box <b>'+bb.width.toFixed(2)+' x '+bb.height.toFixed(2)+
+    '</b> &middot; it varies by at most the amplitude and <b>never reflows the layout</b>, because the '+
+    'SVG viewBox is fixed. That is the difference from route 2.';
+}
+document.getElementById('jitterToggle').addEventListener('click',function(){
+  jitterOn=!jitterOn; this.setAttribute('aria-pressed',jitterOn);
+  this.textContent=jitterOn?'stop jitter':'start jitter';
+  clearInterval(jitterTimer);
+  if(jitterOn){ jitterTimer=setInterval(function(){jitterPath();jitterVerdict();},1000/8); }
+  else document.getElementById('jitterVerdict').textContent='stopped.';
+});
+document.querySelectorAll('.amp').forEach(function(b){
+  b.addEventListener('click',function(){
+    amp=+this.dataset.a;
+    document.querySelectorAll('.amp').forEach(function(x){x.setAttribute('aria-pressed',x===b);});
+    jitterPath(); jitterVerdict();
+  });
+});
+
+/* Both effects are opt-IN via a button and neither autoplays, so there is nothing to gate on
+   prefers-reduced-motion at rest. If either ships, it needs the gate - the site still has no
+   reduced-motion path anywhere in the scene (D21 debt). */
+
+/* ---------- 4. PINNED-ADVANCE BOIL ---------- */
+/* The drift fix. Each character is wrapped in an inline-block whose width is measured ONCE, from
+   font 1, and then never changes. Swapping the face repaints the glyph inside a fixed box, so the
+   line width is constant by construction rather than by hoping three fonts agree. */
+var PIN_TEXT = 'RODNEY FAN';
+var pinTimer = null, pinIndex = 0, pinBuilt = false;
+
+function buildPinned(){
+  var host = document.getElementById('pinLine');
+  host.innerHTML = '';
+  var probe = document.createElement('span');
+  probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+  probe.style.font = getComputedStyle(host).fontSize + ' ' + FONTS[0];
+  document.body.appendChild(probe);
+  for (var i = 0; i < PIN_TEXT.length; i++){
+    probe.textContent = PIN_TEXT[i];
+    var w = probe.getBoundingClientRect().width;
+    var cell = document.createElement('span');
+    cell.textContent = PIN_TEXT[i];
+    cell.style.width = w.toFixed(2) + 'px';       // font 1's advance, frozen
+    host.appendChild(cell);
+  }
+  probe.remove();
+  pinBuilt = true;
+}
+/* TWO LEVERS, because "would more fonts help" is really a question about pattern, not count.
+   ORDER: sequential cycles 1,2,3,1,2,3 - a 3-frame loop the eye locks onto within a second.
+          Random (never repeating the frame it is already on) has no loop to find. Same 3 fonts.
+   PHASE: sequential swaps every letter on the SAME frame, which reads mechanical because real
+          hand-drawn boil never does that. Per-glyph gives each letter its own draw, independently.
+   Between them the apparent variety is 3^10 for a ten-letter line rather than 3. */
+/* DEFAULTS ARE ROD'S PICK, 2026-08-23: "Sequential per glyph 6sec on 4's looks best for me."
+   Sequential order (the traditional cycle) with each glyph on its own random starting phase, so
+   the letters drift out of step while every one still runs 1,2,3 in order. Held on 4s. */
+var pinRandom = false, pinPhase = true;
+function nextFace(prev){
+  if (!pinRandom) return (prev + 1) % FONTS.length;
+  var n; do { n = Math.floor(Math.random() * FONTS.length); } while (FONTS.length > 1 && n === prev);
+  return n;
+}
+function pinTick(){
+  var host = document.getElementById('pinLine');
+  var cells = host.querySelectorAll('span');
+  if (pinPhase){
+    for (var i = 0; i < cells.length; i++){
+      var prev = +(cells[i].dataset.face || 0);
+      var f = nextFace(prev);
+      cells[i].dataset.face = f;
+      cells[i].style.fontFamily = FONTS[f];
+    }
+    host.style.fontFamily = '';
+  } else {
+    pinIndex = nextFace(pinIndex);
+    host.style.fontFamily = FONTS[pinIndex];
+    for (var j = 0; j < cells.length; j++) cells[j].style.fontFamily = '';
+  }
+  var w = 0;
+  for (var k = 0; k < cells.length; k++) w += cells[k].getBoundingClientRect().width;
+  document.getElementById('pinEdge').style.left = w.toFixed(2) + 'px';
+  document.getElementById('pinVerdict').innerHTML =
+    (pinPhase ? '<b>per-glyph</b>' : '<b>' + FONTS[pinIndex].replace(/"/g,'') + '</b>') +
+    ' &middot; ' + (pinRandom ? 'random' : 'sequential') +
+    ' &middot; line width <b>' + w.toFixed(2) + 'px</b> ' +
+    '&middot; <b style="color:var(--ok,#b7d29a)">pinned &mdash; this number does not change</b>';
+}
+document.getElementById('pinToggle').onclick = function(){
+  if (!pinBuilt) buildPinned();
+  if (pinTimer){ clearInterval(pinTimer); pinTimer = null; this.setAttribute('aria-pressed','false');
+    this.textContent = 'start pinned swap'; return; }
+  var fps = +document.getElementById('pinFps').value;
+  pinTimer = setInterval(pinTick, 1000 / fps);
+  this.setAttribute('aria-pressed','true'); this.textContent = 'stop';
+};
+document.getElementById('pinOrder').onclick = function(){
+  pinRandom = !pinRandom; this.setAttribute('aria-pressed', pinRandom);
+  this.textContent = pinRandom ? 'random order' : 'sequential order';
+};
+document.getElementById('pinPhase').onclick = function(){
+  pinPhase = !pinPhase; this.setAttribute('aria-pressed', pinPhase);
+  this.textContent = pinPhase ? 'per-glyph phase' : 'whole line';
+};
+document.getElementById('pinFps').oninput = function(){
+  if (pinTimer){ clearInterval(pinTimer); pinTimer = setInterval(pinTick, 1000 / (+this.value)); }
+};
+Promise.all(FONTS.map(function(f){ return document.fonts.load('46px ' + f, PIN_TEXT); }))
+  .then(function(){ return document.fonts.ready; })
+  .then(function(){ buildPinned(); });
+
+/* ---------- 5. ALL FOUR VARIANTS SIDE BY SIDE ---------- */
+/* Rod: "can you show me the examples of the new line boil on the bottom example?" - toggling one
+   line between four modes makes them impossible to compare, because you cannot hold the previous
+   one in your head. All four run simultaneously off ONE clock, so any difference you see is the
+   pattern and not the timing. */
+var VARIANTS = [
+  {id:'v-seq-line',  label:'sequential &middot; whole line',  random:false, perGlyph:false,
+   note:'the traditional recipe'},
+  {id:'v-rnd-line',  label:'random &middot; whole line',      random:true,  perGlyph:false,
+   note:'kills the 3-frame loop'},
+  {id:'v-seq-glyph', label:'PICKED &middot; sequential &middot; per-glyph', random:false, perGlyph:true,
+   note:'Rod 2026-08-23, at 6/sec on 4s - the traditional cycle, staggered per letter'},
+  {id:'v-rnd-glyph', label:'random &middot; per-glyph',       random:true,  perGlyph:true,
+   note:'3^10 combinations - what section 4 defaults to'}
+];
+var allTimer = null;
+
+function buildVariantRow(v){
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'margin:14px 0 0;padding-bottom:12px;border-bottom:1px solid var(--color-line-faint,rgba(255,255,255,.06))';
+  var cap = document.createElement('div');
+  cap.style.cssText = 'font:10px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:6px';
+  cap.innerHTML = v.label + ' <span style="text-transform:none;letter-spacing:0;opacity:.7">&mdash; ' + v.note + '</span>';
+  var line = document.createElement('div');
+  line.className = 'big pin';
+  line.id = v.id;
+  wrap.appendChild(cap); wrap.appendChild(line);
+  return wrap;
+}
+function fillPinned(host, text){
+  host.innerHTML = '';
+  var probe = document.createElement('span');
+  probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+  probe.style.font = getComputedStyle(host).fontSize + ' ' + FONTS[0];
+  document.body.appendChild(probe);
+  for (var i = 0; i < text.length; i++){
+    probe.textContent = text[i];
+    var cell = document.createElement('span');
+    cell.textContent = text[i];
+    cell.style.width = probe.getBoundingClientRect().width.toFixed(2) + 'px';
+    /* Each glyph starts on a RANDOM face, and that is load-bearing rather than decorative.
+       Measured before this line existed: "sequential + per-glyph" produced only 3 distinct states
+       in 24 ticks - identical to "sequential + whole line" - because every glyph started on face 0
+       and incremented in lockstep, so per-glyph did nothing at all. A random starting phase is what
+       makes the letters drift out of step while each still cycles 1,2,3 in order, which is the
+       traditional sequential boil staggered across the word. */
+    cell.dataset.face = Math.floor(Math.random() * FONTS.length);
+    cell.style.fontFamily = FONTS[+cell.dataset.face];
+    host.appendChild(cell);
+  }
+  probe.remove();
+}
+function tickVariant(v){
+  var host = document.getElementById(v.id);
+  var cells = host.querySelectorAll('span');
+  if (v.perGlyph){
+    for (var i = 0; i < cells.length; i++){
+      var prev = +cells[i].dataset.face;
+      var n;
+      if (v.random){ do { n = Math.floor(Math.random()*FONTS.length); } while (n === prev); }
+      else n = (prev + 1) % FONTS.length;
+      cells[i].dataset.face = n;
+      cells[i].style.fontFamily = FONTS[n];
+    }
+  } else {
+    var prevL = +(host.dataset.face || 0), m;
+    if (v.random){ do { m = Math.floor(Math.random()*FONTS.length); } while (m === prevL); }
+    else m = (prevL + 1) % FONTS.length;
+    host.dataset.face = m;
+    host.style.fontFamily = FONTS[m];
+    /* Clear the per-cell font-family. `fillPinned` sets one on every cell to give each glyph a
+       random STARTING phase, and an inline style on the cell beats the one on its parent - so
+       without this the whole-line rows never changed face at all. */
+    for (var c = 0; c < cells.length; c++) cells[c].style.fontFamily = '';
+  }
+}
+function buildAll(){
+  var host = document.getElementById('variantHost');
+  host.innerHTML = '';
+  VARIANTS.forEach(function(v){
+    host.appendChild(buildVariantRow(v));
+    fillPinned(document.getElementById(v.id), PIN_TEXT);
+    var el = document.getElementById(v.id);
+    if (!v.perGlyph){
+      el.style.fontFamily = FONTS[0];
+      el.dataset.face = 0;
+      var cs = el.querySelectorAll('span');
+      for (var c = 0; c < cs.length; c++) cs[c].style.fontFamily = '';
+    }
+  });
+  // the three faces, static
+  var sh = document.getElementById('staticHost');
+  sh.innerHTML = '';
+  FONTS.forEach(function(f, i){
+    var row = document.createElement('div');
+    row.style.cssText = 'margin:10px 0 0';
+    var cap = document.createElement('div');
+    cap.style.cssText = 'font:10px ui-monospace,monospace;letter-spacing:.1em;color:var(--color-muted)';
+    cap.textContent = f.replace(/"/g,'');
+    var line = document.createElement('div');
+    line.className = 'big';
+    line.style.fontFamily = f;
+    line.textContent = PIN_TEXT;
+    row.appendChild(cap); row.appendChild(line);
+    sh.appendChild(row);
+  });
+}
+document.getElementById('allToggle').onclick = function(){
+  if (allTimer){ clearInterval(allTimer); allTimer = null;
+    this.setAttribute('aria-pressed','false'); this.textContent = 'start all four'; return; }
+  var fps = +document.getElementById('allFps').value;
+  allTimer = setInterval(function(){ VARIANTS.forEach(tickVariant); }, 1000 / fps);
+  this.setAttribute('aria-pressed','true'); this.textContent = 'stop';
+};
+document.getElementById('allFps').oninput = function(){
+  var fps = +this.value;
+  var name = fps >= 12 ? ' &middot; on 2s' : fps >= 8 ? ' &middot; on 3s' : fps >= 6 ? ' &middot; on 4s' : '';
+  document.getElementById('allRate').innerHTML = fps + ' / sec' + name;
+  if (allTimer){ clearInterval(allTimer);
+    allTimer = setInterval(function(){ VARIANTS.forEach(tickVariant); }, 1000 / fps); }
+};
+Promise.all(FONTS.map(function(f){ return document.fonts.load('46px ' + f, PIN_TEXT); }))
+  .then(function(){ return document.fonts.ready; })
+  .then(buildAll);
+
+/* ---------- 6. THE VERTICAL CASE ---------- */
+/* Two columns, same text, same faces, same clock. Left unpinned so the 70px jump is visible;
+   right pinned the way the hero does it. Rod asked for the vertical example here after it turned
+   out the horizontal fix did not transfer. */
+var V_TEXT = 'rodney fan';
+var vTimer = null;
+function makeVColumn(pinned){
+  var col = document.createElement('div');
+  col.style.cssText = 'writing-mode:vertical-rl;text-orientation:upright;text-transform:uppercase;' +
+    'letter-spacing:-.23em;line-height:1.7;font-size:34px;color:var(--color-glow);white-space:nowrap';
+  col.textContent = V_TEXT;
+  col.dataset.face = 0;
+  return col;
+}
+/* Pinning happens AFTER the column is in the document, and that ordering is the bug this shipped
+   with once already: an element that is not attached has zero dimensions, so every advance measured
+   0, `uniform` came out 0, and the whole pinned column collapsed to 0px. `getBoundingClientRect`
+   on a detached node does not fail - it returns zeros, which look like a measurement. */
+function pinVColumn(col){
+  var probe = document.createElement('span');
+  probe.style.cssText = 'visibility:hidden;position:absolute;white-space:pre';  // pre, or a space measures 0
+  col.textContent = '';
+  col.appendChild(probe);
+  probe.style.fontFamily = FONTS[0];
+  var advances = [];
+  for (var i = 0; i < V_TEXT.length; i++){
+    probe.textContent = V_TEXT[i];
+    advances.push(probe.getBoundingClientRect().height);
+  }
+  probe.remove();
+  var uniform = Math.max.apply(null, advances);   // upright: one em box for every glyph
+  col.textContent = '';
+  for (var j = 0; j < V_TEXT.length; j++){
+    var cell = document.createElement('span');
+    cell.textContent = V_TEXT[j];
+    cell.style.display = 'inline-block';
+    cell.style.inlineSize = uniform.toFixed(2) + 'px';
+    cell.style.textAlign = 'center';
+    cell.dataset.face = Math.floor(Math.random() * FONTS.length);
+    cell.style.fontFamily = FONTS[+cell.dataset.face];
+    col.appendChild(cell);
+  }
+}
+function buildVertical(){
+  var stage = document.getElementById('vStage');
+  stage.innerHTML = '';
+  [['unpinned - watch it jump', false], ['pinned - what the hero runs', true]].forEach(function(pair){
+    var wrap = document.createElement('div');
+    var cap = document.createElement('div');
+    cap.style.cssText = 'font:10px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:8px';
+    cap.textContent = pair[0];
+    var col = makeVColumn(pair[1]);
+    col.className = pair[1] ? 'v-pinned' : 'v-raw';
+    wrap.appendChild(cap); wrap.appendChild(col);
+    stage.appendChild(wrap);
+    if (pair[1]) pinVColumn(col);      // attached first, then measured
+  });
+}
+function vTick(){
+  var raw = document.querySelector('.v-raw');
+  if (raw){
+    var n = (+raw.dataset.face + 1) % FONTS.length;
+    raw.dataset.face = n; raw.style.fontFamily = FONTS[n];
+  }
+  var pinned = document.querySelector('.v-pinned');
+  if (pinned){
+    var cells = pinned.querySelectorAll('span');
+    for (var i = 0; i < cells.length; i++){
+      var f = (+cells[i].dataset.face + 1) % FONTS.length;
+      cells[i].dataset.face = f;
+      cells[i].style.fontFamily = FONTS[f];
+    }
+  }
+  document.getElementById('vRead').innerHTML =
+    'unpinned <b>' + (raw ? raw.getBoundingClientRect().height.toFixed(1) : '-') + 'px</b> ' +
+    '&middot; pinned <b style="color:var(--ok,#b7d29a)">' +
+    (pinned ? pinned.getBoundingClientRect().height.toFixed(1) : '-') + 'px</b>';
+}
+document.getElementById('vToggle').onclick = function(){
+  if (vTimer){ clearInterval(vTimer); vTimer = null;
+    this.setAttribute('aria-pressed','false'); this.textContent = 'start vertical'; return; }
+  vTimer = setInterval(vTick, 1000 / (+document.getElementById('vFps').value));
+  this.setAttribute('aria-pressed','true'); this.textContent = 'stop';
+};
+document.getElementById('vFps').oninput = function(){
+  if (vTimer){ clearInterval(vTimer); vTimer = setInterval(vTick, 1000 / (+this.value)); }
+};
+Promise.all(FONTS.map(function(f){ return document.fonts.load('34px ' + f, V_TEXT); }))
+  .then(function(){ return document.fonts.ready; })
+  .then(buildVertical);
+</script>
+</body>
+</html>

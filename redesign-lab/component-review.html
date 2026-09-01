@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COMPONENT REVIEW - every new component, 3 versions each</title>
+<!--
+  THE BATCH REVIEW PAGE. Rod: "create as much as you can so i can review it all in a final batch."
+
+  Every component built 2026-08-23 from a verified reference brief. Each brief re-fetched its
+  source LIVE rather than trusting the saved note, and several found real errors - those are
+  called out per component below rather than buried.
+
+  THE FINAL PAGES ARE STILL CLEAN. Nothing here has been merged. Rod: "the merge of elements into
+  the final pages will be done with me."
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/callout-family/callout-family.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/code-block-real/code-block-real.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/figure-real/figure-real.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/table-real/table-real.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/related-card-real/related-card-real.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/prevnext-real/prevnext-real.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/heading-anchor-real/heading-anchor-real.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/toc-real/toc-real.css">
+<style>
+  /* Reset removed: foundations.css provides it in the `reset` layer and this page loads it.
+   Unlayered here, it beat every layer and wiped component padding. */
+  body{background:var(--color-night,#070C23);color:var(--color-text,#f5f3ef);
+    font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;padding:0 0 160px}
+  header.top{position:sticky;top:0;z-index:30;background:rgba(8,10,18,.96);
+    border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+  header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase}
+  header.top .sub{font-size:10px;color:var(--color-muted)}
+  header.top a{color:var(--color-gold);font-size:10px}
+  .wrap{width:min(1180px,92vw);margin:0 auto;padding:36px 0 0}
+  .lede{font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:20px;max-width:98ch;
+    background:rgba(8,10,18,.72)}
+  .lede b{color:#e4e4e4;font-weight:500}
+  .lede code{color:var(--color-gold)}
+  .lede a{color:var(--color-gold)}
+  .warn{border-color:#5a3a2a;background:rgba(40,20,10,.5)}
+  .warn b{color:#e0a86a}
+  h2.c{font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold);font-weight:400;margin:64px 0 4px;border-top:1px solid #3a3a3a;
+    padding-top:26px}
+  .meta{font-family:var(--font-mono);font-size:10px;line-height:1.85;color:#7d7d7d;
+    margin-bottom:18px;max-width:94ch}
+  .meta b{color:#ccc;font-weight:400}
+  .meta .t{color:var(--color-gold)}
+  /* CORRECTED 2026-08-23. Rod: "I find it weird the scaling shown in the component review but
+     it's OK in callout family." He is right and it was a fault of THIS page, not the components.
+     A 3-up grid at 320px squeezed a component designed for a 767px measure down to ~206px, so
+     every proportion read wrong. Components that need the real measure now get a full-width row
+     and are judged at the width they will actually ship at. */
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:26px;
+    align-items:start;margin-bottom:10px}
+  .row--full{grid-template-columns:1fr}
+  .row--full .vv{max-width:100%}
+  .row--full .stage,.row--full .tape-demo{width:767px;max-width:100%}
+  .pickline{font-family:var(--font-mono);font-size:10px;line-height:1.75;color:#b7d29a;
+    border-left:2px solid #b7d29a;padding:6px 0 6px 10px;margin:0 0 14px}
+  .pickline--none{color:#e0c98a;border-left-color:#e0c98a}
+  .vv.vv--picked{border-color:#5f7a4a;background:rgba(40,54,32,.28)}
+  .vv.vv--out{opacity:.42}
+  .pk{background:#b7d29a;color:#12160e;padding:.05rem .34rem;border-radius:2px;
+    font-size:8.5px;letter-spacing:.12em;margin-right:.3rem}
+  .vv{border:1px solid #2c2c2c;padding:16px;background:rgba(20,20,20,.4)}
+  .vv h3{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:#ddd;font-weight:400;margin-bottom:4px}
+  .vv .n{font-family:var(--font-mono);font-size:9.5px;line-height:1.7;color:#7d7d7d;
+    margin-bottom:14px}
+  .stage{background:rgba(8,15,27,.92);border:1px solid rgba(245,158,11,.15);padding:20px 22px}
+  .stage p.body{font-size:.95rem;line-height:1.75;margin:0 0 14px;color:var(--color-text)}
+  .stage p.body:last-child{margin-bottom:0}
+  .ha-scope h2.demo{font-size:1.2rem;font-weight:100;color:var(--color-gold);margin:0 0 10px}
+  #hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+    pointer-events:none;
+    -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+    mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+  #scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+  body.noscene #hana-bg,body.noscene #scrim{display:none}
+  #scenetoggle{position:fixed;right:14px;bottom:14px;z-index:80;background:rgba(8,10,18,.95);
+    border:1px solid #555;color:#ddd;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;cursor:pointer}
+</style>
+<link rel="stylesheet" href="/redesign-lab/focus-ring.css">
+</head>
+<body>
+<div id="hana-bg"></div><div id="scrim"></div>
+
+<header class="top">
+  <h1>Component review</h1>
+  <span class="sub">22 components &middot; 2-3 versions each &middot; pick one per row</span>
+  <a href="/redesign-lab/line-boil-test.html">line boil test</a>
+  <a href="/redesign-lab/text-decisions.html">text decisions</a>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <b>Every component here was built from a reference brief that re-fetched its source LIVE</b>
+    rather than trusting the saved note. <b>Six of the eight briefs found a real error</b>, and each
+    is called out on its component below rather than buried in a file.<br><br>
+    <b>The final pages are still clean.</b> Nothing here has been merged &mdash; you said the merge
+    happens with you.<br><br>
+    <b>Everything you need to decide is on this page or in the demo it links to.</b> Nothing here
+    asks you to go and read a file.
+  </div>
+
+  <div class="lede warn">
+    <b>THREE THINGS I GOT WRONG THAT THE BRIEFS CAUGHT.</b> Listed up front because they change specs
+    I had already given you.<br><br>
+    <b>1. The related-card "exactly three deletions" spec was wrong.</b> I wrote it from a grep. The
+    hover rule I told you to delete is a <b>suppressor</b> &mdash; deleting it <b>adds</b> a 24px gold
+    bloom. The <code>translateY</code> is a static layout offset, not a band reveal. And the three
+    deletions remove <b>neither</b> the glass nor the motion: six transitions and two glow systems
+    survive them. The component is built standalone instead.<br><br>
+    <b>2. The heading anchor's <code>scroll-margin-top: 6.6rem</code> is calibrated to Maxime's nav,
+    not ours.</b> At &le;780px it leaves <b>-2px</b> and at &le;560px <b>-18px</b> &mdash; the heading
+    tucks under our sticky bar. Derived from the real bar tokens now.<br><br>
+    <b>3. Our own <code>.prose a</code> was silently overriding that anchor</b> &mdash; killing its
+    colour, adding a gold hairline under the mark, and replacing its focus state with a gold filled
+    block. Maxime's <code>--anchor-border-color</code> was exactly the cancel for this; my port kept
+    the half that was fighting nothing and dropped the half that mattered.
+  </div>
+
+  <!-- ══════════ CALLOUT FAMILY ══════════ -->
+  <h2 class="c">1 &middot; Callout family</h2>
+    <div class="pickline"><b>PICKED V1 (flamedfury). Tape colour encodes the TYPE, not the section - D30.</b></div>
+  <div class="meta"><b>The box under the tape.</b> <span class="t">Brief finding:</span> the stated
+    source does not cover this component &mdash; all six gneiss stylesheets return <b>zero hits</b> for
+    callout|notice|warning|admonition|aside. The tape is sourced; the box is not. Four other sites
+    supply it, named per version.<br>
+    <b>Full demo with every category in every version:</b>
+    <a href="/redesign-lab/extracted/index.html?c=callout-family" style="color:var(--color-gold)">callout-family.html</a></div>
+  <div class="row row--full">
+    <div class="vv vv--picked"><h3><span class="pk">PICKED</span> V1 &middot; flamedfury</h3><div class="n">One shell, the variant changes one
+      thing. Hard 3px offset shadow, zero blur &mdash; scene-safe.</div>
+      <div class="stage"><aside class="co co--v1 co--note taped tape--green"><i class="tape tape--top"></i>
+        <span class="co__label">Note</span><p>Originally I used a ping-pong to decay the render
+        texture, but that did not give me the control I wanted.</p></aside></div></div>
+    <div class="vv vv--out"><h3>V2 &middot; catlikecoding</h3><div class="n">One notch smaller than prose, so a
+      run reads as a quiet rail. No shadow at all.</div>
+      <div class="stage"><aside class="co co--v2 co--note taped tape--green"><i class="tape tape--top"></i>
+        <span class="co__label">Note</span><p>Originally I used a ping-pong to decay the render
+        texture, but that did not give me the control I wanted.</p></aside></div></div>
+    <div class="vv vv--out"><h3>V3 &middot; gneiss polaroid</h3><div class="n">The tape's actual partner box &mdash;
+      their taped markup is <code>class="taped polaroid"</code>. Deep bottom sill. Warm blurred shadow.</div>
+      <div class="stage"><aside class="co co--v3 co--note taped tape--green"><i class="tape tape--top"></i>
+        <span class="co__label">Note</span><p>Originally I used a ping-pong to decay the render
+        texture, but that did not give me the control I wanted.</p></aside></div></div>
+  </div>
+
+  <!-- ══════════ CODE BLOCK ══════════ -->
+  <h2 class="c">2 &middot; Code block</h2>
+    <div class="pickline pickline--none"><b>PICKED V1 chrome (D20, Maxime Heckel strip, squared). Its COLOURS are settled too - D35, and they live on the CODE COLOUR tab of text-decisions.</b></div>
+  <div class="meta"><b>Chrome is decided</b> (D20, re-confirmed by you). <span class="t">Brief
+    finding:</span> all 10 chrome probes matched the live site byte-for-byte &mdash; but the saved note
+    <b>never recorded a single syntax colour</b>, which is why this stayed open. <b>No sourced dark
+    scheme is palette-law clean</b>; every real one spends a cool hue on keywords.<br>
+    <a href="/redesign-lab/extracted/index.html?c=code-block-real" style="color:var(--color-gold)">code-block-real.html</a>
+    &mdash; three schemes side by side at full width</div>
+
+  <!-- ══════════ FIGURE ══════════ -->
+  <h2 class="c">3 &middot; Figure + caption</h2>
+    <div class="pickline"><b>PICKED V2 - silver caption, left aligned.</b></div>
+  <div class="meta"><span class="t">Brief finding:</span> <b>the <code>text-align</code> trap.</b> Their
+    <code>figure{text-align:center}</code> centres the caption <b>and the image</b>. Flipping it for
+    your left-aligned caption would have dragged every image flush left too. Split into two jobs.<br>
+    Also: catlikecoding has <b>no <code>.dark figcaption</code> rule</b> &mdash; the caption is
+    differentiated by <b>typography alone, in both themes</b>, which argues for body colour rather than
+    silver. V1 is the faithful reading; V2 is what <code>decisions.css</code> ships today.</div>
+  <div class="row row--full">
+    <div class="vv vv--out"><h3>V1 &middot; faithful</h3><div class="n">Caption in body colour. Italic and size
+      are the only separation &mdash; what the source actually does.</div>
+      <figure class="fig fig--v1"><div style="height:90px;background:#232323;border:1px dashed #555"></div>
+      <figcaption>Culling and creation zones driving the reveal.</figcaption></figure></div>
+    <div class="vv vv--picked"><h3><span class="pk">PICKED</span> V2 &middot; as shipping</h3><div class="n">Caption in silver. Recedes on colour
+      as well as typography. Departs from the source.</div>
+      <figure class="fig fig--v2"><div style="height:90px;background:#232323;border:1px dashed #555"></div>
+      <figcaption>Culling and creation zones driving the reveal.</figcaption></figure></div>
+    <div class="vv vv--out"><h3>V3 &middot; quietest</h3><div class="n">Silver plus one size step down. Ours &mdash;
+      the source has no third degree.</div>
+      <figure class="fig fig--v3"><div style="height:90px;background:#232323;border:1px dashed #555"></div>
+      <figcaption>Culling and creation zones driving the reveal.</figcaption></figure></div>
+  </div>
+
+  <!-- ══════════ TABLE ══════════ -->
+  <h2 class="c">4 &middot; Table</h2>
+    <div class="pickline"><b>PICKED V2 - the effect rather than the literal, and it scrolls.</b></div>
+  <div class="meta"><span class="t">Three corrections:</span> the iq table is <b>not in their global
+    stylesheet</b> (it is a page-local block, so the "minimal body" is one declaration plus absence);
+    <b>there is no bare <code>th</code> rule on acegikmo</b>; and <b>iquilezles has no
+    <code>&lt;th&gt;</code> at all</b>, so the header row is entirely the acegikmo half, not a blend.<br>
+    <span class="t">Two traps:</span> <b><code>font-weight:100</code> is visually inert on their site</b>
+    (single-weight font &mdash; its only real effect is cancelling the UA bold), and <b>the
+    <code>overflow-x:auto</code> wrapper alone will not scroll</b> because table layout wraps text
+    instead.</div>
+  <div class="row row--full">
+    <div class="vv vv--out"><h3>V1 &middot; as specified</h3><div class="n">Keeps the literal
+      <code>font-weight:100</code> &mdash; which renders <b>thinner</b> than acegikmo actually shows.</div>
+      <div class="stage"><div class="tbl-scroll"><table class="tbl tbl--v1">
+        <tr><th>Feature</th><th>SRP</th><th>URP</th></tr>
+        <tr><td>Compute</td><td>yes</td><td>yes</td></tr>
+        <tr><td>Indirect draw</td><td>yes</td><td>n/a</td></tr></table></div></div></div>
+    <div class="vv vv--picked"><h3><span class="pk">PICKED</span> V2 &middot; effect, and it scrolls</h3><div class="n">Weight 400 &mdash; the effect
+      their 100 actually produces. Plus the scroll fix, cited as a cross-component remix.</div>
+      <div class="stage"><div class="tbl-scroll"><table class="tbl tbl--v2">
+        <tr><th>Feature</th><th>SRP</th><th>URP</th></tr>
+        <tr><td>Compute</td><td>yes</td><td>yes</td></tr>
+        <tr><td>Indirect draw</td><td>yes</td><td>n/a</td></tr></table></div></div></div>
+    <div class="vv vv--out"><h3>V3 &middot; the hairline row</h3><div class="n">acegikmo's <b>other</b> table &mdash;
+      <b>126 uses</b> against the pill grid's 1. The source note missed it entirely.</div>
+      <div class="stage"><div class="tbl-scroll"><table class="tbl tbl--v3">
+        <tr><th>Feature</th><th>SRP</th><th>URP</th></tr>
+        <tr><td>Compute</td><td>yes</td><td>yes</td></tr>
+        <tr><td>Indirect draw</td><td>yes</td><td>n/a</td></tr></table></div></div></div>
+  </div>
+
+  <!-- ══════════ RELATED CARD ══════════ -->
+  <h2 class="c">5 &middot; Related post card</h2>
+    <div class="pickline"><b>PICKED V2 - cover kept. Gradient corrected: it now runs a LIFT of the panel down to the panel, keeping the parent light-to-dark direction.</b></div>
+  <div class="meta"><span class="t">Brief finding:</span> the parent's one external citation is
+    <b>DEAD</b> &mdash; <code>yannesidibe.com/about</code> is a 404 and the site is now Tailwind/Next with
+    <b>zero hits</b> for glow, mask-composite or plus-lighter. Live site wins.<br>
+    <b>Tier OURS, origin ROD.</b> And there is a <b>WCAG 2.4.7 failure today</b>: no
+    <code>:focus-visible</code> anywhere, on a full-card link.</div>
+  <div class="row">
+    <div class="vv vv--out"><h3>V1 &middot; text only</h3><div class="n">No cover. Quietest, cheapest.</div>
+      <a class="rc rc--v1" href="#"><div class="rc__body"><div class="rc__title">Compute Grass</div>
+      <div class="rc__meta">tech-art &middot; 12 min</div></div></a></div>
+    <div class="vv vv--picked"><h3><span class="pk">PICKED</span> V2 &middot; cover kept</h3><div class="n">Gradient and seating scrim survive as
+      the card's identity. Blue cover tokens swapped warm per D27.</div>
+      <a class="rc rc--v2" href="#"><div class="rc__cover"></div><div class="rc__body">
+      <div class="rc__title">Compute Grass</div><div class="rc__meta">tech-art &middot; 12 min</div></div></a></div>
+    <div class="vv vv--out"><h3>V3 &middot; hairline row</h3><div class="n">Not a card. If V1 is still too much
+      furniture, this is the floor.</div>
+      <div class="rc-grid--v3"><a class="rc rc--v3" href="#"><div class="rc__body">
+      <div class="rc__title">Compute Grass</div><div class="rc__meta">tech-art &middot; 12 min</div></div></a>
+      <a class="rc rc--v3" href="#"><div class="rc__body">
+      <div class="rc__title">2D Physics on the GPU</div><div class="rc__meta">tech-art &middot; 8 min</div></div></a></div></div>
+  </div>
+
+  <!-- ══════════ PREV / NEXT ══════════ -->
+  <h2 class="c">6 &middot; Prev / next</h2>
+    <div class="pickline pickline--none"><b>NONE OF THESE THREE. The pick is a NEW V4 - two .rc--v2 cards in a 2-lane layout, reusing the approved related card rather than maintaining a thinner second one. It does not fit the 345x44 reservation and cannot: that box was drawn for the text version.</b></div>
+  <div class="meta"><span class="t">Brief finding:</span> the note said "zero colour, drops onto a night
+    ground unchanged" &mdash; true of the five local rules and <b>misleading about the component</b>.
+    <code>.post-nav</code> sits outside <code>.content</code> and <b>inherits the global anchor
+    rules</b>, so building from the note alone ships it <b>with no hover at all</b>. The three versions
+    are the hover.<br>
+    Also: their class names are <b>inverted</b> &mdash; <code>.next-post</code> is the LEFT, newer one.</div>
+  <div class="row row--full">
+    <div class="vv"><h3>V1 &middot; theirs, warmed</h3><div class="n">Colour lift + 1px shadow, in gold.
+      Argues with the de-glow principle.</div>
+      <div class="stage"><nav class="pn pn--v1">
+        <a class="pn__newer" href="#"><span class="pn__kicker">&lt; &lt; Newer</span><span>GPU Memory Pools</span></a>
+        <a class="pn__older" href="#"><span class="pn__kicker">Older &gt; &gt;</span><span>Shader Permutations Part 2</span></a></nav></div></div>
+    <div class="vv"><h3>V2 &middot; colour only</h3><div class="n">Their transition and colour change,
+      shadow dropped. De-glow applied, behaviour kept.</div>
+      <div class="stage"><nav class="pn pn--v2">
+        <a class="pn__newer" href="#"><span class="pn__kicker">&lt; &lt; Newer</span><span>GPU Memory Pools</span></a>
+        <a class="pn__older" href="#"><span class="pn__kicker">Older &gt; &gt;</span><span>Shader Permutations Part 2</span></a></nav></div></div>
+    <div class="vv"><h3>V3 &middot; no transition</h3><div class="n">Instant, no motion. Consistent with
+      the motionless related cards.</div>
+      <div class="stage"><nav class="pn pn--v3">
+        <a class="pn__newer" href="#"><span class="pn__kicker">&lt; &lt; Newer</span><span>GPU Memory Pools</span></a>
+        <a class="pn__older" href="#"><span class="pn__kicker">Older &gt; &gt;</span><span>Shader Permutations Part 2</span></a></nav></div></div>
+  </div>
+
+  <!-- ══════════ HEADING ANCHOR ══════════ -->
+  <h2 class="c">7 &middot; Heading anchor</h2>
+    <div class="pickline"><b>PICKED V3 - always visible, so people who notice do not think it is a bug.</b></div>
+  <div class="meta"><b>You picked the BEHAVIOUR, not the mark</b> &mdash; the demo you judged used a plain
+    <code>#</code>, not their chain SVG. So the glyph is the open slot. Hover a heading below.<br>
+    <span class="t">Two defects corrected:</span> the <code>scroll-margin-top</code> is now derived from
+    our real bar tokens, and our own <code>.prose a</code> override is cancelled.</div>
+  <div class="row ha-scope">
+    <div class="vv vv--out"><h3>V1 &middot; hash</h3><div class="n">What you actually saw. Zero assets, zero
+      sourcing debt.</div>
+      <div class="stage"><h2 class="demo">The Compute Pipeline<a class="ha ha--v1" href="#"></a></h2>
+      <p class="body">Hover the heading.</p></div></div>
+    <div class="vv vv--out"><h3>V2 &middot; their chain SVG</h3><div class="n">True-tier external snippet.
+      <code>stroke="currentColor"</code> so it inherits the colour rules free.</div>
+      <div class="stage"><h2 class="demo">The Compute Pipeline<a class="ha ha--v2" href="#"><svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M10 19.0004L9.82843 19.1719C8.26634 20.734 5.73368 20.734 4.17158 19.1719L3.82843 18.8288C2.26634 17.2667 2.26633 14.734 3.82843 13.1719L7.17158 9.8288C8.73368 8.2667 11.2663 8.2667 12.8284 9.8288L13.1716 10.1719C13.8252 10.8256 14.2053 11.6491 14.312 12.5004" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.68799 12.5004C9.79463 13.3516 10.1748 14.1752 10.8284 14.8288L11.1715 15.1719C12.7336 16.734 15.2663 16.734 16.8284 15.1719L20.1715 11.8288C21.7336 10.2667 21.7336 7.73404 20.1715 6.17194L19.8284 5.8288C18.2663 4.2667 15.7336 4.2667 14.1715 5.8288L14 6.00037" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></h2>
+      <p class="body">Hover the heading.</p></div></div>
+    <div class="vv vv--picked"><h3><span class="pk">PICKED</span> V3 &middot; always visible</h3><div class="n"><b>Ours.</b> Hover does not exist on
+      touch &mdash; V1 and V2 are unreachable on a phone. This is the cheap fallback.</div>
+      <div class="stage"><h2 class="demo">The Compute Pipeline<a class="ha ha--v3" href="#"></a></h2>
+      <p class="body">Visible at rest, brightens on hover.</p></div></div>
+  </div>
+
+  <!-- ══════════ TOC ══════════ -->
+  <h2 class="c">8 &middot; TOC</h2>
+    <div class="pickline"><b>PICKED V3 - sticky plus rule.</b></div>
+  <div class="meta"><span class="t">Brief finding:</span> the note's "zero JS for open/close" is
+    <b>wrong</b> &mdash; there is real behaviour, including <b>Escape closing and returning focus</b>,
+    which is the a11y move worth copying. And <b>the active state is a LIGHTNESS step, not a hue pop</b>
+    (their dark active is a pale blue against a grey), which is why the rail reads quiet. That maps onto
+    gold-against-silver.<br>
+    <b>72rem is the single switch</b> &mdash; below it the popup is the TOC, above it the rail is.
+    Three versions differ on <b>fixed vs sticky</b> and how the active item is marked.
+    Full CSS + notes: <code>extracted/components/toc-real/</code>.</div>
+  <div class="row">
+    <div class="vv vv--out"><h3>V1 &middot; fixed (theirs)</h3><div class="n">Faithful. Costs a
+      <code>padding-top</code> compensation equal to the nav height.</div>
+      <div class="stage"><ul class="toc" style="border-left:1px solid rgba(255,255,255,.1)">
+        <li><a href="#" style="--depth:0">The Compute Pipeline</a></li>
+        <li><a href="#" style="--depth:1" aria-current="true">Culling and creation</a></li>
+        <li><a href="#" style="--depth:0">Fixing the Twitching</a></li></ul></div></div>
+    <div class="vv vv--out"><h3>V2 &middot; sticky (ours)</h3><div class="n">Needs <b>no</b> padding compensation
+      because it never leaves the flow. A real simplification.</div>
+      <div class="stage"><ul class="toc" style="border-left:1px solid rgba(255,255,255,.1)">
+        <li><a href="#" style="--depth:0">The Compute Pipeline</a></li>
+        <li><a href="#" style="--depth:1" aria-current="true">Culling and creation</a></li>
+        <li><a href="#" style="--depth:0">Fixing the Twitching</a></li></ul></div></div>
+    <div class="vv vv--picked"><h3><span class="pk">PICKED</span> V3 &middot; sticky + rule</h3><div class="n"><b>Ours.</b> Colour alone is a WCAG
+      1.4.1 exposure; a left rule adds a second channel at no cost.</div>
+      <div class="stage"><ul class="toc toc--v3" style="border-left:1px solid rgba(255,255,255,.1);position:static;max-height:none">
+        <li><a href="#" style="--depth:0">The Compute Pipeline</a></li>
+        <li><a href="#" style="--depth:1" aria-current="true">Culling and creation</a></li>
+        <li><a href="#" style="--depth:0">Fixing the Twitching</a></li></ul></div></div>
+  </div>
+
+  <h2 class="c">THE SECOND BATCH &mdash; 12 more components</h2>
+  <div class="meta">Built against the <b>measured</b> blockout boxes. Each demo draws its reservation as a dashed outline behind the component, so the fit is visible rather than claimed.<br><b>An independent audit re-measured every one over CDP</b> and reproduced all twelve fit claims to within 1px. <b>Zero circular citations, zero banned colours, zero blur, every animation has a reduced-motion path, zero non-ASCII.</b></div>
+  <h2 class="c">Search bar</h2>
+    <div class="pickline pickline--none"><b>NEITHER. Rod was right that this already existed on the workbench - list-controls has .list-controls__input. The agents rebuilt what was already there.</b></div>
+  <div class="meta"><b>Reserved:</b> 400x34 projects, 1351 or 360 ramblings<br><b>Measured fit:</b> <span style="color:#8fbf7a">FITS EXACTLY, 0.00 delta on all three sizes</span><br>Only the CARET differs; the box is <code>.d-meta</code> reused, not rebuilt. <b>The gallery has essentially no search bar</b> &mdash; ten sites fetched, zero text inputs &mdash; so both carets come from the two verified caret notes.<br><a href="/redesign-lab/extracted/index.html?c=search-bar" style="color:var(--color-gold)">open the search bar demo &rarr;</a></div>
+  <div class="row"><div class="vv"><h3>A</h3><div class="n">bar caret &mdash; atelierbram, a blinking border-left</div></div><div class="vv"><h3>B</h3><div class="n">underscore caret &mdash; 109ichiki, a hard-snapping <code>_</code></div></div></div>
+  <h2 class="c">Empty state</h2>
+    <div class="pickline"><b>PICKED 1.</b></div>
+  <div class="meta"><b>Reserved:</b> 930x60 and 1351x60<br><b>Measured fit:</b> <span style="color:#8fbf7a">ALL THREE FIT &mdash; 43px, 28px and 31px of air</span><br>It caught the ledger claiming a PatternFly source that <b>pointed at nothing</b>, then fetched PatternFly 6.6.1 and resolved every token to a literal. Copy is the live site&rsquo;s own sentence, not invented.<br><a href="/redesign-lab/extracted/index.html?c=empty-state" style="color:var(--color-gold)">open the empty state demo &rarr;</a></div>
+  <div class="row"><div class="vv vv--picked"><h3><span class="pk">PICKED</span> 1</h3><div class="n">centred stack &mdash; PatternFly&rsquo;s real shape</div></div><div class="vv"><h3>2</h3><div class="n">centred row &mdash; all three parts on one line</div></div><div class="vv"><h3>3</h3><div class="n">split row &mdash; message left, action right</div></div></div>
+  <h2 class="c">Filter pills</h2>
+    <div class="pickline pickline--none"><b>REJECTED and rebuilt. The pick is list-controls behaviour in button-kit .kit-tag boxes, both named by Rod. Also fixed on the way: 21.6px tall was 2.4px under the WCAG 2.5.8 target, now 24.0px.</b></div>
+  <div class="meta"><b>Reserved:</b> no contract reservation; self-measured 500x58<br><b>Measured fit:</b> <span style="color:#8fbf7a">FITS its own box</span><br>You rejected pill-FILL hover, and tags are already squares. <b>None of these three is a pill</b> &mdash; that is deliberate.<br><a href="/redesign-lab/extracted/index.html?c=filter-pills" style="color:var(--color-gold)">open the filter pills demo &rarr;</a></div>
+  <div class="row"><div class="vv"><h3>A</h3><div class="n">tab &mdash; the filter opens into the panel</div></div><div class="vv"><h3>B</h3><div class="n">bracket &mdash; no box, no fill anywhere</div></div><div class="vv"><h3>C</h3><div class="n">underline &mdash; the filters are words, a rule marks the live one</div></div></div>
+  <h2 class="c">Page title + description</h2>
+    <div class="pickline"><b>PICKED 1.</b></div>
+  <div class="meta"><b>Reserved:</b> projects 930x44, ramblings 380x100<br><b>Measured fit:</b> <span style="color:#e08a5a">OVER BY ~48px ON ALL THREE &mdash; and the reservation is what is wrong</span><br><b>The H1 you locked does not fit the 44px box.</b> That reservation predates the ladder, so it is stale in exactly the way the 711 column was. Needs your word, not a rebuild.<br><a href="/redesign-lab/extracted/index.html?c=page-title-desc" style="color:var(--color-gold)">open the page title + description demo &rarr;</a></div>
+  <div class="row"><div class="vv vv--picked"><h3><span class="pk">PICKED</span> 1</h3><div class="n">the sub line &mdash; potg&rsquo;s page-header verbatim</div></div><div class="vv"><h3>2</h3><div class="n">the softened paragraph &mdash; potg&rsquo;s multi-line secondary</div></div><div class="vv"><h3>3</h3><div class="n">ruled title over a lede &mdash; two parents, filed as a remix</div></div></div>
+  <h2 class="c">Ramblings entry row</h2>
+    <div class="pickline"><b>PICKED B - filterable tags. Carried forward honestly: it sits 6.8px over its reservation because of the parent line-height, worth fixing at tag-badge rather than patching here.</b></div>
+  <div class="meta"><b>Reserved:</b> title 838x30, blurb 1054x45, x8<br><b>Measured fit:</b> <span style="color:#8fbf7a">FITS &mdash; 2px and 3.4px spare</span><br>The left edge stays identical on all 8 rows, which is the property D15 picked this layout for. <b>B reuses tag-badge and reports the cost honestly</b>: the chip runs 6.8px over its strip because of the reused component&rsquo;s own line-height.<br><a href="/redesign-lab/extracted/index.html?c=entry-row" style="color:var(--color-gold)">open the ramblings entry row demo &rarr;</a></div>
+  <div class="row"><div class="vv vv--out"><h3>A</h3><div class="n">Eve verbatim &mdash; the whole row is one link, the tag is a word</div></div><div class="vv"><h3>B</h3><div class="n">the same row with filterable tags</div></div><div class="vv"><h3>C</h3><div class="n">Eve&rsquo;s real row &mdash; date line, title, nothing else</div></div></div>
+  <h2 class="c">View all button</h2>
+    <div class="pickline"><b>PICKED C, but only the BUTTON. Rod: "not really what I asked for just replace the button the way its laid out now." Shipped as .va--swap, deliberately empty of layout - the swap is one class, kit-button--primary to --outline.</b></div>
+  <div class="meta"><b>Reserved:</b> no contract reservation; 28px chip<br><b>Measured fit:</b> <span style="color:#e08a5a">A is 15px OVER the chip, deliberately</span><br>A breaks the chip on purpose to keep stripe&rsquo;s own padding. Your call which matters more.<br><a href="/redesign-lab/extracted/index.html?c=view-all-button" style="color:var(--color-gold)">open the view all button demo &rarr;</a></div>
+  <div class="row"><div class="vv vv--out"><h3>A</h3><div class="n">the spec row &mdash; stripe.dev, keeping their 12px padding</div></div><div class="vv"><h3>B</h3><div class="n">the quiet link</div></div><div class="vv"><h3>C</h3><div class="n">the outlined button &mdash; reuses button-kit, a class stack not a rebuild</div></div></div>
+  <h2 class="c">Skill tile</h2>
+    <div class="pickline pickline--none"><b>NO WORK. Rod: "lets not do extra work and keep it the same as it is now." The approved skills-row stands and the tile is dropped from the worklist.</b></div>
+  <div class="meta"><b>Reserved:</b> 150x150, flipper band 1421x120<br><b>Measured fit:</b> <span style="color:#8fbf7a">0.38px over &mdash; and the blockout cell is genuinely 150.375</span><br><b>My contract rounded 150.375 to 150.</b> The component is right and my number was wrong. Reuses the approved skills-row classes unchanged.<br><a href="/redesign-lab/extracted/index.html?c=skill-tile" style="color:var(--color-gold)">open the skill tile demo &rarr;</a></div>
+  <div class="row"><div class="vv"><h3>1</h3><div class="n">bare &mdash; stephanewillems</div></div><div class="vv"><h3>2</h3><div class="n">brackets &mdash; filipporuffini corner brackets</div></div><div class="vv"><h3>3</h3><div class="n">frame &mdash; Ashlook sci-fi frame</div></div></div>
+  <h2 class="c">Status chip + terminal</h2>
+    <div class="pickline"><b>PICKED A - dimden bracket token. Terminal pinned at 675x172, which settles the row count the audit found varying.</b></div>
+  <div class="meta"><b>Reserved:</b> chip 100x20<br><b>Measured fit:</b> <span style="color:#e08a5a">CHIP EXACT. Terminal runs 63 under to 68 over by row count</span><br>The terminal&rsquo;s height is a function of how many status rows you write, so it cannot have one fixed answer until you decide the rows.<br><a href="/redesign-lab/extracted/index.html?c=status-chip" style="color:var(--color-gold)">open the status chip + terminal demo &rarr;</a></div>
+  <div class="row"><div class="vv vv--picked"><h3><span class="pk">PICKED</span> A</h3><div class="n">dimden bracket token</div></div><div class="vv"><h3>B</h3><div class="n">Klubnika registry ledger</div></div><div class="vv"><h3>C</h3><div class="n">terminal.shop editor lines</div></div></div>
+  <h2 class="c">Portrait</h2>
+    <div class="pickline"><b>PICKED 3 - named window. The favicon is a marked placeholder for the image Rod has not made yet, flagged in the MARKUP so a stand-in cannot ship by looking finished.</b></div>
+  <div class="meta"><b>Reserved:</b> 191x200<br><b>Measured fit:</b> <span style="color:#8fbf7a">ALL THREE EXACT</span><br>V1 is the consistent choice: you already decided figures get no mat. V3 borrows the portal&rsquo;s window language.<br><a href="/redesign-lab/extracted/index.html?c=portrait-frame" style="color:var(--color-gold)">open the portrait demo &rarr;</a></div>
+  <div class="row"><div class="vv vv--out"><h3>1</h3><div class="n">no frame &mdash; the figure decision applied</div></div><div class="vv"><h3>2</h3><div class="n">corner brackets &mdash; a frame that is not a box</div></div><div class="vv"><h3>3</h3><div class="n">named window &mdash; the portrait as an object with a title bar</div></div></div>
+  <h2 class="c">Achievement tile + locked state &mdash; NOW 6 VERSIONS</h2>
+    <div class="pickline"><b>PICKED V6 (Steam). Rod 2026-08-23: add the project cards hover EDGE GLOW, and vary the border colour per achievement. The COLOURS are wrong against the about scene, so the rebuild deliberately waits on the About 3B call.</b></div>
+  <div class="meta"><b>Reserved:</b> locked row 641x40, tile 88x31, 29 tiles across 5 categories<br><b>Measured fit:</b> <span style="color:#8fbf7a">ALL SIX EXACT at 88 x 31, all squared, 284 tiles rendering, no overflow</span><br>You preferred V2 and asked for three more from real systems. <b>The research decoded Minecraft's actual shipped sprite PNGs pixel by pixel</b> rather than describing them, and fetched Steam's real stylesheet.<br><br><b class="t">The finding that reframes the whole thing:</b> <b>Minecraft's unearned state is not dimmed, faded or hollow &mdash; it is a different HUE at full saturation and near-identical luminance.</b> Blue means not-yet, gold means done. Every other system fades the locked state. That is exactly why Minecraft survives a wall of tiles without looking like a page of failures &mdash; which is your 29-tile case.<br><br><b>Counted from all 126 vanilla advancements:</b> 72% plain, 20% challenge, 8% goal. <b>The fancy shape is a minority by design</b>, which is what keeps the grid calm. And rarity costs INTERIOR area, never grid space &mdash; all three frames are the same 26x26 footprint.<br><a href="/redesign-lab/extracted/index.html?c=achievement-tile" style="color:var(--color-gold)">open all six &rarr;</a></div>
+  <div class="row"><div class="vv vv--out"><h3>V1 &middot; lit edge</h3><div class="n">every slot drawn, earned gets a bar</div></div><div class="vv"><h3>V2 &middot; value only</h3><div class="n">no box on anything &mdash; <b>your current pick</b></div></div><div class="vv"><h3>V3 &middot; no slot</h3><div class="n">locked tiles are not drawn at all</div></div></div>
+  <div class="row"><div class="vv vv--out"><h3>V4 &middot; hue swap (Minecraft)</h3><div class="n">locked is a different <b>hue</b>, not a fade &mdash; same luminance, full saturation. <b style="color:#e0a86a">Needs a palette call: it uses the cool accent, and warm-only cannot do this &mdash; two warms read as the same thing.</b></div></div><div class="vv"><h3>V5 &middot; silhouette (Minecraft)</h3><div class="n">rarity by <b>shape</b>, same 88x31 footprint. Real clip-path chamfers and spikes, verified rendering. The one idea almost nobody else has.</div></div><div class="vv"><h3>V6 &middot; the tile IS the bar (Steam)</h3><div class="n">the row is its own progress fill &mdash; border and fill the same colour, so common reads solid and rare reads as a stub. No second element.</div></div></div>
+  <h2 class="c">Socials</h2>
+  <div class="meta"><b>Reserved:</b> 191x120<br><b>Measured fit:</b> <span style="color:#8fbf7a">FITS &mdash; 8 to 12px under</span><br><b>Carries the batch&rsquo;s only rounded corner</b>: a 50% ring, kept round with an argued exception because cortiz&rsquo;s circle is the only liftable part of that source. Squaring it would leave nothing sourced. Your word.<br><a href="/redesign-lab/extracted/index.html?c=socials-row" style="color:var(--color-gold)">open the socials demo &rarr;</a></div>
+  <div class="row"><div class="vv"><h3>&mdash;</h3><div class="n">the versions differ on the mark treatment &mdash; see the demo</div></div></div>
+  <h2 class="c">Bio blocks</h2>
+    <div class="pickline pickline--none"><b>NEITHER ALONE. The pick is V4 - version 1 panel plus version 2 heading line, Rod combination. A remix of two sourced halves; no source does both, so the combination is ours.</b></div>
+  <div class="meta"><b>Reserved:</b> self-measured 675x112 and 675x138<br><b>Measured fit:</b> <span style="color:#e08a5a">OVER BY 257px &mdash; the biggest miss in the batch</span><br><b>Real copy does not fit the reserved height.</b> Same class of problem as the callout: the reservation was drawn before the real words existed. Either the reservation grows or the copy is cut.<br><a href="/redesign-lab/extracted/index.html?c=bio-block" style="color:var(--color-gold)">open the bio blocks demo &rarr;</a></div>
+  <div class="row"><div class="vv"><h3>1</h3><div class="n">panel &mdash; the whole block is one translucent panel</div></div><div class="vv"><h3>2</h3><div class="n">heading card &mdash; the heading is the box, prose sits bare</div></div></div>
+</div>
+
+<button id="scenetoggle">scene: on</button>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script>
+document.getElementById('scenetoggle').addEventListener('click',function(){
+  var off=document.body.classList.toggle('noscene');
+  this.textContent='scene: '+(off?'off':'on');
+});
+</script>
+</body>
+</html>

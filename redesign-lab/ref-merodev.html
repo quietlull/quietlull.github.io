@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ref: merodev.net — Works grid (bracket-framed project cards)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== merodev.net WORKS view recreation in its OWN palette =====
+   Black + mono, top bar (name / WORKS / EXIT), grid of project cards each framed by
+   corner brackets (targeting reticle) around the image + a bracketed VIEW LIVE button,
+   bottom social bar, left quality/sound/light toggles. Enter gate -> Works (the 3D gate). */
+:root{--bg:#000;--text:#f3f3f3;--muted:#8a8a8a;--line:#2a2a2a}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+body{font-family:"Space Mono",monospace;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* Enter gate (the 3D-scene gate) */
+#splash{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#000;transition:opacity .7s}
+#splash.gone{opacity:0;pointer-events:none}
+#enter{font-size:.9rem;letter-spacing:.2em;color:#fff;background:transparent;border:1px solid #fff;padding:.7rem 2.2rem;cursor:pointer}
+#enter:hover{background:#fff;color:#000}
+
+/* corner brackets */
+.brk{position:relative}
+.brk>.c{position:absolute;width:15px;height:15px;border:2px solid #fff;pointer-events:none}
+.brk>.c.tl{top:-3px;left:-3px;border-right:0;border-bottom:0}
+.brk>.c.tr{top:-3px;right:-3px;border-left:0;border-bottom:0}
+.brk>.c.bl{bottom:-3px;left:-3px;border-right:0;border-top:0}
+.brk>.c.br{bottom:-3px;right:-3px;border-left:0;border-top:0}
+
+#works{opacity:0;transition:opacity .8s .1s}
+#works.show{opacity:1}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:1.3rem 1.8rem}
+.topbar .name{font-weight:700;letter-spacing:.08em;font-size:.95rem}
+.topbar .role{font-size:.58rem;color:var(--muted);letter-spacing:.22em;margin-top:.25rem}
+.topbar .mid{border:1px solid var(--text);padding:.4rem 1.4rem;letter-spacing:.3em;font-size:.8rem;align-self:center}
+.exit{position:relative;padding:.5rem 1.3rem;letter-spacing:.2em;font-size:.75rem;color:var(--text);background:none;border:0;cursor:pointer}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.2rem 2rem;padding:1.5rem 2rem 7rem;max-width:1400px;margin:0 auto}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.proj .shot{aspect-ratio:16/10;overflow:hidden}
+.proj .shot .img{width:100%;height:100%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.proj:hover .shot .img{transform:scale(1.06)}
+.proj .row{display:flex;justify-content:space-between;align-items:center;margin:1.1rem 0 .3rem}
+.proj .t{font-weight:700;font-size:.95rem;letter-spacing:.04em;text-transform:uppercase}
+.view{font-size:.62rem;letter-spacing:.18em;padding:.45rem .8rem;color:var(--text);text-decoration:none}
+.proj .sub{font-size:.72rem;color:#bdbdbd;margin-bottom:.7rem}
+.proj .desc{font-size:.74rem;line-height:1.7;color:var(--muted);padding-bottom:1rem;border-bottom:1px solid var(--line);position:relative}
+
+.botbar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:2.5rem;padding:.9rem;font-size:.66rem;
+  letter-spacing:.16em;color:var(--muted);background:linear-gradient(0deg,#000 60%,transparent)}
+.botbar a{color:var(--muted);text-decoration:none}.botbar a:hover{color:#fff}
+.toggles{position:fixed;left:1.4rem;bottom:3.2rem;z-index:5;font-size:.62rem;letter-spacing:.12em;color:var(--muted);display:flex;flex-direction:column;gap:.5rem}
+.toggles label{display:flex;align-items:center;gap:.5rem;cursor:pointer}
+.toggles input{accent-color:#fff}
+.labtag{position:fixed;left:1.4rem;bottom:.6rem;z-index:6;font-size:10px;color:rgba(243,243,243,.4)}.labtag a{color:#fff}
+</style>
+</head>
+<body>
+<div id="splash"><button id="enter">Enter</button></div>
+
+<main id="works">
+  <div class="topbar">
+    <div><div class="name">MEROUANE BALI</div><div class="role">FULL STACK WEB DEVELOPER</div></div>
+    <div class="mid">WORKS</div>
+    <button class="exit brk" id="exit">EXIT<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></button>
+  </div>
+
+  <div class="grid">
+    <article class="proj"><div class="shot brk"><div class="img" style="background:linear-gradient(135deg,#ff6f61,#ff9a8b)"></div><span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></div>
+      <div class="row"><span class="t">Pawsitive Dog Food</span><a class="view brk" href="#">VIEW LIVE<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></a></div>
+      <div class="sub">International e-commerce platform</div>
+      <div class="desc">A custom-made, responsive, fully-fledged e-commerce platform for a UK company serving 15K+ monthly visitors. Public store, customer portal, CMS, payment gateway, analytics.</div></article>
+
+    <article class="proj"><div class="shot brk"><div class="img" style="background:linear-gradient(135deg,#19c3d6,#0a8ea0)"></div><span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></div>
+      <div class="row"><span class="t">Portfolio V1</span><a class="view brk" href="#">VIEW LIVE<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></a></div>
+      <div class="sub">Personal portfolio website</div>
+      <div class="desc">The first version of my portfolio, showcasing skills, projects, and experience. Features a 3D design and smooth navigation, emphasizing responsiveness across devices.</div></article>
+
+    <article class="proj"><div class="shot brk"><div class="img" style="background:linear-gradient(135deg,#caa56a,#6a4a2a)"></div><span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></div>
+      <div class="row"><span class="t">Ziwe Portfolio</span><a class="view brk" href="#">VIEW LIVE<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></a></div>
+      <div class="sub">Creative personal website</div>
+      <div class="desc">A remake of a personal website inspired by an award-winning template. Built with standard web tech; engaging GSAP + WebGL animations enhance the visual appeal and interactivity.</div></article>
+
+    <article class="proj"><div class="shot brk"><div class="img" style="background:linear-gradient(135deg,#e8e8e8,#9a9a9a)"></div><span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></div>
+      <div class="row"><span class="t">Mono UI Kit</span><a class="view brk" href="#">VIEW LIVE<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></a></div>
+      <div class="sub">Design system</div>
+      <div class="desc">A high-quality, accessible component library with light/dark modes, motion presets, and sound effects. Documented, tokenized, and shipped as an npm package.</div></article>
+
+    <article class="proj"><div class="shot brk"><div class="img" style="background:linear-gradient(135deg,#1a1a1a,#3a3a3a)"></div><span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></div>
+      <div class="row"><span class="t">Speed Terminal</span><a class="view brk" href="#">VIEW LIVE<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></a></div>
+      <div class="sub">Developer tool</div>
+      <div class="desc">A fast in-browser terminal with a roadmap, command palette, and theming. Built for keyboard-first workflows and instant feedback.</div></article>
+
+    <article class="proj"><div class="shot brk"><div class="img" style="background:linear-gradient(135deg,#2a5bd7,#1e3a8a)"></div><span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></div>
+      <div class="row"><span class="t">Easy Forms</span><a class="view brk" href="#">VIEW LIVE<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></a></div>
+      <div class="sub">SaaS / API</div>
+      <div class="desc">Post your forms to an API and let it handle storage, managing, and reporting your data &mdash; without the need for your own backend.</div></article>
+  </div>
+
+  <div class="toggles">
+    <label><input type="checkbox" checked> HIGH QUALITY</label>
+    <label><input type="checkbox"> SOUND EFFECTS</label>
+    <label><input type="checkbox" disabled> LIGHT MODE [SOON]</label>
+  </div>
+  <div class="botbar"><span>&copy; 2025</span><a href="#">LINKEDIN</a><a href="#">GITHUB</a><a href="#">EMAIL</a></div>
+</main>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab index</a> &middot; ref: merodev</div>
+<script>
+(function(){
+  var splash=document.getElementById('splash'),works=document.getElementById('works'),btn=document.getElementById('enter'),exit=document.getElementById('exit');
+  function enter(){splash.classList.add('gone');works.classList.add('show');setTimeout(function(){splash.style.display='none';},750);}
+  function leave(){splash.style.display='grid';splash.classList.remove('gone');works.classList.remove('show');}
+  btn.addEventListener('click',enter);exit.addEventListener('click',leave);
+  if(/auto/.test(location.search)) enter();
+})();
+</script>
+</body>
+</html>

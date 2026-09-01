@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RAMBLINGS BLOCKOUT — 4 variants, greybox</title>
+<!--
+  RAMBLINGS / blog INDEX (the post LIST). The post PAGE itself is post-blockout.html.
+  GREYBOX LAW: geometry only, one grey language, no colour.
+
+  Transcribed from four currently-live sites, each read from its own CSS:
+    DIMDEN    dimden.dev/blog                    /css/blog.css
+    KLUBNIKA  mikeklubnika.com/logs              /static/style/main.css
+    EVE       eveofficial.com/news/              /css/style.css (36,914 bytes)
+    WHEY      whey-isolate.neocities.org         /style.css (7,969 bytes)
+
+  Frozen slots in ALL four: page title + description · search/filter · per-post date · title ·
+  blurb · tags · PINNED state · optional thumbnail · empty state.
+
+  DEVIATION DECLARED: none of the four sources has a SEARCH field. Its geometry in every variant
+  is taken from the live site's own #post-search (_layouts/ramblings.html), not invented.
+-->
+<style>
+  *{box-sizing:border-box}
+  body{background:#141414;color:#d9d9d9;font-family:ui-monospace,"SF Mono",Consolas,monospace;
+    margin:0;padding-top:72px}
+  .box{border:1.5px dashed #555;background:#1b1b1b}
+  .fill{display:grid;place-items:center;height:100%;color:#666;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;text-align:center;padding:2px}
+  .yy{font-size:9px;color:#777}
+  .nav{position:fixed;top:0;left:0;right:0;height:72px;z-index:10;background:#1f1f1f;
+    border-bottom:1.5px solid #666;display:flex;align-items:center;gap:16px;padding:0 20px}
+  .nav .ico{width:44px;height:44px;border:1.5px dashed #777;display:grid;place-items:center;font-size:9px;color:#888}
+  .nav .name{border:1.5px dashed #666;padding:8px 18px;font-size:13px;color:#ccc}
+  .nav .sp{flex:1}
+  .nav .btns span{border:1.5px dashed #666;padding:7px 16px;font-size:10px;color:#999;margin-left:6px}
+  .blk{background:#1b1b1b;border:1.5px dashed #555}
+
+  /* ======== V1 · DIMDEN — rule log, no container ======== */
+  body.rulelog .page{padding:35px}
+  body.rulelog hr{height:4px;border:0;background:#8a8a8a;margin:8px 0}
+  body.rulelog hr.dbl{margin-bottom:4px}
+  body.rulelog .row{padding-bottom:32px}
+
+  /* ======== V2 · KLUBNIKA — terminal ledger, 58em rails, zebra ======== */
+  body.ledger .col{max-width:58em;width:100%;margin:0 auto;padding:10px 15px;
+    border-left:1px solid #5c5c5c;border-right:1px solid #5c5c5c}
+  body.ledger .row{margin:5px 0;font-size:12px}
+  body.ledger .row:nth-child(even){background:rgba(235,235,235,.0333)}
+  body.ledger .l1{display:flex;flex-direction:row;justify-content:space-between;align-items:center;height:12px}
+  body.ledger .l2{display:flex;justify-content:space-between;align-items:center;height:12px;
+    margin-top:4px;padding-left:104px}
+  body.ledger .dot{border:0;border-top:1px dotted #8a8a8a;margin:20px 0 16px}
+
+  /* ======== V3 · EVE — hairline rows, fixed 1140 ======== */
+  body.hairline .wf{width:1140px;max-width:96vw;margin:0 auto}
+  body.hairline .titlebar{background:#1b1b1b;padding:37px 0;text-align:center;margin-bottom:80px}
+  body.hairline .list{border-top:1px solid #333}
+  body.hairline .row{padding:30px 0;border-bottom:1px solid #333}
+
+  /* ======== V4 · WHEY — sticky rail sheet, 10vw gutters ======== */
+  body.rails .band{margin-left:10vw;margin-right:10vw;margin-bottom:24px;position:relative;
+    display:flex;align-items:flex-start}
+  body.rails .pnl{border:10px solid #8a8a8a;background:#1b1b1b;box-shadow:-10px 10px 0 #0d0d0d}
+  body.rails .lrail{width:160px;padding:10px;position:sticky;top:82px;z-index:3;flex:none}
+  body.rails .rrail{width:160px;padding:10px;position:sticky;top:82px;z-index:1;flex:none}
+  body.rails .sheet{flex:1;margin:0 30px;padding:25px;z-index:2}
+  body.rails .entry{margin-bottom:26px}
+  body.rails .entry p{text-indent:50px;margin:0}
+
+  #prov{position:fixed;left:14px;top:88px;z-index:70;width:292px;max-height:calc(100vh - 176px);
+    overflow:auto;background:rgba(10,12,20,.96);border:1px solid rgba(255,255,255,.18);padding:12px 13px;
+    font:11px/1.55 ui-monospace,Consolas,monospace;color:#dcdcdc}
+  #prov .pv-t{font-size:12.5px;color:#fff;margin-bottom:2px}
+  #prov .pv-k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin-bottom:7px}
+  #prov a{color:#9fd0ff;word-break:break-all}
+  #prov h4{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+  #prov ul{margin:0;padding-left:14px}#prov li{margin-bottom:3px;color:#c8c8c8}
+  #prov .warn li{color:#ffb020}
+  .vbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:80;display:flex;gap:6px;
+    flex-wrap:wrap;justify-content:center;background:rgba(8,10,18,.96);border:1px solid rgba(255,255,255,.2);padding:7px 9px}
+  .vbar button{background:none;border:1px solid #555;color:#bbb;font:10px ui-monospace,monospace;
+    letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;cursor:pointer}
+  .vbar button.on{background:#ddd;border-color:#ddd;color:#141414}
+  .labtag{position:fixed;left:14px;bottom:12px;z-index:50;font:10px ui-monospace,monospace;color:rgba(245,243,239,.45)}
+  @media(max-width:1300px){#prov{position:static;width:auto;max-height:none;margin:10px 14px}}
+</style>
+</head>
+<body class="rulelog">
+
+<div class="nav">
+  <span class="ico">MARK</span><span class="name">WORDMARK</span><span class="sp"></span>
+  <span class="btns"><span>HOME</span><span>PROJECTS</span><span>ABOUT</span><span>RAMBLINGS</span></span>
+</div>
+
+<div id="ground"></div>
+
+<aside id="prov"></aside>
+<div class="vbar">
+  <span style="color:#8e8e8e;font:9px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;align-self:center;margin-right:2px">ramblings</span>
+  <button data-v="rulelog" class="on">1 &middot; dimden</button>
+  <button data-v="ledger">2 &middot; klubnika</button>
+  <button data-v="hairline">3 &middot; eve</button>
+  <button data-v="rails">4 &middot; whey-isolate</button>
+</div>
+<div class="labtag">ramblings-blockout &middot; the post PAGE is post-blockout.html</div>
+
+<script>
+var N=8, PINS=2;
+function b(w,h,label){return '<div class="blk" style="width:'+w+';height:'+h+'px"><div class="fill">'+(label||'')+'</div></div>';}
+
+var BUILD={
+ rulelog:function(){
+   var rows='';
+   for(var i=0;i<N;i++){
+     var isLastPin = (i===PINS-1);
+     rows+='<hr'+(isLastPin?' class="dbl"':'')+'>'+(isLastPin?'<hr>':'')
+       +'<div class="row">'+b('62%',30,'TITLE')
+       +'<div style="height:12px"></div>'+b('180px',16,'DATE')
+       +'<div style="height:10px"></div>'+b('78%',45,'BLURB &mdash; 2 lines')
+       +'<div style="height:8px"></div><div style="display:flex;gap:12px">'
+       +b('64px',16,'TAG')+b('88px',16,'TAG')+b('72px',16,'TAG')+'</div></div>';
+   }
+   return '<div class="page"><div style="display:grid;place-items:center">'
+     +b('380px',100,'PAGE TITLE &mdash; 380px centred')
+     +'<div style="height:12px"></div>'+b('520px',44,'PAGE DESCRIPTION')+'</div>'
+     +'<div style="height:35px"></div>'+b('100%',40,'SEARCH &mdash; geometry from OUR #post-search, not dimden')
+     +'<div style="height:24px"></div>'
+     +'<div class="yy" style="margin-bottom:6px">PINNED = the first '+PINS+' rows, closed by a DOUBLE 4px rule</div>'
+     +rows
+     +'<hr>'+b('100%',60,'EMPTY STATE')+'<div style="height:80px"></div></div>';
+ },
+ ledger:function(){
+   var rows='';
+   for(var i=0;i<N;i++){
+     rows+='<div class="row"><div class="l1">'
+       +'<div style="display:flex;align-items:center;gap:8px;flex:1">'
+       +b('96px',12,'DATE')+b('45%',12,'TITLE')+'</div>'
+       +b('92px',12,'17 DAYS AGO')+'</div>'
+       +'<div class="l2">'+b('60%',12,'BLURB')
+       +'<div style="display:flex;gap:8px">'+b('52px',12,'TAG')+b('52px',12,'TAG')+'</div></div></div>';
+     if(i===PINS-1) rows+='<hr class="dot">';
+   }
+   return '<div class="col">'+b('100%',27,'H1 PAGE TITLE &mdash; 27px')
+     +'<div style="height:15px"></div>'+b('100%',28,'SEARCH &mdash; ours, not Klubnika&rsquo;s')
+     +'<div style="height:15px"></div>'+b('100%',20,'H2 GROUP HEADING')
+     +'<div class="yy" style="margin:6px 0">PINNED = first '+PINS+' rows, closed by a 1px DOTTED divider</div>'
+     +rows
+     +'<hr class="dot">'+b('100%',48,'EMPTY STATE')+'<div style="height:80px"></div></div>';
+ },
+ hairline:function(){
+   var rows='';
+   for(var i=0;i<N;i++){
+     var thumb = i%3===0;
+     rows+='<div class="row" style="'+(thumb?'padding-right:270px;position:relative;':'')+'">'
+       +'<div style="display:flex;align-items:center;gap:8px">'
+       +b('48px',16,'TAG')+b('64px',16,'TAG')+b('56px',16,'TAG')+b('140px',16,'DATE')+'</div>'
+       +'<div style="height:15px"></div>'+b('66%',28,'TITLE &mdash; 20/28, 752px')
+       +'<div style="height:15px"></div>'+b('72%',48,'BLURB &mdash; 2 lines, 820px')
+       +(thumb?'<div style="position:absolute;right:0;top:30px;">'+b('240px',135,'THUMB')+'</div>':'')
+       +(i<PINS?'<div class="yy" style="margin-top:8px">PINNED</div>':'')+'</div>';
+   }
+   return '<div class="wf"><div class="titlebar">'
+     +'<div style="display:grid;place-items:center">'+b('220px',26,'PAGE TITLE')
+     +'<div style="height:12px"></div>'+b('560px',20,'PAGE DESCRIPTION')+'</div></div>'
+     +'<div style="display:flex;justify-content:flex-end;margin-bottom:24px">'+b('360px',40,'SEARCH &mdash; ours')+'</div>'
+     +'<div class="list">'+rows+'</div>'
+     +'<div style="height:24px"></div>'+b('100%',60,'EMPTY STATE')+'<div style="height:80px"></div></div>';
+ },
+ rails:function(){
+   var entries='';
+   for(var i=0;i<N;i++){
+     entries+='<div class="entry"><div style="display:grid;place-items:center">'
+       +b('200px',24,'DATE &mdash; CENTRED, outranks the title')+'</div>'
+       +'<div style="height:12px"></div>'
+       +'<p><span class="blk" style="display:inline-block;width:42%;height:16px;vertical-align:middle"></span>'
+       +'<span class="yy"> &larr; heavy lede clause IS the title slot</span></p>'
+       +'<div style="height:6px"></div>'+b('100%',48,'BLURB &mdash; 2 more lines')
+       +'<div style="height:8px"></div><div style="display:flex;gap:8px">'
+       +b('56px',18,'TAG')+b('56px',18,'TAG')+'</div>'
+       +(i<PINS?'<div class="yy" style="margin-top:6px">PINNED</div>':'')+'</div>';
+   }
+   var nav='',tags='';
+   for(var j=0;j<5;j++) nav+='<div style="margin-bottom:8px">'+b('100%',28,'NAV')+'</div>';
+   for(var k=0;k<8;k++) tags+='<div style="margin-bottom:6px">'+b('100%',22,'TAG')+'</div>';
+   return '<div style="padding-top:20px"><div class="band">'
+     +'<div class="pnl lrail">'+nav+'</div>'
+     +'<div class="pnl sheet"><div style="display:grid;place-items:center;margin-bottom:20px">'
+     +b('320px',30,'PAGE TITLE')+'</div>'+entries
+     +b('100%',48,'EMPTY STATE')+'</div>'
+     +'<div class="pnl rrail">'+b('100%',28,'SEARCH')+'<div style="height:10px"></div>'+tags+'</div>'
+     +'</div><div style="height:80px"></div></div>';
+ }
+};
+
+var PROV={
+ rulelog:{t:'1 — dimden /blog',k:'read from source · /css/blog.css',url:'https://dimden.dev/blog',
+  moves:['NO container and no max-width — blog.css constrains the column with ONLY #blog{padding:35px}, so the list runs 1370px at 1440',
+         'Rules are 4px SOLID BLOCKS, not hairlines, with 8px above and below',
+         'Header is their centred 380px logo block plus a description block under it',
+         'PINNED = the first N rows, closed by a DOUBLE rule (two 4px rules 8px apart) — built from their own hr, doubled, no new device',
+         'Row pitch 195px, ~4.6 rows per 900px of scroll',
+         'NO THUMBNAILS — Rod&rsquo;s gallery note calls this "proof an index does not need cards"'],
+  warn:['SEARCH IS A DECLARED DEVIATION — dimden has none. Geometry taken from our own #post-search, not invented.',
+         'The loosest of the four. With only a handful of ramblings it will read as very empty; with fifty it is the most restful.']},
+ ledger:{t:'2 — Mike Klubnika /logs',k:'read from source · /static/style/main.css',url:'https://mikeklubnika.com/logs',
+  moves:['58em (928px) column with 1px rails on the LEFT AND RIGHT ONLY — vertical lines, no box',
+         'A TABLE, not a feed: line 1 is their exact flex row — date + title left, RELATIVE AGE right ("17 days ago"), the one field no other site in the set has',
+         'Line 2 indents 104px to sit under the title, carrying blurb left and tags right via the same space-between',
+         'Row pitch 38px — the density outlier, roughly 5x variant A at 23.7 rows per 900px',
+         'ZEBRA tint instead of rules between rows; section grouping is a 1px DOTTED divider'],
+  warn:['SEARCH IS A DECLARED DEVIATION — Klubnika has none.',
+         'By far the most information per screen, and the only variant that would still work at 200 entries. Also the coldest: a ledger is not obviously the register for personal writing.',
+         'The relative-age field is genuinely nice and genuinely extra work — it needs computing at build time or in JS.']},
+ hairline:{t:'3 — Eve OFFICIAL /news',k:'read from source · /css/style.css, 36,914 bytes',url:'https://eveofficial.com/news/',
+  moves:['FIXED 1140px centred column — a hard width, no percentage and no max-width',
+         'Page title sits in its own full-width band with 37px padding, then 80px of air',
+         'List is 1px hairlines: one on top, then each row padded 30px with a bottom hairline',
+         'THE TAG IS NATIVE HERE — Eve&rsquo;s inline category word sits BEFORE the date on the same line. It is the one solution in the set where the tag is not grafted on',
+         'Thumbnail rows keep the identical left edge and reserve 270px of right padding — so a row with an image and a row without still align',
+         'Row pitch 183px, 4.9 rows per 900px'],
+  warn:['SEARCH IS A DECLARED DEVIATION — Eve has none.',
+         'The only variant that solves the thumbnail problem without changing the row&rsquo;s left edge, which matters because Rod&rsquo;s ramblings will be a mix of illustrated and text-only.',
+         'A fixed 1140px is wide for personal writing; the measure lands well past the 65-75ch rule.']},
+ rails:{t:'4 — whey-isolate',k:'read from source · /style.css, 7,969 bytes',url:'https://whey-isolate.neocities.org/',
+  moves:['10vw gutters (144px at 1440), content band 1152px',
+         'THREE panels sharing one skin: 10px SOLID border and a HARD un-blurred offset shadow -10px 10px 0',
+         'Left rail 160px sticky = section nav. Right rail 160px sticky = SEARCH plus an 8-item tag filter',
+         'The only variant where search and tag-filter are PERSISTENT and pinned — which is what those rails are actually for on the source',
+         'Centre sheet inset 190px each side, padding 25 — inner 772px, measure 722px',
+         'DATE is a CENTRED heading that OUTRANKS the title, and the "title" is transcribed as the heavy lede clause opening an indented paragraph — not invented'],
+  warn:['The only three-column variant and the only one with anything sticky. It is also the only one where filtering is always reachable, which matters more as the archive grows.',
+         'A 10px solid border plus a hard offset shadow is a strong, opinionated frame. It fights the live scene harder than anything else in this batch — three heavy panels leave little ground showing.',
+         'The date-outranks-title inversion is faithful to whey but unusual; it makes the list scan chronologically rather than by subject.']}
+};
+
+(function(){
+  var btns=document.querySelectorAll('.vbar button'),panel=document.getElementById('prov'),g=document.getElementById('ground');
+  function show(v){
+    document.body.className=v;
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
+    g.innerHTML=BUILD[v]();
+    var p=PROV[v];
+    var h='<div class="pv-t">'+p.t+'</div><div class="pv-k">'+p.k+'</div>';
+    h+='<div style="margin-bottom:6px"><a href="'+p.url+'" target="_blank">'+p.url+'</a></div>';
+    h+='<h4>transcribed geometry</h4><ul><li>'+p.moves.join('</li><li>')+'</li></ul>';
+    h+='<h4>honest caveats</h4><ul class="warn"><li>'+p.warn.join('</li><li>')+'</li></ul>';
+    panel.innerHTML=h;
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.v);});});
+  var m=/[?&]v=(rulelog|ledger|hairline|rails)/.exec(location.search);
+  show(m?m[1]:'rulelog');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FINAL - Projects</title>
+<!--
+  ===== THE "FINAL" GROUP (started 2026-08-18, ROD) =====
+  "i want you to start a new group of pages called final... each of these pages will contain just
+   the chosen blockout and we will replace and add each element one by one so everything on the
+   page has had human approval."
+
+  SO THE RULE FOR THIS FILE IS ABSOLUTE:
+    - It starts as the CHOSEN BLOCKOUT and nothing else. Every slot is greybox.
+    - A slot becomes real ONLY when Rod has approved that specific element. Not when it looks
+      ready, not when a component exists, not when another lab page has one.
+    - Nothing is added that the blockout does not declare. An extra element is a PROPOSAL and goes
+      back to the blockout first (docs/PAGE-PROCESS.md, THE BLOCKOUT IS A CONTRACT).
+    - Every 'approved' state below cites Rod saying so.
+
+  CHOSEN BLOCKOUT: projects-blockout.html?v=sticker
+  WHY: MinionsArt page (D15). The first aggregate attempt was REJECTED - D19: source elements and compose, do not pour parts into a borrowed silhouette.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<style>
+/* state-panel headings were <h4> and put bench chrome into the document outline,
+   producing an h2 -> h4 skip on every final page. Same look, no outline cost. */
+.sp__h{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  margin:10px 0 4px;color:#8e8e8e}
+
+/* The universal reset lives in foundations.css, in the `reset` cascade layer, and this page
+   loads it. The duplicate that used to sit here was UNLAYERED, and unlayered CSS beats every
+   layer - so `margin:0;padding:0` was overriding the padding of every layered component.
+   Measured: 452 computed-style differences across five pages, all from this one line. */
+html{scroll-behavior:smooth}
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+/* ---- the scene, when a page carries it ---- */
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;transition:opacity .5s;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+
+/* ---- PENDING SLOT: the greybox. Deliberately ugly. It must never read as a design. ---- */
+.slot{position:relative;border:1.5px dashed #4a4a4a;background:rgba(20,20,20,.55);
+  display:grid;place-items:center;text-align:center;padding:22px 18px;gap:6px}
+.slot__name{font-family:var(--font-mono,ui-monospace),monospace;font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:#9a9a9a}
+.slot__wait{font-family:var(--font-mono,ui-monospace),monospace;font-size:.58rem;letter-spacing:.06em;
+  color:#6f6f6f;max-width:52ch;line-height:1.6}
+.slot__tag{position:absolute;top:6px;left:6px;font:9px ui-monospace,monospace;letter-spacing:.12em;
+  color:#141414;background:#8a8a8a;padding:1px 6px}
+
+/* ---- APPROVED slot: a hairline mark so Rod can see at a glance what is real ---- */
+.ok{position:relative}
+.ok::after{content:'APPROVED';position:absolute;top:6px;left:6px;z-index:40;
+  font:9px ui-monospace,monospace;letter-spacing:.12em;color:#0d2a12;background:#7ee0b8;
+  padding:1px 6px;pointer-events:none;opacity:0;transition:opacity .2s}
+body.show-state .ok::after{opacity:1}
+body:not(.show-state) .slot__tag{opacity:0}
+
+/* ---- the state panel ---- */
+#state{position:fixed;right:14px;bottom:14px;z-index:90;width:300px;max-height:70vh;overflow:auto;
+  background:rgba(8,10,18,.95);border:1px solid rgba(255,255,255,.2);padding:12px 13px;
+  font:11px/1.6 ui-monospace,Consolas,monospace;color:#dcdcdc}
+#state h4{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+#state .bar{height:6px;background:#2a2a2a;margin:6px 0 10px}
+#state .bar i{display:block;height:100%;background:#7ee0b8}
+#state ul{margin:0;padding-left:14px}#state li{margin-bottom:2px;color:#bdbdbd}
+#state .a li{color:#7ee0b8}
+#state button{background:none;border:1px solid #555;color:#bbb;font:9px ui-monospace,monospace;
+  letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;cursor:pointer;margin-top:8px}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font:10px ui-monospace,monospace;
+  color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold,#F3B53C)}
+
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:56px 0 120px;position:relative;z-index:1}
+.stack{display:grid;gap:18px}
+.two{display:grid;grid-template-columns:6fr 12fr;gap:32px;align-items:start}
+@media(max-width:900px){.two{grid-template-columns:1fr}}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.three{grid-template-columns:1fr}}
+
+/* ==========================================================================================
+   THE LAYOUT.  Transcribed from projects-blockout.html?v=sticker, which is itself transcribed
+   from minionsart.github.io/tutorials/ /tutorials/style.css.  D15: "MinionsArt's PAGE carrying
+   project-cards-expensive unmodified".  Numbers are the blockout's, unchanged:
+     panel 1000px @ 35px padding · grid repeat(3,300px) @ 20px gaps, 15px padding, centred
+     card 300x300 · search 400px centred · filter row 5-up, 500px centred, 10px gaps, 15px padding
+     view-all 200x28 · empty state one 300x300 cell
+   Shape pass already applied in the blockout (Rod 2026-08-16): every radius 0 except the star pin.
+
+   ONE STATED DEVIATION, and it is an existing decision rather than a new one: the blockout paints
+   the panel an OPAQUE #1d1d1d because a greybox has no scene behind it. This page does. D27 (Rod,
+   2026-08-22): "we just do normal transparent cards in grey with no texture, the background already
+   adds some texture" - so the same grey is carried at .55 alpha and the scene reads through it.
+   Nothing else about the panel moves.
+   ========================================================================================== */
+.panel{width:1000px;max-width:94vw;margin:40px auto 0;padding:35px;border-radius:0;
+  background:var(--color-panel,rgba(28,26,24,.55))}
+.panel .head{text-align:center}
+.panel .search{width:400px;max-width:100%;margin:0 auto 24px}
+.panel .filters{display:grid;grid-template-columns:repeat(5,auto);width:500px;max-width:100%;
+  margin:0 auto;gap:10px;padding:15px}
+.panel .grid{display:grid;grid-template-columns:repeat(3,300px);gap:20px;padding:15px;
+  justify-content:center}
+
+.panel .viewall{display:grid;place-items:center;margin-top:20px}
+.panel .empty{margin-top:20px;display:grid;justify-content:center}
+/* the load-bearing line, per D15: ZERO blur, ZERO spread - a sticker on paper, not a glass panel */
+
+/* the chip cells inside the filter slot: real geometry so the row reserves its true height */
+/* D15: uniform squares, not the landing bento (bento cut 2026-08-16). `.merged-cards` stays
+   because merged-card.css scopes every card rule under it; only the grid geometry is overridden
+   here, back to the blockout's own repeat(3,300px). */
+.panel .merged-cards.grid{grid-template-columns:repeat(3,300px);gap:20px;padding:15px;
+  justify-content:center}
+.panel .post-card{width:300px;height:300px}
+.panel .post-card{box-shadow:5px 10px 0 0 rgba(255,255,255,.07)}  /* D15, restored 2026-08-24: ZERO blur, ZERO spread - the sticker-on-paper line */
+.proj-rule{border:0;border-top:1px solid var(--color-line-faint,rgba(255,255,255,.08));margin:44px 0}
+
+@media(max-width:760px){.panel .grid{grid-template-columns:300px}
+  .panel .filters{grid-template-columns:repeat(3,auto);width:auto}}
+
+/* FOOTER - the `footer-line` component is linked in <head> and is the ONLY copy.
+   Rod 2026-08-23: "put it in the workbench so we can get it right across the site."
+   Six inline copies used to live here, one per page, and they had already drifted -
+   the landing was still on 2.5rem/3rem at .66rem while the other five were on the
+   corrected 1.2rem/1.6rem at .62rem. Restating it here would re-create that. */
+
+/* generated separators, so the markup stays a plain list and a middot cannot orphan at a wrap */
+
+
+
+
+
+
+/* the footer spans the page and anchors left, rather than following the content column */
+
+/* the name is the way home (Rod 2026-08-23: "clicking my name should bring you to the landing
+   page"). It keeps the name styling and does NOT take the gold link colour - it reads as the
+   signature, not as another nav item, until you touch it. */
+
+
+</style>
+<link rel="stylesheet" href="/redesign-lab/extracted/components/footer-line/footer-line.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/page-title-desc/page-title-desc.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/list-controls/list-controls.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/button-kit/button-kit.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/project-cards-expensive/project-cards-expensive.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/merged-card/merged-card.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/empty-state/empty-state.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/section-head/section-head.css">
+<link rel="stylesheet" href="/redesign-lab/decisions.css">
+<link rel="stylesheet" href="/redesign-lab/focus-ring.css">
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0" style="opacity:0"></div>
+<div id="scrim"></div>
+
+<main id="main"><div class="wrap"><div class="panel">
+
+  <!-- REBUILT AGAINST THE REAL PAGE, 2026-08-24. Rod: "the projects page is clearly broken and
+       view all projects makes zero sense as a button here ... please look at our original projects
+       page to see what it's supposed to look like and try to match it with the new layout and
+       elements."
+
+       WHAT THE LIVE PAGE ACTUALLY DOES (_layouts/section-projects.html), which my first merge
+       ignored entirely:
+         header  -> h1 + description
+         controls-> search field, then filter pills
+         PINNED  -> its own <h2> heading and its own grid, then an <hr>
+         ALL     -> a second grid holding everything else
+         and NO "view all" button anywhere, because you are already looking at every project.
+
+       THREE THINGS CHANGED FROM MY FIRST ATTEMPT:
+       1. VIEW ALL IS GONE. It exists nowhere on the live page and makes no sense on a full
+          listing. Removing a declared slot is allowed by the blockout contract ("fewer is fine");
+          adding one is not. Slot count 19 -> 18.
+       2. THE FILTER TAGS ARE THE REAL ONES. _includes/filter-pills.html lists unity, unreal,
+          godot, shader, tool, vfx, rigging, 2d, 3d, study. I had invented
+          "All / Shaders / Tools / Real-time / Write-ups", which exist nowhere in the site.
+       3. THE GRID IS SPLIT PINNED / ALL. It was one flat run of twelve.
+
+       ONE ADDITION BEYOND THE BLOCKOUT, FLAGGED RATHER THAN SLIPPED IN: the two section headings.
+       The blockout declares no heading slot here, so by the contract this is a PROPOSAL, not an
+       approved element. It is in because Rod asked for the live page's structure to be matched and
+       that structure is built out of those headings. Say the word and they come out. -->
+
+  <div class="head">
+    <div class="ptd ptd--projects ptd--sub">
+      <h1 class="ptd__title d-h1" data-slot="page title" data-state="pending">Tech Art Projects</h1>
+      <p class="ptd__desc" data-slot="description" data-state="pending">Shaders, tools and tech art
+        built in Unity and HLSL. Compute grass, GPU physics, and a decompiler detour or two.</p>
+    </div>
+  </div>
+
+  <div style="height:24px"></div>
+
+  <div class="list-controls">
+    <div class="list-controls__search" data-slot="search bar" data-state="pending">
+      <input class="list-controls__input" type="text" placeholder="Search projects..."
+             aria-label="Search projects">
+    </div>
+    <div class="list-controls__filters" data-slot="filter pills" data-state="pending">
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="unity" type="button">Unity</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="unreal" type="button">Unreal</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="godot" type="button">Godot</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="shader" type="button">Shader</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="tool" type="button">Tool</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="vfx" type="button">VFX</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="rigging" type="button">Rigging</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="2d" type="button">2D</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="3d" type="button">3D</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="study" type="button">Study</button>
+    </div>
+  </div>
+
+  <div style="height:34px"></div>
+
+  <section class="pinned-section">
+    <h2 class="section-head"><span class="section-head__name">Pinned</span></h2>
+    <div class="merged-cards merged-cards--square epx-cards grid">
+      <article data-slot="project card 1" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+                  <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Compute Grass</h3><p class="card-meta">Unity &middot; HLSL &middot; Compute</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"One gust, half a million blades."</p><p class="takeaway-text">The blade count mattered less than the wind phase reading as a single gust across the field.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 2" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+                  <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Decompiling the Shaders of ZZZ!</h3><p class="card-meta">Rendering study &middot; HLSL</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"Rebuilt a shipped game's shaders from scratch."</p><p class="takeaway-text">Half the "magic" was clever use of vertex colors as masks.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+    </div>
+  </section>
+
+  <hr class="proj-rule">
+
+  <section class="all-posts-section">
+    <h2 class="section-head"><span class="section-head__name">All Projects</span></h2>
+    <div class="merged-cards merged-cards--square epx-cards grid">
+      <article data-slot="project card 3" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"></div>
+                  <span class="card-pin card-pin--wip z-layer">WIP</span>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">2D Physics on the GPU</h3><p class="card-meta">Tooling &middot; Compute &middot; soon</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"Full write-up coming soon."</p><p class="takeaway-text">Constraint solving on compute, one tile at a time.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 4" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video></div>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Procedural 3D Mask</h3><p class="card-meta">Unity &middot; Shader</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"One flexible tool beats a thousand single-use ones."</p><p class="takeaway-text">The mask graph outlived every bespoke variant it replaced.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 5" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Sparkler System</h3><p class="card-meta">Unity &middot; VFX</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"Cheap sparks, expensive feel."</p><p class="takeaway-text">A handful of additive quads sold the whole festival.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 6" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Lantern Shader</h3><p class="card-meta">HLSL &middot; Shader</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"Light that breathes."</p><p class="takeaway-text">Flicker is just noise you trust.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 7" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"></div>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Water Reflection</h3><p class="card-meta">Three.js &middot; Shader</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"A mirror that ripples."</p><p class="takeaway-text">Planar reflection plus a little fakery.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 8" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video></div>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Terrain Tool</h3><p class="card-meta">Unity &middot; Tooling</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"Sculpt, don't place."</p><p class="takeaway-text">One brush beat a thousand prefabs.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 9" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+                  
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Sprite Baker 9000</h3><p class="card-meta">Unity &middot; HLSL &middot; Compute</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"One gust, half a million blades."</p><p class="takeaway-text">The blade count mattered less than the wind phase reading as a single gust across the field.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 10" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+                  
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">A Fish Based Game</h3><p class="card-meta">Rendering study &middot; HLSL</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"Rebuilt a shipped game's shaders from scratch."</p><p class="takeaway-text">Half the "magic" was clever use of vertex colors as masks.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 11" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"></div>
+                  
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Doomsday Sales</h3><p class="card-meta">Tooling &middot; Compute &middot; soon</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"Full write-up coming soon."</p><p class="takeaway-text">Constraint solving on compute, one tile at a time.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+      <article data-slot="project card 12" data-state="pending" class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+              <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+                <div class="card-front">
+                  <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video></div>
+                  <div class="glass-plane z-layer"></div>
+                  <div class="card-body z-layer"><h3 class="card-title z-layer">Ludum Dare: What If</h3><p class="card-meta">Unity &middot; Shader</p></div>
+                </div>
+                <div class="card-back"><p class="takeaway-quote">"One flexible tool beats a thousand single-use ones."</p><p class="takeaway-text">The mask graph outlived every bespoke variant it replaced.</p><span class="back-read">Read the post &rarr;</span></div>
+              </div></div></a>
+            </article>
+    </div>
+  </section>
+
+  <!-- PICKED 1. This is a NO-RESULTS state, not a permanent block: on the live site it only
+       appears when a search or filter matches nothing (post-filter.js). Hidden by default so the
+       page does not read as though it is empty while twelve cards sit above it. -->
+  <div class="es es--stack" role="status" hidden data-slot="empty state" data-state="pending">
+    <div class="es__content">
+      <p class="es__title">No projects matching <b>&ldquo;raymarching&rdquo;</b></p>
+      <p class="es__body">Try a shorter word, or
+        <a class="es__action" href="#">show all 12 projects</a>.</p>
+    </div>
+  </div>
+
+  <div style="height:80px"></div>
+</div></div>
+<!-- LEFT ANCHORED (Rod 2026-08-23). The footer used to sit in the page's content
+     column, so on About it started 249px in at a 1440 viewport. It now spans the page
+     with a 2.5vw gutter, so it anchors left instead of following the column.
+     The lab tag was checked and is NOT the cause - it is fixed at left:14/bottom:10 and
+     does not overlap the footer at any width. -->
+<div class="footer-wrap">
+  <footer class="footer-line ok" data-slot="footer" data-state="approved">
+    <!-- The way back, first item, exactly where the lab tag puts its own "&larr; lab".
+         Rod 2026-08-23: "for pages that arent the landing add the back arrow to landing too."
+         The landing does not get one - it would link to itself. -->
+    <a class="footer-line__item footer-line__back" href="/redesign-lab/final-landing.html">&larr; Landing</a>
+    <a class="footer-line__item footer-line__name" href="/redesign-lab/final-landing.html">Rodney Fan</a>
+    <a class="footer-line__item" href="/redesign-lab/final-projects.html">Projects</a>
+    <a class="footer-line__item" href="/redesign-lab/final-about.html">About</a>
+    <a class="footer-line__item" href="/redesign-lab/final-ramblings.html">Ramblings</a>
+    <span class="footer-line__item footer-line__end">Built by hand</span>
+  </footer>
+</div></main>
+<div id="state"></div>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; FINAL &middot; Projects &middot;
+  <a href="/redesign-lab/projects-blockout.html?v=sticker">its blockout</a></div>
+<script>
+(function(){
+  var slots=[].slice.call(document.querySelectorAll('[data-slot]'));
+  var ok=slots.filter(function(s){return s.dataset.state==='approved';});
+  var el=document.getElementById('state');
+  var pct=slots.length?Math.round(ok.length/slots.length*100):0;
+  el.innerHTML='<b>'+ok.length+' of '+slots.length+' slots approved</b>'
+    +'<div class="bar"><i style="width:'+pct+'%"></i></div>'
+    +'<div class="sp__h">approved</div><ul class="a">'+(ok.length?ok.map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join(''):'<li style="color:#6f6f6f">none yet</li>')+'</ul>'
+    +'<div class="sp__h">waiting on you</div><ul>'+slots.filter(function(s){return s.dataset.state!=='approved';})
+      .map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join('')+'</ul>'
+    +'<button id="tog">toggle state badges</button>';
+  document.getElementById('tog').addEventListener('click',function(){
+    document.body.classList.toggle('show-state');});
+})();
+</script>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+
+<script type="module" src="/redesign-lab/effects/sparkler-init.js"></script>
+<script type="module" src="/redesign-lab/effects/scene-mode.js"></script>
+<script type="module">
+  /* MISSING UNTIL 2026-08-24, and this is why Rod said the page was "clearly broken": the cards
+     were copied from the landing WITHOUT the scripts that drive them. Measured before this block
+     existed: 22 `.js-magnetic` elements with 0 initialised, no card able to flip (merged-card owns
+     `.is-flipped`, so every takeaway back-face was unreachable), and 9 cover videos with 0 playing
+     because project-cards-expensive.js is what starts them on hover.
+     A component is its markup AND its container AND its JS - third time that lesson has cost
+     something on this page. */
+  import { init as initMagnetic } from '/redesign-lab/extracted/components/drift-magnet/drift-magnet.js';
+  import { init as initCards } from '/redesign-lab/extracted/components/project-cards-expensive/project-cards-expensive.js';
+  initMagnetic(document);
+  initCards(document);   /* also runs initMergedCard + initDriftMagnet internally */
+</script>
+</body>
+</html>

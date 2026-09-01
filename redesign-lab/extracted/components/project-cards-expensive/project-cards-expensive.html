@@ -1,0 +1,118 @@
+<!-- project-cards (expensive): the COMBINED keeper stack on the real merged-card (Rod 2026-06-14).
+     Per card: drift + magnet (whole card) + glass band-reveal (front) + back-side glow + parallax
+     tilt/flip. Video plays on HOVER only (project-page perf precaution). No text glow (scrapped).
+     For the CAPPED landing/featured grid (bento), where the full luxe stack is affordable. -->
+<div class="epx">
+  <p class="epx-note">
+    combined &mdash; drift + magnet + glass band-reveal + back glow + parallax tilt &middot; video plays on hover
+  </p>
+  <div class="epx-controls">
+    <button type="button" data-epx-layout>Layout: Bento</button>
+    <button type="button" data-epx-corners>Corners: Square</button>
+    <label class="epx-ctl">glow r<input type="range" min="80" max="420" value="220" data-epx-var="--glow-r" data-epx-unit="px" /></label>
+    <label class="epx-ctl">z glass<input type="range" min="0" max="80" value="26" data-epx-var="--z-glass" /></label>
+    <label class="epx-ctl">z body<input type="range" min="0" max="80" value="32" data-epx-var="--z-body" /></label>
+    <label class="epx-ctl">z title<input type="range" min="0" max="80" value="12" data-epx-var="--z-title" /></label>
+  </div>
+  <div class="merged-cards merged-cards--square epx-cards" data-tune="cards grid">
+    <div data-column-span="6" data-row-span="2" class="posts-grid-hue-a">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+            <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">Compute Grass</h3><p class="card-meta">Unity &middot; HLSL &middot; Compute</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"One gust, half a million blades."</p><p class="takeaway-text">The blade count mattered less than the wind phase reading as a single gust across the field.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+    <div data-column-span="6" class="posts-grid-hue-b">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+            <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">Decompiling the Shaders of ZZZ!</h3><p class="card-meta">Rendering study &middot; HLSL</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"Rebuilt a shipped game's shaders from scratch."</p><p class="takeaway-text">Half the "magic" was clever use of vertex colors as masks.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+    <div data-column-span="6" class="posts-grid-hue-a">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"></div>
+            <span class="card-pin card-pin--wip z-layer">WIP</span>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">2D Physics on the GPU</h3><p class="card-meta">Tooling &middot; Compute &middot; soon</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"Full write-up coming soon."</p><p class="takeaway-text">Constraint solving on compute, one tile at a time.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+    <div data-column-span="12" class="posts-grid-hue-b">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video></div>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">Procedural 3D Mask</h3><p class="card-meta">Unity &middot; Shader</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"One flexible tool beats a thousand single-use ones."</p><p class="takeaway-text">The mask graph outlived every bespoke variant it replaced.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+    <div data-column-span="6" class="posts-grid-hue-a">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">Sparkler System</h3><p class="card-meta">Unity &middot; VFX</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"Cheap sparks, expensive feel."</p><p class="takeaway-text">A handful of additive quads sold the whole festival.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+    <div data-column-span="6" class="posts-grid-hue-b">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">Lantern Shader</h3><p class="card-meta">HLSL &middot; Shader</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"Light that breathes."</p><p class="takeaway-text">Flicker is just noise you trust.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+    <div data-column-span="6" class="posts-grid-hue-a">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"></div>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">Water Reflection</h3><p class="card-meta">Three.js &middot; Shader</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"A mirror that ripples."</p><p class="takeaway-text">Planar reflection plus a little fakery.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+    <div data-column-span="6" class="posts-grid-hue-b">
+      <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+        <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+          <div class="card-front">
+            <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video></div>
+            <div class="glass-plane z-layer"></div>
+            <div class="card-body z-layer"><h3 class="card-title z-layer">Terrain Tool</h3><p class="card-meta">Unity &middot; Tooling</p></div>
+          </div>
+          <div class="card-back"><p class="takeaway-quote">"Sculpt, don't place."</p><p class="takeaway-text">One brush beat a thousand prefabs.</p><span class="back-read">Read the post &rarr;</span></div>
+        </div></div></a>
+      </article>
+    </div>
+  </div>
+</div>

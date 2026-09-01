@@ -1,0 +1,241 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   page-title-desc - the PAGE TITLE + DESCRIPTION block for the projects and ramblings indexes.
+   Built 2026-08-23 for the SOURCING PASS. This slot was on the unsourced list: final-projects.html
+   says of it, verbatim, "no source. \"Section title + tagline\" is on the unsourced list."
+
+   ── THE TITLE IS NOT DEFINED HERE, ON PURPOSE ──────────────────────────────────────────────
+   The H1 is already decided in decisions.css (.d-h1: signature orange --h1-color, weight 300,
+   clamp(2.75rem, 7vw, 101px), line-height .92, letter-spacing -.06em, margin 0). This file does
+   NOT restate any of it. The title element in the demo carries .d-h1 and the demo LINKS the real
+   decisions.css by relative path rather than copying it, so the two cannot drift.
+   The only thing this file gives the title is a WIDTH, because the two blockouts reserve
+   different widths for it, and one border-bottom in V3.
+
+   ── PRIMARY SOURCE ─────────────────────────────────────────────────────────────────────────
+   potg.art - https://potg.art/about/ , stylesheet https://potg.art/_astro/about.DQG1MDvI.css
+   Held in the lab as sources/potg-typography.md, tier True, captured 2026-06-11.
+   In Rod's own gallery at reference-gallery.html:559-564, tiered A-, his tags include
+   "serif-display", "minimal-text", "elegant-fonts", "generous-spacing".
+   RE-VERIFIED AGAINST THE LIVE STYLESHEET 2026-08-23 for this build. Every number below came
+   back identical to the saved note. ONE FIELD DID NOT ECHO: the live fetch returned
+   .my__header__sub as font-size 12 / weight 300 / line-height 1 and did not show the
+   letter-spacing .05em the saved note records. It is flagged at V1 rather than assumed.
+
+   potg is the right parent because it has this exact component and almost nothing else does:
+   an <hgroup class="page-header"> holding a page title with a sub line under it, plus two other
+   real title+sub arrangements on the same site. Three versions, three of THEIR arrangements.
+
+   ── UNIT CONVERSION, STATED BECAUSE IT IS A REAL DECISION ──────────────────────────────────
+   potg sets html{font-size:calc(100 / var(--base-vw) * 1vw)} with --base-vw:1440, so 1rem on
+   that site is 1px at a 1440 viewport (sources/potg-typography.md:61,68-72). Our root is the
+   default 16px. Their values are therefore carried across AS PIXELS, not as rems:
+   16rem -> 16px, 11rem -> 11px, 12rem -> 12px, 22rem -> 22px, 23rem -> 23px, 640rem -> 640px.
+   Nothing is rounded and nothing is re-scaled to taste.
+
+   ── WHAT COULD NOT TRANSFER ────────────────────────────────────────────────────────────────
+   Their typefaces (Dahlia, Hellix, Hiragino ProN) are commercial or Japanese-only and are not
+   carried. The description takes --font-body, which is what the six final pages already load.
+   Their #28224D-on-white scheme is inverted here by the palette, so their color-mix softening
+   becomes --color-silver - see the colour note at V1.
+
+   ── PALETTE ────────────────────────────────────────────────────────────────────────────────
+   --color-muted (#9aa3bd) is not used anywhere in this file. The description takes
+   --color-silver (#a3a19d) in V1 and V2 and --color-text in V3.
+   No blur, no backdrop-filter, no shadow, no fill: this block sits straight on the live scene.
+   Square by default and nothing here rounds anything.
+
+   ── MOTION ─────────────────────────────────────────────────────────────────────────────────
+   Nothing in this component animates or transitions, so there is no prefers-reduced-motion
+   block. That is a statement, not an omission.
+   ============================================================================================ */
+
+/* ── THE BLOCK ─────────────────────────────────────────────────────────────────────────────
+   Two children and a gap. The gap is a variable because the two blockouts reserve DIFFERENT
+   gaps and the blockout is the contract - see the page arrangements at the bottom. */
+.ptd {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  row-gap: var(--ptd-gap, 11px);
+}
+.ptd__title { width: var(--ptd-title-w, 100%); max-width: 100%; }
+.ptd__desc {
+  width: var(--ptd-desc-w, 100%);
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--font-body, sans-serif);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V1 - THE SUB LINE.  potg's own page-header, geometry verbatim.
+   TIER: Remixed.  IDEA-ORIGIN: theirs.
+
+   VERBATIM from https://potg.art/_astro/about.DQG1MDvI.css, re-verified live 2026-08-23:
+     hgroup.page-header .page-header__sub{ font-size:16rem; font-weight:300; line-height:1;
+                                           letter-spacing:.05em; margin-top:11rem }
+   Their margin-top:11rem is the gap between title and sub. It is recorded here and NOT set as a
+   live declaration, because both blockouts reserve their own gap (18px projects, 12px
+   ramblings) and match-the-blockout outranks it. Reversible: delete the page arrangement and
+   the default --ptd-gap:11px above is theirs.
+
+   COLOUR IS OURS, and it is a REUSE rather than a new decision: potg softens secondary text by
+   MIXING the primary colour with the ground (color-mix(in srgb, var(--color-black-100) 70%,
+   transparent), sources/potg-typography.md:122) instead of introducing a second hue.
+   --color-silver is already exactly that operation on our side - decisions.css:20 defines it as
+   color-mix(in srgb, #f5f3ef 62%, #1c1a18). So the mechanism is theirs and the token already
+   existed; nothing new is derived here. Their `transparent` half is deliberately NOT copied: a
+   see-through description over a live three.js scene loses legibility, which is the same reason
+   decisions.css:209 swapped --color-panel for --color-panel-solid on the prose link highlight.
+
+   FLAGGED: their sub is ONE line, and line-height:1 is drawn for one line. The projects blockout
+   reserves TWO lines. At two lines a 16px sub at line-height 1 sets solid with no leading. V2
+   exists because of this. */
+.ptd--sub .ptd__desc {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V2 - THE SOFTENED PARAGRAPH.  potg's own multi-line secondary text.
+   TIER: Remixed.  IDEA-ORIGIN: theirs.
+
+   VERBATIM from the same stylesheet, re-verified live 2026-08-23:
+     section.first .first__text-ja{ font-size:16rem; font-weight:300; line-height:1.7;
+                                    letter-spacing:.05em }
+   and its container section.first .first__wrap{ gap:23rem }.
+   This is the site's real answer for a secondary block that WRAPS, which is what a two-line page
+   description is. Same size and weight as V1; only the leading changes, 1 -> 1.7.
+   Their 23px wrap gap is recorded and not set live, same reason as V1.
+
+   OURS: the colour token only, same reuse as V1. */
+.ptd--para .ptd__desc {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: 0.05em;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V3 - THE RULED TITLE OVER A LEDE.  TWO PARENTS, so it is filed as a REMIX and neither
+   citation is allowed to carry the other.
+   TIER: Remixed.  IDEA-ORIGIN: theirs (both halves).  No source does both.
+
+   HALF ONE - THE RULE. acegikmo, https://acegikmo.com/shapes/css/styles.css, verbatim, held as
+   sources/acegikmo-prose.md and re-verified live 2026-08-23:
+     h1{ font-family:"Renogare"; text-align:center; margin-top:60px; color:#ff1155;
+         font-weight:100; border-bottom: solid 1px; }
+   The ONE declaration taken is `border-bottom: solid 1px` with NO border-color, which is the
+   whole device: the rule inherits the heading's own `color`, so the title and its rule move
+   together with a single colour change. Here that colour is the decided --h1-color.
+   NOT TAKEN: their typeface (commercial), their weight 100 (the ladder says 300), their
+   #ff1155 (palette law), their margin-top:60px (the blockout owns the spacing above).
+   NOTE THE ECHO, so it is a choice and not an accident: decisions.css:89-95 already gives the H2
+   a rule, but by a different mechanism (a flex ::after at 0.28 opacity beside the text). This is
+   a rule UNDER the text at full colour. They read as related, not identical.
+
+   HALF TWO - THE LEDE. potg, same stylesheet, re-verified live 2026-08-23:
+     section.first .first__text-en{ font-size:22rem; font-weight:500; line-height:1.8;
+                                    letter-spacing:-.02em }
+     section.first .first__wrap{ max-width:640rem }
+   This is their lead paragraph, and it is the only one of the three that is NOT softened: on
+   their page the lede runs at full text colour while the support line under it is mixed down.
+   Carried across that way, so the description here takes --color-text and becomes the brightest
+   thing in the block. That agrees with decisions.css:184-188, which makes body copy pristine
+   white and the brightest thing on the page while the headings recede.
+
+   NOT TAKEN from potg: their .first__wrap{margin-left:auto}, which right-aligns the lede to the
+   page grid. Both blockouts centre this block, so their alignment cannot come with it.
+
+   WATCH AT BUILD, measured not guessed: .d-h1 is line-height .92, which crops the em box tighter
+   than the glyphs. "Projects" has a descender. A border-bottom sits on the bottom of that
+   cropped box, so the j may cross the rule. The demo draws it so this can be looked at rather
+   than argued about. */
+.ptd--ruled .ptd__title { border-bottom: solid 1px; }
+.ptd--ruled .ptd__desc {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.8;
+  letter-spacing: -0.02em;
+  max-width: 640px;
+  color: var(--color-text, #f5f3ef);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE TWO PAGE ARRANGEMENTS - THIS IS WHERE THE BLOCKOUT WINS.
+
+   The two pages disagree structurally and they are NOT unified here, because both are approved
+   blockout geometry and D25 says layout is Rod's alone:
+
+     PROJECTS is a FULL-WIDTH block. Both boxes span the panel's 930px content width, so the
+     title box and the description box are the same width and only the copy is centred inside
+     them. Nothing is narrowed.
+       projects-blockout.html:232 - box(44,'PAGE TITLE') + height:18px + box(50,'DESCRIPTION')
+       final-projects.html:104    - .panel .head{text-align:center}
+       930 = the 1000px panel less its 2 x 35px padding (final-projects.html:101).
+
+     RAMBLINGS is a NARROW CENTRED TITLE over a WIDER description, both inside a tinted
+     full-width band. The title box is deliberately SMALLER than the description box, which is
+     the exact inverse of projects, where they are equal.
+       ramblings-blockout.html:125-126 - b('380px',100) + height:12px + b('520px',44)
+
+   WHY THEY DIFFER, since the instruction was to say why: they are transcriptions of two
+   different sites, not two attempts at one idea. Projects is MinionsArt's tutorials page, where
+   the header is a band across the top of a boxed panel and everything in the panel shares one
+   width. Ramblings is a personal blog index whose header is a centred mark with a line under it,
+   so the title is sized to the WORD and the description is sized to the SENTENCE. Unifying them
+   would mean overriding one of the two chosen blockouts, which is Rod's call and not this
+   component's. */
+.ptd--projects {
+  --ptd-gap: 18px;        /* projects-blockout.html:232, the literal <div style="height:18px"> */
+}
+.ptd--ramblings {
+  --ptd-gap: 12px;        /* ramblings-blockout.html:126 / final-ramblings.html:110 gap:12px */
+  --ptd-title-w: 380px;   /* ramblings-blockout.html:125 */
+  --ptd-desc-w: 520px;    /* ramblings-blockout.html:126 */
+}
+
+/* ── THE OTHER RAMBLINGS RESERVATION. READ THE NOTE. ───────────────────────────────────────
+   The reservation handed to this build for ramblings (380 x 100 title, 520 x 44 description) is
+   variant 1, `?v=rulelog`, the dimden transcription. That is the variant ramblings-blockout.html
+   loads BY DEFAULT (line 89, <body class="rulelog">, and line 252, show(m?m[1]:'rulelog')), so a
+   measuring pass that opened the page without a ?v= would have measured it.
+
+   The CHOSEN variant is not that one. final-ramblings.html:21 says, verbatim:
+     CHOSEN BLOCKOUT: ramblings-blockout.html?v=hairline
+   and the hairline title bar reserves DIFFERENT boxes:
+     ramblings-blockout.html:164-165 - b('220px',26,'PAGE TITLE') + 12px + b('560px',20,'PAGE DESCRIPTION')
+     final-ramblings.html:167 repeats it: "220x26 title over 560x20 description, centred"
+   Both are drawn in the demo. This is NOT resolved here - it is a contradiction between two
+   Rod-approved artefacts and picking one is his call, exactly like mismatch 2 in
+   analysis/2026-08-23-blockout-contract.md. */
+.ptd--ramblings-hairline {
+  --ptd-gap: 12px;        /* ramblings-blockout.html:165 / final-ramblings.html:110 */
+  --ptd-title-w: 220px;   /* ramblings-blockout.html:164 */
+  --ptd-desc-w: 560px;    /* ramblings-blockout.html:165 */
+}
+}

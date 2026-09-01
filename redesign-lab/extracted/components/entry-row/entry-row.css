@@ -1,0 +1,302 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   entry-row - ONE row of the ramblings index. Built 2026-08-23.
+
+   SOURCE: Eve OFFICIAL, https://eveofficial.com/news/
+   CSS read from https://eveofficial.com/css/style.css?ver=260816230345 (36,914 bytes, 1,654
+   lines). The read is recorded verbatim in redesign-lab/analysis/subpage-specs/extract-5.md:42,
+   with the fetch method (curl, desktop UA, sheet read end to end) documented at extract-5.md:92.
+   The site's root type rule is at extract-3.md:64.
+
+   HONEST GAP, stated first because it changes how much weight these numbers carry:
+   I did NOT re-fetch eveofficial.com in this session (the fetch tool was rate-limited). Every
+   declaration below is copied from that saved read, which is itself a record of a live fetch, not
+   a repo-internal claim. If anything here matters, re-fetch and THE LIVE SITE WINS.
+
+   WHY THIS SOURCE: D15 (docs/DECISIONS.md:328) - "RAMBLINGS -> Eve OFFICIAL, the hairline
+   variant", chosen for exactly one property: a row with a picture and a row without keep the
+   SAME LEFT EDGE. That property is preserved in all three versions below and is the one thing
+   that must not be traded away.
+
+   -- EVE'S RULES, VERBATIM (extract-5.md:42) -------------------------------------------------
+     .wf { margin:0 auto; width:1140px; position:relative }
+     ul:first-of-type { border-top:1px solid #2c2c2c }
+     li { border-bottom:1px solid #2c2c2c; padding:30px 0 }
+     li a { display:block }
+     .date { margin:0 0 15px; display:block; line-height:1 }
+     .date span { margin:0 8px 0 0; color:#a40000 }
+     .ttl { font-size:20px; line-height:28px;
+            background-image:linear-gradient(#fff,#fff);
+            background-position:0% 100%; background-repeat:no-repeat; background-size:0% 1px }
+            -> hover background-size:100% 1px, transition: all .3s ease-out
+     li.tn a { padding-right:270px; min-height:180px; position:relative }
+     li.tn .img { width:240px; height:180px; position:absolute; top:0; right:0 }  hover opacity .6
+   and the root, from extract-3.md:64:
+     html { font: normal 16px/26px "Yu Mincho", ... }
+
+   -- WHAT IS OURS, AND WHY (no silent swaps) -------------------------------------------------
+   1. #a40000 on the category word CANNOT TRANSFER. Palette law bans red. Taken to --color-gold.
+      The mechanism (a coloured word inline before the date, 8px apart) is 100% theirs.
+   2. #2c2c2c hairlines -> --color-line-soft. Their hairline sits on a flat #111 page; ours sits
+      over a live three.js scene, so it is expressed as a token, not a hex.
+   3. Their underline gradient is linear-gradient(#fff,#fff). Taken to --color-gold, because gold
+      is this site's link language everywhere else (decisions.css .prose a). Flagged, not hidden.
+   4. `transition: all .3s ease-out` narrowed to the two properties that actually move. `all` on
+      a row that also carries a hover is a hazard, not a style.
+   5. `.ttl` display is NOT in the read. `display:inline-block` here is INFERRED, not measured:
+      a 0% -> 100% background-size underline only reads as a text underline if the box hugs the
+      text, and it visibly does on their page. Marked inference, per house rule.
+   6. THE BLURB IS A GRAFT. Eve's row is date + title, no blurb at all
+      (synth-ramblings.md:23: "the blurb line is an addition"). Its type comes from
+      decisions.css:195-200 (weight 300, line-height 1.3, letter-spacing -0.18px, --color-text),
+      which is the settled house body rule, and its 15px offset reuses Eve's own .date rhythm.
+      Version C below is the row WITHOUT it, which is the only un-grafted row in the set.
+   7. Focus is OURS and is a requirement, not a taste call: Eve ships no focus style and the row
+      is a link (WCAG 2.4.7). :focus-visible shares the hover appearance, which costs nothing.
+
+   -- NOT TAKEN -------------------------------------------------------------------------------
+   Eve's fixed shell: body{min-width:1140px} plus <meta name="viewport" content="width=1280">.
+   The site is desktop-only by declaration and has NO responsive column, so any mobile behaviour
+   would be invented. The one breakpoint below is the blockout's own (ramblings-blockout is
+   silent; final-ramblings.html:130-131 drops the 270px reserve and stacks the thumb at 820px),
+   carried across rather than re-invented, and it is still an OPEN QUESTION - see the .md.
+   ============================================================================================ */
+
+/* -- THE LIST AND THE ROW. Theirs, verbatim except the two colour tokens. --------------------- */
+
+.er-list {
+  border-top: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.er-row {
+  border-bottom: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  padding: 30px 0;
+}
+
+/* `li a { display:block }`. .er-body is the same box for version B, where the row is not one
+   link. Both are the positioning context for the thumbnail, exactly as `li.tn a` is on Eve. */
+.er-row > a,
+.er-row > .er-body {
+  display: block;
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* THE LEFT EDGE. This is the whole reason D15 picked this variant: the picture is taken out of
+   flow and paid for with RIGHT padding, so nothing on the left ever moves. */
+.er-row--media > a,
+.er-row--media > .er-body {
+  /* 365, NOT the 270 in Rod's paste. The tuner's own readout flags this red and here is why: the
+     thumbnail went to 335px wide but the reserve stayed at 270, so the text would have run 65px
+     UNDER the picture. 365 keeps the 30px gutter his own pre-tune values had (270 - 240). The dial
+     for this exists; he moved the width and not the reserve. */
+  padding-right: 365px;
+  min-height: 170px;
+}
+.er-thumb {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 335px;
+  height: 170px;
+  object-fit: cover;
+  transition: opacity 0.3s ease-out;
+}
+.er-row > a:hover .er-thumb,
+.er-row > a:focus-visible .er-thumb,
+.er-body:hover .er-thumb,
+.er-body:focus-within .er-thumb { opacity: 0.6; }
+
+/* -- THE DATE LINE. `.date { margin:0 0 15px; display:block; line-height:1 }`. ----------------
+   font-size is NOT declared on Eve's .date, so it inherits their root 16px (extract-3.md:64).
+   line-height:1 therefore makes the strip exactly 16px tall - which is also exactly what the
+   blockout reserves for it (ramblings-blockout.html:157). Sourced rule, matching reservation,
+   nothing invented. It is written as 1rem here rather than left to inherit so the strip cannot
+   drift if a host page moves its root size. */
+.er-date {
+  display: block;
+  line-height: 1;
+  margin: 0 0 9px;
+  font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-size: 1rem;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* `.date span { margin:0 8px 0 0; color:#a40000 }` - the category word, inline, BEFORE the date.
+   This is the one row in the whole ramblings reference set where the tag is native to the source
+   rather than grafted on (synth-ramblings.md:22). Red is the only thing that could not come. */
+.er-cat {
+  margin: 0 8px 0 0;
+  color: var(--color-gold, #fbbf24);
+}
+
+/* -- THE TITLE plus their underline. The one genuinely non-default mechanism on the page. ----- */
+.er-ttl {
+  display: inline-block;                    /* INFERRED - see note 5 in the header */
+  max-width: var(--er-ttl-w, 80%);
+  /* LINE-HEIGHT ONLY, AND THE SIZE DELIBERATELY LEFT ALONE. Rod's tune came back with
+     `font-size: 24.5px; line-height: 1.5` and the tuner asked him to pick a destination for it.
+     Taking neither, for a measured reason: **24.5 against the ladder's 24 is half a pixel**, and
+     both destinations cost real things - carving the size back out of `entry-row.css` undoes the
+     three deletions that put these titles ON the ladder today, and moving the rung moves every h3
+     on every final page. Half a pixel is not worth either.
+     The line-height IS worth taking and costs nothing: the ladder's h3 declares none, so these
+     were inheriting `body { line-height: 1.7 }` - a 40.8px line box on 24px type. 1.5 is his
+     number and it restates nothing the ladder owns. */
+  line-height: 1.5;
+  margin: 0;
+  font-family: var(--font-display, "M PLUS Rounded 1c", sans-serif);
+  /* SIZE, WEIGHT AND COLOUR DELETED 2026-08-24 so the ladder reaches these. Rod, asked whether
+     the entry titles should follow the ladder or carve out: "should follow the ladder at 38.4".
+     They were 20px / 400 / #f5f3ef - a size on NO rung of the ladder (which is 61.44 / 38.4 / 24
+     / 15) and set outside `decisions.css` entirely, which is why this page read as not following
+     the ladder while every other page moved. These are `<h2>` elements, so deleting the three
+     declarations lets the bare `h2` rule through at 38.4 / 300 / gold.
+     `line-height: 28px` goes with them: it was Eve's 20/28 pair and would crush a 38.4px line. */
+}
+
+/* THE UNDERLINE MOVED TO THE ANCHOR, 2026-08-24. Rod: "the line only appears on the bottom of the
+   text it should underline both the top and bottom text if split into two lines if possible."
+
+   IT WAS A COPY ERROR, NOT A REMIX, and that is why it is worth fixing rather than deciding.
+   Eve's own sheet was re-fetched (`eveofficial.com/css/style.css?ver=260825084214`, rule at 765-773)
+   and their `.ttl` is a `<span>` that declares NO `display`, so it is `display: inline` and their
+   bar paints PER LINE FRAGMENT. Measured on their live page with a forced wrap: a 2-line title
+   gets two bars at 281px and 229px, a 3-line title gets three. Our `display: inline-block` - which
+   note 5 in this file's own header flags as INFERRED - painted ONE bar under the whole box.
+
+   WHY THE ANCHOR AND NOT THE HEADING. Their arrangement is a block anchor wrapping an inline span;
+   ours is an inline-block h2 wrapping an inline anchor. Putting the gradient on the ANCHOR
+   reproduces their structure exactly. Making the h2 inline instead would also work, but it would
+   silently drop `max-width: 66%` (which does not apply to a non-replaced inline) and would remove
+   a wrap in the 1030-850 band, moving the page 40px. This route moves NO layout: page height is
+   identical at 1440, 1280, 1024, 950 and 475.
+
+   WORTH KNOWING: at desktop widths nothing wraps today, so this is a narrow-window fix now and a
+   permanent one the moment a title longer than ~625px lands. */
+.er-link {
+  background-image: linear-gradient(var(--color-gold, #fbbf24), var(--color-gold, #fbbf24));
+  background-position: 0% 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;                  /* theirs - a border cannot animate its width */
+  transition: background-size 0.3s ease-out;
+}
+/* The first two are version A, where the whole row is the link. The last two are version B, where
+   the anchor is INSIDE the heading - :focus-within is what carries the keyboard state across that
+   nesting, and it is the reason the underline is driven off .er-ttl rather than off the anchor. */
+/* Version B only, which is what `final-ramblings.html` uses. `:focus-within` is still what carries
+   the keyboard state, it just lands on the anchor now.
+   FLAGGED, NOT IMPROVISED: version A (whole row is the link, no `.er-link`) loses its underline by
+   this change. Giving it one back is its own decision and no page uses it today. */
+.er-ttl:hover .er-link,
+.er-ttl:focus-within .er-link { background-size: 100% 1px; }
+
+/* -- THE BLURB. A GRAFT. Type from decisions.css:195-200; the 15px is Eve's own .date rhythm
+   reused, which is a reuse and not a read. Width 72% is the blockout's reservation
+   (ramblings-blockout.html:159), not a declaration on Eve - their title and body are plain
+   blocks with no width rule at all. Both fractions are named so they can be re-pointed in one
+   line if the column changes; see the fit table in the .md. */
+.er-blurb {
+  max-width: var(--er-blurb-w, 72%);
+  margin: 8px 0 0;
+  font-family: var(--font-body, "M PLUS Rounded 1c", sans-serif);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--color-text, #f5f3ef);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .er-link, .er-thumb { transition: none; }
+}
+
+/* ============================================================================================
+   VERSION A - EVE VERBATIM. The whole row is one link and the tag is a WORD.
+   Tier: Remixed. Idea-origin: theirs.
+   No extra CSS. Everything above IS version A - that is the point of it.
+   ============================================================================================ */
+
+/* ============================================================================================
+   VERSION B - THE SAME ROW WITH FILTERABLE TAGS.
+   Tier: Remixed (Eve) + REUSED (tag-badge). Idea-origin: theirs (Eve geometry) / ROD (the chip).
+
+   THIS IS NOT A SKIN CHANGE, it is a trade, and the trade is the reason the version exists:
+   Eve's row is ONE link (`li a { display:block }`). A chip that FILTERS must be a link too, and
+   an anchor inside an anchor is invalid HTML and a keyboard trap. So B gives up the whole-row
+   hit target to buy filterable tags. synth-ramblings.md openQuestion 2 asks Rod this exact
+   question ("is the tag a FILTER or a LABEL?") and it is still open.
+
+   THE CHIP IS NOT REBUILT. It is extracted/components/tag-badge/tag-badge.css, which Rod
+   finalized 2026-08-21 and squared. This file adds NO chip styling - link both stylesheets.
+   The 8px gap is Eve's own `.date span { margin:0 8px 0 0 }`, so even the strip spacing is hers.
+   ============================================================================================ */
+.er-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 15px;
+}
+.er-strip .er-date { margin: 0; }
+/* the anchor sits INSIDE the heading in version B, so it must not repaint it */
+.er-link { color: inherit; text-decoration: none; }
+
+/* ============================================================================================
+   VERSION C - EVE'S REAL ROW. Date line, title, nothing else.
+   Tier: True. Idea-origin: theirs.
+
+   ZERO CSS. It is version A with the <p class="er-blurb"> deleted, and that is the whole
+   version, so nothing is written here on purpose.
+
+   It exists because the blurb is the contested field in this entire page type. Three of the four
+   ramblings sources - dimden, Klubnika and Eve - carry NO blurb; their row is date + title
+   (extract-5.md:92). synth-ramblings.md openQuestion 3 puts it to Rod directly: is the blurb
+   load-bearing on ramblings, or is it a habit carried over from the projects grid? C is what the
+   source actually supports, and it is the only version in this file with nothing grafted onto it.
+   ============================================================================================ */
+
+/* -- The one breakpoint, carried from final-ramblings.html:130-131 rather than invented. Eve has
+   no responsive rule of any kind, so this is OURS and is an open question, not a spec. -------- */
+@media (max-width: 820px) {
+  .er-row--media > a,
+  .er-row--media > .er-body { padding-right: 0; min-height: 0; }
+  .er-thumb { position: static; width: 100%; height: auto; margin-top: 15px; }
+  .er-ttl, .er-blurb { max-width: 100%; }
+}
+
+
+/* *** PICKED 2026-08-23: B, the row with filterable tags. Rod: "I like B for entry row for the
+   blogs/ramblings."
+   CARRIED FORWARD HONESTLY: B reuses `tag-badge`, and the reused component's own
+   `line-height: 1.3rem` makes the tag strip 22.8px against a 16px reservation - 6.8px over. That
+   is the PARENT's size, not a choice made here, and it was reported rather than hidden when B was
+   built. It is worth fixing at tag-badge rather than patching it here, so the two places that use
+   the badge do not drift apart.
+   The property D15 picked this layout for is intact: the left edge is identical on all 8 rows. */
+}

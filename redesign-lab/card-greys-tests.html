@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CARD GREYS - current vs the blockout ramp</title>
+<!--
+  ===== CARD GREYS (2026-08-22) =====
+  Rod, P53: "i also wanted to change the card colors to a grey similar to the current blockout colors."
+
+  WHY THIS IS A PAGE AND NOT JUST A COMMIT. The change is ONE line in
+  extracted/styles/settings.css, but that one line repaints every card on every lab page including
+  the landing, which is built out and 8-of-11 approved. Flipping a global token while Rod cannot see
+  it is the sweeping change the working rules forbid, and "similar to" is not a value. So the
+  candidates are drawn at the real card size, over the real scene ground, and he picks one.
+
+  WHAT IS ACTUALLY BLUE RIGHT NOW, measured from extracted/styles/settings.css:
+    --color-panel        rgba(12, 16, 38, 0.55)   translucent, and 38 blue against 12 red
+    --color-panel-solid  #161d39                  the same hue, opaque
+    foundations.css also carries --panel: #161D39, the same colour under a different name.
+
+  NOT TOUCHED, and each for a reason:
+    --color-stamp-paper  #1e160e   Rod's OWN stamp callout, the one component he said to keep. Its
+                                   own comment says "dots must match exactly".
+    --color-glass        rgba(7,12,35,.4)   the top bar's backdrop. Chrome over the scene, not a card.
+    --color-surface      rgba(255,255,255,.05)  already neutral - a white wash, no hue at all.
+
+  THE BLOCKOUT RAMP, read from post-blockout.html / projects-blockout.html rather than remembered:
+    #141414  body ground      #1b1b1b  .box / .solid fill      #1d1d1d  .panel (projects)
+    #555 dashed / #666 solid borders      #d9d9d9 text      #3a3a3a hairlines
+
+  D18 says colour is decided LAST, after space. This is not a re-opening of that - Rod asked for a
+  specific swap by name, so it is his call. The alpha is kept at .55 in every candidate so nothing
+  moves and only the hue changes.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:44px 0 130px;position:relative;z-index:1}
+.lede{font-family:var(--font-mono);font-size:12px;line-height:1.9;color:var(--color-muted);
+  border:1px solid var(--color-line-faint);padding:18px 20px;margin-bottom:44px;max-width:92ch}
+.lede b{color:var(--color-text);font-weight:500}
+.lede code{color:var(--color-gold)}
+
+/* the cards sit over the same two grounds every real page has: the night ground, and the
+   lighter panel a card lands on inside the projects layout */
+.grounds{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:16px}
+@media(max-width:900px){.grounds{grid-template-columns:1fr}}
+@media(max-width:520px){.row{grid-template-columns:1fr}.ground{padding:16px}}
+.ground{padding:26px;border:1px solid #2c2c2c}
+.g-night{background:var(--color-night,#070C23)}
+.g-panel{background:rgba(29,29,29,.55)}
+.gl{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:#7d7d7d;margin-bottom:12px}
+
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:20px}
+.card{padding:16px 18px;border:1px solid var(--cb,#333);background:var(--cbg);min-height:132px;
+  display:flex;flex-direction:column;justify-content:space-between}
+.card h3{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#d9d9d9;font-weight:400}
+.card p{font-size:.78rem;line-height:1.65;color:#a8a8a8;margin-top:8px}
+.card code{font-family:var(--font-mono);font-size:.62rem;color:var(--color-gold);display:block;
+  margin-top:10px;letter-spacing:.02em}
+
+/* ---- the candidates. ALPHA HELD AT .55 EVERYWHERE so only hue changes and nothing moves ---- */
+.c-now   {--cbg:rgba(12,16,38,.55);  --cb:#242c4d}   /* what ships today - blue */
+.c-1b    {--cbg:rgba(27,27,27,.55);  --cb:#333}      /* blockout .box  #1b1b1b */
+.c-1d    {--cbg:rgba(29,29,29,.55);  --cb:#333}      /* blockout .panel #1d1d1d */
+.c-14    {--cbg:rgba(20,20,20,.55);  --cb:#2c2c2c}   /* blockout ground #141414 */
+.c-28    {--cbg:rgba(40,40,40,.55);  --cb:#3d3d3d}   /* cyanilux heading fill #282828 */
+.c-warm  {--cbg:rgba(28,26,24,.55);  --cb:#37332e}   /* a grey pulled 2 points warm */
+.c-black {--cbg:rgba(0,0,0,.66);     --cb:#383838}   /* dimden .box, verbatim: #000000a8 */
+
+.sw{display:flex;gap:0;margin:26px 0 8px;border:1px solid #2c2c2c}
+.sw div{flex:1;height:54px;position:relative}
+.sw span{position:absolute;bottom:4px;left:6px;font:9px ui-monospace,monospace;color:#8a8a8a}
+.note{font-family:var(--font-mono);font-size:10.5px;line-height:1.9;color:#8a8a8a;
+  border:1px dashed #3a3a3a;padding:16px 18px;margin-top:26px;max-width:92ch}
+.note b{color:#d9d9d9;font-weight:500}
+.note code{color:var(--color-gold)}
+/* ---- P59: THE LIVE SCENE BEHIND THE CARDS (Rod 2026-08-22: "i need to see this in context with
+   the scene to decide"). Same rig every final page uses - the hana bloom on #hana-bg plus the real
+   three.js bundle. The night ground below is now TRANSPARENT so the scene reads through it; the
+   panel ground keeps its fill because a card-inside-a-card genuinely sits on a panel. ---- */
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+body{background:transparent}
+.g-night{background:transparent}
+/* the scene toggle - the whole point is comparing WITH and WITHOUT, so it has to be switchable */
+#scenetoggle{position:fixed;right:14px;bottom:14px;z-index:80;background:rgba(8,10,18,.95);
+  border:1px solid #555;color:#ddd;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;padding:9px 14px;cursor:pointer}
+body.noscene #hana-bg,body.noscene #scrim{display:none}
+body.noscene{background:var(--color-night,#070C23)}
+body.noscene .g-night{background:var(--color-night,#070C23)}
+
+h2.sec{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400;margin:44px 0 14px}
+</style>
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
+<div id="scrim"></div>
+
+<header class="top">
+  <h1>Card greys</h1>
+  <span class="sub">current vs the blockout ramp &middot; alpha held at .55 so only hue changes</span>
+  <span class="sub"><a href="/redesign-lab/">&larr; lab index</a></span>
+</header>
+
+<div class="wrap">
+
+<div class="lede">
+  <b>Your ask, P53:</b> <i>"change the card colors to a grey similar to the current blockout
+  colors."</i> The change is <b>one line</b> &mdash; <code>--color-panel</code> in
+  <code>extracted/styles/settings.css</code> &mdash; but that line repaints every card on every
+  page including the landing, which is built out and 8-of-11 approved. So it is drawn rather than
+  committed, and "similar to" gets a number.<br><br>
+  <b>What is actually blue right now:</b> <code>--color-panel: rgba(12, 16, 38, 0.55)</code>. That
+  is 38 blue against 12 red &mdash; a real hue, not a neutral. <code>--color-panel-solid</code> and
+  <code>foundations.css --panel</code> are both <code>#161d39</code>, the same colour twice under
+  two names.<br><br>
+  <b>Every candidate below holds alpha at .55</b>, so the card stays translucent per D27 and
+  nothing about the box moves. Only the hue changes.<br><br>
+  <b>Three tokens are deliberately not in this set:</b> <code>--color-stamp-paper</code>
+  (<code>#1e160e</code>, your own stamp callout, whose comment says the dots must match exactly),
+  <code>--color-glass</code> (the top bar's backdrop, chrome not a card) and
+  <code>--color-surface</code> (already a neutral white wash with no hue at all).
+</div>
+
+<div class="sw">
+  <div style="background:rgba(12,16,38,.55)"><span>now &mdash; blue</span></div>
+  <div style="background:rgba(20,20,20,.55)"><span>#141414</span></div>
+  <div style="background:rgba(27,27,27,.55)"><span>#1b1b1b</span></div>
+  <div style="background:rgba(29,29,29,.55)"><span>#1d1d1d</span></div>
+  <div style="background:rgba(40,40,40,.55)"><span>#282828</span></div>
+  <div style="background:rgba(28,26,24,.55)"><span>warm grey</span></div>
+  <div style="background:rgba(0,0,0,.66)"><span>dimden</span></div>
+</div>
+
+<h2 class="sec">On the night ground, and on a projects panel</h2>
+<div class="grounds">
+  <div class="ground g-night"><div class="gl">the night ground &mdash; most pages</div>
+    <div class="row">
+      <div class="card c-now"><h3>Now</h3><p>What ships today. Translucent, and blue.</p><code>rgba(12,16,38,.55)</code></div>
+      <div class="card c-1b"><h3>Blockout box</h3><p>The blockout's own card fill.</p><code>rgba(27,27,27,.55)</code></div>
+      <div class="card c-1d"><h3>Blockout panel</h3><p>What the projects panel uses.</p><code>rgba(29,29,29,.55)</code></div>
+      <div class="card c-14"><h3>Blockout ground</h3><p>Darkest of the ramp.</p><code>rgba(20,20,20,.55)</code></div>
+      <div class="card c-28"><h3>Cyanilux fill</h3><p>Lightest. Real, from their heading card.</p><code>rgba(40,40,40,.55)</code></div>
+      <div class="card c-warm"><h3>Warm grey</h3><p>Two points off neutral. Ours, not sourced.</p><code>rgba(28,26,24,.55)</code></div>
+      <div class="card c-black"><h3>dimden</h3><p>Verbatim <code style="display:inline">#000000a8</code>. Real, and translucent.</p><code>rgba(0,0,0,.66)</code></div>
+    </div>
+  </div>
+  <div class="ground g-panel"><div class="gl">on a projects panel &mdash; card inside a card</div>
+    <div class="row">
+      <div class="card c-now"><h3>Now</h3><p>The blue reads hardest here.</p><code>rgba(12,16,38,.55)</code></div>
+      <div class="card c-1b"><h3>Blockout box</h3><p>Near-invisible against the panel.</p><code>rgba(27,27,27,.55)</code></div>
+      <div class="card c-1d"><h3>Blockout panel</h3><p>Same value as its own ground.</p><code>rgba(29,29,29,.55)</code></div>
+      <div class="card c-14"><h3>Blockout ground</h3><p>Separates by going darker, not lighter.</p><code>rgba(20,20,20,.55)</code></div>
+      <div class="card c-28"><h3>Cyanilux fill</h3><p>Separates by going lighter.</p><code>rgba(40,40,40,.55)</code></div>
+      <div class="card c-warm"><h3>Warm grey</h3><p>Ours, not sourced.</p><code>rgba(28,26,24,.55)</code></div>
+      <div class="card c-black"><h3>dimden</h3><p>The only one that darkens what is behind it.</p><code>rgba(0,0,0,.66)</code></div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <b>The thing worth deciding, not just the swatch.</b> Two of the candidates separate a card from
+  its ground by going <b>lighter</b> (#282828), and two by going <b>darker</b> (#141414, dimden).
+  The blockout's own answer is neither &mdash; #1b1b1b on #141414 is a 7-point step, which is
+  MinionsArt's trick exactly: <i>"contrast with the black parent is tiny, so the box separates by
+  fill alone."</i> On the night ground that reads fine. On the projects panel, where a card sits
+  inside a card, a 7-point step may vanish. That is why both grounds are drawn.<br><br>
+  <b>When you pick, the change is:</b><br>
+  <code>extracted/styles/settings.css:27&nbsp;&nbsp;--color-panel: rgba(12, 16, 38, 0.55) &rarr; rgba(NN, NN, NN, 0.55)</code><br>
+  <code>extracted/styles/settings.css:28&nbsp;&nbsp;--color-panel-solid: #161d39 &rarr; #NNNNNN</code><br>
+  <code>foundations.css:6&nbsp;&nbsp;--panel: #161D39 &rarr; #NNNNNN&nbsp;&nbsp;(the same colour under a second name)</code><br><br>
+  <b>Flagging one consequence rather than deciding it:</b> the cards going neutral removes the last
+  blue from every surface except the sky. T0-A ("warm + one cool") already got overturned by D27
+  when the tape took the colour; this finishes that move. If the blue in the cards was doing work
+  you wanted kept, this is the moment to say so.
+</div>
+
+</div>
+<button id="scenetoggle">scene: on</button>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+<script type="module" src="/redesign-lab/effects/scene-mode.js"></script>
+<script>
+(function(){
+  var b=document.getElementById('scenetoggle');
+  b.addEventListener('click',function(){
+    var off=document.body.classList.toggle('noscene');
+    b.textContent='scene: '+(off?'off':'on');
+    var c=document.querySelector('canvas:not(.bgcanvas)');
+    if(c) c.style.display = off ? 'none' : '';
+  });
+})();
+</script>
+</body>
+</html>

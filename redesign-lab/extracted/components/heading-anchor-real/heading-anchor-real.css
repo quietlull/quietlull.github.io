@@ -1,0 +1,136 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   heading-anchor-real - Maxime Heckel's hover anchor, corrected.
+   Built 2026-08-23 from analysis/reference-briefs/heading-anchor-maxime-heckel.md.
+
+   PREMISE: CONFIRMED BYTE-FOR-BYTE. The four rules appear at byte offset 25555 of the live
+   stylesheet, in one contiguous run, in exactly the claimed order with exactly the claimed
+   declarations. Same build hash the note recorded. No discrepancy.
+
+   TIER: True for the mechanism - geometry, transition, timing and structure all lift verbatim.
+   IDEA-ORIGIN: theirs. The departures below are CORRECTIONS forced by our palette and our nav
+   bar, not new design.
+
+   ===== WHAT IS GENUINELY THEIRS =====
+   opacity:0 at rest with the element STILL OCCUPYING LAYOUT, so the heading never reflows when
+   the mark appears; the reveal driven by hovering the HEADING, not the mark, so the hit area is
+   the whole heading; transition:opacity .2s ease; margin-left:.33rem; the
+   inline-flex / align-items:center / vertical-align:middle trio that seats an icon on a text
+   baseline; :focus-visible as a CO-EQUAL reveal trigger; and scroll-margin-top as the paired half.
+
+   ╔══════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ THREE DEFECTS IN THE `decisions.css` PORT THIS COMPONENT CORRECTS.                        ║
+   ║                                                                                            ║
+   ║ (a) `scroll-margin-top: 6.6rem` IS CALIBRATED TO THEIR NAV AND BREAKS ON OURS.            ║
+   ║     Our full bar = --top-bar-height + --top-bar-border * 2, and it grows as the bar stacks: ║
+   ║        >=781px   96px    -> 6.6rem leaves +9.6px. Correct.                                 ║
+   ║        <=780px  107.6px  -> -2px.  THE HEADING TUCKS UNDER THE BAR.                        ║
+   ║        <=560px  123.6px  -> -18px. THE HEADING IS COVERED.                                 ║
+   ║     The bar really is sticky (final-post.html:175), so the failure is real, not theoretical.║
+   ║     DERIVE it instead - already the house pattern for this exact problem at                ║
+   ║     final-post.html:228. At desktop the derivation evaluates to 105.6px, REPRODUCING THEIR  ║
+   ║     6.6rem EXACTLY, and it self-corrects at the two stacked tiers.                         ║
+   ║                                                                                            ║
+   ║ (b) OUR OWN `.prose a` SILENTLY OVERRIDES THE ANCHOR AND ADDS CHROME THEIRS NEVER HAD.    ║
+   ║     The anchor is an <a> inside .prose h2, so it IS a `.prose a` - (0,1,1) against the      ║
+   ║     anchor's (0,1,0), and later in the file. So:                                           ║
+   ║       - the anchor's own `color` is DEAD; it renders --color-text, not the muted tone       ║
+   ║       - it inherits a GOLD HAIRLINE border-bottom under the mark                            ║
+   ║       - :focus-visible gets a GOLD FILLED BLOCK behind it, not their colour swap            ║
+   ║     Their `--anchor-border-color:transparent!important` was PRECISELY the cancel for this   ║
+   ║     in their own system, and the port kept the half that was fighting nothing               ║
+   ║     (`text-decoration:none`) while dropping the half that mattered.                         ║
+   ║     Fixed here with an explicit cancel at winning specificity.                              ║
+   ║                                                                                            ║
+   ║ (c) `--color-muted-warm` was used and never defined (fixed in decisions.css 2026-08-23).   ║
+   ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+
+   NOT COPIED - THEIR OWN BUG: `h4:hover .anchor-link{opacity:1}` reveals on h4, but their
+   `scroll-margin-top` covers only h2,h3. So an h4 anchor on their site JUMPS UNDER THEIR OWN NAV.
+   One heading set, both halves applied to it.
+   ============================================================================================ */
+
+/* the paired half. Derived, not copied - see (a). Fallbacks matter because this can load on pages
+   that do not link top-bar.css. */
+.ha-scope :is(h2, h3) {
+  scroll-margin-top: calc(var(--top-bar-height, 5.875rem) + var(--top-bar-border, 1px) * 2 + 0.6rem);
+}
+
+.ha {
+  opacity: 0;                       /* at rest, but still occupying layout - theirs */
+  transition: opacity 0.2s ease;    /* theirs, verbatim */
+  margin-left: 0.33rem;             /* theirs, verbatim */
+  display: inline-flex;             /* the baseline-seating trio, theirs */
+  align-items: center;
+  vertical-align: middle;
+  color: var(--color-silver, #a3a19d);   /* theirs is --text-tertiary, oklch hue 262 = the
+                                            --color-muted failure mode exactly. Blocked. */
+  /* THE CANCEL - our replacement for their --anchor-border-color:transparent!important.
+     Their version was a Stitches-specific cancel for a selector that does not exist here, so the
+     PURPOSE is reproduced rather than the declaration. */
+  border-bottom: 0;
+  text-decoration: none;
+}
+
+/* reveal on hovering the HEADING, not the mark - theirs, and it is why the hit area is generous */
+.ha-scope :is(h2, h3):hover .ha,
+.ha:focus-visible { opacity: 1; }
+
+/* :focus-visible is a CO-EQUAL trigger in the source, and its colour swap is theirs.
+   Declared at winning specificity so `.prose a:focus-visible`'s gold filled block does not
+   silently replace it - that would be inheriting a focus indicator by accident rather than
+   choosing one. */
+.ha-scope :is(h2, h3) .ha:focus-visible {
+  opacity: 1;
+  color: var(--color-gold, #fbbf24);     /* theirs is --accent, a saturated blue. Blocked. */
+  background: none;
+}
+.ha-scope :is(h2, h3) .ha:hover { background: none; color: var(--color-gold, #fbbf24); }
+
+@media (prefers-reduced-motion: reduce) { .ha { transition: none; } }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE THREE VERSIONS - THE MARK, which is the genuinely open slot.
+
+   Rod judged variant A on text-decisions.html and its demo used a plain `#` character, NOT the
+   chain SVG. So WHAT HE PICKED IS THE BEHAVIOUR; the glyph itself has never been decided.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* V1 - `#`. What he actually saw when he picked. Zero assets, zero sourcing debt. */
+.ha--v1::after { content: "#"; font-size: 0.9em; }
+
+/* V2 - THEIR CHAIN-LINK SVG. Available as a True-tier external snippet: the path data is in the
+   brief, verbatim from their served markup, and `stroke="currentColor"` means it inherits the
+   colour rules above for free. Their own `.anchor-icon` and `space-window-top` hooks have ZERO
+   css rules in the live sheet - dead hooks, not carried. Markup-side; see the demo. */
+.ha--v2 svg { width: 16px; height: 16px; display: block; }
+
+/* V3 - `#`, ALWAYS VISIBLE at low opacity. OURS, and it exists for a real reason:
+   hover does not exist on touch, so V1 and V2 are UNREACHABLE ON A PHONE. That limit was accepted
+   when the variant was picked, on the grounds that the TOC covers mobile - but if the TOC lands
+   as the sticky rail only, this is the cheap fallback. Costs a permanent faint mark beside every
+   heading. Flagged as ours because the source has no such state. */
+.ha--v3 { opacity: 0.28; }
+.ha--v3::after { content: "#"; font-size: 0.9em; }
+.ha-scope :is(h2, h3):hover .ha--v3 { opacity: 1; }
+}

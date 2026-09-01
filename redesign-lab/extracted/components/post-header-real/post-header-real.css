@@ -1,0 +1,105 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   post-header-real - the post title + the metadata rail.
+   Built 2026-08-23. SOURCE: sources/stripe-dev-prose.md (CONFIRMED), sections `aside-sidenote`
+   and `heading`.
+
+   ╔══════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ CORRECTION: THIS WAS FILED "NO SOURCE" AND THAT WAS WRONG.                                ║
+   ║ COMPONENT-TABLE listed post header under "C. Blocked - no source", on the grounds that the ║
+   ║ bench file bundles title + meta while stripe splits them. That is a fact about the BENCH   ║
+   ║ FILE, not about the source. stripe's own `.sidebar` / `.metaDataItem` / `.metaDataShare`   ║
+   ║ rules cover the split directly, and they were already saved and CONFIRMED.                 ║
+   ║ The slot was blocked on a mis-read, not on missing provenance.                             ║
+   ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+
+   TIER: Remixed. Idea-origin theirs. Ours: the squaring, every colour, and the dotted-vs-solid
+   separator call (see V2).
+
+   THE SPLIT, which is the whole point: the TITLE is full-width above the grid; the META lives in
+   a STICKY RAIL beside the article. Their columns, verbatim:
+     .sidebar { grid-column: 1/7; position: sticky; top: var(--stickyOffset) }  (>=960px)
+     .article { grid-column: 8/25 }
+   so the rail is 6 of 24 and the article starts at 8 - a one-column gutter between them.
+   ============================================================================================ */
+
+.ph-rail {
+  display: grid;
+  align-self: start;
+  row-gap: 24px;                       /* theirs, verbatim */
+}
+@media (min-width: 960px) {
+  .ph-rail {
+    position: sticky;
+    top: var(--top-bar-height, 5.875rem);   /* their --stickyOffset, derived from OUR bar */
+  }
+}
+
+/* their metadata row: a two-column grid with a separator under each */
+.ph-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;      /* theirs, verbatim */
+  row-gap: 16px;
+  padding: 12px 0;
+}
+.ph-item:last-child { border-bottom: none; }   /* theirs, on .metaDataShare */
+
+/* the label register. SOURCE: their TableHeader `.text-smallcaps`, verbatim except the colour:
+   uppercase, mono, 12px, weight 300, with a NEGATIVE tracking of -.012em. That negative value is
+   worth noticing - most uppercase labels get positive tracking, and theirs tightens instead. */
+.ph-label {
+  text-transform: uppercase;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: -0.012em;            /* theirs - negative, deliberately */
+  color: var(--color-silver, #a3a19d);
+}
+.ph-value { font-size: 0.875rem; color: var(--color-text, #f5f3ef); }
+
+/* the title. Already decided and live in decisions.css (stripe 101/93, weight 300, -0.06em,
+   signature orange). NOT redefined here - one definition, and it is there. This component is the
+   RAIL plus the title's placement. */
+.ph-title-slot { grid-column: 1 / -1; }   /* full width, above the grid - their arrangement */
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE THREE VERSIONS - the separator, which is the one open call.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* V1 - THEIRS, VERBATIM: a DOTTED bottom border.
+   FLAGGED, because it collides with a house convention: dashed and dotted borders are the
+   GREYBOX PLACEHOLDER signal across this lab (it is why Rod objected to "tags with doted lines"
+   on 2026-08-21). A dotted separator in a finished component may read as unfinished even though
+   it is a faithful transcription. Drawn so the collision can be judged rather than argued. */
+.ph-rail--v1 .ph-item { border-bottom: 1px dotted var(--color-line-soft, rgba(255, 255, 255, 0.1)); }
+
+/* V2 - SOLID HAIRLINE. Same geometry, separator swapped to avoid the greybox collision above.
+   OURS, and the departure is the entire point of the version. */
+.ph-rail--v2 .ph-item { border-bottom: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1)); }
+
+/* V3 - NO SEPARATORS AT ALL. The 24px row-gap does the work on its own.
+   OURS. Quietest, and the most consistent with the reference-list decision, where the sourced
+   answer was also "no box, let space separate". */
+.ph-rail--v3 .ph-item { border-bottom: none; padding: 0; }
+.ph-rail--v3 { row-gap: 20px; }
+}

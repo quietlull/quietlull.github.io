@@ -1,0 +1,119 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* skills-row — the tools as outlines that draw themselves in.
+
+   PICKED BY ROD 2026-08-22: "lets remove open GL and vulcan and go with row 3", row 3 being the
+   outline-and-draw-in treatment rather than the solid or full-colour ones.
+
+   ── PROVENANCE ───────────────────────────────────────────────────────────────────────────────
+   MARKS: simpleicons.org, CC0 1.0, fetched from cdn.simpleicons.org/<slug> and saved verbatim to
+   redesign-lab/references/tool-icons/. Licence read from their repository LICENSE.md, not assumed.
+   The geometry inlined here is byte-identical to those files; only the brand `fill` attribute is
+   dropped, because this component strokes the path instead of filling it.
+
+   MECHANISM: stephanewillems.be/skills, read from the live DOM 2026-08-22 and recorded verbatim in
+   sources/stephanewillems-skills.md. The trick is `pathLength="1"`: it renormalises every path to
+   a length of 1 REGARDLESS of its real geometry, so one dash animation drives seven completely
+   different marks identically with no per-icon measurement. Their icons also carry tabindex and
+   treat hover and focus as the same state, which is copied here.
+
+   TIER: Remixed. The marks are theirs (CC0), the draw-in mechanism is stephanewillems', the set and
+   the gold are Rod's.
+
+   ── WHY OUTLINE AND NOT FULL COLOUR ──────────────────────────────────────────────────────────
+   Measured against the night ground: devicon's Unity is 2.29:1, Blender 2.55:1, Vulkan 2.68:1, and
+   Unreal's own #0E1128 is 1.04:1 — invisible, not dark. Brand marks are built for light pages.
+   Stroking in one gold sidesteps that entirely and keeps the palette law intact.
+
+   ── WHAT IS MISSING, AND IS NOT FAKED ────────────────────────────────────────────────────────
+   C#      Simple Icons carries none — verified against their 3,453-icon index. Only devicon has
+           one, and it is 3 paths of full colour, so it cannot join this row as-is.
+   HLSL    no official mark exists. It is a language, not a product.
+   Compute no official mark, same reason. Rod's idea of one shared glyph for these two is still
+           open, and it would be a DRAWN mark, which makes it ours rather than sourced. */
+
+.skills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skills-row__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  width: 4.75rem;
+  text-align: center;
+}
+
+.skills-row__icon {
+  width: 3rem;
+  height: 3rem;
+  display: block;
+  overflow: visible;
+}
+
+.skills-row__icon path {
+  fill: none;
+  stroke: var(--color-gold-deep, #f59e0b);
+  stroke-width: 0.7;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  /* Rod 2026-08-22 (P69): "skills should draw in at half the speed it is now".
+     Halved twice at his ask (P69 then P74): 1.5s -> 3s -> 6s. The 0.09s per-icon stagger in
+     skills-row.html is a SEPARATE number and is deliberately NOT halved - he asked about the
+     draw, not the cadence, and changing both would make it impossible to tell which he was
+     reacting to. Say the word if the stagger should stretch with it. */
+  animation: skills-row-draw 6s ease forwards;
+  animation-delay: var(--draw-delay, 0s);
+}
+
+@keyframes skills-row-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.skills-row__label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted, #9aa3bd);
+}
+
+/* The OS preference wins: no draw, just the finished outline. Not a fade-in, not a shortened
+   version — the animation simply does not run. */
+@media (prefers-reduced-motion: reduce) {
+  .skills-row__icon path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+}

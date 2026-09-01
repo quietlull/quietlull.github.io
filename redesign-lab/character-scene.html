@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-store" />   <!-- dev: always serve fresh so reloads pick up edits (no hard-refresh needed) -->
+<title>Petal-dissolve character — swappable models / animations</title>
+<!--
+  Reusable petal-dissolve character. `buildCharacter(gltf, opts)` encapsulates body + particles + mixer and
+  returns { root, mixer, setAnimation, setPetalCount, update, dispose, anims } so it can be dropped into the
+  Three.js background later (just add root to a scene + call update(dt)).
+  - Body: flat material + dissolve (snoise over <dithering_fragment>), GPU auto-skinned.
+  - Particles: GPU-skinned (three's skinning in the shader) so they sit on the body; one per SAMPLED vertex
+    (petalCount) so density is tunable. Motion is PROGRESS-INDEPENDENT: age = uProgress - vNoise drives each
+    petal (born at the dissolving edge, drifts + time-sway + tumble, fades by age/lifetime). No CPU particle loop.
+  - Accepts ANY clean-rigged skinned GLTF (Mixamo-style). Switch model / animation / position at runtime.
+    AVOID RobotExpressive (broken 160x rig). See character-test-HANDOFF.md.
+-->
+<style>
+  html, body { margin: 0; background: #0c0f14; }
+  #c { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; }
+  #scrollspace { height: 250vh; pointer-events: none; }   /* page scroll range so the site scroll-camera has somewhere to travel */
+  #hud { position: fixed; left: 0; bottom: 0; padding: 8px 12px; font: 11px ui-monospace, monospace; color: #aeb6c8; pointer-events: none; }
+  /* let the Tweakpane panel scroll instead of overflowing off-screen (it's taller than short viewports) */
+  .tp-dfwv { max-height: calc(100vh - 16px); overflow-y: auto; overflow-x: hidden; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="scrollspace"></div>
+<div id="hud">swap Model / Animation / Position in the panel. Petals = sampled vertices (tune Count). Pause Auto → still flutters.</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+    "tweakpane": "https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { Pane } from 'tweakpane';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { CCDIKSolver } from 'three/addons/animation/CCDIKSolver.js';   // standard three.js IK -> natural arm bend (Rod-approved v12)
+// Rod's REAL dock-scene modules, copied into ./scene/ (provenance: his code, faithful copy)
+import { CONFIG, loadLanternsFBX, loadDockFBX, setupScrollCamera, setupStaticCamera } from './scene/three-shared.js';
+import { LanternController } from './scene/lantern-controller.js';
+import { LanternMaterialManager } from './scene/shader/lanternShaderManager.js';
+import { FireworkController } from './scene/firework-controller.js';
+import { MirroredSurface } from './scene/shader/mirroredSurface-bob.js';   // v17: Bob's reworked water (adds ripple API + his new look). Drop-in: same constructor/update().
+
+const snoise = `
+vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x, 289.0); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+float snoise(vec3 v){
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0); const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i  = floor(v + dot(v, C.yyy)); vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g; vec3 i1 = min(g.xyz, l.zxy); vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + 1.0 * C.xxx; vec3 x2 = x0 - i2 + 2.0 * C.xxx; vec3 x3 = x0 - 1. + 3.0 * C.xxx;
+  i = mod(i, 289.0);
+  vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 1.0/7.0; vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy; vec4 y = y_ * ns.x + ns.yyyy; vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0; vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x); vec3 p1 = vec3(a0.zw, h.y); vec3 p2 = vec3(a1.xy, h.z); vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0); m = m*m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+}`;
+
+const SKIN_GLSL = `
+uniform mat4 bindMatrix; uniform mat4 bindMatrixInverse; uniform highp sampler2D boneTexture;
+attribute vec4 skinIndex; attribute vec4 skinWeight;
+mat4 getBoneMatrix(const in float i){
+  int size = textureSize(boneTexture, 0).x; int j = int(i)*4; int x = j % size; int y = j / size;
+  vec4 v1 = texelFetch(boneTexture, ivec2(x,y),0), v2 = texelFetch(boneTexture, ivec2(x+1,y),0);
+  vec4 v3 = texelFetch(boneTexture, ivec2(x+2,y),0), v4 = texelFetch(boneTexture, ivec2(x+3,y),0);
+  return mat4(v1,v2,v3,v4);
+}
+vec3 skinPosition(vec3 p){
+  mat4 bx=getBoneMatrix(skinIndex.x), by=getBoneMatrix(skinIndex.y), bz=getBoneMatrix(skinIndex.z), bw=getBoneMatrix(skinIndex.w);
+  vec4 sv = bindMatrix * vec4(p,1.0);
+  vec4 sk = bx*sv*skinWeight.x + by*sv*skinWeight.y + bz*sv*skinWeight.z + bw*sv*skinWeight.w;
+  return (bindMatrixInverse * sk).xyz;
+}`;
+
+// ---------- scene ----------
+const cnvs = document.getElementById('c');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x080f1b);   // site dock-scene navy
+const cam = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 10000);
+cam.position.set(0, CONFIG.camera.startPositionY, CONFIG.camera.positionZ);   // match the site About camera (fixed Z; scroll drives Y + tilt)
+cam.rotation.x = CONFIG.camera.startRotationX;
+const re = new THREE.WebGLRenderer({ canvas: cnvs, antialias: true });
+re.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+re.setSize(innerWidth, innerHeight, false);
+re.outputColorSpace = THREE.SRGBColorSpace;
+// DEFAULT view = the site's scroll camera (same as three-background-scene.js -> setupScrollCamera). Free orbit is opt-in inspect.
+const CAM = { freeOrbit: false };
+const scrollCam = setupScrollCamera(cam);   // his module: scrollY -> camera.position.y + rotation.x (provenance: three-shared.js)
+const orbCtrls = new OrbitControls(cam, cnvs);
+orbCtrls.target.set(0, 100, 0); orbCtrls.enableDamping = true; orbCtrls.enabled = false;   // OFF by default (Rod: judge from the fixed scroll view)
+const _lookPt = new THREE.Vector3(0, 100, 0);   // fixed look point for the cursor->world plane (replaces the orbit target)
+
+// Cursor -> world point at the character's depth (drives petal repulsion, Point 2).
+const _ray = new THREE.Raycaster(), _ndc = new THREE.Vector2(), _plane = new THREE.Plane(), _camDir = new THREE.Vector3(), _bendTmp = new THREE.Vector3();
+let mouseFlow = 1.0;   // how hard the cursor bends the whole petal stream
+let mouseMoved = false;
+// Head/arm tracking config (GUI-exposed). Forward axes are TUNABLE because Mixamo bones don't share a forward axis.
+// MODE drives BOTH what she looks at AND (faceMode) which way she faces:
+//   cursor   = facing TOWARD us, head tracks the cursor
+//   lanterns = facing LEFT,      tracks the nearest lantern
+//   fireworks= facing AWAY,      tracks a launched firework
+const LOOK = { head: true, arm: true, maxAngle: 0.7, armMaxAngle: 2.8, smooth: 0.07,
+               weight: 0, engageSpeed: 0.03,   // CALM: slow raise/relax (0.03) + slow hand-follow (smooth 0.07) so she glides, not snaps
+               useIK: true, ikIter: 8, armSide: 'left',   // arm points via CCDIKSolver; armSide = which arm points (defaulted LEFT for Rod's test; GUI toggles)
+               headFwd: new THREE.Vector3(0, 0, 1), armFwd: new THREE.Vector3(0, 1, 0),
+               mode: 'cursor', faceMode: true, faceOffset: 0, frontZFlip: true };   // frontZFlip: cursor mirrors target Z about her depth -> point toward viewer
+const FACE_Y = { cursor: 0, lanterns: Math.PI * 0.5, fireworks: Math.PI, water: Math.PI * 0.5 };  // facing per mode (water = side profile; faceOffset corrects)
+const fireworkTarget = new THREE.Vector3(0, 800, -100);                     // updated when a firework launches
+const FW_FLOOR = 100;                                                       // never aim her BELOW this (rockets launch under the dock)
+const _lanternTrg = new THREE.Vector3(), _ltmp = new THREE.Vector3(), _curTrg = new THREE.Vector3();
+const _IDENTITY = new THREE.Quaternion();
+const lookTarget = new THREE.Vector3();    // last engaged target (so disengage eases from it, not snaps)
+const _animQ = new THREE.Quaternion();     // captured post-mixer animated bone pose, for weight blending
+addEventListener('pointermove', (e) => {
+  mouseMoved = true;
+  _ndc.set((e.clientX/innerWidth)*2 - 1, -(e.clientY/innerHeight)*2 + 1);
+  _ray.setFromCamera(_ndc, cam);
+  cam.getWorldDirection(_camDir);
+  _plane.setFromNormalAndCoplanarPoint(_camDir, _lookPt);
+  _ray.ray.intersectPlane(_plane, U.uMouse.value);
+  // HORIZONTAL lean away from the cursor. Scale the RAW offset (NOT normalized) so the bias passes smoothly through
+  // ZERO at her center instead of snapping 180deg; magnitude grows 0 -> ~mouseFlow with distance.
+  _bendTmp.copy(U.uMouse.value).sub(_lookPt); _bendTmp.y = 0.0;
+  const hd = _bendTmp.length();
+  U.uFlowBias.value.copy(_bendTmp.multiplyScalar(-mouseFlow / (1.5 + hd)));
+});
+
+// Click ON the model -> world hit point -> uClickPoint (dissolve origin). Point 4 wires onCharacterClick.
+let onCharacterClick = null;
+let _downX = 0, _downY = 0, _downT = 0;
+addEventListener('pointerdown', (e) => { _downX = e.clientX; _downY = e.clientY; _downT = performance.now(); });
+addEventListener('pointerup', (e) => {
+  if (!character) return;
+  if (Math.hypot(e.clientX - _downX, e.clientY - _downY) > 6 || performance.now() - _downT > 500) return; // drag, not click
+  _ndc.set((e.clientX/innerWidth)*2 - 1, -(e.clientY/innerHeight)*2 + 1);
+  _ray.setFromCamera(_ndc, cam);
+  const hits = _ray.intersectObject(character.skinned, true);
+  if (hits.length) { U.uClickPoint.value.copy(hits[0].point); if (onCharacterClick) onCharacterClick(hits[0].point); }
+});
+const composer = new EffectComposer(re);
+composer.addPass(new RenderPass(scene, cam));
+// ONE bloom pass. Strength 0.25 (Rod's pick); radius/threshold from the original scene CONFIG. Tunable in Scene GUI.
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight),
+  0.25, CONFIG.lanterns.bloom.radius, CONFIG.lanterns.bloom.threshold);
+composer.addPass(bloom); composer.addPass(new OutputPass());
+
+// ---------- Rod's real dock scene (copied modules) ----------
+const lanternController = new LanternController(CONFIG, cam, { displacementScale: 3, intersectionZ: -150 });
+const lanternMaterialManager = new LanternMaterialManager(CONFIG);
+const fireworkController = new FireworkController(scene, cam, CONFIG.fireworks);
+const fbxLoader = new FBXLoader();
+loadLanternsFBX(fbxLoader, scene, lanternController, lanternMaterialManager);
+loadDockFBX(fbxLoader, scene);
+let mirroredSurface = null, waterMesh = null;
+fbxLoader.load('/assets/mesh/lantern-night/Water.fbx', (fbx) => {
+  fbx.traverse(c => { if (c.isMesh) waterMesh = c; });
+  if (!waterMesh) return;
+  scene.add(fbx);
+  mirroredSurface = new MirroredSurface(scene, cam, re, waterMesh, {
+    reflectionIntensity: CONFIG.water.reflection.reflectionIntensity,
+    reflectionTint: new THREE.Color(CONFIG.water.reflection.reflectionTint),
+    waveStrength: CONFIG.water.waves.waveStrength, waveSpeed: CONFIG.water.waves.waveSpeed,
+    waveScale: CONFIG.water.waves.waveScale, waveType: CONFIG.water.waves.waveType,
+  });
+  waterMesh.material = mirroredSurface.material;
+}, undefined, () => {});
+
+// WATER-WATCHING state (state 3) — wired to Bob's REAL ripple (mirroredSurface-bob.js). Clicking the water SPAWNS a
+// ripple (his module doesn't self-handle clicks); getEngage() then head-looks at the latest active ripple's origin.
+const _clickNdc = new THREE.Vector2(), _clickRay = new THREE.Raycaster();
+function spawnWaterRipple(worldPoint) { if (mirroredSurface) mirroredSurface.spawnRipple(worldPoint); }
+function lookAtWater(x, y, z) { spawnWaterRipple(new THREE.Vector3(x, y, z)); }   // test hook -> fires a real ripple
+addEventListener('pointerdown', (e) => {
+  if (LOOK.mode !== 'water' || !waterMesh) return;
+  _clickNdc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  _clickRay.setFromCamera(_clickNdc, cam);
+  const hit = _clickRay.intersectObject(waterMesh, true)[0];
+  if (hit) spawnWaterRipple(hit.point);   // a real ripple she'll then watch via getActiveRipple()
+});
+
+// Embers — white-yellow fireflies with organic, alive movement.
+// Faithful copy of Rod's About scene `three-background-scene.js:67-93` (provenance: his code). The only addition is
+// `userData.isEmber` so the character's lantern-tracking skips them as point targets (they float + flicker, not poke).
+const EMBER_COUNT = 25;
+const emberGeometry = new THREE.SphereGeometry(5, 8, 6);
+emberGeometry.computeBoundingBox();
+for (let i = 0; i < EMBER_COUNT; i++) {
+  const mesh = new THREE.Mesh(emberGeometry);
+  mesh.material = lanternMaterialManager.createMaterialForMesh(mesh, {
+    baseColor: new THREE.Color(0xfff4cc),
+    gradientStart: 1.0,
+    gradientEnd: 0.35,
+    flickerSpeed: (2.0 + Math.random() * 4.0),
+    flickerAmount: (0.5 + Math.random() * 0.4),
+    flickerColorShift: 0.2 + Math.random() * 0.15,
+  });
+  const side = Math.random() > 0.5 ? 1 : -1;
+  const x = side * (300 + Math.random() * 500);
+  const y = -50 + Math.random() * 450;
+  const z = -50 - Math.random() * 350;
+  mesh.position.set(x, y, z);
+  mesh.userData.floatScale = 1.0 + Math.random() * 0.5;
+  mesh.userData.isEmber = true;
+  lanternController.addLantern(mesh);
+  scene.add(mesh);
+}
+
+function makePetalTexture() {
+  const s = 128, cv = document.createElement('canvas'); cv.width = cv.height = s;
+  const ctx = cv.getContext('2d');
+  const g = ctx.createRadialGradient(s/2, s*0.6, s*0.04, s/2, s*0.5, s*0.6);
+  g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(0.7,'rgba(255,255,255,0.96)'); g.addColorStop(1,'rgba(255,255,255,0.55)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(64,118); ctx.bezierCurveTo(112,104,116,44,82,16);
+  ctx.quadraticCurveTo(72,30,64,24); ctx.quadraticCurveTo(56,30,46,16); ctx.bezierCurveTo(12,44,16,104,64,118);
+  ctx.closePath(); ctx.fill();
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const particleTexture = makePetalTexture();
+
+// shared dissolve uniforms (one active character at a time; per-character if you ever run several)
+const U = {
+  uProgress: { value: -30.0 }, uEdge: { value: 0.8 }, uFreq: { value: 0.25 }, uAmp: { value: 16.0 },
+  uEdgeColor: { value: new THREE.Color(0xffffff) }, uEdgeStrength: { value: 2.2 },   // white dissolve band
+  uCenter: { value: new THREE.Vector3() }, uNoisePre: { value: 1.0 }, uTime: { value: 0 },
+  uMouse: { value: new THREE.Vector3(0, 100, 0) }, uFlowBias: { value: new THREE.Vector3() },  // scene-scale center
+  // dissolve ORIGIN: rise-from-feet (height bias, always on) + radial-from-click (body-spanning)
+  uRiseStrength: { value: 12.0 }, uBindFeetY: { value: 0.0 }, uBindHeight: { value: 1.0 },
+  uClickPoint: { value: new THREE.Vector3(9999, 9999, 9999) }, uClickStrength: { value: 16.0 }, uClickRadius: { value: 120.0 },
+  uFlowSign: { value: 1.0 }, uClickActive: { value: 0.0 }, uClickNoiseScale: { value: 0.0 },  // 0 = pure click front (no noise)
+};
+const REF = 120.0, PMIN = -32, PMAX = 17;   // character height in scene units (scaled up onto the dock)
+const P = { autoDissolve: true, cycle: true, petals: 1500 };
+
+const MODELS = {
+  Soldier: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r161/examples/models/gltf/Soldier.glb',
+  Xbot:    'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r161/examples/models/gltf/Xbot.glb',
+};
+
+const loader = new GLTFLoader();
+let character = null, pane = null, time = 0, currentModelName = 'Soldier', _onLoaded = null;
+
+// What she aims at + whether there's a CURRENTLY-VISIBLE target ("only point at what she can see"), per mode.
+function getEngage() {
+  if (LOOK.mode === 'none') return { engaged: false, target: null };   // state explicitly wants NO head/arm tracking
+  if (LOOK.mode === 'water') { const r = mirroredSurface && mirroredSurface.getActiveRipple(); return r ? { engaged: true, target: r.origin } : { engaged: false, target: null }; }   // watch the latest active ripple (Bob's getActiveRipple)
+  if (LOOK.mode === 'lanterns') {
+    if (lanternController.lanterns.length && character) {
+      let bd = Infinity, found = false; const cp = character.root.position;
+      for (const l of lanternController.lanterns) {
+        if (l.userData.isEmber) continue;                  // fireflies float in the scene but are NOT point targets
+        l.getWorldPosition(_ltmp);
+        const d = _ltmp.distanceToSquared(cp);
+        if (d < bd) { bd = d; _lanternTrg.copy(_ltmp); found = true; }   // nearest real lantern
+      }
+      if (found) return { engaged: true, target: _lanternTrg };
+    }
+    return { engaged: false, target: null };
+  }
+  if (LOOK.mode === 'fireworks') {                          // point at the latest burst, and HOLD that point between bursts (Rod)
+    if (updateFireworkTarget()) { fwHeld = true; return { engaged: true, target: fireworkTarget }; }   // new burst -> retarget
+    return fwHeld ? { engaged: true, target: fireworkTarget } : { engaged: false, target: null };       // none bursting -> hold the last point
+  }
+  if (!mouseMoved) return { engaged: false, target: null };            // cursor: wait for the first move
+  _curTrg.copy(U.uMouse.value);                                        // cursor world point
+  if (LOOK.frontZFlip && character) _curTrg.z = 2 * character.root.position.z - _curTrg.z;   // FRONT state: mirror Z about her depth -> point toward the viewer, not away
+  return { engaged: true, target: _curTrg };
+}
+function getLookTarget() { const e = getEngage(); return e.target || lookTarget; }   // probe helper (last/current target)
+// In fireworks mode, auto-launch fireworks (her real scene fireworks) and aim her head at the latest burst.
+let fwTimer = 0, trackedFw = null, fwHeld = false;   // trackedFw = auto-launch pacing. fwHeld = once she's pointed at a burst, HOLD the last point between bursts (Rod).
+const FW = { xSpread: 800, yMin: 300, yRange: 400, zMin: 1000, zRange: 600, react: 0.1 };   // far/lower/wide -> points OUTWARD; react = TINY extra ON TOP of each firework's own time-to-explode (synced reaction)
+function launchTrackedFirework() {
+  const ex = (Math.random()-0.5)*FW.xSpread;          // horizontal spread (wide -> clear left/right swing)
+  const ey = FW.yMin + Math.random()*FW.yRange;       // height
+  const ez = -FW.zMin - Math.random()*FW.zRange;      // depth: far out -> arm points outward, not straight overhead
+  fireworkController.createFirework(new THREE.Vector3(ex, -100, ez), new THREE.Vector3(ex, ey, ez), 0.3, Math.random() < 0.5);
+  trackedFw = fireworkController.fireWorkGroup[fireworkController.fireWorkGroup.length - 1];   // the one we just made (for launch pacing)
+  fireworkTarget.set(ex, ey, ez);
+}
+// Point at the LATEST firework that's actually BURSTING — any source (her auto-launches OR cursor clicks), newest
+// first. Target = its static burst center (endPoint) -> no rising-rocket lerp, no cursor snap. False if none bursting.
+function updateFireworkTarget() {
+  const grp = fireworkController.fireWorkGroup;
+  for (let i = grp.length - 1; i >= 0; i--) {
+    const fw = grp[i];
+    // REACTION DELAY synced to THIS firework's own time-to-explode (explosionDelay/launchSpeed, variable per firework) + a tiny extra:
+    if (fw.phase === 'explode' && fw.endPoint && fw.explosionClock &&
+        fw.explosionClock.getElapsedTime() >= fw.explosionDelay / fireworkController.config.launchSpeed + FW.react) {
+      fireworkTarget.copy(fw.endPoint);
+      if (fireworkTarget.y < FW_FLOOR) fireworkTarget.y = FW_FLOOR;   // clamp: never aim below the horizon
+      return true;
+    }
+  }
+  return false;
+}
+
+function bodyMaterial() {
+  const m = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x9aa3b2) });
+  m.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, U);
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', `#include <common>
+      varying vec3 vPos; varying vec3 vWorldPos; varying float vLocalY; uniform vec3 uCenter; uniform float uNoisePre;`);
+    sh.vertexShader = sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+      vPos = (position - uCenter) * uNoisePre; vLocalY = position.y;`);
+    sh.vertexShader = sh.vertexShader.replace('#include <skinning_vertex>', `#include <skinning_vertex>
+      vWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>
+      varying vec3 vPos; varying vec3 vWorldPos; varying float vLocalY;
+      uniform float uFreq, uAmp, uProgress, uEdge, uEdgeStrength; uniform vec3 uEdgeColor;
+      uniform float uRiseStrength, uBindFeetY, uBindHeight, uClickActive, uClickNoiseScale;
+      uniform vec3 uClickPoint; uniform float uClickStrength, uClickRadius; ${snoise}`);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <dithering_fragment>', `#include <dithering_fragment>
+      // In CLICK mode the noise amplitude collapses (mix -> uClickNoiseScale) so DISTANCE-from-click drives the
+      // whole dissolve and the noise is only a thin edge jitter. Otherwise full noise (the crumbly rise dissolve).
+      float noise = snoise(vPos * uFreq) * (uAmp * mix(1.0, uClickNoiseScale, uClickActive));
+      // ORIGIN BIAS: rise-from-feet (feet dissolve first / materialize last) + radial-from-click (body-spanning).
+      float heightNorm = clamp((vLocalY - uBindFeetY) / uBindHeight, 0.0, 1.0);
+      float riseBias = uRiseStrength * (1.0 - heightNorm);
+      float clickBias = uClickStrength * (1.0 - clamp(distance(vWorldPos, uClickPoint) / uClickRadius, 0.0, 1.0));
+      float effProg = uProgress + riseBias + clickBias;
+      if (noise < effProg) discard;
+      if (noise > effProg && noise < effProg + uEdge) { gl_FragColor = vec4(uEdgeColor * uEdgeStrength, 1.0); }
+      else { gl_FragColor = vec4(gl_FragColor.xyz, 1.0); }`);
+  };
+  return m;
+}
+
+// Build a self-contained petal-dissolve character from a loaded gltf.
+function buildCharacter(gltf, opts = {}) {
+  const root = gltf.scene;
+  const mixer = new THREE.AnimationMixer(root);
+  const anims = {}; for (const clip of gltf.animations) anims[clip.name] = mixer.clipAction(clip);
+  const animNames = Object.keys(anims);
+  let activeAction = null;
+  function setAnimation(name) {
+    const next = anims[name]; if (!next) return;
+    if (activeAction && activeAction !== next) activeAction.fadeOut(0.3);
+    next.reset().fadeIn(0.3).play(); activeAction = next;
+  }
+  setAnimation(animNames.find(n => /idle/i.test(n)) || animNames[0]);
+
+  let skinned = null, best = 0, headBone = null;
+  const _bones = {};   // collect BOTH arms' bones by name so LOOK.armSide can switch the pointing arm
+  root.traverse(o => {
+    if (o.isSkinnedMesh && o.geometry.attributes.position.count > best) { best = o.geometry.attributes.position.count; skinned = o; }
+    if (o.name === 'mixamorigHead') headBone = o;
+    else if (/^mixamorig(Right|Left)(Arm|ForeArm|Hand)$/.test(o.name)) _bones[o.name] = o;
+  });
+  scene.add(root);
+  root.updateMatrixWorld(true); mixer.update(0); root.updateMatrixWorld(true);
+
+  // --- CCDIK chain per ARM (three.js CCDIKSolver) so the arm BENDS naturally; LOOK.armSide picks which arm points. ---
+  // Each bone's REAL down-the-bone axis = the local position of its child (rig-derived; Mixamo arm bones are diagonal).
+  function buildArm(side) {
+    const arm = _bones['mixamorig'+side+'Arm'], fore = _bones['mixamorig'+side+'ForeArm'], hand = _bones['mixamorig'+side+'Hand'];
+    if (!skinned || !arm || !fore || !hand) return null;
+    const ikTarget = new THREE.Bone(); ikTarget.name = 'ikTarget'+side;
+    scene.add(ikTarget);                                          // world-space point the hand reaches for
+    skinned.skeleton.bones.push(ikTarget);                       // CCDIKSolver indexes skeleton.bones
+    skinned.skeleton.boneInverses.push(new THREE.Matrix4());     // keep boneInverses matched (skeleton.update never hits undefined)
+    const bones = skinned.skeleton.bones, bi = b => bones.indexOf(b);
+    const ikSolver = new CCDIKSolver(skinned, [{
+      target: bi(ikTarget), effector: bi(hand),
+      links: [ { index: bi(fore) }, { index: bi(arm) } ],         // elbow then shoulder; limit-free for now (Rod tunes the bend)
+      iteration: LOOK.ikIter,
+    }]);
+    return { armBone: arm, foreArmBone: fore, handBone: hand,
+             armChildDir: fore.position.clone().normalize(), foreChildDir: hand.position.clone().normalize(),
+             ikSolver, ikTarget };
+  }
+  const ARMS = { right: buildArm('Right'), left: buildArm('Left') };
+  const activeArm = () => ARMS[LOOK.armSide] || ARMS.right || ARMS.left;
+
+  // scale to ~REF tall, center, then apply caller position
+  let box = new THREE.Box3().setFromObject(skinned);
+  root.scale.multiplyScalar(REF / Math.max(box.max.y - box.min.y, 1e-4));
+  root.updateMatrixWorld(true);
+  box = new THREE.Box3().setFromObject(skinned);
+  const c = box.getCenter(new THREE.Vector3());
+  const pos = opts.position || new THREE.Vector3(0, REF * 0.5, 0);   // center at REF/2 -> feet near y=0
+  root.position.set(pos.x - c.x, pos.y - c.y, pos.z - c.z);
+  root.updateMatrixWorld(true);
+
+  // dissolve noise center/scale for THIS geometry
+  const g = skinned.geometry; g.computeBoundingBox();
+  U.uCenter.value.copy(g.boundingBox.getCenter(new THREE.Vector3()));
+  const bs = g.boundingBox.getSize(new THREE.Vector3());
+  U.uNoisePre.value = REF / Math.max(bs.x, bs.y, bs.z);
+  // bind-pose height extent -> feeds the rise-from-feet origin (stable regardless of pose/world position)
+  U.uBindFeetY.value = g.boundingBox.min.y;
+  U.uBindHeight.value = Math.max(bs.y, 1e-4);
+
+  skinned.material = bodyMaterial();
+  re.render(scene, cam);   // force this skeleton's boneTexture to exist
+
+  let points = null, pgeo = null, pmat = null;
+  function buildParticles(count) {
+    if (points) { skinned.remove(points); pgeo.dispose(); pmat.dispose(); }
+    const src = g.attributes, total = src.position.count, cnt = Math.min(count | 0, total);
+    const posA = new Float32Array(cnt*3), siA = new Float32Array(cnt*4), swA = new Float32Array(cnt*4);
+    const aVel = new Float32Array(cnt*3), aFlip = new Float32Array(cnt), aFlipSpeed = new Float32Array(cnt), aSeed = new Float32Array(cnt), aOpacity = new Float32Array(cnt);
+    for (let i = 0; i < cnt; i++) {
+      const j = (Math.random()*total) | 0, x = i*3, q = i*4;
+      posA[x]=src.position.getX(j); posA[x+1]=src.position.getY(j); posA[x+2]=src.position.getZ(j);
+      siA[q]=src.skinIndex.getX(j); siA[q+1]=src.skinIndex.getY(j); siA[q+2]=src.skinIndex.getZ(j); siA[q+3]=src.skinIndex.getW(j);
+      swA[q]=src.skinWeight.getX(j); swA[q+1]=src.skinWeight.getY(j); swA[q+2]=src.skinWeight.getZ(j); swA[q+3]=src.skinWeight.getW(j);
+      // Flow-field base velocity (verbatim from Codrops dissolve-ref: vx/vy random 0.5-1, vz tiny).
+      aVel[x]=Math.random()*0.5+0.5; aVel[x+1]=Math.random()*0.5+0.5; aVel[x+2]=Math.random()*0.1;
+      aFlip[i]=Math.random()*Math.PI*2; aFlipSpeed[i]=0.5+Math.random()*1.5; aSeed[i]=Math.random()*100; aOpacity[i]=0.6+Math.random()*0.4;
+    }
+    pgeo = new THREE.BufferGeometry();
+    pgeo.setAttribute('position',   new THREE.BufferAttribute(posA, 3));
+    pgeo.setAttribute('skinIndex',  new THREE.BufferAttribute(siA, 4));
+    pgeo.setAttribute('skinWeight', new THREE.BufferAttribute(swA, 4));
+    pgeo.setAttribute('aVel', new THREE.BufferAttribute(aVel, 3));
+    pgeo.setAttribute('aFlip', new THREE.BufferAttribute(aFlip, 1));
+    pgeo.setAttribute('aFlipSpeed', new THREE.BufferAttribute(aFlipSpeed, 1));
+    pgeo.setAttribute('aSeed', new THREE.BufferAttribute(aSeed, 1));
+    pgeo.setAttribute('aOpacity', new THREE.BufferAttribute(aOpacity, 1));
+    pmat = new THREE.ShaderMaterial({
+      transparent: true, blending: THREE.NormalBlending, depthWrite: false,
+      uniforms: {
+        bindMatrix: { value: skinned.bindMatrix }, bindMatrixInverse: { value: skinned.bindMatrixInverse }, boneTexture: { value: skinned.skeleton.boneTexture },
+        uTexture: { value: particleTexture }, uPixelDensity: { value: re.getPixelRatio() },
+        uProgress: U.uProgress, uAmp: U.uAmp, uFreq: U.uFreq, uCenter: U.uCenter, uNoisePre: U.uNoisePre, uTime: U.uTime,
+        uBaseSize: { value: 5000 }, uColor: { value: new THREE.Color(0xffffff) }, uPartStrength: { value: 1.2 },  // big point size for the far camera
+        uLifetime: { value: 6.0 }, uDrift: { value: 3.0 }, uSway: { value: 8.0 }, uFlipOn: { value: 1 },        // scene-scale drift/sway
+        uFlowX: { value: 0.0 }, uFlowY: { value: 2.0 }, uWave: { value: 1.0 }, uFlowBias: U.uFlowBias,
+        uRiseStrength: U.uRiseStrength, uBindFeetY: U.uBindFeetY, uBindHeight: U.uBindHeight,
+        uClickPoint: U.uClickPoint, uClickStrength: U.uClickStrength, uClickRadius: U.uClickRadius,
+        uFlowSign: U.uFlowSign, uClickActive: U.uClickActive, uClickNoiseScale: U.uClickNoiseScale,
+      },
+      vertexShader: `
+        ${SKIN_GLSL}
+        ${snoise}
+        uniform float uPixelDensity, uBaseSize, uFreq, uAmp, uProgress, uNoisePre, uTime, uLifetime, uDrift, uSway, uFlowX, uFlowY, uWave, uRiseStrength, uBindFeetY, uBindHeight, uFlowSign, uClickActive, uClickNoiseScale; uniform vec3 uCenter, uFlowBias;
+        uniform vec3 uClickPoint; uniform float uClickStrength, uClickRadius;
+        attribute vec3 aVel; attribute float aFlip; attribute float aFlipSpeed; attribute float aSeed; attribute float aOpacity;
+        varying float vAge; varying float vFlip; varying float vOpacity; varying float vAngle;
+        void main() {
+          vec3 worldBase = (modelMatrix * vec4(skinPosition(position), 1.0)).xyz;
+          // SAME origin bias as the body: petals spawn at the moving front (rise-from-feet + radial-from-click).
+          float heightNorm = clamp((position.y - uBindFeetY) / uBindHeight, 0.0, 1.0);
+          float riseBias = uRiseStrength * (1.0 - heightNorm);
+          float clickBias = uClickStrength * (1.0 - clamp(distance(worldBase, uClickPoint) / uClickRadius, 0.0, 1.0));
+          float noise = snoise(((position - uCenter) * uNoisePre) * uFreq) * (uAmp * mix(1.0, uClickNoiseScale, uClickActive));
+          float age = (uProgress + riseBias + clickBias) - noise; vAge = age; vOpacity = aOpacity;
+          vFlip = aFlip + age * aFlipSpeed * 0.6 + uTime * 0.4; vAngle = aSeed + uTime * 0.3;
+          // FLOW FIELD restored from Codrops dissolve-ref (velocityFactor + calculateWaveOffset),
+          // adapted from CPU per-frame integration to GPU age-driven (keeps progress-independence).
+          float fx = position.x, fy = position.y;
+          float xwave = (sin(fy*2.0)*0.8 + sin(fy*5.0)*0.2 + sin(fy*8.0)*0.8 + sin(fy*3.0)*0.8) * uWave;
+          float ywave = (sin(fx*2.0)*0.6 + sin(fx*1.0)*0.9 + sin(fx*5.0)*0.6 + sin(fx*7.0)*0.6) * uWave;
+          // default direction (uFlowX/Y grid) + spatial wave + GLOBAL mouse bend (uFlowBias = away from cursor, JS-computed)
+          // uFlowSign reverses the BASE flow on dissolve-IN (petals converge, not scatter); uFlowBias (mouse) is
+          // added AFTER, so the cursor lean is NOT reversed.
+          vec3 flow = uFlowSign * vec3(aVel.x * uFlowX + xwave, aVel.y * uFlowY + ywave, aVel.z) + uFlowBias;
+          vec3 drift = flow * max(age, 0.0) * uDrift;
+          drift.x += sin(uTime*0.6 + aSeed) * uSway;
+          drift.z += sin(uTime*0.5 + aSeed*1.7) * uSway;
+          vec4 worldPos = vec4(worldBase, 1.0); worldPos.xyz += drift;
+          vec4 viewPosition = viewMatrix * worldPos;
+          gl_Position = projectionMatrix * viewPosition;
+          gl_PointSize = (uBaseSize * uPixelDensity) / -viewPosition.z;
+        }`,
+      fragmentShader: `
+        uniform vec3 uColor; uniform float uPartStrength, uFlipOn, uLifetime; uniform sampler2D uTexture;
+        varying float vAge; varying float vFlip; varying float vOpacity; varying float vAngle;
+        void main() {
+          if (vAge < 0.0 || vAge > uLifetime) discard;
+          float lifeT = vAge / uLifetime;
+          float alpha = smoothstep(0.0, 0.10, lifeT) * (1.0 - smoothstep(0.55, 1.0, lifeT));
+          vec2 coord = (gl_PointCoord - 0.5) * mat2(cos(vAngle), sin(vAngle), -sin(vAngle), cos(vAngle));
+          if (uFlipOn > 0.5) { coord = vec2(coord.x / (0.6 + abs(cos(vFlip))/3.0), coord.y / (0.8 + abs(sin(vFlip))/5.0)); }
+          coord += 0.5;
+          if (coord.x < 0.0 || coord.x > 1.0 || coord.y < 0.0 || coord.y > 1.0) discard;
+          vec4 tex = texture2D(uTexture, coord);
+          gl_FragColor = vec4(uColor * uPartStrength * tex.rgb, tex.a * alpha * vOpacity);
+        }`,
+    });
+    points = new THREE.Points(pgeo, pmat); points.frustumCulled = false; skinned.add(points);
+  }
+  buildParticles(opts.petals || P.petals);
+
+  // --- Head/arm tracking: additive bone-aim applied AFTER mixer.update (standard three.js look-at + clamp + smooth) ---
+  const _lt = new THREE.Vector3(), _want = new THREE.Quaternion();
+  function aimBone(bone, fwd, targetWorld, maxAngle, weight) {
+    if (!bone) return;
+    _animQ.copy(bone.quaternion);                                                  // the animated head pose (post-mixer)
+    bone.parent.updateWorldMatrix(true, false);
+    _lt.copy(targetWorld); bone.parent.worldToLocal(_lt); _lt.sub(bone.position);  // dir bone->target, parent space
+    if (_lt.lengthSq() < 1e-8) return;
+    _lt.normalize();
+    _want.setFromUnitVectors(fwd, _lt);                                            // align the bone forward to it
+    const ang = 2.0 * Math.acos(Math.min(1, Math.max(-1, _want.w)));
+    if (ang > maxAngle) _want.slerp(_IDENTITY, 1 - maxAngle / ang);                 // CLAMP (head: tight, arm: wide)
+    if (!bone.userData.lookQ) bone.userData.lookQ = bone.quaternion.clone();
+    bone.userData.lookQ.slerp(_want, LOOK.smooth);                                  // SMOOTH target-follow + persist
+    bone.quaternion.copy(_animQ).slerp(bone.userData.lookQ, weight);               // BLEND animation<->look by gate weight
+  }
+  // Aim ONE bone so its REAL down-the-bone axis (childDir) points at the target. No clamp -> free to point anywhere.
+  function aimSeg(bone, childDir, target, weight) {
+    if (!bone) return;
+    _animQ.copy(bone.quaternion);                                                  // animated bone pose (post-mixer)
+    bone.parent.updateWorldMatrix(true, false);
+    _lt.copy(target); bone.parent.worldToLocal(_lt); _lt.sub(bone.position);
+    if (_lt.lengthSq() < 1e-8) return;
+    _lt.normalize();
+    _want.setFromUnitVectors(childDir, _lt);
+    if (!bone.userData.lookQ) bone.userData.lookQ = bone.quaternion.clone();
+    bone.userData.lookQ.slerp(_want, LOOK.smooth);
+    bone.quaternion.copy(_animQ).slerp(bone.userData.lookQ, weight);               // BLEND animation<->point by gate weight
+  }
+  // CCDIK pointing: the hand reaches toward the world target; CCD bends forearm + upper arm to get there (natural,
+  // not a dead-straight board). Blended over the animated pose by the engage weight. Old straight aim = fallback.
+  const _ikAnimArm = new THREE.Quaternion(), _ikAnimFore = new THREE.Quaternion();
+  function aimArm(target, weight) {
+    const A = activeArm();
+    if (!A) return;
+    if (!A.ikSolver || !LOOK.useIK) {                        // fallback: old rig-derived straight 2-bone aim
+      aimSeg(A.armBone, A.armChildDir, target, weight);
+      A.armBone.updateWorldMatrix(false, false);
+      aimSeg(A.foreArmBone, A.foreChildDir, target, weight);
+      return;
+    }
+    _ikAnimArm.copy(A.armBone.quaternion); _ikAnimFore.copy(A.foreArmBone.quaternion);   // capture the animated pose (post-mixer)
+    A.armBone.updateWorldMatrix(true, true);                // fresh world matrices for the chain before solving
+    A.ikTarget.position.copy(target); A.ikTarget.updateMatrixWorld();
+    A.ikSolver.iks[0].iteration = LOOK.ikIter;
+    A.ikSolver.update();                                    // CCD rotates forearm + upper arm so the hand reaches the target
+    if (!A.armBone.userData.ikQ) { A.armBone.userData.ikQ = A.armBone.quaternion.clone(); A.foreArmBone.userData.ikQ = A.foreArmBone.quaternion.clone(); }
+    A.armBone.userData.ikQ.slerp(A.armBone.quaternion, LOOK.smooth);      // smooth the IK solution across frames
+    A.foreArmBone.userData.ikQ.slerp(A.foreArmBone.quaternion, LOOK.smooth);
+    A.armBone.quaternion.copy(_ikAnimArm).slerp(A.armBone.userData.ikQ, weight);          // BLEND animation<->IK by engage weight
+    A.foreArmBone.quaternion.copy(_ikAnimFore).slerp(A.foreArmBone.userData.ikQ, weight);
+  }
+  function lookUpdate() {
+    if (LOOK.faceMode && FACE_Y[LOOK.mode] !== undefined) root.rotation.y = FACE_Y[LOOK.mode] + LOOK.faceOffset;   // force facing (skipped for 'none')
+    const e = getEngage();                                                      // is there a VISIBLE target right now?
+    LOOK.weight += ((e.engaged ? 1 : 0) - LOOK.weight) * LOOK.engageSpeed;      // ease engage 0<->1 (smooth raise / relax)
+    if (e.target) lookTarget.copy(e.target);                                    // remember last target so disengage eases from it
+    if (LOOK.weight < 0.001) return;                                            // fully relaxed -> pure animation pose
+    if (LOOK.head) aimBone(headBone, LOOK.headFwd, lookTarget, LOOK.maxAngle, LOOK.weight);   // head BLENDS look over anim
+    if (LOOK.arm && LOOK.mode !== 'water') aimArm(lookTarget, LOOK.weight);                   // arm points, gated by weight (NOT in water mode — she just watches, head-only)
+  }
+
+  return {
+    root, mixer, anims, animNames, skinned, headBone, arms: ARMS, getActiveArm: activeArm, ikReady: !!(ARMS.right || ARMS.left),
+    setAnimation, setPetalCount: (n) => buildParticles(n),
+    pmat: () => pmat,
+    update: (dt) => { mixer.update(dt); lookUpdate(); },
+    setPosition: (x,y,z) => { root.position.set(x,y,z); },
+    dispose: () => {
+      scene.remove(root);
+      root.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); });
+      if (pgeo) pgeo.dispose(); if (pmat) pmat.dispose();
+    },
+  };
+}
+
+function loadModel(name) {
+  currentModelName = name;
+  loader.load(MODELS[name], (gltf) => {
+    if (character) character.dispose();
+    character = buildCharacter(gltf, { petals: P.petals });
+    buildGUI();
+    window.__s = { U, P, character, scene, cam, composer, LOOK, FACE_Y, CAM, FW, scrollCam, bloom, lanternController, fireworkController, getLookTarget, launchTrackedFirework, updateFireworkTarget, lookAtWater, getActiveRipple: () => mirroredSurface && mirroredSurface.getActiveRipple(), STATES, nextState: applyNextState, getStateIdx: () => stateIdx };
+    const cb = _onLoaded; _onLoaded = null; if (cb) cb();
+  }, undefined, err => { document.getElementById('hud').textContent = 'load failed: ' + err; });
+}
+
+function buildGUI() {
+  if (pane) pane.dispose();
+  pane = new Pane();
+  const sel = { model: currentModelName, animation: character.animNames.find(n=>/idle/i.test(n)) || character.animNames[0] };
+  const m = pane.addFolder({ title: 'Model', expanded: true });
+  m.addBinding(sel, 'model', { options: Object.fromEntries(Object.keys(MODELS).map(k => [k, k])) }).on('change', e => loadModel(e.value));
+  m.addBinding(sel, 'animation', { options: Object.fromEntries(character.animNames.map(k => [k, k])) }).on('change', e => character.setAnimation(e.value));
+  m.addBinding(P, 'petals', { min: 100, max: 8000, step: 100, label: 'Petal count' }).on('change', e => character.setPetalCount(e.value));
+  const px = { x: 0, y: 60, z: 0 };
+  m.addBinding(px, 'x', { min: -300, max: 300, step: 1 }).on('change', () => character.setPosition(px.x, px.y, px.z));
+  m.addBinding(px, 'y', { min: -100, max: 300, step: 1 }).on('change', () => character.setPosition(px.x, px.y, px.z));
+  m.addBinding(px, 'z', { min: -300, max: 300, step: 1 }).on('change', () => character.setPosition(px.x, px.y, px.z));
+  const d = pane.addFolder({ title: 'Dissolve', expanded: true });
+  d.addBinding(U.uProgress, 'value', { min: PMIN, max: PMAX, step: 0.01, label: 'Progress' });
+  d.addBinding(P, 'cycle', { label: 'Cycle' });
+  d.addBinding(CYC, 'dwell', { min: 1, max: 20, step: 0.5, label: 'Idle secs' });
+  d.addBinding(CYC, 'gap', { min: 0, max: 3, step: 0.1, label: 'Gap secs' });
+  d.addBinding(CYC, 'speed', { min: 1, max: 30, step: 0.5, label: 'Dissolve speed' });
+  d.addBinding(U.uEdge, 'value', { min: 0.1, max: 8, step: 0.001, label: 'Edge' });
+  d.addBinding(U.uFreq, 'value', { min: 0.001, max: 2, step: 0.001, label: 'Frequency' });
+  d.addBinding(U.uAmp, 'value', { min: 0.1, max: 20, step: 0.01, label: 'Amplitude' });
+  d.addBinding(U.uRiseStrength, 'value', { min: 0, max: 20, step: 0.1, label: 'Rise Strength' });
+  d.addBinding(U.uClickStrength, 'value', { min: 0, max: 20, step: 0.1, label: 'Click Strength' });
+  d.addBinding(U.uClickRadius, 'value', { min: 5, max: 400, step: 1, label: 'Click Radius' });
+  const pm = character.pmat();
+  const pp = pane.addFolder({ title: 'Petals', expanded: true });
+  pp.addBinding(pm.uniforms.uLifetime, 'value', { min: 1, max: 20, step: 0.1, label: 'Lifetime' });
+  pp.addBinding(pm.uniforms.uDrift, 'value', { min: 0, max: 12, step: 0.05, label: 'Drift' });
+  const flowDir = { v: { x: pm.uniforms.uFlowX.value, y: pm.uniforms.uFlowY.value } };
+  pp.addBinding(flowDir, 'v', { label: 'Flow dir', picker: 'inline', expanded: true,
+    x: { min: -5, max: 5 }, y: { min: -5, max: 5, inverted: true } })
+    .on('change', e => { pm.uniforms.uFlowX.value = e.value.x; pm.uniforms.uFlowY.value = e.value.y; });
+  pp.addBinding(pm.uniforms.uWave, 'value', { min: 0, max: 3, step: 0.01, label: 'Wave' });
+  const mf = { v: mouseFlow };
+  pp.addBinding(mf, 'v', { min: 0, max: 4, step: 0.05, label: 'Mouse Flow' }).on('change', e => mouseFlow = e.value);
+  pp.addBinding(pm.uniforms.uSway, 'value', { min: 0, max: 30, step: 0.1, label: 'Sway' });
+  pp.addBinding(pm.uniforms.uFlipOn, 'value', { min: 0, max: 1, step: 1, label: 'Tumble' });
+  pp.addBinding(pm.uniforms.uBaseSize, 'value', { min: 100, max: 12000, step: 50, label: 'Size' });
+  pp.addBinding(pm.uniforms.uColor, 'value', { color: { type: 'float' }, label: 'Color' });
+  pp.addBinding(pm.uniforms.uPartStrength, 'value', { min: 0.3, max: 4, step: 0.05, label: 'Brightness' });
+
+  const lk = pane.addFolder({ title: 'Tracking', expanded: true });
+  lk.addBinding(LOOK, 'mode', { label: 'Mode', options: { 'None (off)': 'none', 'Cursor (toward)': 'cursor', 'Lanterns (left)': 'lanterns', 'Fireworks (away)': 'fireworks', 'Water (watch click)': 'water' } });
+  lk.addBinding(LOOK, 'frontZFlip', { label: 'Cursor Z-flip (front)' });
+  lk.addBinding(LOOK, 'faceMode', { label: 'Force facing' });
+  lk.addBinding(LOOK, 'faceOffset', { min: -Math.PI, max: Math.PI, step: 0.05, label: 'Facing offset' });
+  lk.addBinding(LOOK, 'head', { label: 'Head track' });
+  lk.addBinding(LOOK, 'arm', { label: 'Arm track' });
+  lk.addBinding(LOOK, 'maxAngle', { min: 0, max: 1.6, step: 0.01, label: 'Head max angle' });
+  lk.addBinding(LOOK, 'smooth', { min: 0.02, max: 1, step: 0.01, label: 'Smooth' });
+  lk.addBinding(LOOK, 'engageSpeed', { min: 0.01, max: 0.5, step: 0.01, label: 'Engage speed' });
+  lk.addBinding(LOOK, 'useIK', { label: 'Arm IK (CCDIK)' });
+  lk.addBinding(LOOK, 'ikIter', { min: 1, max: 20, step: 1, label: 'IK iterations' });
+  lk.addBinding(LOOK, 'armSide', { label: 'Point arm', options: { Right: 'right', Left: 'left' } });
+  // HEAD still needs a forward (face) axis — flip these until her head faces the target. ARM is now rig-derived (no knob).
+  lk.addBinding(LOOK.headFwd, 'x', { min: -1, max: 1, step: 1, label: 'HeadFwd X' });
+  lk.addBinding(LOOK.headFwd, 'y', { min: -1, max: 1, step: 1, label: 'HeadFwd Y' });
+  lk.addBinding(LOOK.headFwd, 'z', { min: -1, max: 1, step: 1, label: 'HeadFwd Z' });
+
+  const fwf = pane.addFolder({ title: 'Fireworks spawn', expanded: false });
+  fwf.addBinding(FW, 'xSpread', { min: 100, max: 2000, step: 50, label: 'X spread' });
+  fwf.addBinding(FW, 'yMin', { min: 100, max: 1000, step: 25, label: 'Y min' });
+  fwf.addBinding(FW, 'yRange', { min: 0, max: 1000, step: 25, label: 'Y range' });
+  fwf.addBinding(FW, 'zMin', { min: 100, max: 2500, step: 50, label: 'Z dist (min)' });
+  fwf.addBinding(FW, 'zRange', { min: 0, max: 2000, step: 50, label: 'Z range' });
+  fwf.addBinding(FW, 'react', { min: 0, max: 1.5, step: 0.05, label: 'Reaction +delay (s)' });
+  const sc = pane.addFolder({ title: 'Scene', expanded: false });
+  sc.addBinding(CAM, 'freeOrbit', { label: 'Free orbit (inspect)' }).on('change', e => { orbCtrls.enabled = e.value; });
+  sc.addBinding(bloom, 'strength', { min: 0, max: 3, step: 0.05, label: 'Bloom' });
+  sc.addBinding(bloom, 'radius', { min: 0, max: 2, step: 0.01, label: 'Bloom radius' });
+  sc.addBinding(bloom, 'threshold', { min: 0, max: 1, step: 0.01, label: 'Bloom threshold' });
+}
+
+// ---------- Point 4: state-machine cycle ----------
+// idle X s -> dissolve OUT -> gap -> swap (model+pos+anim) -> dissolve IN -> idle ...; click skips the dwell.
+// P_VISIBLE is low (-30) so she's FULLY solid at rest even with the rise bias adding up to uRiseStrength at the feet.
+const P_VISIBLE = -30, P_DISSOLVED = 17;
+const CYC = { dwell: 6.0, gap: 0.8, speed: 12.0 };  // idle seconds, empty-gap seconds, uProgress units/sec
+const STATES = [   // the 6 DOCK STATES (character-spec FINAL OUTPUT). pos/facing/end = scene-scale PLACEHOLDERS (Rod tunes by eye).
+  // kind 'walk' = glide stand-in (real root-motion clip later): lerps pos -> end across the dwell; mode 'none' (no head/arm).
+  // kind 'sit'  = materialize at pos -> idle the clip -> dwell -> dissolve; mode AUTO-forces the facing (faceMode).
+  { kind: 'walk', anim: 'walk', mode: 'none',      facing: 0.0,          pos: [-240, 60, 60], end: [0, 60, 40] },  // 1 ENTER -> dock edge
+  { kind: 'sit',  anim: 'idle', mode: 'fireworks',                       pos: [0, 60, 40] },                        // 2 sit, face AWAY, point at the sky
+  { kind: 'sit',  anim: 'idle', mode: 'water',                          pos: [-50, 60, 30] },                       // 3 sit, side PROFILE, watch the water
+  { kind: 'sit',  anim: 'idle', mode: 'cursor',                         pos: [0, 60, 20] },                         // 4 sit, face the CAMERA, track the cursor
+  { kind: 'sit',  anim: 'idle', mode: 'lanterns',                       pos: [70, 60, 0] },                         // 5 on a PILLAR, point at a lantern
+  { kind: 'walk', anim: 'walk', mode: 'none',      facing: Math.PI*0.5,  pos: [0, 60, 40], end: [280, 60, 90] },   // 6 EXIT off-screen
+];
+let stateIdx = 0, phase = 'idle', phaseT = 0, swapping = false, savedRise = U.uRiseStrength.value;
+
+function startOut(fromClick) {
+  if (phase !== 'idle') return;
+  U.uFlowSign.value = 1.0;                          // OUT: petals flow outward (scatter)
+  U.uClickActive.value = fromClick ? 1.0 : 0.0;     // click -> noise collapses so distance drives the dissolve
+  if (fromClick) {
+    savedRise = U.uRiseStrength.value; U.uRiseStrength.value = 0.0;   // click = PURE radial from contact
+    U.uProgress.value = -U.uClickStrength.value + 1.0;               // JUMP to the click front's start -> no dead ramp
+  } else { U.uRiseStrength.value = savedRise; U.uClickPoint.value.set(9999, 9999, 9999); } // timer = rise-from-feet, uniform
+  phase = 'out'; phaseT = 0;
+}
+onCharacterClick = () => startOut(true);
+
+function applyState(st) {
+  U.uClickPoint.value.set(9999, 9999, 9999);   // materialize uniformly
+  U.uRiseStrength.value = savedRise;            // restore rise -> top-down materialize-in
+  LOOK.mode = st.mode;                          // each state AUTO-selects its tracking mode (sit modes auto-force facing via faceMode)
+  character.setPosition(st.pos[0], st.pos[1], st.pos[2]);
+  const names = character.animNames;
+  character.setAnimation(names.includes(st.anim) ? st.anim : (names.find(n => /idle/i.test(n)) || names[0]));   // fall back if the clip is missing
+  if (st.mode === 'none' && st.facing !== undefined) character.root.rotation.y = st.facing;   // walk/none: face the travel dir manually
+}
+function applyNextState(onReady) {
+  stateIdx = (stateIdx + 1) % STATES.length;
+  const st = STATES[stateIdx];
+  const model = st.model || 'Xbot';
+  if (model !== currentModelName) { _onLoaded = () => { applyState(st); onReady(); }; loadModel(model); }
+  else { applyState(st); onReady(); }
+}
+
+function stepCycle(dt) {
+  if (!P.cycle || !character) return;
+  phaseT += dt;
+  if (phase === 'idle') {
+    const st = STATES[stateIdx];
+    if (st.kind === 'walk' && st.end) {   // glide stand-in: lerp pos -> end across the dwell (real root-motion clip later)
+      const t = Math.min(1, phaseT / CYC.dwell);
+      character.setPosition(st.pos[0] + (st.end[0]-st.pos[0])*t, st.pos[1] + (st.end[1]-st.pos[1])*t, st.pos[2] + (st.end[2]-st.pos[2])*t);
+    }
+    if (phaseT >= CYC.dwell) startOut(false);
+  } else if (phase === 'out') {
+    // click mode has no noise so she's fully gone by ~uProgress 0; don't ramp to the rise-mode max (dead time).
+    const outMax = U.uClickActive.value > 0.5 ? 2.0 : P_DISSOLVED;
+    U.uProgress.value = Math.min(outMax, U.uProgress.value + CYC.speed * dt);
+    if (U.uProgress.value >= outMax) { phase = 'gap'; phaseT = 0; }
+  } else if (phase === 'gap') {
+    if (phaseT >= CYC.gap && !swapping) {
+      swapping = true;
+      applyNextState(() => {
+        swapping = false; phase = 'in'; phaseT = 0;
+        U.uFlowSign.value = -1.0;      // IN: base flow reverses (petals converge); mouse bias stays un-reversed
+        U.uClickActive.value = 0.0;    // materialize uses the full-noise rise dissolve, not the click front
+      });
+    }
+  } else if (phase === 'in') {
+    U.uProgress.value = Math.max(P_VISIBLE, U.uProgress.value - CYC.speed * dt);
+    if (U.uProgress.value <= P_VISIBLE) { phase = 'idle'; phaseT = 0; U.uFlowSign.value = 1.0; }
+  }
+}
+function resize() {
+  if (cnvs.width !== innerWidth || cnvs.height !== innerHeight) {
+    re.setSize(innerWidth, innerHeight, false); composer.setSize(innerWidth, innerHeight);
+    cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
+  }
+}
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05); time += dt; U.uTime.value = time;
+  const nd = dt * 60;   // normalized delta (frames) — what Rod's scene controllers expect
+  if (LOOK.mode === 'fireworks') {
+    fwTimer -= dt;
+    // HOLD the tracked firework through its WHOLE life (launch AND explode) so she has the full ~1.2s burst to point at.
+    // Bug fixed (v13): relaunching at 0.8s ~= the 0.75s launch time stole trackedFw ~0.05s into the burst -> arm never engaged.
+    const busy = trackedFw && fireworkController.fireWorkGroup.indexOf(trackedFw) !== -1
+                 && (trackedFw.phase === 'launch' || trackedFw.phase === 'explode');
+    if (!busy && fwTimer <= 0) { fwTimer = 0.8; launchTrackedFirework(); }   // relaunch only once the burst is fully done
+  }
+  if (CAM.freeOrbit) orbCtrls.update();   // default off: the site scroll-camera drives the view
+  lanternMaterialManager.update(nd);
+  fireworkController.update(nd);
+  lanternController.update(nd);
+  if (mirroredSurface) mirroredSurface.update(nd);
+  // (firework burst target is computed inside getEngage/lookUpdate now — she only points when a burst is actually visible)
+  if (character) character.update(dt);
+  stepCycle(dt); resize();
+  composer.render();
+}
+window.__loadModel = loadModel;   // for verification / external embedding
+animate();
+_onLoaded = () => applyState(STATES[0]);   // start ON dock state 1 (the ENTER walk)
+loadModel('Xbot');   // Xbot = the placeholder base for everything for now (Rod)
+</script>
+</body>
+</html>

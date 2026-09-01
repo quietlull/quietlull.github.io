@@ -1,0 +1,75 @@
+/* EDGE RAILS — harumakigohan.com/10/, from the CSS block their own comment labels カーテン (curtain):
+     .left,.right { position:fixed; top:0; height:100%; pointer-events:none; z-index:10 }
+     .left img,.right img { height:100%; width:auto }
+     @media (max-width:450px) { .left,.right { display:none } }
+   The same block also carries .ue — an absolutely-positioned full-width valance across the top.
+   It is not built here because the layout reserves no space for it; it is available if we want it.
+
+   A full-height illustration pinned to each edge, sized by HEIGHT so it never stretches, with the
+   page inset past it. It is page furniture, not content: it never takes the pointer.
+   Artwork is Rod's to draw — set --rail-art. With none, the rails keep their exact inset and
+   degrade to an edge rule (--noart). */
+
+.edge-rail {
+  --rail-art: none;
+  --rail-width: 106px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: var(--rail-width);
+  z-index: 40;
+  pointer-events: none;
+  background-image: var(--rail-art);
+  background-repeat: no-repeat;
+  background-size: auto 100%; /* source: img { height:100%; width:auto } */
+}
+
+.edge-rail--l {
+  left: 0;
+  background-position: top left;
+}
+
+.edge-rail--r {
+  right: 0;
+  background-position: top right;
+}
+
+/* no artwork yet: hold the inset, mark the edge, label it once */
+.edge-rail--noart::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 1px;
+  background: var(--color-line-faint);
+}
+
+.edge-rail--r.edge-rail--noart::before {
+  inset: 0 auto 0 0;
+}
+
+.edge-rail--noart::after {
+  content: attr(data-art);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  opacity: 0.55;
+}
+
+@media (max-width: 450px) {
+  .edge-rail {
+    display: none;
+  }
+}
+
+/* bench-only explainer: fixed furniture cannot demo itself inside a panel */
+.edge-rail-demo {
+  max-width: 60ch;
+  color: var(--color-muted);
+}

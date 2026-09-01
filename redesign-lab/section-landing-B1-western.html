@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" data-hover>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section Landing - Variation B1 (Western, showcase)</title>
+<!--
+  PROVENANCE:
+  - HUGE filled name + outlined kicker above it ...... yannesidibe hero (YANNE SIDIBE + outlined CREATIVE DEVELOPER) [seen]
+  - "available for work" pill + "Sound OFF" + top-right nav  yannesidibe top bar [seen] (Sound defaults OFF = Rod's opt-in rule)
+  - "BASED IN ___" locator line ..................... yannesidibe LOCATED IN FRANCE [seen]
+  - left-edge vertical Work/Honors tab .............. yannesidibe left rail [seen]
+  - "Selected * Work" outlined header w/ asterisk .... yannesidibe [seen]
+  - WORK AS A HOVER-LIST (rows -> floating preview) .. yannesidibe Work section [seen]
+  - hover reveals key learning ...................... ROD'S existing hover-quote
+  - small "currently studying" status chip .......... dimden Current-status widget [seen] (NO now-playing -> Rod's no-music-data rule)
+  - Space Grotesk display + Poppins + Space Mono ..... Western pairing (Clash-Display-like + stephanewillems Poppins)
+  - PALETTE locked: #F59E0B fills, #FBBF24 accents, #FFE8B0 glow halo, NO pink ... foundations
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Poppins:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--fd:"Space Grotesk",sans-serif;--fb:"Poppins",sans-serif;--fl:"Space Mono",monospace;}
+body{font-family:var(--fb)}
+.bar{display:flex;align-items:center;gap:1.2rem;padding:1.1rem 2.2rem;position:sticky;top:0;z-index:60;backdrop-filter:blur(4px)}
+.logo{font-family:var(--fd);font-weight:700;color:var(--gold-deep);font-size:1.1rem;letter-spacing:-.01em}
+.pill{margin:0 auto;font-family:var(--fl);font-size:.66rem;letter-spacing:.05em;color:var(--text);border:1px solid rgba(245,158,11,.4);border-radius:999px;padding:.35rem .9rem;display:flex;align-items:center;gap:.5rem}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);filter:drop-shadow(0 0 6px var(--gold))}
+.snd{font-family:var(--fl);font-size:.66rem;color:var(--muted);letter-spacing:.06em}
+.nav{display:flex;gap:1.4rem;font-family:var(--fl);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.nav a{color:var(--muted);text-decoration:none;transition:color .16s,filter .16s}
+.nav a:hover,.nav a.on{color:var(--gold);filter:drop-shadow(0 0 9px rgba(255,232,176,.6))}
+.tab{position:fixed;left:0;top:42%;z-index:55;writing-mode:vertical-rl;font-family:var(--fl);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.04);padding:1rem .4rem;border-radius:0 8px 8px 0}
+/* hero - huge filled name + outlined kicker [yannesidibe] */
+.hero{min-height:90vh;display:grid;justify-items:center;align-content:center;text-align:center;padding:5rem 1rem;position:relative}
+.kicker{font-family:var(--fd);font-weight:700;font-size:calc(1.6rem * var(--head-scale));letter-spacing:.12em;color:transparent;-webkit-text-stroke:1px rgba(245,243,239,.45);margin-bottom:.2rem}
+.name{font-family:var(--fd);font-weight:700;font-size:calc(7rem * var(--head-scale));line-height:.92;letter-spacing:-.03em;color:var(--gold-deep);filter:drop-shadow(0 0 26px rgba(255,232,176,.35)) drop-shadow(0 0 8px rgba(245,158,11,.5))}
+.loc{font-family:var(--fd);font-weight:500;margin-top:1.6rem;letter-spacing:.06em;color:var(--text);font-size:calc(1rem * var(--type-scale))}
+.loc small{display:block;font-family:var(--fl);font-size:.62rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-top:.5rem}
+.scrollcue{position:absolute;bottom:30px;font-family:var(--fl);font-size:.62rem;letter-spacing:.3em;color:rgba(245,243,239,.6)}
+/* section header outlined + asterisk [yannesidibe] */
+.shead{font-family:var(--fd);font-weight:700;font-size:calc(3rem * var(--head-scale));text-align:center;letter-spacing:-.01em;color:transparent;-webkit-text-stroke:1.2px var(--gold-deep);margin:calc(2.5rem * var(--space-scale)) 0 calc(2rem * var(--space-scale))}
+.shead i{font-style:normal;color:var(--gold);-webkit-text-stroke:0}
+/* WORK AS HOVER-LIST [yannesidibe] */
+.work{max-width:var(--measure);margin:0 auto;padding:0 2.5rem;position:relative}
+.row{position:relative;padding:1.5rem 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:baseline;cursor:pointer}
+.row h3{font-family:var(--fd);font-weight:700;font-size:calc(2.3rem * var(--head-scale));color:var(--text);transition:color .2s,transform .2s;letter-spacing:-.01em}
+.row .yr{font-family:var(--fl);font-size:.7rem;color:var(--muted)}
+.row:hover h3{color:var(--gold-deep);transform:translateX(12px)}
+.row .preview{position:absolute;right:7%;top:50%;transform:translateY(-50%) scale(.95);width:300px;border-radius:16px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:6;filter:drop-shadow(0 0 26px rgba(245,158,11,.45));background:#0c1330}
+.row:hover .preview{opacity:1;transform:translateY(-50%) scale(1)}
+.preview .thumb{aspect-ratio:4/3;background:#0d1430;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 10px,rgba(255,255,255,0) 10px 20px);position:relative}
+.preview .view{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:var(--gold-deep);color:#0a1030;font-family:var(--fl);font-size:.6rem;display:grid;place-items:center;letter-spacing:.05em}
+.preview .learn{padding:.9rem 1rem;font-family:var(--fb);font-size:.8rem;line-height:1.45;color:var(--glow)}
+.viewall{display:block;width:max-content;margin:calc(2.6rem * var(--space-scale)) auto calc(2rem * var(--space-scale));font-family:var(--fl);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid rgba(245,158,11,.4);border-radius:999px;padding:.6rem 1.6rem;transition:filter .16s}
+.viewall:hover{filter:drop-shadow(0 0 10px rgba(255,232,176,.5))}
+/* dimden nod: tiny status chip (NO now-playing) */
+.status{display:flex;justify-content:center;gap:.6rem;align-items:center;font-family:var(--fl);font-size:.66rem;color:var(--muted);margin:0 0 4rem;letter-spacing:.04em}
+.status b{color:var(--gold);font-weight:400}
+.status .live{width:7px;height:7px;border-radius:50%;background:var(--gold);filter:drop-shadow(0 0 6px var(--gold))}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="logo">Rodney Fan</div>
+  <div class="pill"><span class="dot"></span>available for work</div>
+  <span class="snd">Sound &middot; OFF</span>
+  <nav class="nav"><a class="on" href="#">Home</a><a href="#">Projects</a><a href="#">About</a></nav>
+</header>
+<div class="tab">Honors &mdash; W.</div>
+
+<section class="hero">
+  <div class="kicker">TECHNICAL ARTIST</div>
+  <div class="name">RODNEY FAN</div>
+  <div class="loc">Game Designer &amp; Technical Artist<small>based in the night market</small></div>
+  <div class="scrollcue">scroll down to explore &darr;</div>
+</section>
+
+<div class="shead">Selected <i>&#10038;</i> Work</div>
+<div class="work">
+  <div class="row"><h3>Compute Grass</h3><span class="yr">Shaders &copy; 2026</span>
+    <div class="preview"><div class="thumb"><span class="view">View &rarr;</span></div><div class="learn">"Half a million blades on the GPU &mdash; where I learned to think in compute."</div></div></div>
+  <div class="row"><h3>Decompiling ZZZ</h3><span class="yr">Teardown &copy; 2025</span>
+    <div class="preview"><div class="thumb"><span class="view">View &rarr;</span></div><div class="learn">"Read a shipped game's shaders, then rebuilt the magic from scratch."</div></div></div>
+  <div class="row"><h3>Toy Renderer</h3><span class="yr">Engine &copy; 2025</span>
+    <div class="preview"><div class="thumb"><span class="view">View &rarr;</span></div><div class="learn">"A tiny renderer, written to understand the big ones."</div></div></div>
+  <div class="row"><h3>Lantern Scene</h3><span class="yr">Real-time &copy; 2024</span>
+    <div class="preview"><div class="thumb"><span class="view">View &rarr;</span></div><div class="learn">"Procedural lanterns that dodge your cursor."</div></div></div>
+</div>
+<a class="viewall" href="#">All projects (07)</a>
+<div class="status"><span class="live"></span> currently &mdash; <b>studying compute-driven hair &amp; fur</b></div>
+
+<div class="lab">
+  <h4>tune</h4>
+  <label>type <span id="s-type-out"></span></label><input type="range" id="s-type" data-var="--type-scale" data-default="1" min="0.85" max="1.3" step="0.01" value="1">
+  <label>headings <span id="s-head-out"></span></label><input type="range" id="s-head" data-var="--head-scale" data-default="1" min="0.7" max="1.7" step="0.01" value="1">
+  <label>spacing <span id="s-space-out"></span></label><input type="range" id="s-space" data-var="--space-scale" data-default="1" min="0.6" max="1.7" step="0.01" value="1">
+  <label>width <span id="s-measure-out"></span></label><input type="range" id="s-measure" data-var="--measure" data-unit="rem" data-default="64" min="44" max="84" step="1" value="64">
+  <button class="reset">reset</button>
+</div>
+<div class="labtag">VAR B1 &middot; Western showcase (yannesidibe + dimden status) &middot; amber &middot; <a href="/redesign-lab/">lab</a></div>
+<script src="/redesign-lab/sliders.js"></script>
+</body>
+</html>

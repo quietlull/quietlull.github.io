@@ -1,0 +1,724 @@
+/* =============================================================================================
+   achievement-tile - the ACHIEVEMENT TILE and its LOCKED state. SIX versions.
+
+   V1-V3 built 2026-08-23. V4-V6 added the same day after the achievement-systems sourcing pass;
+   their own header sits above the V4 section, roughly two thirds down this file. V1-V3 are
+   untouched by that addition - Rod prefers V2 and it stays as the reference point to beat.
+
+   SCOPE, stated first because it is the thing most likely to be got wrong later:
+   this file builds the TILE and the LOCKED state ONLY. It does NOT build the trophy wall.
+   Rod 2026-08-23: the wall has no source and needs a design conversation first. Nothing here
+   decides how the 29 tiles are arranged into a page; it only decides what one tile looks like,
+   and what "you have not got this one" looks like.
+
+   WHAT IS NOT REBUILT HERE, because it already exists:
+     - the unlock TOAST is already picked. dimden .box at 200 x 76, achievement-tests.html
+       `.t-pick`. Not touched, not duplicated.
+     - the tag / meta chips are decisions.css `.d-tag` and `.d-meta`. Different job: those are
+       text chips that size to their content. A tile is a fixed 88 x 31 graphic slot.
+
+   D28 (Rod 2026-08-22, P77): "lets scrap the idea of unlocks they get an achievement and thats
+   fine." Every reward is gone, so the tile IS the payoff and the locked state is the only place
+   left to say "there is more". That is why every version below differs on exactly that.
+
+   -------------------------------------------------------------------------------------------
+   THE MEASURED BOXES. Read off about-blockout.html?v=panels rendered at viewport 1440 with
+   getBoundingClientRect, this session. Not labels, not memory.
+
+     locked / empty state ....... 641 x 40      (the .box inside the last .p of .main)
+     tile ....................... 88 x 31       (.tile, box-sizing border-box)
+     wall ....................... display:flex; flex-wrap:wrap; gap:10px, inside 641
+     tiles per row .............. 6             (measured: 6*88 + 5*10 = 578, 63px slack)
+
+   Where 641 comes from, so nobody has to guess again: .main is 675 wide, .p is border-box with
+   border 2px and padding 10px 15px, so 675 - 4 - 30 = 641. The blockout's own prose says the
+   content width is 645; the rendered value is 641. Same 4px annotation drift the blockout
+   contract already found in the post blockout. The RENDERED value wins.
+
+   -------------------------------------------------------------------------------------------
+   SOURCES S1-S4 (V1-V3). Re-verified against the live files this session. S5-S7 (V4-V6) are
+   declared in the V4-V6 header further down, because one of them has no stylesheet at all and
+   that fact needs to sit next to the versions that rest on it.
+
+   S1  dimden.dev - https://dimden.dev/css/main.css      (fetched live 2026-08-23)
+         .box { background-color:#000000a8; border:2px solid #383838; border-radius:4px;
+                color:white; padding:10px 15px; margin:5px; }
+         #webtiles-container { display:flex; flex-direction:row; gap:10px; align-items:flex-start; }
+         #webtiles-iframe { border:2px solid #383838; border-radius:4px; width:250px; height:270px; }
+       Matches sources/section-and-heading-blocks.md section B byte for byte.
+
+       *** CORRECTION TO A CITATION ALREADY IN THIS REPO, and it matters. ***
+       about-blockout.html:236 says "Badge wall is their #webtiles-container at true size:
+       88x31 tiles, gap 10". Verified against the live stylesheet, that is HALF true:
+         - `gap: 10px` IS verbatim theirs. Kept.
+         - their container has NO flex-wrap. It is a single row holding a 250x270 iframe beside
+           a paragraph. A WRAPPING wall of tiles is OURS, not theirs.
+         - there is NO 88x31 rule anywhere in their CSS. 88 x 31 is the intrinsic size of the
+           button IMAGE they serve at https://dimden.dev/services/images/88x31.gif - the classic
+           web-button footprint. So the tile size is sourced to an ASSET, not to a rule.
+       Recorded here rather than repeated, because a half-true citation is the exact failure the
+       provenance law is written against.
+
+   S2  cyanilux.com - https://www.cyanilux.com/css/style.css?v=12   (fetched live 2026-08-23)
+         h2:not(.title-no-margin):not(.title-undecorated), h3, h4 {
+           margin-top:30px; padding:7px 20px; background-color:#282828;
+           border-left:10px solid #00aabb; border-radius:7px; }
+       Matches sources/section-and-heading-blocks.md section A byte for byte, comment included.
+
+   S3  THE LIVE SITE - _sass/abstracts/_animations.scss:392-404. Read, never edited (D22).
+       CLAUDE.md's provenance law names "the live site" as a valid source, and this is the one
+       real achievement display that already exists and already has a working locked state:
+         .achv-debug-row { display:flex; align-items:center; gap:0.4rem;
+                           padding:0.25rem 0.35rem; border-radius:6px; }
+         .achv-debug-row:hover { background: rgba(255,255,255,0.03); }
+         .achv-debug-row.unlocked .achv-debug-name { color: var(--link-hover-color); }
+         .achv-debug-icon { font-size:1rem; width:1.25rem; text-align:center; flex-shrink:0; }
+         .achv-debug-name { flex:1; color: var(--text-muted-color); }
+         .achv-debug-prog { color: var(--gold-50); font-size:0.65rem; }
+       Token values, resolved rather than assumed:
+         --text-muted-color  rgba(232,224,212,0.78)   _sass/themes/_dark.scss:55
+         --link-hover-color  var(--amber-300) = #fcd34d  _dark.scss:298 / _dark.scss:22
+         --gold-50           rgba(251,191,36,0.50)     _dark.scss:164
+       ITS ONE IMPORTANT PROPERTY: locked and unlocked differ by COLOUR AND NOTHING ELSE. Same
+       box, same icon slot, same name, one colour swap. Idea origin: ROD, it is his code.
+
+   S4  iquilezles.org - sources/iquilezles-prose.md, verified byte for byte there.
+       The transferable rule, in the note's own words: "no boxes, borders, backgrounds, radii,
+       shadows or padding are ever used to separate a component from prose. Components differ
+       from prose only by (a) colour, (b) font family, (c) line-height."
+       Verbatim baseline it rests on: body{...color:#c0c0c0;...line-height:1.8;font-family:
+       sans-serif;} against .code{font-family:Courier...;color:#dcdcdc;...line-height:1.35;}
+
+   -------------------------------------------------------------------------------------------
+   ONE FINDING THAT CONSTRAINS V1-V5, and it is not a preference. V6 breaks it deliberately and
+   says so in its own header: the finding is about TITLES, and a count is not a title.
+
+   AT 88 x 31 NO TITLE FITS. Take V2's own padding (0.25rem 0.35rem) and icon slot (1.25rem):
+   88 - 11.2 padding - 20 icon - 6.4 gap = 50.4px left for the name. At the mono face that is
+   about five characters. Real titles are "First Light", "Behind the Curtain", "Hey, You Touched
+   My Fly!". So the tile is ICON-ONLY in V1-V5 and the name has to be the ACCESSIBLE
+   name, not visible text. dimden's own 88x31 is an image with no text layout inside it, so this
+   is consistent with the size's origin rather than a compromise forced on it.
+
+   CONSEQUENCE, flagged not solved: dimden's .box padding of 10px 15px cannot survive on an
+   88 x 31 tile (it would leave 54 x 7 of content). The padding is kept verbatim on the
+   641 x 40 row, where it fits, and dropped on the tile. Stated rather than quietly adjusted.
+
+   SECOND CONSEQUENCE: an UNEARNED achievement has no icon by definition, because you have not
+   seen it yet. So no version invents a mystery glyph. What varies is whether the empty slot is
+   drawn at all, and how the earned one is marked.
+
+   -------------------------------------------------------------------------------------------
+   PALETTE. No red, no cool accent outside the sky, --color-muted (#9aa3bd) never used.
+   Two sourced colours could not transfer and both are logged at their version:
+     cyanilux #00aabb  -> --color-gold        (cool accent, banned outside the sky)
+     live     #fcd34d  -> --color-gold        (#fcd34d is not a lab token; #fbbf24 is)
+   dimden's #383838 is a neutral grey and survives the palette law UNCHANGED, so it is kept
+   verbatim rather than re-derived.
+
+   SHAPE. Every radius is 0. All three sources round (dimden 4, cyanilux 7, live 6) and all
+   three are squared per the 2026-08-11 shape pass. No exception is claimed anywhere here.
+
+   SCENE. A live three.js scene sits behind this. No backdrop-filter, no blur, no shadow, and
+   the only fills used are the 55% panel and the 3% surface. dimden's fill is the one sourced
+   panel here that was already translucent, which is why it is the chassis and not cyanilux's
+   opaque #282828.
+   ============================================================================================= */
+
+
+/* --- SHARED: the wall geometry. Measured off the blockout, gap is dimden's. ------------------
+   This is GEOMETRY ONLY and is deliberately not a design for the wall - it reproduces the
+   blockout's own flex-wrap so the tiles can be judged at their real pitch. The wall itself is
+   still Rod's design conversation. */
+.at-wall {
+  display: flex;
+  flex-wrap: wrap;          /* OURS. dimden's container does not wrap. */
+  gap: 10px;                /* verbatim, dimden #webtiles-container */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Every tile is the measured 88 x 31, border-box, in every version. */
+.at-tile {
+  box-sizing: border-box;
+  width: 88px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+}
+
+/* The mark. Emoji ignore `color`, which is why no version carries its locked state on the mark
+   itself - it would silently do nothing. Flagged because it is easy to write and never notice. */
+.at-mark {
+  font-size: 1.05rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+
+/* =============================================================================================
+   VERSION 1 - LIT EDGE. Every slot is drawn; earned gets a bar; locked is the same box, empty.
+
+   TIER: Remixed.   IDEA ORIGIN: theirs (dimden chassis + cyanilux marker).
+
+   VERBATIM: dimden's `border: 2px solid #383838` and their `gap: 10px`. cyanilux's
+   `border-left: 10px solid <accent>` as the entire earned marker, which is exactly the job it
+   does on their site - it is the only thing distinguishing a heading from a paragraph there.
+   OURS: putting the two together. Neither site marks an earned-vs-unearned anything.
+   COULD NOT TRANSFER: cyanilux's #00aabb (cool accent), their 7px radius (shape pass), their
+   background #282828 (opaque, would sit on top of the scene), and dimden's 10px 15px padding
+   (does not fit 88 x 31, see the header).
+
+   THE IDEA: the wall's silhouette tells you the total, the lit edges tell you the score.
+   Nothing is invented to stand for an unearned thing - the locked tile is just the box.
+
+   THE HONEST COST: 10px of an 88px tile is 11% of its width, where on cyanilux's full-width
+   heading the same 10px is about 1%. It reads much heavier here than it does there. That is the
+   open question for Rod on this version, and it is the reason V2 and V3 exist.
+   ============================================================================================= */
+.at1-tile {
+  border: 2px solid #383838;                                /* verbatim, dimden .box */
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));   /* their #000000a8 -> Rod's warm grey */
+  transition: border-left-color 0.2s ease;
+}
+
+/* LOCKED is the base state on purpose: the tile you have not earned is the tile with nothing
+   added to it. Earning is what puts something on. */
+.at1-tile--unlocked {
+  border-left: 10px solid var(--color-gold, #fbbf24);       /* cyanilux's marker, warm hue */
+}
+
+/* dimden's own hover value, borrowed from the live achievement row rather than invented:
+   rgba(255,255,255,0.03) is _animations.scss:398 verbatim, and it is already a lab token. */
+.at1-tile:hover,
+.at1-tile:focus-visible {
+  background: var(--color-surface-faint, rgba(255, 255, 255, 0.03));
+}
+
+/* The 641 x 40 row. dimden's .box at its VERBATIM padding, which fits at this size:
+   641 - 4 border - 30 padding = 607 content, 40 - 4 - 20 = 16 tall. One mono line is 15.4px. */
+.at1-row {
+  box-sizing: border-box;
+  width: 641px;
+  height: 40px;
+  border: 2px solid #383838;                                /* verbatim */
+  border-radius: 0;                                         /* their 4px, squared */
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  padding: 10px 15px;                                       /* verbatim */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+  line-height: 1.4;
+  color: rgba(232, 224, 212, 0.78);                         /* live --text-muted-color */
+}
+.at1-row b { font-weight: 400; color: var(--color-text, #f5f3ef); }
+.at1-row .at-count { margin-left: auto; color: var(--color-gold, #fbbf24); }
+
+
+/* =============================================================================================
+   VERSION 2 - VALUE ONLY. No box on anything. Earned and locked differ by value alone.
+
+   TIER: Remixed.   IDEA ORIGIN: ROD (it is his own live rule) + theirs (iquilezles' recipe).
+
+   VERBATIM from the live row, _animations.scss:392-404: the flex row, align-items:center,
+   gap 0.4rem, padding 0.25rem 0.35rem, the icon slot at font-size 1rem / width 1.25rem /
+   text-align center / flex-shrink 0, the name at flex:1 in --text-muted-color, the progress
+   figure at --gold-50 / 0.65rem, and the 3% white hover. Kept in rem so it stays their ratio.
+   OURS: their 6px radius squared, and #fcd34d -> #fbbf24 because #fcd34d is not a lab token.
+   ALSO OURS, and it is the one real invention in this version: the source uses
+   rgba(255,255,255,0.03) as a HOVER value; here it is the resting ground of a LOCKED slot. Same
+   value, different job. Labelled rather than passed off as transcription.
+   COULD NOT TRANSFER: nothing else - the source is already borderless and fill-free, which is
+   why it is the cheapest of the three over a live scene.
+
+   Corroborated by iquilezles' recipe (S4): components differ from their surroundings by colour,
+   font family and line-height, never by a box. Two independent sources agreeing on "value, not
+   chrome" is the strongest argument any version here has.
+
+   THE IDEA: an earned tile is its mark on the bare ground. A locked tile is a 3% breath that
+   says a slot exists, with no border, no fill worth the name, and nothing to compete with the
+   water behind it. Over 29 tiles, V1 draws 29 bordered fills and V2 draws none.
+   ============================================================================================= */
+.at2-tile {
+  padding: 0.25rem 0.35rem;                                 /* verbatim, live row */
+  border: 0;
+  background: none;
+  transition: background-color 0.2s ease;
+}
+.at2-tile--locked {
+  background: var(--color-surface-faint, rgba(255, 255, 255, 0.03));  /* their hover value, our resting ground */
+}
+.at2-tile:hover,
+.at2-tile:focus-visible {
+  background: var(--color-surface-faint, rgba(255, 255, 255, 0.03));  /* verbatim, live row */
+}
+
+/* The 641 x 40 row IS the live row at the reserved size, which is where it came from and where
+   it actually fits. 40 - 8 padding = 32 of content for a 1rem icon and a 0.8rem name. */
+.at2-row {
+  box-sizing: border-box;
+  width: 641px;
+  height: 40px;
+  display: flex;
+  align-items: center;                                      /* verbatim */
+  gap: 0.4rem;                                              /* verbatim */
+  padding: 0.25rem 0.35rem;                                 /* verbatim */
+  border-radius: 0;                                         /* their 6px, squared */
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  transition: background-color 0.2s ease;
+}
+.at2-row:hover { background: var(--color-surface-faint, rgba(255, 255, 255, 0.03)); }
+.at2-icon {
+  font-size: 1rem;                                          /* verbatim */
+  width: 1.25rem;                                           /* verbatim */
+  text-align: center;                                       /* verbatim */
+  flex-shrink: 0;                                           /* verbatim */
+}
+.at2-name {
+  flex: 1;                                                  /* verbatim */
+  color: rgba(232, 224, 212, 0.78);                         /* verbatim --text-muted-color */
+  font-size: 0.8rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.at2-row--unlocked .at2-name { color: var(--color-gold, #fbbf24); }   /* their one colour swap */
+.at2-prog {
+  color: rgba(251, 191, 36, 0.5);                           /* verbatim --gold-50 */
+  font-size: 0.65rem;                                       /* verbatim */
+  flex-shrink: 0;
+}
+
+
+/* =============================================================================================
+   VERSION 3 - NO SLOT. Locked achievements are not drawn at all.
+
+   TIER: Remixed.   IDEA ORIGIN: theirs (iquilezles) + ROD (D28 removed every reward, which is
+   what makes "say it in a sentence" enough).
+
+   VERBATIM as a RULE rather than as declarations, and that distinction is the honest one:
+   iquilezles has no achievement anything. What is taken is their verified recipe - a component
+   is separated from its surroundings by colour, font family and line-height, and by nothing
+   else. Their own instance of it is .code against body: #dcdcdc vs #c0c0c0, Courier vs
+   sans-serif, 1.35 vs 1.8. Here the same three switches carry a line of end matter.
+   OURS: which three values. Their greys are cool-neutral and ours are the warm tokens.
+   COULD NOT TRANSFER: their hues, and their font-weight:bold, which on 11px mono over a scene
+   reads as shouting rather than as a switch.
+
+   The earned tile keeps the dimden chassis (S1) so V3 is a change to the LOCKED state only and
+   can be judged against V1 without a second variable moving.
+
+   THE IDEA: 29 achievements means up to 29 empty boxes on the page that carries the heaviest
+   scene. V3 draws zero of them and spends one line of copy instead. It is also the only version
+   that does not have to answer "what does an unearned thing look like", because it never draws
+   one.
+
+   THE HONEST COST, and it is real: you lose the sense of how much is left. The wall stops being
+   a wall and becomes a shelf. The count in the line is the only thing carrying it.
+   ============================================================================================= */
+.at3-tile {
+  border: 2px solid #383838;                                /* verbatim, dimden .box */
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  transition: background-color 0.2s ease;
+}
+.at3-tile:hover,
+.at3-tile:focus-visible {
+  background: var(--color-surface-faint, rgba(255, 255, 255, 0.03));
+}
+
+/* The 641 x 40 line. No border, no fill, no padding, no radius - that absence IS the citation.
+   Three switches against the prose around it: colour, family, line-height. Nothing else. */
+.at3-row {
+  box-sizing: border-box;
+  width: 641px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);   /* switch 2: family */
+  font-size: 11px;
+  line-height: 1.35;                                            /* switch 3: leading, iq's own value */
+  color: var(--color-silver, #a3a19d);                          /* switch 1: colour */
+  letter-spacing: 0.02em;
+}
+.at3-row b { font-weight: 400; color: var(--color-gold, #fbbf24); }
+
+
+/* =============================================================================================
+   VERSIONS 4-6 - added 2026-08-23 after the achievement-systems sourcing pass.
+
+   V1-V3 STAY. Rod prefers V2, so V2 is the reference point to beat and nothing below replaces it.
+
+   WHY THREE MORE. V1-V3 all vary the same one thing: how much CHROME a locked slot gets (a full
+   box, a 3% breath, nothing). Reading five real achievement systems end to end showed the axis
+   they actually differ on is three axes, and V1-V3 only move one of them:
+
+       axis A  how LOCKED reads          dimmed / hue-swapped / partly filled / absent
+       axis B  is RARITY encoded         not at all / by colour / by SILHOUETTE
+       axis C  what METADATA rides       nothing / a count / a percentage / a date
+
+   So V4 moves A alone, V5 moves B, V6 moves C. Each holds the other two still, which is the only
+   way they can be judged against each other and against V2.
+
+   -------------------------------------------------------------------------------------------
+   PROVENANCE WARNING, up front, because it is the thing most likely to be misread later.
+
+   MINECRAFT HAS NO STYLESHEET. Its advancement screen is drawn by the game from PNG sprites;
+   there is no CSS anywhere to transcribe and none is invented below. What is cited is (a) the
+   decoded SPRITE FILES and (b) the vanilla advancement JSON, both named with their repos. Every
+   CSS declaration in V4 and V5 is therefore OURS expressing THEIR mechanism, and both versions
+   are tiered REMIXED with that stated. Nothing here claims a Minecraft URL that was read as CSS,
+   because there is not one.
+
+   S5  MINECRAFT - the advancement UI. NO CSS EXISTS. Sprites decoded from
+       https://github.com/InventivetalentDev/minecraft-assets @1.21.4, paths
+       gui/sprites/advancements/{task,goal,challenge}_frame_{obtained,unobtained}.png and
+       gui/sprites/advancements/box_{obtained,unobtained}.png. Measured, not remembered:
+         all three frames ......... 26 x 26, identical footprint
+         the name bar ............. 200 x 26, nine-slice, border 10
+         task_frame_unobtained .... fill #C6C6C6  hi #FFFFFF  lo #555555  outline #000000
+         task_frame_obtained ...... fill #AA7E0F  hi #DBA213  lo #493606  outline #000000
+         box_unobtained ........... fill #036A96  hi #0489C1  lo #012E40  outline #000000
+         box_obtained ............. fill #B98F2C  hi #DBA213  lo #493606  outline #000000
+       Frame distribution counted over all 126 vanilla advancement JSON files from
+       https://github.com/misode/mcmeta @data: task 91 (72%), challenge 25 (20%), goal 10 (8%).
+       Layout constants cross-checked against BetterAdvancementWidget.java in
+       https://github.com/way2muchnoise/BetterAdvancements, a mod that reimplements the screen.
+
+   S6  STEAM - real CSS, fetched from
+       https://community.akamai.steamstatic.com/public/css/skin_1/game_achievements.css
+         .achieveFill      { position:absolute; top:2px; left:2px; bottom:2px; z-index:10;
+                             background:#17435c; }
+         .achieveTxtHolder { min-height:60px; border:1px solid #17435c; padding:1px;
+                             overflow:hidden; background: rgba(0,0,0,0.5); }
+         .achievePercent   { float:right; margin-top:27px; margin-right:20px; color:#66C0F4;
+                             font-size:13px; }
+       and the markup sets the fill inline: div class="achieveFill" style="width: 62%".
+
+   S7  RETROACHIEVEMENTS - real CSS, open source, https://github.com/RetroAchievements/RAWeb
+       resources/css/badge.css:
+         .badgeimg  { border:2px solid transparent; padding:0; box-sizing:content-box; }
+         .goldimage { border:2px solid gold;        padding:0; box-sizing:content-box; }
+       resources/css/completion-progress.css, the two-axis ring:
+         [data-award='unfinished']      border-embed-highlight, bg-embed      (hollow)
+         [data-award='beaten-hardcore'] border-zinc-600, bg-gradient          (filled)
+         [data-award='completed']       border-yellow-500, bg-embed           (hollow)
+         [data-award='mastered']        border-[gold],     bg-[#606]          (filled)
+       COLOUR = which tier, HOLLOW vs FILLED = how far. Two axes out of one shape.
+
+   NOT USED, and each rejection has a reason rather than a preference:
+     - Steam's _BW.jpg greyscale asset swap and PlayStation/Xbox client dimming. Across 29 tiles
+       a desaturated locked state is a wall of grey, and the greys those systems use (#8F98A0,
+       #898989) are the cool-grey family --color-muted is banned for.
+     - RetroAchievements' blur-[10px] mastery glow and its border-image holo sweep, which is a
+       rainbow gradient: red and a cool accent in one declaration.
+     - Minecraft's "hidden": true, which removes an unearned advancement from the screen. It
+       would leave a hole where the 3 Secret tiles live inside a fixed 641 x 40 reservation.
+     - Xbox gamerscore and PlayStation point values. They exist to feed a lifetime total and
+       there is no total here, so a number on every tile would be decoration dressed as data.
+     - Steam's 7-per-row cap and its +N overflow chip. The 29 tiles are the deliverable.
+   ============================================================================================= */
+
+
+/* =============================================================================================
+   VERSION 4 - HUE SWAP. Locked is not dimmer than earned. It is a different colour, same weight.
+
+   TIER: Remixed.   IDEA ORIGIN: theirs (Minecraft), mechanism only - see the warning above.
+
+   THE MECHANISM, measured off the sprites rather than remembered: between box_unobtained and
+   box_obtained THE GEOMETRY IS BYTE-IDENTICAL. Only four colours change, and they change HUE,
+   not brightness - #036A96 blue against #B98F2C gold, both saturated, near-equal luminance. Of
+   the five systems read, Minecraft is the ONLY one that does not fade its locked state, and that
+   is exactly why a screen of mostly-unearned advancements does not read as a screen of failures.
+
+   HOW IT IS EXPRESSED HERE: the four colours are custom properties on the tile and the two state
+   classes swap all four and nothing else. That is not a stylistic choice, it is the finding -
+   the two rules below are the same shape with a different palette, which is what the sprites are.
+
+   THE BEVEL is their 4-colour construction transcribed as geometry: 1px black outline, 1px light
+   top-left, flat fill, 1px dark bottom-right. The inset box-shadows carry blur 0, so they are
+   hard 1px lines and not shadows - stated because the scene rule bans blur and soft shadow, and
+   a 0-blur inset is neither.
+
+   OURS: every declaration, because there is no CSS to copy; the translucent fills, because their
+   plate is opaque and would sit on top of the water; and the two hues.
+
+   *** THE OPEN QUESTION ON V4, and it is a real one, not a caveat. ***
+   The mechanism REQUIRES two hues at equal strength. The palette has exactly one non-warm hue -
+   --color-accent-cool #3090a8, "the cool sky the warm lanterns hang in", which settings.css says
+   to spend RARELY, on the single most important mark per view. V4 spends it on 15 locked tiles.
+   That is the opposite of rarely. Either the sky token stops being rare on this one panel, or V4
+   loses its premise, because two warm hues at equal luminance read as two golds, not as two
+   states. Flagged rather than quietly resolved: this is Rod's call, and it is the whole version.
+   ============================================================================================= */
+.at4-tile {
+  border: 1px solid #000;                                   /* their outline, transcribed */
+  background: var(--at4-fill, transparent);
+  box-shadow:
+    inset 1px 1px 0 var(--at4-hi, transparent),             /* their light top-left, blur 0 */
+    inset -1px -1px 0 var(--at4-lo, transparent);           /* their dark bottom-right, blur 0 */
+}
+
+/* The whole version is these two rules. Same box, four colours apart. The row shares them
+   rather than restating them, which is the sprite finding: one palette, any size of plate. */
+.at4-tile--unlocked,
+.at4-row--unlocked {
+  --at4-fill: rgba(245, 158, 11, 0.34);                     /* --color-gold-deep, translucent */
+  --at4-hi: rgba(251, 191, 36, 0.85);                       /* --color-gold */
+  --at4-lo: rgba(40, 26, 6, 0.85);                          /* warm dark, their #493606 role */
+}
+.at4-tile--locked,
+.at4-row--locked {
+  --at4-fill: rgba(48, 144, 168, 0.34);                     /* --color-accent-cool, same alpha */
+  --at4-hi: rgba(120, 192, 192, 0.85);                      /* the sanctioned brighter sky #78c0c0 */
+  --at4-lo: rgba(6, 38, 48, 0.85);                          /* sky dark, their #012E40 role */
+}
+
+/* The 641 x 40 row is the same plate at name-bar scale. Minecraft's box sprite is 200 x 26
+   nine-sliced with border 10, i.e. the bevel stays a fixed 1px at any width, which is why the
+   same declarations hold here without rescaling anything. Metadata is Minecraft's: a title and a
+   criteria count, nothing else. No date, no score, no percentage. */
+.at4-row {
+  box-sizing: border-box;
+  width: 641px;
+  height: 40px;
+  border: 1px solid #000;
+  background: var(--at4-fill, transparent);
+  box-shadow:
+    inset 1px 1px 0 var(--at4-hi, transparent),
+    inset -1px -1px 0 var(--at4-lo, transparent);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--color-text, #f5f3ef);
+}
+.at4-row b { font-weight: 400; letter-spacing: 0.12em; }
+.at4-row .at-count { margin-left: auto; color: var(--color-text, #f5f3ef); }
+
+
+/* =============================================================================================
+   VERSION 5 - SILHOUETTE. Every tile keeps the same 88 x 31 footprint; the OUTLINE changes.
+
+   TIER: Remixed.   IDEA ORIGIN: theirs (Minecraft frames + RetroAchievements' two-axis ring).
+
+   THE MECHANISM. Minecraft has three frame sprites - task, goal, challenge - and all three are
+   26 x 26. The rarity is carried entirely by what the outline does INSIDE that box: task is a
+   plain rect, goal chamfers its corners, challenge steps OUT into corner spikes and IN at the
+   waist. The interior shrinks as the frame gets fancier (400 / 368 / 382 px of icon well) and
+   the outer box never moves. RARITY COSTS INTERIOR AREA, NEVER GRID SPACE - which is the only
+   reason a rarity system can exist inside a fixed 641 x 40 reservation at all.
+
+   RARITY IS NOT INVENTED. There is no rarity field in achievements.js, so rather than assigning
+   one by taste it is read off a field that is already there: `scope`.
+       scope 'section'        -> task       19 of 29   (66%)
+       scope 'cross' | 'site' -> goal        5 of 29   (17%)
+       scope 'meta'           -> challenge   5 of 29   (17%)
+   Minecraft's own vanilla distribution, counted over 126 files, is 72 / 8 / 20. Same shape, same
+   order, and the fancy silhouette stays a minority - which is what keeps a wall of them calm.
+   The MAPPING is ours; the field and the counts are the live file's.
+
+   THE SECOND AXIS is RetroAchievements', and it is free: colour says WHICH tier, hollow versus
+   filled says HOW FAR. Here shape says which tier and fill says earned. Their ring gets four
+   states out of four one-line rules; this gets two states across three shapes out of two.
+
+   OURS: the polygons. Minecraft's spikes were drawn for a 1:1 box and this tile is 2.84:1, so
+   they are re-cut to sit at the four corners of 88 x 31 instead of being stretched sideways, and
+   the waist pinches the left and right edges at mid-height, which is the wide-box reading of "in
+   at the vertical middle". Re-cutting is a real design act and is logged as ours, not
+   transcribed. Also ours: dropping RetroAchievements' content-box border, because clip-path has
+   no border to size - the frame here is a painted parent with an inset well, which is how the
+   sprites are built anyway.
+
+   THE HONEST COST: 5 of 29 tiles get a silhouette nobody has been taught to read. Minecraft
+   teaches it over hundreds of hours. A portfolio has one visit.
+   ============================================================================================= */
+.at5-tile {
+  position: relative;
+  background: var(--at5-frame, transparent);                /* the frame IS the painted parent */
+}
+/* The well. Absolutely positioned so it is not a flex item, and clipped by the parent's
+   clip-path along with everything else - which is what makes the interior shrink on its own
+   wherever the silhouette cuts in. */
+.at5-tile::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: var(--at5-well, transparent);
+}
+.at5-tile .at-mark { position: relative; z-index: 1; }
+
+.at5-tile--locked {
+  --at5-frame: var(--color-silver, #a3a19d);
+  --at5-well: var(--color-panel, rgba(28, 26, 24, 0.55));   /* hollow: the scene reads through */
+}
+.at5-tile--unlocked {
+  --at5-frame: var(--color-gold, #fbbf24);
+  --at5-well: rgba(251, 191, 36, 0.14);                     /* filled */
+}
+
+/* The three silhouettes. Same 88 x 31 box in all three cases - only the outline moves. */
+.at5-tile--goal {
+  clip-path: polygon(7px 0, 81px 0, 88px 7px, 88px 24px, 81px 31px, 7px 31px, 0 24px, 0 7px);
+}
+.at5-tile--challenge {
+  clip-path: polygon(
+    0 0, 9px 3px, 79px 3px, 88px 0,
+    85px 9px, 81px 15.5px, 85px 22px,
+    88px 31px, 79px 28px, 9px 28px, 0 31px,
+    3px 22px, 7px 15.5px, 3px 9px);
+}
+
+/* The 641 x 40 row is the plain (task) frame at row scale, so the silhouettes read as the
+   exception rather than as the house style. Metadata is the tier census, because on this version
+   the tier is the only thing a tile says. */
+.at5-row {
+  box-sizing: border-box;
+  position: relative;
+  width: 641px;
+  height: 40px;
+  background: var(--color-silver, #a3a19d);
+}
+.at5-row::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+}
+.at5-rowin {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(232, 224, 212, 0.78);
+}
+.at5-row b { font-weight: 400; letter-spacing: 0.12em; color: var(--color-text, #f5f3ef); }
+.at5-row .at-count { margin-left: auto; color: var(--color-gold, #fbbf24); }
+
+
+/* =============================================================================================
+   VERSION 6 - THE TILE IS THE BAR. The only version that carries a number.
+
+   TIER: Remixed.   IDEA ORIGIN: theirs (Steam .achieveFill) + ROD (the count is his content idea).
+
+   THE MECHANISM, and this one HAS real CSS. Steam's achievement row does not put a progress bar
+   beside the row - the row IS the bar. `.achieveFill` is absolutely positioned inset 2px inside
+   `.achieveTxtHolder`, its width set inline as a percentage, and its background is THE SAME
+   COLOUR AS THE CONTAINER BORDER (#17435c in both). So a fully-earned thing reads as a solid
+   plate, a barely-started one as a thin stub, and nothing extra is drawn in either case. No
+   second element, no second row, no track. Minecraft does the same trick a different way: its
+   name bar blits the left floor(pct * width) pixels from the obtained texture and the rest from
+   the unobtained one, so the bar and the bar's background are one object.
+
+   WHY THIS VERSION EXISTS. Rod, 2026-08-23: "maybe we can track posts written vs posts read and
+   the achievements and then we can track this across design, tech art, and ramblings." That
+   needs a tile that can hold a COUNT. This is the one that can, and it costs no chrome to do it:
+   the number is a numeral in the space the icon does not use, and the progress is the tile's own
+   background. Nothing is added to carry it.
+
+   THE COUNT IS REAL DATA, not a mock-up. achievements.js already ships a `progress` function on
+   TEN of the 29 - well-rounded [n,5], connoisseur [n,10], completionist [n,15], pyrotechnician
+   [n,50], fan-club [n,10], lantern-tapper [n,25], lantern-painter [n,50], lantern-master [n,100],
+   getting-started [n,5], collector [n,15]. The other 19 are booleans and correctly show no
+   number. So the version degrades on its own: a tile with something to count shows it, a tile
+   with nothing to count is the empty plate, and no rule is needed to switch between them.
+
+   THIS VERSION BREAKS THE ICON-ONLY FINDING ON PURPOSE, and the distinction matters: the finding
+   was that no TITLE fits in 88 x 31, measured at about 50px of free width against names like
+   "Behind the Curtain". A count is not a title. "31/100" is six characters, about 32px at 9px
+   mono, and it fits in that same 50px with room left. Measured, and the demo prints the result.
+
+   OURS: the fills are translucent (Steam's #17435c is opaque and this sits on a live scene), the
+   hues, and z-index 0 instead of their 10 so the numeral sits above its own bar. Steam's
+   rgba(0,0,0,0.5) scrim - their answer to an achievement page over a full-bleed game hero, no
+   blur, one declaration - is the direct precedent for using --color-panel here rather than any
+   backdrop-filter.
+
+   THE HONEST COST: a half-filled tile says "not yet, and here is exactly how far off you are",
+   which is the closest any of the six versions comes to implying a reward. D28 scrapped rewards.
+   A count is not a reward, but it does point forward, and that is worth looking at on purpose.
+   ============================================================================================= */
+.at6-tile {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--at6-bar, transparent);            /* their border == fill colour */
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));   /* their rgba(0,0,0,.5) scrim role */
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 0 4px;
+}
+.at6-fill {
+  position: absolute;
+  top: 2px;                                                 /* verbatim, .achieveFill */
+  left: 2px;                                                /* verbatim */
+  bottom: 2px;                                              /* verbatim */
+  width: var(--at6-pct, 0);                                 /* they set width inline; so do we */
+  background: var(--at6-bar, transparent);                  /* verbatim: same colour as the border */
+  z-index: 0;                                               /* theirs is 10; see the header */
+  transition: width 0.25s ease;
+}
+.at6-tile .at-mark,
+.at6-count { position: relative; z-index: 1; }
+.at6-count {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-silver, #a3a19d);
+  white-space: nowrap;
+}
+.at6-tile--unlocked { --at6-bar: rgba(251, 191, 36, 0.38); }
+.at6-tile--locked { --at6-bar: rgba(163, 161, 157, 0.30); }
+
+/* The 641 x 40 row is the same object at category scale: one bar, one numeral, no track. */
+.at6-row {
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  width: 641px;
+  height: 40px;
+  border: 1px solid var(--at6-bar, transparent);
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  --at6-bar: rgba(251, 191, 36, 0.38);
+}
+.at6-rowin {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(232, 224, 212, 0.78);
+}
+.at6-row b { font-weight: 400; letter-spacing: 0.12em; color: var(--color-text, #f5f3ef); }
+.at6-row .at-count { margin-left: auto; color: var(--color-gold, #fbbf24); }
+
+
+/* --- REDUCED MOTION. Every transition in this file, and all but one of them is colour. -------
+   V6's is the exception: it animates WIDTH, which is real motion and the only thing here a
+   vestibular reader would notice. It is the reason this block is not optional. */
+@media (prefers-reduced-motion: reduce) {
+  .at1-tile,
+  .at2-tile,
+  .at2-row,
+  .at3-tile,
+  .at6-fill { transition: none; }
+}

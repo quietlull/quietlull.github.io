@@ -1,0 +1,257 @@
+<!-- search-bar - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=search-bar can mount it. Page chrome is scoped to .cb-search-bar; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: SEARCH BAR - one component, two carets, three reservations -->
+<!--
+  The box, the // sigil and the "no expand animation" rule are SETTLED (element-tracker.md:107 +
+  decisions.css:426-435). The only thing genuinely still open is WHICH CARET, so the two versions
+  below are the same box and differ in nothing else. Both carets come from a different verified
+  external source; neither is invented.
+
+  Every field carries REAL content - Rod's own post and project titles.
+-->
+<div class="cb cb-search-bar">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-search-bar {
+  background:var(--color-night,#070C23);color:var(--color-text,#f5f3ef);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;padding:0 0 140px
+
+  & * {box-sizing:border-box;margin:0;padding:0
+  }
+  & header.top {position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid var(--color-line-faint,rgba(255,255,255,.06));padding:14px 28px;
+    display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)
+  }
+  & header.top h1 {font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase
+  }
+  & header.top .sub {font-size:10px;color:#8a8a8a
+  }
+  & .wrap {width:min(1480px,96vw);margin:0 auto;padding:40px 0 0
+  }
+  & .lede {font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:44px;max-width:104ch;
+    background:rgba(8,10,18,.72)
+  }
+  & .lede b {color:#e4e4e4;font-weight:500
+  }
+  & .lede code {color:var(--color-gold,#fbbf24)
+  }
+  & .lede .bad {color:#e0a06a
+  }
+  & h2.slot {font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold,#fbbf24);font-weight:400;margin:56px 0 4px;border-top:1px solid #2c2c2c;
+    padding-top:22px
+  }
+  & .slotsrc {font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;
+    margin-bottom:22px;max-width:104ch
+  }
+  & .slotsrc b {color:#ccc;font-weight:400
+  }
+  & h3.v {font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:#9a9a9a;font-weight:400;margin:26px 0 10px
+  }
+  & h3.v em {font-style:normal;color:var(--color-gold,#fbbf24)
+  }
+  /* THE RESERVATION. Drawn at the exact measured size, dashed, and the component sits inside it.
+     The component's own border is rgba(255,255,255,.1) and the dash is #7a6a4a, so an exact fit
+     shows the dash running under a faint hairline. Any overflow crosses the dash visibly. */
+  & .res {position:relative;margin:0 0 8px
+  }
+  & .res::before {content:"";position:absolute;inset:0;border:1px dashed #7a6a4a;pointer-events:none;z-index:2
+  }
+  & .res>.sb {position:relative;z-index:1
+  }
+  /* the projects blockout also labels a 200x34 INNER. Drawn separately, dotted, so the
+     discrepancy is visible instead of quietly resolved. */
+  & .res--inner::after {content:"";position:absolute;left:0;top:0;width:200px;height:34px;
+    border:1px dotted #4a6a7a;pointer-events:none;z-index:2
+  }
+  & .rlabel {font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:#6f6f6f;
+    margin-bottom:26px
+  }
+  & .rlabel .ok {color:#8fbf7a
+  }
+  & .rlabel .no {color:#e08a6a
+  }
+  & .scrollx {overflow-x:auto;padding-bottom:10px
+  }
+  & footer.note {font-family:var(--font-mono);font-size:11px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-top:60px;max-width:104ch;
+    background:rgba(8,10,18,.72)
+  }
+  & footer.note b {color:#e4e4e4;font-weight:500
+  }
+  & footer.note .q {color:var(--color-gold,#fbbf24)
+  }
+}
+</style>
+<header class="top">
+  <h1>search bar</h1>
+  <span class="sub">one component &middot; two carets &middot; three reservations &middot; zero JS</span>
+</header>
+
+<div class="wrap">
+
+<div class="lede">
+<b>WHICH SPEC I FOLLOWED: the ledger's.</b> element-tracker.md:107 records Rod's canonical search
+as <code>square, always-open, // prefix, blinking caret, real typeable input, NO expand/animation</code>
+and that is what is built. The two clauses that look like they fight do not: the rejected animation
+is the box that grows out of a magnifier icon, the blink is the thing he asked for. So the box never
+moves and the caret blinks.<br><br>
+<b>THE BOX IS NOT SLOP ANY MORE.</b> The ledger says "box/prefix still Slop", written before
+decisions.css existed. Rod has since named the shape himself: <i>"squares for tags on project cards,
+rectangles from the buttons for the search and post meta data"</i> (decisions.css:399-401). So the
+box is <code>.d-meta</code> reused, not rebuilt - radius 0, 1px line-soft, silver, 0.82rem/500,
+1.5rem horizontal padding, all read off decisions.css rather than re-picked. The <code>//</code> is
+still Rod's own idea, which is an origin, not a gap.<br><br>
+<b>THE ONE THING I CHECKED THAT CAME BACK NEGATIVE.</b> decisions.css:413 hoped stephanewillems'
+live CSS would close the last citation on that padding. I fetched it
+(<code>/assets/index-fc98faf9.css</code>, 22,087 bytes, today): it is a Tailwind build, there is no
+<code>0.7rem 1.5rem</code> in it and no utility that makes one. <span class="bad">That padding is
+ours, not theirs.</span> Kept because Rod locked it, reported because the citation it wanted does
+not exist.<br><br>
+<b>THE GALLERY HAS ALMOST NO SEARCH BAR.</b> Ten candidate sites were fetched and grepped for a
+text input. Exactly one has one - ronja-tutorials.com - and both its stylesheets return zero rules
+for <code>#SearchField</code>: their search box is a browser default with one margin class. So the
+gallery supplies the behaviour and nothing at all for the look, which is why both carets come from
+the two verified caret notes instead.
+</div>
+
+
+<h2 class="slot">PROJECTS - reservation 400 &times; 34</h2>
+<div class="slotsrc">
+  <b>Source of the number:</b> analysis/2026-08-23-blockout-contract.md line 29, measured at viewport
+  1440. Matched by final-projects.html:105 <code>.panel .search{width:400px}</code> and by
+  projects-blockout.html:69. Three independent places agree, so this one is solid.<br>
+  <b>The dotted blue box is the "200&times;34 inner"</b> the contract also lists. It is a LABEL in
+  the blockout (projects-blockout.html:234 prints the string "SEARCH - 200x34 inner"), and the
+  blockout's own <code>box()</code> helper renders that div at 100% of the 400px parent - so the
+  blockout does not itself draw a 200px inner. Drawn here so Rod can see the gap and say which he
+  meant. Open question 2.
+</div>
+
+<h3 class="v">A &middot; <em>bar caret</em> - atelierbram, border-left blink &middot; empty</h3>
+<div class="res res--inner" data-res="400x34" style="width:400px;height:34px">
+  <label class="sb sb--bar">
+    <span class="sb__prefix" aria-hidden="true">//</span>
+    <input class="sb__input" type="text" placeholder="search projects" aria-label="Search projects">
+  </label>
+</div>
+<div class="rlabel" data-readout></div>
+
+<h3 class="v">A &middot; <em>bar caret</em> - typed</h3>
+<div class="res" data-res="400x34" style="width:400px;height:34px">
+  <label class="sb sb--bar">
+    <span class="sb__prefix" aria-hidden="true">//</span>
+    <input class="sb__input" type="text" placeholder="search projects" aria-label="Search projects" value="Sprite Baker 9000">
+  </label>
+</div>
+<div class="rlabel" data-readout></div>
+
+<h3 class="v">B &middot; <em>underscore caret</em> - 109ichiki, step-start blink &middot; empty</h3>
+<div class="res res--inner" data-res="400x34" style="width:400px;height:34px">
+  <label class="sb sb--underscore">
+    <span class="sb__prefix" aria-hidden="true">//</span>
+    <input class="sb__input" type="text" placeholder="search projects" aria-label="Search projects">
+  </label>
+</div>
+<div class="rlabel" data-readout></div>
+
+<h3 class="v">B &middot; <em>underscore caret</em> - typed</h3>
+<div class="res" data-res="400x34" style="width:400px;height:34px">
+  <label class="sb sb--underscore">
+    <span class="sb__prefix" aria-hidden="true">//</span>
+    <input class="sb__input" type="text" placeholder="search projects" aria-label="Search projects" value="Procedural 3D Mask">
+  </label>
+</div>
+<div class="rlabel" data-readout></div>
+
+
+<h2 class="slot">RAMBLINGS - reservation 1351 &times; 40 (the number I was handed)</h2>
+<div class="slotsrc">
+  <b>Source of the number:</b> analysis/2026-08-23-blockout-contract.md line 48.<br>
+  <b>AND IT COMES FROM THE REJECTED VARIANT.</b> ramblings-blockout.html:252 defaults to
+  <code>rulelog</code> (dimden), whose search is <code>b('100%',40,...)</code> - full width, so
+  1351 at viewport 1440. D15 picked <b>Eve, the hairline variant</b>, whose search is
+  ramblings-blockout.html:166 <code>b('360px',40,...)</code> inside a
+  <code>justify-content:flex-end</code> row. final-ramblings.html:167 agrees with the hairline
+  variant, not with 1351: <code>min-height:40px;width:360px</code>.<br>
+  Both widths are drawn below because the height (40) is the same in both and the component is
+  width-fluid, so it fits either without a second build. Open question 3 - and it is Rod's call,
+  because search WIDTH is layout.
+</div>
+
+<h3 class="v">A &middot; <em>bar caret</em> - at the handed 1351 &times; 40</h3>
+<div class="scrollx">
+  <div class="res" data-res="1351x40" style="width:1351px;height:40px">
+    <label class="sb sb--tall sb--bar">
+      <span class="sb__prefix" aria-hidden="true">//</span>
+      <input class="sb__input" type="text" placeholder="search posts" aria-label="Search posts">
+    </label>
+  </div>
+</div>
+<div class="rlabel" data-readout></div>
+
+<h3 class="v">B &middot; <em>underscore caret</em> - at the handed 1351 &times; 40, typed long</h3>
+<div class="scrollx">
+  <div class="res" data-res="1351x40" style="width:1351px;height:40px">
+    <label class="sb sb--tall sb--underscore">
+      <span class="sb__prefix" aria-hidden="true">//</span>
+      <input class="sb__input" type="text" placeholder="search posts" aria-label="Search posts" value="Decompiling the Shaders of a 2004 Racing Game">
+    </label>
+  </div>
+</div>
+<div class="rlabel" data-readout></div>
+
+
+<h2 class="slot">RAMBLINGS - reservation 360 &times; 40 (what the APPROVED variant reserves)</h2>
+<div class="slotsrc">
+  <b>Source of the number:</b> ramblings-blockout.html:166 (the hairline / Eve variant, the D15
+  winner) and final-ramblings.html:167. Same 40px height, right-aligned in its row.
+</div>
+
+<h3 class="v">A &middot; <em>bar caret</em> - empty</h3>
+<div class="res" data-res="360x40" style="width:360px;height:40px">
+  <label class="sb sb--tall sb--bar">
+    <span class="sb__prefix" aria-hidden="true">//</span>
+    <input class="sb__input" type="text" placeholder="search posts" aria-label="Search posts">
+  </label>
+</div>
+<div class="rlabel" data-readout></div>
+
+<h3 class="v">B &middot; <em>underscore caret</em> - typed</h3>
+<div class="res" data-res="360x40" style="width:360px;height:40px">
+  <label class="sb sb--tall sb--underscore">
+    <span class="sb__prefix" aria-hidden="true">//</span>
+    <input class="sb__input" type="text" placeholder="search posts" aria-label="Search posts" value="2D Physics on the GPU">
+  </label>
+</div>
+<div class="rlabel" data-readout></div>
+
+
+<footer class="note">
+<b>OPEN QUESTIONS FOR ROD</b><br><br>
+<span class="q">1.</span> The <code>0.7rem 1.5rem</code> padding in decisions.css is not
+stephanewillems'. I fetched their live CSS and it is a Tailwind build with no such value. The
+padding is ours. Keep it (it is what he locked) or re-pick it against something real?<br><br>
+<span class="q">2.</span> Projects: is the "200&times;34 inner" a real reservation for the typing
+field inside a 400px box, or is it a stale label? The blockout prints the string but renders the
+inner at the full 400. Right now the field fills the box.<br><br>
+<span class="q">3.</span> Ramblings: 1351 (the rejected dimden variant, which is what the contract
+measured) or 360 right-aligned (the approved Eve variant, which is what final-ramblings.html
+reserves)? The component fits both; the choice is layout, so it is his.<br><br>
+<span class="q">4.</span> The field takes <code>--font-mono</code>, not .d-meta's
+<code>--font-body</code>. Reason: <code>//</code> is a code sigil and both caret parents are
+monospace terminal type. It is a departure from the locked rule and reverts by changing one token,
+<code>--sb-face</code>.<br><br>
+<span class="q">5.</span> The house focus ring (generic.css:25) lands on the INPUT, which sits
+1.5rem in from the box edge, so the gold ring draws inside the rectangle rather than around it. No
+extra CSS was added to change that. If he wants the ring on the box it is one rule.
+</footer>
+
+</div>
+</div>

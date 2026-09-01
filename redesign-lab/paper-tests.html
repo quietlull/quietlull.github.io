@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAPER - three sourced options, on cards</title>
+<!--
+  ===== PAPER TESTS (2026-08-22, ROD) =====
+  Rod: "I also want to ask if we have a paper texture for some cards yet" -> then "Where are these
+  can you show me i havent seen them yet."
+
+  They existed only on text-decisions.html, applied to an IMAGE MAT, which is not where he was
+  looking and not what he is asking about. Same three options, on CARDS this time.
+
+  ALL THREE ARE SOURCED. Verbatim CSS in redesign-lab/sources/:
+    A  gneiss-paper-borderimage.md   the EDGE is torn paper, via border-image
+    B  gneiss-paper-ground.md        a tiled photographed paper surface + a separate stain
+    C  ibelick-feturbulence-grain.md one inline feTurbulence, no asset at all
+
+  A and B come from gneiss.place, which is the same site the washi tape came from.
+  C is the only one that needs no artwork, and the only one that is monochrome by construction.
+
+  WHERE A STAND-IN IS USED IT SAYS SO ON THE CARD. A and B want photographed assets we do not have;
+  their MECHANISM is real and shown, their TEXTURE is a placeholder until the asset exists.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:blur(20px) brightness(.6) saturate(1.03)}
+.bg-1{opacity:1}.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+@keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.bg-2{animation:none;opacity:.6}}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:56px 0 140px;position:relative;z-index:1}
+.case{margin-bottom:84px}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;background:#7ee0b8;color:#0d2a12}
+.badge--asset{background:#c9a227;color:#141414}
+.case h2{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400}
+.prov{font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:12px 0 24px;max-width:78ch}
+.prov b{color:var(--color-text);font-weight:500}
+.prov code{color:var(--color-gold)}
+
+/* three cards per option, so the texture is judged repeating rather than once */
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:800px){.row{grid-template-columns:1fr}}
+
+/* the card itself is deliberately plain - only the PAPER differs between options */
+.card{position:relative;padding:20px 22px 24px;min-height:186px;display:flex;
+  flex-direction:column;justify-content:flex-end;overflow:hidden}
+.card h3{font-size:1.15rem;font-weight:500;color:var(--color-text);margin-bottom:2px}
+.card p{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--color-muted)}
+.card .thumb{position:absolute;inset:0;bottom:64px;background:rgba(0,0,0,.28)}
+
+/* ---------- A - EDGE. gneiss.place .navbox / .button-image ----------
+   border-image with a fill slice and an asymmetric width, plus their sub-degree rotation.
+   The slice here is a hatch STAND-IN; the real thing is a photographed torn edge. */
+.a .card{background:rgba(255,255,255,.045);border:16px solid transparent;
+  border-image:repeating-linear-gradient(45deg,#3a332a 0 6px,#2b261f 6px 12px) 16 round;
+  transform:rotate(-.1deg)}
+
+/* ---------- B - GROUND. gneiss.place tiled surface ----------
+   ruling drawn as geometry because that is the honest greybox of a tiled photograph, plus their
+   coffeestain as a SEPARATE overlay at opacity .25 - the separation is the good idea in it. */
+.b .card{background:repeating-linear-gradient(to bottom,
+  rgba(255,255,255,.055) 0 22px, rgba(255,255,255,.085) 22px 23px);
+  border:1px solid rgba(255,255,255,.14)}
+.b .card::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 96px 66px at 74% 24%,rgba(190,150,90,.20),transparent 70%);
+  opacity:.25}
+
+/* ---------- C - SURFACE. ibelick.com, VERBATIM ----------
+   one feTurbulence rect as a data URI. No asset, no request, monochrome by construction. */
+.c .card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.14)}
+.c .card::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
+  background-size:182px;opacity:.12}
+
+/* ---------- the control: no paper at all ---------- */
+.none .card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.14)}
+
+/* ---------- D - THE SHEET WE ALREADY BAKED, GRADIENT-MAPPED ----------
+   Rod 2026-08-22: "can we use the paper texture we baked for the three.js background maybe with a
+   gradient map?" Yes, and it is better than any of A/B/C because it is not a stand-in and not an
+   approximation - it is the same sheet the scene is already running.
+
+   WHERE IT COMES FROM: assets/tex/paper-*.png, baked 2026-08-22 for the scene's paper filter
+   (commit acebfd8, D24). Those are normal+height maps - rg is the normal, B IS THE HEIGHT, and the
+   height channel alone IS the paper structure. Extracted to references/paper/*-height.png; nothing
+   was redrawn, the blue channel was split out.
+
+   THE GRADIENT MAP: the height is greyscale, so a warm ramp blended over it in soft-light remaps
+   its luminance to warm tone the way a gradient map does, without a filter pass.
+   Tiling matches the scene's own CONFIG.lanterns.paper: washi at tile 1, cold press at tile 4. */
+/* the blend must sit on the SAME element as the backgrounds. It was on the section wrapper, so
+   D1-D3 were compositing normally and the gradient map was doing nothing. */
+.paper-card .card{background-color:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.14);
+  background-blend-mode:soft-light;background-repeat:repeat}
+.d1 .card{background-image:linear-gradient(155deg,rgba(214,168,108,.5),rgba(60,48,36,.5)),
+  url(/redesign-lab/references/paper/paper-washi-height.png);background-size:cover,256px}
+.d2 .card{background-image:linear-gradient(155deg,rgba(214,168,108,.5),rgba(60,48,36,.5)),
+  url(/redesign-lab/references/paper/paper-coldpress-height.png);background-size:cover,256px}
+.d3 .card{background-image:linear-gradient(155deg,rgba(214,168,108,.5),rgba(60,48,36,.5)),
+  url(/redesign-lab/references/paper/paper-wove-height.png);background-size:cover,256px}
+
+/* E - BOTH SHEETS, the way the shader actually combines them: washi at tile 1 carrying the large
+   fibre, cold press at tile 4 sitting inside it as tooth. The shader subtracts so the sheets cancel
+   where they agree; `exclusion` is the CSS blend that behaves closest to that. */
+.e .card{background-color:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.14);
+  background-image:linear-gradient(155deg,rgba(214,168,108,.5),rgba(60,48,36,.5)),
+    url(/redesign-lab/references/paper/paper-coldpress-height.png),
+    url(/redesign-lab/references/paper/paper-washi-height.png);
+  background-size:cover,64px,256px;
+  background-blend-mode:soft-light,exclusion,normal;background-repeat:repeat}
+
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--font-mono);
+  font-size:10px;color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold)}
+</style>
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
+<div id="scrim"></div>
+
+<header class="top">
+  <h1>Paper on cards</h1>
+  <span class="sub">three sourced options + a no-paper control &middot;
+    <a href="/redesign-lab/">lab</a> &middot;
+    <a href="/redesign-lab/final-landing.html">final-landing</a></span>
+</header>
+
+<div class="wrap">
+  <div class="prov" style="margin-bottom:52px">
+    <b>These existed only on <code>text-decisions.html</code>, applied to an image mat</b> - not
+    where you were looking, and not what you asked about. Same three options, on cards.<br><br>
+    All three are sourced, verbatim CSS in <code>sources/</code>. <b>A and B want a photographed
+    asset we do not have</b>; their MECHANISM is real and is what you are looking at, their TEXTURE
+    is a stand-in until that asset exists. <b>C needs no artwork at all.</b>
+  </div>
+
+  <section class="case none">
+    <div class="tagrow"><h2>Control &middot; no paper</h2></div>
+    <div class="row">
+      <div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div>
+    </div>
+  </section>
+
+  <section class="case a">
+    <div class="tagrow"><span class="badge">sourced</span><span class="badge--asset badge">asset owed</span>
+      <h2>A &middot; the EDGE is paper &middot; gneiss.place border-image</h2></div>
+    <div class="prov">Their <code>.navbox</code> has no drawn border - its edge IS a torn-paper
+      photograph, sliced with <code>border-image</code> using a <code>fill</code> slice, an
+      asymmetric width and a <b>-0.1deg rotation</b> so nothing sits perfectly square. Same site as
+      the washi tape, so the page would speak one material language.
+      <b>The hatch you see is a stand-in for the photographed edge.</b></div>
+    <div class="row">
+      <div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div>
+    </div>
+  </section>
+
+  <section class="case b">
+    <div class="tagrow"><span class="badge">sourced</span><span class="badge--asset badge">asset owed</span>
+      <h2>B &middot; the GROUND is paper &middot; gneiss.place tiled surface</h2></div>
+    <div class="prov">A photographed paper surface, tiled, scaled well off 100% so it never reads as
+      a tile. The <b>stain is a separate <code>::before</code> at opacity .25</b>, which means one
+      paper can wear many different marks - that separation is the good idea in it.
+      <b>Ruling is drawn as geometry here</b>, which is the honest stand-in for a tiled photograph.</div>
+    <div class="row">
+      <div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div>
+    </div>
+  </section>
+
+  <section class="case c">
+    <div class="tagrow"><span class="badge">sourced</span><span class="badge">no asset needed</span>
+      <h2>C &middot; the SURFACE is paper &middot; ibelick feTurbulence, verbatim</h2></div>
+    <div class="prov">One inline <code>feTurbulence</code> as a data URI, quoted exactly from
+      ibelick.com: <code>baseFrequency .65</code>, <code>numOctaves 3</code>,
+      <code>opacity .12</code>, <code>background-size 182px</code>. No image request, resolution
+      independent, monochrome by construction so it needs no palette exception.
+      <b>This is the real thing, not a stand-in.</b> Honest limit: it is film grain, so it gives the
+      card tooth rather than fibre or a deckle. It can also sit UNDER A or B rather than compete.</div>
+    <div class="row">
+      <div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div>
+    </div>
+  </section>
+
+  <section class="case d1 paper-card">
+    <div class="tagrow"><span class="badge">the sheet we baked</span><span class="badge">no new asset</span>
+      <h2>D1 &middot; WASHI height, gradient-mapped &middot; tile 1, as the scene runs it</h2></div>
+    <div class="prov"><b>This is not a stand-in.</b> It is the same sheet the three.js scene is
+      already running, from <code>assets/tex/paper-washi.png</code>, baked 2026-08-22 for the paper
+      filter (D24). Those files are normal+height maps; <b>the blue channel IS the height</b>, and
+      the height alone is the paper structure. Split out to
+      <code>references/paper/paper-washi-height.png</code> - nothing redrawn.
+      The warm ramp over it in <code>soft-light</code> is the gradient map.</div>
+    <div class="row"><div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div></div>
+  </section>
+
+  <section class="case d2 paper-card">
+    <div class="tagrow"><span class="badge">the sheet we baked</span>
+      <h2>D2 &middot; COLD PRESS height, gradient-mapped</h2></div>
+    <div class="prov">The other sheet the scene loads. In the shader this one runs at <b>tile 4</b>,
+      sitting inside the washi as tooth rather than as the main structure. Shown here at tile 1 so
+      you can see the sheet itself.</div>
+    <div class="row"><div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div></div>
+  </section>
+
+  <section class="case d3 paper-card">
+    <div class="tagrow"><span class="badge">the sheet we baked</span>
+      <h2>D3 &middot; WOVE height, gradient-mapped</h2></div>
+    <div class="prov">The third baked sheet, present in <code>assets/tex/</code> but <b>not
+      currently used by the scene</b> - the config loads washi and cold press only.</div>
+    <div class="row"><div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div></div>
+  </section>
+
+  <section class="case e">
+    <div class="tagrow"><span class="badge">the sheet we baked</span><span class="badge">as the shader combines them</span>
+      <h2>E &middot; BOTH sheets, washi tile 1 + cold press tile 4</h2></div>
+    <div class="prov">The combination the scene actually ships, per
+      <code>CONFIG.lanterns.paper</code>: washi at tile 1 carrying the large fibre, cold press at
+      tile 4 inside it as tooth. The shader combines them with <b>SUBTRACT</b> so the sheets cancel
+      where they agree instead of reading as more noise; <code>exclusion</code> is the CSS blend
+      that behaves closest to that. <b>If the cards and the scene should feel like the same paper,
+      this is the one that matches.</b></div>
+    <div class="row"><div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+      <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+      <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div></div>
+  </section>
+</div>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; paper tests &middot;
+  A and B are stand-ins for assets; C is verbatim</div>
+<script src="/redesign-lab/hana-bloom.js"></script>
+</body>
+</html>

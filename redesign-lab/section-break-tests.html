@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SECTION BREAKS - 6 sourced treatments, greybox</title>
+<!--
+  ===== HEADING + SECTION BLOCKS (2026-08-22) =====
+  Rod, P54: "make sure the headers in posts have their own spaced out cards and sections are broken
+  down into their own bits."
+
+  This is a LAYOUT change to the post page. Per docs/PAGE-PROCESS.md a change Rod asks for becomes a
+  NEW VARIANT, not an edit to the existing one, and the treatment needs a real source before it is
+  drawn. So this is a COMPONENT BLOCKOUT (pipeline stage 3), not a build.
+
+  SIX SOURCES, all verbatim, all verified. Full note with the CSS: sources/section-and-heading-blocks.md
+    A  cyanilux.com          every h2/h3/h4 IS a card, 30px above it       read from source 2026-08-22
+    B  dimden.dev            the SECTION is a TRANSLUCENT panel            read from source 2026-08-22
+    C  minionsart.github.io  a tinted section block, fill only, no rule    held + verified in repo
+    D  catlikecoding.com     no card - nested counters make the unit       held + verified in repo
+    E  iquilezles.org        no box at all - colour value + a bare <hr>    held + verified in repo
+    F  acegikmo.com          heading as a ruled chapter divider            held + verified in repo
+
+  GREYBOX LAW (D8): geometry only, one grey language, NO colour. Every source accent becomes a grey
+  at the same value weight, and every radius is SQUARED per Rod's locked 2026-08-11 shape rule
+  ("square by default, round only by exception") - the same pass projects-blockout.html applied.
+  The sources' real radii are recorded in each panel so the shape call stays reversible.
+
+  MEASURE: 767px = 94 characters. That is Rod's decision (P33, "lets go with 94 it feels about
+  right"), so the variants are judged at the width the post actually reads at, not at a demo width.
+
+  E IS ON THIS PAGE ON PURPOSE. Without a no-box option every variant is a box and the comparison
+  is rigged - the page would prove the ask rather than test it.
+
+  WHAT IS NOT HERE: no source combines a boxed heading WITH a boxed section. Cyanilux boxes the
+  heading; dimden and MinionsArt box the section. Doing both would be OURS, so it is not drawn.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:48px 0 140px;position:relative;z-index:1}
+.lede{font-family:var(--font-mono);font-size:12px;line-height:1.9;color:var(--color-muted);
+  border:1px solid var(--color-line-faint);padding:18px 20px;margin-bottom:56px;max-width:92ch}
+.lede b{color:var(--color-text);font-weight:500}
+.lede code{color:var(--color-gold)}
+
+.case{margin-bottom:78px}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;background:#7fa87f;color:#141414}
+.badge--none{background:#8a8a8a}
+.case h2{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400}
+.prov{font-family:var(--font-mono);font-size:11px;line-height:1.85;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:12px 0 24px;max-width:88ch}
+.prov b{color:var(--color-text);font-weight:500}
+.prov code{color:var(--color-gold)}
+.prov a{color:var(--color-gold)}
+
+/* ==========================================================================================
+   THE STAGE.  767px = 94 characters, Rod's measure (P33). Blockout greys throughout: #141414
+   ground, #1b1b1b box, #555/#666 lines, #d9d9d9 text - the same ramp post-blockout.html uses.
+   Every variant renders the SAME four blocks of copy so the only difference is the treatment.
+   ========================================================================================== */
+.stage{width:767px;max-width:100%;background:#141414;border:1px solid #2c2c2c;padding:34px 30px 40px}
+.stage p{color:#d9d9d9;font-size:1rem;line-height:1.8;margin:14px 0}
+.stage .hd{font-family:var(--font-mono);font-size:.95rem;letter-spacing:.02em;color:#e4e4e4;
+  font-weight:500}
+.stage .hd3{font-size:.85rem;color:#cfcfcf}
+
+/* ---- A · CYANILUX. Verbatim geometry, greys substituted, radius squared.
+        real: background #282828 · border-left 10px solid #00aabb · radius 7px
+        greybox: same 30px/7px/20px box, accent -> #6f6f6f, radius 0 ---- */
+.a .hd,.a .hd3{margin-top:30px;padding:7px 20px;background:#282828;border-left:10px solid #6f6f6f;
+  border-radius:0}
+.a .hd:first-child{margin-top:0}
+/* nesting is carried by FILL on their site: #282828 -> #303030 one step per level of containment */
+.a .nest{background:#1f1f1f;padding:0 15px 12px 10px;margin-top:14px}
+.a .nest .hd3{background:#303030}
+
+/* ---- B · DIMDEN. The SECTION is the panel and the heading is plain inside it.
+        real: background #000000a8 (TRANSLUCENT, 66% black) · border 2px solid #383838
+              · radius 4px · padding 10px 15px · margin 5px  ---- */
+.b .sec{background:rgba(0,0,0,.66);border:2px solid #383838;border-radius:0;padding:10px 15px;
+  margin:5px 0}
+.b .hd,.b .hd3{margin:0 0 6px}
+
+/* ---- C · MINIONSART. Fill alone - no rule, no accent bar, no left border.
+        real: padding 7px / 20px sides · margin 10px · radius 2px · background #1c1c1c ---- */
+.c .sec{padding:7px 20px;margin:10px 0;border-radius:0;background:#1c1c1c}
+.c .hd,.c .hd3{margin:0 0 6px}
+
+/* ---- D · CATLIKE CODING. No box. Nested counters carry the hierarchy, de-emphasised.
+        real: ::before at 14px #888 against a 20px #222 heading on 16px prose ---- */
+.d{counter-reset:h2}
+.d .sec{counter-increment:h2;counter-reset:h3;margin-top:26px}
+.d .sec:first-child{margin-top:0}
+.d .hd::before{content:counter(h2) ". ";font-size:.72rem;color:#888;font-family:var(--font-mono)}
+.d .sub{counter-increment:h3}
+.d .hd3::before{content:counter(h2) "." counter(h3) " ";font-size:.72rem;color:#888;
+  font-family:var(--font-mono)}
+.d .hd{font-size:1.05rem}          /* their 20px against 16px prose - barely larger, on purpose */
+
+/* ---- E · IQUILEZLES. No box anywhere. Weight reset to normal, pure white against grey body,
+        section break is a BARE <hr> with the browser's own default inset border. ---- */
+.e .hd,.e .hd3{font-weight:normal;color:#fff;background:none;padding:0;font-size:1rem;
+  font-family:"M PLUS Rounded 1c",sans-serif}
+.e p{color:#c0c0c0}
+.e hr{border:0;border-top:1px inset #444;margin:0}   /* UA default, restated so it survives the reset */
+.e br{line-height:2}
+
+/* ---- F · ACEGIKMO. h1 as a ruled chapter divider - border-bottom with NO border-color, so the
+        rule inherits `color` and heading + rule move together. h5 is display:inline, a run-in. ---- */
+.f .hd{text-align:center;border-bottom:solid 1px;color:#d9d9d9;font-weight:100;
+  margin:34px 0 .3em;padding-bottom:.2em;background:none}
+.f .hd:first-child{margin-top:0}
+.f .runin{display:inline;font-weight:100;color:#fff;margin-right:.5em;
+  font-family:var(--font-mono);font-size:.8rem;letter-spacing:.08em}
+
+/* ---- G · D+F MIX. Rod 2026-08-22: "can we do a mix of D and F?"
+        Catlike's nested COUNTERS (D) carrying the hierarchy, on acegikmo's ruled chapter
+        DIVIDER (F). Both halves are sourced and verbatim; **the COMBINATION is OURS** - no
+        source does both, and saying so is the rule that stops an invention inheriting a real
+        source's credibility.
+        The two actually agree on a principle, which is why they merge cleanly: Catlike
+        de-emphasises the NUMBER (14px #888 against a 20px heading) and acegikmo de-emphasises
+        the TYPE (font-weight 100). Neither uses size to carry hierarchy. The counter does the
+        ranking, the rule does the separation, and the type is free to stay quiet.
+        acegikmo's `border-bottom: solid 1px` with NO border-color is kept exactly - it inherits
+        `color`, so the heading and its rule recolour together under any palette. ---- */
+.g{counter-reset:h2}
+.g .sec{counter-increment:h2;counter-reset:h3}
+.g .sub{counter-increment:h3}
+/* P73, Rod 2026-08-22: "lets recolor the headers and the sub sections too i also find it weird
+   that the section number is smaller than the header text and doesnt grow to match it."
+
+   THE NUMBER NOW SCALES WITH ITS HEADING. It was a fixed .72rem, so it stayed put while the
+   heading grew - exactly what he saw. `em` on a ::before resolves against the HEADING's own
+   font-size, so `0.68em` tracks any heading size for free and never needs a second number.
+   0.68 is not a taste pick: Catlike's own ratio is 14px on a 20px heading = 0.7, and their whole
+   device is a de-emphasised number, so the ratio is the thing to keep, not the pixel value.
+
+   COLOUR. Heads take the deep gold, subheads the brighter gold one step up so depth reads by hue
+   rather than by size - which is the same logic the rest of the merge runs on (neither source
+   uses size to carry hierarchy). The NUMBER stays muted so it never competes with the label it
+   introduces. The rule inherits `color` from acegikmo's borderless `border-bottom`, so recolouring
+   the head recolours its rule automatically - that is the whole reason F's trick was worth
+   keeping. */
+/* P82, Rod 2026-08-23: "Section breaks dont have enough padding between them and the next and
+     previous text please measure out how our combined references do it."
+
+     MEASURED, from each source's own CHAPTER-level rule rather than from memory:
+       catlikecoding tutorials.css   h2 { font-size:20px; margin: 2em 0 1em }   -> 40px above, 20px below
+       acegikmo styles.css           h1 { margin-top: 60px; border-bottom: solid 1px }  (no bottom set)
+       catlike                       p  { margin: 1em 0 }
+
+     THE BUG WAS MINE AND IT WAS A LEVEL MIX-UP. The `.3em` bottom margin came from acegikmo's
+     h3/h4/h5 - their SUB-heading value - not from their h1. Their chapter heading sets no bottom
+     margin at all. So our chapter heading was sitting ~11px off the paragraph under it while both
+     references sit at 20px or more.
+
+     TAKEN: Catlike's `2em 0 1em`, because it is the only one of the two that specifies both ends at
+     the chapter level. In `em` it is their RATIO, so at our larger heading it scales proportionally
+     - 2em/1em on a 36px head is 72px above and 36px below, exactly the proportion they use on 20px.
+     acegikmo's 60px top corroborates the generous top rather than contradicting it. */
+.g .hd{text-align:center;border-bottom:solid 1px;color:var(--color-gold-deep,#F59E0B);
+  font-weight:100;margin:2em 0 1em;padding-bottom:.2em;background:none;font-size:1.35rem}
+.g .sec:first-child .hd{margin-top:0}  /* only the very first, so the stage does not open with 72px of air */
+.g .hd::before{content:counter(h2) ". ";font-size:0.68em;color:var(--color-muted,#9aa3bd);
+  font-family:var(--font-mono)}
+/* the subsection keeps the number but NOT the rule - a rule per h3 would turn the page into a
+   ladder, and F's divider is a CHAPTER device. This is the one judgement call in the merge. */
+.g .hd3{font-weight:100;color:var(--color-gold,#FBBF24);font-size:1.05rem;margin-top:18px;
+  background:none;padding:0}
+.g .hd3::before{content:counter(h2) "." counter(h3) " ";font-size:0.68em;
+  color:var(--color-muted,#9aa3bd);font-family:var(--font-mono)}
+.g .runin{display:inline;font-weight:100;color:#fff;margin-right:.5em;
+  font-family:var(--font-mono);font-size:.8rem;letter-spacing:.08em}
+
+.foot{font-family:var(--font-mono);font-size:10.5px;line-height:1.9;color:#8a8a8a;
+  border:1px dashed #3a3a3a;padding:16px 18px;margin-top:20px;max-width:88ch}
+.foot b{color:#d9d9d9;font-weight:500}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Section breaks &mdash; heading and section as blocks</h1>
+  <span class="sub">6 sourced treatments &middot; greybox &middot; at the real 767px measure</span>
+  <span class="sub"><a href="/redesign-lab/">&larr; lab index</a></span>
+  <span class="sub"><a href="/redesign-lab/sources/section-and-heading-blocks.md">source note</a></span>
+</header>
+
+<div class="wrap">
+
+<div class="lede">
+  <b>Your ask, P54:</b> <i>"make sure the headers in posts have their own spaced out cards and
+  sections are broken down into their own bits."</i> That is a layout change, so per the process it
+  becomes variants rather than an edit, and each one needed a real source first. Six below.<br><br>
+  <b>A is your ask almost word for word</b> &mdash; cyanilux boxes every h2, h3 and h4 and puts
+  <code>30px</code> above each one. <b>B and C</b> box the SECTION instead and leave the heading
+  plain. <b>D, E and F</b> break sections apart with <b>no box at all</b>, and they are here on
+  purpose: without them every option is a card and the page would prove the ask rather than test
+  it.<br><br>
+  <b>The deciding property is probably not the radius, it is the alpha.</b> Only dimden's panel is
+  translucent (<code>#000000a8</code>, 66% black). Every other boxed option is opaque and would sit
+  on top of the live scene instead of letting it through &mdash; on a page whose entire ground is
+  that scene, that is the thing to judge.<br><br>
+  <b>No source combines a boxed heading with a boxed section.</b> Doing both at once would be ours,
+  so it is not drawn here. If that is what you want, say so and it gets built as a labelled
+  combination rather than smuggled in as a transcription.
+</div>
+
+<!-- ================================ A ================================ -->
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced</span>
+    <h2>A &middot; cyanilux &mdash; every heading IS a card</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://www.cyanilux.com/css/style.css?v=12">cyanilux.com/css/style.css?v=12</a>
+    lines 817-832, read from source 2026-08-22. Seen on
+    <a href="https://www.cyanilux.com/tutorials/urp-shader-code/">/tutorials/urp-shader-code/</a>,
+    which carries <b>20 h2 on one page</b> &mdash; this is their working system, not a one-off.<br>
+    <b>Verbatim:</b> <code>margin-top:30px; padding:7px 20px; background:#282828;
+    border-left:10px solid #00aabb; border-radius:7px</code> on
+    <code>h2:not(.title-no-margin):not(.title-undecorated), h3, h4</code>.<br>
+    <b>Two details that matter more than the box:</b> h2, h3 and h4 all get the <b>same</b>
+    treatment &mdash; no size or weight escalation carries the hierarchy. And <b>nesting is carried
+    by FILL</b>: a heading inside <code>.foldout</code> or <code>.tabpanel</code> goes
+    <code>#282828 &rarr; #303030</code>, one step lighter per level of containment. That is a
+    ready-made answer to the second half of your ask, drawn below as the nested block.<br>
+    <b>Greybox changes:</b> accent <code>#00aabb &rarr; #6f6f6f</code> (D8, no colour), radius
+    <code>7 &rarr; 0</code> (your locked shape rule). Everything else is theirs.<br>
+    <b>The cost, stated:</b> their real page nests card in card in card &mdash; page shell, section,
+    heading &mdash; three opaque fills deep before any prose. Ours has a scene behind it.</div>
+  <div class="stage a">
+    <div class="hd">Instancing the grass</div>
+    <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+      reallocated, not just the uniform updated, which is the part that bit me.</p>
+    <div class="hd3">Why the buffer has to be rebuilt</div>
+    <p>A structured buffer's length is baked into its descriptor. The shader reads it as a constant,
+      so growing the count without a new allocation reads past the end.</p>
+    <div class="nest">
+      <div class="hd3">Nested one level &mdash; their fill steps #282828 to #303030</div>
+      <p>This is how cyanilux carries containment depth: the heading's fill lightens one step, and
+        nothing else changes. No indent, no rule, no size jump.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ B ================================ -->
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced</span>
+    <h2>B &middot; dimden &mdash; the SECTION is a translucent panel</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://dimden.dev/css/main.css?9">dimden.dev/css/main.css?9</a>
+    lines 168-180, read from source 2026-08-22. <b>17 <code>.box</code> elements</b> on the
+    homepage.<br>
+    <b>Verbatim:</b> <code>background:#000000a8; border:2px solid #383838; border-radius:4px;
+    padding:10px 15px; margin:5px</code>, with a Firefox-only override pushing the fill to
+    <code>#000000d3</code> &mdash; note it goes to 83%, <b>not</b> to opaque.<br>
+    <b>This is the one that suits our page.</b> A 66%-black panel over a live scene is exactly D27's
+    <i>"normal transparent cards in grey"</i>, and it comes from a site already in your gallery
+    rather than from a rule we invented.<br>
+    <b>Correction to a number already in this repo:</b> <code>about-blockout.html</code> transcribes
+    this as <code>border:2px solid #666</code> and <code>margin-top:10px</code>. The <code>#666</code>
+    is the greybox language and is fine; the margin is wrong &mdash; the real rule is <b>5px on all
+    four sides</b>. Padding and radius match exactly.</div>
+  <div class="stage b">
+    <div class="sec">
+      <div class="hd">Instancing the grass</div>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p>
+    </div>
+    <div class="sec">
+      <div class="hd3">Why the buffer has to be rebuilt</div>
+      <p>A structured buffer's length is baked into its descriptor. The shader reads it as a
+        constant, so growing the count without a new allocation reads past the end.</p>
+    </div>
+    <div class="sec">
+      <div class="hd3">What I would do differently</div>
+      <p>Profile before optimising. The slow part was never the part that looked slow, and I spent
+        two evenings on the wrong half of the frame.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ C ================================ -->
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced</span>
+    <h2>C &middot; MinionsArt &mdash; a tinted block, separated by fill alone</h2></div>
+  <div class="prov"><b>Source:</b> <code>sources/minionsart-prose.md</code> &mdash; style.css:487-494,
+    verified there character for character, used at <code>Posts.html:80</code>,
+    <code>grasssystem.html:117</code> and <code>:199</code>.<br>
+    <b>Verbatim:</b> <code>padding:7px; padding-left:20px; margin:10px; padding-right:20px;
+    border-radius:2px; background:#1c1c1c</code> &mdash; the odd declaration order is theirs and is
+    reproduced rather than tidied, because tidying it is how a transcription quietly becomes a
+    rewrite.<br>
+    <b>The held note's own words:</b> <i>"Contrast with the black .post_card parent is tiny (#1c1c1c
+    on #000), so the box separates by fill alone, no rule, no accent bar, no left border."</i><br>
+    <b>The quietest boxed option</b>, and already effectively square at 2px. Its near-zero contrast
+    is the interesting part: it proves a section can be a block without becoming a card.</div>
+  <div class="stage c">
+    <div class="sec">
+      <div class="hd">Instancing the grass</div>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p>
+    </div>
+    <div class="sec">
+      <div class="hd3">Why the buffer has to be rebuilt</div>
+      <p>A structured buffer's length is baked into its descriptor. The shader reads it as a
+        constant, so growing the count without a new allocation reads past the end.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ D ================================ -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--none">Sourced &mdash; no box</span>
+    <h2>D &middot; Catlike Coding &mdash; numbering makes the section a unit</h2></div>
+  <div class="prov"><b>Source:</b> <code>sources/catlikecoding-prose.md</code> &mdash; tutorials.css,
+    verified there. Selectors <code>body{counter-reset:h2}</code>, <code>h2{counter-reset:h3}</code>,
+    <code>h2:before,h3:before</code>.<br>
+    <b>The held note's own words:</b> <i>"Two nested CSS counters produce 1, 1.1, 1.2, 2, 2.1
+    automatically, and the numbers are deliberately DE-emphasised &mdash; the ::before is 14px #888
+    while the h2 itself is 20px #222, so the number is a small grey tick sitting before a heading
+    that is barely larger than body text. The manuscript numbering carries the hierarchy so the type
+    sizes never have to. No rule, no anchor icon, no colour. h2 also forces a page break in print,
+    making the section the unit of the document."</i><br>
+    <b>The strongest counter-proposal to a card.</b> It answers "sections broken down into their own
+    bits" without drawing a single box, and it is the only one of the six whose section boundary
+    survives printing. Also worth noting for us: Catlike is already the source behind your 94-char
+    measure (P33), so this page and that decision come from the same site.</div>
+  <div class="stage d">
+    <div class="sec">
+      <div class="hd">Instancing the grass</div>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p>
+      <div class="sub"><div class="hd3">Why the buffer has to be rebuilt</div>
+        <p>A structured buffer's length is baked into its descriptor. The shader reads it as a
+          constant, so growing the count without a new allocation reads past the end.</p></div>
+      <div class="sub"><div class="hd3">Measuring it</div>
+        <p>RenderDoc will show the draw, but not the stall. The stall is on the CPU side, waiting
+          for the map.</p></div>
+    </div>
+    <div class="sec">
+      <div class="hd">What I would do differently</div>
+      <p>Profile before optimising. The slow part was never the part that looked slow.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ E ================================ -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--none">Sourced &mdash; no box</span>
+    <h2>E &middot; iquilezles &mdash; colour value alone, plus a bare hr</h2></div>
+  <div class="prov"><b>Source:</b> <code>sources/iquilezles-prose.md</code> &mdash;
+    <a href="https://iquilezles.org/style.css?v=2">iquilezles.org/style.css?v=2</a>. Verbatim:
+    <code>h3{color:#ffffff;font-weight:normal;}h2{color:#ffffff;font-weight:normal;}</code>, and
+    <b>there is no <code>hr{}</code> rule at all</b> &mdash; <code>grep -c 'hr{'</code> returns 0, so
+    the break is the browser's own default inset border.<br>
+    <b>Headings are DE-emphasised</b>, not emphasised: weight reset to normal, signal is pure white
+    against <code>#c0c0c0</code> body. No size jump, no bold, no numbering, no anchor.<br>
+    <b>The transferable line from the held note:</b> <i>"no boxes, borders, backgrounds, radii,
+    shadows or padding are ever used to separate a component from prose. Components differ from
+    prose only by (a) colour, (b) font family, (c) line-height."</i><br>
+    <b>The floor of the range.</b> This is what the post looks like if the answer to P54 turns out
+    to be "no".</div>
+  <div class="stage e">
+    <div class="hd">Instancing the grass</div>
+    <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+      reallocated, not just the uniform updated.</p>
+    <hr>
+    <div class="hd">Why the buffer has to be rebuilt</div>
+    <p>A structured buffer's length is baked into its descriptor. The shader reads it as a constant,
+      so growing the count without a new allocation reads past the end.</p>
+    <hr>
+    <div class="hd">What I would do differently</div>
+    <p>Profile before optimising. The slow part was never the part that looked slow.</p>
+  </div>
+</div>
+
+<!-- ================================ F ================================ -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--none">Sourced &mdash; no box</span>
+    <h2>F &middot; acegikmo &mdash; the heading as a ruled chapter divider</h2></div>
+  <div class="prov"><b>Source:</b> <code>sources/acegikmo-prose.md</code> &mdash;
+    <a href="https://acegikmo.com/shapes/css/styles.css">acegikmo.com/shapes/css/styles.css</a>.<br>
+    <b>Two devices, per the held note:</b> h1 is a full-width section rule &mdash; centred display
+    type with <code>border-bottom: solid 1px</code> and <b>no border-color</b>, so the rule inherits
+    <code>color</code> and heading and rule move together. And h5 is <code>display:inline</code>, a
+    run-in heading that flows into the paragraph beside it instead of taking its own line. Whole
+    scale at <code>font-weight:100</code>, every level with a tight <code>.3em</code> bottom margin
+    so the heading sticks to the text it labels.<br>
+    <b>Why the borderless trick is worth having regardless of which variant wins:</b> one accent
+    change moves the type and its rule together, it costs nothing, and it works under any palette
+    &mdash; which matters while D18 keeps colour undecided.</div>
+  <div class="stage f">
+    <div class="hd">Instancing the grass</div>
+    <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+      reallocated, not just the uniform updated.</p>
+    <p><span class="runin">On buffers.</span> A structured buffer's length is baked into its
+      descriptor, so the shader reads it as a constant and growing the count without a new
+      allocation reads past the end. This is the run-in heading &mdash; it labels the paragraph
+      without costing a line.</p>
+    <div class="hd">What I would do differently</div>
+    <p>Profile before optimising. The slow part was never the part that looked slow.</p>
+  </div>
+</div>
+
+
+<!-- ================================ G ================================ -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--none">Sourced x2 &mdash; combination ours</span>
+    <h2>G &middot; the D+F mix you asked for</h2></div>
+  <div class="prov"><b>Rod 2026-08-22:</b> <i>"can we do a mix of D and F?"</i><br>
+    <b>D half:</b> Catlike Coding's nested counters &mdash; <code>body{counter-reset:h2}</code> /
+    <code>h2{counter-reset:h3}</code>, number de-emphasised at 14px #888.
+    <b>F half:</b> acegikmo's ruled chapter divider &mdash; centred, <code>font-weight:100</code>,
+    <code>border-bottom: solid 1px</code> with <b>no border-color</b> so the rule inherits
+    <code>color</code>. Both verbatim; sources in
+    <a href="/redesign-lab/sources/section-and-heading-blocks.md">the note</a>.<br>
+    <b>THE COMBINATION IS OURS</b> and is labelled that way at the moment it is added &mdash; no
+    source does both. What makes them merge rather than collide: <b>neither uses SIZE to carry
+    hierarchy.</b> Catlike de-emphasises the number, acegikmo de-emphasises the type. So the
+    counter can do the ranking and the rule can do the separation while the type stays quiet.<br>
+    <b>One judgement call, flagged:</b> the subsection keeps its number but <b>not</b> the rule.
+    A rule under every h3 turns the page into a ladder, and F's divider is a chapter device. Say if
+    you want the rule on both levels.<br>
+    <b>Free bonus from F:</b> the borderless <code>border-bottom</code> means one accent change
+    moves the type and its rule together &mdash; useful while D18 keeps colour undecided.</div>
+  <div class="stage g">
+    <div class="sec">
+      <div class="hd">Instancing the grass</div>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated, which is the part that bit me.</p>
+      <div class="sub"><div class="hd3">Why the buffer has to be rebuilt</div>
+        <p>A structured buffer's length is baked into its descriptor. The shader reads it as a
+          constant, so growing the count without a new allocation reads past the end.</p></div>
+      <div class="sub"><div class="hd3">Measuring it</div>
+        <p><span class="runin">On tooling.</span> RenderDoc will show the draw but not the stall.
+          The stall is on the CPU side, waiting for the map &mdash; and this is F's run-in heading,
+          which labels a paragraph without costing it a line.</p></div>
+    </div>
+    <div class="sec">
+      <div class="hd">What I would do differently</div>
+      <p>Profile before optimising. The slow part was never the part that looked slow, and I spent
+        two evenings on the wrong half of the frame.</p>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <b>If you want one of these, say which letter</b> and it gets built as a real component with the
+  source saved, then it goes into <code>final-post.html</code> at the heading slot. Until then the
+  post keeps plain headings, because a heading treatment with no pick is the same unsourced guess
+  the process exists to stop.<br><br>
+  <b>Three things I did not do, on purpose:</b> I did not combine a boxed heading with a boxed
+  section (no source does it, so it would be ours). I did not pick colours (D18 defers that until
+  after space). And I did not change <code>final-post.html</code> &mdash; this is stage 3 of the
+  pipeline and the build is stage 4, which needs your pick first.
+</div>
+
+</div>
+</body>
+</html>

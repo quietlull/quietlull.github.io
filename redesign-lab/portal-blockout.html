@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PORTAL BLOCKOUT — 2 verified sources</title>
+<!--
+  PORTAL (root /). CORRECTION FOUND IN INVENTORY: it is a THREE-way, not a two-way. The live
+  _layouts/portal.html ships Tech Art, Game Design AND a Ramblings link in .portal-extras, so
+  every variant routes THREE doors with Ramblings demoted.
+  Rod's standing call: the portal is NOT the landing page and is LAST priority.
+
+  SOURCES CUT TO THE VERIFIED ONES (Rod 2026-08-16: "cut the others"). Two of the original four
+  turned out not to be portals at all, verified by fetching them:
+    potg.art    an artist PORTFOLIO with a nav bar (About/Works/Contact) — the "two-door chooser"
+                was a scroll-animated homepage reframed. CUT.
+    lyra.horse  a personal HOMEPAGE listing four projects plus socials. The "2em bold door links"
+                were project links. CUT.
+  What remains, and where each idea comes from:
+    ZUTOMAYO  zutomayo.net/mart_both/     a genuine both-stores chooser. Block module read from
+                                          source: 500px block, mark capped 300 with a hard 50px
+                                          gap, 40vw/340px button at 55px tall, 70px left inset for
+                                          a 44x32 icon, 40px right inset for a 14x14 arrow, and a
+                                          hover that SWAPS FILL rather than glowing.
+    SPACEJAM  www.spacejam.com/1996/      the only verified hub: 11 section links and nothing else,
+                                          routing IS the page. 500px stage, 272x165 centre mark,
+                                          satellites at real measured sizes, hierarchy by POSITION
+                                          and AREA rather than type scale.
+  Rod also wants POPUP WINDOWS folded in here, from 109ichiki's draggable profile panels and
+  zutomayo — see the orbit variant's notes for where the unlabelled satellites go.
+
+  DELIBERATE OVERRIDE: the research proposed a LIGHT grey ramp (#E8E8E8) for this page type.
+  Rejected — the greybox law is ONE grey language across every surface, so these use the same
+  dark ramp as landing/post/projects/about/ramblings/resume. Comparability beats fidelity here.
+-->
+<style>
+  *{box-sizing:border-box}
+  body{background:#141414;color:#d9d9d9;font-family:ui-monospace,"SF Mono",Consolas,monospace;
+    margin:0;padding-top:72px}
+  .box{border:1.5px dashed #555;background:#1b1b1b}
+  .fill{display:grid;place-items:center;height:100%;color:#666;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;text-align:center;padding:2px}
+  .yy{font-size:9px;color:#777}
+  .nav{position:fixed;top:0;left:0;right:0;height:72px;z-index:10;background:#1f1f1f;
+    border-bottom:1.5px solid #666;display:flex;align-items:center;gap:16px;padding:0 20px}
+  .nav .ico{width:44px;height:44px;border:1.5px dashed #777;display:grid;place-items:center;font-size:9px;color:#888}
+  .nav .name{border:1.5px dashed #666;padding:8px 18px;font-size:13px;color:#ccc}
+  .nav .sp{flex:1}
+  .nav .btns span{border:1.5px dashed #666;padding:7px 16px;font-size:10px;color:#999;margin-left:6px}
+
+  /* ===== V1 · POTG — sequential, one door on screen at a time ===== */
+  body.seq .stage{height:calc(100vh - 72px);position:relative;overflow:hidden}
+  body.seq .contents{position:absolute;top:0;left:100px;height:100%;display:flex;align-items:center;z-index:2}
+  body.seq .wrap{display:flex;flex-direction:column;align-items:flex-start}
+  body.seq .pill{width:240px;height:30px;border:1px solid #666;border-radius:calc(infinity * 1px);
+    display:flex;align-items:center;padding-left:10px;font-size:10px;color:#888;letter-spacing:.1em}
+  body.seq .pill i{margin-left:8px;font-style:normal;font-size:12px}
+  body.seq .stateflag{position:absolute;right:24px;bottom:24px}
+
+  /* ===== V2 · ZUTOMAYO — stacked block per destination ===== */
+  body.stack .block{max-width:500px;margin:0 auto;padding:100px 0}
+  body.stack .mark{width:80vw;max-width:300px;display:block;margin:0 auto 50px}
+  body.stack .cap{text-align:center;margin-bottom:20px}
+  body.stack .brow{display:flex;gap:20px 5px;justify-content:center}
+  body.stack .btn{width:40vw;max-width:340px;height:55px;border:1px solid #666;font-size:11px;
+    display:flex;align-items:center;padding-left:70px;padding-right:40px;position:relative;color:#999}
+  body.stack .btn .ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);
+    width:44px;height:32px;border:1.5px dashed #555}
+  body.stack .btn .ar{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    width:14px;height:14px;border:1.5px dashed #555}
+  body.stack .ground{background-image:radial-gradient(#242424 1px,transparent 1px);
+    background-size:60px 60px}
+
+  /* ===== V3 · LYRA — type scale only, NO layout system ===== */
+  body.typeonly .doc{font-family:ui-monospace,Consolas,monospace}
+  body.typeonly .doc a{font-size:2em;font-weight:bold;color:#ddd;text-decoration:underline}
+  body.typeonly .doc hr{border:0;border-top:1px solid #444;margin-block:.5em}
+  body.typeonly .doc h1{margin-block:.67em}
+  body.typeonly .doc p{margin-block:1em}
+  body.typeonly .glyph{display:inline-block;width:1em;height:1em;border:1px dashed #555;
+    vertical-align:baseline;margin-right:.4em}
+
+  /* ===== V4 · SPACEJAM — orbital constellation ===== */
+  body.orbit .field{width:500px;margin:40px auto;position:relative;height:520px}
+  body.orbit .band{width:488px;height:60px;margin:0 auto 12px;display:flex;align-items:center;
+    justify-content:space-between}
+  body.orbit .sat{position:absolute;border:1.5px dashed #555;background:#1b1b1b}
+  body.orbit .centre{position:absolute;width:272px;height:165px;left:114px;top:178px;
+    border:1.5px dashed #777;background:#1e1e1e}
+  body.orbit .ground{background-image:radial-gradient(#242424 1px,transparent 1px);
+    background-size:24px 24px;padding-bottom:60px}
+
+  #prov{position:fixed;left:14px;top:88px;z-index:70;width:292px;max-height:calc(100vh - 176px);
+    overflow:auto;background:rgba(10,12,20,.96);border:1px solid rgba(255,255,255,.18);padding:12px 13px;
+    font:11px/1.55 ui-monospace,Consolas,monospace;color:#dcdcdc}
+  #prov .pv-t{font-size:12.5px;color:#fff;margin-bottom:2px}
+  #prov .pv-k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin-bottom:7px}
+  #prov a{color:#9fd0ff;word-break:break-all}
+  #prov h4{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+  #prov ul{margin:0;padding-left:14px}#prov li{margin-bottom:3px;color:#c8c8c8}
+  #prov .warn li{color:#ffb020}
+  .vbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:80;display:flex;gap:6px;
+    flex-wrap:wrap;justify-content:center;background:rgba(8,10,18,.96);border:1px solid rgba(255,255,255,.2);padding:7px 9px}
+  .vbar button{background:none;border:1px solid #555;color:#bbb;font:10px ui-monospace,monospace;
+    letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;cursor:pointer}
+  .vbar button.on{background:#ddd;border-color:#ddd;color:#141414}
+  .labtag{position:fixed;left:14px;bottom:12px;z-index:50;font:10px ui-monospace,monospace;color:rgba(245,243,239,.45)}
+  @media(max-width:1300px){#prov{position:static;width:auto;max-height:none;margin:10px 14px}}
+</style>
+</head>
+<body class="stack">
+
+<div class="nav">
+  <span class="ico">MARK</span><span class="name">WORDMARK</span><span class="sp"></span>
+  <span class="btns"><span>HOME</span><span>PROJECTS</span><span>ABOUT</span><span>RAMBLINGS</span></span>
+</div>
+
+<div id="ground"></div>
+
+<aside id="prov"></aside>
+<div class="vbar">
+  <span style="color:#8e8e8e;font:9px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;align-self:center;margin-right:2px">portal</span>
+  <button data-v="stack" class="on">1 &middot; zutomayo</button>
+  <button data-v="orbit">2 &middot; space jam 1996</button>
+</div>
+<div class="labtag">portal-blockout &middot; THREE doors (Ramblings demoted) &middot; LAST priority</div>
+
+<script>
+var DOORS=[['TECH ART','slot 4'],['GAME DESIGN','slot 5'],['RAMBLINGS','slot 6 — demoted']];
+function b(w,h,label){return '<div class="box" style="width:'+w+';height:'+h+'px"><div class="fill">'+(label||'')+'</div></div>';}
+
+var BUILD={
+ stack:function(){
+   var blocks='';
+   for(var i=0;i<DOORS.length;i++){
+     blocks+='<div class="block"><div class="mark">'+b('100%',120,'IDENTITY MARK')+'</div>'
+       +'<div class="cap">'+b('100%',16,'CAPTION')+'</div>'
+       +'<div class="brow"><div class="btn"><span class="ic"></span>'+DOORS[i][0]+'<span class="ar"></span></div></div></div>';
+   }
+   return '<div class="ground">'
+     +'<div class="block" style="padding-bottom:0">'+b('100%',12,'GREETING')
+     +'<div style="height:14px"></div>'+b('100%',48,'NAME')
+     +'<div style="height:10px"></div>'+b('100%',20,'ROLE SUBTITLE')+'</div>'
+     +blocks
+     +'<div style="height:60px"></div></div>';
+ },
+ orbit:function(){
+   // every size below is a real measured element from the source
+   var sats=[['TECH ART',131,56,40,20],['RAMBLINGS',104,67,330,70],['GAME DESIGN',95,77,60,360],
+             ['',88,44,360,300],['',72,60,180,60],['',66,52,20,240],['',80,40,300,180],['',60,60,400,430]];
+   var s='';
+   for(var i=0;i<sats.length;i++){
+     s+='<div class="sat" style="width:'+sats[i][1]+'px;height:'+sats[i][2]+'px;left:'+sats[i][3]+'px;top:'+sats[i][4]+'px">'
+       +'<div class="fill">'+(sats[i][0]||'&middot;')+'</div></div>';
+   }
+   return '<div class="ground"><div class="band">'+b('50px',11,'')+b('50px',11,'')+'</div>'
+     +'<div class="field">'+s+'<div class="centre"><div class="fill">NAME &mdash; 272x165, the ONLY element allowed to be this big</div></div></div>'
+     +'<div class="yy" style="text-align:center;max-width:500px;margin:0 auto">Satellites are deliberately unaligned to any grid and no two are the same size. Hierarchy is carried by POSITION and AREA, not type scale.</div></div>';
+ }
+};
+
+var PROV={
+ stack:{t:'2 — ZUTOMAYO MART_BOTH  ⚠ UNVERIFIED as a chooser',
+   k:'geometry read from source; page-type claim NOT confirmed',url:'https://zutomayo.net/mart_both/',
+  moves:['One BLOCK MODULE reused per destination: max-width 500, margin auto, padding 100px 0',
+         'Doors are peers stacked in READING ORDER — never side by side, never sequential; each is a full room',
+         'Identity mark 80vw capped 300, with a hard 50px mark-to-caption gap',
+         'Button 40vw capped 340, height 55, 1px border, padding-left 70 reserving a 44x32 icon at left:10, padding-right 40 reserving a 14x14 arrow',
+         'Hover is a SOLID FILL SWAP — not a scale, not a glow',
+         'On desktop the button row never wraps; wrapping only enables at &lt;=768px'],
+  warn:['<b>PARTIALLY VERIFIED 2026-08-16.</b> The path <code>/mart_both/</code> reads as a "both marts" chooser and the block geometry was read from source, but the anchors retrievable from the page are the site&rsquo;s GLOBAL NAV (news / live / release / collabo / font / photo / profile) — the two store doors are not in the readable markup. So the module is real; the claim that this page exists to make one choice is NOT confirmed. Treat as provisional until someone opens it.',
+         'The most conventional and the most legible. Every door gets equal weight and equal space, which suits a portal whose job is one unbiased choice.',
+         'Equal weight is also the problem: Rod&rsquo;s Ramblings door is meant to be DEMOTED, and this module gives it the same room as the other two. Demotion has to be added rather than inherited.',
+         'The fill-swap hover is a genuinely good match for the de-glow principle — it ignites on interaction instead of glowing at rest.']},
+ orbit:{t:'4 — Space Jam 1996  ✓ VERIFIED a real hub',
+   k:'read from source · 6.8KB served HTML, one CSS rule, still live',url:'https://www.spacejam.com/1996/',
+  moves:['HIERARCHY BY POSITION AND AREA, not type scale — the doors are neither in reading order nor the same size',
+         '500px square-ish stage, centred, with a 488x60 band above carrying the greeting and subtitle as two 50x11 label strips (a real source size)',
+         'Centre mark 272x165, exact — the only element allowed to be that big',
+         'Satellites absolutely positioned, deliberately unaligned to any grid, no two the same size. Every size used here is measured from the source.',
+         'Rod&rsquo;s slots go to the three largest: Tech Art 131x56, Ramblings 104x67, Game Design 95x77'],
+  warn:['<b>THE ONLY VERIFIED PORTAL IN THIS SET (2026-08-16).</b> Its homepage is 11 section links — pressbox, jamcentral, bball, tunes, lineup, jump, junior, souvenirs, sitemap, behind — and essentially nothing else. Routing IS the page. The other three sources turned out to be homepages, not choosers.',
+         'This is the one variant that could genuinely be PLAYFUL rather than merely tidy, which is a locked pillar — and the constellation reads naturally against a night sky, which is the ground we actually have.',
+         'It is also the least usable: unaligned satellites of different sizes make scanning harder and accessibility worse. Focus order and touch targets both need real work.',
+         'Ramblings ends up LARGER than Game Design here (104x67 vs 95x77 by area it is close), so the demotion Rod wants has to be imposed deliberately rather than falling out of the transcription.']}
+};
+
+(function(){
+  var btns=document.querySelectorAll('.vbar button'),panel=document.getElementById('prov'),g=document.getElementById('ground');
+  function show(v){
+    document.body.className=v;
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
+    g.innerHTML=BUILD[v]();
+    var p=PROV[v];
+    var h='<div class="pv-t">'+p.t+'</div><div class="pv-k">'+p.k+'</div>';
+    h+='<div style="margin-bottom:6px"><a href="'+p.url+'" target="_blank">'+p.url+'</a></div>';
+    h+='<h4>transcribed geometry</h4><ul><li>'+p.moves.join('</li><li>')+'</li></ul>';
+    h+='<h4>honest caveats</h4><ul class="warn"><li>'+p.warn.join('</li><li>')+'</li></ul>';
+    panel.innerHTML=h;
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.v);});});
+  var m=/[?&]v=(stack|orbit)/.exec(location.search);
+  show(m?m[1]:'stack');
+})();
+</script>
+</body>
+</html>

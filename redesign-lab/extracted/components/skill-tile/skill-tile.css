@@ -1,0 +1,344 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ================================================================================================
+   skill-tile - the 150 x 150 cell that holds one tool mark on the landing SKILLS band,
+   plus the SKILL FLIPPER band that sits above it.
+
+   *** THIS FILE DOES NOT REBUILD THE ROW. ***
+   The marks, the stroke, the deep gold, pathLength="1", the 6s draw-in, the 0.09s stagger and the
+   reduced-motion path are all ALREADY BUILT AND ALREADY APPROVED in
+   extracted/components/skills-row/. The demo links that file and uses its classes unchanged
+   (.skills-row__icon, .skills-row__label). Everything below is only the BOX around a mark and the
+   band above it. Two overrides of skills-row are made and both are declared, in the SHARED section.
+
+   ------------------------------------------------------------------------------------------------
+   THE RESERVATION, and where each number came from. Nothing here is rounded to look tidy.
+
+     landing-blockout.html:73
+       .skills{height:240px; grid-template-columns:repeat(8,1fr); gap:14px;
+               align-items:center; padding:30px 60px}
+     landing-blockout.html:74
+       .skills .sk{aspect-ratio:1; border:1.5px dashed #4e4e4e}
+
+     band width 1421 (measured at viewport 1440)
+     - 60 left - 60 right          = 1301 content
+     - 7 gaps x 14                 = 1203 across 8 columns
+     / 8                           = 150.375 per column
+     aspect-ratio:1                => 150.375 tall, centred in the 180 of inner band height
+
+   So the reported "150 x 150" is 150.375 rounded by the measuring pass. The tile below is
+   width:100% of its grid cell, so it IS the cell. It cannot overflow by construction.
+
+     landing-blockout.html:69
+       .flip{height:120px; display:grid; place-items:center}
+     -> the flipper band is a centring grid 120 tall. .skill-flipper reproduces exactly that.
+
+   ------------------------------------------------------------------------------------------------
+   PROVENANCE SUMMARY (per-version detail is in skill-tile.md)
+
+     V1 --bare      stephanewillems.be/skills, sources/stephanewillems-skills.md   Remixed, theirs
+     V2 --brackets  filipporuffini.com,        sources/filipporuffini-corner-brackets.md  Remixed, theirs
+     V3 --frame     codepen.io/Ashlook/pen/YzQQwdo, sources/ashlook-scifi-button.md  Remixed, theirs
+     F1 flipper     REUSE of extracted/components/slap-toggle/ (YarivFrd codepen). No new build.
+     F2 flipper     stephanewillems.be/skills own switch, measured. Remixed, theirs.
+
+   No colour, size or timing below is invented except where a comment says OURS.
+   ================================================================================================ */
+
+
+/* ================================================================================================
+   SHARED - the box, and the two overrides of skills-row
+   ================================================================================================ */
+
+.skill-tile {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;          /* landing-blockout.html:74 - the blockout's own .sk rule */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;             /* skills-row.css .skills-row__item - carried, not re-chosen */
+  list-style: none;
+}
+
+/* OVERRIDE 1 of 2 - the mark size.
+   skills-row sizes its icon 3rem inside a 4.75rem item. The blockout cell is 150.375, twice that
+   item, so a 3rem mark would sit in a lot of air. Rather than pick a new number, the RATIO from the
+   approved component is carried across: 3rem / 4.75rem = 63.16% of the cell.
+   At 150.375 that lands on 94.97px. Written as the arithmetic so nothing is rounded. */
+.skill-tile .skills-row__icon {
+  --tile-mark: calc(100% * 3 / 4.75);
+  width: var(--tile-mark);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+/* OVERRIDE 2 of 2 - the label colour, and this one is a BUG FLAG, not a preference.
+   skills-row.css sets .skills-row__label to var(--color-muted, #9aa3bd). #9aa3bd is the last blue
+   in the token set and the palette law names it as the one token never to use in text. The approved
+   row is currently rendering it. Corrected here to --color-silver (decisions.css:20), which Rod
+   picked for heading tiers 3-4. The fix belongs in skills-row.css; it is not made there because
+   that file is not mine to edit. Raised in skill-tile.md.
+   line-height:1 is OURS and it is a tidy-up, not a fix: skills-row sets none and inherits the host
+   page's, which at 1.7 makes the stack 119.55 rather than 113.05. Both fit inside 150. It is here so
+   the tile's height does not move when the host page's line-height does. */
+.skill-tile .skills-row__label {
+  color: var(--color-silver, #a3a19d);
+  line-height: 1;
+}
+
+/* The corner boxes. V2 and V3 both use them; V1 has none in its markup.
+   The four one-sided-border boxes and the .is--tl/tr/br/bl naming are VERBATIM from
+   filipporuffini.com's simpler variant (sources/filipporuffini-corner-brackets.md section D).
+   Ashlook's sci-fi button uses the same four-box idea with .top/.left/.bottom/.right combinations,
+   so one set of boxes serves both versions and the two sources only disagree on SIZE.
+   Their line is `1px solid #333333` on #101010. Ours is the house gold hairline, settings.css:34 -
+   a swap of value, not of mechanism. */
+.skill-tile__c {
+  position: absolute;
+  box-sizing: border-box;   /* verbatim, Ashlook */
+  --tile-line: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
+}
+.skill-tile__c.is--tl { top: 0;    left: 0;  border-top: var(--tile-line);    border-left: var(--tile-line); }
+.skill-tile__c.is--tr { top: 0;    right: 0; border-top: var(--tile-line);    border-right: var(--tile-line); }
+.skill-tile__c.is--br { bottom: 0; right: 0; border-bottom: var(--tile-line); border-right: var(--tile-line); }
+.skill-tile__c.is--bl { bottom: 0; left: 0;  border-bottom: var(--tile-line); border-left: var(--tile-line); }
+
+/* Filippo's own wrapper carries `padding:.9375rem` so content clears the brackets. It is DROPPED
+   here on purpose: our corner boxes are absolutely positioned on the tile's border box rather than
+   inset by padding, so a padding would shrink the mark in V2 and V3 only and make the three
+   versions non-comparable. Nothing collides - at the widest arm the bracket is still a 1px line at
+   the very edge and the mark spans 27.7 to 122.7. */
+
+
+/* ================================================================================================
+   V1  .skill-tile--bare  -  no box at all. The reservation stays empty; only the mark is drawn.
+
+   SOURCE: stephanewillems.be/skills, captured from the live DOM and recorded in
+   sources/stephanewillems-skills.md. Their icon is a bare `w-20 h-20` span with no frame, and the
+   active state was captured live as an inline style:
+       filter: drop-shadow(<the icon's own brand colour> 2px 2px 10px);
+       transform: scale(1.2) translateZ(0px);
+   The offsets, the blur and the scale are theirs verbatim. Their `translateZ(0)` is kept for the
+   reason they had it - it holds the transform on the compositor.
+
+   WHAT COULD NOT TRANSFER: the colour. Their whole idea is that the glow is the icon's OWN brand
+   colour, and those are exactly the cool accents and reds the palette law bans. skills-row already
+   settled this by stroking every mark in one deep gold, so the glow follows the stroke.
+   OURS: the 0.2s duration. Their state is applied by JS as an inline style and no transition was
+   captured, so there is no source number for it.
+   ================================================================================================ */
+
+.skill-tile--bare .skills-row__icon {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.skill-tile--bare:hover .skills-row__icon,
+.skill-tile--bare:focus-visible .skills-row__icon {
+  transform: scale(1.2) translateZ(0);
+  filter: drop-shadow(var(--color-gold-deep, #f59e0b) 2px 2px 10px);
+}
+
+
+/* ================================================================================================
+   V2  .skill-tile--brackets  -  corner ticks at rest, closing to a full frame on hover.
+
+   SOURCE: filipporuffini.com, sources/filipporuffini-corner-brackets.md. Tier True on that page:
+   the CSS was read from the site's own inline head style block and its Webflow stylesheet.
+   Their arm lengths live in :root as four tiers, all verbatim:
+       --corners-large: 6.25rem   --corners-small: 3.125rem
+       --corners-cursor: 0.5rem   --corners-hover: 1rem
+   Rest takes --corners-small (50px on a 150.375 cell, one third of each side - it reads as a
+   viewfinder tick rather than a box). Hover takes --corners-large. Those two are their own values
+   and their own DOUBLING ratio - the only grow in their system is the cursor frame going
+   0.5rem -> 1rem, which is also exactly x2.
+   The easing is verbatim from that same cursor frame: .4s cubic-bezier(.77, 0, .175, 1).
+
+   OURS, and it has to be said rather than buried: Filippo never grows a CONTENT frame. Only their
+   cursor grows. Applying their ratio to their frame tiers is our move. What it produces at this
+   size is not arbitrary though - at 6.25rem the four arms overlap and the bracket closes into a
+   complete border, so hover reads as "the frame closes on the thing you are pointing at".
+   ================================================================================================ */
+
+.skill-tile--brackets {
+  --tile-corner: 3.125rem;            /* their --corners-small */
+}
+.skill-tile--brackets:hover,
+.skill-tile--brackets:focus-visible {
+  --tile-corner: 6.25rem;             /* their --corners-large */
+}
+.skill-tile--brackets .skill-tile__c {
+  width: var(--tile-corner);
+  height: var(--tile-corner);
+  transition:
+    width 0.4s cubic-bezier(0.77, 0, 0.175, 1),
+    height 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+
+/* ================================================================================================
+   V3  .skill-tile--frame  -  a complete frame at rest, retracting to corner brackets on hover.
+   The exact inverse of V2, and that is the choice on the table: does the box open for you or close
+   on you.
+
+   SOURCE: codepen.io/Ashlook/pen/YzQQwdo, sources/ashlook-scifi-button.md. Tier True there - Rod
+   pasted the pen verbatim. Their mechanism, quoted from that file:
+       div { position:absolute; width:50%; height:50%; box-sizing:border-box;
+             transition: width 200ms ease-in, height 200ms ease-in; }
+       &.top { border-top:1px solid; top:0 }  (and the three siblings)
+       &:hover div { width: $padding-x; height: $padding-y; }   $padding-x:0.75em  $padding-y:0.5em
+   Four boxes at 50% tile a complete border with no gaps. Everything above is verbatim.
+
+   TWO THINGS DELIBERATELY NOT TAKEN:
+     - their `::before` radial-gradient flash on :active. It is a full-bleed fill, and a live
+       three.js scene sits behind this band.
+     - their material box-shadow, for the same reason. The glass/lift tell is being stripped
+       site-wide.
+   ================================================================================================ */
+
+.skill-tile--frame .skill-tile__c {
+  width: 50%;
+  height: 50%;
+  transition:
+    width 200ms ease-in,
+    height 200ms ease-in;
+}
+.skill-tile--frame:hover .skill-tile__c,
+.skill-tile--frame:focus-visible .skill-tile__c {
+  width: 0.75em;
+  height: 0.5em;
+}
+
+
+/* ================================================================================================
+   THE SKILL FLIPPER BAND - 1421 x 120
+
+   The band itself is landing-blockout.html:69 verbatim: a 120 tall centring grid. That is all the
+   band is; the switch inside it is a component that already exists.
+
+   F1 is not defined in this file at all. It is extracted/components/slap-toggle/ used as shipped,
+   in its --square variant. That component is already the Technology/Personal switch by name, it is
+   already wired (its JS dispatches a real change event so a page-level consumer hears the switch),
+   its radios are real and focusable, and it already has a reduced-motion path. Rebuilding it here
+   would be a second definition of one thing.
+
+   F2 IS defined here, because it is a different ARRANGEMENT rather than a different switch: the two
+   names sit OUTSIDE the track. That is stephanewillems' own switch, and the source note records it
+   measured rather than guessed.
+   ================================================================================================ */
+
+.skill-flipper {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+}
+
+/* F2 - stephanewillems.be/skills, the switch quoted in sources/stephanewillems-skills.md:
+       <div class="flex justify-center gap-5 py-5 font-light text-white">
+         <p>Technology</p>
+         <div class="switch justify-start w-8 h-5 bg-white bg-opacity-40 flex p-1 rounded-full">
+           <div class="w-3 h-3 bg-white rounded-full handle"></div>
+         </div>
+         <p>Personal Skills</p>
+       </div>
+   VERBATIM from that: track 32 x 20, padding 4, handle 12 x 12, track white at 40%, handle solid
+   white, gap 20 (gap-5), font-weight 300 (font-light), and the labels living either side of the
+   track so it reads as a choice between two named things rather than an on/off.
+
+   OURS, listed rather than absorbed:
+     - the 12px travel. It is arithmetic off their own numbers (32 - 4 - 4 - 12), not a new value.
+     - SQUARE. Theirs is rounded-full on both track and handle. Squared per the shape pass.
+     - the transition duration. Their handle is moved by JS and no duration was captured.
+     - real radios plus <label for>. Theirs are <p> elements, so on their site only the JS-driven
+       track is clickable and the words are dead. That is an a11y gap in the source, not a feature.
+     - the focus ring.
+   White here is --color-text #f5f3ef, which is our white, so nothing cool enters. */
+
+.sw-flip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  font-family: var(--font-body, sans-serif);
+  font-weight: 300;
+  color: var(--color-text, #f5f3ef);
+}
+
+.sw-flip__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sw-flip__side {
+  cursor: pointer;
+}
+
+.sw-flip__track {
+  width: 32px;
+  height: 20px;
+  padding: 4px;
+  display: flex;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--color-text, #f5f3ef) 40%, transparent);
+}
+
+.sw-flip__handle {
+  width: 12px;
+  height: 12px;
+  background: var(--color-text, #f5f3ef);
+  transition: transform 0.2s ease;
+}
+
+.sw-flip__radio.is--second:checked ~ .sw-flip__track .sw-flip__handle {
+  transform: translateX(12px);
+}
+
+.sw-flip__radio:focus-visible ~ .sw-flip__track {
+  outline: 2px solid var(--color-gold, #fbbf24);
+  outline-offset: 3px;
+}
+
+
+/* ================================================================================================
+   REDUCED MOTION - every state above still happens, it just happens instantly.
+   Same shape as skills-row's own rule: not a fade, not a shortened version, the animation simply
+   does not run.
+   ================================================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-tile--bare .skills-row__icon,
+  .skill-tile--brackets .skill-tile__c,
+  .skill-tile--frame .skill-tile__c,
+  .sw-flip__handle {
+    transition: none;
+  }
+  .skill-tile--bare:hover .skills-row__icon,
+  .skill-tile--bare:focus-visible .skills-row__icon {
+    transform: none;
+  }
+}
+}

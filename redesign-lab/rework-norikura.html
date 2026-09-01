@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>REBUILD - Norikura (real-sourced elements)</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== NORIKURA REBUILD ===== over Rod's REAL Three.js scene. Real-sourced elements:
+   nav = suwako-hanabi .gnavi (scaleX hairline underline) · buttons = nelu .boxbutton (clip-path bevel + inset
+   hairline + arrow + hoverRoll) · footer = sengoku .footer · post = sengoku .inner + .decision + .contact_wrap.
+   Locked palette: night #070C23 / amber #F59E0B / gold #FBBF24 / orange-halo #FF6A00. Single gold accent, restraint. */
+:root{
+  --fs:"Shippori Mincho",serif; --fm:"IBM Plex Mono",monospace;
+  --night:#070C23; --panel:rgba(12,16,38,.55); --text:#F5F3EF; --muted:#9AA3BD;
+  --gold:#FBBF24; --gold-deep:#F59E0B; --glow:#FF6A00; --line:rgba(251,191,36,.26);
+}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}html{scroll-behavior:smooth}
+body{background:transparent;color:var(--text);font-family:var(--fs);overflow-x:hidden;line-height:1.7}
+.wrap{max-width:1000px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+.rail{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:1rem;font-family:var(--fm);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase}
+.rail a{color:var(--muted);text-decoration:none;writing-mode:vertical-rl}.rail a:hover{color:var(--gold)}
+.lbl{font-family:var(--fm);font-size:.66rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin:4.5rem 0 1.4rem}.lbl::before{content:"/ "}.lbl::after{content:" /"}
+
+/* 1 TOP BAR + nav = suwako-hanabi .gnavi (border-right dividers + scaleX gold underline on hover) */
+.bar{display:flex;align-items:center;gap:1.4rem;padding:1.2rem 2rem;position:sticky;top:0;z-index:60;backdrop-filter:blur(5px);background:rgba(7,12,35,.4)}
+.bar .logo{font-weight:700;font-size:1.2rem;letter-spacing:.14em;color:var(--gold-deep)}
+.bar .nav{display:flex;margin-left:auto;font-family:var(--fm);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;overflow:hidden;line-height:1.3}
+.bar .nav a{color:var(--muted);text-decoration:none;display:block;padding:0 18px;position:relative;border-right:1px solid var(--line)}
+.bar .nav a:last-child{border-right:none}
+.bar .nav a::after{content:'';position:absolute;left:0;right:0;bottom:-4px;margin:auto;width:80%;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .5s ease}
+.bar .nav a:hover::after,.bar .nav a.on::after{transform:scaleX(1)}
+.bar .nav a:hover,.bar .nav a.on{color:var(--gold)}
+/* thin gold-line toggle (norikura-derived) */
+.tg{display:flex;gap:1rem;padding-left:1.1rem;border-left:1px solid var(--line)}
+.sw{width:30px;height:14px;position:relative;cursor:pointer}
+.sw::before{content:"";position:absolute;top:50%;left:0;right:0;height:1px;background:var(--line);transform:translateY(-50%)}
+.sw::after{content:"";position:absolute;top:50%;left:0;width:9px;height:9px;border-radius:50%;border:1px solid var(--gold);background:var(--night);transform:translate(0,-50%);transition:left .2s,background .2s}
+.sw.on::after{left:21px;background:var(--gold);box-shadow:0 0 6px var(--gold)}
+
+/* 2 HERO */
+.hero{text-align:center;padding:6rem 1rem 1rem}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);letter-spacing:.12em;line-height:1.1;color:var(--gold-deep);text-shadow:0 0 30px rgba(255,106,0,.28)}
+.hero .en{font-family:var(--fm);font-size:.68rem;letter-spacing:.5em;color:var(--muted);text-transform:uppercase;margin-top:.8rem}
+.stamp{display:inline-block;margin-top:1.4rem;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:.5rem 1.5rem;font-size:.76rem;letter-spacing:.18em}
+.hero p{max-width:34rem;margin:2.4rem auto 0;color:var(--muted)}
+
+/* 3 BUTTONS = nelu .boxbutton (clip-path bevel + inset hairline :before + arrow + pure-CSS hoverRoll) */
+.kit{display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center}
+.boxbutton{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:0 .8rem;cursor:pointer;text-decoration:none;border:0;background:transparent;color:var(--gold);
+  clip-path:polygon(.7rem 0,calc(100% - .7rem) 0,100% .7rem,100% calc(100% - .7rem),calc(100% - .7rem) 100%,.7rem 100%,0 calc(100% - .7rem),0 .7rem);
+  font-family:var(--fm);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;min-height:3.4rem;padding:1rem 1.8rem;transition:color .2s,background .2s}
+.boxbutton::before{content:"";position:absolute;pointer-events:none;border:1px solid var(--line);top:.4rem;left:.4rem;height:calc(100% - .8rem);width:calc(100% - .8rem);transition:border-color .2s}
+.boxbutton:hover{color:#fff}.boxbutton:hover::before{border-color:var(--gold)}
+.boxbutton--pri{background:var(--gold);color:var(--night)}.boxbutton--pri::before{border-color:transparent}.boxbutton--pri:hover{background:#fff;color:var(--night)}
+.boxbutton__arrow{position:relative;width:1.5rem;height:1px;background:currentColor;flex:0 0 auto}
+.boxbutton__arrow::after{content:"";position:absolute;right:0;top:50%;width:.45rem;height:.45rem;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:translateY(-50%) rotate(45deg)}
+.hoverRoll__text{display:block;position:relative;overflow:hidden;height:1.1em}
+.hoverRoll__text span{display:block}
+.hoverRoll__text span+span{position:absolute;left:0;top:100%}
+.boxbutton:hover .hoverRoll__text span{animation:textRoll .55s cubic-bezier(.19,1,.22,1) forwards}
+@keyframes textRoll{to{transform:translateY(-100%)}}
+@media(prefers-reduced-motion:reduce){.boxbutton:hover .hoverRoll__text span{animation:none}}
+/* tags + inline link (norikura-derived hairline) */
+.txtlink{font-family:var(--fm);font-size:.76rem;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--line)}.txtlink:hover{border-color:var(--gold)}
+.tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:.25rem .7rem;border-radius:999px}
+
+/* 4 CARDS - hover lift, gold hairline; thumb = SOLID near-black placeholder (Rod's call, was claude radial) */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}@media(max-width:760px){.cards{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:pointer;transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s,box-shadow .35s;position:relative}
+.card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 18px 50px rgba(255,106,0,.16)}
+.card .thumb{aspect-ratio:16/11;background:#080b18}
+.card .b{padding:1rem 1.1rem}.card h3{font-size:1.1rem;margin-bottom:.3rem}.card .t{font-family:var(--fm);font-size:.64rem;letter-spacing:.1em;color:var(--gold-deep)}
+.card .pin{position:absolute;top:10px;left:10px;font-family:var(--fm);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 8px;background:rgba(7,12,35,.6)}
+
+/* 5 LIST CONTROLS */
+.search{display:flex;gap:.6rem;border:1px solid var(--line);border-radius:999px;padding:.7rem 1.2rem;font-family:var(--fm);font-size:.76rem;color:var(--muted);max-width:340px}
+.filters{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}
+.filters .f{font-family:var(--fm);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .9rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);cursor:pointer}.filters .f.on{color:var(--night);background:var(--gold);border-color:var(--gold)}
+.empty{font-family:var(--fm);font-size:.8rem;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:1.6rem;text-align:center}.empty b{color:var(--gold);font-weight:400}
+
+/* 6 POST = sengoku .inner + .decision card + prose + .contact_wrap details card */
+.inner{max-width:1000px;margin:0 auto}
+.decision{display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--panel);margin:0 0 2.4rem;padding:0 1em}
+.decision_inner{max-width:1000px;width:100%;margin:0 auto;padding:46px 50px;text-align:center}
+.decision_inner h2{font-weight:600;font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:.05em;line-height:1.4;margin-bottom:1.1rem}
+.decision_inner .m{font-family:var(--fm);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap}
+.prose{max-width:70ch;margin:0 auto}
+.prose h2{font-size:1.6rem;margin:2rem 0 .8rem;letter-spacing:.03em}.prose h2::before{content:"/ ";color:var(--gold)}
+.prose p{margin:0 0 1rem}.prose a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+.prose ul{margin:0 0 1rem 1.2rem}
+.tldr{border-left:2px solid var(--gold);padding:.6rem 1.2rem;margin:1.4rem 0}.tldr b{font-family:var(--fm);color:var(--gold);letter-spacing:.12em;text-transform:uppercase;font-size:.64rem;display:block;margin-bottom:.4rem}
+.prose blockquote{border-left:2px solid var(--gold);padding-left:1rem;color:var(--muted);font-style:italic;margin:1.2rem 0}
+.prose code{font-family:var(--fm);font-size:.85em;background:rgba(251,191,36,.12);color:var(--gold);padding:.1em .35em;border-radius:3px}
+.codeblock{position:relative;background:#0a0e22;border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;font-family:var(--fm);font-size:.8rem;color:#cdd3e8;overflow-x:auto;margin:1.2rem 0}.codeblock .cp{position:absolute;top:.5rem;right:.6rem;font-size:.58rem;text-transform:uppercase;color:var(--gold);cursor:pointer}.codeblock .k{color:var(--glow)}.codeblock .s{color:#9bdc8a}
+.takeaway{border:1px solid var(--line);border-radius:8px;padding:1.2rem 1.4rem;margin:1.6rem 0;background:var(--panel)}.takeaway b{font-family:var(--fm);color:var(--gold);letter-spacing:.12em;text-transform:uppercase;font-size:.64rem;display:block;margin-bottom:.4rem}
+.contact_wrap{max-width:1000px;margin:3rem auto 0;padding:40px;text-align:center;background:var(--panel);border:1px solid var(--line)}
+.contact_wrap .contact_heading{position:relative;font-weight:700;font-size:1.8rem;letter-spacing:.05em;display:inline-block}
+.contact_wrap .contact_heading::after{content:"";display:block;position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);width:44px;height:1px;background:var(--gold)}
+.contact_wrap address{margin:40px 0 0;font-style:normal}
+.contact_wrap address .bold{font-size:1.1rem;margin-bottom:.4rem}
+.contact_wrap address .flex_wrap{display:flex;justify-content:center;gap:60px;margin-top:1.2rem;flex-wrap:wrap}
+.contact_wrap .s_ttl{display:block;font-family:var(--fm);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:.3rem}
+.contact_wrap a{color:var(--gold);text-decoration:none}.contact_wrap a:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* 7 ABOUT - gold-RING pulse status */
+.bios{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}@media(max-width:680px){.bios{grid-template-columns:1fr}}
+.bio{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:1.6rem}.bio h3{margin-bottom:.5rem}.bio p{color:var(--muted);font-size:.94rem}
+.stats{display:flex;gap:2.4rem;margin:1.6rem 0;flex-wrap:wrap}.stat .n{font-size:2.8rem;color:var(--gold-deep);font-weight:700;font-family:var(--fs)}.stat .l{font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.trophies{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0}.trophy{width:46px;height:46px;border-radius:8px;display:grid;place-items:center;border:1px solid var(--line);color:var(--gold);font-size:1.1rem}.trophy.lock{color:rgba(245,243,239,.18)}
+.status{display:inline-flex;gap:.6rem;align-items:center;font-family:var(--fm);font-size:.7rem;color:var(--muted);margin-top:1rem}
+.status .d{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--gold);background:transparent;animation:ring 2.6s ease-out infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(251,191,36,.5)}70%{box-shadow:0 0 0 6px rgba(251,191,36,0)}100%{box-shadow:0 0 0 0 rgba(251,191,36,0)}}
+.status b{color:var(--gold);font-weight:400}
+
+/* 8 FOOTER = sengoku .footer (follow us + SNS row + copyright) */
+.footer{margin-top:6rem;padding:80px 0 56px;text-align:center;border-top:1px solid var(--line);position:relative}
+.footer .follow{font-family:var(--fm);font-weight:500;font-size:clamp(2.6rem,7vw,4.8rem);letter-spacing:.1em;color:var(--gold-deep);margin:0 0 36px;line-height:1}
+.footer .flex_wrap{display:flex;justify-content:center;align-items:center;gap:30px;margin-bottom:40px}
+.footer .icon a{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:50%;color:var(--gold);font-family:var(--fm);font-size:.6rem;text-decoration:none;transition:transform .3s,border-color .3s}
+.footer .icon a:hover{transform:scale(1.1);border-color:var(--gold)}
+.footer .copyright{font-family:var(--fm);font-size:.72rem;letter-spacing:.12em;color:var(--muted)}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--fm);font-size:10px;color:rgba(245,243,239,.45)}.labtag a{color:var(--gold)}
+</style>
+<script src="/redesign-lab/lab-solo.js"></script>
+</head>
+<body>
+<nav class="rail"><a href="#">Top</a><a href="#">Work</a><a href="#">About</a><a href="#">Reel</a></nav>
+
+<header class="bar">
+  <span class="logo">LANTERN NIGHT</span>
+  <nav class="nav"><a class="on" href="#">Home</a><a href="#">Projects</a><a href="#">About</a><a href="#">Ramblings</a></nav>
+  <span class="tg"><span class="sw on"></span><span class="sw on"></span><span class="sw"></span></span>
+</header>
+
+<section class="hero">
+  <h1>TECHNICAL ART</h1>
+  <div class="en">shaders &middot; tools &middot; rendering &middot; 2026</div>
+  <div class="stamp">portfolio . 2026</div>
+  <p>A mostly-dark night where a few things truly glow &mdash; lanterns above, reflected in the work below.</p>
+</section>
+
+<div class="wrap">
+  <div class="lbl">01 . buttons &amp; tags</div>
+  <div class="kit">
+    <a class="boxbutton boxbutton--pri" href="#"><span class="hoverRoll__text"><span>View project</span><span>View project</span></span><span class="boxbutton__arrow"></span></a>
+    <a class="boxbutton" href="#"><span class="hoverRoll__text"><span>Read more</span><span>Read more</span></span><span class="boxbutton__arrow"></span></a>
+    <a class="boxbutton" href="#"><span class="hoverRoll__text"><span>All projects</span><span>All projects</span></span><span class="boxbutton__arrow"></span></a>
+    <a class="txtlink" href="#">an inline link &rarr;</a>
+    <span class="tag">HLSL</span><span class="tag">Compute</span><span class="tag">Unity</span>
+  </div>
+
+  <div class="lbl">02 . program cards</div>
+  <div class="cards">
+    <article class="card"><span class="pin">Pinned</span><div class="thumb"></div><div class="b"><h3>Compute Grass</h3><div class="t">Unity &middot; HLSL</div></div></article>
+    <article class="card"><span class="pin">Pinned</span><div class="thumb"></div><div class="b"><h3>Decompiling ZZZ</h3><div class="t">RenderDoc</div></div></article>
+    <article class="card"><div class="thumb"></div><div class="b"><h3>Lantern Scene</h3><div class="t">Three.js</div></div></article>
+  </div>
+
+  <div class="lbl">03 . list controls</div>
+  <div class="search">// search projects &amp; tags</div>
+  <div class="filters"><span class="f on">All</span><span class="f">Shaders</span><span class="f">Tools</span><span class="f">Real-time</span><span class="f">Write-ups</span></div>
+  <div class="empty">No results for <b>"raymarching"</b> &mdash; try a broader tag, or <a class="txtlink" href="#">browse all</a>.</div>
+
+  <div class="lbl">04 . post</div>
+  <div class="inner">
+    <section class="decision">
+      <div class="decision_inner">
+        <h2>Half a Million Blades of Grass</h2>
+        <div class="m"><span>Mar 2026</span><span>9 min read</span><span>Shaders</span></div>
+      </div>
+    </section>
+    <div class="prose">
+      <div class="tldr"><b>TL;DR</b>A GPU-instanced grass system: per-blade compute, wind via flow noise, and LOD that holds framerate.</div>
+      <p>The naive approach is a mesh per blade. That dies at a few thousand. Move the whole simulation onto the GPU.</p>
+      <h2>The compute pass</h2>
+      <p>Each blade is a point in a buffer. A compute shader displaces it by a wind field. Draw with <code>DrawProceduralIndirect</code>.</p>
+      <ul><li>Spatial hash for the wind lookup</li><li>One indirect draw for the whole field</li><li>LOD by distance, not by count</li></ul>
+      <blockquote>The GPU doesn't care how many blades there are, only how many it can't see.</blockquote>
+      <div class="codeblock"><span class="cp">copy</span><span class="k">[numthreads(64,1,1)]</span><br>void <span class="s">CSMain</span>(uint3 id) { blades[id.x].pos += windField(...) * dt; }</div>
+      <div class="takeaway"><b>Takeaway</b>Stop counting blades. Count what the GPU can see, and let the rest be free.</div>
+    </div>
+    <div class="contact_wrap">
+      <h3 class="contact_heading">Project details</h3>
+      <address>
+        <p class="bold">Compute Grass</p>
+        <p>Unity &middot; HLSL &middot; Compute &middot; Mar 2026</p>
+        <div class="flex_wrap">
+          <div><span class="s_ttl">Repo</span><a href="#">github.com/rodneyfan</a></div>
+          <div><span class="s_ttl">Read</span><a href="#">9 min</a></div>
+        </div>
+      </address>
+    </div>
+  </div>
+
+  <div class="lbl">05 . about</div>
+  <div class="bios"><div class="bio"><h3>Hello there</h3><p>Game developer first, artist after that. Quiet and lit.</p></div><div class="bio"><h3>Toolbox</h3><p>Three.js, GLSL/HLSL, Unity, compute. A still lake, and a sky that doubles.</p></div></div>
+  <div class="stats"><div class="stat"><div class="n">10+</div><div class="l">years</div></div><div class="stat"><div class="n">40</div><div class="l">write-ups</div></div><div class="stat"><div class="n">29</div><div class="l">achievements</div></div></div>
+  <div class="trophies"><span class="trophy">&#9733;</span><span class="trophy">&#9670;</span><span class="trophy">&#9650;</span><span class="trophy">&#10022;</span><span class="trophy lock">&#128274;</span><span class="trophy lock">&#128274;</span></div>
+  <div class="status"><span class="d"></span> currently &mdash; <b>studying compute-driven hair &amp; fur</b></div>
+</div>
+
+<footer class="footer">
+  <p class="follow">follow us</p>
+  <div class="flex_wrap">
+    <span class="icon"><a href="#">IG</a></span>
+    <span class="icon"><a href="#">GH</a></span>
+    <span class="icon"><a href="#">X</a></span>
+  </div>
+  <p class="copyright">&copy; 2026 Rodney Fan &middot; felt with all five senses</p>
+</footer>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; REBUILD: norikura (real-sourced)</div>
+
+<!-- Rod's REAL Three.js about-scene as the background -->
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+</body>
+</html>

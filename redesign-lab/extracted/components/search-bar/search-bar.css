@@ -1,0 +1,283 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   search-bar - ONE component, two reservations (projects 400x34, ramblings 40 tall).
+   Built 2026-08-23.
+
+   --------------------------------------------------------------------------------------------
+   WHAT I RECONCILED WITH, AND WHICH SPEC I FOLLOWED
+   --------------------------------------------------------------------------------------------
+   The ledger (element-tracker.md:107) records Rod's canonical spec and it is NOT the generic
+   pill: "square, always-open, // prefix, blinking caret, real typeable input, NO expand/animation
+   (he rejected animated examples). Concept Rod's; re-source code. CARET now Remixed (atelierbram
+   border-caret) in rework-hana; box/prefix still Slop."
+
+   I FOLLOWED THE LEDGER SPEC. Every clause of it is honoured below, and the two clauses that
+   look like they fight each other do not:
+     - "blinking caret" + "NO expand/animation" are about DIFFERENT things. The rejected animation
+       is the search box that grows out of a magnifier icon on click. The caret blink is the thing
+       he asked FOR. So the box never moves and the caret blinks. Both, not one.
+     - "square" is also decisions.css:428 (.d-meta border-radius:0) and the D20 shape pass, so
+       nothing here is a lone call.
+
+   The ledger's "box/prefix still Slop" is now only HALF true, and the half that changed is the
+   box - see the provenance block. The prefix is still Rod's own idea, which is an ORIGIN, not a
+   gap.
+
+   --------------------------------------------------------------------------------------------
+   PROVENANCE - checked, not claimed
+   --------------------------------------------------------------------------------------------
+   THE BOX: decisions.css:426-435 (.d-meta), which is Rod's own naming: "squares for tags on
+   project cards, rectangles from the buttons for the search and post meta data." He named the
+   button rectangle as the search's shape, so the shape is a SETTLED HOUSE DECISION, not a fresh
+   source. Reused, not redefined - the values below are read off .d-meta rather than re-picked:
+     border-radius 0, border 1px solid var(--color-line-soft), colour var(--color-silver),
+     font-size 0.82rem, font-weight 500, horizontal padding 1.5rem.
+
+   *** ONE THING I CHECKED AND IT CAME BACK NEGATIVE. Report it, do not paper over it. ***
+   decisions.css:413 says of that padding: "the sole inherited value here is padding 0.7rem 1.5rem.
+   Checking stephanewillems' live CSS would close even that." I fetched it:
+     https://stephanewillems.be/assets/index-fc98faf9.css  (22,087 bytes, 2026-08-23)
+   It is a Tailwind build. There is no `padding: 0.7rem 1.5rem` in it and no utility that produces
+   one - the closest pairs are .px-5/.py-2.5 (1.25rem/0.625rem) and .px-8/.py-2 (2rem/0.5rem).
+   So that padding is NOT stephanewillems'. It is OURS. Using it here is legitimate because Rod
+   locked it in decisions.css, but the citation it was hoping for does not exist. Open question 1.
+
+   THE CARET: two real, already-verified external sources, one per version below.
+     sources/atelierbram-border-caret.md  - codepen.io/atelierbram/pen/abrbyQ
+     sources/109ichiki-caret.md           - 109ichiki.com, captured from the live page
+   Both notes carry the original CSS verbatim; the keyframes below are those keyframes, renamed
+   and recoloured, and nothing else.
+
+   THE `//` PREFIX: Rod's own idea (element-tracker.md:107, "Concept Rod's"). ORIGIN: ROD.
+   No external source and none is claimed.
+
+   THE LIVE-FILTER BEHAVIOUR: not built here, and that is deliberate - see the JS note at the
+   bottom of the file. The only real search field anywhere in the 87-site gallery is
+   ronja-tutorials.com, verified live today:
+       <input id="SearchField" class="mb1" type="text" oninput="filterPosts(this.value)" />
+   and grepping BOTH its stylesheets (/css/main.css 298 bytes, /dist/css/app.d876a0cc....css
+   134,426 bytes) returns ZERO rules matching `#SearchField` or any bare `input` selector. Their
+   search box is a browser default with one margin class. So the gallery supplies the BEHAVIOUR
+   (oninput filter + a URL param) and supplies nothing at all for the LOOK. Stated so the absence
+   is visible instead of being quietly filled in.
+
+   --------------------------------------------------------------------------------------------
+   REUSE - what already existed and why it is not used as-is
+   --------------------------------------------------------------------------------------------
+   extracted/components/list-controls/ already contains a search field, and its caret is the same
+   atelierbram mechanic. It is NOT reused wholesale, for four reasons, all of them measurable:
+     1. its own header (list-controls.css:1-9) declares it circular-citation Slop
+     2. border-radius:10px - the shape pass squares this
+     3. color: var(--color-muted) - #9aa3bd, THE BLUE the palette law rules out
+     4. max-width:340px with 0.7rem 1rem padding - it cannot become 400x34 or 1351x40
+   What IS carried across from it, because it is the genuinely sourced part: the atelierbram
+   border-caret and the finding that the decorative caret must yield once the field is live.
+   One thing is improved rather than copied: list-controls needs a JS-set `.has-text` class for
+   that; `:not(:placeholder-shown)` does it in CSS, so this component ships zero JS.
+
+   --------------------------------------------------------------------------------------------
+   SIZE - measured, never rounded
+   --------------------------------------------------------------------------------------------
+   The height is an EXPLICIT height, not padding-derived. .d-meta reaches its height through
+   0.7rem vertical padding, which lands wherever the font metrics land; the reservations are
+   measured pixel heights and have to be hit exactly. So the vertical padding is replaced by
+   `height: var(--sb-h)` + centring, and the horizontal 1.5rem is kept verbatim.
+   Width is 100% - the component takes the width of whatever slot it is dropped in, which is how
+   one component serves a 400px reservation and a 1351px one without a second build.
+   ============================================================================================ */
+
+.sb {
+  --sb-h: 34px;                                   /* projects reservation, contract line 29 */
+  --sb-pad: 1.5rem;                               /* decisions.css:434 .d-meta, horizontal half */
+  --sb-face: var(--font-mono, "IBM Plex Mono", monospace);
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);                    /* settings.css spacing scale, not a new number */
+  width: 100%;
+  height: var(--sb-h);
+  box-sizing: border-box;
+  padding: 0 var(--sb-pad);
+  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  border-radius: 0;                               /* decisions.css:428, D20 shape pass */
+  background: transparent;                        /* a live scene is behind this; no fill, no blur */
+  font-family: var(--sb-face);
+  font-size: 0.82rem;                             /* decisions.css:433 */
+  font-weight: 500;                               /* decisions.css:434 */
+  color: var(--color-silver, #a3a19d);            /* decisions.css:431 */
+}
+
+/* the ramblings reservation. Same component, one token. */
+.sb--tall { --sb-h: 40px; }
+
+/* Rod's sigil. aria-hidden because it is decoration - the field is labelled with aria-label,
+   never by its placeholder alone. */
+.sb__prefix {
+  flex: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.sb__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;                     /* so the border-caret sits exactly at the text origin */
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--color-text, #f5f3ef);
+  caret-color: var(--color-gold, #fbbf24);
+}
+
+.sb__input::placeholder {
+  color: var(--color-silver, #a3a19d);
+  opacity: 1;                     /* Firefox dims placeholders by default; this cancels that */
+}
+
+/* No focus rule here on purpose. extracted/styles/generic.css:25 already defines the house
+   :focus-visible ring (transparent outline for High Contrast Mode + gold ring + ember bloom), so
+   the field inherits it. Re-declaring it would be a second copy that can drift. */
+
+
+/* ============================================================================================
+   VERSION A - BAR CARET.  Tier: Remixed.  Idea-origin: theirs (atelierbram) / Rod (the // sigil).
+   SOURCE: sources/atelierbram-border-caret.md -> https://codepen.io/atelierbram/pen/abrbyQ
+
+   THEIR IDEA, and it is the whole point: the caret is not an element, it is a BORDER on the text
+   element. A border auto-matches the element's own text height and sits flush at its edge, so the
+   alignment problem a hand-sized floating span creates never exists.
+
+   VERBATIM: the keyframe SHAPE - `from,to {transparent} 50% {colour}` - and the `1s infinite`
+   timing.
+   OURS, and each is a deliberate change rather than drift:
+     - border-RIGHT becomes border-LEFT. Theirs trails a shrink-wrapped typewriter line; ours
+       leads a full-width field, so a right border would render at the far edge of a 400px box and
+       read as a box edge, not a caret.
+     - #000 becomes the gold token.
+     - the keyframe toggles border-LEFT-color specifically, since only that border exists.
+     - their `typing` width animation is dropped entirely, and with it the 5s delay that only
+       existed to wait for the typewriter to finish. Rod rejected animated search boxes and this
+       is a real typeable input, not a reveal.
+   ============================================================================================ */
+.sb--bar .sb__input {
+  border-left: 1px solid var(--color-gold, #fbbf24);
+  animation: sb-blink 1s infinite;
+}
+
+@keyframes sb-blink {
+  from, to { border-left-color: transparent; }
+  50%      { border-left-color: var(--color-gold, #fbbf24); }
+}
+
+/* the decorative caret yields the moment the field is live, so the native gold caret-color is the
+   only caret on screen and there are never two. The list-controls finding, done without its JS. */
+.sb--bar:focus-within .sb__input,
+.sb--bar .sb__input:not(:placeholder-shown) {
+  animation: none;
+  border-left-color: transparent;
+}
+
+
+/* ============================================================================================
+   VERSION B - UNDERSCORE CARET.  Tier: Remixed.  Idea-origin: theirs (109ichiki) / Rod (sigil).
+   SOURCE: sources/109ichiki-caret.md -> https://109ichiki.com (captured from the live page)
+
+   THEIR IDEA: the caret is a `::after` pseudo carrying `content:"_"`, blinked by a step-start
+   keyframe that snaps opacity 1 -> 0 -> 1. Hard snap, no fade. Pure CSS.
+
+   VERBATIM: the keyframe block and the full animation shorthand
+   `1s step-start 0s infinite normal none <name>`, renamed off their hashed CSS-Modules class
+   (_cursor_1ppyp_1) exactly as their source note says to.
+   OURS:
+     - it hangs off the `//` prefix rather than an <h1>, because `::after` cannot be applied to an
+       <input> at all - an input is a replaced element and has no pseudo children. Their own host
+       is a heading for the same structural reason.
+     - theirs never hides; ours does once the field is live, or you get `// _Compute Grass`.
+       :has() is doing that, because the prefix is an EARLIER sibling than the input and no
+       sibling combinator reaches backwards.
+   ============================================================================================ */
+.sb--underscore .sb__prefix::after {
+  content: "_";
+  animation: 1s step-start 0s infinite normal none sb-cursor;
+}
+
+@keyframes sb-cursor {
+  0%   { opacity: 1; }
+  50%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.sb--underscore:focus-within .sb__prefix::after,
+.sb--underscore:has(.sb__input:not(:placeholder-shown)) .sb__prefix::after {
+  animation: none;
+  opacity: 0;
+}
+
+
+/* ============================================================================================
+   REDUCED MOTION - both carets stop, neither disappears.
+   A caret that vanishes is worse than a caret that does not blink: the prompt is the affordance.
+   So the animation is removed and the resting state is left VISIBLE in both versions.
+   ============================================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .sb--bar .sb__input          { animation: none; }
+  .sb--underscore .sb__prefix::after { animation: none; opacity: 1; }
+}
+
+
+/* ============================================================================================
+   NO JAVASCRIPT, ON PURPOSE.
+   The two things a search bar's JS does are filtering and URL sync, and the live site already
+   owns both - _javascript/modules/components/post-filter.js reads #post-search and filters
+   [data-post-item]. Shipping a second filter here would be a duplicate of working code that the
+   port has to reconcile later. ronja-tutorials.com does the same two jobs in nine lines
+   (oninput -> filter -> URLSearchParams.set("search")) and is the reference if it is ever
+   rewritten; nothing about the LOOK depends on either.
+   ============================================================================================ */
+
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   OVERFLOW BEHAVIOUR - Rod 2026-08-23, and it is a correction:
+   "it 100% should not have a scroll bar though it should just scale to the correct size and if
+    you go past it just pushes text to the left and you can't see it"
+
+   That is the NATIVE behaviour of a single-line <input> and it is what we want - but only if
+   nothing overrides it. An input never shows a scrollbar; it scrolls its own value horizontally
+   and keeps the caret in view, pushing earlier text out of sight to the left. Exactly as asked.
+
+   The three things that would BREAK it, pinned here so nobody adds them later:
+     - `overflow-x: auto` on the field or any wrapper -> a real scrollbar appears
+     - swapping the <input> for a contenteditable or a <textarea> -> wraps or scrolls visibly
+     - `width: max-content` / `min-width` on the input -> the box grows past its reservation
+       instead of the text scrolling inside it
+   Declared explicitly rather than left to the default, because "the default is correct" is only
+   true until someone adds a rule.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.sb__input {
+  overflow-x: hidden;        /* never a scrollbar; the input scrolls its own value */
+  text-overflow: clip;       /* no ellipsis - the text simply runs out of the box */
+  min-width: 0;              /* lets the field shrink inside a flex/grid parent */
+  width: 100%;               /* fills its reservation and no more */
+}
+.sb, .sb__wrap { overflow: hidden; }
+}

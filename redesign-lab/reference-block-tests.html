@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference block - 2 alternatives</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/callout-family/callout-family.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<link rel="stylesheet" href="/redesign-lab/decisions.css">
+<link rel="stylesheet" href="/redesign-lab/focus-ring.css">
+<style>
+@layer reset, tokens, prose, components, overrides;
+@layer reset { *{box-sizing:border-box;margin:0;padding:0} }
+
+body{
+  background:radial-gradient(120% 80% at 80% -10%,#101a3e 0%,transparent 55%),
+             linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+  color:var(--color-text,#f5f3ef);
+  font-family:"M PLUS Rounded 1c",sans-serif;font-weight:300;
+  min-height:100vh;padding:clamp(2rem,5vw,4rem) clamp(1rem,4vw,3rem);line-height:1.5;
+}
+.wrap{max-width:60rem;margin:0 auto}
+h1{font-family:"M PLUS Rounded 1c",sans-serif;font-weight:100;font-size:2.4rem;
+  color:var(--h2-color,#fbbf24);margin-bottom:.4rem}
+.sub{color:var(--color-silver,#a3a19d);font-size:.82rem;margin-bottom:2.6rem;max-width:52rem}
+
+.case{margin:3.4rem 0 0;padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.08)}
+.case__name{color:var(--color-gold,#fbbf24);font-family:"IBM Plex Mono",monospace;
+  font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem}
+.case__cite{color:var(--color-silver,#a3a19d);font-size:.72rem;line-height:1.75;
+  max-width:52rem;margin-bottom:.4rem}
+.case__cite b{color:var(--color-text,#f5f3ef);font-weight:500}
+.case__cite code{color:var(--color-gold,#fbbf24);font-family:"IBM Plex Mono",monospace;font-size:.92em}
+.tier{font-family:"IBM Plex Mono",monospace;font-size:.56rem;letter-spacing:.12em;
+  text-transform:uppercase;border:1px solid rgba(255,255,255,.16);padding:.1rem .45rem;
+  color:var(--color-silver,#a3a19d);margin-left:.4rem;white-space:nowrap}
+
+/* the article context, so each option is judged where it will actually live */
+.stage{margin-top:1.4rem;padding:2rem 1.6rem;background:rgba(8,15,27,.92);
+  border:1px solid rgba(245,158,11,.15);max-width:48rem}
+.stage p{font-size:18px;line-height:1.3;letter-spacing:-.18px;color:var(--color-text,#f5f3ef)}
+.stage p + *{margin-top:24px}
+
+/* ============================================================ A - RONJA
+   SOURCE: sources/ronja-tutorials-prose.md, `.nested-links a` + `.nested-links a:hover, :focus`.
+   TRANSCRIBED: colour-only treatment scoped by ONE container class, NO underline rule of its own
+   (links keep the UA underline), hover goes LIGHTER rather than darker, `:focus` grouped with
+   `:hover` so keyboard users get identical feedback, and `word-wrap:break-word` purely so a long
+   bare URL cannot blow out the measure. No external-link marker - that is theirs too.
+   OURS (Remixed): their #357edd -> #96ccff blue becomes our gold -> glow, and the label is ours. */
+.refA__label{display:block;font-family:"IBM Plex Mono",monospace;font-size:.62rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--color-silver,#a3a19d);
+  margin-bottom:.7rem}
+.refA ul{list-style:none;padding:0;margin:0}
+.refA li + li{margin-top:.5rem}
+.refA a{color:var(--color-gold,#fbbf24);transition:color .15s ease-in;word-wrap:break-word}
+.refA a:hover,.refA a:focus{color:var(--color-glow,#FFE8B0)}
+
+/* ============================================================ B - CATLIKE CODING
+   SOURCE: sources/catlikecoding-prose.md, `article header ul / article header ul li`.
+   TRANSCRIBED: a summary block with NO BOX AT ALL. Bullets dropped entirely
+   (`list-style-type:none; padding:0`), set in ITALIC with a 1.5em margin all round. Their own note
+   is the point: "the italic plus the whitespace island is the only signal that this block is a
+   summary rather than prose". So the block is marked by TYPE and SPACE, never by a container.
+   OURS (Remixed): the links take our gold, and a hairline replaces their pure-whitespace island
+   because this site's prose sits on a panel rather than on paper. */
+.refB{margin:1.5em 0;font-style:italic}
+.refB ul{list-style-type:none;padding:0;margin:0}
+.refB li{margin:.35em 0}
+.refB a{color:var(--color-gold,#fbbf24)}
+.refB a:hover,.refB a:focus{color:var(--color-glow,#FFE8B0)}
+.refB__rule{width:2.5rem;height:1px;background:currentColor;opacity:.28;margin-bottom:.9em}
+
+.foot{margin-top:4rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);
+  color:var(--color-silver,#a3a19d);font-size:.7rem;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Reference block &mdash; two alternatives</h1>
+  <p class="sub">Rod 2026-08-24: <i>&ldquo;not sure where this reference box came from but honestly
+    we should change the design give me 2 new alternatives based on the gallery references.&rdquo;</i>
+    <br><br>
+    <b>Where the current one came from:</b> it is <code>.co-ref</code>, part of the
+    <b>callout-family V1</b> you picked &mdash; flamedfury&rsquo;s box &mdash; with D30 assigning
+    <i>reference = no tape</i>. It arrived with the callout merge and was never judged on its own,
+    which is why it looks unfamiliar.
+    <br><br>
+    <b>Both alternatives below drop the box.</b> That is not a coincidence: the two gallery sites
+    whose reference lists were actually transcribed are technical tutorial sites, and
+    <b>neither of them boxes its links</b>. Sources are cited per option and nothing here is
+    free-handed.</p>
+
+  <!-- CURRENT -->
+  <div class="case">
+    <div class="case__name">Current &mdash; what is on the post now</div>
+    <div class="case__cite">callout-family V1 (<b>flamedfury</b>) with <code>.co-ref</code>.
+      A full box, same shell as the TL;DR / note / warning callouts, minus the tape.
+      <span class="tier">shipped</span></div>
+    <div class="stage">
+      <p>Indirect drawing hides its own errors, so the count buffer is worth validating before
+        blaming the shader.</p>
+      <aside class="co co--v1 co-ref">
+        <span class="co__label">Reference</span>
+        <ul>
+          <li><a href="#">Unity manual &mdash; ComputeBuffer</a></li>
+          <li><a href="#">Indirect drawing and why the count buffer lies</a></li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+
+  <!-- A -->
+  <div class="case">
+    <div class="case__name">A &mdash; Ronja Tutorials, colour-only links</div>
+    <div class="case__cite"><b>SOURCE:</b> <code>sources/ronja-tutorials-prose.md</code> &mdash;
+      <code>.nested-links a</code> / <code>.nested-links a:hover, :focus</code>.
+      <span class="tier">remixed</span>
+      <br>Transcribed: <b>no box and no underline rule of its own</b> &mdash; links keep the browser
+      underline and only the hue changes. Their device is that <b>hover goes LIGHTER, not darker</b>,
+      so a link reads as receding on approach. <code>:focus</code> is grouped with <code>:hover</code>,
+      so keyboard users get identical feedback. <code>word-wrap:break-word</code> is their own
+      one-liner, purely so a long bare URL cannot blow out the measure.
+      <br><b>Ours:</b> their #357edd &rarr; #96ccff blue becomes our gold &rarr; glow. The small
+      label is ours; Ronja has no external-link marker and neither does this.</div>
+    <div class="stage">
+      <p>Indirect drawing hides its own errors, so the count buffer is worth validating before
+        blaming the shader.</p>
+      <div class="refA">
+        <span class="refA__label">Reference</span>
+        <ul>
+          <li><a href="#">Unity manual &mdash; ComputeBuffer</a></li>
+          <li><a href="#">Indirect drawing and why the count buffer lies</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="case">
+    <div class="case__name">B &mdash; Catlike Coding, the whitespace island</div>
+    <div class="case__cite"><b>SOURCE:</b> <code>sources/catlikecoding-prose.md</code> &mdash;
+      <code>article header ul / article header ul li</code> (their TL;DR summary).
+      <span class="tier">remixed</span>
+      <br>Transcribed: <b>no box at all.</b> Bullets dropped entirely
+      (<code>list-style-type:none; padding:0</code>), set in <b>italic</b> with a
+      <code>1.5em</code> margin all round. The source note is the whole idea:
+      <i>&ldquo;the italic plus the whitespace island is the only signal that this block is a
+      summary rather than prose&rdquo;</i> &mdash; it is marked by <b>type and space</b>, never by a
+      container.
+      <br><b>Ours:</b> links take our gold, and a short hairline stands in for their pure-whitespace
+      island, because this site&rsquo;s prose sits on a panel rather than on paper &mdash; with no
+      rule at all the block would not separate. Say the word and the hairline goes.</div>
+    <div class="stage">
+      <p>Indirect drawing hides its own errors, so the count buffer is worth validating before
+        blaming the shader.</p>
+      <div class="refB">
+        <div class="refB__rule"></div>
+        <ul>
+          <li><a href="#">Unity manual &mdash; ComputeBuffer</a></li>
+          <li><a href="#">Indirect drawing and why the count buffer lies</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Both options are <b>Remixed</b>: the mechanism is transcribed from a named file and the colour
+    is ours. Neither is on the post &mdash; nothing ships until you pick.
+    <br><a href="/redesign-lab/final-post.html" style="color:var(--color-gold,#fbbf24)">&larr; back to the post</a>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!-- goo filter defs: exactly ONE per document (the id is global) -->
+<svg style="display: none" aria-hidden="true">
+  <defs>
+    <filter id="goo-toggle-goo" filterUnits="userSpaceOnUse" x="-24" y="-24" width="280" height="120">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur" />
+      <feColorMatrix
+        in="blur"
+        mode="matrix"
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+        result="goo"
+      />
+    </filter>
+  </defs>
+</svg>
+<div class="goo-toggle-demo" data-tune="toggle row">
+  <label class="goo-toggle js-magnetic" data-strength="40">
+    <input class="goo-toggle__input" type="checkbox" checked aria-label="Toggle breathing" />
+    <svg class="goo-toggle__frame" viewBox="0 0 232 72" aria-hidden="true">
+      <rect class="goo-toggle__track" x="2" y="2" width="228" height="68" rx="34" />
+      <g filter="url(#goo-toggle-goo)">
+        <rect class="goo-toggle__capsule" x="6" y="6" width="146" height="60" rx="30" />
+        <rect class="goo-toggle__tail" x="59" y="13" width="46" height="46" rx="23" />
+        <g class="goo-toggle__orb-shift"><rect class="goo-toggle__orb" x="166" y="6" width="60" height="60" rx="30" /></g>
+      </g>
+    </svg>
+    <span class="goo-toggle__word" aria-hidden="true">Breathing</span>
+    <span class="goo-toggle__state" aria-hidden="true">Off</span>
+  </label>
+  <label class="goo-toggle goo-toggle--small js-magnetic" data-strength="25">
+    <input class="goo-toggle__input" type="checkbox" aria-label="Toggle sparkler" />
+    <svg class="goo-toggle__frame" viewBox="0 0 232 72" aria-hidden="true">
+      <rect class="goo-toggle__track" x="2" y="2" width="228" height="68" rx="34" />
+      <g filter="url(#goo-toggle-goo)">
+        <rect class="goo-toggle__capsule" x="6" y="6" width="146" height="60" rx="30" />
+        <rect class="goo-toggle__tail" x="59" y="13" width="46" height="46" rx="23" />
+        <g class="goo-toggle__orb-shift"><rect class="goo-toggle__orb" x="166" y="6" width="60" height="60" rx="30" /></g>
+      </g>
+    </svg>
+    <span class="goo-toggle__word" aria-hidden="true">Sparkler</span>
+    <span class="goo-toggle__state" aria-hidden="true">Off</span>
+  </label>
+</div>

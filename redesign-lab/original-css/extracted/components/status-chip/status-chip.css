@@ -1,0 +1,368 @@
+/* ==============================================================================================
+   STATUS CHIP + STATUS TERMINAL - about page, 3 versions.
+   Built 2026-08-23.
+
+   MEASURED RESERVATION (read off about-blockout.html?v=panels at viewport 1440 with
+   getBoundingClientRect, not from a label):
+     status chip     100 x 20      (.box[style*="width:100px"], 1px dashed, no padding)
+     status terminal 675 x 172     (.p.term - 2px border + 10px/15px padding -> 641 x 148 content)
+   Inside the terminal reservation, also measured:
+     .yy label   641 x 10   (9px), margin-bottom 6px
+     row         641 x 22   x6      (6 rows, 132px block)
+     row label   250 x 12            <- see THE 250 CORRECTION below
+     row token    40 x 14
+
+   THE 250 CORRECTION - the blockout misreads its own parent, and the live site wins.
+   about-blockout.html says dimden's status terminal is a "2-col table, 250px FIRST CELLS,
+   6 rows at 22px, label .......... TOKEN", and puts it on dimden's ABOUT page.
+   Read live 2026-08-23 from https://dimden.dev/ and https://dimden.dev/css/main.css?9
+   (18,447 bytes, the same file already cited in sources/section-and-heading-blocks.md):
+     1. dimden's ABOUT page has NO status device at all. It is seven plain `.box` paragraphs.
+        The terminal is on the HOME page.
+     2. `#statuses > td { width: 250px }` - the 250 is the width of EACH OF TWO columns, not the
+        first cell of a 6-row table. The real arrangement is 2 columns of 3, not 6 stacked rows.
+     3. The token comes FIRST, in literal square brackets, and the label follows:
+        `[ OK ] dimden.dev`. There is no "label .......... TOKEN" and there are no dotted leaders
+        anywhere on the site.
+   So the blockout's 675x172 GEOMETRY stands (Rod approved that by eye) but its description of
+   the parent does not. Version A below follows the live site and reports the height gap.
+   ============================================================================================== */
+
+/* -- shared: nothing is shared on purpose ---------------------------------------------------
+   The three versions come from three different sites and share no rule, so there is no base
+   class. A shared base here would be a fourth design nobody sourced. */
+
+
+/* ==============================================================================================
+   VERSION A - DIMDEN BRACKET TOKEN.   Tier: Remixed.   Idea origin: theirs (dimden).
+   SOURCE, read live 2026-08-23:
+     https://dimden.dev/css/main.css?9   (18,447 bytes - matches the byte count already recorded
+                                          in sources/section-and-heading-blocks.md, so that note
+                                          is confirmed rather than assumed)
+     https://dimden.dev/                 (markup, `<div class="box terminal">`)
+   dimden is tier S in Rod's own reference-gallery.html, and this is the site about-blockout.html
+   variant 1 was drawn from, so the parent is his pick, not mine.
+
+   VERBATIM from their CSS:
+     .box { background-color:#000000a8; border:2px solid #383838; border-radius:4px;
+            color:white; padding:10px 15px; margin:5px }
+     .terminal { background-color:black; font-family:"Perfect DOS VGA 437 Win"; color:lightgray }
+     #statuses > td { width:250px }
+     .status-ok   { color:#36fda0; text-shadow:0 0 20px #36fda0 }
+     .status-fail { color:#ff5858; text-shadow:0 0 20px #ff5858 }
+   VERBATIM from their markup:
+     <span>[<span class="status-ok"> OK </span>] dimden.dev</span><br>   x6, 3 per <td>
+
+   FIVE DEPARTURES, each with its reason, none of them silent:
+     1. `.terminal { background-color: black }` is DROPPED. On their own page `.terminal` loads
+        after `.box` (line 660 vs line 167) so it wins, and the panel renders OPAQUE BLACK. We
+        have a live three.js scene behind this. Their `.box` translucency is the half that
+        survives contact with our ground, so the panel keeps `.box` and loses `.terminal`'s fill.
+     2. `border-radius: 4px` -> 0. Shape pass, square by default.
+     3. `#36fda0` green and `#ff5858` red BOTH fail the palette law (no cool accent outside the
+        sky, no red). Reassigned to gold / silver / glow. This is a real loss and it is flagged
+        as an open question in the .md - a status system wants two states you cannot confuse,
+        and gold-vs-orange is a weaker separation than green-vs-red.
+     4. `text-shadow: 0 0 20px` is DROPPED on both states. It is a glow, and the de-glow
+        principle plus the anti-glass pass strip exactly this.
+     5. "Perfect DOS VGA 437 Win" is a bitmap face we do not have and have not licensed. The
+        house mono stands in.
+
+   COULD NOT TRANSFER: their `.box { padding: 10px 15px }` on the CHIP. 10px of vertical padding
+   cannot exist inside a 20px-tall box. The chip keeps their 2px border and loses their padding.
+   ============================================================================================== */
+
+.sc-a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100px;                                  /* measured reservation */
+  height: 20px;                                  /* measured reservation */
+  padding: 0;                                    /* their 10px 15px cannot fit - see above */
+  border: 2px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));   /* their 2px, our hue */
+  border-radius: 0;
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));               /* their .box translucency */
+  font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-size: 11px;                               /* T3-E floor - see the .md for the check */
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* their `[<span class="status-ok"> OK </span>]` - the brackets are LITERAL TEXT outside the
+   coloured span, which is what makes the token read as a terminal field rather than a pill. */
+.sc-a__ok { color: var(--color-gold, #fbbf24); }
+.sc-a__warn { color: var(--color-glow, #ff6a00); }
+
+.sc-a-term {
+  box-sizing: border-box;
+  width: 675px;                                  /* measured reservation */
+  padding: 10px 15px;                            /* theirs, verbatim */
+  border: 2px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));   /* their 2px, our hue */
+  border-radius: 0;
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--color-silver, #a3a19d);
+}
+
+/* their header line is `Systems status: OK` with the token NOT bracketed. Only the table rows
+   bracket it. That distinction is theirs and is kept. */
+.sc-a-term__head {
+  margin: 0 0 22px;                              /* their blank <br> line, at the blockout's 22px row */
+  font-weight: 400;
+  line-height: 22px;                             /* the blockout's measured row height */
+  color: var(--color-text, #f5f3ef);
+}
+
+.sc-a-term table { border-collapse: collapse; }
+.sc-a-term td {
+  width: 250px;                                  /* #statuses > td, verbatim */
+  padding: 0;
+  vertical-align: top;
+}
+.sc-a-term td > span {
+  display: block;
+  line-height: 22px;                             /* the blockout's measured row height */
+}
+
+/* ONE-COLUMN ARRANGEMENT - offered because it is the one the blockout drew, NOT because dimden
+   does it. Their table is two 250px columns of three; stacking the same six rows in one column is
+   OUR rearrangement of their content and is labelled as such rather than cited to them.
+   It exists so the height question is decidable by eye: 2x3 leaves a gap in the reservation,
+   6x1 overruns it, and the numbers for both are printed under the specimens. */
+.sc-a-term--stack td { width: auto; display: block; }
+.sc-a-term--stack tr { display: block; }
+
+
+/* ==============================================================================================
+   VERSION B - KLUBNIKA REGISTRY LEDGER.   Tier: Remixed.   Idea origin: theirs (Mike Klubnika).
+   SOURCE, read live 2026-08-23:
+     https://mikeklubnika.com/static/style/main.css   (8,021 bytes)
+     https://mikeklubnika.com/                        (markup, the `.cataloguealt` registry)
+   Klubnika is tier C+ in reference-gallery.html with Rod's own note ("Looks awful, and I LOVE
+   it"), and about-blockout.html variant 3 is his site, so again the parent is already his.
+
+   VERBATIM from their CSS:
+     .ue { display:flex; flex-direction:row; justify-content:space-between;
+           margin-top:5px; margin-bottom:5px; font-family:bank; font-size:12px }
+     .uebg { background-color: rgba(235,235,235,0.0333) }
+     .entrytext { font-family: monospace }
+     body { background-color:black; color:white; font-family:monospace }
+   VERBATIM from their markup:
+     <div class="ue uebg">
+       <div>[30 Jul 2026] <a class="entrytext" href="...">Machine Party</a></div>
+       <div class="entrytext">24 days ago</div>
+     </div>
+
+   THE POINT OF THIS VERSION: it has NO FRAME AND NO FILL. The only paint is a 3.33% white zebra
+   on alternate rows. On the page carrying the full water and dock scene that is the cheapest
+   status device of the three by a wide margin - version A puts a 675x172 panel over the water.
+
+   TWO DEPARTURES:
+     1. `font-family: bank` is a face on their server we do not have. The house mono stands in.
+        Their own `.entrytext` is already `monospace`, so half the row was mono anyway.
+     2. Nothing else changes. `rgba(235,235,235,.0333)` is a neutral near-white at 3% and carries
+        no hue, so the palette law has nothing to object to. 12px clears the T3-E floor.
+
+   COULD NOT TRANSFER: a panel. Klubnika's registry has no container of its own - it sits inside
+   their 58em column, whose left and right hairlines belong to the page, not to the widget. So
+   this version has no outer chrome and its measured box is the row stack alone.
+   ============================================================================================== */
+
+.sc-b {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;                                  /* measured reservation */
+  height: 20px;                                  /* measured reservation */
+  background-color: rgba(235, 235, 235, 0.0333); /* .uebg, verbatim */
+  font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-size: 12px;                               /* .ue, verbatim */
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-text, #f5f3ef);
+}
+
+.sc-b-term {
+  box-sizing: border-box;
+  width: 675px;                                  /* measured reservation */
+  font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+  color: var(--color-text, #f5f3ef);
+}
+
+.sc-b-term__row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+.sc-b-term__row:nth-child(odd) { background-color: rgba(235, 235, 235, 0.0333); }
+
+/* their right-hand cell is the one that keeps `.entrytext`, so the two halves of the row are set
+   in different faces. With one mono for both that distinction disappears; the value is dimmed
+   instead so the row still has a near half and a far half. */
+.sc-b-term__val { color: var(--color-silver, #a3a19d); }
+.sc-b-term__tok { color: var(--color-gold, #fbbf24); }
+
+
+/* ==============================================================================================
+   VERSION C - TERMINAL.SHOP EDITOR LINES.   Tier: Remixed.   Idea origin: theirs (terminal.shop).
+   SOURCE, read live 2026-08-23:
+     https://www.terminal.shop/_astro/about.CSjCn8a_.css   (30,551 bytes, Tailwind build)
+     https://www.terminal.shop/                            (markup)
+   terminal.shop is in reference-gallery.html untiered ("?"), with the note "Peak engineered UI -
+   the merodev/dimden 'screams internet' vein taken to its logical end". So it is a catalogued
+   site rather than a tiered pick, and that is stated rather than dressed up.
+
+   VERBATIM from their CSS (the line-number gutter is a real CSS counter, not markup):
+     .editor { counter-reset: editor-counter }
+     .line   { counter-increment: editor-counter }
+     .line:before { content: counter(editor-counter); width: 2rem;
+                    flex-shrink: 0; align-self: flex-start }
+     @keyframes blink { 0%,25%,to { opacity:1 } 50%,75% { opacity:0 } }
+     .animate-blink { animation: blink 1.45s infinite step-start }
+     .bg-orange { background-color:#ff5e00 }   .border-orange { border-color:#ff5e00 }
+     .leading-10 { line-height:2.5rem }        .border-l-2 { border-left-width:2px }
+     .text-gray-10 { color:#e5f2ff78 }         .text-gray-11 { color:#f0f7ff9e }
+     .bg-gray-6 { background-color:#e1f0fe24 }
+   VERBATIM from their markup (the utility string on every `.line`):
+     class="line group flex leading-10 items-center text-gray-10 hover:bg-gray-5 px-4
+            sm:px-[22px] border-transparent border-l-2 active:border-orange active:text-gray-11
+            active:bg-gray-6 focus:border-orange focus:text-gray-11 focus:bg-gray-6 ..."
+   and the caret:
+     class="... bg-orange w-[10px] h-[21px] shrink-0 animate-blink"
+
+   WHY THIS IS THE THIRD OPTION AND NOT PADDING: A and B both answer "a status is a list of
+   label/value pairs". This one answers "a status is a FILE you are looking at" - numbered lines,
+   an active-line marker, a caret sitting on the last one. It is the only one of the three where
+   the device implies the page is live rather than printed.
+
+   THREE DEPARTURES:
+     1. Their greys are COOL. #e5f2ff78 and #f0f7ff9e are blue-whites and #e1f0fe24 is a blue
+        tint. Palette law puts blue in the sky only, so they become the warm text tokens and a
+        warm 6% tint. This is the biggest single change to their look and it is deliberate.
+     2. Their orange #ff5e00 -> our --color-glow #ff6a00. Twelve units of red apart; effectively
+        the same colour, so this one costs nothing.
+     3. `px-4 sm:px-[22px]` keeps 22px (their >=640px value). Ours never renders at their small
+        breakpoint inside a 675px slot.
+
+   COULD NOT TRANSFER at chip scale: `line-height: 2.5rem`. Forty pixels of leading is the thing
+   that makes this read as a code editor and a 20px chip cannot hold it. The chip drops to 20px
+   leading, which is why the chip is the weakest half of this version.
+   ============================================================================================== */
+
+.sc-c {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100px;                                  /* measured reservation */
+  height: 20px;                                  /* measured reservation */
+  padding: 0 6px;                                /* their 22px will not fit 100px - see the .md */
+  border-left: 2px solid var(--color-glow, #ff6a00);   /* their active-line marker, verbatim 2px */
+  background-color: rgba(245, 243, 239, 0.06);         /* their .bg-gray-6, warmed */
+  font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-size: 11px;
+  line-height: 20px;                             /* NOT theirs - their 2.5rem cannot fit */
+  white-space: nowrap;
+  color: var(--color-text, #f5f3ef);
+}
+
+/* Their caret is 10 x 21 inside a 40px line box. Held to that RATIO rather than to those pixels,
+   because a 21px caret in a 20px chip would overflow the box it is meant to sit in:
+     height 21/40 of the line box, width 10/21 of the caret height.
+   At the 20px chip that is 10.5 x 5. DERIVED, not measured - flagged as such. */
+.sc-c__caret {
+  flex-shrink: 0;
+  width: 5px;
+  height: 10.5px;
+  margin-left: auto;
+  background: var(--color-glow, #ff6a00);
+  animation: sc-blink 1.45s infinite step-start;
+}
+
+.sc-c-term {
+  box-sizing: border-box;
+  width: 675px;                                  /* measured reservation */
+  counter-reset: sc-line;                        /* .editor, verbatim mechanism */
+  font-family: var(--font-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--color-silver, #a3a19d);           /* their text-gray-10, warmed */
+}
+
+.sc-c-term__line {
+  display: flex;
+  align-items: center;
+  line-height: 2.5rem;                           /* .leading-10, verbatim */
+  padding: 0 22px;                               /* sm:px-[22px], verbatim */
+  border-left: 2px solid transparent;            /* .border-l-2 .border-transparent, verbatim */
+  counter-increment: sc-line;
+}
+.sc-c-term__line::before {
+  content: counter(sc-line);
+  width: 2rem;                                   /* .line:before, verbatim */
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* their active line: border goes orange, text lifts, fill tints. One state, three declarations,
+   exactly as their utility string has it. */
+.sc-c-term__line:hover,
+.sc-c-term__line--on {
+  border-left-color: var(--color-glow, #ff6a00);
+  color: var(--color-text, #f5f3ef);
+  background-color: rgba(245, 243, 239, 0.06);
+}
+
+.sc-c-term__caret {
+  width: 10px;                                   /* w-[10px], verbatim */
+  height: 21px;                                  /* h-[21px], verbatim */
+  flex-shrink: 0;
+  margin-left: 8px;
+  background: var(--color-glow, #ff6a00);
+  animation: sc-blink 1.45s infinite step-start; /* .animate-blink, verbatim timing */
+}
+
+@keyframes sc-blink {                            /* @keyframes blink, verbatim */
+  0%, 25%, to { opacity: 1; }
+  50%, 75% { opacity: 0; }
+}
+
+/* Their site ships no reduced-motion rule for the blink. Ours has to: a caret that never stops
+   is exactly the kind of persistent motion the preference exists to switch off. The caret stays
+   VISIBLE rather than being hidden, because it marks where the line ends. */
+@media (prefers-reduced-motion: reduce) {
+  .sc-c__caret,
+  .sc-c-term__caret { animation: none; opacity: 1; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   *** PICKED 2026-08-23: A, THE DIMDEN BRACKET TOKEN. Terminal at 675 x 172. ***
+   Rod: "bracket token is A for sure" ... "btw I like the 675 x 172 version the most"
+
+   675 x 172 SETTLES THE ROW COUNT, which was the one thing the terminal could not decide for
+   itself. The audit measured it running 63px under to 68px over depending on how many status rows
+   were written - because the height is a function of the content, not of the design. Picking the
+   675 x 172 rendering picks the row count that produces it, so the box stops being variable.
+
+   A CONTENT DIRECTION HE RAISED, recorded because it changes what the rows ARE - not built,
+   because he has not committed to it:
+     "maybe we can track posts written vs posts read and the achievements and then we can track
+      this across design, tech art, and ramblings"
+
+   That is a real idea and it has a real consequence: it would replace the terminal's free-text
+   status lines with a small set of COUNTED rows, three sections x a metric. Two things follow if
+   he takes it:
+     - the rows become derivable from the repo rather than hand-written, so they cannot go stale
+     - "posts read" is per-VISITOR state, not site state, so it needs localStorage and is the only
+       part of the idea that is not just a build-time count
+   Neither is designed here. Flagged so the terminal is not locked to hand-written rows before he
+   decides.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.sc-term--picked { min-height: 172px; }   /* the rendering he picked, pinned so it stops drifting */

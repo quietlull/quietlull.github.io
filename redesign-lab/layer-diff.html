@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Before / after the layer refactor</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#F3B53C;--glow:#FFE8B0;--text:#F5F3EF;--muted:#9aa3bd;
+  --line:rgba(255,255,255,.08);--bad:#e08b8b;--ok:#b7d29a;--night:#070C23}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+body{background:var(--night);color:var(--text);font-family:"IBM Plex Mono",monospace;
+  min-height:100vh;line-height:1.6}
+
+/* ── the bar. Same device the blockouts use: tabs, not shrunken side-by-sides.
+      Rod 2026-08-23: "instead of these shrunk versions of the scenes can you make tabs to switch
+      between them like we have been doing for blockouts instead?" ── */
+#ld-bar{position:sticky;top:0;z-index:80;background:rgba(8,10,18,.96);
+  border-bottom:1px solid rgba(255,255,255,.14);padding:8px 14px;
+  display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+  font:10px ui-monospace,Consolas,monospace;letter-spacing:.11em;text-transform:uppercase}
+#ld-bar b{color:#8e8e8e;font-weight:400;margin-right:4px}
+#ld-bar .sep{width:1px;height:18px;background:rgba(255,255,255,.16);margin:0 6px}
+button{background:none;border:1px solid #444;color:#bbb;font:inherit;letter-spacing:.11em;
+  text-transform:uppercase;padding:5px 10px;cursor:pointer;transition:all .15s}
+button:hover{border-color:#777;color:#eee}
+button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#141414}
+button:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+#ld-bar .state{margin-left:auto;text-transform:none;letter-spacing:.04em;color:var(--muted)}
+#ld-bar .state b{color:var(--gold)}
+#ld-bar .same{background:var(--ok);color:#12160e;padding:.1rem .45rem}
+#ld-bar .diff{background:var(--bad);color:#1a0d0d;padding:.1rem .45rem}
+
+/* ── the stage. ONE frame, full size, not a thumbnail. ── */
+#ld-stage{position:relative;width:100%;height:calc(100vh - 46px);background:var(--night)}
+#ld-stage iframe{width:100%;height:100%;border:0;display:block;background:var(--night)}
+#ld-stage iframe[hidden]{display:none}
+#ld-loading{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  color:var(--muted);font:11px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;
+  background:rgba(7,12,35,.85);transition:opacity .2s}
+#ld-loading[hidden]{display:none}
+
+/* ── the findings drawer ── */
+#ld-panel{position:fixed;right:14px;bottom:14px;z-index:90;width:min(560px,calc(100vw - 28px));
+  max-height:56vh;overflow:auto;background:rgba(8,10,18,.97);
+  border:1px solid rgba(255,255,255,.2);padding:12px 13px;
+  font:11px/1.6 ui-monospace,Consolas,monospace;color:#dcdcdc}
+#ld-panel[hidden]{display:none}
+#ld-panel h3{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;
+  margin:0 0 8px;display:flex;align-items:center;gap:8px}
+#ld-panel table{width:100%;border-collapse:collapse;font-size:10px}
+#ld-panel th{text-align:left;color:#8e8e8e;font-weight:400;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;padding:3px 6px 3px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+#ld-panel td{padding:3px 6px 3px 0;border-bottom:1px solid rgba(255,255,255,.07);
+  vertical-align:top;color:#bdbdbd}
+#ld-panel td.el{color:#eee;white-space:nowrap}
+#ld-panel td.pr{color:var(--glow);white-space:nowrap}
+#ld-panel td.is{color:var(--bad)}
+#ld-panel .none{color:var(--ok)}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font:10px ui-monospace,monospace;
+  color:rgba(245,243,239,.45)}
+.labtag a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div id="ld-bar">
+  <b>Page</b>
+  <span id="ld-pages"></span>
+  <span class="sep"></span>
+  <b>Version</b>
+  <button id="ld-before" aria-pressed="false">before</button>
+  <button id="ld-after"  aria-pressed="true">after</button>
+  <span class="sep"></span>
+  <button id="ld-toggle-panel" aria-pressed="true">findings</button>
+  <span class="state" id="ld-state">loading&hellip;</span>
+</div>
+
+<div id="ld-stage">
+  <div id="ld-loading">rendering&hellip;</div>
+</div>
+
+<div id="ld-panel">
+  <h3>What moved <span id="ld-count"></span></h3>
+  <div id="ld-body"></div>
+</div>
+
+<div class="labtag">layer&#8209;diff &middot; <a href="/redesign-lab/todo.html">todo</a>
+  &middot; <a href="/redesign-lab/index.html">lab</a></div>
+
+<script>
+var PAGES = ['final-post','final-landing','final-about','final-projects','final-ramblings',
+             'final-portal','component-review'];
+var PROPS = ['color','background-color','font-size','font-weight','line-height',
+             'border-bottom-width','padding-top','padding-left','margin-top','margin-left',
+             'display','opacity','letter-spacing','width','height'];
+
+var stage = document.getElementById('ld-stage');
+var loading = document.getElementById('ld-loading');
+var state = document.getElementById('ld-state');
+var panel = document.getElementById('ld-panel');
+var current = PAGES[0], showing = 'after';
+var built = {};        // page -> {before, after, diffs}
+
+// page tabs
+PAGES.forEach(function(p){
+  var b = document.createElement('button');
+  b.textContent = p.replace('final-','');
+  b.setAttribute('aria-pressed', p === current ? 'true' : 'false');
+  b.dataset.page = p;
+  b.onclick = function(){ select(p); };
+  document.getElementById('ld-pages').appendChild(b);
+});
+
+function markPageTabs(){
+  [].forEach.call(document.querySelectorAll('#ld-pages button'), function(b){
+    b.setAttribute('aria-pressed', b.dataset.page === current ? 'true' : 'false');
+  });
+}
+function markVersion(){
+  document.getElementById('ld-before').setAttribute('aria-pressed', showing === 'before' ? 'true':'false');
+  document.getElementById('ld-after').setAttribute('aria-pressed', showing === 'after' ? 'true':'false');
+}
+
+// Swap a frame's lab stylesheets to the frozen pre-refactor copy. Returns how many swapped, so a
+// silent 404 can never masquerade as "no differences" - that already happened once, when the copy
+// lived in _original/ and Jekyll refused to serve a leading-underscore directory.
+async function useOriginal(f){
+  var d = f.contentDocument, swapped = 0, failed = 0;
+  var links = [].slice.call(d.querySelectorAll('link[rel=stylesheet]'));
+  for (var i = 0; i < links.length; i++){
+    var h = links[i].getAttribute('href') || '';
+    if (h.indexOf('/redesign-lab/') !== 0 || h.slice(-4) !== '.css') continue;
+    var url = h.replace('/redesign-lab/', '/redesign-lab/original-css/');
+    var r = await fetch(url, {method:'HEAD'});
+    if (r.status !== 200) { failed++; continue; }
+    links[i].setAttribute('href', url);
+    swapped++;
+  }
+  await new Promise(function(res){ setTimeout(res, 2200); });
+  return {swapped: swapped, failed: failed};
+}
+function snapshot(f){
+  var d = f.contentDocument, w = f.contentWindow, out = {};
+  // EVERY element, not just [class]. The first version sampled `[class]` only and therefore missed
+  // `.posthead h1`, which has no class and whose colour DID move - so it reported final-post as
+  // 1 changed when the page's own unlayered rule had taken the heading off the ladder entirely.
+  // Sampling by class is sampling by what you expect to change.
+  [].slice.call(d.querySelectorAll('body *')).slice(0, 900).forEach(function(el, i){
+    var cs = w.getComputedStyle(el), v = {};
+    PROPS.forEach(function(p){ v[p] = cs.getPropertyValue(p); });
+    out[i + '|' + el.tagName + (el.className ? '.' + String(el.className).slice(0, 30) : '')] = v;
+  });
+  return out;
+}
+function mkFrame(page, original){
+  var f = document.createElement('iframe');
+  f.setAttribute('title', page + ' ' + (original ? 'before' : 'after'));
+  f.src = '/redesign-lab/' + page + '.html?ld=' + (original ? 'o' : 'n');
+  f.hidden = true;
+  stage.appendChild(f);
+  return f;
+}
+
+async function build(page){
+  if (built[page]) return built[page];
+  loading.hidden = false;
+  loading.textContent = 'rendering ' + page + '…';
+
+  var after  = mkFrame(page, false);
+  var before = mkFrame(page, true);
+  await new Promise(function(res){
+    var n = 0; function done(){ if (++n === 2) res(); }
+    after.onload = done; before.onload = done; setTimeout(res, 8000);
+  });
+  await new Promise(function(res){ setTimeout(res, 1500); });
+
+  var swap = {swapped:0, failed:0};
+  try { swap = await useOriginal(before); } catch (e) {}
+
+  var diffs = [];
+  try {
+    var a = snapshot(before), b = snapshot(after);
+    Object.keys(a).forEach(function(k){
+      if (!b[k]) return;
+      PROPS.forEach(function(p){
+        if (a[k][p] !== b[k][p]) diffs.push({el:k.split('|')[1], p:p, was:a[k][p], is:b[k][p]});
+      });
+    });
+  } catch (e) { diffs.push({el:'(unreadable)', p:'-', was:String(e), is:'-'}); }
+
+  built[page] = {before:before, after:after, diffs:diffs, swap:swap};
+  loading.hidden = true;
+  return built[page];
+}
+
+function render(){
+  var rec = built[current];
+  if (!rec) return;
+  [].forEach.call(stage.querySelectorAll('iframe'), function(f){ f.hidden = true; });
+  (showing === 'before' ? rec.before : rec.after).hidden = false;
+
+  state.innerHTML = (rec.diffs.length
+      ? '<span class="diff">' + rec.diffs.length + ' changed</span>'
+      : '<span class="same">identical</span>') +
+    ' &nbsp;<b>' + rec.swap.swapped + '</b> stylesheets swapped on BEFORE' +
+    (rec.swap.failed ? ' &nbsp;<span class="diff">' + rec.swap.failed + ' failed to load</span>' : '');
+
+  document.getElementById('ld-count').textContent = current;
+  var body = document.getElementById('ld-body');
+  if (!rec.diffs.length){
+    body.innerHTML = '<div class="none">No differences on any measured property.</div>';
+  } else {
+    var t = '<table><thead><tr><th>element</th><th>prop</th><th>before</th><th>after</th></tr></thead><tbody>';
+    rec.diffs.forEach(function(d){
+      t += '<tr><td class="el">' + d.el + '</td><td class="pr">' + d.p +
+           '</td><td>' + d.was + '</td><td class="is">' + d.is + '</td></tr>';
+    });
+    body.innerHTML = t + '</tbody></table>';
+  }
+}
+
+async function select(page){
+  current = page; markPageTabs();
+  await build(page);
+  render();
+}
+document.getElementById('ld-before').onclick = function(){ showing = 'before'; markVersion(); render(); };
+document.getElementById('ld-after').onclick  = function(){ showing = 'after';  markVersion(); render(); };
+document.getElementById('ld-toggle-panel').onclick = function(){
+  panel.hidden = !panel.hidden;
+  this.setAttribute('aria-pressed', panel.hidden ? 'false' : 'true');
+};
+// B toggles before/after, like flipping between blockout variants
+document.addEventListener('keydown', function(e){
+  if (e.key === 'b' || e.key === 'B'){
+    showing = (showing === 'after') ? 'before' : 'after';
+    markVersion(); render();
+  }
+});
+
+markVersion();
+select(current);
+</script>
+</body>
+</html>

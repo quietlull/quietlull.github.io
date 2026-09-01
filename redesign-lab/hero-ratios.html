@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero ratios - tuner</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/line-boil/line-boil.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/drift-magnet/drift-magnet.css">
+<style>
+/* HERO RATIO TUNER. Rod 2026-08-23: "can you also make me a page so I can tune the hero text
+   ratios? the clock is in a good spot but the text really isn't."
+
+   THE CLOCK IS THE FIXED REFERENCE. He approved its size and position, so the panel treats it as
+   the constant and reports the NAME as a ratio against it - that is the number being tuned, not the
+   name's own px size, which is meaningless on its own.
+
+   THIS IS FULL-BLEED ON PURPOSE, not a scaled-down thumbnail. Every value in the hero is a `vh`
+   clamp, so a preview in a smaller box would resolve them against the WINDOW and show numbers that
+   do not match what ships. The panel floats over the real thing instead.
+
+   The scene is NOT here - the landing has a Three.js background behind this. The gradient stands in.
+   Contrast against the real scene is a separate judgement, on the landing itself. */
+@layer reset, tokens, prose, components, overrides;
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+
+:root{
+  --night:#070C23;--panel:#0d1430;--gold:#F3B53C;--glow:#FFE8B0;
+  --text:#F5F3EF;--muted:#9aa3bd;--line:rgba(255,255,255,.08);
+  --h0-color:#f86a03;--color-text:#F5F3EF;--font-mono:"IBM Plex Mono",monospace;
+  --color-gold:#F3B53C;--color-glow:#FFE8B0;--color-night:#070C23;
+  --top-bar-height:94px;--top-bar-border:1px;
+}
+body{background:radial-gradient(120% 80% at 80% -10%,#101a3e 0%,transparent 55%),
+  linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+  color:var(--text);font-family:var(--font-mono);min-height:100vh}
+
+/* ---- the hero replica. These rules mirror final-landing's, with every tuned value lifted to a
+   custom property so the panel can drive them live. ---- */
+.h{
+  /* SYNCED TO THE LANDING 2026-08-24, after Rod tuned it and confirmed "font size for the hero
+     should be 3.8vh". The tuner had drifted from the page it tunes: it still opened on
+     5.8vh / -.06em / 4.23 / 48 / 48 / 23px while the landing rendered his tune. That is the same
+     fault as the stale trench, which is also corrected here - a tuner whose defaults are not the
+     page's is tuning a composition nobody approved, and every export it makes carries the drift
+     into the paste. Every value below is READ OFF `final-landing.html` rather than chosen.
+     The trench moves .684 -> .428 as part of this: .684 was the pre-hoist number from when the
+     font-size lived on the column, and the landing corrected it when the size moved to the row so
+     both `em`s resolve against one base. */
+  --h0-vh:3.8; --h0-lh:4.15; --h0-ls:-.3; --h0-trench:.428;
+  --h-top:0px; --h-gap:20px; --pad-r:30px;
+  --soc-rem:3.4; --soc-gap:10px; --soc-mark:28px;
+  position:relative;height:calc(100vh - var(--top-bar-height) - var(--top-bar-border)*2);
+  min-height:520px;overflow:hidden;
+}
+.topbar{height:var(--top-bar-height);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;padding:0 24px;gap:28px}
+.topbar__logo{font-size:1.6rem;color:var(--h0-color);letter-spacing:.02em}
+.topbar nav{margin-left:auto;display:flex;gap:22px;color:var(--muted);font-size:.72rem;
+  letter-spacing:.14em;text-transform:uppercase}
+
+.h__vert{display:flex;position:absolute;top:0;right:0;width:auto;
+  flex-direction:column;align-items:flex-end;gap:var(--h-gap);
+  padding:var(--h-top) var(--pad-r) 0 0}
+.h__vert__cols{display:flex;flex-direction:row-reverse;align-items:flex-start;
+  gap:calc(var(--h0-trench)*1em);
+  font-size:clamp(2.1rem,min(calc(var(--h0-vh)*1vh),6.5vw),5.8rem)}
+.h__col{writing-mode:vertical-rl;text-orientation:upright;text-transform:uppercase;
+  letter-spacing:calc(var(--h0-ls)*1em);line-height:var(--h0-lh);color:var(--h0-color)}
+.h__social{display:flex;flex-direction:column;gap:var(--soc-gap)}
+.h__social .dm-social{width:calc(var(--soc-rem)*1rem);height:calc(var(--soc-rem)*1rem)}
+.h__social .dm-social__mark{width:var(--soc-mark);height:var(--soc-mark);display:block;fill:currentColor}
+.h__clock{position:absolute;left:50px;bottom:14%;font-family:var(--font-mono);
+  font-size:clamp(2.2rem,7vh,4.6rem);line-height:1;letter-spacing:.06em;color:var(--color-text)}
+
+/* guides */
+.guide{position:absolute;pointer-events:none;inset:0;display:none}
+.guide.on{display:block}
+.guide i{position:absolute;background:rgba(255,80,80,.55)}
+.guide .vline{top:0;bottom:0;width:1px}
+.guide .hline{left:0;right:0;height:1px;background:rgba(120,200,255,.45)}
+.guide span{position:absolute;font-size:.58rem;letter-spacing:.1em;color:rgba(255,140,140,.9);
+  background:rgba(7,12,35,.8);padding:1px 4px}
+.box{position:absolute;border:1px dashed rgba(120,200,255,.5);pointer-events:none;display:none}
+.box.on{display:block}
+
+/* ---- control panel ---- */
+.panel{position:fixed;top:12px;right:12px;width:340px;max-height:calc(100vh - 24px);
+  overflow:auto;background:rgba(9,14,38,.94);border:1px solid var(--line);
+  backdrop-filter:blur(6px);padding:14px;font-size:.72rem;z-index:50;line-height:1.5}
+.panel.hid{transform:translateX(calc(100% + 20px))}
+.panel h2{color:var(--gold);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:.5rem}
+.panel h3{color:var(--muted);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;
+  margin:.9rem 0 .35rem;padding-top:.5rem;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:1fr auto;gap:.2rem .5rem;align-items:center;
+  margin-bottom:.45rem}
+.row label{color:var(--text);font-size:.68rem}
+.row .val{color:var(--gold);font-size:.66rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--gold);height:16px}
+.row .hint{grid-column:1/-1;color:var(--muted);font-size:.58rem;margin-top:-.1rem}
+
+.read{display:grid;grid-template-columns:1fr auto;gap:.15rem .5rem;font-size:.66rem;
+  color:var(--muted);font-variant-numeric:tabular-nums}
+.read b{color:var(--text);font-weight:400}
+.read .ok{color:#7ee0b8}
+.read .bad{color:#ff8b8b}
+.big{margin:.4rem 0 .2rem;padding:.5rem .6rem;border:1px solid rgba(243,181,60,.35);
+  background:rgba(243,181,60,.06)}
+.big .n{color:var(--gold);font-size:1.25rem;letter-spacing:.02em}
+.big .l{color:var(--muted);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase}
+
+.btns{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.7rem}
+button{background:none;border:1px solid var(--line);color:var(--muted);cursor:pointer;
+  font:inherit;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .55rem}
+button:hover{color:var(--text);border-color:var(--muted)}
+button.pri{border-color:rgba(243,181,60,.5);color:var(--gold)}
+:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+textarea{width:100%;height:120px;margin-top:.5rem;background:rgba(0,0,0,.35);color:var(--glow);
+  border:1px solid var(--line);font:inherit;font-size:.6rem;padding:.5rem;resize:vertical}
+.toggle{position:fixed;top:12px;right:12px;z-index:51}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="topbar__logo" id="tb-logo">rodney fan</span>
+  <nav><span>home</span><span>projects</span><span>about</span><span>ramblings</span></nav>
+</header>
+
+<section class="h" id="hero">
+  <div class="h__vert" id="vert">
+    <div class="h__vert__cols" id="cols" aria-hidden="true">
+      <span class="h__col">rodney fan</span><span class="h__col">technical</span><span class="h__col">artist</span>
+    </div>
+    <nav class="h__social" id="socials" aria-label="Elsewhere">
+      <a class="dm-social js-magnetic" data-drift="6" data-strength="45" href="#" aria-label="GitHub">
+        <span class="dm-social__fill" aria-hidden="true"></span>
+        <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-github"/></svg></span></a>
+      <a class="dm-social js-magnetic" data-drift="6" data-strength="45" href="#" aria-label="ArtStation">
+        <span class="dm-social__fill" aria-hidden="true"></span>
+        <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-artstation"/></svg></span></a>
+      <a class="dm-social js-magnetic" data-drift="6" data-strength="45" href="#" aria-label="itch.io">
+        <span class="dm-social__fill" aria-hidden="true"></span>
+        <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-itch"/></svg></span></a>
+      <a class="dm-social js-magnetic" data-drift="6" data-strength="45" href="#" aria-label="LinkedIn">
+        <span class="dm-social__fill" aria-hidden="true"></span>
+        <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-linkedin"/></svg></span></a>
+    </nav>
+  </div>
+
+  <p class="h__clock" id="clock">--:--:--</p>
+
+  <div class="guide" id="guide">
+    <i class="vline" id="g-red" style="left:1042px"></i>
+    <span id="g-red-l" style="left:1046px;top:8px">your red line</span>
+    <i class="hline" id="g-floor"></i>
+    <span id="g-floor-l" style="left:8px">hero floor</span>
+  </div>
+  <div class="box" id="g-box"></div>
+</section>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="si-github" viewBox="0 0 24 24"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></symbol>
+<symbol id="si-artstation" viewBox="0 0 24 24"><path d="M0 17.7l2.4 4.1c.4.8 1.2 1.2 2 1.2h13.3l-3.1-5.3H0zM24 17.7L14.3 1c-.4-.7-1.1-1-1.9-1H8.8l11.5 19.9 2.6-4.5c.5-.8.5-1.5 0-2.3zM7.9 15.2h6.9L11.3 9z"/></symbol>
+<symbol id="si-itch" viewBox="0 0 24 24"><path d="M3.1 1.2C2.1 1.8.2 4 .2 4.5v1c0 1.2 1.1 2.3 2.2 2.3 1.3 0 2.3-1 2.3-2.3 0 1.3 1 2.3 2.3 2.3 1.2 0 2.2-1 2.2-2.3 0 1.3 1.1 2.3 2.4 2.3h.2c1.3 0 2.4-1 2.4-2.3 0 1.3 1 2.3 2.2 2.3 1.3 0 2.3-1 2.3-2.3 0 1.3 1 2.3 2.3 2.3 1.1 0 2.2-1.1 2.2-2.3v-1c0-.5-1.9-2.7-2.9-3.3C16.9 1.1 14.6 1 12 1s-6.7.1-8.9.2m6.4 7.9a2.8 2.8 0 0 1-2.4 1.3 2.8 2.8 0 0 1-2.3-1.3 2.8 2.8 0 0 1-2.3 1.3c-.3 0-.6 0-.9-.2-.2 2-.3 4.6-.3 6.3 0 2.6.4 5.2.7 6 .4 1 1.6 1.4 4.6 1.5 2 0 3.6.1 5.4.1s3.4 0 5.4-.1c3-.1 4.2-.5 4.6-1.5.3-.8.7-3.4.7-6 0-1.7-.1-4.3-.3-6.3-.3.2-.6.2-.9.2a2.8 2.8 0 0 1-2.3-1.3 2.8 2.8 0 0 1-2.3 1.3 2.8 2.8 0 0 1-2.4-1.3 2.8 2.8 0 0 1-2.4 1.3h-.2a2.8 2.8 0 0 1-2.4-1.3M8.1 11c.8 0 1.5 0 2.4 1 .7-.1 1.5-.1 2.3-.1s1.6 0 2.3.1c.9-1 1.6-1 2.4-1 .4 0 1.9 0 2.9 2.9l1.1 4c.8 2.9-.3 3-1.6 3-2 0-3.1-1.4-3.1-2.9-1.1.2-2.5.3-4 .3s-2.9-.1-4-.3c0 1.5-1.1 3-3.1 3-1.3 0-2.4-.2-1.6-3.1l1.1-4C6.2 11 7.7 11 8.1 11m4.7 2.7-2.1 2 1.2 1.2.9-.9.9.9 1.2-1.2z"/></symbol>
+<symbol id="si-linkedin" viewBox="0 0 24 24"><path d="M20.4 20.5h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1a3.8 3.8 0 0 1 3.4-1.8c3.6 0 4.3 2.4 4.3 5.5v6.2zM5.3 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2m1.8 13.1H3.6V9H7zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 .9.8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7c0-.9-.8-1.7-1.8-1.7"/></symbol>
+</defs></svg>
+
+<button class="toggle" id="toggle" type="button" hidden>panel</button>
+
+<aside class="panel" id="panel">
+  <h2>Hero ratios</h2>
+
+  <div class="big">
+    <div class="n" id="r-ratio">--</div>
+    <div class="l">name : clock &nbsp;&middot;&nbsp; <span id="r-sizes"></span></div>
+  </div>
+
+  <h3>The name</h3>
+  <div class="row">
+    <label for="s-vh">font size</label><span class="val" id="v-vh"></span>
+    <input type="range" id="s-vh" min="3.8" max="10.5" step=".1">
+    <span class="hint">the <code>vh</code> term. Measured at 1425x900: below 3.73 the 2.1rem floor binds
+      and nothing changes, above 10.29 the 6.5vw cap binds. Both move with the window.</span>
+  </div>
+  <div class="row">
+    <label for="s-lh">column width</label><span class="val" id="v-lh"></span>
+    <input type="range" id="s-lh" min="1.2" max="7" step=".01">
+    <span class="hint"><code>line-height</code>. In a vertical writing mode this is the HORIZONTAL air around each column.</span>
+  </div>
+  <div class="row">
+    <label for="s-ls">letter gap</label><span class="val" id="v-ls"></span>
+    <input type="range" id="s-ls" min="-.3" max=".15" step=".005">
+    <span class="hint"><code>letter-spacing</code>, which here runs down the column, not across.</span>
+  </div>
+  <div class="row">
+    <label for="s-tr">trench</label><span class="val" id="v-tr"></span>
+    <input type="range" id="s-tr" min="0" max="2" step=".002">
+    <span class="hint">gap BETWEEN the three columns, in em of the name.</span>
+  </div>
+
+  <h3>Placement</h3>
+  <div class="row">
+    <label for="s-top">space above the name</label><span class="val" id="v-top"></span>
+    <input type="range" id="s-top" min="0" max="160" step="1">
+    <span class="hint">top padding on the block. Pushes the name AND the socials down together.</span>
+  </div>
+  <div class="row">
+    <label for="s-gap">space between name and socials</label><span class="val" id="v-gap"></span>
+    <input type="range" id="s-gap" min="0" max="160" step="1">
+    <span class="hint">moves the socials only. Was welded to the value above, now separate.</span>
+  </div>
+  <div class="row">
+    <label for="s-pr">right inset</label><span class="val" id="v-pr"></span>
+    <input type="range" id="s-pr" min="0" max="120" step="1">
+  </div>
+  <div class="row">
+    <label for="s-soc">socials</label><span class="val" id="v-soc"></span>
+    <input type="range" id="s-soc" min="1.6" max="5" step=".05">
+  </div>
+  <div class="row">
+    <label for="s-sgap">space between social marks</label><span class="val" id="v-sgap"></span>
+    <input type="range" id="s-sgap" min="0" max="40" step="1">
+    <span class="hint">3 gaps between 4 marks, so the stack grows by 3x whatever you add.</span>
+  </div>
+  <div class="row">
+    <label for="s-smark">symbol size inside the circle</label><span class="val" id="v-smark"></span>
+    <input type="range" id="s-smark" min="12" max="32" step="1">
+  </div>
+
+  <h3>Readout</h3>
+  <div class="read">
+    <span>name font-size</span><b id="r-fs"></b>
+    <span>clock font-size</span><b id="r-cfs"></b>
+    <span>block</span><b id="r-block"></b>
+    <span>left edge</span><b id="r-left"></b>
+    <span>vs your red line</span><b id="r-red"></b>
+    <span>stack / hero</span><b id="r-stack"></b>
+    <span>headroom</span><b id="r-head"></b>
+    <span>fits hero</span><b id="r-fits"></b>
+    <span>clears clock</span><b id="r-clock"></b>
+  </div>
+
+  <div class="btns">
+    <button type="button" id="b-guides">guides</button>
+    <button type="button" id="b-cur">current</button>
+    <button type="button" id="b-pre">before your tune</button>
+    <button type="button" id="b-fit" class="pri">largest that fits</button>
+  </div>
+  <div class="btns">
+    <button type="button" id="b-copy" class="pri">copy tune</button>
+    <button type="button" id="b-css">show CSS</button>
+    <button type="button" id="b-hide">hide panel</button>
+  </div>
+  <textarea id="out" hidden readonly></textarea>
+</aside>
+
+<script type="module">
+import { initLineBoil } from '/redesign-lab/extracted/components/line-boil/line-boil.js';
+document.querySelectorAll('.h__col').forEach(function (c) { initLineBoil(c); });
+initLineBoil(document.getElementById('tb-logo'));
+initLineBoil(document.getElementById('clock'));
+import('/redesign-lab/extracted/components/drift-magnet/drift-magnet.js')
+  .then(function (m) { (m.init || function () {})(document); });
+</script>
+
+<script>
+(function () {
+  var hero = document.getElementById('hero');
+  var cols = document.getElementById('cols');
+  var vert = document.getElementById('vert');
+  var socials = document.getElementById('socials');
+  var clockEl = document.getElementById('clock');
+
+  /* The clock keeps ticking, and it writes INTO the boil cells rather than over textContent -
+     assigning textContent would delete every pinned cell each second. Same rule as the landing. */
+  function tick() {
+    var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+    var now = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+    var cells = clockEl.querySelectorAll('.lb__g');
+    if (cells.length !== now.length) { clockEl.textContent = now; return; }
+    for (var i = 0; i < cells.length; i++) {
+      if (cells[i].textContent !== now[i]) cells[i].textContent = now[i];
+    }
+  }
+  tick(); setInterval(tick, 1000);
+
+  var KNOBS = {
+    vh:   { prop: '--h0-vh',     el: 's-vh',  out: 'v-vh',  fmt: function (v) { return (+v).toFixed(1) + 'vh'; } },
+    lh:   { prop: '--h0-lh',     el: 's-lh',  out: 'v-lh',  fmt: function (v) { return (+v).toFixed(2); } },
+    ls:   { prop: '--h0-ls',     el: 's-ls',  out: 'v-ls',  fmt: function (v) { return (+v).toFixed(3) + 'em'; } },
+    tr:   { prop: '--h0-trench', el: 's-tr',  out: 'v-tr',  fmt: function (v) { return (+v).toFixed(3) + 'em'; } },
+    top:  { prop: '--h-top',    el: 's-top',   out: 'v-top',   unit: 'px', fmt: function (v) { return v + 'px'; } },
+    gap:  { prop: '--h-gap',    el: 's-gap',   out: 'v-gap',   unit: 'px', fmt: function (v) { return v + 'px'; } },
+    pr:   { prop: '--pad-r',     el: 's-pr',  out: 'v-pr',  unit: 'px', fmt: function (v) { return v + 'px'; } },
+    soc:  { prop: '--soc-rem',  el: 's-soc',   out: 'v-soc',  fmt: function (v) { return (+v).toFixed(2) + 'rem'; } },
+    sgap: { prop: '--soc-gap',  el: 's-sgap',  out: 'v-sgap',  unit: 'px', fmt: function (v) { return v + 'px'; } },
+    smark:{ prop: '--soc-mark', el: 's-smark', out: 'v-smark', unit: 'px', fmt: function (v) { return v + 'px'; } }
+  };
+
+  var PRESETS = {
+    /* `current` IS the landing, value for value. `pre` is what it rendered BEFORE Rod's tune,
+       kept so he can A/B the change rather than have it described to him. */
+    current: { vh: 3.8, lh: 4.15, ls: -0.30, tr: 0.428, top: 0,  gap: 20, pr: 30, soc: 3.4, sgap: 10, smark: 28 },
+    pre:     { vh: 5.8, lh: 4.23, ls: -0.06, tr: 0.428, top: 48, gap: 48, pr: 30, soc: 3.4, sgap: 10, smark: 23 }
+  };
+
+  /* v2: the saved v1 object has an `air` key and no `top`/`gap`. Object.assign would carry `air`
+     as dead weight while top/gap silently kept their defaults - no crash, just a confusing
+     half-restore. Bumping the key drops it cleanly. */
+  var STORE = 'hero-ratios-v3';
+  var state = Object.assign({}, PRESETS.current);
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved) state = Object.assign(state, saved);
+  } catch (e) { /* private mode */ }
+
+  function apply() {
+    Object.keys(KNOBS).forEach(function (k) {
+      var K = KNOBS[k];
+      hero.style.setProperty(K.prop, state[k] + (K.unit || ''));
+      document.getElementById(K.el).value = state[k];
+      document.getElementById(K.out).textContent = K.fmt(state[k]);
+    });
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* private mode */ }
+    /* THE ONE LINE THAT MAKES VERTICAL TUNING REAL. line-boil pins every glyph's advance to a
+       fixed px at load and only re-measures on a window resize (line-boil.js onResize). In
+       `writing-mode: vertical-rl` that pin IS the vertical length, so without this the size and
+       letter-gap sliders changed the letters and not the block. Measured: --h0-vh 2 -> 9 moved
+       the "technical" column 646.9px -> 646.9px, which is to say not at all. With the re-pin the
+       same sweep moves it 646.9 -> 900. Two behaviours to expect: line-boil re-randomises the
+       boil phase on each re-pin, so dragging reshuffles the letters, and its 150ms debounce means
+       one re-pin per pause rather than one per input event. */
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(read, 200);          // after line-boil's 150ms debounce, or the readout lags a repin
+  }
+
+  function px(n) { return Math.round(n) + 'px'; }
+
+  function read() {
+    var cb = cols.getBoundingClientRect();
+    var sb = socials.getBoundingClientRect();
+    var hb = hero.getBoundingClientRect();
+    var kb = clockEl.getBoundingClientRect();
+    var nameFs = parseFloat(getComputedStyle(cols).fontSize);
+    var clockFs = parseFloat(getComputedStyle(clockEl).fontSize);
+
+    document.getElementById('r-ratio').textContent = (nameFs / clockFs).toFixed(2) + '×';
+    document.getElementById('r-sizes').textContent = nameFs.toFixed(1) + ' / ' + clockFs.toFixed(1) + 'px';
+    document.getElementById('r-fs').textContent = nameFs.toFixed(1) + 'px';
+    document.getElementById('r-cfs').textContent = clockFs.toFixed(1) + 'px';
+    document.getElementById('r-block').textContent = Math.round(cb.width) + ' × ' + Math.round(cb.height);
+    document.getElementById('r-left').textContent = px(cb.left);
+
+    var dRed = Math.round(cb.left - 1042);
+    var red = document.getElementById('r-red');
+    red.textContent = dRed === 0 ? 'on it' : (dRed < 0 ? Math.abs(dRed) + 'px past' : dRed + 'px short');
+    red.className = Math.abs(dRed) <= 4 ? 'ok' : '';
+
+    var stack = Math.round(sb.bottom - hb.top);
+    document.getElementById('r-stack').textContent = stack + ' / ' + Math.round(hb.height);
+    var head = Math.round(hb.bottom - sb.bottom);
+    document.getElementById('r-head').textContent = head + 'px';
+    var fits = sb.bottom <= hb.bottom;
+    var f = document.getElementById('r-fits');
+    f.textContent = fits ? 'yes' : 'NO, ' + Math.abs(head) + 'px over';
+    f.className = fits ? 'ok' : 'bad';
+
+    var clears = cb.left > kb.right;
+    var c = document.getElementById('r-clock');
+    c.textContent = clears ? Math.round(cb.left - kb.right) + 'px clear' : 'OVERLAPS';
+    c.className = clears ? 'ok' : 'bad';
+
+    // guides
+    document.getElementById('g-floor').style.top = (hb.height - 1) + 'px';
+    document.getElementById('g-floor-l').style.top = (hb.height - 16) + 'px';
+    var box = document.getElementById('g-box');
+    box.style.left = (cb.left - hb.left) + 'px';
+    box.style.top = (cb.top - hb.top) + 'px';
+    box.style.width = cb.width + 'px';
+    box.style.height = cb.height + 'px';
+  }
+
+  Object.keys(KNOBS).forEach(function (k) {
+    document.getElementById(KNOBS[k].el).addEventListener('input', function (e) {
+      state[k] = parseFloat(e.target.value);
+      apply();
+    });
+  });
+
+  document.getElementById('b-cur').addEventListener('click', function () {
+    state = Object.assign({}, PRESETS.current); apply();
+  });
+  document.getElementById('b-pre').addEventListener('click', function () {
+    state = Object.assign({}, PRESETS.pre); apply();
+  });
+
+  /* Binary search on the vh term for the largest name that still keeps the socials inside the hero,
+     with whatever the other knobs are currently set to. Cheaper and more honest than my arithmetic:
+     it MEASURES each candidate rather than modelling it. */
+  document.getElementById('b-fit').addEventListener('click', function () {
+    var lo = 2, hi = 9, best = 2;
+    for (var i = 0; i < 22; i++) {
+      var mid = (lo + hi) / 2;
+      hero.style.setProperty('--h0-vh', mid + '');
+      var sb = socials.getBoundingClientRect(), hb = hero.getBoundingClientRect();
+      if (sb.bottom <= hb.bottom) { best = mid; lo = mid; } else { hi = mid; }
+    }
+    state.vh = Math.floor(best * 10) / 10;
+    apply();
+  });
+
+  document.getElementById('b-guides').addEventListener('click', function () {
+    document.getElementById('guide').classList.toggle('on');
+    document.getElementById('g-box').classList.toggle('on');
+  });
+
+  /* ONE builder, two buttons. Written with template literals on purpose: the blocks below mirror
+     final-landing.html rule for rule and name the line each belongs to, so a tune pastes in as a
+     value swap rather than a rewrite, and backticks let the real line breaks be real line breaks.
+     The vh terms are recomputed against the CURRENT window height, which is the landing's own
+     convention. The previous version emitted `--h-air` as a flat px, which would have silently
+     deleted the clamp the landing uses for short windows. */
+  function tuneCss() {
+    var vhOf = function (px) { return (px / (window.innerHeight / 100)).toFixed(3); };
+    var rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    var socVh = vhOf(state.soc * rem);
+    var mkVh = vhOf(state.smark);
+
+    /* BUG FIXED 2026-08-24, found by Rod's first real tune. The floor was hardcoded at 18px, so a
+       tuned value BELOW 18 emitted `clamp(18px, 0vh, 0px)` - and clamp() returns the MIN when the
+       max is under it, so his tuned 0 would have rendered as 18px. A value at or under the floor
+       has nothing to clamp, so it is emitted flat. */
+    var soft = function (v) {
+      return v <= 18 ? v + 'px' : 'clamp(18px, ' + vhOf(v) + 'vh, ' + v + 'px)';
+    };
+    var air = state.top === state.gap
+      ? `--h-air: ${soft(state.top)};
+gap: var(--h-air);
+padding: var(--h-air) ${state.pr}px 0 0;`
+      : `/* top and gap now DIFFER, so --h-air cannot carry both - this rule needs two props */
+gap: ${soft(state.gap)};
+padding: ${soft(state.top)} ${state.pr}px 0 0;`;
+
+    return `/* hero tune from hero-ratios.html, ${window.innerWidth} x ${window.innerHeight}
+   paste into redesign-lab/final-landing.html at the lines named below. */
+
+/* :100-101  .h__vert */
+${air}
+
+/* :122-123  .h__vert__cols */
+gap: ${state.tr}em;   /* landing is .428 - if you did not move this slider, KEEP .428 */
+font-size: clamp(2.1rem, min(${state.vh}vh, 6.5vw), 5.8rem);
+
+/* :160-161  .h__vert .h__col */
+letter-spacing: ${state.ls}em;
+line-height: ${state.lh};
+
+/* :186  .h__social */
+gap: ${state.sgap}px;
+
+/* :205  .h__social .dm-social */
+width: clamp(2.2rem, ${socVh}vh, ${state.soc}rem);
+height: clamp(2.2rem, ${socVh}vh, ${state.soc}rem);
+
+/* :206  .h__social .dm-social__mark */
+width: clamp(15px, ${mkVh}vh, ${state.smark}px);
+height: clamp(15px, ${mkVh}vh, ${state.smark}px);
+`;
+  }
+
+  document.getElementById('b-css').addEventListener('click', function () {
+    var t = document.getElementById('out');
+    t.hidden = !t.hidden;
+    t.value = tuneCss();
+  });
+
+  /* navigator.clipboard IS available here - http://localhost is a secure context by spec. It needs
+     a real user gesture, which a click supplies. Both fallbacks kept: they cost three lines and
+     cover a denied permission. */
+  document.getElementById('b-copy').addEventListener('click', function () {
+    var btn = this, text = tuneCss();
+    var ok = function () {
+      btn.textContent = 'copied';
+      setTimeout(function () { btn.textContent = 'copy tune'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () { window.prompt('Copy:', text); });
+    } else { window.prompt('Copy:', text); }
+  });
+
+  document.getElementById('b-hide').addEventListener('click', function () {
+    document.getElementById('panel').classList.add('hid');
+    document.getElementById('toggle').hidden = false;
+  });
+  document.getElementById('toggle').addEventListener('click', function () {
+    document.getElementById('panel').classList.remove('hid');
+    this.hidden = true;
+  });
+
+  window.addEventListener('resize', function () { requestAnimationFrame(read); });
+  apply();
+  /* 1200ms was a guess and it lost the race: on a cold load the panel reported "block 734 x 470,
+     9px over" when the truth was "734 x 703, 242px over" - under-reporting by 233px. The boil's
+     faces are font-display:block and pin only after document.fonts.ready. */
+  document.fonts.ready.then(function () { setTimeout(read, 200); });
+})();
+</script>
+</body>
+</html>

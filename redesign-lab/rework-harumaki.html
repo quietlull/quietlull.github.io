@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Element REWORK - Harumaki (playful night-market)</title>
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<script src="/redesign-lab/lab-solo.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Shippori+Mincho:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+/* ===== REWORK - HARUMAKI ===== playful/dreaming hand-drawn night-market (harumakigohan.com inspired). SEGMENTED-pill toggles (option A),
+   SQUARE buttons (fill-sweep), PILL segtag search, CONNECTED pill pagination, STAR status (ping), ~tilde~ headers, BENTO frame cells. */
+:root{--fh:"Caveat",cursive;--fm:"M PLUS Rounded 1c",sans-serif}
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */html{scroll-behavior:smooth}
+body{color:var(--text);font-family:var(--fm);overflow-x:hidden;line-height:1.7}
+.wrap{max-width:1000px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+.shead{text-align:center;margin:4.5rem 0 1.8rem}.shead .num{font-family:var(--fm);font-size:.66rem;letter-spacing:.3em;color:var(--gold-deep);display:block;margin-bottom:.3rem;text-transform:uppercase}.shead .nm{font-family:var(--fh);font-weight:700;font-size:2.4rem;color:var(--gold-deep)}.shead .nm::before{content:"~ ";color:var(--gold)}.shead .nm::after{content:" ~";color:var(--gold)}
+.frame{position:absolute;inset:0;pointer-events:none;z-index:4}.frame span{position:absolute;display:block}
+.frame span:nth-of-type(1){left:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}.frame span:nth-of-type(2){right:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}.frame span:nth-of-type(3){right:0;top:0;height:100%;border-right:1.5px solid rgba(255,106,0,.7);transform-origin:top;scale:1 0}.frame span:nth-of-type(4){right:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}.frame span:nth-of-type(5){left:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}.frame span:nth-of-type(6){left:0;top:0;height:100%;border-left:1.5px solid rgba(255,106,0,.7);transform-origin:bottom;scale:1 0}
+.cell.in .frame span{scale:1;transition:scale 1.1s cubic-bezier(.215,.61,.355,1)}
+.menu{position:fixed;top:18px;left:24px;z-index:60;font-family:var(--fm);font-size:.72rem;letter-spacing:.25em;color:var(--text);text-transform:uppercase;display:flex;align-items:center;gap:.6rem}.menu .b{display:inline-flex;flex-direction:column;gap:3px}.menu .b i{width:20px;height:2px;background:var(--text);display:block}
+.rail{position:fixed;top:50%;right:22px;transform:translateY(-50%);z-index:60;display:flex;flex-direction:column;gap:16px}.rail a{width:13px;height:13px;border-radius:50%;background:rgba(245,243,239,.5)}.rail a:hover{background:var(--gold);filter:drop-shadow(0 0 8px rgba(255,106,0,.7))}
+.hero{min-height:72vh;display:grid;justify-items:center;align-content:center;text-align:center;padding:4rem 1rem 2rem}
+.logo{font-family:var(--fh);font-weight:700;font-size:clamp(3rem,8vw,5rem);line-height:.9;color:var(--gold-deep);filter:drop-shadow(0 0 20px rgba(255,106,0,.4)) drop-shadow(0 0 7px rgba(255,106,0,.55))}
+.logo small{display:block;font-family:var(--fm);font-size:.7rem;letter-spacing:.5em;color:var(--text);opacity:.8;margin-top:.4rem;text-transform:uppercase}
+.tagline{font-family:var(--fm);margin-top:1.8rem;font-size:.96rem;color:rgba(245,243,239,.9);max-width:46ch}
+/* switches = GOOEY LIQUID toggle (Gemini final; ref: codepen nicolasjesenberger xxmbvxL). Amber liquid flows through a center notch between [word|Off]. */
+.tg{display:flex;gap:1.2rem;justify-content:center;margin-top:1.6rem;flex-wrap:wrap}
+.goosw{position:relative;display:inline-block;height:38px;aspect-ratio:232/72;cursor:pointer;user-select:none}
+.goosw input{appearance:none;margin:0;position:absolute;inset:0;z-index:2;cursor:pointer}
+.goosw input:focus-visible ~ .gframe .track{stroke:var(--gold)}
+.goosw svg.gframe{position:absolute;inset:0;overflow:visible;filter:drop-shadow(0 2px 10px rgba(255,106,0,.35))}
+.track{fill:rgba(245,243,239,.06);stroke:rgba(255,106,0,.3);stroke-width:3;transition:stroke .25s ease}
+.lobe-capsule,.lobe-orb,.tail{fill:var(--gold-deep);transform-box:fill-box;backface-visibility:hidden}
+.lobe-capsule{transform-origin:100% 50%;transform:translateX(24px) scale(0);transition:transform 320ms cubic-bezier(.6,0,.75,.7) 340ms}
+.goosw input:checked ~ .gframe .lobe-capsule{transform:translateX(0) scale(1);transition:transform 620ms cubic-bezier(.4,0,.2,1) 50ms}
+.orb-shift{transform:translateX(0);transition:transform 600ms cubic-bezier(.3,0,.25,1) 60ms}
+.goosw input:checked ~ .gframe .orb-shift{transform:translateX(-30px)}
+.lobe-orb{transform-origin:0% 50%;transform:scale(1);transition:transform 600ms cubic-bezier(.25,0,.2,1) 50ms}
+.goosw input:checked ~ .gframe .lobe-orb{transform:scale(0);transition:transform 320ms cubic-bezier(.6,0,.75,.7) 420ms}
+.tail{transform:translateX(114px);transition:transform 750ms cubic-bezier(.45,0,.25,1)}
+.goosw input:checked ~ .gframe .tail{transform:translateX(0)}
+.goosw .word,.goosw .state{position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:center;z-index:1;font-size:.74rem;color:var(--muted);pointer-events:none;white-space:nowrap}
+.goosw .word{left:2.5%;width:63%;transition:color .25s .45s,font-weight .25s .45s}
+.goosw .state{left:71.5%;width:26%;transition:color .25s .5s,font-weight .25s .5s}
+.goosw input:checked ~ .word,.goosw input:not(:checked) ~ .state{color:var(--night);font-weight:700}
+.goosw input:checked ~ .word{transition:color .25s .35s,font-weight .25s .35s}
+.goosw input:not(:checked) ~ .state{transition:color .25s .4s,font-weight .25s .4s}
+@media (prefers-reduced-motion:reduce){.lobe-capsule,.lobe-orb,.orb-shift,.tail,.goosw .word,.goosw .state{transition:none !important}}
+.kit{display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+/* buttons - SQUARE (no rounding), warm fill-sweep on outline. ref: codepen seadox zYqxVjy / davekilljoy AqLQRL */
+.btn{font-family:var(--fm);font-size:.8rem;padding:.7rem 1.5rem;cursor:pointer;border:0;text-decoration:none;border-radius:0;position:relative;overflow:hidden;z-index:0;transition:color .2s,box-shadow .2s}
+.btn-pri{background:var(--gold-deep);color:var(--night)}.btn-pri:hover{box-shadow:0 4px 18px rgba(255,106,0,.4)}
+.btn-out,.btn-pill{background:transparent;color:var(--gold);border:1.5px solid rgba(255,106,0,.5)}
+.btn-out::before,.btn-pill::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--gold-deep);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.215,.61,.355,1)}
+.btn-out:hover,.btn-pill:hover{color:var(--night)}.btn-out:hover::before,.btn-pill:hover::before{transform:scaleX(1)}
+.btn-pill{border-radius:999px}  /* pill shape + same side fill-sweep as Read more */
+.txtlink{font-family:var(--fh);font-size:1.2rem;color:var(--gold);text-decoration:none;position:relative}
+.txtlink::after{content:"";position:absolute;left:0;bottom:-1px;width:0;height:2px;background:var(--gold-deep);border-radius:2px;transition:width .25s ease}
+.txtlink:hover{color:var(--glow-soft)}.txtlink:hover::after{width:100%}
+.tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);border:1.5px solid rgba(255,106,0,.3);padding:.25rem .6rem;border-radius:10px 14px 11px 13px;cursor:pointer;transition:background .15s,color .15s}
+.tag:hover{background:rgba(255,106,0,.1);color:var(--gold)}  /* transparent fill on hover (pagination model) */
+.tag.on{background:var(--gold);color:var(--night);border-color:var(--gold)}  /* solid fill when active */
+/* bento = FLIP-TILE grid (ref: Rod-provided CodePen flip-tile, recolored to harumaki). click a tile -> 3D flip to backface w/ the key-learning + detail. */
+.tile-layout{display:grid;gap:.9rem;grid-template-columns:repeat(6,1fr);perspective:80rem}
+@media(min-width:760px){.tile-layout{grid-template-columns:repeat(12,1fr)}}
+[data-column-span="6"]{grid-column:span 6}[data-column-span="12"]{grid-column:span 12}[data-row-span="2"]{grid-row:span 2}
+.tile{display:flex;position:relative;min-height:14rem;text-align:left;cursor:pointer;color:var(--text);transition:transform .6s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d;box-shadow:0 10px 26px -10px rgba(0,0,0,.55)}
+.tile:has(.tile__check:checked),.tile.flipped{transform:rotateY(180deg)}
+.tile__cover,.tile__body,.tile .pin,.tile__check{backface-visibility:hidden}  /* hide front faces when flipped so the inverted Pinned/text doesn't bleed onto the backside */
+.tile__cover{position:absolute;inset:0;border-radius:1rem;background:radial-gradient(130% 100% at 50% 0%,rgba(255,140,50,.18),transparent 55%),linear-gradient(160deg,#1b2452,#0b1024)}
+.tile__body{position:relative;padding:1.3rem 1.5rem;isolation:isolate;align-self:flex-end;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+.tile__header{font-family:var(--fh);font-weight:700;font-size:1.7rem;line-height:1;color:var(--gold-deep);margin:0 0 .12em}
+.tile__text{font-family:var(--fm);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);opacity:.85;margin:0}
+.tile .pin{position:absolute;top:.7rem;left:.7rem;z-index:2;font-family:var(--fm);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--night);background:var(--gold);padding:2px 7px;border-radius:8px}
+.tile__check{appearance:none;position:absolute;right:.9rem;bottom:.9rem;width:1.5rem;height:1.5rem;border-radius:50%;background:rgba(255,106,0,.9);z-index:1;margin:0;cursor:pointer;display:grid;place-items:center;transition:transform .4s}
+.tile__check::after{content:"+";color:var(--night);font-family:var(--fm);font-weight:700;font-size:1rem;line-height:1}
+.tile:has(.tile__check:checked) .tile__check,.tile.flipped .tile__check{transform:rotateZ(135deg);background:var(--gold)}
+.tile__toggle{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0}
+/* hover-dwell flip indicator: a cursor-centered ring fills over the dwell, then the tile flips (LIVE-SITE trigger; lab keeps click too) */
+@property --dp{syntax:"<number>";inherits:false;initial-value:0}
+.dwell{position:fixed;left:0;top:0;width:42px;height:42px;border-radius:50%;pointer-events:none;z-index:200;transform:translate(-50%,-50%);opacity:0;transition:opacity .15s;--dp:0;background:conic-gradient(var(--gold) calc(var(--dp)*1turn),rgba(255,255,255,.16) 0)}
+.dwell::after{content:"";position:absolute;inset:5px;border-radius:50%;background:rgba(8,12,30,.9)}
+.dwell.on{opacity:1}
+.dwell.fill{--dp:1;transition:opacity .15s,--dp .7s linear}
+@media(prefers-reduced-motion:reduce){.dwell.fill{transition:opacity .15s}}
+/* bento style toggle: flip-tile (default) <-> HANA-STYLE merch cards (image/video + corner ribbon + title-beneath + hover key-learning), matches rework-hana */
+#bentoToggle{top:92px}
+.cards{display:none;grid-template-columns:repeat(3,1fr);gap:1.4rem}@media(max-width:760px){.cards{grid-template-columns:1fr 1fr}}@media(max-width:520px){.cards{grid-template-columns:1fr}}
+body.bento-cards .tile-layout{display:none}
+body.bento-cards .cards{display:grid}
+.card{position:relative;background:rgba(12,16,38,.66);backdrop-filter:blur(2px);box-shadow:0 0 70px rgba(255,106,0,0),0 0 140px rgba(255,106,0,0);transition:box-shadow 2s cubic-bezier(0,.5,0,1)}
+.card.in{box-shadow:0 0 70px rgba(255,106,0,.2),0 0 140px rgba(255,106,0,.09)}
+.card::before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(255,106,0,.16),transparent 60%);opacity:0;transition:opacity .4s;pointer-events:none}
+.card:hover::before{opacity:1}
+.card a{position:relative;z-index:1;display:grid;grid-template-rows:1fr auto;gap:.9rem;height:100%;padding:1.1rem;text-decoration:none;color:var(--text)}
+.card-img{position:relative;aspect-ratio:1;overflow:visible;box-shadow:0 0 40px rgba(255,106,0,.18),0 0 80px rgba(255,106,0,.09)}
+.card-img .base{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;display:block}
+.card-img .alt{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;display:grid;place-items:center;padding:1.2rem;text-align:center;background:radial-gradient(120% 90% at 50% 100%,rgba(255,26,0,.28),transparent 62%),rgba(10,7,14,.92)}
+.card a:hover .alt{opacity:1}
+.card-img .alt .learn{font-family:var(--fm);font-size:.72rem;line-height:1.65;color:var(--glow-soft)}
+.card-img .ribbon{width:106px;height:106px;overflow:hidden;position:absolute;top:-8px;right:-8px;z-index:6;pointer-events:none}
+.card-img .ribbon::before,.card-img .ribbon::after{position:absolute;z-index:-1;content:'';display:block;border:4px solid #8a3300;border-top-color:transparent;border-right-color:transparent}
+.card-img .ribbon::before{top:0;left:0}.card-img .ribbon::after{bottom:0;right:0}
+.card-img .ribbon span{position:absolute;display:block;width:160px;padding:9px 0;background:var(--gold-deep);box-shadow:0 4px 8px rgba(0,0,0,.2);color:var(--night);font:700 11px/1 var(--fm);letter-spacing:.12em;text-transform:uppercase;text-align:center;text-shadow:0 1px 1px rgba(0,0,0,.2);left:-18px;top:21px;transform:rotate(45deg)}
+.card-img .n{position:absolute;left:0;right:0;bottom:0;z-index:2;text-align:center;padding:.45rem;font-family:var(--fm);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,243,239,.45)}
+.cards .card-title{text-align:center;font-family:var(--fh);font-size:1.4rem;color:var(--gold-deep);line-height:1.2}
+.card.in .frame span{scale:1;transition:scale 1.1s cubic-bezier(.215,.61,.355,1)}
+/* ===== MERGED CARD v2 (other agent): flip-tile look + merch content + parallax z-layers + dwell-flip + gyro ===== */
+:root{--text-muted:rgba(245,232,208,.72);--cover-hi:#1b2452;--cover-lo:#0b1024;--gold-35:rgba(251,191,36,.35);--gold-40:rgba(251,191,36,.4);--gold-60:rgba(251,191,36,.6);--gold-80:rgba(251,191,36,.8);--shadow-a25:rgba(0,0,0,.25);--glow-tier3-hover:0 0 24px var(--gold-80),0 0 36px var(--gold-40)}
+.posts-grid .d-flex{display:flex}.posts-grid .flex-column{flex-direction:column}.posts-grid .mt-auto{margin-top:auto}.posts-grid .justify-content-between{justify-content:space-between}.posts-grid .align-items-center{align-items:center}.posts-grid .p-3{padding:1rem}.posts-grid .mb-2{margin-bottom:.5rem}.posts-grid .me-1{margin-right:.25rem}.posts-grid .ms-2{margin-left:.5rem}.posts-grid .small{font-size:.85em}.post-card.h-100,.posts-grid .h-100{height:100%}
+.post-card{perspective:1000px;--depth:1;--img-h:190px}
+@media(hover:none){.post-card{--depth:0}}
+body.flat-depth .post-card{--depth:0}
+.card-link{display:block;width:100%;height:100%;text-decoration:none;color:inherit;transform-style:preserve-3d}
+.card-tilt{height:100%;transform-style:preserve-3d;transition:transform .4s ease}
+.card-flipper{position:relative;height:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.card-flipper.is-flipped{transform:rotateY(180deg)}
+.z-layer{transform:translateZ(calc(var(--z,0) * var(--depth,1) * 1px));transition:transform .5s cubic-bezier(.22,1,.36,1);backface-visibility:hidden}
+.post-card:hover .z-layer{--z:var(--z-hover,var(--z,0))}
+.card-front{position:relative;height:100%;display:flex;flex-direction:column;transform-style:preserve-3d}
+.card-bg{position:absolute;inset:0;border-radius:1rem;overflow:hidden;background:radial-gradient(130% 100% at 50% 0%,rgba(255,140,50,.18),transparent 55%),linear-gradient(160deg,var(--cover-hi),var(--cover-lo));border:1px solid rgba(245,158,11,.14);box-shadow:0 10px 26px -10px rgba(0,0,0,.55);transition:border-color .5s ease,box-shadow .4s ease;--z:0}
+.posts-grid > :nth-child(odd) .post-card{--glow-hue:251,191,36;--glow-border-hue:245,158,11}
+.posts-grid > :nth-child(even) .post-card{--glow-hue:255,106,0;--glow-border-hue:234,88,12}
+.card-bg::before{content:'';position:absolute;inset:-30%;background:radial-gradient(ellipse at 50% 60%,rgba(var(--glow-hue),.16) 0%,transparent 60%);pointer-events:none;opacity:.4;transition:opacity .4s ease}
+.post-card:hover .card-bg::before{opacity:.75}
+.post-card:hover .card-bg{border-color:rgba(var(--glow-border-hue),.45);box-shadow:0 14px 30px -10px rgba(0,0,0,.6),0 0 24px rgba(var(--glow-hue),.3)}
+.post-card.pinned .card-bg{border-color:var(--gold-35)}
+.post-card.pinned:hover .card-bg{border-color:var(--gold-60);box-shadow:0 8px 24px var(--shadow-a25),var(--glow-tier3-hover)}
+.glass-plane{position:absolute;top:calc(var(--img-h) + 8px);left:8px;right:8px;bottom:8px;border-radius:12px;background:linear-gradient(0deg,rgba(255,232,176,.04) 0%,rgba(255,232,176,.14) 100%);border-left:1px solid rgba(251,191,36,.5);border-bottom:1px solid rgba(251,191,36,.16);pointer-events:none;--z:26;--z-hover:36;transition-delay:.05s}
+.card-img-wrapper{position:relative;height:var(--img-h);flex-shrink:0;overflow:hidden;border-radius:1rem 1rem 0 0;--z:2;--z-hover:2}
+.card-img-wrapper::after{content:'';position:absolute;inset:auto 0 0 0;height:56%;background:linear-gradient(180deg,transparent 0%,rgba(11,16,36,.55) 60%,var(--cover-lo) 100%);pointer-events:none}
+.card-img-wrapper img,.card-img-wrapper video{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.card-img-wrapper video{transform:scale(1.1);transform-origin:center bottom}
+.post-card:hover .card-img-wrapper img{transform:scale(1.05)}
+.post-card:hover .card-img-wrapper video{transform:scale(1.155);transform-origin:center bottom}
+.placeholder-img{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(27,36,82,.7) 0%,rgba(11,16,36,.9) 100%)}
+.placeholder-img i{color:rgba(245,232,208,.25)}
+.badge-pinned,.badge-wip{position:absolute;top:.7rem;left:.7rem;padding:2px 8px;border-radius:8px;font-family:var(--fm);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;z-index:2;box-shadow:0 4px 10px rgba(0,0,0,.45);--z:36;--z-hover:72;transition-delay:.1s}
+.post-card:hover .badge-pinned,.post-card:hover .badge-wip{box-shadow:0 14px 20px rgba(0,0,0,.5)}
+.badge-pinned{background:var(--gold);color:var(--night)}
+.badge-wip{background:var(--glow);color:var(--night)}
+.card-body{position:relative;flex:1;display:flex;flex-direction:column;transform-style:preserve-3d;text-shadow:0 1px 6px rgba(0,0,0,.9);--z:32;--z-hover:42;transition-delay:.08s}
+.post-card .card-title{font-family:var(--fh);font-weight:700;font-size:1.7rem;line-height:1;color:var(--gold-deep);margin-bottom:.3rem;transition:color .3s ease,text-shadow .3s ease,transform .5s cubic-bezier(.22,1,.36,1);--z:12;--z-hover:26;transition-delay:.06s}
+.post-card:hover .card-title{color:var(--gold);text-shadow:0 1px 6px rgba(0,0,0,.9),0 0 14px rgba(var(--glow-hue),.35)}
+.post-card .card-text{font-size:.82rem;line-height:1.5;color:var(--text-muted)!important;--z:5;--z-hover:12;transition-delay:.09s}
+.card-role{font-size:.62rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);opacity:.85}
+.card-meta{padding-top:.5rem;border-top:1px solid rgba(245,158,11,.14);margin-top:auto}
+.card-meta small{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)!important}
+.tag-badges{display:flex;align-items:center;gap:.4rem;flex-shrink:0;--z:28;--z-hover:64;transition-delay:.12s}
+.post-card:hover .tag-badges{filter:drop-shadow(0 10px 7px rgba(0,0,0,.55))}
+.tag-badges .tag-badge{display:inline-flex;align-items:center;justify-content:center;opacity:.65;transition:opacity .3s ease}
+.tag-badges .tag-badge i{font-size:.85rem}
+.post-card:hover .tag-badges .tag-badge{opacity:1}
+.reading-time{opacity:.7}
+.card-back{position:absolute;inset:0;border-radius:1rem;padding:1.4rem 1.6rem;display:grid;align-content:center;gap:.55rem;text-align:left;transform:rotateY(180deg) translateZ(1px);backface-visibility:hidden;background:radial-gradient(130% 100% at 50% 0%,rgba(255,140,50,.14),transparent 55%),linear-gradient(160deg,var(--cover-hi),var(--cover-lo));border:1px solid var(--gold-35)}
+.card-back .takeaway-quote{font-family:var(--fh);font-weight:700;font-size:1.35rem;line-height:1.15;color:var(--gold-deep);margin:0}
+.card-back .takeaway-text{font-family:var(--fm);font-size:.8rem;line-height:1.5;color:var(--glow-soft);margin:0}
+.card-back .back-read{margin-top:.4rem;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.dwell-ring{position:fixed;left:0;top:0;width:42px;height:42px;border-radius:50%;pointer-events:none;z-index:200;transform:translate(-50%,-50%);opacity:0;transition:opacity .15s;--dp:0;background:conic-gradient(var(--gold) calc(var(--dp) * 1turn),rgba(255,255,255,.16) 0)}
+.dwell-ring::after{content:'';position:absolute;inset:5px;border-radius:50%;background:rgba(8,12,30,.9)}
+.dwell-ring.on{opacity:1}
+.dwell-ring.fill{--dp:1;transition:opacity .15s,--dp .9s linear}
+/* ===== "OLD" mode = original overlay-card bento (Rod branched back to recover) ===== */
+.bento{grid-template-columns:repeat(4,1fr);grid-auto-rows:150px;gap:14px}@media(max-width:680px){.bento{grid-template-columns:repeat(2,1fr)}}
+.cell{position:relative;overflow:hidden;background:rgba(255,255,255,.03);cursor:pointer;transition:transform .25s,filter .2s;filter:drop-shadow(0 0 8px rgba(255,106,0,.08))}.cell:hover{transform:translateY(-3px);filter:drop-shadow(0 0 12px rgba(255,106,0,.4)) drop-shadow(0 0 28px rgba(255,106,0,.3))}.cell.big{grid-column:span 2;grid-row:span 2}.cell.wide{grid-column:span 2}
+.cell .thumb{position:absolute;inset:0;background:radial-gradient(130% 100% at 50% 0%,rgba(255,140,50,.18),transparent 55%),linear-gradient(160deg,#141a3a,#0b1024)}
+.cell .meta{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:.8rem .9rem;font-family:var(--fm);text-shadow:0 1px 5px rgba(0,0,0,.9)}.cell .meta h3{font-size:.92rem;margin-bottom:.2rem}.cell .meta .t{font-size:.6rem;color:var(--gold-deep)}
+.cell .pin{position:absolute;top:8px;right:8px;z-index:5;font-family:var(--fm);font-size:.54rem;text-transform:uppercase;color:var(--gold);background:rgba(8,12,30,.7);border:1px solid rgba(255,106,0,.4);border-radius:10px 6px 10px 6px;padding:2px 6px}
+.cell .learn{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:1.2rem;text-align:center;opacity:0;transition:.2s;background:radial-gradient(circle,rgba(8,12,30,.93),rgba(8,12,30,.82));font-family:var(--fm);font-size:.72rem;line-height:1.5;color:var(--glow-soft)}.cell:hover .learn{opacity:1}
+/* ===== 4-WAY card mode (cm-*): Merged (default, no class) -> Flip -> Hana (cards) -> Old (orig bento) ===== */
+.posts-grid,.tile-layout,.cards,.bento{display:none;position:relative;z-index:1}
+/* merged grid = BENTO (same 6/12-col + data-span config as .tile-layout, from Rod's flip-tile bundle) */
+.posts-grid{display:grid;gap:.9rem;grid-template-columns:repeat(6,1fr)}
+@media(min-width:760px){.posts-grid{grid-template-columns:repeat(12,1fr)}.posts-grid [data-row-span="2"] .post-card{--img-h:600px}}
+body.cm-flip .posts-grid,body.cm-cards .posts-grid,body.cm-orig .posts-grid{display:none}
+body.cm-flip .tile-layout{display:grid}
+body.cm-cards .cards{display:grid}
+body.cm-orig .bento{display:grid}
+.tile__backface{position:absolute;inset:0;border-radius:1rem;padding:1.4rem 1.6rem;transform:rotateY(180deg);backface-visibility:hidden;pointer-events:none;background:linear-gradient(160deg,#1b2452,#0b1024);display:grid;align-content:center;gap:.55rem;font-family:var(--fm);font-size:.8rem;line-height:1.5;color:var(--glow-soft)}
+.tile__backface .q{font-family:var(--fh);font-size:1.2rem;line-height:1.15;color:var(--gold-deep)}
+/* ORIGINAL grid bento (pre-flip-tile overlay cards) — toggle alternative, shown when body.bento-orig. */
+.bento{display:none;grid-template-columns:repeat(4,1fr);grid-auto-rows:150px;gap:14px}@media(max-width:680px){.bento{grid-template-columns:repeat(2,1fr)}}
+body.bento-orig .bento{display:grid}body.bento-orig .tile-layout{display:none}
+.cell{position:relative;overflow:hidden;background:rgba(255,255,255,.03);cursor:pointer;transition:transform .25s,filter .2s;filter:drop-shadow(0 0 8px rgba(255,106,0,.08))}.cell:hover{transform:translateY(-3px);filter:drop-shadow(0 0 12px rgba(255,106,0,.4)) drop-shadow(0 0 28px rgba(255,106,0,.3))}.cell.big{grid-column:span 2;grid-row:span 2}.cell.wide{grid-column:span 2}
+.cell .thumb{position:absolute;inset:0;background:radial-gradient(130% 100% at 50% 0%,rgba(255,140,50,.18),transparent 55%),linear-gradient(160deg,#141a3a,#0b1024);transition:filter .35s,transform .4s}
+.cell:hover .thumb{filter:brightness(.5)}
+.cell .meta{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:.8rem .9rem;font-family:var(--fm);text-shadow:0 1px 5px rgba(0,0,0,.9)}.cell h3{font-size:.92rem;margin-bottom:.2rem}.cell .t{font-size:.6rem;color:var(--gold-deep)}
+.cell .pin{position:absolute;top:8px;right:8px;z-index:5;font-family:var(--fm);font-size:.54rem;text-transform:uppercase;color:var(--gold);background:rgba(8,12,30,.7);border:1px solid rgba(255,106,0,.4);border-radius:10px 6px 10px 6px;padding:2px 6px}
+.cell .learn{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:1.2rem;text-align:center;opacity:0;transition:.2s;background:radial-gradient(circle,rgba(8,12,30,.93),rgba(8,12,30,.82));font-family:var(--fm);font-size:.72rem;line-height:1.5;color:var(--glow-soft)}.cell:hover .learn{opacity:1}
+.band{width:100vw;margin-left:calc(50% - 50vw);height:36vh;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);background:#0b1024;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 12px,transparent 12px 24px);margin-top:3rem}.band span{font-family:var(--fm);font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,243,239,.4)}
+/* search = segtag two-part, PILL shape. ref: codepen designcouch vYYByYY / chamsi LavooJ */
+.search{display:inline-flex;align-items:stretch;border:1.5px solid var(--gold-deep);border-radius:999px;overflow:hidden;max-width:360px;font-family:var(--fm);font-size:.82rem}
+.search .k{background:var(--gold-deep);color:var(--night);padding:.55rem 1.05rem;font-weight:500;white-space:nowrap}
+.search .v{padding:.55rem 1.15rem;color:var(--muted);flex:1}
+/* pagination - ONE CONNECTED bar, SQUARE, NO border (matches reference): translucent bar, items flush, active amber square */
+.pages{display:inline-flex;align-items:center;margin-top:1.4rem;background:rgba(245,243,239,.06);padding:.3rem;font-family:var(--fm);font-size:.82rem;backdrop-filter:blur(4px)}
+.pages a{color:var(--muted);text-decoration:none;padding:.4rem .85rem;transition:.15s}
+.pages a:hover{color:var(--text);background:rgba(255,106,0,.1)}
+.pages a.on{background:var(--gold);color:var(--night)}
+.filters{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}.filters .f{font-family:var(--fm);font-size:.7rem;padding:.4rem .9rem;border:1.5px solid rgba(255,255,255,.12);border-radius:12px 8px 12px 8px;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
+.filters .f:hover{background:rgba(255,106,0,.1);color:var(--text)}  /* transparent fill on hover (pagination model) */
+.filters .f.on{color:var(--night);background:var(--gold);border-color:var(--gold)}  /* solid fill when active */
+.empty{font-family:var(--fm);font-size:.86rem;color:var(--muted);border:1.5px dashed rgba(255,255,255,.12);border-radius:12px;padding:1.6rem;text-align:center}.empty b{color:var(--gold-deep);font-weight:500}
+.post{max-width:68ch;margin:0 auto}.post .phead{border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:1.4rem;margin-bottom:1.6rem}.post .phead h1{font-family:var(--fh);font-size:clamp(2.2rem,5vw,3.2rem);color:var(--gold-deep);line-height:1;margin-bottom:.5rem}.post .phead .m{font-family:var(--fm);font-size:.66rem;text-transform:uppercase;color:var(--muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+/* TL;DR + Takeaway = STAMP callout (perforated dot edge). ref: Rod-provided stamp CSS (radial-gradient dot cutout). */
+.tldr,.takeaway{position:relative;background:#1E160E;border:0;border-radius:0;padding:1.4rem 1.6rem;margin:1.9rem .4rem;font-size:.94rem;color:rgba(245,243,239,.92)}
+.tldr::before,.takeaway::before{content:"";position:absolute;inset:-7px;z-index:-1;background:radial-gradient(transparent 0 3.5px,#1E160E 4px);background-size:15px 15px;background-position:-7px -7px}
+.tldr b,.takeaway b{font-family:var(--fh);color:var(--gold-deep);font-size:1.25rem;display:block;margin-bottom:.3rem}
+.prose h2{font-family:var(--fh);font-size:1.9rem;color:var(--gold-deep);margin:2rem 0 .6rem}.prose p{margin:0 0 1rem}.prose a{color:var(--gold);text-decoration:underline}.prose ul{margin:0 0 1rem 1.2rem}.prose blockquote{font-family:var(--fh);font-size:1.3rem;border-left:3px solid var(--gold-deep);padding-left:1rem;color:var(--glow-soft);margin:1.2rem 0}.prose code{font-family:ui-monospace,monospace;font-size:.85em;background:rgba(255,106,0,.12);color:var(--gold);padding:.1em .35em;border-radius:3px}
+.codeblock{position:relative;background:#0a0e22;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1rem 1.2rem;font-family:ui-monospace,monospace;font-size:.8rem;color:#cdd3e8;overflow-x:auto;margin:1.2rem 0}.codeblock .cp{position:absolute;top:.5rem;right:.6rem;font-size:.58rem;text-transform:uppercase;color:var(--gold-deep);cursor:pointer}.codeblock .k{color:var(--glow)}.codeblock .s{color:#9bdc8a}
+/* .takeaway styled by the shared .tldr,.takeaway STAMP rule above */
+.bios{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem}@media(max-width:680px){.bios{grid-template-columns:1fr}}.bio{background:rgba(255,255,255,.03);border-radius:16px;padding:1.6rem}.bio h3{font-family:var(--fh);font-size:1.5rem;color:var(--gold-deep);margin-bottom:.3rem}.bio p{color:var(--muted);font-size:.94rem}
+.stats{display:flex;gap:2.4rem;margin:1.6rem 0;flex-wrap:wrap}.stat .n{font-family:var(--fh);font-size:3.2rem;color:var(--gold);line-height:1}.stat .l{font-family:var(--fm);font-size:.66rem;text-transform:uppercase;color:var(--muted)}
+.trophies{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0}.trophy{width:46px;height:46px;border-radius:14px 10px 14px 10px;display:grid;place-items:center;background:rgba(255,255,255,.03);border:1.5px solid rgba(255,106,0,.3);color:var(--gold);font-size:1.1rem}.trophy.lock{color:rgba(245,243,239,.18)}
+/* UNIQUE star status */
+.status{display:inline-flex;gap:.5rem;align-items:center;font-family:var(--fm);font-size:.78rem;color:var(--muted);margin-top:1rem}
+.status .d{color:var(--gold);font-size:1rem;line-height:1;display:inline-block;animation:dot-pulse 1.5s linear infinite}.status .d::before{content:"\2726"}
+@keyframes dot-pulse{0%{transform:scale(1);opacity:.75}25%{transform:scale(1);opacity:.75}100%{transform:scale(2.5);opacity:0}}  /* rezapirighadim JjQvVWy ping (Rod-provided), applied to the star shape */
+.status b{color:var(--gold);font-weight:500}
+.foot{margin-top:4rem;border-top:1px solid rgba(255,255,255,.07);padding:2rem;text-align:center;font-family:var(--fh);font-size:1.2rem;color:var(--gold)}.foot a{color:var(--text);text-decoration:none;margin:0 .6rem;font-size:1rem;font-family:var(--fm)}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--fm);font-size:10px;color:rgba(245,243,239,.45)}.labtag a{color:var(--gold)}
+/* Three.js scene bg toggle (self-injected canvas hidden until on; !important beats the bundle re-asserting its style) */
+canvas{transition:opacity .5s}
+body.scene-off canvas{opacity:0!important}
+.bgtoggle{position:fixed;top:16px;right:22px;z-index:61;font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:rgba(8,12,30,.6);border:1.5px solid rgba(255,106,0,.45);border-radius:999px;padding:.4rem .8rem;cursor:pointer;transition:.15s;backdrop-filter:blur(4px)}
+.bgtoggle:hover{background:rgba(255,106,0,.12)}
+.bgtoggle.scene{color:var(--night);background:var(--gold);border-color:var(--gold)}
+#haloToggle{top:54px}  /* logo glow-halo on/off test toggle (stacked under BG toggle) */
+body.no-halo .logo{filter:none}
+</style>
+</head>
+<body class="scene-off">
+<div class="menu"><span class="b"><i></i><i></i><i></i></span> Menu</div>
+<nav class="rail"><a></a><a></a><a></a></nav>
+<button class="bgtoggle" id="bgToggle">BG &middot; Off</button>
+<button class="bgtoggle scene" id="haloToggle">Halo &middot; On</button>
+<button class="bgtoggle" id="bentoToggle">Bento &middot; Flip</button>
+<section class="hero"><div class="logo">rodney fan<small>technical artist &middot; game designer</small></div><div class="tagline">// shaders, tools &amp; little worlds &mdash; a night market of tech-art experiments, lit one lantern at a time.</div>
+  <svg style="display:none" aria-hidden="true"><defs><filter id="goo" filterUnits="userSpaceOnUse" x="-24" y="-24" width="280" height="120"><feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/></filter></defs></svg>
+  <div class="tg">
+    <label class="goosw"><input type="checkbox" aria-label="Toggle Breathing"><svg class="gframe" viewBox="0 0 232 72" aria-hidden="true"><rect class="track" x="2" y="2" width="228" height="68" rx="34"/><g filter="url(#goo)"><rect class="lobe-capsule" x="6" y="6" width="146" height="60" rx="30"/><rect class="tail" x="59" y="13" width="46" height="46" rx="23"/><g class="orb-shift"><rect class="lobe-orb" x="166" y="6" width="60" height="60" rx="30"/></g></g></svg><span class="word" aria-hidden="true">Breathing</span><span class="state" aria-hidden="true">Off</span></label>
+    <label class="goosw"><input type="checkbox" aria-label="Toggle Sparkler"><svg class="gframe" viewBox="0 0 232 72" aria-hidden="true"><rect class="track" x="2" y="2" width="228" height="68" rx="34"/><g filter="url(#goo)"><rect class="lobe-capsule" x="6" y="6" width="146" height="60" rx="30"/><rect class="tail" x="59" y="13" width="46" height="46" rx="23"/><g class="orb-shift"><rect class="lobe-orb" x="166" y="6" width="60" height="60" rx="30"/></g></g></svg><span class="word" aria-hidden="true">Sparkler</span><span class="state" aria-hidden="true">Off</span></label>
+    <label class="goosw"><input type="checkbox" checked aria-label="Toggle Fireworks"><svg class="gframe" viewBox="0 0 232 72" aria-hidden="true"><rect class="track" x="2" y="2" width="228" height="68" rx="34"/><g filter="url(#goo)"><rect class="lobe-capsule" x="6" y="6" width="146" height="60" rx="30"/><rect class="tail" x="59" y="13" width="46" height="46" rx="23"/><g class="orb-shift"><rect class="lobe-orb" x="166" y="6" width="60" height="60" rx="30"/></g></g></svg><span class="word" aria-hidden="true">Fireworks</span><span class="state" aria-hidden="true">Off</span></label>
+  </div></section>
+<div class="wrap">
+  <div class="shead"><span class="num">01 / kit</span><span class="nm">buttons &amp; tags</span></div>
+  <div class="kit"><button class="btn btn-pri">View project</button><button class="btn btn-out">Read more</button><button class="btn btn-pill">All projects</button><a class="txtlink" href="#">an inline link &rarr;</a><span class="tag">HLSL</span><span class="tag">Compute</span><span class="tag">Unity</span></div>
+  <div class="shead"><span class="num">02 / featured</span><span class="nm">the work</span></div>
+  <div class="posts-grid">
+    <div data-column-span="6" data-row-span="2">
+      <article class="post-card h-100">
+        <a href="#" class="card-link">
+          <div class="card-tilt">
+            <div class="card-flipper">
+              <div class="card-front">
+                <div class="card-bg z-layer"></div>
+                <div class="card-img-wrapper z-layer"><video autoplay loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+                <div class="glass-plane z-layer"></div>
+                <div class="card-body z-layer d-flex flex-column p-3">
+                  <h3 class="card-title z-layer">Compute Grass</h3>
+                  <p class="card-text z-layer small">GPU-instanced grass driven by a compute shader, with wind and interaction response.</p>
+                  <p class="card-role mb-2">Realtime VFX &middot; Unity</p>
+                  <div class="card-meta mt-auto">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small><i class="far fa-calendar-alt me-1"></i> Mar 14, 2026 <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>6 min</span></small>
+                      <div class="tag-badges z-layer"><span class="tag-badge" title="Unity"><i class="fas fa-cube" style="color:#f0a500;"></i></span><span class="tag-badge" title="Shader"><i class="fas fa-brush" style="color:#ffd93d;"></i></span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-back">
+                <p class="takeaway-quote">"One gust, half a million blades."</p>
+                <p class="takeaway-text">The blade count mattered less than getting the wind phase offset to read as a single gust across the field.</p>
+                <span class="back-read">Read the post <i class="fas fa-arrow-right ms-1"></i></span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </article>
+    </div>
+    <div data-column-span="6">
+      <article class="post-card h-100 pinned">
+        <a href="#" class="card-link">
+          <div class="card-tilt">
+            <div class="card-flipper">
+              <div class="card-front">
+                <div class="card-bg z-layer"></div>
+                <div class="card-img-wrapper z-layer"><video autoplay loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+                <span class="badge-pinned z-layer"><i class="fas fa-thumbtack"></i> Pinned</span>
+                <div class="glass-plane z-layer"></div>
+                <div class="card-body z-layer d-flex flex-column p-3">
+                  <h3 class="card-title z-layer">Decompiling the Shaders of ZZZ!</h3>
+                  <p class="card-text z-layer small">Pulling apart a stylized toon pipeline to understand how the outline and rim work was authored.</p>
+                  <p class="card-role mb-2">Rendering study &middot; HLSL</p>
+                  <div class="card-meta mt-auto">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small><i class="far fa-calendar-alt me-1"></i> Feb 02, 2026 <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>11 min</span></small>
+                      <div class="tag-badges z-layer"><span class="tag-badge" title="Shader"><i class="fas fa-brush" style="color:#ffd93d;"></i></span><span class="tag-badge" title="Study"><i class="fas fa-book" style="color:#e8a87c;"></i></span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-back">
+                <p class="takeaway-quote">"Rebuilt a shipped game's shaders from scratch."</p>
+                <p class="takeaway-text">Half the "magic" was just clever use of vertex colors as masks &mdash; the lighting model was almost vanilla.</p>
+                <span class="back-read">Read the post <i class="fas fa-arrow-right ms-1"></i></span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </article>
+    </div>
+    <div data-column-span="6">
+      <article class="post-card h-100">
+        <a href="#" class="card-link">
+          <div class="card-tilt">
+            <div class="card-flipper">
+              <div class="card-front">
+                <div class="card-bg z-layer"></div>
+                <div class="card-img-wrapper z-layer placeholder-img"><div class="placeholder-content"><i class="fas fa-image fa-3x"></i></div></div>
+                <span class="badge-wip z-layer"><i class="fas fa-hard-hat"></i> WIP</span>
+                <div class="glass-plane z-layer"></div>
+                <div class="card-body z-layer d-flex flex-column p-3">
+                  <h3 class="card-title z-layer">2D Physics on the GPU</h3>
+                  <p class="card-text z-layer small">Full write-up coming soon.</p>
+                  <div class="card-meta mt-auto">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small><i class="far fa-calendar-alt me-1"></i> Jun 09, 2026 <span class="reading-time ms-2"><i class="far fa-clock me-1"></i>1 min</span></small>
+                      <div class="tag-badges z-layer"><span class="tag-badge" title="Tool"><i class="fas fa-wrench" style="color:#b0b8c4;"></i></span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </article>
+    </div>
+  </div>
+  <div class="tile-layout">
+    <article class="tile" data-column-span="6" data-row-span="2"><span class="tile__cover"></span><span class="pin">Pinned</span><div class="tile__body"><h3 class="tile__header">Compute Grass</h3><p class="tile__text">Unity &middot; HLSL &middot; Compute</p><input class="tile__check" type="radio" name="tile" id="t1"></div><div class="tile__backface"><span class="q">"Half a million blades, all on the GPU."</span><span>A GPU-instanced grass system: per-blade compute, wind via flow noise, and LOD that holds framerate across vast fields.</span></div><label class="tile__toggle" for="t1">flip</label></article>
+    <article class="tile" data-column-span="6"><span class="tile__cover"></span><span class="pin">Pinned</span><div class="tile__body"><h3 class="tile__header">Decompiling ZZZ</h3><p class="tile__text">RenderDoc</p><input class="tile__check" type="radio" name="tile" id="t2"></div><div class="tile__backface"><span class="q">"Rebuilt a shipped game's shaders from scratch."</span><span>Captured frames, read the bytecode, reconstructed the magic.</span></div><label class="tile__toggle" for="t2">flip</label></article>
+    <article class="tile" data-column-span="6"><span class="tile__cover"></span><div class="tile__body"><h3 class="tile__header">Toy Renderer</h3><p class="tile__text">C++ &middot; Vulkan</p><input class="tile__check" type="radio" name="tile" id="t3"></div><div class="tile__backface"><span class="q">"A tiny renderer, to understand the big ones."</span><span>From triangle to PBR, one commit at a time.</span></div><label class="tile__toggle" for="t3">flip</label></article>
+    <article class="tile" data-column-span="12"><span class="tile__cover"></span><div class="tile__body"><h3 class="tile__header">Lantern Scene</h3><p class="tile__text">Three.js &middot; GLSL</p><input class="tile__check" type="radio" name="tile" id="t4"></div><div class="tile__backface"><span class="q">"Lanterns that dodge your cursor."</span><span>Procedural sky lanterns with mouse avoidance and bloom.</span></div><label class="tile__toggle" for="t4">flip</label></article>
+  </div>
+  <div class="cards">
+    <article class="card reveal"><a href="#"><span class="card-img"><video class="base" autoplay loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video><span class="alt"><span class="learn">"Half a million blades, all on the GPU."</span></span><span class="n">Unity &middot; HLSL</span><span class="ribbon"><span>Pinned</span></span></span><span class="card-title">Compute Grass</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><video class="base" autoplay loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video><span class="alt"><span class="learn">"Rebuilt a shipped game's shaders from scratch."</span></span><span class="n">RenderDoc</span><span class="ribbon"><span>Pinned</span></span></span><span class="card-title">Decompiling ZZZ</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><video class="base" autoplay loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video><span class="alt"><span class="learn">"One flexible tool beats a thousand single-use ones."</span></span><span class="n">Unity &middot; Shader</span><span class="ribbon"><span>Pinned</span></span></span><span class="card-title">Procedural 3D Mask</span></a></article>
+  </div>
+  <div class="bento">
+    <div class="cell big reveal"><div class="thumb"></div><span class="pin">Pinned</span><div class="meta"><h3>Compute Grass</h3><div class="t">Unity &middot; HLSL &middot; Compute</div></div><div class="learn">"Half a million blades, all on the GPU."</div></div>
+    <div class="cell wide reveal"><div class="thumb"></div><span class="pin">Pinned</span><div class="meta"><h3>Decompiling ZZZ</h3><div class="t">RenderDoc</div></div><div class="learn">"Rebuilt a shipped game's shaders."</div></div>
+    <div class="cell reveal"><div class="thumb"></div><div class="meta"><h3>Toy Renderer</h3><div class="t">C++ &middot; Vulkan</div></div><div class="learn">"A tiny renderer."</div></div>
+    <div class="cell reveal"><div class="thumb"></div><div class="meta"><h3>Lantern Scene</h3><div class="t">Three.js</div></div><div class="learn">"Lanterns that dodge your cursor."</div></div>
+  </div>
+</div>
+<div class="band"><span>demo reel &mdash; full-bleed cinematic band</span></div>
+<div class="wrap">
+  <div class="shead"><span class="num">03 / explore</span><span class="nm">find a project</span></div>
+  <div class="search"><span class="k">Search</span><span class="v">projects &amp; tags</span></div><div class="filters"><span class="f on">All</span><span class="f">Shaders</span><span class="f">Tools</span><span class="f">Real-time</span><span class="f">Write-ups</span></div><div class="empty">No results for <b>"raymarching"</b> &mdash; try a broader tag, or <a class="txtlink" href="#">browse all</a>.</div>
+  <div class="pages"><a href="#">&laquo;</a><a href="#">1</a><a class="on" href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a><a href="#">6</a><a href="#">&raquo;</a></div>
+  <div class="shead"><span class="num">04 / read</span><span class="nm">a write-up</span></div>
+  <article class="post"><div class="phead"><h1>Half a Million Blades of Grass</h1><div class="m"><span>Mar 2026</span><span>9 min read</span><span>Shaders</span></div></div><div class="tldr"><b>TL;DR</b>A GPU-instanced grass system: per-blade compute, wind via flow noise, and LOD.</div><div class="prose"><p>The naive approach is a mesh per blade. Move the simulation onto the GPU.</p><h2>The compute pass</h2><p>Each blade is a point; a compute shader displaces it by a wind field. Draw with <code>DrawProceduralIndirect</code>.</p><ul><li>Spatial hash for wind</li><li>One indirect draw</li><li>LOD by distance</li></ul><blockquote>The GPU doesn't care how many blades there are, only how many it can't see.</blockquote><div class="codeblock"><span class="cp">copy</span><span class="k">[numthreads(64,1,1)]</span><br>void <span class="s">CSMain</span>(uint3 id) { ... }</div></div><div class="takeaway"><b>Takeaway</b>Stop counting blades. Count what the GPU can see.</div></article>
+  <div class="shead"><span class="num">05 / me</span><span class="nm">about</span></div>
+  <div class="bios"><div class="bio"><h3>Hello there</h3><p>Game developer first, artist after that. A love of childlike wonder.</p></div><div class="bio"><h3>Toolbox</h3><p>Three.js, GLSL/HLSL, Unity, compute &mdash; and a lantern or two.</p></div></div>
+  <div class="stats"><div class="stat"><div class="n">10+</div><div class="l">years</div></div><div class="stat"><div class="n">40</div><div class="l">write-ups</div></div><div class="stat"><div class="n">29</div><div class="l">achievements</div></div></div>
+  <div class="trophies"><span class="trophy">&#9733;</span><span class="trophy">&#9670;</span><span class="trophy">&#9650;</span><span class="trophy">&#10022;</span><span class="trophy lock">&#128274;</span><span class="trophy lock">&#128274;</span></div>
+  <div class="status"><span class="d"></span> currently &mdash; <b>studying compute-driven hair &amp; fur</b></div>
+</div>
+<footer class="foot">thanks for wandering by<div style="margin-top:.6rem"><a href="#">Home</a><a href="#">Projects</a><a href="#">About</a><a href="#">Ramblings</a><a href="#">Resume</a></div></footer>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; REWORK: harumaki</div>
+<script>(function(){var b=document.getElementById('haloToggle');if(!b)return;var on=true;b.addEventListener('click',function(){on=!on;document.body.classList.toggle('no-halo',!on);b.classList.toggle('scene',on);b.textContent=on?'Halo · On':'Halo · Off';});})();</script>
+<script>
+/* card mode toggle: cycles Merged (default) -> Flip -> Hana (cards) -> Old (orig grid bento). ?mode=merged|flip|cards|orig for capture. */
+(function(){var b=document.getElementById('bentoToggle');if(!b)return;var states=['merged','flip','cards','orig'],i=0,labels={merged:'Cards · Merged',flip:'Cards · Flip',cards:'Cards · Hana',orig:'Cards · Old'};function set(){var s=states[i];document.body.classList.toggle('cm-flip',s==='flip');document.body.classList.toggle('cm-cards',s==='cards');document.body.classList.toggle('cm-orig',s==='orig');b.classList.toggle('scene',s!=='merged');b.textContent=labels[s];if(s==='cards')document.querySelectorAll('.cards .card').forEach(function(c){c.classList.add('in');});if(s==='orig')document.querySelectorAll('.bento .cell').forEach(function(c){c.classList.add('in');});}b.addEventListener('click',function(){i=(i+1)%states.length;set();});var mm=/[?&]mode=(\w+)/.exec(location.search);if(mm){var idx=states.indexOf(mm[1]);i=idx<0?0:idx;}set();})();
+/* hover-dwell flip: hover a flip-tile ~.7s -> a cursor-centered ring fills, then the tile flips (live-site trigger; click still works in the lab) */
+(function(){var DWELL=700;var lay=document.querySelector('.tile-layout');if(!lay)return;var d=document.createElement('div');d.className='dwell';document.body.appendChild(d);
+lay.querySelectorAll('.tile').forEach(function(tile){var t=null;
+  tile.addEventListener('mouseenter',function(e){d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';d.classList.add('on','fill');t=setTimeout(function(){tile.classList.add('flipped');d.classList.remove('on','fill');},DWELL);});
+  tile.addEventListener('mousemove',function(e){d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';});
+  tile.addEventListener('mouseleave',function(){clearTimeout(t);d.classList.remove('on','fill');tile.classList.remove('flipped');});});})();
+/* hana cards-mode hover glow: mouse-tracked --mx/--my on .card (rAF) -> source codepen.io/john_r_muir/pen/ExzJjqL */
+(function(){var cards=document.querySelectorAll('.card');if(!cards.length)return;var ticking=false,ev=null;document.addEventListener('mousemove',function(e){ev=e;if(ticking)return;ticking=true;requestAnimationFrame(function(){cards.forEach(function(c){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(ev.clientX-r.left)+'px');c.style.setProperty('--my',(ev.clientY-r.top)+'px');});ticking=false;});});})();
+</script>
+<script>/* flip-tile: re-click a flipped tile to flip it back (radios don't toggle off natively) */
+(function(){var last=null;document.querySelectorAll('.tile__check').forEach(function(r){r.addEventListener('click',function(){if(last===r){r.checked=false;last=null;}else{last=r;}});});})();</script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+<script>
+/* BG toggle: drop Rod's real Three.js lantern scene behind harumaki. ?scene=1 starts on (headless capture). */
+(function(){
+  var btn=document.getElementById('bgToggle'),b=document.body,on=false;
+  function set(v){on=v;b.classList.toggle('scene-off',!on);btn.classList.toggle('scene',on);btn.textContent=on?'BG · Scene':'BG · Off';}
+  btn.addEventListener('click',function(){set(!on);});
+  set(/[?&]scene=1/.test(location.search));
+})();
+</script>
+<script>
+/* MERGED CARD v2 (other agent): parallax z-layer tilt + dwell-flip + gyro. Scoped to .post-card. */
+(() => {
+  const TILT_MAX=8,SCALE_HOVER=1.02,LIFT_PX=6,TILT_IN='transform 0.15s ease-out',TILT_OUT='transform 0.4s ease-out',DWELL_MS=900,DWELL_RESET_PX=48;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cards=document.querySelectorAll('.post-card');if(!cards.length)return;
+  let tiltEnabled=false,startPos=null;
+  const onFirstMove=(e)=>{if(!startPos){startPos={x:e.clientX,y:e.clientY};return;}const dx=e.clientX-startPos.x,dy=e.clientY-startPos.y;if(dx*dx+dy*dy>16){tiltEnabled=true;document.removeEventListener('mousemove',onFirstMove);}};
+  document.addEventListener('mousemove',onFirstMove);
+  const ring=document.createElement('div');ring.className='dwell-ring';document.body.appendChild(ring);
+  cards.forEach(setupCard);setupGyroTilt(document.querySelectorAll('.card-tilt'));
+  function setupCard(card){
+    const tilt=card.querySelector('.card-tilt'),flipper=card.querySelector('.card-flipper'),hasBack=!!card.querySelector('.card-back');
+    if(!tilt||!flipper)return;
+    let active=false,rect=null,frame=null,px=0,py=0,dwellTimer=null,dwellAnchor=null;
+    const applyTilt=()=>{frame=null;if(!active)return;if(!rect)rect=tilt.getBoundingClientRect();const x=((px-rect.left)/rect.width-0.5)*2,y=((py-rect.top)/rect.height-0.5)*2;tilt.style.transform=`rotateX(${-y*TILT_MAX}deg) rotateY(${x*TILT_MAX}deg) translateY(-${LIFT_PX}px) scale(${SCALE_HOVER})`;};
+    const startDwell=(x,y)=>{if(flipper.classList.contains('is-flipped'))return;dwellAnchor={x,y};ring.style.left=x+'px';ring.style.top=y+'px';ring.classList.remove('fill');void ring.offsetWidth;ring.classList.add('on','fill');clearTimeout(dwellTimer);dwellTimer=setTimeout(()=>{flipper.classList.add('is-flipped');ring.classList.remove('on','fill');dwellTimer=null;dwellAnchor=null;},DWELL_MS);};
+    const stopDwell=()=>{clearTimeout(dwellTimer);dwellTimer=null;dwellAnchor=null;ring.classList.remove('on','fill');};
+    card.addEventListener('mouseenter',(e)=>{if(tiltEnabled){active=true;rect=tilt.getBoundingClientRect();tilt.style.transition=TILT_IN;tilt.style.willChange='transform';}if(hasBack)startDwell(e.clientX,e.clientY);});
+    card.addEventListener('mousemove',(e)=>{if(active){px=e.clientX;py=e.clientY;if(frame===null)frame=requestAnimationFrame(applyTilt);}if(hasBack&&dwellAnchor){ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';const dx=e.clientX-dwellAnchor.x,dy=e.clientY-dwellAnchor.y;if(dx*dx+dy*dy>DWELL_RESET_PX*DWELL_RESET_PX)startDwell(e.clientX,e.clientY);}});
+    card.addEventListener('mouseleave',()=>{active=false;rect=null;if(frame!==null){cancelAnimationFrame(frame);frame=null;}tilt.style.transition=TILT_OUT;tilt.style.transform='';tilt.style.willChange='';stopDwell();flipper.classList.remove('is-flipped');});
+    window.addEventListener('scroll',()=>{rect=null;},{passive:true});
+  }
+  function setupGyroTilt(tiltLayers){
+    if(!('DeviceOrientationEvent' in window))return;const isTouch='ontouchstart' in window||navigator.maxTouchPoints>0;if(!isTouch)return;
+    const visible=new Set();const observer=new IntersectionObserver(entries=>{entries.forEach(en=>en.isIntersecting?visible.add(en.target):visible.delete(en.target));},{rootMargin:'50px'});tiltLayers.forEach(el=>observer.observe(el));
+    const GYRO_MAX=TILT_MAX*0.5,GYRO_STRENGTH=0.15,BETA_REST=45,DEADZONE_DEG=3;let armed=false,firstBeta=null,frame=null,beta=0,gamma=0;
+    const applyGyro=()=>{frame=null;visible.forEach(el=>{el.style.transition=TILT_IN;el.style.transform=`rotateX(${beta}deg) rotateY(${gamma}deg)`;});};
+    const handleOrientation=(e)=>{if(!armed){if(firstBeta===null){firstBeta=e.beta;return;}if(Math.abs(e.beta-firstBeta)<DEADZONE_DEG&&Math.abs(e.gamma)<DEADZONE_DEG)return;armed=true;}beta=Math.max(-GYRO_MAX,Math.min(GYRO_MAX,(e.beta-BETA_REST)*GYRO_STRENGTH));gamma=Math.max(-GYRO_MAX,Math.min(GYRO_MAX,e.gamma*GYRO_STRENGTH));if(frame===null)frame=requestAnimationFrame(applyGyro);};
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){let requested=false;document.addEventListener('touchstart',()=>{if(requested)return;requested=true;DeviceOrientationEvent.requestPermission().then(state=>{if(state==='granted')window.addEventListener('deviceorientation',handleOrientation);}).catch(()=>{});});}else{window.addEventListener('deviceorientation',handleOrientation);}
+  }
+})();
+</script>
+<script src="/redesign-lab/frame-draw.js"></script>
+<script src="/redesign-lab/sliders.js"></script>
+</body>
+</html>

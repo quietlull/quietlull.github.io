@@ -1,0 +1,218 @@
+<!-- status-chip - bench fragment. Converted from a standalone page 2026-08-25; the page's own
+     head comment is kept below verbatim because it is the measurement contract.
+
+     Self-contained bench for extracted/components/status-chip/.
+     The dashed rectangle behind every specimen is the MEASURED reservation, drawn at exactly
+     100 x 20 (chip) and 675 x 172 (terminal). Both numbers were read off about-blockout.html?v=panels
+     at viewport 1440 with getBoundingClientRect. Overflow and underfill are both meant to be visible.
+     Provenance for each version is in status-chip.css and status-chip.md. -->
+<div class="cb cb-status-chip">
+<style>
+.cb-status-chip {
+  position: relative;
+  isolation: isolate; /* so .ground's z-index:-1 stays inside this component */
+  --color-silver: #a3a19d;
+  margin: 0;
+  padding: 40px 40px 120px;
+  background: #12100e;
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  & * { box-sizing: border-box;
+  }
+  /* A cheap stand-in for the live scene, so nothing here is judged on flat black. It is a
+     gradient, not the real three.js build - the real judgement still has to happen on the page. */
+  & .ground {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(900px 520px at 22% 12%, rgba(255, 106, 0, .16), transparent 62%),
+      radial-gradient(700px 700px at 82% 78%, rgba(251, 191, 36, .10), transparent 60%),
+      linear-gradient(#171310, #0d0c0b);
+  }
+  & h1 { font-size: 15px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase;
+       color: var(--color-gold); margin: 0 0 4px;
+  }
+  & .lede { color: var(--color-silver); max-width: 700px; line-height: 1.6; margin: 0 0 34px;
+  }
+  & h2 { font-size: 13px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase;
+       color: var(--color-gold); margin: 44px 0 2px;
+  }
+  & .src { color: var(--color-silver); margin: 0 0 18px; line-height: 1.6; max-width: 760px;
+  }
+  & .src b { color: var(--color-text); font-weight: 400;
+  }
+  & .cap { font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+         color: rgba(245, 243, 239, .38); margin: 20px 0 7px;
+  }
+  /* the reservation, drawn behind. .stage is exactly the reserved box; the specimen is placed
+     on top of it at its own natural size so any difference reads as a gap or an overhang. */
+  & .stage { position: relative; margin-bottom: 6px;
+  }
+  & .stage::before {
+    content: ""; position: absolute; left: 0; top: 0; pointer-events: none;
+    border: 1px dashed rgba(251, 191, 36, .5);
+  }
+  & .stage--chip { width: 100px; height: 20px;
+  }
+  & .stage--chip::before { width: 100px; height: 20px;
+  }
+  & .stage--term { width: 675px; min-height: 172px;
+  }
+  & .stage--term::before { width: 675px; height: 172px;
+  }
+  & .stage > * { position: relative;
+  }
+  & .fit { font-size: 11px; color: var(--color-silver); margin: 8px 0 0; line-height: 1.6;
+  }
+  & .fit b { color: var(--color-gold); font-weight: 400;
+  }
+  & .row2 { display: flex; gap: 46px; align-items: flex-start; flex-wrap: wrap;
+  }
+  & hr { border: 0; border-top: 1px solid rgba(255, 255, 255, .08); margin: 46px 0 0;
+  }
+  & #readout { margin-top: 40px; padding: 14px 16px; border: 1px solid rgba(255, 255, 255, .12);
+             font-size: 11px; line-height: 1.7; color: var(--color-silver); white-space: pre;
+  }
+  & #readout b { color: var(--color-text); font-weight: 400;
+  }
+}
+</style>
+<div class="ground"></div>
+
+<h1>Status chip + status terminal</h1>
+<p class="lede">
+  Three versions, three different live sites. The dashed box behind each specimen is the measured
+  reservation: <b>100 x 20</b> for the chip, <b>675 x 172</b> for the terminal, both read off
+  <code>about-blockout.html?v=panels</code> at viewport 1440. Content is real: post titles, tool
+  stack and the 14 / 29 trophy count all come from the repo.
+</p>
+
+<!-- ============================ A ============================ -->
+<h2>A &middot; dimden bracket token</h2>
+<p class="src">
+  <b>dimden.dev</b>, read live 2026-08-23 from <code>/css/main.css?9</code> and the home page.
+  Tier S in Rod's gallery, and the site <code>about-blockout.html</code> variant 1 was drawn from.
+  Their device is <code>[&nbsp;OK&nbsp;]&nbsp;label</code>: literal square brackets as text with the
+  state word coloured inside them, in a translucent <code>.box</code>, six services in
+  <b>two 250px columns of three</b>. The blockout describes this as six stacked rows with the token
+  on the right; the live site does the opposite. See the .md.
+</p>
+
+<p class="cap">chip &middot; reservation 100 x 20</p>
+<div class="stage stage--chip">
+  <span class="sc-a" id="chipA">[<span class="sc-a__ok">&nbsp;OK&nbsp;</span>]&nbsp;ONLINE</span>
+</div>
+
+<p class="cap">terminal &middot; reservation 675 x 172</p>
+<div class="stage stage--term">
+  <div class="sc-a-term" id="termA">
+    <div class="sc-a-term__head">Systems status: <span class="sc-a__ok">OK</span></div>
+    <table><tbody><tr>
+      <td>
+        <span>[<span class="sc-a__ok">&nbsp;OK&nbsp;</span>] available for work</span>
+        <span>[<span class="sc-a__warn">&nbsp;WIP&nbsp;</span>] Compute Grass</span>
+        <span>[<span class="sc-a__ok">&nbsp;NEW&nbsp;</span>] Sprite Baker 9000</span>
+      </td>
+      <td>
+        <span>[<span class="sc-a__ok">&nbsp;19&nbsp;</span>] posts written</span>
+        <span>[<span class="sc-a__warn">&nbsp;14/29&nbsp;</span>] achievements</span>
+        <span>[<span class="sc-a__ok">&nbsp;HLSL&nbsp;</span>] Unity / shaders</span>
+      </td>
+    </tr></tbody></table>
+  </div>
+</div>
+<p class="fit" id="fitA"></p>
+
+<p class="cap">the same six rows stacked in one column &middot; the blockout's arrangement, not dimden's</p>
+<div class="stage stage--term">
+  <div class="sc-a-term sc-a-term--stack" id="termAstack">
+    <div class="sc-a-term__head">Systems status: <span class="sc-a__ok">OK</span></div>
+    <table><tbody><tr>
+      <td>
+        <span>[<span class="sc-a__ok">&nbsp;OK&nbsp;</span>] available for work</span>
+        <span>[<span class="sc-a__warn">&nbsp;WIP&nbsp;</span>] Compute Grass</span>
+        <span>[<span class="sc-a__ok">&nbsp;NEW&nbsp;</span>] Sprite Baker 9000</span>
+        <span>[<span class="sc-a__ok">&nbsp;19&nbsp;</span>] posts written</span>
+        <span>[<span class="sc-a__warn">&nbsp;14/29&nbsp;</span>] achievements</span>
+        <span>[<span class="sc-a__ok">&nbsp;HLSL&nbsp;</span>] Unity / shaders</span>
+      </td>
+    </tr></tbody></table>
+  </div>
+</div>
+<p class="fit" id="fitAstack"></p>
+
+<hr />
+
+<!-- ============================ B ============================ -->
+<h2>B &middot; Klubnika registry ledger</h2>
+<p class="src">
+  <b>mikeklubnika.com</b>, read live 2026-08-23 from <code>/static/style/main.css</code> and the home
+  page registry. Tier C+ with Rod's own note. Their row is
+  <code>display:flex; justify-content:space-between</code> at 12px with a
+  <code>rgba(235,235,235,.0333)</code> zebra on alternate rows, bracketed metadata on the left and a
+  short relative value on the right. <b>No frame, no fill, no border anywhere</b> - the cheapest of
+  the three against the live scene, and the only one that does not put a panel over the water.
+</p>
+
+<p class="cap">chip &middot; reservation 100 x 20</p>
+<div class="stage stage--chip">
+  <span class="sc-b" id="chipB">[ AVAILABLE ]</span>
+</div>
+
+<p class="cap">terminal &middot; reservation 675 x 172</p>
+<div class="stage stage--term">
+  <div class="sc-b-term" id="termB">
+    <div class="sc-b-term__row"><div>[<span class="sc-b-term__tok"> STATUS </span>] available for work</div><div class="sc-b-term__val">open</div></div>
+    <div class="sc-b-term__row"><div>[<span class="sc-b-term__tok"> NOW </span>] Compute Grass</div><div class="sc-b-term__val">in progress</div></div>
+    <div class="sc-b-term__row"><div>[<span class="sc-b-term__tok"> NEW </span>] Sprite Baker 9000</div><div class="sc-b-term__val">latest post</div></div>
+    <div class="sc-b-term__row"><div>[<span class="sc-b-term__tok"> TOOLS </span>] Unity / HLSL</div><div class="sc-b-term__val">daily</div></div>
+    <div class="sc-b-term__row"><div>[<span class="sc-b-term__tok"> WRITTEN </span>] 19 posts</div><div class="sc-b-term__val">all tech art</div></div>
+    <div class="sc-b-term__row"><div>[<span class="sc-b-term__tok"> TROPHIES </span>] 14 / 29</div><div class="sc-b-term__val">unlocked</div></div>
+  </div>
+</div>
+<p class="fit" id="fitB"></p>
+
+<hr />
+
+<!-- ============================ C ============================ -->
+<h2>C &middot; terminal.shop editor lines</h2>
+<p class="src">
+  <b>terminal.shop</b>, read live 2026-08-23 from <code>/_astro/about.CSjCn8a_.css</code> and the
+  home page. Catalogued in Rod's gallery but <b>untiered</b> - stated plainly, it is the one parent
+  here he has not scored. Line numbers are a real CSS counter on <code>.editor</code> /
+  <code>.line</code>, the active line is marked by a 2px left border going orange, and the caret is
+  a 10 x 21 orange block blinking on a 1.45s <code>step-start</code>. Their leading is
+  <code>2.5rem</code>, which is why only four lines fit the reservation.
+</p>
+
+<p class="cap">chip &middot; reservation 100 x 20</p>
+<div class="stage stage--chip">
+  <span class="sc-c" id="chipC">AVAILABLE<i class="sc-c__caret"></i></span>
+</div>
+
+<p class="cap">terminal &middot; reservation 675 x 172 &middot; four lines at their true 2.5rem leading</p>
+<div class="stage stage--term">
+  <div class="sc-c-term" id="termC">
+    <div class="sc-c-term__line">status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;available for work</div>
+    <div class="sc-c-term__line">now&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compute Grass</div>
+    <div class="sc-c-term__line">latest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sprite Baker 9000</div>
+    <div class="sc-c-term__line sc-c-term__line--on">tools&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unity / HLSL<i class="sc-c-term__caret"></i></div>
+  </div>
+</div>
+<p class="fit" id="fitC"></p>
+
+<p class="cap">the same device at six lines, to show the overrun</p>
+<div class="stage stage--term">
+  <div class="sc-c-term" id="termC6">
+    <div class="sc-c-term__line">status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;available for work</div>
+    <div class="sc-c-term__line">now&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compute Grass</div>
+    <div class="sc-c-term__line">latest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sprite Baker 9000</div>
+    <div class="sc-c-term__line">tools&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unity / HLSL</div>
+    <div class="sc-c-term__line">written&nbsp;&nbsp;&nbsp;&nbsp;19 posts</div>
+    <div class="sc-c-term__line sc-c-term__line--on">trophies&nbsp;&nbsp;&nbsp;14 / 29<i class="sc-c-term__caret"></i></div>
+  </div>
+</div>
+<p class="fit" id="fitC6"></p>
+
+<div id="readout"></div>
+</div>

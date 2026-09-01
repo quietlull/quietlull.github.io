@@ -53,6 +53,20 @@ jobs:
         env:
           JEKYLL_ENV: "production"
 
+      # THE WORKBENCH NEVER SHIPS. Rod, decision D49: keep the lab and put it in version control,
+      # "provided its much cleaner and cant be accessed and wont be built on the main site when it
+      # ships." It is removed HERE, after the build and before the test and upload, rather than
+      # via the config exclude list, and that is deliberate for two reasons.
+      # First, excluding it would also stop it building LOCALLY, and Rod works from the lab's own
+      # pages at localhost every day, todo.html most of all. This keeps local exactly as it is.
+      # Second, Jekyll config merging REPLACES arrays rather than appending to them, so adding the
+      # lab through a second production config would silently drop every other exclusion (docs,
+      # tools, CLAUDE.md) and publish them. One line here has no such trap.
+      # htmlproofer runs AFTER this on purpose: the lab's pages link to bench files and reference
+      # screenshots that are not part of the site, and checking them would fail the deploy.
+      - name: Remove the redesign lab from the built site
+        run: rm -rf "_site${{ steps.pages.outputs.base_path }}/redesign-lab"
+
       - name: Test site
         run: |
           bundle exec htmlproofer _site \

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redesign Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#070C23;--night2:#0a1030;--panel:#0d1430;
+  --gold:#F3B53C;--glow:#FFE8B0;--text:#F5F3EF;--muted:#9aa3bd;--line:rgba(255,255,255,.08);
+}
+@layer reset, tokens, prose, components, overrides;
+/* No foundations.css on this page, so it keeps its own reset - but LAYERED, or being
+   unlayered would make it beat every component rendered here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+body{
+  background:radial-gradient(120% 80% at 80% -10%,#101a3e 0%,transparent 55%),
+             linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+  color:var(--text);font-family:"IBM Plex Mono",monospace;min-height:100vh;
+  padding:clamp(2.5rem,6vw,5rem) clamp(1.2rem,5vw,3rem);line-height:1.6;
+}
+.wrap{max-width:64rem;margin:0 auto}
+
+/* header */
+header{margin-bottom:3rem;padding-bottom:1.6rem;border-bottom:1px solid var(--line)}
+h1{font-family:"Playfair Display",serif;font-weight:600;font-size:clamp(2rem,5vw,2.7rem);letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:.82rem;margin-top:.5rem;max-width:46rem}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem .4rem;margin-top:1.1rem}
+.chip{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:.22rem .6rem}
+.chip b{color:var(--gold);font-weight:500}
+
+/* sections */
+section{margin-top:2.6rem}
+h2{color:var(--gold);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;
+  margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
+h2::before{content:"/"}h2 .note{color:var(--muted);letter-spacing:.06em;font-size:.62rem;text-transform:none}
+
+.grid{display:grid;grid-template-columns:11.5rem 1fr;gap:.2rem 1.4rem}
+.grid .name{color:var(--muted);font-size:.78rem;padding:.55rem 0}
+.grid .links{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;padding:.55rem 0;
+  border-bottom:1px solid var(--line)}
+.grid .name{border-bottom:1px solid var(--line)}
+.grid > .name:last-of-type,.grid > .links:last-child{border-bottom:0}
+a{color:var(--gold);text-decoration:none;transition:filter .15s,color .15s}
+a:hover{filter:drop-shadow(0 0 8px rgba(255,232,176,.55))}
+a.lead{font-weight:500}
+.desc{color:var(--muted)}
+.todo{color:var(--muted);font-size:.78rem}
+.pill{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--night);
+  background:var(--gold);padding:.05rem .4rem;border-radius:2px;vertical-align:middle}
+.pill.dim{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.st{font-size:.58rem;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);
+  padding:.05rem .32rem;margin-left:.25rem;vertical-align:middle}
+.st.go{color:var(--glow);border-color:rgba(255,232,176,.3)}
+.warn{border:1px solid rgba(243,181,60,.35);background:rgba(243,181,60,.06);
+  padding:.7rem .9rem;font-size:.72rem;color:var(--muted);line-height:1.7;margin-bottom:1rem}
+.warn b{color:var(--gold);font-weight:500}
+
+footer{margin-top:3.5rem;padding-top:1.4rem;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.7rem;letter-spacing:.03em;line-height:1.9}
+
+@media(max-width:640px){
+  .grid{grid-template-columns:1fr;gap:0}
+  .grid .name{padding:.5rem 0 .1rem;border-bottom:0;color:var(--gold);font-size:.66rem;
+    letter-spacing:.14em;text-transform:uppercase}
+  .grid .links{padding:0 0 .7rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Redesign Lab</h1>
+    <div class="sub">Build environment (gitignored) for the twilight&#8209;festival redesign.
+      Ordered by <b style="color:var(--glow)">what needs your eye first</b>. The top section holds
+      ONLY things still waiting on a call from you; anything already decided moved down to
+      Settled, kept for reference. Shared foundations:
+      night palette &middot; hana ignite&#8209;glow &middot; drift&#8209;magnet interaction base.</div>
+    <div class="meta">
+      <span class="chip"><b>6</b> final pages</span>
+      <span class="chip"><b>25</b> of 104 slots approved</span>
+      <span class="chip"><b>1</b> call waiting on you</span>
+      <span class="chip"><b>56</b> bench components</span>
+      <span class="chip"><b>7</b> blockouts</span>
+      <span class="chip"><b>72</b> gallery cards kept of 102</span>
+      <span class="chip"><b>60</b> sourced snippets</span>
+    </div>
+  </header>
+
+  <!-- JUDGE -->
+  <section>
+    <h2>Judge here <span class="note">waiting on you, nothing moves until these are called</span></h2>
+    <div class="grid">
+      <div class="name">Everything left</div>
+      <div class="links"><a class="lead" href="/redesign-lab/todo.html">todo.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">the whole remaining road in one
+          table</b>, deduplicated from the tracker, the merge worklist and the component table.
+          Your 1 remaining call, my build queue, the open bugs, the port gates, and what is parked.
+          <b style="color:var(--glow)">Re-verified</b> &mdash; the first version listed six things you
+          had already decided <span class="pill">new</span></span></div>
+
+      <div class="name">Final pages</div>
+      <div class="links">
+        <a class="lead" href="/redesign-lab/final-landing.html">landing<span class="st go">9/12</span></a>
+        <a href="/redesign-lab/final-post.html">post<span class="st">4/19</span></a>
+        <a href="/redesign-lab/final-projects.html">projects<span class="st">1/19</span></a>
+        <a href="/redesign-lab/final-about.html">about<span class="st">1/26</span></a>
+        <a href="/redesign-lab/final-ramblings.html">ramblings<span class="st">1/12</span></a>
+        <a href="/redesign-lab/final-portal.html">portal<span class="st go">8/9</span></a>
+        <span class="desc">&mdash; the actual deliverable, counts measured off the rendered pages.
+          <b style="color:var(--glow)">The type on all six looks different now</b> &mdash; the ladder
+          had never rendered, so every pick before 2026&#8209;08&#8209;23 was judged at weight 400.
+          Portal is now 8 of 9 - you approved everything but the centre name, so the eight are marked and the identity mark stays pending</span></div>
+
+      <div class="name">Component review</div>
+      <div class="links"><a class="lead" href="/redesign-lab/component-review.html">component&#8209;review.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">22 components, roughly 20 picked.</b>
+          Its 14 outbound links now open in the bench instead of the old demo pages. It stays put
+          because it is not a link list: it holds the measured&#8209;fit verdicts, the picks, and the
+          only demos of related&#8209;card, heading&#8209;anchor, toc and table.
+
+          Two things left on it: the achievement tiles, and the one decision blocking the whole
+          merge &mdash; nine components render wrong inside <code>.prose</code> and two land at 1:1
+          contrast, which needs a prefix policy from you</span></div>
+
+      <div class="name">Text decisions</div>
+      <div class="links"><a class="lead" href="/redesign-lab/text-decisions.html">text-decisions.html</a>
+        <span class="desc">&mdash; every text element in a post, one tabbed page. 23 picks settled,
+          and the three I listed as open were all already decided.
+          <b style="color:var(--glow)">New CODE tab</b> &mdash; the syntax colours you named were
+          real in <code>decisions.css</code> and shown on no page, which is why you could not find
+          them <span class="pill">new</span></span></div>
+
+      <div class="name">Achievements</div>
+      <div class="links"><a class="lead" href="/redesign-lab/achievement-tests.html">achievement-tests.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">V6 PICKED.</b> Rebuild waits on the
+          About scene by your own sequencing, then it gets the project cards' hover edge glow and a
+          per-achievement border colour. After that the tiles become the scene's CONTROLS (D34),
+          which is what finally answers where the deleted toggles went</span></div>
+
+      <div class="name">Before / after</div>
+      <div class="links"><a class="lead" href="/redesign-lab/layer-diff.html">layer&#8209;diff.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">every page rendered twice, live</b>,
+          against the frozen original stylesheets and the layered set, with the computed differences
+          under each pair. <b style="color:var(--glow)">4 of 7 identical</b>, 19 values moved. Takes
+          about a minute to measure <span class="pill">new</span></span></div>
+
+      <div class="name">The .prose collisions</div>
+      <div class="links"><a class="lead" href="/redesign-lab/prose-collisions.html">prose&#8209;collisions.html</a>
+        <span class="desc">&mdash; the 8 components split out one at a time, every losing rule with
+          both specificities. <b style="color:var(--glow)">The collision itself is now FIXED</b> by
+          cascade layers, so this is the record of what the problem was and the four-box demo of
+          why</span></div>
+
+      <div class="name">The palette</div>
+      <div class="links"><a class="lead" href="/redesign-lab/palette-backup.html">palette-backup.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">now swatches, not an export.</b> All 47
+          colour tokens read live from the stylesheets, grouped, with the translucent ones shown
+          composited over night <span class="pill">new</span></span></div>
+    </div>
+  </section>
+
+  <!-- ACTIVE -->
+  <section>
+    <h2>Active build <span class="note">where the work is</span></h2>
+    <div class="grid">
+      <div class="name">Component bench</div>
+      <div class="links"><a class="lead" href="/redesign-lab/extracted/index.html">extracted/</a>
+        <span class="desc">&mdash; all 51 components + spacing tuner + palette editor.
+          <b style="color:var(--glow)">The 18 standalone demo pages were folded in 2026&#8209;08&#8209;25</b>
+          &mdash; every one of them now opens here at <code>?c=&lt;name&gt;</code>, with its own prose,
+          sources and live measurements intact <span class="pill">start here</span></span></div>
+
+
+      <div class="name">A3 assembly</div>
+      <div class="links"><a href="/redesign-lab/a3-assembly.html">a3-assembly.html</a>
+        <span class="desc">&mdash; bench components in each verified layout. A working surface, not
+          a source: copying out of it is inventing with extra steps.</span></div>
+
+      <div class="name">Post aggregate</div>
+      <div class="links"><a class="lead" href="/redesign-lab/post-aggregate.html">post-aggregate.html</a>
+        <span class="desc">&mdash; stripe layout, 3 elements BUILT and 18 greybox slots. A worklist,
+          not a design.</span></div>
+
+      <div class="name">Landing blockout</div>
+      <div class="links"><a href="/redesign-lab/landing-blockout.html">landing-blockout.html</a>
+        <span class="desc">&mdash; greybox layouts + the provenance panel naming each borrowed move</span></div>
+
+
+    </div>
+  </section>
+
+  <!-- SETTLED -->
+  <section>
+    <h2>Settled, kept for reference <span class="note">decided, moved off the top 2026&#8209;08&#8209;23</span></h2>
+    <div class="grid">
+      <div class="name">Card greys</div>
+      <div class="links"><a href="/redesign-lab/card-greys-tests.html">card-greys-tests.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">warm grey locked</b> (D28).
+          <code>rgba(28,26,24,.55)</code>, origin yours not a source. The last blue is the sky</span></div>
+
+      <div class="name">Washi tape</div>
+      <div class="links"><a href="/redesign-lab/washi-tape-tests.html">washi-tape-tests.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">case D locked</b>, opaque and
+          axis&#8209;aligned (D28); colour now means callout TYPE (D30). Still open as a BUILD job,
+          not a pick: the ends look fake, and the reference measures as a tear rather than a
+          serration</span></div>
+
+      <div class="name">Paper</div>
+      <div class="links"><a href="/redesign-lab/paper-tuner.html">paper-tuner.html</a>
+        <a href="/redesign-lab/paper-tests.html">all options</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">paper is dead everywhere</b> (D29).
+          The background carries the texture. The scene's own paper FILTER (D24) is a different
+          thing and is untouched</span></div>
+
+      <div class="name">Section breaks</div>
+      <div class="links"><a href="/redesign-lab/section-break-tests.html">section-break-tests.html</a>
+        <span class="desc">&mdash; <b style="color:var(--glow)">case G</b> (D28): Catlike's nested
+          counters on acegikmo's ruled divider. Pushed to the final post. Only the padding
+          measurement is still running</span></div>
+
+      <div class="name">Section head</div>
+      <div class="links"><a href="/redesign-lab/section-head-tests.html">section-head-tests.html</a>
+        <span class="desc">&mdash; the four renders side by side, plus the four real harumaki
+          headers. <b style="color:var(--glow)">All four of ours are unsourced</b>, so this is not a
+          pick you can make yet &mdash; it waits on the sourcing pass</span></div>
+
+      <div class="name">Tool icons</div>
+      <div class="links"><a href="/redesign-lab/tool-icons-tests.html">tool-icons-tests.html</a>
+        <span class="desc">&mdash; the devicon set is picked and built into the skills row.
+          <b style="color:var(--glow)">C#, HLSL and Compute are still drawn as gaps</b> rather than
+          faked, which is a build job</span></div>
+
+      <div class="name">Line boil</div>
+      <div class="links"><a href="/redesign-lab/line-boil-test.html">line&#8209;boil&#8209;test.html</a>
+        <span class="desc">&mdash; the metric harness, blocked on your three scratch fonts. Max drift
+          51.66px on three unrelated fonts, 9.8% of the line. Drop the three in and it answers
+          immediately</span></div>
+
+      <div class="name">Sub&#8209;page layouts</div>
+      <div class="links"><a href="/redesign-lab/post-blockout.html">post</a>
+        <a href="/redesign-lab/projects-blockout.html">projects</a>
+        <a href="/redesign-lab/about-blockout.html">about</a>
+        <a href="/redesign-lab/ramblings-blockout.html">ramblings</a>
+        <a href="/redesign-lab/portal-blockout.html">portal</a>
+        <span class="desc">&mdash; all judged (D15) and superseded by the six final pages. Kept as
+          the layout contract every final page is measured against</span></div>
+
+      <div class="name">Hero</div>
+      <div class="links"><a href="/redesign-lab/hero-tests.html?v=v6">hero-tests.html?v=v6</a>
+        <span class="desc">&mdash; V6, locked; kept only as the reference
+          <span class="pill dim">locked</span></span></div>
+    </div>
+  </section>
+
+  <!-- LIVE SCENES -->
+  <section>
+    <h2>Live scenes <span class="note">three.js, parallel tracks</span></h2>
+    <div class="grid">
+      <div class="name">Character</div>
+      <div class="links"><a class="lead" href="/redesign-lab/character-scene.html">character-scene.html</a>
+        <a href="/redesign-lab/character-test.html">character-test.html</a>
+        <a href="/redesign-lab/dissolve-ref.html">dissolve-ref.html</a>
+        <span class="desc">&mdash; dissolving spirit in the dock scene</span></div>
+
+      <div class="name">Water</div>
+      <div class="links"><a class="lead" href="/redesign-lab/water-scene.html">water-scene.html</a>
+        <span class="desc">&mdash; About&#8209;page procedural water rework</span></div>
+
+      <div class="name">Lantern glow</div>
+      <div class="links"><a href="/redesign-lab/anime-glow-scene.html">anime-glow-scene.html</a>
+        <a href="/redesign-lab/lantern-lab.html">lantern-lab.html</a>
+        <span class="desc">&mdash; flat-emissive A/B (live now) + the lantern bench</span></div>
+    </div>
+  </section>
+
+  <!-- PALETTE / TYPE -->
+  <section>
+    <h2>Palette &amp; type <span class="note">both still open decisions</span></h2>
+    <div class="grid">
+      <div class="name">Palette</div>
+      <div class="links"><a class="lead" href="/redesign-lab/palette-explorer.html">palette-explorer.html</a>
+        <span class="desc">&mdash; Sodium &amp; Sky is the frontrunner</span></div>
+      <div class="name">Type</div>
+      <div class="links"><a href="/redesign-lab/font-preview.html">font-preview.html</a>
+        <span class="desc">&mdash; mincho vs rounded gothic is unresolved and gates the font lock</span></div>
+    </div>
+  </section>
+
+  <!-- REFERENCE GALLERY -->
+  <section>
+    <h2>Reference gallery <span class="note">your taste catalog</span></h2>
+    <div class="grid">
+      <div class="name">All sites</div>
+      <div class="links"><a class="lead" href="/redesign-lab/reference-gallery.html">reference-gallery.html</a>
+        <span class="desc">&mdash; 72 cards, tier-graded, keyword filters, plus a Sub-pages section
+          grouped by page type <span class="pill">stripe.dev added</span></span></div>
+    </div>
+  </section>
+
+  <!-- SOURCES + DOCS -->
+  <section>
+    <h2>Sources &amp; docs <span class="note">provenance records, specs, logs</span></h2>
+    <div class="grid">
+      <div class="name">Prose sources</div>
+      <div class="links">
+        <a href="/redesign-lab/sources/stripe-dev-prose.md">stripe.dev</a>
+        <a href="/redesign-lab/sources/maximeheckel-prose.md">maximeheckel</a>
+        <a href="/redesign-lab/sources/catlikecoding-prose.md">catlikecoding</a>
+        <a href="/redesign-lab/sources/minionsart-prose.md">minionsart</a>
+        <a href="/redesign-lab/sources/ronja-tutorials-prose.md">ronja</a>
+        <a href="/redesign-lab/sources/bookofshaders-prose.md">bookofshaders</a>
+        <a href="/redesign-lab/sources/iquilezles-prose.md">iquilezles</a>
+        <a href="/redesign-lab/sources/acegikmo-prose.md">acegikmo</a>
+        <a href="/redesign-lab/sources/cyanilux-notice-callout.md">cyanilux</a>
+      </div>
+      <div class="name">Redesign</div>
+      <div class="links">
+        <a href="/redesign-lab/HANDOFF.md">HANDOFF</a>
+        <a href="/redesign-lab/element-tracker.md">element-tracker</a>
+        <a href="/redesign-lab/feature-backlog.md">feature-backlog</a>
+        <a href="/redesign-lab/final-picks.md">final-picks</a>
+        <a href="/redesign-lab/references.md">references</a>
+      </div>
+      <div class="name">Scene tracks</div>
+      <div class="links">
+        <a href="/redesign-lab/character-scene-HANDOFF.md">character-HANDOFF</a>
+        <a href="/redesign-lab/character-spec.md">character-spec</a>
+        <a href="/redesign-lab/water-PLAN.md">water-PLAN</a>
+        <a href="/redesign-lab/water-CHANGELOG.md">water-CHANGELOG</a>
+      </div>
+      <div class="name">Analysis</div>
+      <div class="links">
+        <a href="/redesign-lab/analysis/2026-08-16-subpage-sources.md">subpage-sources</a>
+        <a href="/redesign-lab/analysis/2026-08-16-component-gaps.md">component-gaps</a>
+        <a href="/redesign-lab/analysis/2026-08-14-gallery-teardown.md">gallery-teardown</a>
+        <a href="/redesign-lab/analysis/layout-measurements.md">layout-measurements</a>
+        <a href="/redesign-lab/sources/">sources/</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECREATIONS -->
+  <section>
+    <h2>Recreations <span class="note">ours, not sources</span></h2>
+    <div class="warn"><b>These are NOT provenance.</b> The <code>rework-*</code> pages and the
+      <code>ref-*</code> skins are OUR OWN builds named after the sites that inspired them. Twelve bench
+      components still cite them under a &ldquo;PROVENANCE&rdquo; heading, which is a circular citation;
+      each of those now carries a warning in its CSS header. Only the live sites listed under
+      <i>Sources</i> above count as sources.</div>
+    <div class="grid">
+      <div class="name">Original palettes</div>
+      <div class="links">
+        <a href="/redesign-lab/ref-hana.html">hana</a>
+        <a href="/redesign-lab/ref-harumaki.html">harumaki</a>
+        <a href="/redesign-lab/ref-norikura.html">norikura</a>
+        <a href="/redesign-lab/ref-yannesidibe.html">yannesidibe</a>
+        <a href="/redesign-lab/ref-stephanewillems.html">stephanewillems</a>
+        <a href="/redesign-lab/ref-merodev.html">merodev</a>
+        <a href="/redesign-lab/ref-dimden.html">dimden</a>
+      </div>
+      <div class="name">Element sets</div>
+      <div class="links">
+        <a href="/redesign-lab/rework-merodev-yanne.html">merodev+yanne</a>
+        <a href="/redesign-lab/rework-hana.html">hana</a>
+        <a href="/redesign-lab/rework-norikura.html">norikura</a>
+        <a href="/redesign-lab/rework-stephan.html">stephan</a>
+        <a href="/redesign-lab/rework-harumaki.html">harumaki</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RETIRED -->
+  <section>
+    <h2>Retired <span class="note">moved out 2026&#8209;08&#8209;18, not deleted</span></h2>
+    <div class="grid">
+      <div class="name">Pulled off the index</div>
+      <div class="links todo"><code>aggregate.html</code> (superseded by new&#8209;landing) still in
+        <code>archive/2026-08-18-retired/</code> &mdash; it is the verbatim source for section&#8209;head
+        variant C, so it stays. <code>picker.html</code>, <code>assembly.html</code> and
+        <code>layout-blockouts.html</code> moved to <code>_TRASH-2026-08-25/</code> pending your review.</div>
+
+      <div class="name">Early landings</div>
+      <div class="links">
+        <a href="/redesign-lab/section-landing-A-japanese.html">A1</a>
+        <a href="/redesign-lab/section-landing-A2-japanese.html">A2</a>
+        <a href="/redesign-lab/section-landing-B1-western.html">B1</a>
+      </div>
+
+      <div class="name">Rejected</div>
+      <div class="links todo"><span class="pill dim">archive/2026-08-16-rejected-subpage-tests</span>
+        the six coloured, under&#8209;sourced sub&#8209;page tests moved to
+        <code>_TRASH-2026-08-25/</code>; its <code>README.md</code> stays &mdash; it is the only
+        surviving copy of the 65&#8209;75ch prose rule and the stripe.dev measurement &nbsp;
+        <span class="pill dim">archive/VERSIONS.md</span> the scene version trail, condensed</div>
+    </div>
+  </section>
+
+  <footer>
+    foundations: twilight palette &middot; hana glow (ignite&#8209;not&#8209;constant) &middot; type TBD &nbsp;|&nbsp;
+    provenance is law &middot; ask before any rendered&#8209;pixel change &middot; the bench is ours, the live sites are the sources
+  </footer>
+</div>
+</body>
+</html>

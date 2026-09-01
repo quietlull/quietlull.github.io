@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FINAL LANDING - A3 ndt base + V6 hero</title>
+<!--
+  ===== FINAL LANDING (started 2026-08-18, ROD) =====
+  "we are using A3 NDT as the main base of the new landing, keep the changes we did to the hero
+   test and combine them to create the Final Landing."
+
+  TWO PARENTS, both already judged:
+    LAYOUT   a3-assembly.html -> body.a3seam, transcribed from harumakigohan.com/ndt/
+             M PLUS Rounded 1c (their exact face) - a rounded GOTHIC, which is what lets the
+             no-serif rule survive. Content held in a NARROW COLUMN inset 18.5% each side.
+             Descent rhythm: section, gap, section.
+    HERO     hero-tests.html?v=v6 - LOCKED by Rod 2026-08-16. Three upright all-caps columns at
+             the right edge, a large live clock low on the left, the social rail hanging 48px
+             under the vertical block (the same gap the block takes from the top bar), and the
+             horizontal name/role kept in the markup for screen readers only.
+
+  ONE DELIBERATE OMISSION, FLAGGED RATHER THAN SILENTLY DECIDED.
+  A3 ndt's signature device is a 160px painted SEAM BAND carrying every transition. Rod REJECTED
+  the borrowed painted dividers on 2026-08-13 (DECISIONS): they exist to divide flat painted colour
+  fields, and this site has one continuous live scene instead, so they read as stickers over it.
+  So the ndt RHYTHM is here and the ndt BAND is not - sections are separated by space, and the
+  scene shows through the gap, which is what that decision said to do. If you want the bands back,
+  say so and they come back from extracted/components/seam-band.
+
+  SECTIONS COMPLETED 2026-08-18 (Rod: "our new landing is still missing alot of the headers and the
+  skill section and demo reel section are incomplete stubs"). Added: the real two-part section head
+  (display label left, mono action right) in place of a bare centred word, the list-controls filter
+  row under Projects, the Technology/Personal mode flip above the skills row, the whole Demo reel
+  section, and the site footer - this page had none.
+
+  REVERTED 2026-08-18, same day, on Rod: "idk why the landing page has tag buttons, this has never
+  been a thing i wanted. skills switch doesnt actually work."
+    - the filter/tag chip row is GONE. He never asked for it; I added it because the assembly had one.
+    - the Technology/Personal skills switch is GONE. It had ZERO JS behind it anywhere in the repo -
+      a control that does nothing is worse than no control.
+  STILL PRESENT AND NOT YET RULED ON BY ROD - I added these unprompted too, and they should be
+  treated as proposals rather than settled: the "View all ->" action in the section head, and the
+  site footer. Say the word and either comes out.
+
+  PROVENANCE DEBT, STATED NOT HIDDEN: five of the components on this page - project-cards-expensive,
+  draw-in-icons, list-controls, reel-band and site-footer - carry the CIRCULAR CITATION banner in
+  their own CSS headers. They are Slop until re-sourced (worklist gate 3, task 16). Completing the
+  sections does not launder them; it just means the page now shows what it is actually missing.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/goo-toggle/goo-toggle.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/favicon/favicon.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/top-bar/top-bar.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/slap-toggle/slap-toggle.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/merged-card/merged-card.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/project-cards-expensive/project-cards-expensive.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/draw-in-icons/draw-in-icons.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/site-footer/site-footer.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+/* A3 ndt: their exact face. overflow-x is CLIP not HIDDEN - hidden makes body a scroll container
+   and silently kills position:sticky for every descendant (docs/TRAPS.md). */
+body{background:var(--color-night);color:var(--color-text);font-family:"M PLUS Rounded 1c",sans-serif;
+  line-height:1.7;overflow-x:clip}
+
+/* ===== BG pair (hana) - three.js scene ON by default; Bloom on toggle ===== */
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);pointer-events:none;transition:opacity .5s;-webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(20px) brightness(.6) saturate(1.03)}
+.bg-1{opacity:1}.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+@keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.bg-2{animation:none;opacity:.6}}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+canvas:not(.bgcanvas){transition:opacity .5s}
+body.bloom-mode canvas:not(.bgcanvas){opacity:0!important;display:none!important}
+
+.top-bar{position:sticky;top:0;z-index:60}
+
+/* ===== A3 ndt COLUMN =====================================================================
+   Their content sits in a narrow column inset 18.5% from each edge, not in a max-width box, so
+   the column BREATHES with the viewport instead of stopping at a constant. Transcribed from
+   a3-assembly body.a3seam, which was measured off harumakigohan.com/ndt/. */
+.col{padding-inline:18.5%;position:relative;z-index:1}
+@media (max-width:1100px){.col{padding-inline:10%}}
+@media (max-width:700px){.col{padding-inline:1.4rem}}
+
+/* ndt descent rhythm: section, gap, section. The gap is where the scene shows through, which is
+   what replaces their painted seam band here (see the header note). */
+.sec{padding-block:30px 60px}
+.sec + .sec{padding-top:20px}
+
+/* SECTION HEADS - PROVISIONAL, NOT SOURCED (flagged 2026-08-18).
+   final-picks.md:89 records these as "harumaki shead, PROVISIONAL (never a picker slot)" - they
+   have never been judged and have no verified external source. Rod flagged them the same day he
+   flagged the reel. They stay for now because a page needs section labels to be readable at all,
+   but they are on the sourcing list, not settled.
+   (rebuilt 2026-08-18, Rod: "our new landing is still missing alot of the headers").
+   The bare centred label that used to sit here was a stub - it carried no name treatment and no
+   View-all, so a section could not be entered. This is the assembly's real two-part head:
+   a display-face label on the left, a mono action on the right. ndt keeps its labels CENTRED,
+   which is why the row centres itself while its two halves stay split. */
+.shead{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  margin:0 auto 26px;padding-bottom:10px;border-bottom:1px solid var(--color-line-faint)}
+.shead__l{font-family:var(--font-display);font-size:1.5rem;color:var(--color-gold-deep);
+  letter-spacing:.04em}
+.shead__r{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--color-muted);text-decoration:none}
+.shead__r:hover{color:var(--color-gold)}
+
+.ph{border:1.5px dashed var(--color-line-soft);color:var(--color-muted);
+  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  display:grid;place-items:center;padding:34px 18px;text-align:center}
+
+/* ===== V6 HERO (LOCKED 2026-08-16) =======================================================
+   Ported verbatim from hero-tests.html?v=v6. The hero is the viewport minus the bar - taken from
+   the bar's OWN variable, not a hard-coded 96, so it stays correct when the bar stacks to two or
+   three rows on a narrow window (docs/TRAPS.md). */
+.h{position:relative;
+  height:calc(100vh - var(--top-bar-height) - var(--top-bar-border) * 2);
+  min-height:520px}
+
+/* the horizontal name and role stay in the DOM for screen readers and are visually hidden,
+   because V6 shows the name as the vertical block instead */
+.h__name,.h__role{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);
+  white-space:nowrap}
+
+/* ndt stacks its title as ONE COLUMN PER WORD, top-aligned, read RIGHT TO LEFT - hence
+   row-reverse rather than reordering the markup. text-orientation:upright (corrected 2026-08-14,
+   Rod: "text is also the wrong way up") stands every Latin letter up like a marquee sign.
+   SIZED IN vh, NOT vw: this block's HEIGHT is what has to clear the social rail, so both axes
+   derive from height and the proportion holds at any aspect ratio. */
+.h__vert{display:flex;position:absolute;top:0;right:0;width:20%;min-width:280px;
+  flex-direction:row-reverse;align-items:flex-start;gap:.34em;padding:48px 30px 0 0}
+.h__vert .h__col{writing-mode:vertical-rl;text-orientation:upright;text-transform:uppercase;
+  letter-spacing:-.23em;line-height:1.7;
+  font-family:var(--font-hand);color:var(--color-gold-deep);font-size:clamp(1.05rem,2.9vh,2.9rem)}
+
+/* the clock is a MAIN ATTRACTION (Rod), not a footnote: large, left-anchored, low in the frame.
+   Tabular figures so the digits do not jitter as the seconds tick. Device sourced from 109ichiki,
+   which runs one in its frame gutter. */
+.h__clock{position:absolute;left:50px;bottom:14%;
+  font-family:var(--font-mono);font-size:clamp(2.2rem,7vh,4.6rem);line-height:1;
+  letter-spacing:.06em;color:var(--color-text);font-variant-numeric:tabular-nums}
+
+/* the scene switch stacks UNDER the clock so the left edge reads as one group (clock + control)
+   against the name + socials on the right. CLAUDE's placement - V6 had no switch in it. */
+.h__switch{position:absolute;left:50px;bottom:4%}
+
+/* V6 hangs the social rail under the vertical name instead of centring it on the hero, so the
+   centring transform has to go with it or the rail rides half its height back up. The top is set
+   by script, because the block's height is type-dependent and clamped in vh. */
+.h__social{position:absolute;right:26px;top:50%;transform:none;display:grid;gap:14px;
+  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em}
+.h__social a{color:var(--color-muted);text-decoration:none}
+.h__social a:hover{color:var(--color-gold)}
+
+/* the scroll chevron was REMOVED 2026-08-18 (Rod: "remove the chevron honestly we don't need it").
+   Deleted rather than hidden - a hidden element is still a thing to maintain. */
+
+/* narrow: the vertical block and the clock would collide, so the block gives up the right edge
+   and the clock drops its size. Not a design pass - a guard so nothing overlaps. */
+@media (max-width:700px){
+  .h__vert{width:auto;min-width:0;padding:32px 16px 0 0}
+  .h__clock{left:22px;bottom:18%;font-size:clamp(1.8rem,6vh,3rem)}
+  .h__switch{left:22px;bottom:5%}
+  .h__social{right:14px}
+}
+
+/* scene space - empty bottom stretch so the scene's water/dock reads like the original page */
+.scene-space{height:85vh}
+body.bloom-mode .scene-space{display:none}
+
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font:10px ui-monospace,monospace;color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold)}
+</style>
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0" style="opacity:0"></div>
+<div id="scrim"></div>
+
+<!-- ===== TOP BAR — extracted/components/top-bar (favicon SQUARE) ===== -->
+<header class="top-bar" data-tune="top bar">
+  <div class="top-bar__left">
+    <a class="favicon favicon--square" data-tune="favicon" href="#" aria-label="Home">
+      <span class="favicon__magnet js-magnetic" data-strength="50" data-magnet-clamp="6">
+        <img class="favicon__img" src="/assets/img/favicons/favicon.svg" alt="" width="24" height="24" />
+      </span>
+    </a>
+    <span class="top-bar__logo">RODNEY FAN</span>
+  </div>
+
+  <nav class="top-bar__nav" data-tune="nav links" data-bloom data-tspeed>
+    <a class="top-bar__link is-active js-magnetic" data-strength="40" href="#">Home</a>
+    <a class="top-bar__link js-magnetic" data-strength="40" href="#">Projects</a>
+    <a class="top-bar__link js-magnetic" data-strength="40" href="#">About</a>
+    <a class="top-bar__link js-magnetic" data-strength="40" href="#">Ramblings</a>
+  </nav>
+
+  <!-- bar toggles = SMALL SQUARE slap toggles (Rod 2026-08-11: slap here, goo moved to the hero) -->
+  <span class="top-bar__toggles" data-tune="bar toggles">
+    <span class="slap-toggle slap-toggle--small slap-toggle--square js-magnetic" data-strength="25">
+      <span class="slap-toggle__control">
+        <input class="slap-toggle__radio" type="radio" name="bar-breathe" id="bar-breathe-on" checked />
+        <label class="slap-toggle__label" for="bar-breathe-on">Breathing</label>
+        <input class="slap-toggle__radio" type="radio" name="bar-breathe" id="bar-breathe-off" />
+        <label class="slap-toggle__label" for="bar-breathe-off">Off</label>
+        <span class="slap-toggle__flap" aria-hidden="true"><span class="slap-toggle__flap-text">Breathing</span></span>
+      </span>
+    </span>
+    <span class="slap-toggle slap-toggle--small slap-toggle--square js-magnetic" data-strength="25">
+      <span class="slap-toggle__control">
+        <input class="slap-toggle__radio" type="radio" name="bar-spark" id="bar-spark-on" checked />
+        <label class="slap-toggle__label" for="bar-spark-on">Sparkler</label>
+        <input class="slap-toggle__radio" type="radio" name="bar-spark" id="bar-spark-off" />
+        <label class="slap-toggle__label" for="bar-spark-off">Off</label>
+        <span class="slap-toggle__flap" aria-hidden="true"><span class="slap-toggle__flap-text">Sparkler</span></span>
+      </span>
+    </span>
+    <span class="slap-toggle slap-toggle--small slap-toggle--square js-magnetic" data-strength="25">
+      <span class="slap-toggle__control">
+        <input class="slap-toggle__radio" type="radio" name="bar-fire" id="bar-fire-on" />
+        <label class="slap-toggle__label" for="bar-fire-on">Fireworks</label>
+        <input class="slap-toggle__radio" type="radio" name="bar-fire" id="bar-fire-off" checked />
+        <label class="slap-toggle__label" for="bar-fire-off">Off</label>
+        <span class="slap-toggle__flap" aria-hidden="true"><span class="slap-toggle__flap-text">Off</span></span>
+      </span>
+    </span>
+  </span>
+</header>
+
+<main id="main">
+
+  <!-- ===== HERO - V6, ported from hero-tests.html?v=v6 (LOCKED by Rod 2026-08-16) ===== -->
+  <section class="h" data-tune="hero">
+    <!-- kept for screen readers; V6 shows the name as the vertical block instead -->
+    <h1 class="h__name">rodney fan</h1>
+    <p class="h__role">technical artist, game designer</p>
+
+    <!-- three columns matching ndt's structure, read right to left -->
+    <div class="h__vert" aria-hidden="true">
+      <span class="h__col">rodney fan</span><span class="h__col">technical</span><span class="h__col">artist</span>
+    </div>
+
+    <p class="h__clock" aria-hidden="true">--:--:--</p>
+
+    <div class="h__switch" data-tune="scene switch">
+      <!-- goo filter defs: exactly ONE per document (moved here from the bar with the goo toggle) -->
+      <svg style="display: none" aria-hidden="true">
+        <defs>
+          <filter id="goo-toggle-goo" filterUnits="userSpaceOnUse" x="-24" y="-24" width="280" height="120">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+          </filter>
+        </defs>
+      </svg>
+      <label class="goo-toggle js-magnetic js-scene-switch" data-strength="40">
+        <input class="goo-toggle__input" type="checkbox" id="hero-scene" checked aria-label="Toggle Three.js lantern scene vs bloom background" />
+        <svg class="goo-toggle__frame" viewBox="0 0 232 72" aria-hidden="true">
+          <rect class="goo-toggle__track" x="2" y="2" width="228" height="68" rx="34" />
+          <g filter="url(#goo-toggle-goo)">
+            <rect class="goo-toggle__capsule" x="6" y="6" width="146" height="60" rx="30" />
+            <rect class="goo-toggle__tail" x="59" y="13" width="46" height="46" rx="23" />
+            <g class="goo-toggle__orb-shift"><rect class="goo-toggle__orb" x="166" y="6" width="60" height="60" rx="30" /></g>
+          </g>
+        </svg>
+        <span class="goo-toggle__word" aria-hidden="true">Lanterns</span>
+        <span class="goo-toggle__state" aria-hidden="true">Off</span>
+      </label>
+    </div>
+
+    <nav class="h__social" data-tune="hero socials" aria-label="Social links">
+      <a href="#" aria-label="ArtStation">AS</a>
+      <a href="#" aria-label="itch.io">IO</a>
+      <a href="#" aria-label="GitHub">GH</a>
+      <a href="#" aria-label="X">X</a>
+    </nav>
+  </section>
+
+  <div class="col sec" id="sec-projects">
+    <div class="shead">
+      <span class="shead__l">Projects</span>
+      <a class="shead__r js-magnetic" data-strength="25" href="#">View all &rarr;</a>
+    </div>
+
+    <!-- ===== CARDS — project-cards-expensive: SQUARE bento + pink STAR pins (capped landing set) ===== -->
+  <div class="wrap sec" id="sec-projects">
+    <div class="merged-cards merged-cards--square epx-cards" data-tune="cards grid">
+      <div data-column-span="6" data-row-span="2" class="posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+          <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Compute Grass</h3><p class="card-meta">Unity &middot; HLSL &middot; Compute</p></div>
+            </div>
+            <div class="card-back"><p class="takeaway-quote">"One gust, half a million blades."</p><p class="takeaway-text">The blade count mattered less than the wind phase reading as a single gust across the field.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+      <div data-column-span="6" class="posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+          <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Decompiling the Shaders of ZZZ!</h3><p class="card-meta">Rendering study &middot; HLSL</p></div>
+            </div>
+            <div class="card-back"><p class="takeaway-quote">"Rebuilt a shipped game's shaders from scratch."</p><p class="takeaway-text">Half the "magic" was clever use of vertex colors as masks.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+      <div data-column-span="6" class="posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+          <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">2D Physics on the GPU</h3><p class="card-meta">Tooling &middot; Compute &middot; soon</p></div>
+            </div>
+            <div class="card-back"><p class="takeaway-quote">"Full write-up coming soon."</p><p class="takeaway-text">Constraint solving on compute, one tile at a time.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+      <div data-column-span="12" class="posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20">
+          <a href="#" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video></div>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Procedural 3D Mask</h3><p class="card-meta">Unity &middot; Shader</p></div>
+            </div>
+            <div class="card-back"><p class="takeaway-quote">"One flexible tool beats a thousand single-use ones."</p><p class="takeaway-text">The mask graph outlived every bespoke variant it replaced.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="col sec" id="sec-skills">
+    <div class="shead">
+      <span class="shead__l">Skills</span>
+    </div>
+
+    <!-- ===== SKILLS — draw-in-icons, unchanged (magnet + drift + recolor circle) ===== -->
+  <div class="wrap sec">
+    <div class="draw-in-icons" data-tune="tools icons">
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><rect pathLength="1" x="10" y="10" width="44" height="44" rx="8"/><path pathLength="1" d="M30 28v12a4 4 0 0 1-8 0M44 28a5 5 0 0 0-8 4c0 6 8 4 8 8a5 5 0 0 1-8 0"/></svg><span class="draw-in-icons__label">HLSL</span></div>
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0.1s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><circle pathLength="1" cx="32" cy="32" r="5"/><ellipse pathLength="1" cx="32" cy="32" rx="22" ry="9"/><ellipse pathLength="1" cx="32" cy="32" rx="22" ry="9" transform="rotate(60 32 32)"/><ellipse pathLength="1" cx="32" cy="32" rx="22" ry="9" transform="rotate(120 32 32)"/></svg><span class="draw-in-icons__label">Compute</span></div>
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0.2s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><path pathLength="1" d="M32 8l22 12v24L32 56 10 44V20z"/></svg><span class="draw-in-icons__label">Unity</span></div>
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0.3s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><path pathLength="1" d="M12 16h10l10 18 10-18h10L32 52z"/></svg><span class="draw-in-icons__label">Three.js</span></div>
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0.4s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><circle pathLength="1" cx="18" cy="20" r="5"/><circle pathLength="1" cx="18" cy="46" r="5"/><circle pathLength="1" cx="44" cy="33" r="5"/><path pathLength="1" d="M18 25v16M22 44l18-9"/></svg><span class="draw-in-icons__label">Git</span></div>
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0.5s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><path pathLength="1" d="M32 8C20 20 22 30 32 38c10-8 12-18 0-30z"/><path pathLength="1" d="M24 40c0 8 4 12 8 16 4-4 8-8 8-16"/></svg><span class="draw-in-icons__label">RenderDoc</span></div>
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0.6s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><path pathLength="1" d="M10 40c8-22 36-22 44 0-8 8-14-2-22-2s-14 10-22 2z"/></svg><span class="draw-in-icons__label">Blender</span></div>
+      <div class="draw-in-icons__skill js-magnetic" data-strength="34" data-strength-text="16" data-drift="4" style="--d: 0.7s"><svg class="draw-in-icons__icon js-magnetic-inner" viewBox="0 0 64 64" aria-hidden="true"><rect pathLength="1" x="10" y="22" width="44" height="20" rx="10"/><path pathLength="1" d="M22 28v8M30 28v8M40 36l4-8 4 8"/></svg><span class="draw-in-icons__label">C#</span></div>
+    </div>
+  </div>
+  </div>
+
+  <!-- ===== DEMO REEL - was missing entirely from this page (Rod 2026-08-18). Header plus the
+       reel-band component, which is a full-bleed cinematic band with a hatched placeholder face.
+       The band deliberately breaks the ndt column: it is the one full-width moment on the page. -->
+  <div class="col sec" id="sec-reel">
+    <div class="shead">
+      <span class="shead__l">Demo reel</span>
+      <a class="shead__r js-magnetic" data-strength="25" href="#">Watch on YouTube &rarr;</a>
+    </div>
+  </div>
+  <!-- THE REEL BAND IS PULLED (Rod 2026-08-18): "the element holding the demo reel is ugly and i
+       actually have no idea where it even comes from." He is right, and the ledger agrees -
+       element-tracker.md:76 reads `Demo reel embed / placeholder | Slop | ? | - | no ref yet.`
+       Tier Slop, Source empty, no reference. It came from nowhere, and I shipped it into this page
+       earlier today anyway. Replaced with the honest placeholder language (D9) until a real
+       treatment is sourced, because a fabricated element pretending to be a design is worse than
+       an empty slot that says so. -->
+  <div class="col sec">
+    <div class="ph">Demo reel &mdash; NO SOURCE YET. Slot reserved, treatment not designed.</div>
+  </div>
+
+  <!-- ===== SCENE SPACE - empty stretch so the three.js scene bottom reads like the original
+       page. Hidden automatically when the scene is off (bloom mode). ===== -->
+  <div class="scene-space" data-tune="scene space" aria-hidden="true"></div>
+
+</main>
+
+<footer class="site-footer" data-tune="footer">thanks for wandering by
+  <div class="site-footer__links"><a class="site-footer__link js-magnetic" data-strength="30" href="#">about me &rarr;</a></div>
+</footer>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; FINAL LANDING &middot; A3 ndt + V6 &middot;
+  <a href="/redesign-lab/new-landing.html">previous</a> &middot;
+  <a href="/redesign-lab/hero-tests.html?v=v6">hero source</a></div>
+
+<script type="module">
+import { init as initTopBar } from '/redesign-lab/extracted/components/top-bar/top-bar.js';
+import { init as initCards } from '/redesign-lab/extracted/components/project-cards-expensive/project-cards-expensive.js';
+import { init as initIcons } from '/redesign-lab/extracted/components/draw-in-icons/draw-in-icons.js';
+import { init as initMagnetic } from '/redesign-lab/extracted/components/drift-magnet/drift-magnet.js';
+import { loadPalette, applyPalette } from '/redesign-lab/extracted/bench/palette-store.js';
+initTopBar(document);   /* bar slap toggles (flap state + magnet) */
+initCards(document);
+initIcons(document);
+initMagnetic(document); /* the scene switch is magnetic; the hero component is not used here */
+applyPalette(loadPalette());
+</script>
+<script>
+/* live clock. 109ichiki runs one in its frame gutter, so the device is sourced, not invented.
+   Local time, seconds ticking, so the landing has one thing on it that is genuinely now. */
+(function(){
+  var el=document.querySelector('.h__clock');
+  if(!el) return;
+  function tick(){
+    var d=new Date(), p=function(n){return String(n).padStart(2,'0')};
+    el.textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  }
+  tick(); setInterval(tick,1000);
+})();
+
+/* V6: the social rail measures its distance from the vertical name block instead of from the hero
+   centre, using the SAME 48px the block takes from the top bar (Rod 2026-08-16). The block's
+   height is type-dependent and clamped in vh, so no CSS constant can express where it ends. */
+(function(){
+  var vert=document.querySelector('.h__vert'), rail=document.querySelector('.h__social'), GAP=48;
+  if(!vert||!rail) return;
+  function place(){ rail.style.top=(vert.offsetTop+vert.offsetHeight+GAP)+'px'; }
+  new ResizeObserver(place).observe(vert);
+  place();
+})();
+
+/* scene <-> bloom pair (hana pattern). Default = SCENE, like the original page; bloom-mode hides
+   the three.js canvas AND the scene-space. ?bloom=1 starts in bloom. */
+(function(){
+  var bg=document.getElementById('hana-bg'),b=document.body,sw=document.getElementById('hero-scene');
+  function set(scene){
+    b.classList.toggle('bloom-mode',!scene);
+    bg.style.opacity=scene?0:1;
+    if(sw&&sw.checked!==scene){sw.checked=scene;}
+  }
+  if(sw){sw.addEventListener('change',function(){set(sw.checked);});}
+  set(!/[?&]bloom=1/.test(location.search));
+})();
+</script>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+</body>
+</html>

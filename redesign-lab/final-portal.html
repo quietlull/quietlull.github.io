@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FINAL - Portal</title>
+<!--
+  ===== THE "FINAL" GROUP (started 2026-08-18, ROD) =====
+  "i want you to start a new group of pages called final... each of these pages will contain just
+   the chosen blockout and we will replace and add each element one by one so everything on the
+   page has had human approval."
+
+  SO THE RULE FOR THIS FILE IS ABSOLUTE:
+    - It starts as the CHOSEN BLOCKOUT and nothing else. Every slot is greybox.
+    - A slot becomes real ONLY when Rod has approved that specific element. Not when it looks
+      ready, not when a component exists, not when another lab page has one.
+    - Nothing is added that the blockout does not declare. An extra element is a PROPOSAL and goes
+      back to the blockout first (docs/PAGE-PROCESS.md, THE BLOCKOUT IS A CONTRACT).
+    - Every 'approved' state below cites Rod saying so.
+
+  CHOSEN BLOCKOUT: portal-blockout.html?v=orbit
+  WHY: Space Jam orbital (D15) - the only VERIFIED portal of the two candidates. Rod wants the 109ichiki/zutomayo popup windows folded in to replace the unlabelled satellites.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/button-kit/button-kit.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/portal-window/portal-window.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<style>
+/* The universal reset lives in foundations.css, in the `reset` cascade layer, and this page
+   loads it. The duplicate that used to sit here was UNLAYERED, and unlayered CSS beats every
+   layer - so `margin:0;padding:0` was overriding the padding of every layered component.
+   Measured: 452 computed-style differences across five pages, all from this one line. */
+html{scroll-behavior:smooth}
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+/* BREATHING IS OFF ON THIS PAGE. Rod 2026-08-23: "the cards seem to be shimmering and the text is
+   moving? are they trying to do the breathing? this is a deprecated feature please remove it."
+   He was right, and it was TWO separate things:
+     1. `foundations.css:27` puts a fixed full-page orange glow on `body::before` and runs it on a
+        16s `breathe-bg` loop (opacity .5->1, scale 1->1.07). Measured running on this page.
+     2. drift-magnet's ambient drift on every window - see the markup, `data-drift` is gone.
+   Only (1) is the breathing system proper. It is killed HERE rather than in foundations.css,
+   because that file is shared by every lab page and removing it there would silently change all of
+   them. **STILL LIVE EVERYWHERE ELSE - say the word if it should come out globally.** */
+body::before{animation:none;content:none}
+
+/* ---- the scene, when a page carries it ---- */
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;transition:opacity .5s;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+
+/* ---- PENDING SLOT: the greybox. Deliberately ugly. It must never read as a design. ---- */
+.slot{position:relative;border:1.5px dashed #4a4a4a;background:rgba(20,20,20,.55);
+  display:grid;place-items:center;text-align:center;padding:22px 18px;gap:6px}
+.slot__name{font-family:var(--font-mono,ui-monospace),monospace;font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:#9a9a9a}
+.slot__wait{font-family:var(--font-mono,ui-monospace),monospace;font-size:.58rem;letter-spacing:.06em;
+  color:#6f6f6f;max-width:52ch;line-height:1.6}
+.slot__tag{position:absolute;top:6px;left:6px;font:9px ui-monospace,monospace;letter-spacing:.12em;
+  color:#141414;background:#8a8a8a;padding:1px 6px}
+
+/* ---- APPROVED slot: a hairline mark so Rod can see at a glance what is real ---- */
+.ok{position:relative}
+.ok::after{content:'APPROVED';position:absolute;top:6px;left:6px;z-index:40;
+  font:9px ui-monospace,monospace;letter-spacing:.12em;color:#0d2a12;background:#7ee0b8;
+  padding:1px 6px;pointer-events:none;opacity:0;transition:opacity .2s}
+body.show-state .ok::after{opacity:1}
+body:not(.show-state) .slot__tag{opacity:0}
+
+/* ---- the state panel ---- */
+#state{position:fixed;right:14px;bottom:14px;z-index:90;width:300px;max-height:70vh;overflow:auto;
+  background:rgba(8,10,18,.95);border:1px solid rgba(255,255,255,.2);padding:12px 13px;
+  font:11px/1.6 ui-monospace,Consolas,monospace;color:#dcdcdc}
+#state h4{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+#state .bar{height:6px;background:#2a2a2a;margin:6px 0 10px}
+#state .bar i{display:block;height:100%;background:#7ee0b8}
+#state ul{margin:0;padding-left:14px}#state li{margin-bottom:2px;color:#bdbdbd}
+#state .a li{color:#7ee0b8}
+#state button{background:none;border:1px solid #555;color:#bbb;font:9px ui-monospace,monospace;
+  letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;cursor:pointer;margin-top:8px}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font:10px ui-monospace,monospace;
+  color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold,#F3B53C)}
+
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:56px 0 120px;position:relative;z-index:1}
+.stack{display:grid;gap:18px}
+.two{display:grid;grid-template-columns:6fr 12fr;gap:32px;align-items:start}
+@media(max-width:900px){.two{grid-template-columns:1fr}}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.three{grid-template-columns:1fr}}
+
+/* ==========================================================================================
+   THE LAYOUT.  Transcribed from portal-blockout.html?v=orbit, itself read from
+   www.spacejam.com/1996/ - 6.8KB of served HTML, one CSS rule, still live.  D15: "PORTAL ->
+   Space Jam orbital", and it is treated as settled because it is the only VERIFIED portal of the
+   two remaining references (ZUTOMAYO's page-type claim was never confirmed).
+
+   THE LOAD-BEARING IDEA, in the blockout's own words: hierarchy is carried by POSITION and AREA,
+   not type scale. The satellites are deliberately unaligned to any grid and NO TWO ARE THE SAME
+   SIZE. Every size and position below is a real measured element from the source - do not tidy
+   them into a grid, that is the one thing that would kill this page.
+
+   Numbers are the blockout's, unchanged:
+     .band  488x60 centred, 12px below, carrying the greeting + subtitle as two 50x11 strips
+     .field 500x520 centred, position:relative
+     .centre 272x165 at left:114 top:178 - the ONLY element allowed to be this big
+     .ground dotted, radial-gradient(#242424 1px, transparent 1px) at 24px, 60px bottom padding
+     8 satellites at [w,h,left,top]:
+       131x56 @40,20 · 104x67 @330,70 · 95x77 @60,360 · 88x44 @360,300
+       72x60 @180,60 · 66x52 @20,240 · 80x40 @300,180 · 60x60 @400,430
+
+   THE THREE DOORS: the live _layouts/portal.html ships Tech Art, Game Design AND a Ramblings link
+   in .portal-extras, so this is a THREE-way, not a two-way, with Ramblings demoted.
+   THE FIVE UNLABELLED SATELLITES are where Rod wants the 109ichiki/zutomayo popup windows folded
+   in (D15). They are drawn at their measured sizes and left unlabelled, which is what the blockout
+   does - not filled with something invented.
+
+   The dotted ground is kept because it is the blockout's, but note it is the one element here that
+   competes with the live scene rather than letting it through. Flagged for Rod, not changed.
+   ========================================================================================== */
+/* the dotted ground is GONE: it competed with the live scene rather than letting it
+   through, which is the "way it was in reality" Rod rejected. */
+/* NO SCROLL (Rod 2026-08-23: "portal page doesnt need to scroll"). The page was 111px over at
+   900px tall - band 60 + field 700 + note 119 + a 60px spacer + 60px of padding. It is a
+   viewport-locked COLUMN now: band and note take what they need, the field takes the rest.
+   That is also why the field no longer sets its own height - a fixed height and "fill the
+   leftover space" are the same instruction given twice, and they would disagree. */
+.pground{height:100svh;display:flex;flex-direction:column;overflow:hidden}
+/* the .band (greeting + subtitle strips) is REMOVED - Rod 2026-08-23: "remove the greeting
+   and subtitle". Its 60px + 12px went to the field, which is why the windows can be bigger
+   without crowding. Space Jam had a band; we no longer do, and that is a deliberate
+   departure from the blockout rather than an oversight. */
+/* THE FIELD IS THE PAGE (Rod 2026-08-23: "it doesnt scale up to meet the edges of the page").
+   Was a fixed 500x520 stage floating in the middle, which is why the constellation could not grow
+   and why thrown windows bounced off a wall in mid-air. Full width, viewport-tall, and the JS reads
+   clientWidth/clientHeight every resize - so the drag bounds ARE these edges, by construction. */
+.field{position:relative;width:100%;margin:51px 0 0;flex:1 1 auto;
+  /* min-height:0 or a flex item refuses to shrink past its content and puts the scrollbar
+     straight back. The constellation copes: positions are fractions of each window's travel
+     range, so they stay inside the field at any height it ends up with. */
+  min-height:0}
+/* .slot's 22px/18px padding is sized for a full-width slot and cannot fit inside a 44px or 40px
+   satellite - it forced both to 46px and broke two of the eight measured sizes. Padding is cut
+   here so the satellites hold the source's exact geometry, which is the only thing this variant
+   is carrying. Verified: all 8 now match [w,h] exactly. */
+.sat{position:absolute}
+.sat.slot{padding:3px;gap:2px;overflow:hidden}
+.sat .slot__tag{top:2px;left:2px;font-size:8px;padding:0 3px}
+/* 114,178 + 272x165 in a 500x520 stage is EXACTLY centred (centre lands at 250,260). So it is
+   restated as a real centring rather than kept as two magic offsets that only worked at one size. */
+/* THE WELCOME LINE (Rod 2026-08-24): "add a welcome to the page under my name for that page",
+   then "if its measured and ready add it to the page how can i confirm its good if i cant see it".
+   Fair - the PLACEMENT was ready and only the words were not, so it goes in with marked placeholder
+   copy for him to judge and replace.
+
+   IT COSTS THE FIELD ZERO HEIGHT, and that is the whole reason it can exist. The greeting he
+   deleted before (P136) was a `.band` inside the flex column, so its 60px came straight out of the
+   window field - removing it took the field 764 -> 836, which is what let the windows grow. This is
+   absolutely positioned against the same centre point, so it takes nothing.
+
+   A SIBLING OF `.centre`, NOT A CHILD. `.centre` is the reset control, `role="button"` with its own
+   `aria-label`, so words inside it would be swallowed by that label and would sit in the button's
+   hit area.
+
+   500px IS A MEASURED CEILING, not a round number: below the name there is at least 155px of clear
+   space at every viewport tested up to a 500px-wide line, and at 600px it collides with the
+   ArtStation window at 1280 and 1440x900.
+
+   H3 RUNG, at 0.58x the mark so it cannot compete. H2 would be 0.92x its size and also carries a
+   44px hanging indent meant for a counter it would never get.
+   ANCHORED TO THE NAME, NOT TO THE MIDDLE. Rod 2026-08-25: "the welcome to my page needs to be
+   placed relative to the name boil text make it 20px below that". It was `top: 50% + 3.2rem`,
+   measured from the middle of the window field, and the name is NOT measured from there, so the
+   gap drifted with the viewport: 150px seen at 1029x918 against the 51px the number claimed. The
+   99px of difference is three things and the big one moves. 86px is the empty lower half of
+   `.centre` (its box is 165px x --pscale and the name sits at the TOP of it), 5.7px is the space
+   under the name's letters, 7.2px the space over this line's.
+   So the calc walks DOWN FROM THE NAME instead: field middle, back up half of `.centre`'s scaled
+   box to reach its top edge, down the name's own line box (its font-size x the 1.15 line-height),
+   then the 20px he asked for. The two font-metric terms are folded into the constants: 1.15 minus
+   0.1585 is the .9915, taking off the space under the letters, and 12.8 is his 20 minus the 7.2
+   over this line's.
+   MEASURED, NOT DERIVED. Those ratios come off the live page with canvas ink metrics, max across
+   the three Lineboil faces, and the font API quantises them to whole pixels, so the gap lands
+   within about half a pixel of 20 rather than exactly on it. They also encode THESE TWO STRINGS,
+   so changing the name or this line means re-measuring.
+   IT HOLDS AT EVERY SIZE, which the old number could not: both of the terms that move are in the
+   calc, so --pscale and the 3.5vw clamp are tracked instead of ignored.
+   THE TUNER WILL FLATTEN THIS. `portal-ratios.html` emits `top: <rem>` for its `welcome line` and
+   `gap under the name` dials, so tuning either one replaces this calc with a fixed number and the
+   drift comes straight back. That emit needs updating before those dials are used again. */
+.centre__welcome{position:absolute;left:calc(50% + 2px);top:calc(50% - (165px * var(--pscale,1)) / 2 + clamp(1.6rem,3.5vw,6rem) * .9915 + 12.8px);transform:translateX(-50%);
+  margin:0;max-width:500px;width:max-content;text-align:center;
+  font-size:1.5rem;font-weight:300;line-height:1.35;color:var(--h3-color,#fbbf24);
+  pointer-events:none}
+.centre__welcome[data-placeholder="true"]{opacity:.55;font-style:italic}
+.centre{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:calc(272px * var(--pscale,1));height:calc(165px * var(--pscale,1))}
+/* the note is lab chrome and it was eating 119px of a page that must fit the viewport, so it is
+   tighter and wider rather than tall and narrow. It must never take space from the design. */
+.note{flex:none;max-width:1000px;margin:0 auto;text-align:center;
+  font:10px/1.55 ui-monospace,monospace;color:#7d7d7d;padding:8px 12px 10px}
+/* The old @media(max-width:560px) block scaled the whole 500px stage down with a transform and
+   clipped the overflow. It is GONE because the thing it worked around is gone - the field is fluid,
+   so it fits every width by measuring rather than by being shrunk. */
+
+/* generated separators, so the markup stays a plain list and a middot cannot orphan at a wrap */
+
+
+
+
+
+
+/* the name is the way home (Rod 2026-08-23: "clicking my name should bring you to the landing
+   page"). It keeps the name styling and does NOT take the gold link colour - it reads as the
+   signature, not as another nav item, until you touch it. */
+
+
+/* ============ PORTAL WINDOWS =============================================================
+   THE LOOK NOW LIVES IN A COMPONENT: extracted/components/portal-window/portal-window.css,
+   transcribed from zutomayo's own served CSS (Rod 2026-08-23: "can you start making the real
+   component based on zutomayo?"). Everything that was inline here - frame, bar, close, body,
+   glow - moved there so it can be judged and reused rather than being buried in one page.
+
+   WHAT STAYS HERE is only what is about THIS PAGE rather than about a window: the positioning
+   shell the drag engine drives, and the identity mark. A component should not know that it is
+   absolutely positioned inside a portal field.
+
+   The layout numbers, the source ledger and the "what is theirs vs ours" split all live in the
+   component's CSS header now. Read that before changing any of this.
+   ========================================================================================== */
+.pwin{position:absolute;top:0;left:0;z-index:10;
+  width:var(--win-w);height:var(--win-h);
+  will-change:transform}
+/* The centre mark. Colour is the H0 token so it cannot drift from the landing's own mark; the
+   size is read off the 272x165 the layout reserves for it rather than picked. */
+.centre__mark{display:block;text-align:center;font-size:clamp(1.6rem,3.5vw,6rem);
+  line-height:1.15;color:var(--h0-color,#f86a03);text-transform:uppercase;letter-spacing:-.02em}
+</style>
+<!-- No footer on the portal. Rod 2026-08-23: "no footer on the portal." It is a full-bleed
+     page that never scrolls, so there is nowhere for a footer to sit. The stylesheet link is
+     gone with it - the page was loading the component and rendering nothing. -->
+<link rel="stylesheet" href="/redesign-lab/extracted/components/line-boil/line-boil.css">
+<link rel="stylesheet" href="/redesign-lab/decisions.css">
+<link rel="stylesheet" href="/redesign-lab/focus-ring.css">
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0" style="opacity:0"></div>
+<div id="scrim"></div>
+
+<main id="main"><div class="pground"><div class="field"><div class="pwin pwin--door pwin--lead" data-slot="door: Tech Art" data-state="approved" data-x="97" data-y="3" data-w="231" data-h="150"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">Tech Art</span><button class="pwin__close" type="button" aria-label="Close Tech Art"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="/redesign-lab/final-projects.html"><span class="pwin__fill" aria-hidden="true"></span><span class="pwin__enter kit-button kit-button--outline" aria-hidden="true"><span class="kit-button__fill" aria-hidden="true"></span><span class="kit-button__label">Enter</span></span><span class="pwin__sr">Tech Art</span></a></div></div></div><div class="pwin pwin--door" data-slot="door: Ramblings" data-state="approved" data-x="254" data-y="247" data-w="146" data-h="149"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">Ramblings</span><button class="pwin__close" type="button" aria-label="Close Ramblings"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="/redesign-lab/final-ramblings.html"><span class="pwin__fill" aria-hidden="true"></span><span class="pwin__enter kit-button kit-button--outline" aria-hidden="true"><span class="kit-button__fill" aria-hidden="true"></span><span class="kit-button__label">Enter</span></span><span class="pwin__sr">Ramblings</span></a></div></div></div><div class="pwin pwin--door pwin--lead" data-slot="door: Game Design" data-state="approved" data-x="59" data-y="342" data-w="128" data-h="115"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">Game Design</span><button class="pwin__close" type="button" aria-label="Close Game Design"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="/redesign-lab/final-projects.html"><span class="pwin__fill" aria-hidden="true"></span><span class="pwin__enter kit-button kit-button--outline" aria-hidden="true"><span class="kit-button__fill" aria-hidden="true"></span><span class="kit-button__label">Enter</span></span><span class="pwin__sr">Game Design</span></a></div></div></div><div class="pwin pwin--social" data-slot="social: GitHub" data-state="approved" data-x="224" data-y="388" data-w="62" data-h="62"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">GitHub</span><button class="pwin__close" type="button" aria-label="Close GitHub"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="https://github.com/quietlull" target="_blank" rel="noopener noreferrer"><svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span class="pwin__sr">GitHub</span></a></div></div></div><div class="pwin pwin--social" data-slot="social: Twitter" data-state="approved" data-x="136" data-y="343" data-w="68" data-h="68"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">Twitter</span><button class="pwin__close" type="button" aria-label="Close Twitter"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="https://twitter.com/AQuietLull" target="_blank" rel="noopener noreferrer"><svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg><span class="pwin__sr">Twitter</span></a></div></div></div><div class="pwin pwin--social" data-slot="social: LinkedIn" data-state="approved" data-x="293" data-y="74" data-w="58" data-h="58"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">LinkedIn</span><button class="pwin__close" type="button" aria-label="Close LinkedIn"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="https://www.linkedin.com/in/rodneyfan/" target="_blank" rel="noopener noreferrer"><svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg><span class="pwin__sr">LinkedIn</span></a></div></div></div><div class="pwin pwin--social" data-slot="social: ArtStation" data-state="approved" data-x="97.5" data-y="201" data-w="72" data-h="72"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">ArtStation</span><button class="pwin__close" type="button" aria-label="Close ArtStation"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="https://www.artstation.com/rodneyfan" target="_blank" rel="noopener noreferrer"><svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M0 17.723l2.027 3.505h.001a2.424 2.424 0 0 0 2.164 1.333h13.457l-2.792-4.838H0zm24 .025c0-.484-.143-.935-.388-1.314L15.728 2.728a2.424 2.424 0 0 0-2.142-1.289H9.419L21.598 22.54l1.92-3.325c.378-.637.482-.919.482-1.467zm-11.129-3.462L7.428 4.858l-5.444 9.428h10.887z"/></svg><span class="pwin__sr">ArtStation</span></a></div></div></div><div class="pwin pwin--social" data-slot="social: itch.io" data-state="approved" data-x="417" data-y="353" data-w="54" data-h="54"><div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6"><div class="pwin__bar"><span class="pwin__title">itch.io</span><button class="pwin__close" type="button" aria-label="Close itch.io"><span class="pwin__x"></span></button></div><div class="pwin__body"><a href="https://rodneyfan.itch.io/" target="_blank" rel="noopener noreferrer"><svg class="pwin__icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M3.13 1.338C2.08 1.96.02 4.328 0 4.95v1.03c0 1.303 1.22 2.45 2.325 2.45 1.33 0 2.436-1.102 2.436-2.41 0 1.308 1.07 2.41 2.4 2.41 1.328 0 2.362-1.102 2.362-2.41 0 1.308 1.137 2.41 2.466 2.41h.024c1.33 0 2.466-1.102 2.466-2.41 0 1.308 1.034 2.41 2.363 2.41 1.33 0 2.4-1.102 2.4-2.41 0 1.308 1.106 2.41 2.435 2.41C22.78 8.43 24 7.282 24 5.98V4.95c-.02-.62-2.082-2.99-3.13-3.612-3.253-.114-5.508-.134-8.87-.133-3.362 0-7.945.053-8.87.133zm6.376 6.477a2.74 2.74 0 0 1-.468.602c-.5.49-1.19.795-1.947.795a2.786 2.786 0 0 1-1.95-.795c-.182-.178-.32-.37-.446-.59-.127.222-.303.412-.486.59a2.788 2.788 0 0 1-1.95.795c-.092 0-.187-.025-.264-.052-.107 1.113-.152 2.176-.168 2.95v.005l-.006 1.167c.02 2.334-.23 7.564 1.03 8.85 1.952.454 5.545.662 9.15.663 3.605 0 7.198-.21 9.15-.664 1.26-1.284 1.01-6.514 1.03-8.848l-.006-1.167v-.004c-.016-.775-.06-1.838-.168-2.95-.077.026-.172.052-.263.052a2.788 2.788 0 0 1-1.95-.795c-.184-.178-.36-.368-.486-.59-.127.22-.265.412-.447.59a2.786 2.786 0 0 1-1.95.794c-.76 0-1.446-.303-1.948-.793a2.74 2.74 0 0 1-.468-.602 2.738 2.738 0 0 1-.463.602 2.787 2.787 0 0 1-1.95.794h-.16a2.787 2.787 0 0 1-1.95-.793 2.738 2.738 0 0 1-.464-.602zm-2.004 2.59v.002c.795.002 1.5 0 2.373.953.687-.072 1.406-.108 2.125-.107.72 0 1.438.035 2.125.107.873-.953 1.578-.95 2.372-.953.376 0 1.876 0 2.92 2.934l1.123 4.028c.832 2.995-.266 3.068-1.636 3.07-2.03-.075-3.156-1.55-3.156-3.025-1.124.184-2.436.276-3.748.277-1.312 0-2.624-.093-3.748-.277 0 1.475-1.125 2.95-3.156 3.026-1.37-.004-2.468-.077-1.636-3.072l1.122-4.027c1.045-2.934 2.545-2.934 2.92-2.934zM12 12.714c-.002.002-2.14 1.964-2.523 2.662l1.4-.056v1.22c0 .056.56.033 1.123.007.562.026 1.124.05 1.124-.008v-1.22l1.4.055C14.138 14.677 12 12.713 12 12.713z"/></svg><span class="pwin__sr">itch.io</span></a></div></div></div><!-- THE CENTRE IDENTITY MARK, no longer a greybox. Rod 2026-08-23: "add the line boil text to
+     the top bar as well and the portal". This was the last thing P100 was blocking - the slot
+     header said it "will be replaced by the line boil h0 font later", and this is later.
+     It keeps its second job as the RESET control: clicking it restores every closed window. -->
+<div class="centre" data-slot="identity mark (name)" data-state="pending" role="button" tabindex="0" aria-label="Restore all closed windows"><span class="centre__mark lb">rodney fan</span></div><h3 class="centre__welcome">welcome to my page!</h3></div><div class="note"><b>Drag any window from anywhere on it; throw it and it bounces off the page edges.</b> The three large windows are the sections; the five smaller ones are the social links and open in a new tab. &middot; Sizes and the original constellation come from Space Jam, but the arrangement is Rod's own, hand-placed. &middot; Frame RATIOS are zutomayo's; the look is not (see the component header). Magnetism, glow and drift are the site's own engines; <b>drag, throw, bounce and the proximity lean are ours</b>.</div></div></main>
+<div id="state"></div>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; FINAL &middot; Portal &middot;
+  <a href="/redesign-lab/portal-blockout.html?v=orbit">its blockout</a></div>
+<script>
+(function(){
+  var slots=[].slice.call(document.querySelectorAll('[data-slot]'));
+  var ok=slots.filter(function(s){return s.dataset.state==='approved';});
+  var el=document.getElementById('state');
+  var pct=slots.length?Math.round(ok.length/slots.length*100):0;
+  el.innerHTML='<b>'+ok.length+' of '+slots.length+' slots approved</b>'
+    +'<div class="bar"><i style="width:'+pct+'%"></i></div>'
+    +'<h4>approved</h4><ul class="a">'+(ok.length?ok.map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join(''):'<li style="color:#6f6f6f">none yet</li>')+'</ul>'
+    +'<h4>waiting on you</h4><ul>'+slots.filter(function(s){return s.dataset.state!=='approved';})
+      .map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join('')+'</ul>'
+    +'<button id="tog">toggle state badges</button>';
+  document.getElementById('tog').addEventListener('click',function(){
+    document.body.classList.toggle('show-state');});
+})();
+</script>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+
+<script type="module" src="/redesign-lab/effects/sparkler-init.js"></script>
+<script type="module" src="/redesign-lab/effects/scene-mode.js"></script>
+<script>
+/* THE TEXT FILL — a PLACEHOLDER, and deliberately a small one. Rod 2026-08-23: "do a spam of
+   repeated text of what the header says inside the box for now."
+
+   It is generated from each window's OWN title rather than written into the markup, for two
+   reasons: eight windows x ~40 repeats is 300+ lines of noise in a file people have to read, and a
+   baked copy would drift the moment a title changed. Read the title, repeat it, done.
+
+   The fill is `aria-hidden` and each link carries a `.pwin__sr` label instead. Repeating a word
+   forty times is texture to look at and pure noise to listen to, so a screen reader gets the name
+   once. Deleting this script and the two spans is the whole removal when real content arrives. */
+(function () {
+  var REPEATS = 40;
+  document.querySelectorAll('.pwin').forEach(function (win) {
+    var title = win.querySelector('.pwin__title');
+    var fill = win.querySelector('.pwin__fill');
+    if (!title || !fill) return;
+    var word = title.textContent.trim();
+    fill.textContent = new Array(REPEATS).fill(word).join(' ');
+  });
+})();
+</script>
+<script type="module" src="/redesign-lab/effects/portal-windows.js"></script>
+<script type="module">
+  /* The centre identity mark boils like the landing's H0 - same component, same picked pattern. */
+  import { initLineBoil } from '/redesign-lab/extracted/components/line-boil/line-boil.js';
+  initLineBoil(document.querySelector('.centre__mark'));
+</script>
+</body>
+</html>

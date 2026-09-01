@@ -1,0 +1,85 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* PICTURE FRAME — 109ichiki.com's outer frame:
+     ._frame { position:fixed; width:100vw; height:100svh; top:0; left:0;
+               pointer-events:none; z-index:var(--z-index-outer-frame) }
+     an SVG <rect stroke-width="1" stroke="var(--color-border)"> with rx:8px (6px ≤768), plus a
+     <mask> whose second rect knocks out the middle so the band OUTSIDE the stroke is painted with
+     the page background.
+     --padding-outside: 20px  (15px ≤768)
+
+   Rebuilt in CSS with no JS. Their SVG exists only because the rect has to be resized to the
+   viewport in script; `inset` does that for free, and one outset box-shadow paints the same
+   masked band. Same result, no resize listener.
+
+   THE ONE REAL DIFFERENCE from the source: 109's page background is flat, so an opaque band costs
+   them nothing. Ours is the live lantern scene, so an opaque band crops it — which turns the frame
+   into a window onto the scene. That is a taste call, so both are here:
+     default        opaque band, faithful to 109
+     --open         stroke only, scene runs to the viewport edge */
+
+.picture-frame {
+  --frame-inset: 20px;
+  --frame-radius: 8px;
+  position: fixed;
+  inset: var(--frame-inset);
+  z-index: 45;
+  pointer-events: none;
+  border: 1px solid var(--color-line);
+  border-radius: var(--frame-radius);
+  box-shadow: 0 0 0 100vmax var(--color-night); /* = their mask */
+}
+
+.picture-frame--open {
+  box-shadow: none;
+}
+
+/* 109 keeps small type in the gutter the frame creates, rather than wasting it */
+.picture-frame__gutter {
+  position: fixed;
+  top: 0;
+  right: var(--frame-inset, 20px);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: var(--frame-inset, 20px);
+  z-index: 46;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+@media (max-width: 768px) {
+  .picture-frame {
+    --frame-inset: 15px;
+    --frame-radius: 6px;
+  }
+}
+
+/* bench-only explainer: fixed furniture cannot demo itself inside a panel */
+.picture-frame-demo {
+  max-width: 60ch;
+  color: var(--color-muted);
+}
+}

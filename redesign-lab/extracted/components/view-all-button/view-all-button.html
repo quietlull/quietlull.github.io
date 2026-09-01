@@ -1,0 +1,160 @@
+<!-- view-all-button - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=view-all-button can mount it. Page chrome is scoped to .cb-view-all-button; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: view-all-button - three versions at the measured blockout size -->
+<!-- 300 IS REQUESTED HERE ON PURPOSE. final-landing.html:25 asks only for 400;500;700, so every
+     weight-300 rule in decisions.css silently renders 400 on that page. This demo shows the real
+     300 so the choice is judged on what the register actually specifies. See the .md. -->
+<div class="cb cb-view-all-button">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-view-all-button {
+  margin: 0;
+  padding: 40px 0 80px;
+  background: var(--color-night, #070c23);
+  color: var(--color-text, #f5f3ef);
+  font-family: var(--font-body, "M PLUS Rounded 1c", sans-serif);
+  font-weight: 300;
+
+  /* DEMO CHROME ONLY. Nothing below this line is part of the component. */
+  & .doc { max-width: 1421px; margin: 0 auto; padding: 0 20px;
+  }
+  & h1 { font-size: 1.1rem; font-weight: 300; letter-spacing: 0.02em; margin: 0 0 6px;
+  }
+  & .doc p { font-size: 0.82rem; line-height: 1.6; color: var(--color-silver, #a3a19d); margin: 0 0 8px;
+  }
+  & code { font-family: var(--font-mono, "IBM Plex Mono", monospace); font-size: 0.78em;
+  }
+  & .scroller { overflow-x: auto; padding-bottom: 8px;
+  }
+  & .case { margin: 34px 0 0;
+  }
+  & .case > h2 {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.68rem; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--color-gold, #fbbf24); margin: 0 0 10px;
+  }
+  /* THE RESERVATION, drawn from the measurements in the CSS header.
+   1421 x 64 is analysis/2026-08-23-blockout-contract.md. My own re-measure says 1425 x 64; the
+   4px is scrollbar width. The contract number is used here because it is the reservation I was
+   handed, and the narrower of the two is the safer box to fit. */
+  & .stage {
+  position: relative;
+  width: 1421px;
+  height: 64px;
+  padding: 0 20px;                 /* landing-blockout.html:55, .rowhead padding, verbatim */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  outline: 1px dashed rgba(255, 255, 255, 0.22);
+  outline-offset: -1px;
+  }
+  & .stage::before {
+  content: "reserved band 1421 x 64";
+  position: absolute; left: 0; top: -15px;
+  font-family: var(--font-mono, monospace); font-size: 9px; letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.35);
+  }
+  /* the SLOT: .rowhead .r measured clean at 84.98 x 28, right edge at band right minus 20px. */
+  & .slot {
+  position: relative;
+  width: 84.98px;
+  height: 28px;
+  outline: 1px dashed rgba(251, 191, 36, 0.55);
+  outline-offset: -1px;
+  }
+  & .slot::before {
+  content: "reserved slot 84.98 x 28";
+  position: absolute; right: 0; bottom: -15px;
+  white-space: nowrap;
+  font-family: var(--font-mono, monospace); font-size: 9px; letter-spacing: 0.08em;
+  color: rgba(251, 191, 36, 0.6);
+  }
+  /* the component is anchored to the slot's RIGHT edge and vertically centred, the way the
+   blockout anchors it, so any overflow shows to the left and above/below the dashed box. */
+  & .slot > .va {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  }
+  /* the demo's own readout. Measures what actually rendered; it does not trust this file. */
+  & .fit {
+  margin: 22px 0 0;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.7rem; line-height: 1.9; color: var(--color-silver, #a3a19d);
+  border-top: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+  padding-top: 12px;
+  }
+  & .fit b { color: var(--color-text, #f5f3ef); font-weight: 500;
+  }
+  & .fit .over { color: var(--color-gold, #fbbf24);
+  }
+}
+</style>
+<div class="doc">
+  <h1>view-all-button</h1>
+  <p>Three real alternatives for the "View all" affordance in the landing PROJECTS HEADER band (D9:
+    every layout keeps it). Dashed white = the reserved band. Dashed gold = the reserved slot,
+    measured off <code>landing-blockout.html</code> at viewport 1440. Hover and tab to each one.</p>
+  <p>Widths only read true at a 1440 viewport. Narrower, the band scrolls sideways rather than
+    reflowing, so the numbers stay honest.</p>
+</div>
+
+<div class="doc">
+
+  <div class="case">
+    <h2>A &middot; spec row &middot; stripe.dev directory row</h2>
+    <div class="scroller"><div class="stage">
+      <h2 class="section-head" style="margin:0;padding:0;border:0">
+        <a class="section-head__name" href="#projects">Featured Projects</a>
+      </h2>
+      <span class="slot"><a class="va va--row" id="vaA" href="/projects/">
+        <span class="va__square" aria-hidden="true"></span>
+        <span class="va__label">View all</span>
+        <svg class="va__arrow" viewBox="0 0 26 27" aria-hidden="true"><path d="M23.2338 12.28L14.7538 20.8V0.239998H11.3538V20.76L2.87375 12.28L0.59375 14.56L13.0738 27L25.5138 14.56L23.2338 12.28Z"/></svg>
+      </a></span>
+    </div></div>
+  </div>
+
+  <div class="case">
+    <h2>B &middot; quiet link &middot; MauriciAbad underline draw + Maxime Heckel arrow spacing</h2>
+    <div class="scroller"><div class="stage">
+      <h2 class="section-head" style="margin:0;padding:0;border:0">
+        <a class="section-head__name" href="#projects">Featured Projects</a>
+      </h2>
+      <span class="slot"><a class="va va--link" id="vaB" href="/projects/">View all<svg class="va__arrow" viewBox="0 0 26 27" aria-hidden="true"><path d="M23.2338 12.28L14.7538 20.8V0.239998H11.3538V20.76L2.87375 12.28L0.59375 14.56L13.0738 27L25.5138 14.56L23.2338 12.28Z"/></svg></a></span>
+    </div></div>
+  </div>
+
+  <div class="case">
+    <h2>C &middot; outlined button &middot; button-kit reused, dennissnellenberg rising fill</h2>
+    <div class="scroller"><div class="stage">
+      <h2 class="section-head" style="margin:0;padding:0;border:0">
+        <a class="section-head__name" href="#projects">Featured Projects</a>
+      </h2>
+      <span class="slot"><a class="va va--outline kit-button kit-button--outline" id="vaC" href="/projects/">
+        <span class="kit-button__fill" aria-hidden="true"></span>
+        <span class="kit-button__label">View all</span>
+        <svg class="va__arrow kit-button__label" viewBox="0 0 26 27" aria-hidden="true"><path d="M23.2338 12.28L14.7538 20.8V0.239998H11.3538V20.76L2.87375 12.28L0.59375 14.56L13.0738 27L25.5138 14.56L23.2338 12.28Z"/></svg>
+      </a></span>
+    </div></div>
+  </div>
+
+  <div class="case">
+    <h2>the same three, in a real row of Rod's project titles</h2>
+    <div class="scroller"><div class="stage" style="height:auto;padding:14px 20px;outline-style:solid;outline-color:rgba(255,255,255,.08);justify-content:flex-start;gap:26px">
+      <span style="font-size:.82rem;color:var(--color-silver)">Compute Grass</span>
+      <span style="font-size:.82rem;color:var(--color-silver)">Decompiling the Shaders of a 2004 Racing Game</span>
+      <span style="font-size:.82rem;color:var(--color-silver)">2D Physics on the GPU</span>
+      <span style="font-size:.82rem;color:var(--color-silver)">Procedural 3D Mask</span>
+      <span style="font-size:.82rem;color:var(--color-silver)">Sprite Baker 9000</span>
+    </div></div>
+  </div>
+
+  <div class="fit" id="fit">measuring...</div>
+</div>
+</div>

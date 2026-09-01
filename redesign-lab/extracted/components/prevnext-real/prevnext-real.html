@@ -1,0 +1,104 @@
+<!-- prevnext-real - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=prevnext-real can mount it. Page chrome is scoped to .cb-prevnext-real; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: prevnext-real - newer / older -->
+<div class="cb cb-prevnext-real">
+<style>
+.cb-prevnext-real {
+  background:#070C23;color:#F5F3EF;font-family:"IBM Plex Mono",monospace;
+  padding:clamp(2rem,5vw,4rem);line-height:1.6
+
+  /* Bench chrome only. */
+  & .wrap {max-width:64rem;margin:0 auto
+  }
+  & h1 {font-family:"M PLUS Rounded 1c",sans-serif;font-size:1.7rem;margin-bottom:.4rem
+  }
+  & .sub {color:#9aa3bd;font-size:.78rem;margin-bottom:2rem
+  }
+  & .lede {border:1px solid rgba(243,181,60,.35);background:rgba(243,181,60,.06);
+  padding:.9rem 1.1rem;font-size:.76rem;color:#9aa3bd;line-height:1.8;margin-bottom:2.4rem
+  }
+  & .lede b {color:#F3B53C;font-weight:500
+  }
+  & h2.bh {color:#F3B53C;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  margin:2.6rem 0 .3rem
+  }
+  & .bnote {color:#9aa3bd;font-size:.74rem;margin-bottom:1rem;max-width:70ch
+  }
+  & .stage {border:1px dashed rgba(255,255,255,.14);padding:26px;background:rgba(255,255,255,.015)
+  }
+  & .readout {color:#7ee0b8;font-size:.66rem;margin-top:.8rem
+  }
+  & .warn {color:#ffb4b4
+  }
+}
+</style>
+<div class="wrap">
+
+<h1>prevnext-real</h1>
+<div class="sub">newer / older &middot; the picked V4, built at last</div>
+
+<div class="lede">
+  <b>THE PICK WAS RECORDED AND THEN NEVER BUILT.</b> component-review says of the three text
+  versions: <i>"NONE OF THESE THREE. The pick is a NEW V4 - two .rc--v2 cards in a 2-lane layout,
+  reusing the approved card."</i> The CSS for it (<code>.pn--cards</code>) was written; the markup
+  never was, in any file in the repo. So the decision existed for a day with nothing to look at.
+  Rod 2026-08-24: <i>"build out all the remaining components except the trophy case."</i><br><br>
+
+  <b>Nothing is invented here.</b> The two lanes, the kicker above each card, the outward text
+  alignment and the Newer/Older labelling are all specified by <code>prevnext-real.css</code>. The
+  card is <code>.rc.rc--v2</code>, the component Rod already approved one section up in the same
+  review &mdash; reusing it is the whole point of the V4.<br><br>
+
+  <b>WHAT CARRIES OVER FROM THE SOURCE:</b> the outward alignment, the kicker recipe
+  (0.8em / opacity .8 / uppercase), <b>Newer and Older rather than Prev and Next</b>, and the
+  asymmetric 1.5em / 2.5em block margins. Those are still theirs, verbatim.<br><br>
+
+  <b class="warn">KNOWN, AND NOT HIDDEN:</b> the blockout reserves 345 x 44 for each side, drawn for
+  the TEXT version. A card is taller by construction, so this version does not fit that reservation
+  and cannot. The reservation describes a different device. Measured height is printed under the
+  stage so the overshoot is a number rather than a surprise.
+</div>
+
+<h2 class="bh">V4 &mdash; two cards, two lanes</h2>
+<p class="bnote">The kicker sits <b>above</b> its card rather than inside it, so the card stays
+  exactly the approved component with nothing added to it.</p>
+<div class="stage">
+  <nav class="pn pn--cards" aria-label="More posts">
+    <div class="pn__lane pn__lane--newer">
+      <span class="pn__kicker">Newer</span>
+      <a class="rc rc--v2" href="#">
+        <div class="rc__cover"></div>
+        <div class="rc__body">
+          <div class="rc__title">2D Physics on the GPU</div>
+          <div class="rc__meta">shaders &middot; 14 min</div>
+        </div>
+      </a>
+    </div>
+    <div class="pn__lane pn__lane--older">
+      <span class="pn__kicker">Older</span>
+      <a class="rc rc--v2" href="#">
+        <div class="rc__cover"></div>
+        <div class="rc__body">
+          <div class="rc__title">Procedural 3D Mask</div>
+          <div class="rc__meta">tech-art &middot; 9 min</div>
+        </div>
+      </a>
+    </div>
+  </nav>
+  <div class="readout" id="readout"></div>
+</div>
+
+<h2 class="bh">The three text versions it replaced</h2>
+<p class="bnote">Kept so the pick can still be compared against what it rejected. These are the
+  source's own device: two text links, no thumbnail, no meta line.</p>
+<div class="stage">
+  <nav class="pn pn--v2" aria-label="More posts, text version">
+    <a class="pn__newer" href="#"><span class="pn__kicker">Newer</span><br>2D Physics on the GPU</a>
+    <a class="pn__older" href="#"><span class="pn__kicker">Older</span><br>Procedural 3D Mask</a>
+  </nav>
+</div>
+
+
+</div>
+</div>

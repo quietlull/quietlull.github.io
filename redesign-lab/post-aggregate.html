@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>POST AGGREGATE — sourced spine, everything unsourced greyboxed</title>
+<!--
+  POST page. Rod picked the stripe.dev layout from post-blockout.html.
+
+  HONESTY RULE FOR THIS FILE (Rod 2026-08-16): only elements with real provenance are BUILT.
+  Everything that is Slop in element-tracker.md — including bench components that exist but were
+  never re-proven after the 2026-06-09 trust reset, and anything carried over from the live site
+  that is itself being reworked — is a GREYBOX BLOCKOUT BLOCK instead. The gap is meant to be
+  visible. A previous pass imported unsourced bench files and presented them as "real components";
+  that is what made the page read as slop.
+
+  BUILT (sourced, from element-tracker.md):
+    Post layout / spine    Remixed — stripe.dev, measured @1440
+    Sticky metadata rail   Remixed — stripe.dev, same measurement
+    Top nav links          Remixed — sources/hana-nav.md (hana.b-rave live)
+
+  GREYBOXED (Slop — every one needs a source before it can be built):
+    favicon · wordmark · post header · hero media · TL;DR · reading well · code block ·
+    blockquote · takeaway · TOC · progress bar · meta chips · prev/next · lightbox ·
+    footnotes · share · related cards · footer
+
+  GEOMETRY, measured from
+  https://stripe.dev/blog/what-it-feels-like-building-with-stripe-projects at 1440:
+    24-column grid, 58.375px per column, container 1425px
+    sticky rail = EXACTLY 6 columns (350px); prose = EXACTLY 12 columns (701px) from x=421
+    ~5 columns of bare right margin — not centred; on this site the scene shows through it
+    h1 101.085 / 92.998 / weight 300 / -6.065px tracking; 56px section rhythm
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/favicon/favicon.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/top-bar/top-bar.css">
+
+<style>
+  /* foundations.css sets `body{overflow-x:hidden}`, which makes body a scroll container and kills
+     position:sticky for every descendant. `clip` blocks the same overflow without that side effect. */
+  body { overflow-x: clip; }
+
+  /* The bar must travel with the rail: the rail pins beneath it, so a bar that scrolls away leaves
+     the metadata floating against nothing. */
+  .top-bar { position: sticky; top: 0; z-index: 60; }
+
+  .post-page {
+    --grid-columns: 24;
+    --rail-columns: 6;
+    --article-columns: 12;
+    --article-start-column: 8;
+    --grid-max-width: 1425px;
+    --top-bar-height: 94px;
+    --rail-sticky-offset: calc(var(--top-bar-height) + 12px);
+    --section-rhythm: 56px;
+
+    position: relative;
+    z-index: 2;
+  }
+
+  .post-page__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), 1fr);
+    width: min(var(--grid-max-width), 99vw);
+    margin: 0 auto;
+    column-gap: 0;
+  }
+
+  .post-page__title { grid-column: 1 / -1; padding: 64px 12px 44px; }
+
+  .post-page__rail {
+    grid-column: 1 / span var(--rail-columns);
+    position: sticky;
+    top: var(--rail-sticky-offset);
+    align-self: start;
+    padding: 0 18px 0 12px;
+  }
+
+  .post-page__article {
+    grid-column: var(--article-start-column) / span var(--article-columns);
+    padding-bottom: 140px;
+  }
+
+  .post-page__section { margin-top: var(--section-rhythm); }
+
+  /* The "/" label and the hairline rows ARE part of the stripe transcription, so they are built. */
+  .post-page__label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .post-page__meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    padding: 9px 0;
+    border-bottom: 1px solid var(--color-line-faint);
+  }
+
+  .post-page__meta-row b { font-weight: 400; color: var(--color-text); opacity: 0.85; }
+
+  /* GREYBOX blocks — every unsourced slot. Deliberately unstyled beyond the hatch so they never
+     get mistaken for a design decision. `.ph` is foundations' own placeholder. */
+  .slot { position: relative; }
+  .slot + .slot { margin-top: 12px; }
+  .slot__need {
+    display: block;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 176, 32, 0.75);
+    margin-top: 4px;
+  }
+
+  .scene-space { height: 40vh; }
+
+  .labtag {
+    position: fixed; left: 14px; bottom: 10px; z-index: 50;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px; color: rgba(245, 243, 239, 0.45);
+  }
+  .labtag a { color: var(--color-gold); }
+
+  #build-list {
+    position: fixed; left: 14px; top: 106px; z-index: 70; width: 300px;
+    max-height: calc(100vh - 210px); overflow: auto;
+    background: rgba(7, 12, 35, 0.96); border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 12px 13px; font: 11px/1.55 ui-monospace, Consolas, monospace; color: #dcdcdc;
+  }
+  #build-list h4 { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #8e8e8e; margin: 10px 0 4px; }
+  #build-list .title { font-size: 12.5px; color: #fff; margin-bottom: 3px; }
+  #build-list ul { margin: 0; padding-left: 15px; }
+  #build-list li { margin-bottom: 3px; }
+  #build-list .have li { color: #8fd39a; }
+  #build-list .missing li { color: #ffb020; }
+  #build-list .note { color: #9aa3bd; margin-top: 8px; }
+  @media (max-width: 1400px) { #build-list { position: static; width: auto; max-height: none; margin: 12px 14px; } }
+</style>
+</head>
+<body>
+
+<header class="top-bar">
+  <!-- BUILT: the favicon and its spin are ROD'S OWN WORK (Figma), so they are legitimate by
+       definition — the provenance law stops Claude free-handing, not Rod designing. Full-bleed:
+       fills the bar's whole height, anchored hard left. The WORDMARK is still Slop. -->
+  <div class="top-bar__left">
+    <a class="favicon favicon--square" href="#" aria-label="Home">
+      <span class="favicon__magnet"><img class="favicon__img" src="/assets/img/favicons/favicon.svg" alt="" width="24" height="24" /></span>
+    </a>
+    <!-- KEPT (Rod 2026-08-16): "the wordmark is fine, it's just text." Not greyboxed, because
+         plain text needs no source. REPLACE NEAR THE END of the redesign, once the rest of the
+         name treatment is settled — tracked in feature-backlog.md. -->
+    <span class="top-bar__logo">RODNEY FAN</span>
+  </div>
+  <!-- BUILT: top nav links are Remixed from sources/hana-nav.md -->
+  <nav class="top-bar__nav">
+    <a class="top-bar__link" href="#">Home</a>
+    <a class="top-bar__link is-active" href="#">Projects</a>
+    <a class="top-bar__link" href="#">About</a>
+    <a class="top-bar__link" href="#">Ramblings</a>
+  </nav>
+  <span class="top-bar__toggles"></span>
+</header>
+
+<div class="ph" data-label="reading progress bar — SLOP" style="height:3px;position:sticky;top:94px;z-index:59"></div>
+
+<main class="post-page">
+  <div class="post-page__grid">
+
+    <div class="post-page__title">
+      <div class="slot">
+        <div class="ph" data-label="post title — SLOP (no header source)" style="height:104px"></div>
+        <span class="slot__need">stripe sets 101/93 weight 300 · face + treatment unsourced</span>
+      </div>
+    </div>
+
+    <!-- BUILT: the sticky rail, Remixed from stripe.dev. Its STRUCTURE is sourced; the things
+         that go inside it are not, so they are greyboxed within it. -->
+    <aside class="post-page__rail">
+      <div class="post-page__label">/ metadata</div>
+      <div class="post-page__meta-row"><span>Date</span><b>2026.08.16</b></div>
+      <div class="post-page__meta-row"><span>Author</span><b>Rodney Fan</b></div>
+      <div class="post-page__meta-row"><span>Reading time</span><b>10 min read</b></div>
+      <div class="post-page__meta-row"><span>Categories</span></div>
+      <div class="slot">
+        <div class="ph" data-label="meta chips — SLOP" style="height:26px"></div>
+        <span class="slot__need">lead: 109ichiki mono tags + HANA glow-ignite</span>
+      </div>
+
+      <!-- NOT STRIPE'S. Verified 2026-08-16: their rail carries METADATA / AGENTS / SHARE and no
+           contents block at all, and none of their article headings appear in it. Putting a TOC
+           here is CLAUDE's proposal, and it needs its own source. -->
+      <div class="post-page__label" style="margin-top:28px">/ contents &mdash; not stripe's</div>
+      <div class="slot">
+        <div class="ph" data-label="TOC scroll-spy — SLOP, and NOT from stripe" style="height:150px"></div>
+        <span class="slot__need">stripe has NO toc · ledger lead: brittanychiang sticky sidebar · needs its own source</span>
+      </div>
+
+      <div class="post-page__label" style="margin-top:28px">/ share</div>
+      <div class="slot"><div class="ph" data-label="share — SLOP" style="height:38px"></div></div>
+    </aside>
+
+    <div class="post-page__article">
+      <div class="post-page__label">/ article</div>
+
+      <div class="slot">
+        <div class="ph" data-label="hero media 16:9 — SLOP" style="height:394px"></div>
+        <span class="slot__need">lead: norikura arch/circle masks, masked not boxed</span>
+      </div>
+
+      <div class="post-page__section">
+        <div class="slot">
+          <div class="ph" data-label="TL;DR — SLOP" style="height:96px"></div>
+          <span class="slot__need">callout family: one source fixes TL;DR + takeaway + blockquote</span>
+        </div>
+      </div>
+
+      <div class="post-page__section">
+        <div class="slot">
+          <div class="ph" data-label="reading well — prose, headings, measure — SLOP" style="height:320px"></div>
+          <span class="slot__need">nothing owns measure/scale/rhythm · ledger marks this TOP priority</span>
+        </div>
+      </div>
+
+      <div class="post-page__section">
+        <div class="slot">
+          <div class="ph" data-label="code block + copy — SLOP" style="height:200px"></div>
+          <span class="slot__need">PICK exists: shadcn code-snippet, filename tab + copy, no traffic lights · re-prove by extract+match</span>
+        </div>
+      </div>
+
+      <div class="post-page__section">
+        <div class="slot">
+          <div class="ph" data-label="blockquote — SLOP" style="height:90px"></div>
+          <span class="slot__need">same callout family</span>
+        </div>
+      </div>
+
+      <div class="post-page__section">
+        <div class="slot">
+          <div class="ph" data-label="takeaway — SLOP" style="height:96px"></div>
+          <span class="slot__need">same callout family</span>
+        </div>
+      </div>
+
+      <div class="post-page__section">
+        <div class="slot">
+          <div class="ph" data-label="footnotes / references — SLOP" style="height:70px"></div>
+        </div>
+      </div>
+
+      <div class="post-page__section" style="display:flex;gap:20px">
+        <div class="ph" data-label="&larr; prev — SLOP" style="flex:1;height:80px"></div>
+        <div class="ph" data-label="next &rarr; — SLOP" style="flex:1;height:80px"></div>
+      </div>
+
+      <div class="post-page__section">
+        <div class="post-page__label">/ related</div>
+        <div class="slot">
+          <div class="ph" data-label="related posts cards — SLOP" style="height:220px"></div>
+          <span class="slot__need">follows whatever the project-cards direction settles on</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene-space" aria-hidden="true"></div>
+</main>
+
+<div class="ph" data-label="site footer — SLOP" style="height:80px"></div>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; POST AGGREGATE &middot; sourced spine only</div>
+<aside id="build-list"></aside>
+
+<script>
+var SOURCED = [
+ ['Post layout / spine', 'Remixed — stripe.dev @1440. 24 cols x 58.375px, rail 6, article 12.'],
+ ['Sticky metadata rail', 'Remixed — stripe.dev. Structure sourced; contents are not.'],
+ ['Top nav links', 'Remixed — sources/hana-nav.md (hana.b-rave live).']
+];
+var NEEDS_SOURCE = [
+ ['Callout family', 'ONE source fixes THREE slots: TL;DR, takeaway, blockquote.'],
+ ['Code block + copy', 'PICK already named: shadcn code-snippet. Needs extract+match to go True.'],
+ ['Reading well', 'Measure, heading scale, paragraph rhythm. Ledger: readability TOP priority.'],
+ ['TOC scroll-spy', 'Build into the stripe rail. No source yet.'],
+ ['Post header / title', 'Bench file bundles title+meta; stripe splits them. Needs its own source.'],
+ ['Hero media', 'Lead: norikura arch/circle masks.'],
+ ['Meta chips / tags', 'Lead: 109ichiki mono tags + HANA glow-ignite (Rod rejected pill-fill).'],
+ ['Related posts cards', 'Follows the project-cards direction, still unsettled.'],
+ ['Favicon + wordmark', 'Both Slop. Favicon is Rod own Figma art — tier ruling still owed.'],
+ ['Progress bar', 'Live site has one; never brought into the bench, and the live site is being reworked.'],
+ ['Prev/next, lightbox, footnotes, share, footer', 'No references yet.']
+];
+(function () {
+  var built = SOURCED.length, gaps = NEEDS_SOURCE.length;
+  var html = '<div class="title">POST — what is actually sourced</div>'
+    + '<div class="note">Only provenanced elements are BUILT. Everything hatched is Slop and is '
+    + 'waiting on a SOURCE, not on building. Bench files that exist but were never re-proven after '
+    + 'the 2026-06-09 trust reset count as Slop.</div>'
+    + '<h4>built — sourced (' + built + ')</h4><ul class="have">';
+  SOURCED.forEach(function (r) { html += '<li><b>' + r[0] + '</b> — ' + r[1] + '</li>'; });
+  html += '</ul><h4>greyboxed — needs a source (' + gaps + ' groups)</h4><ul class="missing">';
+  NEEDS_SOURCE.forEach(function (r) { html += '<li><b>' + r[0] + '</b> — ' + r[1] + '</li>'; });
+  html += '</ul><div class="note">Cheapest wins first: the CALLOUT FAMILY clears three slots at '
+    + 'once, and the CODE BLOCK already has its pick chosen — it only needs extracting.</div>';
+  document.getElementById('build-list').innerHTML = html;
+})();
+</script>
+<script defer src="/assets/js/dist/three-background-minimal.min.js"></script>
+</body>
+</html>

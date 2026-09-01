@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal ratios - tuner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&family=IBM+Plex+Mono:wght@300;400&display=swap">
+<style>
+/* ================================================================================================
+   PORTAL TUNER. Rod, 2026-08-24: "can you add a tuner for portal as well so i can tune where these
+   windows and the center text sits."
+
+   Built to the same shape as rail-ratios.html and rambling-ratios.html: the REAL page in a
+   full-bleed iframe, the panel in THIS document so it can never contribute layout to the design,
+   one injected <style> in the frame's body, one function building both the injected CSS and the
+   paste-ready text.
+
+   ------------------------------------------------------------------------------------------------
+   THE THREE RULES rambling-ratios BREAKS, and why this file is written the way it is.
+   That tuner hand-transcribed a preset table, injected all 19 of its dials on load, and 11 of them
+   are now stale - so merely OPENING it overwrote the real page with numbers that no longer match
+   the file. This one:
+
+     1. DERIVES every default by reading the rendered frame - getComputedStyle, the frame's own
+        CSSOM, and the windows' data attributes. Nothing here is a transcribed number. If the page
+        changes, the tuner's baseline changes with it, silently and correctly.
+     2. EMITS ONLY WHAT MOVED. A dial sitting on its derived base contributes no declaration to the
+        injected CSS and no line to the copy-out.
+     3. DOES NOT INJECT UNTIL A DIAL MOVES. There is no <style> in the frame when this page opens.
+        It is created on the first `input`. A saved tune from a previous session is NOT auto-applied
+        either - it is offered as a button, because a saved delta measured against a baseline that
+        has since changed is exactly the rambling failure.
+
+   `reset` reloads the frame and re-derives from the fresh document. It never restores a literal.
+
+   ------------------------------------------------------------------------------------------------
+   HOW THE WINDOWS ARE ACTUALLY POSITIONED, because it decides what a dial can reach.
+
+   NOT CSS. effects/portal-windows.js reads `data-x/-y/-w/-h` off each `.pwin` (Space Jam's measured
+   satellite geometry in a 500x520 stage), turns each into a FRACTION of that window's own travel
+   range, and every layout writes `element.style.transform = translate3d(...)`. Sizes are written as
+   INLINE custom properties `--win-w` / `--win-h`.
+
+   Inline style beats any stylesheet, so a tuner cannot move or resize a window by writing
+   `transform`, `--win-w` or `--win-h`. Fighting the engine's output is not on the table. What IS
+   reachable are the engine's INPUTS and the two properties it never touches:
+
+     THE FIELD BOX      `.field` is plain CSS. layout() reads field.clientWidth/clientHeight every
+                        time, and a ResizeObserver on the field re-runs it. So shrinking the field
+                        genuinely re-runs the constellation - positions AND the size multiplier.
+     `left` / `top`     `.pwin` is `position:absolute; top:0; left:0` in the page's own <style>, and
+                        the engine never writes either. An injected `left`/`top` composes with the
+                        engine's transform, exactly additively. Measured: `.pwin{left:20px}` moved
+                        every window 20px right and nothing else changed.
+     WIDTH / HEIGHT     `.pwin{width:var(--win-w)}` is a stylesheet rule, so `width:calc(var(--win-w)
+                        * K)` reads the engine's own number and scales it.
+     DRIFT              the amplitudes live in `data-drift-x/-y/-speed` on `.pwin__inner`, and
+                        drift-magnet exports `retune(el)` for exactly this - "so a tuner can change
+                        them without a reload". That needs an ES-module import inside the frame, so
+                        this file injects ONE tiny bridge <script> the first time a drift dial moves.
+                        That is a deliberate second injection and the only one; it is documented
+                        rather than hidden.
+
+   WHAT THE PREVIEW CANNOT FOLLOW, stated plainly rather than papered over: the engine keeps its own
+   copy of each window's width for the drag bounds, the bounce walls and the cursor lean. A `left`
+   nudge or a size multiplier moves the picture but not those walls. It stops mattering the moment
+   the numbers are pasted into the file, because then the engine computes them itself - which is why
+   the copy-out emits `data-x/-y/-w/-h` and not the preview CSS.
+
+   ------------------------------------------------------------------------------------------------
+   DRAG-TO-PLACE, and why this file contains no drag (Rod 2026-08-25: "for portal can you just let
+   me drag and place and the copy tunes remembers. keep the sizing stuff though").
+
+   THE PAGE ALREADY DRAGS. effects/portal-windows.js:278-345 takes the pointer, keeps a 4px slop so
+   links still click, throws with friction, bounces off the field edges, and on release calls
+   recordHome() - which stores the resting place as that window's FRACTION of its own travel range.
+   A drag written here would fight that one for the same pixels, so there is none. This file only
+   WATCHES: pointerdown remembers which window is held, and the release starts a settle watch that
+   waits for the engine's own velocity to fall under the 0.1 px/frame it itself calls at rest
+   (portal-windows.js:431). A thrown window is recorded where it STOPS, not where the pointer let go.
+
+   IT READS pos/frac AND NEVER A RECT, which is the load-bearing detail. The engine draws
+   `translate3d(pos + lean)`, so a getBoundingClientRect taken while the cursor is near carries up to
+   10px of proximity lean baked into it, and the tuner would record the lean as placement.
+   `positions()` and `fractions()` publish `pos` alone, so nothing here can see the lean. That is
+   also the whole of "keeping the two apart": there is one drag, it is the page's, and the engine
+   already zeroes lean for a held window (portal-windows.js:427).
+
+   THE INVERSION, which is the actual work. The engine turns a fraction into a screen position; this
+   has to go the other way, in two hops.
+
+     HOP 1, undo this file's own dials. Spread and the size multiplier both offset a window from
+     where its fraction puts it, and both are LINEAR in that base position:
+         screen = base * G + C     G = spread + sw*(1-K)/travel      C = (field/2 - sw/2)*(1-spread)
+     so one division undoes them. With those dials at their base G is 1 and C is 0 and the hop is
+     the identity - which is why an ordinary drag records the engine's own fraction untouched.
+
+     HOP 2, back into the authored stage. `data-x = (base / travel) * (500 - data-w)`, which is
+     portal-windows.js:135 read backwards.
+
+   WHY A DROPPED WINDOW CANNOT JUMP: both hops are expressed against the SAME engine fraction the
+   window is currently drawn from, so the offset this file injects after a drop comes out identical
+   to the offset it was already injecting - exactly zero change for an ordinary drag. And a relayout
+   re-derives position from the engine's own `frac`, which the drag already updated, so re-laying out
+   is a no-op by construction rather than by agreement.
+
+   WHAT AN INTEGER data-x COSTS: it is a fraction of (500 - data-w), so one unit is worth
+   travel/(500 - data-w) screen pixels - about 1.7px on the widest window at 1280x900. Where a whole
+   number would miss by more than a pixel, the copy-out emits one decimal instead.
+
+   A RESTORED TUNE IS A PREVIEW; A FRESH DRAG IS NOT. A window dragged in this session IS at its
+   recorded place - the engine put it there, so its bounce walls and its lean centre are all correct.
+   A tune restored after a reload cannot be pushed into the engine (data-x is read once, at init), so
+   it is previewed with the same left/top offset the size dials use: the picture is right, the
+   engine's walls are still at the file's positions. `windows you placed` says when that is the case.
+
+   NO CURSOR IS INJECTED. `cursor: grab` / `grabbing` already ship on `.pwin__bar`
+   (extracted/components/portal-window/portal-window.css:134,147), so the handle already advertises
+   itself. The window BODY deliberately shows the link cursor, because it is a link. Changing that is
+   a design call, not a tuner's - and injecting a cursor on load would break rule 3 below.
+
+   ------------------------------------------------------------------------------------------------
+   THE GAP UNDER THE NAME, and why the dial for it reads like it is lying (Rod 2026-08-25: "the div
+   center spacing between 'welcome to my page' and my name is too big let me tune it").
+
+   THERE WAS ALREADY A DIAL. `.centre__welcome{top:calc(50% + 3.2rem)}` is 51.2px, and the dial has
+   always sat on it. The reason it does not feel like the gap is that the gap you SEE is more than
+   twice the number, and it is not the same multiple at two window sizes. Measured by this file's
+   own readout, same page, same dial value of 51.2 throughout:
+
+       895x419   109px      1280x900   138px      1440x900   132px      1920x1080   144px
+
+   WHERE THE OTHER 58-93px COMES FROM. Every term below is measured, and they add up exactly:
+
+       5-10px   dead box under the last letter of the name. `.centre__mark` is line-height 1.15 on
+                faces overridden to 105% ascent / 38% descent (line-boil.css), so the baseline lands
+                0.91em down a 1.15em box and 0.24em of box hangs below the ink. Grows with the mark.
+       46-76px  THE EMPTY HALF OF `.centre`. This is the big one, and it is the whole reason the gap
+                will not hold still. `.centre` is a fixed `165px * var(--pscale)` box
+                (final-portal.html:184) and the name sits at the TOP of it, but the welcome line is
+                measured from `50%` - the MIDDLE of that box. So half of `.centre` minus the one
+                line of name is pure air: measured 46px at 895x419, 73px at 1280x900, 76px at
+                1920x1080. `--pscale` is the engine's own `min(fw/500, fh/520)`, so that block grows
+                with the window while a rem-based `top` cannot.
+       7px      dead box over the first letter of the welcome line, the same half-leading effect.
+
+   TWO THINGS THAT ARE NOT THE CAUSE, both checked rather than assumed:
+     THE NEW CLAMP IS NOT IT. Rod widened `.centre__mark` to `clamp(1.6rem,3.5vw,6rem)` the same
+     day. It moves the gap the OTHER way - a bigger mark has a taller line box, so its baseline
+     drops and the gap closes. Measured at 1280x900: the old `clamp(1.6rem,3.4vw,2.6rem)` gives
+     141px with the mark at 41.6px and pinned to its ceiling; the new one gives 138px at 44.8px.
+     Rod's change made the gap 3px SMALLER, and more than that at wider viewports where the old
+     ceiling used to bite harder.
+     LINE-HEIGHT IS NOT THE FIX EITHER, and the intuitive direction is backwards. Measured at
+     895x419 against the shipped 109px: line-height 1.0 -> 112px (WORSE by 3), 1.43 -> 105, 2.0 ->
+     105. Lowering it lifts the baseline faster than it shrinks the box, and the 4px the other
+     direction can win is not the 46-76px problem. Reported, not changed.
+
+   SO THE DIAL IS HONEST AND THE LABEL WAS NOT. Two things are added rather than one changed: the
+   old dial still drives `top` and now says so, and a second dial asks for the GAP and works out the
+   `top` that gives it. They are the same setting shown twice and each re-seats from the other.
+   The readout carries the measured gap next to the dial value, and the breakdown above, live.
+
+   INK IS MEASURED WITH CANVAS FONT METRICS, NOT WITH A RECT OR A RANGE. A `Range` over the mark
+   reports the FONT'S CONTENT BOX (45px at a 31px font here - ascent+descent of the overrides),
+   which still carries 12px of descent that "RODNEY FAN" never uses; it also happens to be reading
+   the space character's rect rather than the glyph cells, which would break if the name lost its
+   space. The baseline is derived instead as `box.top + (line-height - (ascent + descent))/2 +
+   ascent`, with ascent/descent from a `measureText` on the element's own computed font, and the ink
+   from `actualBoundingBox*` of the string as rendered (uppercased where the CSS uppercases it).
+   Chrome's integer rounding of `fontBoundingBox*` very nearly cancels in that sum - it lands within
+   0.01px of the CSS-derived baseline where a Range read is out by 0.5px. The canvas is created,
+   measured and dropped: nothing is appended, so rule 3 survives.
+
+   ------------------------------------------------------------------------------------------------
+   SIZING ONE WINDOW (Rod 2026-08-25: "let me tune the specific windows by size just let me tune the
+   one i last touched").
+
+   IT REUSES THE DRAG'S OWN SELECTION. `lastSlot` is already what the arrow keys nudge; pressing a
+   window now sets it immediately rather than only on release, and the two per-window dials follow
+   it. Nothing else on the field is touched.
+
+   THE GROUP DIALS AND THE PER-WINDOW DIALS MULTIPLY. Effective size is `group x this window`, so
+   1.00 here means "whatever the group says" and the group dial still moves this window with the
+   rest. An override rule would have made the group dial look dead for the tuned window, and would
+   have needed a null state to mean "not overridden"; a multiplier of 1 already means that and drops
+   out of rule 2 for free. The emitted `.pwin[data-slot]` rule carries the COMBINED number, and it
+   outranks `.pwin--door` on specificity as well as coming later, so there is one answer per window.
+
+   A SOCIAL GETS ONE DIAL, NOT TWO. portal-windows.js:231 squares every social from its own width
+   after the header-fit grow, so a separate height would preview a shape the file cannot produce.
+   All five are authored square, so the width dial drives both and the height dial is switched off
+   with the reason on it.
+
+   THE PREVIEW COUNTS A SIZE DIAL TWICE ON THE WIDTH. Found while checking this work, PRE-EXISTING,
+   and left alone. Height is faithful - nothing measures it back - so this is a width-only fault.
+   layout() sizes a window to fit its own title from `title.scrollWidth`
+   (portal-windows.js:209), but `.pwin__title` is `flex: 1 1 auto` - so when the title FITS, that
+   reads back the box the flex row handed it rather than the width the word needs. A CSS width
+   multiplier widens the box, the engine measures the widened box and adopts it as the window's
+   size, and the multiplier is then applied to that. Measured, Tech Art at 895x419: engine 233px
+   drawn 233 at rest; the door dial at 1.30x gives engine 303, drawn 394, pasted `data-w` 300 - and
+   the per-window dial gives the identical numbers, so this is inherited rather than introduced. It
+   converges rather than running away, because layout() restarts from `baseW * scale` every time.
+   NOT WORKED AROUND, on purpose: every fix changes what the preview draws, which is a pixel change
+   to the picture Rod judges by, and it would also pull `sw` out from under the drag inversion. It
+   is flagged in the panel instead, and `its size on screen` prints the drawn size next to what the
+   paste will really give whenever they disagree.
+
+   RESIZING DOES NOT MOVE THE WINDOW, and that was already true rather than newly arranged: the
+   preview carries `ox += fx * sw * (1 - k)` so the window keeps its own fraction at the new size,
+   and `authoredAt` divides by the travel range AT THE PASTED SIZE, so the pasted `data-x` comes out
+   as whatever now means the same spot. What DOES change is the number - `data-x` is a fraction of
+   `(500 - data-w)` (portal-windows.js:135), so a wider window needs a different `data-x` to sit
+   still. Both are shown: `where it gets pasted` prints the file's number and the new one side by
+   side, and `data-x`/`data-y` are always emitted alongside `data-w`/`data-h` for exactly this
+   reason - pasting a new size without a new position is what would move it.
+
+   ------------------------------------------------------------------------------------------------
+   THE TRIPWIRES, which are the portal's own and not another page's.
+
+     NO SCROLL is this page's whole premise (Rod 2026-08-23: "portal page doesnt need to scroll").
+     At 900 tall the page measures scrollHeight 900 == innerHeight 900. Any dial that pushes past
+     that breaks the premise, so page-height-vs-window-height is always on screen and turns red the
+     moment they diverge.
+
+     SIDEWAYS OVERFLOW is measured by walking for the furthest right edge in `#main`, NOT by
+     scrollWidth. `body` sets `overflow-x: clip` (final-portal.html:37), which makes scrollWidth
+     report no overflow while the right edge is being cut off - the same lie it tells on ramblings.
+
+     OVERLAP is what goes wrong first with 8 windows on a field. The closest pair, and the closest
+     window to the centre text, are both shown as a WORST CASE: the resting gap minus the drift each
+     of the two can spend closing it. A resting measurement of a drifting element is a range, not a
+     number, and the resting number is the flattering end of it.
+   ============================================================================================== */
+:root{
+  --ink:#f5f3ef; --muted:#9aa3bd; --gold:#fbbf24; --night:#070c23;
+  --line:rgba(251,191,36,.26);
+  --font-body:"M PLUS Rounded 1c",sans-serif; --font-mono:"IBM Plex Mono",monospace;
+}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--night)}
+#portal{position:fixed;inset:0;width:100%;height:100%;border:0}
+
+.panel{position:fixed;top:12px;right:12px;z-index:50;width:344px;max-height:calc(100vh - 24px);
+  overflow:auto;background:rgba(7,12,35,.94);border:1px solid var(--line);
+  padding:16px 18px 20px;font-family:var(--font-body);color:var(--ink);
+  transition:transform .25s ease}
+.panel.hid{transform:translateX(calc(100% + 20px))}
+.panel h2{margin:0 0 2px;font-size:1.05rem;font-weight:300;color:var(--gold)}
+.panel .note{margin:0 0 14px;font-size:.72rem;color:var(--muted);line-height:1.5}
+.panel h3{margin:16px 0 8px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.08);
+  padding-bottom:5px}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:0 0 11px}
+.row label{font-size:.76rem}
+.row .val{font-family:var(--font-mono);font-size:.68rem;color:var(--gold)}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--gold);margin:2px 0 0}
+.row select{grid-column:1/-1;width:100%;margin:2px 0 0;background:#04070f;color:var(--ink);
+  border:1px solid var(--line);font-family:var(--font-mono);font-size:.66rem;padding:4px 5px}
+.row .hint{grid-column:1/-1;font-size:.64rem;color:var(--muted);line-height:1.45;margin:2px 0 0}
+.chk{display:flex;align-items:center;gap:7px;font-size:.76rem;margin:0 0 11px}
+.chk input{accent-color:var(--gold)}
+.read{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:.7rem;margin:0 0 4px}
+.read span{color:var(--muted)}
+.read b{font-family:var(--font-mono);font-weight:400;text-align:right}
+.read b.ok{color:#7fd18b}
+.read b.bad{color:#e0713f}
+.read b.warn{color:#e0b23f}
+.flag{font-size:.64rem;color:#e0b23f;line-height:1.5;margin:8px 0 0;
+  border-left:2px solid rgba(224,178,63,.5);padding-left:8px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.btns button{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:7px 11px;
+  cursor:pointer}
+.btns button.pri{color:var(--gold)}
+.btns button:hover{border-color:var(--gold)}
+#toggle{position:fixed;top:12px;right:12px;z-index:51;font-family:var(--font-mono);font-size:.64rem;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--gold);background:rgba(7,12,35,.94);
+  border:1px solid var(--line);padding:7px 11px;cursor:pointer}
+#out{width:100%;height:190px;margin-top:10px;background:#04070f;color:var(--ink);
+  border:1px solid var(--line);font-family:var(--font-mono);font-size:.6rem;padding:8px;resize:vertical}
+#restore{display:block;width:100%;margin:0 0 12px;font-family:var(--font-mono);font-size:.62rem;
+  letter-spacing:.06em;text-transform:uppercase;color:#e0b23f;background:rgba(224,178,63,.08);
+  border:1px solid rgba(224,178,63,.45);padding:7px 9px;cursor:pointer;text-align:left;line-height:1.5}
+</style>
+</head>
+<body>
+
+<iframe id="portal" src="/redesign-lab/final-portal.html" title="final portal"></iframe>
+
+<button id="toggle" type="button" hidden>panel</button>
+
+<aside class="panel" id="panel">
+  <h2>Portal ratios</h2>
+  <p class="note">Tunes the real portal in the frame. Nothing is injected until you move a dial, and
+  every starting value is read off the page rather than typed in here. You can also just
+  <b>drag a window where you want it</b> and hit copy - the tune records where you left it.</p>
+
+  <button id="restore" type="button" hidden></button>
+
+  <h3>Where the windows sit</h3>
+  <div class="row">
+    <label for="s-spread">how far the windows sit from the centre</label><span class="val" id="v-spread"></span>
+    <input type="range" id="s-spread" min="0.4" max="1.6" step="0.01">
+    <span class="hint">1.00 is where the page has them. Below 1 pulls every window in towards the
+      middle of the area, above 1 pushes them out. It does not change their size.</span>
+  </div>
+  <div class="row">
+    <label for="s-side">air at the left and right of the area</label><span class="val" id="v-side"></span>
+    <input type="range" id="s-side" min="0" max="320" step="1">
+    <span class="hint">narrows the area the windows are arranged in, so they close in sideways.</span>
+  </div>
+  <div class="row">
+    <label for="s-top">air above the area</label><span class="val" id="v-top"></span>
+    <input type="range" id="s-top" min="0" max="240" step="1">
+    <span class="hint">watch <b>window size</b> in the readout: the engine sizes the windows from the
+      SHORTER side of the area, and that is the height here, so squeezing top or bottom shrinks
+      every window as well as closing the gaps.</span>
+  </div>
+  <div class="row">
+    <label for="s-bot">air below the area</label><span class="val" id="v-bot"></span>
+    <input type="range" id="s-bot" min="0" max="240" step="1">
+  </div>
+
+  <h3>Placing windows by hand</h3>
+  <p class="note">Drag a window in the page and let it settle - the page's own drag does the moving,
+  this panel just writes down where you left it, and the copy-out turns that into that window's own
+  <code>data-x</code> / <code>data-y</code>. Throw one and it records where it comes to REST, not
+  where you let go. The title bar carries the grab cursor; with a mouse the whole window drags.
+  <b>Arrow keys</b> move the window you last touched by 1px, or 10 with shift.</p>
+  <div class="read">
+    <span>last placed</span><b id="r-last">nothing dragged yet</b>
+    <span>where it would be pasted</span><b id="r-coord">-</b>
+    <span>windows you placed</span><b id="r-placed"></b>
+  </div>
+  <p class="flag" id="place-flag">A window dragged NOW is genuinely there - the engine moved it, so
+  its bounce walls moved with it. A tune RESTORED after a reload can only be previewed by shifting
+  the picture, because the engine reads <code>data-x</code> once and never again; the walls stay
+  where the file put them until you paste the numbers in. <code>preview offset</code> above is how
+  far apart the two are.</p>
+
+  <h3>How big the windows are</h3>
+  <div class="row">
+    <label for="s-door">the three door windows</label><span class="val" id="v-door"></span>
+    <input type="range" id="s-door" min="0.6" max="1.8" step="0.01">
+  </div>
+  <div class="row">
+    <label for="s-soc">the five social windows</label><span class="val" id="v-soc"></span>
+    <input type="range" id="s-soc" min="0.6" max="1.8" step="0.01">
+    <span class="hint">PREVIEW IS APPROXIMATE. The engine still grows any window whose own title
+      would not fit, and still forces the two lead doors taller than the tallest social - neither
+      floor is applied here. The pasted <code>data-w</code> / <code>data-h</code> get both.</span>
+  </div>
+  <p class="flag" id="size-flag">THE PREVIEW COUNTS A SIZE DIAL TWICE ON THE WIDTH, and the file
+  will only count it once. Height is faithful; it is width that doubles.
+  <b>Judge the numbers, not the picture, when you change a size.</b> Measured: the door dial at
+  1.30x draws Tech Art at 394px where its own numbers say 300. The engine sizes a window to fit its
+  title by reading <code>title.scrollWidth</code>, and the title is a <code>flex:1 1 auto</code>
+  child - so when the text fits, that reads back the box it has been GIVEN rather than the width the
+  word needs. The dial widens the box, the engine measures the widened box and adopts it as the
+  window's size, then the dial multiplies that again. It settles rather than running away (the
+  engine restarts from the authored size every relayout), and it is not new - it is exactly what the
+  two group dials have always done. <b>Nothing has been changed to work around it: that would be a
+  pixel change to the picture you judge by.</b> <code>its size on screen</code> below prints what is
+  drawn and what the paste will actually give, side by side, whenever the two disagree.</p>
+
+  <h3>Sizing one window on its own</h3>
+  <p class="note">These follow the window you <b>last touched</b> - drag one, or just press it, and
+  it becomes the one they size. Every other window is left alone. They sit ON TOP of the two group
+  dials above: the group scales all three doors or all five socials, this multiplies that one window
+  again, so <b>1.00 here means "whatever the group says"</b> and the group dial still moves this
+  window with the rest.</p>
+  <div class="row">
+    <label for="s-pw">how wide this one is</label><span class="val" id="v-pw"></span>
+    <input type="range" id="s-pw" min="0.5" max="2.5" step="0.01" disabled>
+  </div>
+  <div class="row">
+    <label for="s-ph">how tall this one is</label><span class="val" id="v-ph"></span>
+    <input type="range" id="s-ph" min="0.5" max="2.5" step="0.01" disabled>
+    <span class="hint" id="ph-hint"></span>
+  </div>
+  <div class="read">
+    <span>the window these size</span><b id="r-sel">nothing touched yet</b>
+    <span>its size in the file</span><b id="r-selsize">-</b>
+    <span>its size on screen</span><b id="r-selpx">-</b>
+    <span>where it gets pasted</span><b id="r-selpos">-</b>
+  </div>
+  <p class="flag">A resize does NOT move the window, and the readout shows both halves of that.
+  What is held is its place as a <b>proportion of the area</b> - which is exactly what
+  <code>data-x</code> means, so a growing window's left edge slides left while it stays in the same
+  relative spot. The NUMBER still changes, because <code>data-x</code> is a fraction of
+  <code>(500 - data-w)</code> and a wider window has a shorter run to travel - which is why
+  <code>data-x</code> / <code>data-y</code> are always emitted next to <code>data-w</code> /
+  <code>data-h</code>. Pasting a new size on its own is the thing that would move it.</p>
+
+  <h3>How the windows wander</h3>
+  <div class="row">
+    <label for="s-dx">how far they wander sideways</label><span class="val" id="v-dx"></span>
+    <input type="range" id="s-dx" min="0" max="24" step="0.5">
+  </div>
+  <div class="row">
+    <label for="s-dy">how far they wander up and down</label><span class="val" id="v-dy"></span>
+    <input type="range" id="s-dy" min="0" max="24" step="0.5">
+    <span class="hint">these two are the reason the overlap readouts below are worst-case rather
+      than resting. Raising them tightens both.</span>
+  </div>
+  <div class="row">
+    <label for="s-ds">how fast the wander is</label><span class="val" id="v-ds"></span>
+    <input type="range" id="s-ds" min="0.1" max="3" step="0.05">
+  </div>
+
+  <h3>Where the centre text sits</h3>
+  <div class="row">
+    <label for="s-cy">the name: up or down from the middle</label><span class="val" id="v-cy"></span>
+    <input type="range" id="s-cy" min="-360" max="360" step="1">
+  </div>
+  <div class="row">
+    <label for="s-cx">the name: left or right of the middle</label><span class="val" id="v-cx"></span>
+    <input type="range" id="s-cx" min="-360" max="360" step="1">
+  </div>
+  <div class="row">
+    <label for="s-wy">the welcome line: how far below the middle</label><span class="val" id="v-wy"></span>
+    <input type="range" id="s-wy" min="-240" max="360" step="0.1">
+    <span class="hint">this is the raw setting the file carries: the distance from the middle of the
+      window area to the TOP OF THE LINE'S BOX. It is not the gap you see - use the dial below for
+      that, or read the two side by side in <b>gap under the name</b>.</span>
+  </div>
+  <div class="row">
+    <label for="s-gap">the gap under the name</label><span class="val" id="v-gap"></span>
+    <input type="range" id="s-gap" min="-60" max="320" step="0.5">
+    <span class="hint">THE GAP YOU ACTUALLY SEE: bottom of the letters in your name to top of the
+      letters in the line below. Same setting as the dial above, asked for the other way round -
+      move either and both re-seat. The number here is measured off the page every tick, so if
+      something else changes the gap this follows it.</span>
+  </div>
+  <p class="flag" id="gap-flag"></p>
+  <div class="row">
+    <label for="s-wx">the welcome line: left or right of the middle</label><span class="val" id="v-wx"></span>
+    <input type="range" id="s-wx" min="-360" max="360" step="1">
+  </div>
+  <div class="row">
+    <label for="s-mmax">the name's size</label><span class="val" id="v-mmax"></span>
+    <input type="range" id="s-mmax" min="1" max="6" step="0.05">
+    <span class="hint">the biggest the name is ever allowed to get. At this window width it is the
+      term deciding the size - the readout says so if that changes.</span>
+  </div>
+  <div class="row">
+    <label for="s-mvw">how much the name grows with the window</label><span class="val" id="v-mvw"></span>
+    <input type="range" id="s-mvw" min="1" max="10" step="0.05">
+  </div>
+  <p class="flag" id="h3-flag"></p>
+
+  <h3>Lab chrome, never copied out</h3>
+  <div class="chk">
+    <input type="checkbox" id="s-note"><label for="s-note">hide the note strip under the field</label>
+  </div>
+
+  <h3>Readout</h3>
+  <div class="read">
+    <span>window</span><b id="r-vw"></b>
+    <span>page height vs window height</span><b id="r-scroll"></b>
+    <span>page vs window sideways</span><b id="r-over"></b>
+    <span>the window area</span><b id="r-field"></b>
+    <span>window size</span><b id="r-scale"></b>
+    <span>closest two windows, worst case</span><b id="r-pair"></b>
+    <span>...with the cursor between them</span><b id="r-pairlean"></b>
+    <span>closest window to the name</span><b id="r-cent"></b>
+    <span>windows leaving the area</span><b id="r-out"></b>
+    <span>windows pinned at their travel limit</span><b id="r-pin"></b>
+    <span>gap under the name</span><b id="r-gap"></b>
+    <span>dead space inside that gap</span><b id="r-dead"></b>
+    <span>the name's size</span><b id="r-mark"></b>
+    <span>the welcome line's size</span><b id="r-wel"></b>
+    <span>one full wander takes</span><b id="r-period"></b>
+    <span>the note strip costs the area</span><b id="r-note"></b>
+    <span>engine coordinate check</span><b id="r-engine"></b>
+  </div>
+
+  <div class="btns">
+    <button type="button" id="b-copy" class="pri">copy tune</button>
+    <button type="button" id="b-css">show CSS</button>
+    <button type="button" id="b-reset">reset</button>
+    <button type="button" id="b-hide">hide panel</button>
+  </div>
+  <textarea id="out" hidden readonly></textarea>
+</aside>
+
+<script>
+(function () {
+  var fr = document.getElementById('portal');
+  var STORE = 'portal-ratios-v1';
+
+  /* effects/portal-windows.js:78-79. The stage every `data-x/-y/-w/-h` in the markup is measured
+     in. It is the one structural constant this file has to know rather than read, so there is a
+     live check on it in the readout - see `engine coordinate check`. */
+  var REF_W = 500, REF_H = 520;
+  /* effects/portal-windows.js:108. The furthest a window ever leans towards the cursor. */
+  var MAX_LEAN = 10;
+  /* drift-magnet.js:96-97 - each element gets a random amplitude jitter of 0.85..1.15, so the
+     worst case is 15% more travel than the authored amplitude. */
+  var JITTER = 1.15;
+  /* drift-magnet.js:71-72 - the sine speeds are 0.45 and 0.57 rad/s times `data-drift-speed`. */
+  var SPEED_X = 0.45, SPEED_Y = 0.57;
+
+  /* every dial: the slider, its readout, how it prints, and the step it snaps to. `base` is filled
+     in by derive() from the rendered frame - there is no table of numbers in this file. */
+  var px = function (v) { return v + 'px'; };
+  var mult = function (v) { return (+v).toFixed(2) + 'x'; };
+  var KNOBS = {
+    spread: { el: 's-spread', out: 'v-spread', fmt: mult, step: 0.01 },
+    side:   { el: 's-side',   out: 'v-side',   fmt: px,   step: 1 },
+    top:    { el: 's-top',    out: 'v-top',    fmt: px,   step: 1 },
+    bot:    { el: 's-bot',    out: 'v-bot',    fmt: px,   step: 1 },
+    door:   { el: 's-door',   out: 'v-door',   fmt: mult, step: 0.01 },
+    soc:    { el: 's-soc',    out: 'v-soc',    fmt: mult, step: 0.01 },
+    dx:     { el: 's-dx',     out: 'v-dx',     fmt: px,   step: 0.5 },
+    dy:     { el: 's-dy',     out: 'v-dy',     fmt: px,   step: 0.5 },
+    ds:     { el: 's-ds',     out: 'v-ds',     fmt: function (v) { return (+v).toFixed(2) + 'x'; }, step: 0.05 },
+    cy:     { el: 's-cy',     out: 'v-cy',     fmt: px,   step: 1 },
+    cx:     { el: 's-cx',     out: 'v-cx',     fmt: px,   step: 1 },
+    wy:     { el: 's-wy',     out: 'v-wy',     fmt: function (v) { return (+v).toFixed(1) + 'px'; }, step: 0.1 },
+    wx:     { el: 's-wx',     out: 'v-wx',     fmt: px,   step: 1 },
+    mmax:   { el: 's-mmax',   out: 'v-mmax',   fmt: function (v) { return (+v).toFixed(2) + 'rem'; }, step: 0.05 },
+    mvw:    { el: 's-mvw',    out: 'v-mvw',    fmt: function (v) { return (+v).toFixed(2) + 'vw'; }, step: 0.05 }
+  };
+
+  var BASE = null;      // exact values as read off the page
+  var UI = null;        // BASE snapped to each slider's step - what "has not moved" means
+  var state = null;     // the live dial values
+  /* WHERE HANDS PUT THINGS. `authored` is each window's fraction as the FILE writes it, snapshotted
+     once at boot - that is what "this window has not been moved" is measured against. `place` holds
+     only the windows a hand has moved, also as fractions of their own travel range, so a placement
+     survives a resize and a different viewport rather than being a pixel count that stops meaning
+     anything. Both are keyed by data-slot. */
+  var authored = {};
+  var place = {};
+  /* WHERE HANDS SET SIZES. Only the windows given a size of their own, keyed by data-slot, as
+     `[width, height]` MULTIPLIERS on top of whatever the group dial says. [1,1] never appears -
+     a window back at its group size has its entry deleted, so "has anything moved" stays a key
+     count rather than a comparison.
+     NOT CALLED `size`, and that is not fussiness: windows() already has a local
+     `var size = P.sizes()` - the engine's per-window pixel sizes, an ARRAY. A module-level `size`
+     is shadowed by it inside exactly the function that needs to read this one, and `size[slot]` on
+     an array returns undefined without erroring, so every per-window size silently did nothing. */
+  var winSize = {};
+  var lastSlot = null;  // the window the arrow keys move, and the one the size dials size
+  var dragSlot = null;  // the window the page is dragging right now, if any
+  var dragOff = [0, 0]; // the injected offset that window is being drawn with, frozen at grab
+  var boundDoc = null;  // the frame document the watchers are attached to
+  var noteHidden = false;
+  var injected = false; // RULE 3: no <style> exists in the frame until this flips
+  var bridged = false;  // the drift bridge <script>, created on the first drift change
+  var markMin = null;   // the smallest term of the name's clamp, carried through untouched
+  var ready = false;
+
+  /* Math.round(0.6 / 0.05) * 0.05 is 0.6000000000000001, not 0.6. Left alone, that lands in the
+     derived base, in the emitted CSS and in the data attributes written back to the windows - and
+     it makes "this dial has not moved" permanently false for every fractional-step dial. Snap, then
+     round the float noise off. */
+  function round6(v) { return Math.round(v * 1e6) / 1e6; }
+  /* `calc(50% + -40px)` is legal and reads like a typo in a file people have to maintain */
+  function off(v, unit) {
+    var u = unit || 'px';
+    return 'calc(50% ' + (v < 0 ? '- ' + Math.abs(v) : '+ ' + v) + u + ')';
+  }
+  function snap(v, step) { return round6(Math.round(v / step) * step); }
+  function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+  function num(v, fallback) { var n = parseFloat(v); return isFinite(n) ? n : fallback; }
+  function doc() { return fr.contentDocument; }
+
+  /* read one declaration straight out of the frame's own CSSOM. This is how the name's clamp terms
+     are derived: getComputedStyle only ever reports the RESOLVED font size, so the three terms are
+     invisible from there and would otherwise have to be transcribed. */
+  function ruleValue(selector, prop) {
+    var d = doc();
+    if (!d) return '';
+    for (var i = 0; i < d.styleSheets.length; i++) {
+      var rules;
+      try { rules = d.styleSheets[i].cssRules; } catch (e) { continue; }   // cross-origin font sheet
+      if (!rules) continue;
+      for (var j = 0; j < rules.length; j++) {
+        if (rules[j].selectorText === selector && rules[j].style && rules[j].style[prop]) {
+          return rules[j].style[prop];
+        }
+      }
+    }
+    return '';
+  }
+
+  /* ---- DERIVE. Every starting value, read off the rendered page. ---- */
+  function derive() {
+    var d = doc(), w = fr.contentWindow;
+    if (!d || !w || !d.querySelector('.field')) return null;
+    var field = d.querySelector('.field'),
+        pg = d.querySelector('.pground'),
+        centre = d.querySelector('.centre'),
+        wel = d.querySelector('.centre__welcome'),
+        inner = d.querySelector('.pwin__inner');
+    if (!field || !pg || !centre || !wel) return null;
+
+    var root = parseFloat(w.getComputedStyle(d.documentElement).fontSize) || 16;
+    var fcs = w.getComputedStyle(field),
+        ccs = w.getComputedStyle(centre),
+        wcs = w.getComputedStyle(wel);
+    /* the field is 835.5px tall, and clientHeight rounds that to 836. A `top:50%` resolves against
+       the REAL box, so deriving "how far off the middle" from clientHeight lands the welcome line's
+       3.2rem at 50.9px instead of 51.2 - and a base that is 0.3px wrong makes "has not moved" a
+       lie. Rects, not client boxes. */
+    var fbox = field.getBoundingClientRect(), pbox = pg.getBoundingClientRect();
+
+    /* the clamp on `.centre__mark`, read as authored */
+    var m = /clamp\(\s*([\d.]+)rem\s*,\s*([\d.]+)vw\s*,\s*([\d.]+)rem\s*\)/
+      .exec(ruleValue('.centre__mark', 'fontSize'));
+    markMin = m ? parseFloat(m[1]) : null;
+
+    var b = {
+      root: root,
+      spread: 1,
+      side: Math.max(0, (pbox.width - fbox.width) / 2),
+      top: num(fcs.marginTop, 0),
+      bot: num(fcs.marginBottom, 0),
+      nx: 0, ny: 0,
+      door: 1, soc: 1,
+      dx: inner ? num(inner.dataset.driftX, 6) : 6,
+      dy: inner ? num(inner.dataset.driftY, 6) : 6,
+      ds: inner ? num(inner.dataset.driftSpeed, 1) : 1,
+      /* `left`/`top` on an absolutely positioned box compute to px, so "how far off the middle of
+         the field" is a subtraction rather than a percentage to unpick */
+      cy: num(ccs.top, 0) - fbox.height / 2,
+      cx: num(ccs.left, 0) - fbox.width / 2,
+      wy: num(wcs.top, 0) - fbox.height / 2,
+      wx: num(wcs.left, 0) - fbox.width / 2,
+      mmax: m ? parseFloat(m[3]) : 2.6,
+      mvw: m ? parseFloat(m[2]) : 3.4,
+      markParsed: !!m
+    };
+    return b;
+  }
+
+  /* ---- THE WINDOWS. Everything the CSS builder and the copy-out need about each one, measured
+     from the engine rather than guessed. ---- */
+  function windows() {
+    var d = doc(), w = fr.contentWindow;
+    var P = w && w.__portalWindows;
+    if (!d || !P) return [];
+    var els = [].slice.call(d.querySelectorAll('.pwin'));
+    var size = P.sizes(), frac = P.fractions(), f = P.field();
+    var fw = f[0], fh = f[1];
+    return els.map(function (el, i) {
+      var isDoor = el.classList.contains('pwin--door');
+      var slot = el.dataset.slot;
+      /* GROUP x THIS WINDOW. The group dial keeps working on every window including this one, and
+         a per-window 1.00 contributes nothing - see the header. A social's height is not its own
+         number: portal-windows.js:231 squares every social from its width after the header-fit
+         grow, so previewing an oblong social would be showing a shape the file cannot produce. */
+      var g = isDoor ? state.door : state.soc;
+      var ov = winSize[slot] || [1, 1];
+      var kw = round6(g * ov[0]);
+      var kh = round6(g * (isDoor ? ov[1] : ov[0]));
+      var sized = ov[0] !== 1 || ov[1] !== 1;
+      var sw = size[i] ? size[i][0] : el.offsetWidth;
+      var sh = size[i] ? size[i][1] : el.offsetHeight;
+      var tx = Math.max(0, fw - sw), ty = Math.max(0, fh - sh);
+      /* where the ENGINE has this window - its own fraction of its own travel range. After a drag
+         this is already the dragged spot, because recordHome() re-recorded it on release. */
+      var efx = frac[i] ? frac[i][0] : 0, efy = frac[i] ? frac[i][1] : 0;
+      /* where it SHOULD be. A NULL entry in `place` means "placed by hand, and the engine is
+         already holding it exactly" - the ordinary drag. It follows efx, so this file injects
+         nothing at all for that window and there is nothing to drift. An ARRAY means the tuner has
+         to carry it there itself: a tune restored after a reload, or an arrow-key nudge. No entry
+         at all means the window is wherever the file put it. */
+      var p = place[slot];
+      var fx = p ? p[0] : efx, fy = p ? p[1] : efy;
+      /* the engine's resting position, rebuilt from the numbers it publishes rather than from the
+         rounded integers in positions() */
+      var px0 = efx * tx, py0 = efy * ty;
+      var bx = fx * tx, by = fy * ty;
+
+      /* PLACEMENT first: carry the window from where the engine drew it to where it was put. Zero
+         for anything dragged in this session, so a fresh drag injects no CSS at all. */
+      var ox = bx - px0, oy = by - py0;
+      /* SPREAD - a straight pull towards or away from the middle of the area */
+      ox += (fw / 2 - (bx + sw / 2)) * (1 - state.spread);
+      oy += (fh / 2 - (by + sh / 2)) * (1 - state.spread);
+      /* SIZE - keep the window where its own fraction says it belongs at the NEW size, or growing
+         a window would slide it sideways as a side effect */
+      ox += fx * sw * (1 - kw);
+      oy += fy * sh * (1 - kh);
+
+      var a = authored[slot] || [efx, efy];
+      return {
+        el: el, slot: slot, i: i, door: isDoor, kw: kw, kh: kh, sized: sized,
+        baseW: num(el.dataset.w, sw), baseH: num(el.dataset.h, sh),
+        sw: sw, sh: sh, fx: fx, fy: fy, px0: px0, py0: py0,
+        ox: ox, oy: oy, fw: fw, fh: fh,
+        /* how far the PICTURE has been shifted away from where the engine thinks the window is,
+           which is the same thing as how stale the engine's bounce walls are for it */
+        poff: Math.hypot(bx - px0, by - py0),
+        /* "has this window moved" is measured against the fraction the FILE authors, per axis, so a
+           drag that ends where it started emits nothing. A SIZE change counts on BOTH axes even
+           when only one side of the window changed: `data-x` is a fraction of `(500 - data-w)` and
+           `data-y` of `(520 - data-h)`, so a new size means both numbers have to be restated or
+           the paste moves the window. */
+        movedX: Math.abs(ox) > 0.5 || kw !== 1 || kh !== 1 || Math.abs((fx - a[0]) * tx) > 0.5,
+        movedY: Math.abs(oy) > 0.5 || kw !== 1 || kh !== 1 || Math.abs((fy - a[1]) * ty) > 0.5
+      };
+    });
+  }
+
+  /* the engine's own formula (portal-windows.js:135-136) applied to the file's numbers. Snapshotted
+     at boot: the tuner never writes data-x back, so this stays the file's truth for the session. */
+  function authoredFracs() {
+    var d = doc(), out = {};
+    if (!d) return out;
+    [].slice.call(d.querySelectorAll('.pwin')).forEach(function (el) {
+      var bw = num(el.dataset.w, 0), bh = num(el.dataset.h, 0);
+      out[el.dataset.slot] = [
+        REF_W - bw > 0 ? clamp(num(el.dataset.x, 0) / (REF_W - bw), 0, 1) : 0,
+        REF_H - bh > 0 ? clamp(num(el.dataset.y, 0) / (REF_H - bh), 0, 1) : 0
+      ];
+    });
+    return out;
+  }
+
+  function bySlot(slot) {
+    var found = null;
+    windows().forEach(function (x) { if (x.slot === slot) found = x; });
+    return found;
+  }
+
+  /* ---- HOP 1 OF THE INVERSION, both directions. See the header. `screen = base * G + C`, and both
+     terms are linear in the base, so placeAt is a division rather than a search. With spread and the
+     size dials at their base G is 1 and C is 0 and this is the identity - which is why an ordinary
+     drag records the engine's own fraction and cannot move the window by so much as a pixel. ---- */
+  function placeAt(x, vx, vy) {
+    var tx = Math.max(0, x.fw - x.sw), ty = Math.max(0, x.fh - x.sh);
+    var gx = state.spread + (tx > 0 ? x.sw * (1 - x.kw) / tx : 0);
+    var gy = state.spread + (ty > 0 ? x.sh * (1 - x.kh) / ty : 0);
+    var cx = (x.fw / 2 - x.sw / 2) * (1 - state.spread);
+    var cy = (x.fh / 2 - x.sh / 2) * (1 - state.spread);
+    place[x.slot] = [
+      tx > 0 && Math.abs(gx) > 0.05 ? (vx - cx) / gx / tx : 0,
+      ty > 0 && Math.abs(gy) > 0.05 ? (vy - cy) / gy / ty : 0
+    ];
+  }
+
+  /* a window that ends up where the file already had it is not a change - drop the entry rather
+     than carry a no-op into the copy-out and into the saved tune. Re-measured through windows(), so
+     this is the same test the copy-out makes rather than a second opinion about it. */
+  function prune(x) {
+    if (x && !x.movedX && !x.movedY) delete place[x.slot];
+  }
+
+  /* ---- HOP 2. A screen position becomes the data-x/-y the file would carry: a fraction of this
+     window's travel range AT THE PASTED SIZE, then back into the 500x520 stage. ---- */
+  function authoredAt(x, vx, vy) {
+    var dw = Math.round(x.baseW * x.kw), dh = Math.round(x.baseH * x.kh);
+    var tx = Math.max(0, x.fw - x.sw * x.kw), ty = Math.max(0, x.fh - x.sh * x.kh);
+    var f2x = tx > 0 ? vx / tx : 0, f2y = ty > 0 ? vy / ty : 0;
+    return { x: f2x * (REF_W - dw), y: f2y * (REF_H - dh),
+             fx: f2x, fy: f2y, w: dw, h: dh, tx: tx, ty: ty };
+  }
+
+  /* one unit of data-x is worth travel/(500 - data-w) screen pixels, which is more than a pixel on
+     the wider windows. Where rounding to a whole number would land somewhere else, keep a decimal. */
+  function coord(v, span, travel) {
+    return Math.abs(Math.round(v) - v) * (span > 0 ? travel / span : 0) > 1
+      ? v.toFixed(1) : String(Math.round(v));
+  }
+
+  /* ---- ONE FUNCTION, BOTH OUTPUTS. buildCss() drives the frame; tuneCss() below prints the same
+     decisions against their file and line. Neither emits a value that has not moved. ---- */
+  function buildCss() {
+    var out = [], f = [];
+    if (state.side !== UI.side) f.push('width:calc(100% - ' + (state.side * 2) + 'px)', 'margin-inline:auto');
+    if (state.top !== UI.top) f.push('margin-top:' + state.top + 'px');
+    if (state.bot !== UI.bot) f.push('margin-bottom:' + state.bot + 'px');
+    if (f.length) out.push('.field{' + f.join(';') + '}');
+
+    if (state.door !== UI.door) {
+      out.push('.pwin--door{width:calc(var(--win-w) * ' + state.door +
+        ');height:calc(var(--win-h) * ' + state.door + ')}');
+    }
+    if (state.soc !== UI.soc) {
+      out.push('.pwin--social{width:calc(var(--win-w) * ' + state.soc +
+        ');height:calc(var(--win-h) * ' + state.soc + ')}');
+    }
+
+    windows().forEach(function (w) {
+      var d = [];
+      if (Math.abs(w.ox) > 0.05) d.push('left:' + w.ox.toFixed(1) + 'px');
+      if (Math.abs(w.oy) > 0.05) d.push('top:' + w.oy.toFixed(1) + 'px');
+      /* the per-window size carries the GROUP multiplier baked into it, so this rule is the whole
+         answer for this window rather than something the group rule above still contributes to.
+         It can be: `.pwin[data-slot="x"]` is a class plus an attribute against `.pwin--door`'s one
+         class, and it is written later in the same sheet, so it wins twice over. */
+      if (w.sized) {
+        d.push('width:calc(var(--win-w) * ' + w.kw + ')', 'height:calc(var(--win-h) * ' + w.kh + ')');
+      }
+      if (d.length) out.push('.pwin[data-slot="' + w.slot + '"]{' + d.join(';') + '}');
+    });
+
+    var c = [];
+    if (state.cy !== UI.cy) c.push('top:' + off(state.cy));
+    if (state.cx !== UI.cx) c.push('left:' + off(state.cx));
+    if (c.length) out.push('.centre{' + c.join(';') + '}');
+
+    var v = [];
+    if (state.wy !== UI.wy) v.push('top:' + off(state.wy));
+    if (state.wx !== UI.wx) v.push('left:' + off(state.wx));
+    if (v.length) out.push('.centre__welcome{' + v.join(';') + '}');
+
+    if (BASE.markParsed && (state.mmax !== UI.mmax || state.mvw !== UI.mvw)) {
+      out.push('.centre__mark{font-size:clamp(' + markMin + 'rem,' + state.mvw + 'vw,' + state.mmax + 'rem)}');
+    }
+
+    if (noteHidden) out.push('.note{display:none}');
+    return out.join('\n');
+  }
+
+  function styleEl() {
+    var d = doc();
+    if (!d || !d.body) return null;
+    var s = d.getElementById('portal-tuner');
+    if (!s) { s = d.createElement('style'); s.id = 'portal-tuner'; d.body.appendChild(s); }
+    return s;
+  }
+
+  /* THE DRIFT BRIDGE, and the only reason this file injects anything other than that one <style>.
+     The amplitudes are data attributes on `.pwin__inner`, and drift-magnet caches them at register
+     time - but it exports `retune(el)` for exactly this case ("so a tuner can change them without a
+     reload", drift-magnet.js:239). Reaching an ES module's export means importing it INSIDE the
+     frame, so a four-line module script is added the first time a drift dial moves and never
+     again. Importing the same URL the page already imported gets the same module instance, so this
+     retunes the live engine rather than starting a second one. */
+  function applyDrift() {
+    var d = doc(), w = fr.contentWindow;
+    if (!d || !w) return;
+    if (!bridged) {
+      bridged = true;
+      var sc = d.createElement('script');
+      sc.type = 'module';
+      sc.id = 'portal-tuner-bridge';
+      sc.textContent =
+        "import { retune } from '/redesign-lab/extracted/components/drift-magnet/drift-magnet.js';" +
+        "window.__portalTunerRetune = retune;";
+      d.body.appendChild(sc);
+    }
+    var inners = d.querySelectorAll('.pwin__inner');
+    for (var i = 0; i < inners.length; i++) {
+      inners[i].dataset.driftX = state.dx;
+      inners[i].dataset.driftY = state.dy;
+      inners[i].dataset.driftSpeed = state.ds;
+      if (w.__portalTunerRetune) w.__portalTunerRetune(inners[i]);
+    }
+  }
+
+  function moved() {
+    if (noteHidden) return true;
+    for (var k in KNOBS) { if (state[k] !== UI[k]) return true; }
+    /* `place` only ever holds windows that are somewhere other than the file put them - prune()
+       deletes the entry again the moment one lands back home. An entry can legitimately be null, so
+       this counts keys rather than truthiness. `size` is kept the same way: a window wound back to
+       1.00 has its entry deleted rather than kept as a no-op. */
+    return Object.keys(place).length > 0 || Object.keys(winSize).length > 0;
+  }
+
+  /* ---- THE ONE WINDOW THE SIZE DIALS ACT ON: whichever was last touched. Panel-side only, so it
+     is safe to call from a pointerdown without disturbing the engine mid-press. ---- */
+  function syncSel() {
+    var pw = document.getElementById('s-pw'), ph = document.getElementById('s-ph');
+    var sel = ready && lastSlot ? bySlot(lastSlot) : null;
+    var k = (lastSlot && winSize[lastSlot]) || [1, 1];
+    pw.disabled = !sel;
+    ph.disabled = !sel || !sel.door;
+    if (document.activeElement !== pw) pw.value = k[0];
+    if (document.activeElement !== ph) ph.value = sel && !sel.door ? k[0] : k[1];
+    document.getElementById('v-pw').textContent = mult(pw.value);
+    document.getElementById('v-ph').textContent = mult(ph.value);
+    document.getElementById('ph-hint').textContent = !sel
+      ? 'Drag or press a window in the page first - these follow the one you last touched.'
+      : (sel.door
+        ? 'The engine still grows any window whose own title would not fit, and still forces the two lead doors taller than the tallest social. A shrink can come back bigger than you asked for.'
+        : 'Off for a social. The engine squares every social from its own width after fitting the title, so a separate height here would show you a shape the file cannot produce - the width dial sizes both sides.');
+  }
+
+  /* a multiplier back at 1.00 is not an override - drop the entry rather than carry a no-op into
+     the copy-out and the saved tune, the same way prune() treats a window dragged back home. */
+  function setSel(kw, kh) {
+    var sel = lastSlot && bySlot(lastSlot);
+    if (!sel) return;
+    if (!sel.door) kh = kw;
+    if (Math.abs(kw - 1) < 0.005 && Math.abs(kh - 1) < 0.005) delete winSize[lastSlot];
+    else winSize[lastSlot] = [round6(kw), round6(kh)];
+    apply();
+  }
+
+  function apply(second) {
+    if (!ready) return;
+    for (var k in KNOBS) {
+      var K = KNOBS[k];
+      document.getElementById(K.el).value = state[k];
+      document.getElementById(K.out).textContent = K.fmt(state[k]);
+    }
+    document.getElementById('s-note').checked = noteHidden;
+    syncSel();
+
+    /* RULE 3. Until something moves there is no <style> in that document at all. */
+    if (moved()) injected = true;
+    if (injected) {
+      var css = buildCss();
+      var s = styleEl();
+      /* back at every derived base -> take the element away again rather than leaving an empty one
+         behind, so "the tuner changed nothing" stays literally checkable in the frame's DOM */
+      if (!css) { if (s) s.remove(); injected = false; } else if (s) { s.textContent = css; }
+      /* the drift bridge is a SECOND injection and it is gated on the drift dials themselves, not
+         on "something moved". Placing a window by hand counts as moved, and dragging a window is no
+         reason to put a module script into the page. Once bridged it keeps running, so winding the
+         dials back to base puts the authored amplitudes back rather than stranding the last value. */
+      if (bridged || state.dx !== UI.dx || state.dy !== UI.dy || state.ds !== UI.ds) applyDrift();
+    }
+    try {
+      /* a null entry is "placed, the engine is holding it", which only means anything while that
+         engine is alive - so it is resolved against the live fraction on the way out. A reload has
+         no engine memory to consult, and real numbers are the only form it can restore from. */
+      var saved = {};
+      windows().forEach(function (x) {
+        if (x.slot in place) saved[x.slot] = place[x.slot] || [x.fx, x.fy];
+      });
+      localStorage.setItem(STORE,
+        JSON.stringify({ s: state, place: saved, size: winSize, last: lastSlot, note: noteHidden }));
+    } catch (e) { /* private mode */ }
+
+    /* the field's ResizeObserver and the engine's rAF are both unreliable in a background tab, and
+       the per-window offsets are computed FROM the post-resize positions - so force the relayout,
+       then rebuild once more against the settled numbers. Two passes converge: `left`/`top` cannot
+       change the field's size, so there is no loop here. */
+    /* setTimeout rather than requestAnimationFrame ON PURPOSE. rAF does not fire at all in a tab
+       the browser considers hidden, and neither does ResizeObserver delivery - which is exactly why
+       the engine publishes `relayout()` and `step()`. A tuner whose readouts go blank the moment
+       the window loses focus is a tuner that cannot be trusted. */
+    setTimeout(function () {
+      var w = fr.contentWindow;
+      if (w && w.__portalWindows) { w.__portalWindows.relayout(); w.__portalWindows.step(); }
+      if (!second) { apply(true); return; }
+      read();
+    }, 16);
+  }
+
+  function set(id, text, good) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.className = good === undefined ? '' : (good === 'warn' ? 'warn' : (good ? 'ok' : 'bad'));
+  }
+
+  /* the gap between two boxes: 0 when they touch, negative when they overlap */
+  function boxGap(a, b) {
+    var dx = Math.max(b.left - a.right, a.left - b.right, 0);
+    var dy = Math.max(b.top - a.bottom, a.top - b.bottom, 0);
+    if (dx === 0 && dy === 0) {
+      return -Math.min(Math.min(a.right, b.right) - Math.max(a.left, b.left),
+                       Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+    }
+    return Math.hypot(dx, dy);
+  }
+
+  /* the same gap, with the drift each of the two boxes can spend closing it taken off first. A
+     resting measurement of a drifting element is the flattering end of a range. */
+  function worstGap(a, b, bx, by) {
+    var dx = Math.max(b.left - a.right, a.left - b.right, 0);
+    var dy = Math.max(b.top - a.bottom, a.top - b.bottom, 0);
+    if (dx === 0 && dy === 0) return boxGap(a, b);
+    var wx = Math.max(0, dx - bx), wy = Math.max(0, dy - by);
+    if (wx === 0 && wy === 0) return 0;
+    return Math.hypot(wx, wy);
+  }
+
+  /* the visible ink of the identity mark, not its box. line-boil wraps every letter in its own
+     span inside a full-width block, so the element's rect is 437px wide where the name is 179. */
+  function inkBox(el) {
+    var d = doc();
+    if (!el || !d) return null;
+    var r = d.createRange();
+    r.selectNodeContents(el);
+    var b = r.getBoundingClientRect();
+    return b.width ? b : el.getBoundingClientRect();
+  }
+
+  /* ---- WHERE THE LETTERS ACTUALLY STOP. See the header: a rect is the line box, a Range is the
+     font's content box, and neither is the ink. Both of those carry the descent under "RODNEY FAN"
+     that the name never uses, which is a good part of why the gap dial reads like it is lying. ----
+
+     The canvas is created, measured and thrown away - it is never appended, so opening this page
+     still puts nothing into that document. */
+  var ink2d = null;
+  function ctx2d() {
+    var d = doc();
+    if (!d) return null;
+    if (!ink2d || ink2d.canvas.ownerDocument !== d) ink2d = d.createElement('canvas').getContext('2d');
+    return ink2d;
+  }
+
+  /* the three hand-drawn faces the mark's glyphs cycle through, READ OFF THE GLYPHS rather than
+     named here. They share their metric overrides but not their ink, so the deepest descent of the
+     lot is what the gap has to clear. Accumulated across calls: each glyph starts on a random face
+     (line-boil.js:118), so one sample can miss one of the three. */
+  var boilSeen = {};
+  function boilFaces() {
+    var d = doc(), w = fr.contentWindow;
+    if (d && w) {
+      d.querySelectorAll('.centre__mark .lb__g').forEach(function (g) {
+        var f = w.getComputedStyle(g).fontFamily;
+        if (f) boilSeen[f] = 1;
+      });
+    }
+    var out = Object.keys(boilSeen);
+    return out.length ? out : null;
+  }
+
+  /* the top of the first letter and the bottom of the last one, in viewport px.
+     baseline = box top + half-leading + ascent, where half-leading is
+     `(line-height - (ascent + descent)) / 2` and the two font numbers come from a measureText on
+     this element's OWN computed font - nothing transcribed, and it follows a font swap. Chrome
+     rounds `fontBoundingBox*` to whole px, but the two roundings very nearly cancel in that sum, so
+     this lands ~0.01px from the CSS-derived baseline. The remaining slack is `actualBoundingBox*`,
+     good to about half a pixel. */
+  function inkEdges(el, faces) {
+    var d = doc(), w = fr.contentWindow, c = ctx2d();
+    if (!el || !d || !w || !c) return null;
+    var cs = w.getComputedStyle(el), box = el.getBoundingClientRect();
+    var lh = parseFloat(cs.lineHeight);
+    if (!isFinite(lh)) lh = box.height;                     // `normal`, and a single line
+    var t = el.textContent.replace(/\s+/g, ' ').trim();
+    if (!t) return null;
+    if (cs.textTransform === 'uppercase') t = t.toUpperCase();
+    else if (cs.textTransform === 'lowercase') t = t.toLowerCase();
+    var fams = faces && faces.length ? faces : [cs.fontFamily];
+    var asc = 0, desc = 0, fAsc = 0, fDesc = 0;
+    fams.forEach(function (f) {
+      c.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + f;
+      var m = c.measureText(t);
+      asc = Math.max(asc, m.actualBoundingBoxAscent || 0);
+      desc = Math.max(desc, m.actualBoundingBoxDescent || 0);
+      fAsc = Math.max(fAsc, m.fontBoundingBoxAscent || 0);
+      fDesc = Math.max(fDesc, m.fontBoundingBoxDescent || 0);
+    });
+    if (!fAsc) return null;                                  // font not measurable yet
+    var half = (lh - (fAsc + fDesc)) / 2;
+    return {
+      top: box.top + half + fAsc - asc,                      // ink top, off the FIRST line
+      bottom: box.bottom - half - fDesc + desc,               // ink bottom, off the LAST line
+      boxTop: box.top, boxBottom: box.bottom
+    };
+  }
+
+  /* the gap Rod can see, and the three pieces of dead box that make it bigger than the dial says.
+     Every term is measured off the frame and they add up exactly:
+        gap = dial + empty half of `.centre` + box under the name + box over the line */
+  function gapInfo() {
+    var d = doc(), w = fr.contentWindow;
+    if (!d || !w) return null;
+    var mark = d.querySelector('.centre__mark'), wel = d.querySelector('.centre__welcome'),
+        centre = d.querySelector('.centre'), field = d.querySelector('.field');
+    if (!centre || !field || !wel) return null;
+    var mi = inkEdges(mark, boilFaces()), wi = inkEdges(wel, null);
+    if (!mi || !wi) return null;
+    var cb = centre.getBoundingClientRect(), fb = field.getBoundingClientRect();
+    return {
+      gap: wi.top - mi.bottom,
+      dial: parseFloat(w.getComputedStyle(wel).top) - fb.height / 2,
+      emptyCentre: cb.top + cb.height / 2 - mi.boxBottom,
+      underLetters: mi.boxBottom - mi.bottom,
+      overLine: wi.top - wi.boxTop,
+      centreH: cb.height,
+      markFs: parseFloat(w.getComputedStyle(mark).fontSize)
+    };
+  }
+
+  /* ---- EVERYTHING BELOW IS MEASURED IN THE FRAME. Nothing is computed from `state`, so a readout
+     that disagrees with a slider is telling the truth and the slider is not. ---- */
+  function read() {
+    var d = doc(), w = fr.contentWindow;
+    if (!d || !w) return;
+    var field = d.querySelector('.field'), pg = d.querySelector('.pground'),
+        centre = d.querySelector('.centre'), mark = d.querySelector('.centre__mark'),
+        wel = d.querySelector('.centre__welcome'), note = d.querySelector('.note');
+    if (!field || !pg) return;
+    var P = w.__portalWindows;
+
+    set('r-vw', w.innerWidth + ' x ' + w.innerHeight);
+
+    var sh = d.documentElement.scrollHeight, ih = w.innerHeight;
+    set('r-scroll', sh + ' vs ' + ih + (sh > ih ? '  (+' + (sh - ih) + ')' : ''), sh <= ih + 0.5);
+
+    /* `overflow-x: clip` on body makes scrollWidth report no overflow while the right edge is being
+       cut off, so walk for the furthest right edge instead. */
+    var far = 0;
+    d.querySelectorAll('#main *').forEach(function (el) {
+      if (el.tagName === 'CANVAS') return;
+      var r = el.getBoundingClientRect();
+      if (r.width && r.right > far) far = r.right;
+    });
+    var over = far - d.documentElement.clientWidth;
+    set('r-over', over > 0.5 ? '+' + over.toFixed(1) + 'px over' : 'fits', over <= 0.5);
+
+    var fw = field.clientWidth, fh = field.clientHeight;
+    set('r-field', fw + ' x ' + fh);
+
+    if (P) {
+      var sc = P.scale();
+      var byW = fw / REF_W, byH = fh / REF_H;
+      var capped = sc >= 2.4 - 1e-6;
+      set('r-scale', sc.toFixed(3) + 'x  (set by the ' + (byH <= byW ? 'height' : 'width') + ')' +
+        (capped ? ' AT CAP' : ''), capped ? 'warn' : undefined);
+    } else {
+      set('r-scale', 'engine not running', false);
+    }
+
+    var pwins = [].slice.call(d.querySelectorAll('.pwin')).filter(function (el) {
+      return !el.classList.contains('is-closed');
+    });
+    var boxes = pwins.map(function (el) { return el.getBoundingClientRect(); });
+    var bx = 2 * state.dx * JITTER, by = 2 * state.dy * JITTER;   // both windows can spend it
+
+    var best = Infinity, bestName = '';
+    for (var i = 0; i < boxes.length; i++) {
+      for (var j = i + 1; j < boxes.length; j++) {
+        var g = worstGap(boxes[i], boxes[j], bx, by);
+        if (g < best) {
+          best = g;
+          bestName = pwins[i].dataset.slot.replace(/^\w+: /, '') + ' / ' +
+                     pwins[j].dataset.slot.replace(/^\w+: /, '');
+        }
+      }
+    }
+    if (isFinite(best)) {
+      set('r-pair', best.toFixed(0) + 'px  ' + bestName, best > 0.5);
+      var lean = best - 2 * MAX_LEAN;
+      set('r-pairlean', lean.toFixed(0) + 'px', lean > 0.5);
+    }
+
+    /* against the INK of the centre text, plus the name's click box reported separately - the box
+       is 165px tall where the name itself is 48, so measuring the box alone cries wolf. */
+    var ink = null;
+    [inkBox(mark), wel && wel.getBoundingClientRect()].forEach(function (b) {
+      if (!b || !b.width) return;
+      ink = ink ? {
+        left: Math.min(ink.left, b.left), top: Math.min(ink.top, b.top),
+        right: Math.max(ink.right, b.right), bottom: Math.max(ink.bottom, b.bottom)
+      } : { left: b.left, top: b.top, right: b.right, bottom: b.bottom };
+    });
+    if (ink) {
+      var bc = Infinity, bcName = '';
+      boxes.forEach(function (b, k) {
+        var g = worstGap(b, ink, state.dx * JITTER, state.dy * JITTER);
+        if (g < bc) { bc = g; bcName = pwins[k].dataset.slot.replace(/^\w+: /, ''); }
+      });
+      set('r-cent', (bc < 0 ? bc.toFixed(0) + 'px OVERLAP  ' : bc.toFixed(0) + 'px  ') + bcName, bc > 0.5);
+    }
+
+    var frect = field.getBoundingClientRect();
+    var escaped = boxes.filter(function (b) {
+      return b.left < frect.left - 0.5 || b.top < frect.top - 0.5 ||
+             b.right > frect.right + 0.5 || b.bottom > frect.bottom + 0.5;
+    }).length;
+    set('r-out', escaped + ' of ' + boxes.length, escaped === 0);
+
+    if (P) {
+      var fr2 = P.fractions();
+      /* NAMED, not counted. Two windows ship pinned - Game Design's data-x of 340 is past its own
+         range of 500-170 and clamps to the far edge, and GitHub sits on 0 - so a bare count reads
+         as normal and hides the fact that those two cannot be dragged further that way without the
+         file's number changing. `allWins` rather than the visible list: fractions() is in document
+         order and includes closed windows, so a filtered list would name the wrong ones. */
+      var allWins = [].slice.call(d.querySelectorAll('.pwin'));
+      var pinned = [];
+      fr2.forEach(function (f2, k) {
+        if (f2[0] <= 0 || f2[0] >= 1 || f2[1] <= 0 || f2[1] >= 1) {
+          pinned.push((allWins[k] ? allWins[k].dataset.slot : '?').replace(/^\w+: /, ''));
+        }
+      });
+      set('r-pin', pinned.length ? pinned.length + ': ' + pinned.join(', ') : 'none',
+        pinned.length ? 'warn' : true);
+
+      /* THE STALENESS CHECK. Rebuild one window's position from this file's own understanding of
+         the engine (fraction x travel range in a 500x520 stage) and compare it with what the engine
+         actually placed. If those two ever disagree, every number this tuner emits is wrong. */
+      var sz = P.sizes(), pos = P.positions();
+      var err = 0;
+      for (var q = 0; q < fr2.length; q++) {
+        err = Math.max(err, Math.abs(fr2[q][0] * Math.max(0, fw - sz[q][0]) - pos[q][0]));
+      }
+      set('r-engine', err < 1.5 ? 'agrees' : 'DISAGREES by ' + err.toFixed(1) + 'px', err < 1.5);
+    }
+
+    /* WHAT I SET vs WHAT I SEE, side by side. The dial is the file's own number; the gap is the
+       distance between the two lots of letters. They are not the same thing and the readout stops
+       pretending they are - see the header for the full measurement. */
+    var gi = gapInfo();
+    if (gi) {
+      set('r-gap', gi.gap.toFixed(0) + 'px seen   (dial ' + gi.dial.toFixed(1) + 'px)');
+      set('r-dead', (gi.gap - gi.dial).toFixed(0) + 'px:  ' + gi.emptyCentre.toFixed(0) +
+        ' empty name box, ' + gi.underLetters.toFixed(0) + ' under the letters, ' +
+        gi.overLine.toFixed(0) + ' over the line',
+        Math.abs(gi.gap - gi.dial) > 24 ? 'warn' : undefined);
+      var gs = document.getElementById('s-gap');
+      /* re-seat the gap dial on the measured number, so changing the NAME'S SIZE (which moves the
+         gap without touching `top`) leaves the dial telling the truth. Skipped while it is the
+         thing being dragged, or the thumb would fight the hand. */
+      if (document.activeElement !== gs) gs.value = gi.gap;
+      document.getElementById('v-gap').textContent = gi.gap.toFixed(0) + 'px';
+      document.getElementById('gap-flag').textContent =
+        'A dial of ' + gi.dial.toFixed(0) + 'px is showing as a ' + gi.gap.toFixed(0) +
+        'px gap. Most of the difference is the name\'s BOX: `.centre` is 165px x --pscale, ' +
+        gi.centreH.toFixed(0) + 'px here, and the name sits at the TOP of it while the welcome ' +
+        'line is measured from the MIDDLE - so ' + gi.emptyCentre.toFixed(0) + 'px of that box is ' +
+        'empty before the line even starts. --pscale is the engine\'s own min(fw/500, fh/520), so ' +
+        'that block GROWS WITH THE WINDOW while a rem-based top cannot: this same dial measures a ' +
+        '109px gap at 895x419 and a 138px one at 1280x900. Line-height on the name is not the fix, ' +
+        'and the obvious direction is backwards - measured, 1.15 -> 1.0 made the gap 3px BIGGER.';
+    } else {
+      set('r-gap', 'font not measurable yet');
+      set('r-dead', '-');
+    }
+
+    /* the one window the size dials are pointed at */
+    var sel = ready && lastSlot ? bySlot(lastSlot) : null;
+    if (!sel) {
+      set('r-sel', 'nothing touched yet');
+      set('r-selsize', '-'); set('r-selpx', '-'); set('r-selpos', '-');
+    } else {
+      var sa = authoredAt(sel, sel.px0 + sel.ox, sel.py0 + sel.oy);
+      var sr = sel.el.getBoundingClientRect();
+      set('r-sel', sel.slot);
+      set('r-selsize', sel.baseW + ' x ' + sel.baseH +
+        (sa.w !== sel.baseW || sa.h !== sel.baseH ? '  ->  ' + sa.w + ' x ' + sa.h : '   unchanged'));
+      /* WHAT IS DRAWN vs WHAT WILL BE PASTED, because on this page they are not the same number and
+         the difference is not small. See `size-flag` - the multiplier gets counted twice in the
+         preview and once in the file. */
+      var sc2 = P ? P.scale() : 1;
+      var willW = sa.w * sc2, willH = sa.h * sc2;
+      var off2 = Math.abs(willW - sr.width) > 2 || Math.abs(willH - sr.height) > 2;
+      set('r-selpx', sr.width.toFixed(0) + ' x ' + sr.height.toFixed(0) + ' drawn' +
+        (off2 ? ',  paste draws about ' + Math.round(willW) + ' x ' + Math.round(willH) : ''),
+        off2 ? 'warn' : undefined);
+      set('r-selpos', 'data-x ' + (sel.el.dataset.x || '?') + ' -> ' + coord(sa.x, REF_W - sa.w, sa.tx) +
+        ',  data-y ' + (sel.el.dataset.y || '?') + ' -> ' + coord(sa.y, REF_H - sa.h, sa.ty),
+        sa.fx < 0 || sa.fx > 1 || sa.fy < 0 || sa.fy > 1 ? false : undefined);
+    }
+
+    if (mark) {
+      var fs = parseFloat(w.getComputedStyle(mark).fontSize);
+      var lo = (markMin === null ? NaN : markMin * BASE.root),
+          mid = state.mvw / 100 * w.innerWidth,
+          hi = state.mmax * BASE.root;
+      var by2 = !isFinite(lo) ? '?' : (fs >= hi - 0.5 ? 'the ceiling' : (fs <= lo + 0.5 ? 'the floor' : 'the window width'));
+      set('r-mark', fs.toFixed(1) + 'px, set by ' + by2);
+    }
+    if (wel) {
+      set('r-wel', parseFloat(w.getComputedStyle(wel).fontSize).toFixed(0) + 'px - declared twice', 'warn');
+    }
+
+    set('r-period', state.dx || state.dy
+      ? (2 * Math.PI / (SPEED_X * state.ds)).toFixed(1) + 's across, ' +
+        (2 * Math.PI / (SPEED_Y * state.ds)).toFixed(1) + 's down'
+      : 'not wandering');
+
+    var ws = windows();
+    var hand = ws.filter(function (x) { return x.movedX || x.movedY; }).length;
+    var shift = ws.reduce(function (m, x) { return Math.max(m, x.poff); }, 0);
+    set('r-placed', hand + ' of ' + ws.length +
+      (shift > 0.5 ? ', preview offset ' + shift.toFixed(0) + 'px' : ''),
+      shift > 0.5 ? 'warn' : undefined);
+
+    if (note && pg) {
+      var nb = note.getBoundingClientRect(), pb = pg.getBoundingClientRect();
+      var cut = nb.bottom - pb.bottom;
+      set('r-note', w.getComputedStyle(note).display === 'none'
+        ? 'hidden'
+        : nb.height.toFixed(0) + 'px' + (cut > 0.5 ? ', ' + cut.toFixed(0) + 'px cut off' : ''),
+        cut <= 0.5 ? undefined : 'warn');
+    }
+  }
+
+  /* ---- THE PASTE-OUT. Same decisions as buildCss(), printed against their file and line. ---- */
+  function tuneCss() {
+    var w = fr.contentWindow, d = doc();
+    var lines = [];
+    var head = [
+      '/* portal tune from portal-ratios.html, window ' + (w ? w.innerWidth + 'x' + w.innerHeight : '?') +
+        ', window area ' + (w && w.__portalWindows ? w.__portalWindows.field().join('x') : '?') + '.',
+      '   ONLY the values that were actually moved are below. Anything absent is unchanged and its',
+      '   line in the file should be left alone. Paste each block over the cited rule; the comments',
+      '   in the originals are NOT reproduced here - keep them. */',
+      ''
+    ];
+
+    var f = [];
+    if (state.side !== UI.side) {
+      f.push('width: calc(100% - ' + (state.side * 2) + 'px);   /* was width:100% */');
+      f.push('margin-inline: auto;');
+    }
+    if (state.top !== UI.top) f.push('margin-top: ' + state.top + 'px;');
+    if (state.bot !== UI.bot) f.push('margin-bottom: ' + state.bot + 'px;');
+    if (f.length) {
+      lines.push('/* ===== redesign-lab/final-portal.html:143  .field  (the page <style>, unlayered) =====',
+        '   The field IS the window area. The engine reads clientWidth/clientHeight every resize, so',
+        '   shrinking it re-runs the whole constellation - positions AND the size multiplier. */');
+      lines = lines.concat(f, '');
+    }
+
+    var moves = windows().filter(function (x) { return x.movedX || x.movedY; });
+    if (moves.length) {
+      var anyDecimal = false;
+      lines.push('/* ===== redesign-lab/final-portal.html:237  the .pwin markup =====',
+        '   All eight windows are on that one line. Match them by data-slot. These are NOT the',
+        '   preview CSS: the preview nudges left/top, the FILE carries data-x/-y/-w/-h, which is what',
+        '   effects/portal-windows.js:78 actually reads. Space Jam stage is ' + REF_W + 'x' + REF_H + '. */');
+      moves.forEach(function (x) {
+        var a = authoredAt(x, x.px0 + x.ox, x.py0 + x.oy);
+        var outOfRange = a.fx < 0 || a.fx > 1 || a.fy < 0 || a.fy > 1;
+        var bits = [];
+        if (x.movedX) bits.push('data-x="' + coord(a.x, REF_W - a.w, a.tx) + '"');
+        if (x.movedY) bits.push('data-y="' + coord(a.y, REF_H - a.h, a.ty) + '"');
+        if (x.kw !== 1 || x.kh !== 1) bits.push('data-w="' + a.w + '"', 'data-h="' + a.h + '"');
+        if (bits.join(' ').indexOf('.') >= 0) anyDecimal = true;
+        lines.push('/* ' + x.slot + ' */  ' + bits.join(' ') +
+          (outOfRange ? '   /* OUTSIDE its travel range - the engine will clamp this */' : ''));
+      });
+      lines.push('');
+      if (anyDecimal) {
+        lines.push('/* A DECIMAL means a whole number would have missed. data-x is read back as a',
+          '   fraction of (500 - data-w), so on the wider windows one unit is worth more than a screen',
+          '   pixel at this viewport. parseFloat takes the decimal fine (portal-windows.js:135) - round',
+          '   it if you would rather have the tidy number than the pixel. */', '');
+      }
+      if (moves.some(function (x) { return x.kw !== 1 || x.kh !== 1; })) {
+        lines.push('/* SIZE CAVEAT: the engine still grows any window whose own title does not fit, and',
+          '   still forces the two lead doors past the tallest social. Both floors are applied AFTER',
+          '   these numbers, so a shrink can come back smaller than asked. Re-open the tuner and check.',
+          '   data-x/-y ARE INCLUDED WITH EVERY SIZE CHANGE ON PURPOSE. They are fractions of',
+          '   (500 - data-w) and (520 - data-h), so a new size needs a new number to mean the same',
+          '   spot. Pasting data-w without data-x is what would move the window. */',
+          '');
+      }
+      if (moves.some(function (x) { return x.sized && !x.door; })) {
+        lines.push('/* A SOCIAL\'S data-h IS DECORATIVE. portal-windows.js:231 squares every social from',
+          '   its own width at runtime, so the height above only matters as the number in the file. */',
+          '');
+      }
+    }
+
+    var c = [];
+    if (state.cy !== UI.cy) c.push('top: ' + off(state.cy) + ';');
+    if (state.cx !== UI.cx) c.push('left: ' + off(state.cx) + ';');
+    if (c.length) {
+      lines.push('/* ===== redesign-lab/final-portal.html:183  .centre  (the name, and the reset control) =====*/');
+      lines = lines.concat(c, '');
+    }
+
+    var v = [];
+    if (state.wy !== UI.wy) {
+      v.push('top: ' + off(round6(+(state.wy / BASE.root).toFixed(3)), 'rem') + ';   /* ' + state.wy.toFixed(1) +
+        'px at a ' + BASE.root + 'px root; the file uses rem here, so this keeps that */');
+    }
+    if (state.wx !== UI.wx) v.push('left: ' + off(state.wx) + ';');
+    if (v.length) {
+      lines.push('/* ===== redesign-lab/final-portal.html:178  .centre__welcome ===== */');
+      lines = lines.concat(v);
+      var gi2 = gapInfo();
+      if (gi2 && state.wy !== UI.wy) {
+        lines.push('/* That leaves a ' + gi2.gap.toFixed(0) + 'px gap between the bottom of the name\'s ' +
+          'letters and the top of',
+          '   this line\'s, measured at ' + (w ? w.innerWidth + 'x' + w.innerHeight : '?') + '. THE GAP IS ' +
+          'NOT FIXED BY THIS NUMBER: ' + gi2.emptyCentre.toFixed(0) + 'px of it is the',
+          '   empty lower half of `.centre`, which is 165px x --pscale and so grows with the window while',
+          '   this rem does not. Re-check it at the sizes you care about. */');
+      }
+      lines.push('');
+    }
+
+    if (BASE.markParsed && (state.mmax !== UI.mmax || state.mvw !== UI.mvw)) {
+      lines.push('/* ===== redesign-lab/final-portal.html:223  .centre__mark ===== */',
+        'font-size: clamp(' + markMin + 'rem, ' + state.mvw + 'vw, ' + state.mmax + 'rem);', '');
+    }
+
+    var drift = [];
+    if (state.dx !== UI.dx) drift.push('data-drift-x="' + state.dx + '"');
+    if (state.dy !== UI.dy) drift.push('data-drift-y="' + state.dy + '"');
+    if (state.ds !== UI.ds) drift.push('data-drift-speed="' + state.ds + '"');
+    if (drift.length) {
+      lines.push('/* ===== redesign-lab/final-portal.html:237  every .pwin__inner, all eight ===== */',
+        drift.join(' '),
+        '/* one full wander: ' + (2 * Math.PI / (SPEED_X * state.ds)).toFixed(1) + 's across, ' +
+          (2 * Math.PI / (SPEED_Y * state.ds)).toFixed(1) + 's down, plus up to 15% amplitude jitter',
+        '   per window (drift-magnet.js:96). */', '');
+    }
+
+    if (noteHidden) {
+      lines.push('/* The note strip was HIDDEN in the tuner. That is lab chrome and is not emitted -',
+        '   it comes out at the merge, not by a tune. */', '');
+    }
+
+    if (!lines.length) return head.join('\n') + '\nNothing has moved. There is nothing to paste.\n';
+    return head.concat(lines).join('\n');
+  }
+
+  /* ---- WIRING ---- */
+
+  function showCoord(x, vx, vy) {
+    var a = authoredAt(x, vx, vy);
+    var oor = a.fx < 0 || a.fx > 1 || a.fy < 0 || a.fy > 1;
+    set('r-last', x.slot);
+    set('r-coord', 'data-x ' + Math.round(a.x) + '   data-y ' + Math.round(a.y) +
+      (oor ? '  PAST ITS LIMIT' : ''), oor ? false : undefined);
+  }
+
+  /* THE SETTLE WATCH. A throw keeps travelling after the pointer is gone, so nothing is recorded at
+     release - this waits for the window to STOP and records it there.
+
+     IT WAITS FOR THE POSITION TO STOP, not only for the velocity to look small, and that is not
+     belt-and-braces. velocities() publishes `vel.toFixed(2)`, so a window still moving at 0.1004
+     px/frame - which the engine is still stepping, and still re-recording home for - reads out as a
+     flat 0.10. Trusting that number alone recorded the window one or two frames early and left a
+     sub-pixel offset behind on every throw. The integer positions are the honest signal: when they
+     stop changing, the engine has stopped.
+
+     IF THE POSITION IS FROZEN WHILE REAL VELOCITY REMAINS, no rAF is running - a hidden tab
+     delivers none, which this file has been bitten by before - so the throw is advanced by hand with
+     the engine's own step(). The cap is 240 ticks; a MAX_THROW flick decays past 0.1 in about 105
+     frames at FRICTION 0.94, so it is a stop, not a limit anything real reaches. */
+  function settle(slot, off) {
+    var ticks = 0, last = null;
+    (function tick() {
+      var P = fr.contentWindow && fr.contentWindow.__portalWindows;
+      var x = ready && P ? bySlot(slot) : null;
+      if (!x) return;
+      var v = P.velocities()[x.i], p = P.positions()[x.i];
+      var frozen = !!last && last[0] === p[0] && last[1] === p[1];
+      showCoord(x, p[0] + off[0], p[1] + off[1]);
+      if (!(frozen && Math.abs(v[0]) <= 0.1 && Math.abs(v[1]) <= 0.1) && ticks++ < 240) {
+        if (frozen) P.step();
+        last = p;
+        setTimeout(tick, 16);
+        return;
+      }
+      /* A DRAG THE TUNER WAS NOT ALREADY OFFSETTING IS THE ENGINE'S TO KEEP. Writing an absolute
+         fraction here and then injecting the difference would be manufacturing an offset out of
+         rounding: fractions() publishes 3 decimals and positions() whole pixels, so a window still
+         creeping a tenth of a pixel per frame reads as stopped, and the difference between the
+         number recorded and where it finally stops comes out as most of a pixel. Marking it null
+         instead leaves the position where it actually lives and injects nothing.
+         Where an offset IS already in play, px0 rather than positions(): px0 is this file's
+         reconstruction from the SAME fraction the new offset is measured against, so the two cancel
+         and the drop cannot shift the window by a rounding error. */
+      if (!off[0] && !off[1]) place[slot] = null;
+      else placeAt(x, x.px0 + off[0], x.py0 + off[1]);
+      prune(bySlot(slot));
+      lastSlot = slot;
+      apply();
+      var after = bySlot(slot);
+      if (after) showCoord(after, after.px0 + after.ox, after.py0 + after.oy);
+    })();
+  }
+
+  /* fine placement where a mouse cannot reach: the last window you touched, 1px a press. Skipped
+     when a slider or a button has focus, because those steer with the arrows themselves. */
+  function nudgeKey(e) {
+    if (!ready || !lastSlot || e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target;
+    if (t && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(t.tagName)) return;
+    var d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    var x = d && bySlot(lastSlot);
+    if (!x) return;
+    var k = e.shiftKey ? 10 : 1;
+    placeAt(x, x.px0 + x.ox + d[0] * k, x.py0 + x.oy + d[1] * k);
+    e.preventDefault();
+    apply();
+    var after = bySlot(lastSlot);
+    if (after) showCoord(after, after.px0 + after.ox, after.py0 + after.oy);
+  }
+
+  /* ---- WATCHING THE PAGE'S OWN DRAG. There is no drag in this file; see the header. ---- */
+  function bindFrame() {
+    var d = doc();
+    if (!d || d === boundDoc) return;
+    boundDoc = d;   // a reload replaces the document and takes its listeners with it
+
+    d.addEventListener('pointerdown', function (e) {
+      var t = e.target;
+      if (!ready || !t || !t.closest || t.closest('.pwin__close')) return;
+      var el = t.closest('.pwin');
+      var x = el && bySlot(el.dataset.slot);
+      if (!x) return;
+      dragSlot = x.slot;
+      /* SELECTED ON PRESS, not on release: "the one i last touched" should be true the moment you
+         touch it, so the size dials can be reached without having to drag the window first. Only
+         the panel is updated here - apply() would relayout the engine mid-press, and settle() sets
+         lastSlot again on release anyway. */
+      lastSlot = x.slot;
+      syncSel();
+      /* the injected left/top cannot change while the pointer is down, so the offset this window is
+         being drawn with is frozen here; the release adds it back to the engine's own position to
+         recover where the window visually ended up */
+      dragOff = [x.ox, x.oy];
+    }, true);
+
+    /* bubble, not capture: the engine's own handler is on the window element and has to have
+       written the new pos before this reads it */
+    d.addEventListener('pointermove', function () {
+      var x = dragSlot ? bySlot(dragSlot) : null;
+      var P = fr.contentWindow && fr.contentWindow.__portalWindows;
+      if (!x || !P || !x.el.classList.contains('is-dragging')) return;
+      var p = P.positions()[x.i];
+      showCoord(x, p[0] + dragOff[0], p[1] + dragOff[1]);
+    });
+
+    var up = function () {
+      if (!dragSlot) return;
+      var slot = dragSlot;
+      dragSlot = null;
+      settle(slot, dragOff.slice());
+    };
+    d.addEventListener('pointerup', up);
+    d.addEventListener('pointercancel', up);
+    d.addEventListener('keydown', nudgeKey);
+  }
+
+  function boot() {
+    ready = false;
+    var b = derive();
+    if (!b) { setTimeout(boot, 200); return; }
+    BASE = b;
+    UI = {};
+    state = {};
+    Object.keys(KNOBS).forEach(function (k) {
+      UI[k] = snap(BASE[k], KNOBS[k].step);
+      state[k] = UI[k];
+    });
+    authored = authoredFracs();
+    place = {};
+    winSize = {};
+    boilSeen = {};
+    lastSlot = null;
+    dragSlot = null;
+    noteHidden = false;
+    injected = false;
+    bindFrame();
+
+    document.getElementById('h3-flag').textContent = BASE.markParsed
+      ? 'No dial for the SIZE of the welcome line, deliberately. It is 24px/300 twice over: the h3 ' +
+        'rung in decisions.css:228, and final-portal.html:180 restating the same two values ' +
+        'unlayered, where it wins. A size dial here would deepen that. Changing it properly means ' +
+        'moving the h3 rung, which moves every h3 on every page - say the word and it gets its ' +
+        'own tuner.'
+      : 'The clamp on the name could not be read out of the page, so its two size dials are off.';
+    if (!BASE.markParsed) {
+      document.getElementById('s-mmax').disabled = true;
+      document.getElementById('s-mvw').disabled = true;
+    }
+
+    /* RULE 3 again: a saved tune is OFFERED, never applied. A delta saved against a baseline that
+       has since changed is precisely how rambling-ratios ended up overwriting the real page. */
+    var btn = document.getElementById('restore');
+    btn.hidden = true;
+    try {
+      var sv = JSON.parse(localStorage.getItem(STORE) || 'null');
+      if (sv && sv.s) {
+        var diff = 0, placed = 0, sized = 0;
+        for (var k3 in KNOBS) { if (sv.s[k3] !== UI[k3]) diff++; }
+        for (var s3 in (sv.place || {})) { placed++; }
+        for (var s4 in (sv.size || {})) { sized++; }
+        if (diff || placed || sized) {
+          btn.hidden = false;
+          btn.textContent = 'restore your last tune (' + diff + ' dial' + (diff === 1 ? '' : 's') +
+            ', ' + placed + ' window' + (placed === 1 ? '' : 's') + ' you placed, ' +
+            sized + ' sized on its own) - nothing is applied until you click';
+          btn.onclick = function () {
+            for (var k4 in KNOBS) { if (sv.s[k4] !== undefined) state[k4] = sv.s[k4]; }
+            /* fractions of each window's own travel range, so a placement made at one window size
+               still means the same thing at another */
+            place = sv.place || {};
+            /* multipliers, so a per-window size means the same thing at any viewport too. The slot
+               it was pointed at comes back with it, or the size dials would restore a window and
+               then refuse to say which one. */
+            winSize = sv.size || {};
+            if (sv.last && bySlot(sv.last)) lastSlot = sv.last;
+            noteHidden = !!sv.note;
+            btn.hidden = true;
+            apply();
+          };
+        }
+      }
+    } catch (e) { /* private mode */ }
+
+    ready = true;
+    /* populate the sliders and run the readouts, and nothing else. There is no <style> in that
+       document right now and there will not be one until a dial moves. */
+    for (var k5 in KNOBS) {
+      document.getElementById(KNOBS[k5].el).value = state[k5];
+      document.getElementById(KNOBS[k5].out).textContent = KNOBS[k5].fmt(state[k5]);
+    }
+    document.getElementById('s-note').checked = false;
+    syncSel();
+    set('r-last', 'nothing dragged yet');
+    set('r-coord', '-');
+    /* poke the engine once before the first read. It writes every window's transform from inside
+       its own rAF loop, and a tab the browser thinks is hidden never runs one - so without this the
+       first readout measures eight windows stacked at 0,0 and every overlap number is fiction.
+       Safe here and only here: the page has just loaded, so nothing is mid-drag. */
+    var w0 = fr.contentWindow;
+    if (w0 && w0.__portalWindows) { w0.__portalWindows.relayout(); w0.__portalWindows.step(); }
+    setTimeout(read, 16);
+  }
+
+  Object.keys(KNOBS).forEach(function (k) {
+    document.getElementById(KNOBS[k].el).addEventListener('input', function () {
+      state[k] = round6(parseFloat(this.value));
+      apply();
+    });
+  });
+
+  /* THE GAP DIAL. It does not model the geometry and does not need to: moving the welcome line by
+     N moves the visible gap by exactly N, so it asks for a gap and closes the difference against
+     what is measured RIGHT NOW. That makes it self-correcting - if the name's size has since moved
+     the gap, read() has already re-seated this slider on the real number and the next drag is
+     measured from there. It writes `state.wy`, so rule 2, the copy-out and "has anything moved" are
+     untouched: this is the same setting as the dial above it, asked for the other way round. */
+  document.getElementById('s-gap').addEventListener('input', function () {
+    var g = gapInfo();
+    if (!g) return;
+    state.wy = round6(clamp(snap(state.wy + (parseFloat(this.value) - g.gap), KNOBS.wy.step),
+      +document.getElementById('s-wy').min, +document.getElementById('s-wy').max));
+    apply();
+  });
+
+  document.getElementById('s-pw').addEventListener('input', function () {
+    setSel(parseFloat(this.value), parseFloat(document.getElementById('s-ph').value));
+  });
+  document.getElementById('s-ph').addEventListener('input', function () {
+    setSel(parseFloat(document.getElementById('s-pw').value), parseFloat(this.value));
+  });
+
+  document.addEventListener('keydown', nudgeKey);
+  document.getElementById('s-note').addEventListener('change', function () {
+    noteHidden = this.checked;
+    apply();
+  });
+
+  document.getElementById('b-css').addEventListener('click', function () {
+    var t = document.getElementById('out');
+    t.hidden = !t.hidden;
+    t.value = tuneCss();
+  });
+
+  document.getElementById('b-copy').addEventListener('click', function () {
+    var btn = this, text = tuneCss();
+    var ok = function () {
+      btn.textContent = 'copied';
+      setTimeout(function () { btn.textContent = 'copy tune'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () { window.prompt('Copy:', text); });
+    } else { window.prompt('Copy:', text); }
+  });
+
+  /* RESET means "back to what the file says", and the only honest way to get there is to throw the
+     document away and read a fresh one. Restoring a literal is what makes a tuner lie.
+     THAT IS ALSO WHAT UNDOES THE DRAGGING. A dragged window is moved inside the engine, not by any
+     CSS this file wrote, so clearing `place` alone would leave every window sitting where it was
+     dropped. The reload re-runs the engine off the file's own data-x/-y, and boot() empties `place`
+     - and `size`, the per-window multipliers - against the fresh document. The two together are the
+     only thing that gets all the way back. */
+  document.getElementById('b-reset').addEventListener('click', function () {
+    try { localStorage.removeItem(STORE); } catch (e) { /* private mode */ }
+    bridged = false;
+    fr.contentWindow.location.reload();
+  });
+
+  document.getElementById('b-hide').addEventListener('click', function () {
+    document.getElementById('panel').classList.add('hid');
+    document.getElementById('toggle').hidden = false;
+  });
+  document.getElementById('toggle').addEventListener('click', function () {
+    document.getElementById('panel').classList.remove('hid');
+    this.hidden = true;
+  });
+
+  fr.addEventListener('load', function () { setTimeout(boot, 300); });
+  window.addEventListener('resize', function () { setTimeout(read, 16); });
+  if (fr.contentDocument && fr.contentDocument.readyState === 'complete') setTimeout(boot, 300);
+})();
+</script>
+</body>
+</html>

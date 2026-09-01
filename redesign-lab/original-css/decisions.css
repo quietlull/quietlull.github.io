@@ -1,0 +1,726 @@
+/* ============================================================================================
+   decisions.css - EVERY SETTLED TEXT DECISION, in one place, imported by all six final-* pages.
+
+   Built 2026-08-23 from Rod's picks on text-decisions.html. This file exists so the six pages
+   cannot drift from each other or from the decision page: one definition, six consumers.
+
+   RULES THIS FILE FOLLOWS
+   - Every block cites the source that decided it. A rule with no citation is a bug in this file.
+   - Where Rod combined two sources, the block says OURS/REMIX rather than borrowing one citation.
+   - It styles TYPE and TEXT only. No layout, no spacing between sections, no page structure -
+     those are each page's own business and D25 says layout is Rod's alone.
+   ============================================================================================ */
+
+/* ── TOKENS ADDED BY THE DECISIONS ─────────────────────────────────────────────────────────
+   Only ONE new token. Rod picked silver candidate ii for heading tiers 3-4; it is a derivation
+   of two tokens he already approved, not a new hue, and it is named here rather than left as a
+   literal so H3/H4 reference a name. Measured 7.40:1 against the reading well - the only one of
+   the three candidates that keeps the ramp descending (i was BRIGHTER than gold-deep). */
+:root {
+  --color-silver: #a3a19d;              /* = color-mix(in srgb, #f5f3ef 62%, #1c1a18) */
+
+  /* --color-muted-warm - ADDED 2026-08-23 after a reference agent caught it. It was USED three
+     times in this file and DEFINED nowhere, so every use silently fell back to the literal
+     #8a8a8a: a neutral grey, on a token named "warm". A name that reads like part of the system
+     but is not is worse than a literal, because nothing fails - it just quietly renders wrong.
+     Defined now on the same derivation as silver, one step quieter, so the heading counter and the
+     anchor sit UNDER the heading text they belong to rather than competing with it. */
+  --color-muted-warm: #7d7a76;          /* = color-mix(in srgb, #f5f3ef 45%, #1c1a18) */
+  --h0-color: var(--color-glow, #ff6a00);      /* signature orange - Rod 2026-08-23 */
+  --h1-color: var(--color-glow, #ff6a00);
+  --h2-color: var(--color-gold, #fbbf24);      /* the yellow */
+  --h3-color: var(--color-silver);
+  --h4-color: var(--color-silver);
+  --emphasis-color: var(--color-gold, #fbbf24); /* bold takes the H2 yellow - Rod 2026-08-23 */
+}
+
+/* ============================================================================================
+   HEADINGS - the H0-H4 ladder, ACCEPTED by Rod 2026-08-23.
+   Structure is his (H0 for the site mark). Sizes are stripe's measured scale where they exist.
+   THE LADDER ITSELF IS OURS - no single source supplies it.
+
+   Weight follows stripe's confirmed rule: hierarchy is size + tracking, NEVER weight. That is
+   why every level below is 100-300 and nothing is bold. Landing and about currently run 700
+   everywhere, which is that rule inverted; adopting this changes them.
+   ============================================================================================ */
+
+/* H0 - the site mark. One per SITE, not per page. Landing hero only.
+   PROVISIONAL BY DEFINITION: this is being replaced by the line boil, which is blocked on Rod's
+   three scratch fonts. The colour is the decision; the type is a placeholder. */
+.d-h0 {
+  color: var(--h0-color);
+  font-weight: 300;
+  line-height: 1.1;
+}
+
+/* H1 - the page title. One per page.
+   SOURCE: sources/stripe-dev-prose.md (CONFIRMED). 101px/93 line, weight 300, -0.06em.
+   Their margin rule comes with it: margin-TOP only, never bottom. */
+.d-h1, .prose > h1 {
+  color: var(--h1-color);
+  font-size: clamp(2.75rem, 7vw, 101px);
+  line-height: 0.92;
+  font-weight: 300;
+  letter-spacing: -0.06em;
+  margin: 0 0 0;
+}
+
+/* H2 - the section break. DECIDED as case G (D28): catlikecoding's nested COUNTERS on
+   acegikmo's ruled chapter DIVIDER. The COMBINATION is ours; no source does both.
+   They merge because neither uses SIZE to carry hierarchy.
+   The counter is 0.68em - catlike's own 14/20 ratio, which Rod asked to keep as an em so it
+   scales with the heading rather than being pinned. */
+.prose h2, .d-h2 {
+  color: var(--h2-color);
+  font-size: 1.375rem;
+  font-weight: 100;
+  margin: 4.5rem 0 2.25rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  counter-increment: d-h2;
+  counter-reset: d-h3;
+}
+.prose h2::before, .d-h2::before {
+  content: counter(d-h2) " ";
+  font-size: 0.68em;
+  color: var(--color-muted-warm, #8a8a8a);
+}
+.prose h2::after, .d-h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.28;
+}
+
+/* H3 - the subsection. Same case-G mechanism, nested counter (2.1), silver.
+   NOTE: the post currently applies this to h3 while SKIPPING h2 entirely, which is a
+   WCAG 1.3.1 heading-order failure. Fixing that is a tag change in the markup, not here. */
+.prose h3, .d-h3 {
+  color: var(--h3-color);
+  font-size: 1.0625rem;
+  font-weight: 100;
+  margin: 2.75rem 0 1.25rem;
+  counter-increment: d-h3;
+}
+.prose h3::before, .d-h3::before {
+  content: counter(d-h2) "." counter(d-h3) " ";
+  font-size: 0.68em;
+  color: var(--color-muted-warm, #8a8a8a);
+  margin-right: 0.5em;
+}
+
+/* H4 - the card / item title. Highest traffic of the lot: 8 on the landing alone.
+   Currently .card-title 27px w700 and .bio-h 20px w700 - two sizes for one job. */
+.d-h4, .card-title, .bio-h {
+  color: var(--h4-color);
+  font-size: 0.9375rem;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+/* the counter root. Set on the article so numbering restarts per page, not per site. */
+.prose, .d-counts { counter-reset: d-h2; }
+
+/* HEADING ANCHORS - PICKED A, Maxime Heckel (Rod 2026-08-23).
+   SOURCE: sources/maximeheckel-prose.md (CONFIRMED).
+   scroll-margin-top is the load-bearing half: without it the sticky top bar covers the heading
+   you just jumped to. :focus-visible is theirs too - keyboard users get the anchor as well,
+   which most implementations forget.
+   KNOWN LIMIT, accepted with the pick: hover does not exist on touch. The Starlight TOC (also
+   picked) is the mobile route to a section. */
+.d-anchor {
+  opacity: 0;
+  margin-left: 0.33rem;
+  color: var(--color-muted-warm, #8a8a8a);
+  text-decoration: none !important;
+  transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+:is(.prose h2, .prose h3, .d-h2, .d-h3):hover .d-anchor,
+.d-anchor:focus-visible { opacity: 1; }
+
+/* CORRECTED 2026-08-23. The anchor is an <a> inside .prose h2, so it IS a `.prose a` - (0,1,1)
+   against .d-anchor's (0,1,0), and later in this file. So the port was silently:
+     - killing the anchor's own `color` (it rendered --color-text, not the muted tone)
+     - giving it a GOLD HAIRLINE border-bottom under the mark
+     - giving :focus-visible a GOLD FILLED BLOCK instead of their colour swap
+   Maxime's `--anchor-border-color:transparent!important` was PRECISELY the cancel for this in
+   their own system; this port kept the half that was fighting nothing (`text-decoration:none`,
+   which .prose a already sets) and dropped the half that mattered.
+   Cancelled here at winning specificity. A focus indicator should be chosen, not inherited. */
+:is(.prose h2, .prose h3, .d-h2, .d-h3) .d-anchor {
+  border-bottom: 0;
+  color: var(--color-muted-warm);
+}
+:is(.prose h2, .prose h3, .d-h2, .d-h3) .d-anchor:hover,
+:is(.prose h2, .prose h3, .d-h2, .d-h3) .d-anchor:focus-visible {
+  background: none;
+  color: var(--color-gold, #fbbf24);
+}
+/* CORRECTED 2026-08-23. Their 6.6rem is calibrated to THEIR nav and breaks on ours:
+   >=781px our bar is 96px  -> +9.6px clearance, fine
+   <=780px it is 107.6px    -> -2px,  the heading TUCKS UNDER the bar
+   <=560px it is 123.6px    -> -18px, the heading is COVERED
+   The bar really is sticky (final-post.html:175), so this was a real failure, not a theoretical
+   one. Derived instead - the house pattern for this exact problem. At desktop it evaluates to
+   105.6px, reproducing their 6.6rem EXACTLY, and it self-corrects at the two stacked tiers.
+   Fallbacks matter: this file can load on pages that do not link top-bar.css. */
+.prose h2, .prose h3, .d-h2, .d-h3 {
+  scroll-margin-top: calc(var(--top-bar-height, 5.875rem) + var(--top-bar-border, 1px) * 2 + 0.6rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d-anchor { transition: none; }
+}
+
+/* ============================================================================================
+   BODY TEXT
+   ============================================================================================ */
+
+/* THE MEASURE - 94 characters, Rod's own call (P33). Body is stripe's weight 300 at 130%.
+   SOURCE: sources/stripe-dev-prose.md (CONFIRMED) for the type; the width is Rod's.
+   Body copy is PRISTINE WHITE and is the brightest thing on the page - Rod 2026-08-23. That
+   inverts the usual arrangement on purpose: prose leads, headings recede. Measured 17.31:1
+   against the reading well, more than twice the contrast of the H3/H4 silver above it. */
+.prose {
+  --char-w: 8.16px;
+  --measure-ch: 94;
+  max-width: calc(var(--measure-ch) * var(--char-w));
+  color: var(--color-text, #f5f3ef);
+}
+.prose p, .prose li {
+  color: var(--color-text, #f5f3ef);
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+}
+@media (max-width: 959px) { .prose { --char-w: 7.25px; } }
+
+/* PROSE LINKS - PICKED A, stripe.dev (Rod 2026-08-23).
+   SOURCE: sources/stripe-dev-prose.md (CONFIRMED).
+   The hover FILLS the link and flips the text to the page colour - a highlighter, not an
+   underline.
+   ONE DELIBERATE DEPARTURE, and it is a bug fix rather than taste: the highlight takes
+   --color-panel-solid, NOT --color-panel. Their page is opaque; ours is 55% translucent over a
+   live three.js scene, and an inverted text colour over a see-through fill reads as mud. */
+.prose a {
+  color: var(--color-text, #f5f3ef);
+  border-bottom: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
+  text-decoration: none;
+  position: relative;
+  transition: background-color 0.1s linear;
+}
+.prose a:hover,
+.prose a:focus-visible {
+  background-color: var(--color-gold, #fbbf24);
+  color: var(--color-panel-solid, #1c1a18);
+}
+
+/* INLINE CODE - PICKED B, Maxime Heckel (Rod 2026-08-23).
+   SOURCE: sources/maximeheckel-prose.md (CONFIRMED).
+   TWO DELIBERATE DEPARTURES:
+     1. border-radius squared, per the shape pass (D20). Their 'var(--border-radius-1)' is gone.
+     2. their box-shadow is DROPPED. It is a lift, which is the glass tell being stripped
+        everywhere else on this site. Rod flagged the shadow himself when picking.
+   box-decoration-break:clone is KEPT and is the part worth having - it keeps the border intact
+   on a chip that wraps across a line. */
+.prose code:not(pre code) {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.86em;
+  line-height: 1.45;
+  padding: 2px 6px;
+  border-radius: 0;
+  background-color: var(--color-panel-solid, #1c1a18);
+  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  color: var(--color-text, #f5f3ef);
+  font-weight: 400;
+  word-break: break-word;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* INLINE EMPHASIS - PICKED C's coloured bold + D's strikeout (Rod 2026-08-23).
+   THIS IS A REMIX AND IS FILED AS ONE: acegikmo supplies the bold treatment, catlikecoding
+   supplies del/ins, and no single source does both.
+
+   BOLD: taken as a LOOK, not a mechanism. acegikmo marks bold with custom elements
+   (<propname>), which markdown cannot emit without a plugin - so it becomes strong{} driven by
+   ordinary **bold**. That drops their semantic-vocabulary idea and keeps the appearance, which
+   is exactly why this is a remix rather than a transcription.
+   Their #ff1155 cannot transfer (palette law); Rod assigned the H2 yellow instead.
+   WATCH AT BUILD: a whole sentence in bold becomes a whole sentence in yellow, which is louder
+   than a bolded phrase. If that reads badly the fix is a weight change, not a colour change. */
+.prose strong, .prose b {
+  color: var(--emphasis-color);
+  font-weight: 700;
+}
+
+/* Italic gets nothing but the browser default slant. No source designs it and Rod uses it zero
+   times in 19 posts - so nothing is invented here. */
+
+/* del / ins - SOURCE: sources/catlikecoding-prose.md (CONFIRMED). The ONLY source that defines
+   them. Both get the highlight; only del gets the line; ins's default underline is explicitly
+   stripped, which is theirs, not an oversight.
+   Their #fafa99 light-mode highlight becomes their own dark-mode value #411, which is a warm
+   near-black and survives the palette law almost unchanged.
+   Rod confirmed the highlight stays: "my problem isnt with highlights per se". */
+.prose del, .prose ins {
+  background-color: #412c11;
+  color: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+  padding: 0 3px;
+}
+.prose del { text-decoration: line-through; }
+
+/* sup - SOURCE: gwern.net (CONFIRMED). ACCEPTED by Rod 2026-08-23.
+   vertical-align:baseline is the whole idea: a footnote marker shrinks but does NOT rise, so
+   the leading stays even. The optical spacing below only a site with real footnotes would find;
+   the 0.125em fix is credited to a reader in their own comment. */
+.prose sup { font-size: 0.75em; vertical-align: baseline; }
+.prose sup + sup { margin-left: 0.125em; }
+.prose sup a, .prose sub a { margin-left: 0.10em; margin-right: 0.13em; }
+.prose sup a + a { margin-left: 0.20em; }
+
+/* sub - ACCEPTED as the browser default plus the shared spacing above. No source has a general
+   sub design; the one that exists is a TeX logo and does not generalise. Nothing invented. */
+
+/* abbr - ACCEPTED AS DEFAULT, which is a decision NOT to style it (Rod 2026-08-23).
+   Zero designed abbr rules across nine sites fetched. The dotted underline is normalize's, and
+   every site read simply allows it. No rule is written here on purpose - writing one would be
+   inventing a design and then citing the absence of one. */
+
+/* kbd and mark - REJECTED by Rod 2026-08-23 ("i dont like the way KBD looks same with mark").
+   No rules. Both fall back to the browser default and both are used zero times in 19 posts. */
+
+/* LISTS - PICKED B, Maxime Heckel (Rod 2026-08-23).
+   SOURCE: sources/maximeheckel-prose.md (CONFIRMED).
+   counters() is PLURAL, so nesting gives 2.1 / 2.1.1 automatically.
+   34 of Rod's 45 list items are numbered, making this the highest-traffic pick on the page.
+   The number takes --emphasis-color, the same yellow bold took, rather than introducing a
+   second accent for the same job. */
+.prose ol {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  counter-reset: d-li;
+}
+.prose ol > li {
+  counter-increment: d-li;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+.prose ol > li::before {
+  content: counters(d-li, ".") ". ";
+  color: var(--emphasis-color);
+  margin-right: 6px;
+}
+.prose ul {
+  display: grid;
+  gap: 8px;
+  margin: 1.5rem 0 0;
+  padding-left: 28px;
+}
+
+/* ============================================================================================
+   FIGURES - PICKED B, catlikecoding, WITH A LEFT-ALIGNED CAPTION (Rod 2026-08-23).
+   SOURCE: sources/catlikecoding-prose.md (CONFIRMED) for the geometry.
+   ONE DELIBERATE DEPARTURE: their figcaption is text-align:center. Rod asked for left. Dropping
+   that one declaration makes this a REMIX rather than a transcription, and it is filed as one.
+
+   NO MAT, NO BORDER, NO FILL - the 2em vertical margin does all the separating. With 46 images
+   across the posts, that is 46 frames NOT competing with the live scene behind them.
+   Paper on the mat was killed separately (D29, A0).
+   Hero media takes these same rules: Rod rejected all three mask treatments, so a hero is just
+   a figure. line-height:0 borrowed from Maxime kills the inline descender gap under the image.
+   ============================================================================================ */
+.prose figure, .d-figure {
+  text-align: center;
+  display: block;
+  margin: 2em auto;
+  padding: 0;
+}
+.prose figure img, .prose figure video, .d-figure img, .d-figure video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  line-height: 0;
+}
+.prose figcaption, .d-figure figcaption {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-silver);
+  text-align: left;       /* <- Rod's change. catlikecoding centres this. */
+  margin-top: 0.5rem;
+}
+
+/* ============================================================================================
+   TABLES - PICKED B squared, with an H2-yellow header row (Rod 2026-08-23).
+   THIS IS A REMIX and each half has a different parent:
+     - iquilezles supplies the minimal body and the horizontal SCROLL WRAPPER (CONFIRMED)
+     - acegikmo supplies the idea of a coloured header row. CITATION CORRECTED 2026-08-23:
+       their selector is `.feature-table th`, NOT a bare `th` - there is no bare th rule on
+       that site. Also note their `.feature-table` draws a BOX (1px border, 8px radius,
+       8px padding) which the iquilezles half deliberately has none of, so the two parents
+       genuinely contradict on that point and we take iq's boxlessness.
+   "Square" resolves a real conflict rather than being a preference: acegikmo's table is
+   border-radius:8px with 4px cells, and the shape pass squares by default.
+   NOT TAKEN: acegikmo's four semantic cell states (td.on/.off/.na/.depends). They are four
+   colours and the palette law bans red and cool accents.
+   The scroll wrapper is load-bearing: the measure is 767px and a feature matrix will exceed it.
+   ============================================================================================ */
+.prose .table-scroll { overflow-x: auto; max-width: 100%; }
+.prose table {
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  color: var(--color-text, #f5f3ef);
+}
+.prose th {
+  color: var(--h2-color);
+  font-weight: 100;
+  text-align: left;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-line, rgba(251, 191, 36, 0.26));
+  padding: 0.25rem 1rem 0.4rem 0;
+}
+.prose td {
+  border-radius: 0;
+  padding: 0.35rem 1rem 0.35rem 0;
+}
+
+/* ============================================================================================
+   TAGS / META CHIPS - SETTLED 2026-08-21, re-confirmed 2026-08-23. TWO SHAPES, TWO JOBS.
+   Rod: "squares for tags on project cards, rectangles from the buttons for the search and post
+   meta data."
+
+   SQUARES: OURS. The live site's own .post-tag (_sass/base/_base.scss:247), carried forward on
+   Rod's instruction, with ONE deliberate change - border-radius 0.5rem -> 0 per the shape pass.
+   Filed OURS, never sourced: the bench makes a thing ours, not sourced.
+
+   RECTANGLES: .kit-button from extracted/components/button-kit/, named by Rod 2026-08-23.
+   THREE THINGS INHERITED AND CORRECTED HERE:
+     1. .kit-button is border-radius:8px. Squared, to match the tag half and the shape pass.
+     2. CORRECTED 2026-08-23 (Rod was right, I repeated the file's own warning without checking
+        what it pointed at). button-kit is a MIX, not Slop: its ripple (phojanecki), fill-sweep
+        (nfranciosi) and magnetic behaviour are all genuinely sourced and external. Only the SHAPES
+        line is circular, and since we square the radius anyway the sole inherited value here is
+        padding 0.7rem 1.5rem. Checking stephanewillems' live CSS would close even that.
+     3. the kit's own .kit-tag uses --color-muted (#9aa3bd), which is THE BLUE the palette law
+        rules out. Not carried across; these use the warm tokens instead.
+   ============================================================================================ */
+.d-tag {
+  display: inline-block;
+  border-radius: 0;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: rgba(232, 224, 212, 0.78);
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0.35rem 0.6rem;
+}
+.d-meta {
+  display: inline-block;
+  border-radius: 0;
+  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  color: var(--color-silver);
+  font-family: var(--font-body, inherit);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.7rem 1.5rem;
+}
+
+/* ============================================================================================
+   RELATED POST CARDS - DECIDED 2026-08-23. The project card, stripped.
+   PROVENANCE: OURS - derived from extracted/components/project-cards-expensive/, which Rod
+   co-authored and whose citation objection he withdrew 2026-08-22 (origin ROD).
+   Rod: "resemble the project cards without the glass and motion and glow ... keep them pretty
+   motionless we dont want stuff interrupting their ability to focus on the text."
+
+   *** CORRECTED 2026-08-23. THE "EXACTLY THREE DELETIONS" SPEC WAS WRONG. ***
+   I wrote it from a grep; a reference pass read the CASCADE and found three faults:
+     (a) DELETING THE HOVER RULE ADDS GLOW. That rule is a SUPPRESSOR - its own comment says so -
+         holding back merged-card.css's 24px gold bloom. It wins on source order in all six host
+         pages. Delete it and the card GAINS the bloom.
+     (b) translateY is NOT a band reveal. It is a static staggered-grid offset with no transition
+         and no motion, and it only applies if `.is-staggered` is on the grid, which a 3-up
+         related row would not have. Removing it is a LAYOUT change.
+     (c) The three deletions remove NEITHER the glass NOR the motion. Still live afterwards:
+         `.glass-plane`, the cursor-tracked plus-lighter glow rings, and six CSS transitions plus
+         a rAF tilt and gyro in JS. Deleting the blur only makes the glow ring HARD-EDGED, which
+         the parent's own comment calls the failure that blur was added to fix.
+   So the component is built STANDALONE in extracted/components/related-card-real/ rather than as
+   a diff against the parent. Subtracting three rules from a file with six transitions and two
+   glow systems does not produce a motionless card.
+
+   ONE ADDITION, and it is an accessibility requirement rather than a style choice: with hover
+   gone there is no affordance that the card is clickable, and it IS a link. A border-colour
+   change costs no motion and no glow, which is the cheapest thing that satisfies WCAG 2.4.7
+   without breaking "motionless".
+   ============================================================================================ */
+.d-relcard {
+  display: block;
+  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  padding: 0.9rem 1rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+.d-relcard:hover,
+.d-relcard:focus-visible { border-color: var(--color-gold, #fbbf24); }
+@media (prefers-reduced-motion: reduce) { .d-relcard { transition: none; } }
+
+/* ============================================================================================
+   THE CALLOUT FAMILY - DECIDED 2026-08-23. Four categories, one tape placement each.
+   The tape itself is extracted/components/washi-tape/washi-tape.css and is NOT redefined here -
+   this file only maps categories onto its placements, so there stays one definition.
+
+     warning  -> D, four diagonal corner tabs   (loudest; suits the category that must stop you)
+     note     -> A, over the top edge           (gneiss's own placement; quietest, one strip)
+     tldr     -> B, down the left edge          (replaces our .post-takeaway 3px bar)
+     quote    -> C, L-shaped corners
+
+   BOTH OPEN THREADS ARE NOW CLOSED (Rod 2026-08-23):
+
+   1. COLOUR NOW ENCODES CALLOUT TYPE, NOT SITE SECTION. Rod: "that makes sense we should hard
+      code the colors in a way that makes sense", then "do pink for warning instead my mistake".
+        warning -> PINK    note -> GREEN    quote -> BLUE    tldr -> ORANGE (by elimination)
+
+      *** THIS OVERTURNS THE COLOUR HALF OF D27. *** D27 assigned the four tape colours to the
+      four SITE SECTIONS, so the tape told you where you were. They cannot both be true: a
+      warning inside the blue section would have to be pink (breaking the section rule) or blue
+      (breaking the warning rule). Rod chose meaning over location, deliberately, with the
+      conflict in front of him.
+      D27's OTHER half is untouched and still holds - the tape is the site's one loud object and
+      the cards stay plain grey.
+      CONSEQUENCE TO CARRY INTO THE PORT: sections no longer have a colour identity via the tape.
+      If they still need one, it has to come from somewhere else, and that is a new question.
+
+   2. reference/links takes NO TAPE. Rod: "reference i guess should have no tape." It is end
+      matter rather than an interruption, so it stays quiet. Nothing had to be originated.
+   ============================================================================================ */
+.d-callout {
+  position: relative;
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  padding: 1rem 1.25rem;
+  margin: 1.9rem 0;
+  width: calc(100% - 2 * (26px - 7px));
+  margin-left: 19px;
+  /* ROTATION CORRECTED 2026-08-23 (Rod: "you should probably correct the page rotation").
+     Was rotate(-0.5deg) - TEN TIMES gneiss's actual value. Theirs is an inline style on the host,
+     `style="rotate: 0.05deg;"`, recorded in sources/gneiss-washi-tape.md.
+     MEASURED CONSEQUENCE, so it is not a surprise later: on a 700px card 0.5deg lifts a corner by
+     6.11px and reads as a visible tilt; 0.05deg lifts it 0.61px and reads as no tilt at all. So
+     "correct" here means the card effectively stops looking rotated - which is what gneiss's own
+     card does. If a visible tilt is wanted it is OURS and has to be labelled, not cited.
+     SIGN KEPT NEGATIVE: theirs is positive 0.05deg. The magnitude was the error; the direction is
+     a mirror and was already ours. Flagged rather than silently flipped. */
+  transform: rotate(-0.05deg);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.45);
+}
+.d-callout > p { margin: 0; line-height: 1.7; }
+.d-callout--quote > p { font-style: italic; }
+
+/* The takeaway keeps the STAMP and takes no tape - Rod's own CSS and the one callout with a
+   legitimate attribution. It is in extracted/components/stamp-callout/ and is not redefined. */
+
+
+/* ============================================================================================
+   PAGE MAPPING - which existing element on each page plays which ladder role.
+
+   The ladder above is generic (.d-h1 etc). The six final-* pages were built before it and use
+   their own class names, so this block maps them. It exists because Rod asked to SEE the
+   decisions applied, and a generic ladder nothing references shows nothing.
+
+   Specificity is matched to each page's own rule DELIBERATELY, not exceeded - decisions.css is
+   loaded last in <head>, so an equal-specificity selector wins on source order. Matching rather
+   than escalating keeps the page able to override where it genuinely needs to.
+
+   MEASURED BEFORE WRITING, so the mapping is not guesswork:
+     landing  .h__name is VISUALLY HIDDEN (clip-path:inset(50%)) - a screen-reader-only h1. The
+              visible name is the V6 hero ART, which is the real H0 and is being replaced by the
+              line boil. So the landing has no visible H1 and none is invented here.
+     landing  .section-head__name = the section break -> H2 role
+     landing  .merged-cards .card-title = the card title -> H4 role (8 of them, highest traffic)
+     about    body.spacious .bio-h = a section head -> H2 role
+     about    body.spacious .bio-h--lesser = the lesser one -> H3 role
+     post     .posthead h1 = the page title -> H1 role
+   ============================================================================================ */
+
+/* --- LANDING --- */
+/* The h2 ELEMENT carries no role: its visible text lives in a `.section-head__name` child, so the
+   h2's own computed colour stayed white/700 and unused. Harmless on screen, wrong to anything that
+   reads the element - and it is what a heading-hierarchy check reports. Mapped so the tag and the
+   role agree. Changes nothing visually, because the child still wins on the text. */
+h2.section-head { color: var(--h2-color); font-weight: 100; }
+
+.section-head__name {
+  color: var(--h2-color);
+  font-weight: 100;
+  letter-spacing: 0;
+}
+/* their ~ ~ ornament is the section-head's own device and is left alone; only type + colour move */
+
+.merged-cards .card-title {
+  color: var(--h4-color);
+  font-size: 0.9375rem;
+  font-weight: 300;
+}
+
+/* --- ABOUT --- */
+/* This also removes the page's two-different-golds contradiction: .bio-h was #f59e0b and
+   .bio-h--lesser was #fbbf24, two colours for two levels of the same thing. */
+body.spacious .bio-h {
+  color: var(--h2-color);
+  font-weight: 100;
+}
+body.spacious .bio-h--lesser {
+  color: var(--h3-color);
+  font-weight: 100;
+}
+
+/* --- POST --- */
+/* The post already matched on size and weight; only the colour moves, gold-deep -> signature
+   orange, per Rod 2026-08-23. */
+.posthead h1 { color: var(--h1-color); }
+
+/* ============================================================================================
+   WHAT IS DELIBERATELY NOT DONE HERE, so the gap is visible rather than silent:
+
+   The post SKIPS H2 - it runs h1 straight to h3 for its five section breaks. That is a WCAG
+   1.3.1 heading-order failure and Rod's accepted ladder fixes it, but the fix is a MARKUP
+   change (h3 -> h2 in final-post.html), not a CSS one. Doing it here would mean styling h3 to
+   look like h2, which hides the failure instead of fixing it. Left for a markup pass.
+
+   Projects, ramblings and portal have no design headings at all yet, so they adopt the ladder
+   for free the moment they grow one. Nothing to map.
+   ============================================================================================ */
+
+
+/* ── THE FOUR CALLOUT CATEGORIES, COLOUR HARD-CODED BY MEANING (Rod 2026-08-23) ──────────────
+   Each sets --tape-hue on the HOST, which is how washi-tape.css is built to be recoloured: one
+   place per card, and every strip on it follows. The hue VALUES are the four already in the
+   component; only their ASSIGNMENT is new.
+   Provenance of the hues is unchanged and still tracked in washi-tape.css - orange and blue are
+   ours already, pink is measured off harumakigohan's own section-header PNGs, and GREEN is SETTLED
+   as origin ROD - D27's own condition was "sampled from a real asset OR Rod picking it", and he
+   picked it. The tape's MECHANISM is sourced (gneiss + winterwind); only the colour VALUE is his
+   choice, and "Rod chose it" is a legitimate tracked origin, not a gap. */
+.d-callout--warning { --tape-hue: #f078f0; --tape-hue-2: color-mix(in srgb, #f078f0 62%, #000); }
+.d-callout--note    { --tape-hue: #6fbf73; --tape-hue-2: color-mix(in srgb, #6fbf73 62%, #000); }
+.d-callout--quote   { --tape-hue: var(--color-accent-cool, #3090a8);
+                      --tape-hue-2: color-mix(in srgb, var(--color-accent-cool, #3090a8) 62%, #000); }
+.d-callout--tldr    { --tape-hue: var(--color-glow, #ff6a00);
+                      --tape-hue-2: color-mix(in srgb, var(--color-glow, #ff6a00) 62%, #000); }
+
+/* MARGIN NOTE - DROPPED 2026-08-23. Rod: "lets do no margin note replace the single instance with
+   the next closest thing probably the regular note."
+   It had exactly one candidate instance in 19 posts - the Cyanilux pointer buried mid-paragraph in
+   ComputeGrass - and it cost a permanently asymmetric article to un-centre the prose, plus it
+   collided with the Starlight TOC for the one gutter. That instance becomes a regular NOTE
+   (green, tape A). The category is closed, not parked: nothing in the family steps outside the
+   column any more, which also means the prose column stays centred and the TOC keeps its side.
+
+   reference / links - NO TAPE, and no rotation either. Same block, same padding, no strip.
+   Deliberately the quietest member of the family because it is end matter, not an interruption. */
+.d-callout--reference { transform: none; }
+
+
+/* ============================================================================================
+   CODE BLOCK SYNTAX COLOURS - NAMED BY ROD 2026-08-23, and he is right that he had named them.
+   "same as VS code orange for structs like void, const, float, etc blue for named constants and
+    variables green for classes and pink for functions."
+
+   THIS IS AN EXPLICIT CARVE-OUT FROM THE PALETTE LAW, and it has to be stated rather than assumed.
+   The palette law bans cool accents and red outside the sky. Syntax highlighting needs a set of
+   mutually distinguishable hues, and a warm-only set cannot provide one - four warm hues would be
+   four oranges and unreadable at 13px. Rod named blue and pink deliberately.
+   The carve-out is SCOPED TO `pre code` ONLY. These hues must never leak into UI, prose, links,
+   headings or chrome. Inline code is NOT included - it stays on the warm text token (D31).
+
+   ROLE MAPPING (Rod's words -> what they actually are in HLSL, since "structs" needs unpacking):
+     orange  types and storage keywords - void, const, float, float4, RWStructuredBuffer, uniform,
+             struct, return, if, for. In VS Code's Dark+ this is the keyword/type slot.
+     blue    named constants and variables - identifiers, parameters, buffer names.
+     green   classes and type NAMES.  ALSO the comment slot in VS Code Dark+ - flagged below.
+     pink    functions - both declarations and call sites.
+
+   ONE CONFLICT TO RESOLVE WITH ROD, not guessed at here: in VS Code Dark+ GREEN is comments
+   (#6A9955), while classes are teal-green (#4EC9B0). Rod said green for classes. If comments also
+   go green the two collide, so comments are left on the muted grey below until he says otherwise.
+
+   VALUES: taken from VS Code Dark+ rather than invented, because "same as VS code" is the citation.
+   They are NOT re-derived to fit the palette - a syntax theme people already read fluently is the
+   point, and re-tinting it would defeat the reason for choosing it.
+   ============================================================================================ */
+.prose pre code {
+  --syn-type: #ce9178;      /* types + storage keywords - ROD's ORANGE. void const float float4  */
+  --syn-const: #569cd6;     /* named CONSTANTS - Rod 2026-08-23 "keep dark blue for constants"   */
+  --syn-var: #9cdcfe;       /* plain variables - the lighter blue, so const reads apart from var */
+  --syn-class: #4ec9b0;     /* classes / type names - Dark+ teal-green                           */
+  --syn-func: #c586c0;      /* functions - ROD's PINK                                            */
+  --syn-comment: #6a6a6a;   /* held neutral until the green-vs-comments conflict is resolved     */
+  --syn-number: #b5cea8;
+  --syn-string: #ce9178;    /* SHARES the type orange. Open, see the STRING COLLISION note below */
+}
+
+/* SETTLED 2026-08-23 BY ROD, looking at both readings side by side on text-decisions.html#code:
+   *** "Keep dark blue for constants but 100% a." ***
+   So option A - HIS ROLE LIST - wins outright, with one refinement he added in the same breath.
+
+   WHAT THIS CORRECTED. The block above previously held Dark+'s values under a comment claiming it
+   followed Rod's list. It did not: type was #569CD6 BLUE where he said orange, and func was #DCDCAA
+   YELLOW where he said pink. TWO OF FOUR ROLES RENDERED AGAINST SPEC for as long as this file has
+   existed, with a comment directly above them asserting the opposite. Nothing errored, because a
+   wrong colour is still a valid colour. **A comment is not evidence.**
+
+   THE REFINEMENT, and why it needed a new token. His original list said "blue for named constants
+   AND variables", one hue for both. Seeing it drawn, he split them: constants take the DARK blue,
+   which is exactly the #569CD6 that types just vacated by going orange. So `--syn-const` is new and
+   `.tok-const` no longer shares `--syn-var`. Nothing was invented to do it - the hue was already in
+   the file and is simply now on the role he wants it on.
+
+   *** WHAT COUNTS AS A CONSTANT - Rod 2026-08-23, and it corrected the demo. ***
+   "constants should be in SCREAMING but alot of the uses of the constants are in _camelCase."
+   He is right, and the first sample taught the wrong rule. `_Cutoff`, `_EdgeWidth`, `_NoiseTex`,
+   `_EdgeColor` are shader UNIFORMS / material properties, not constants - the leading underscore is
+   Unity's property convention, and their values change per material and per frame.
+
+   So the rule the highlighter has to follow, by NAMING not by position:
+     `.tok-const`  SCREAMING_SNAKE_CASE only - `#define MAX_STEPS`, `static const EDGE_SOFTNESS`.
+                   Things that are fixed at compile time.
+     `.tok-var`    everything that varies, INCLUDING `_Prefixed` uniforms and buffer names. A
+                   uniform is a variable that happens to be set from outside.
+
+   ONE CASE LEFT UNDECIDED RATHER THAN GUESSED: HLSL SEMANTICS (`POSITION`, `TEXCOORD0`,
+   `SV_Target`). They are fixed reserved names, which is why they currently sit on `.tok-const`, but
+   `SV_Target` is not screaming and they are arguably closer to keywords than to constants. One word
+   from Rod moves them; nothing else depends on it.
+
+   VALUES ARE STILL DARK+'s, WHICH IS THE POINT. Every hue here is from VS Code Dark+'s own palette,
+   just mapped to Rod's roles rather than Dark+'s. Choosing his list therefore cost NO new colour:
+   orange #CE9178 is Dark+'s string colour, pink #C586C0 its control-flow keyword colour. That is
+   what made A cheap to pick.
+
+   *** STRING COLLISION - OPEN, FLAGGED, NOT GUESSED AT. *** Types now hold #CE9178, which is also
+   what `--syn-string` holds, so a string and a type render identically. Left as-is rather than
+   invented around, for two reasons: Dark+ has no second string hue to fall back on, and HLSL - the
+   language in every code block on this site - barely uses strings, so it may genuinely never show.
+   If it does, it needs one value from Rod.
+
+   ONE THING A REFERENCE PASS FOUND THAT IS WORTH KEEPING: no sourced dark syntax scheme in the lab
+   is palette-law clean. Every real one spends a cool hue on keywords, because that is what syntax
+   highlighting has done for thirty years. That is the strongest argument for the carve-out being a
+   carve-out rather than a violation - there is no warm-only precedent to follow. */
+.prose pre .tok-type,     .prose pre .tok-keyword  { color: var(--syn-type); }
+.prose pre .tok-const                              { color: var(--syn-const); }
+.prose pre .tok-var                                { color: var(--syn-var); }
+.prose pre .tok-class,    .prose pre .tok-struct   { color: var(--syn-class); }
+.prose pre .tok-func                               { color: var(--syn-func); }
+.prose pre .tok-comment                            { color: var(--syn-comment); font-style: italic; }
+.prose pre .tok-number                             { color: var(--syn-number); }
+.prose pre .tok-string                             { color: var(--syn-string); }

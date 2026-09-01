@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rambling ratios - tuner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&family=IBM+Plex+Mono:wght@300;400&display=swap">
+<style>
+/* ================================================================================================
+   RAMBLINGS TUNER. Rod: "give me a tuning dial for the rambling/blog posts as well include the
+   height from search bar as well."
+
+   Every default is read off the RENDERED page, and nothing is written until you move a dial.
+   The first build typed the numbers in by hand and injected all 19 on open. Eleven had drifted, so
+   opening it to tune one thing silently reverted ten others. Never hand-transcribe a default here.
+
+   Same idiom as about-ratios.html: a full-bleed iframe of the real page, the panel in the parent
+   document so it adds no layout, one <style> in the frame's BODY created on the first input, and
+   one table driving both the injection and the clipboard text so they cannot disagree.
+
+   THE GAP HE NAMED IS THE HARD ONE. "The height from search bar" is `.searchrow`'s margin-bottom,
+   but three dials land on one number: search gap + list border - top bleed. It was -7px once and
+   the panel sat on top of the search control, so the clearance readout is permanent and goes red
+   below zero.
+
+   THE SECOND TRIPWIRE is the page running wider than its own window. `overflow-x: clip` hides that
+   by cutting the right edge off, so it is measured as the furthest right edge inside `#main`, not
+   `scrollWidth`, and the full-bleed canvases are skipped or it reads red forever.
+
+   ONE DIAL IS DELIBERATELY ABSENT: row-to-row gap. It is 2 x row padding + hairline, so it is a
+   readout. A slider on a derived number is a lie.
+   ============================================================================================== */
+:root{
+  --ink:#f5f3ef; --muted:#9aa3bd; --gold:#fbbf24; --night:#070c23;
+  --line:rgba(251,191,36,.26);
+  --font-body:"M PLUS Rounded 1c",sans-serif; --font-mono:"IBM Plex Mono",monospace;
+}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--night)}
+#page{position:fixed;inset:0;width:100%;height:100%;border:0}
+
+.panel{position:fixed;top:12px;right:12px;z-index:50;width:340px;max-height:calc(100vh - 24px);
+  overflow:auto;background:rgba(7,12,35,.94);border:1px solid var(--line);
+  padding:16px 18px 20px;font-family:var(--font-body);color:var(--ink);transition:transform .25s ease}
+.panel.hid{transform:translateX(calc(100% + 20px))}
+.panel h2{margin:0 0 2px;font-size:1.05rem;font-weight:300;color:var(--gold)}
+.panel .note{margin:0 0 14px;font-size:.72rem;color:var(--muted);line-height:1.5}
+.panel h3{margin:16px 0 8px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.08);
+  padding-bottom:5px}
+.panel h3 em{color:#e0713f;font-style:normal}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:0 0 11px}
+.row label{font-size:.76rem}
+.row .val{font-family:var(--font-mono);font-size:.68rem;color:var(--gold)}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--gold);margin:2px 0 0}
+.row .hint{grid-column:1/-1;font-size:.64rem;color:var(--muted);line-height:1.45;margin:2px 0 0}
+.read{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:.7rem;margin:0 0 4px}
+.read span{color:var(--muted)}
+.read b{font-family:var(--font-mono);font-weight:400}
+.read b.ok{color:#7fd18b}
+.read b.bad{color:#e0713f}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.btns button{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:7px 11px;
+  cursor:pointer}
+.btns button.pri{color:var(--gold)}
+.btns button:hover{border-color:var(--gold)}
+#boot{font-family:var(--font-mono);font-size:.62rem;color:#e0713f;margin:0 0 10px}
+#saved{margin:10px 0 0;font-size:.66rem;color:var(--muted);line-height:1.5}
+#saved button{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--gold);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:5px 9px;
+  cursor:pointer;margin-left:6px}
+#toggle{position:fixed;top:12px;right:12px;z-index:51;font-family:var(--font-mono);font-size:.64rem;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--gold);background:rgba(7,12,35,.94);
+  border:1px solid var(--line);padding:7px 11px;cursor:pointer}
+#out{width:100%;height:180px;margin-top:10px;background:#04070f;color:var(--ink);
+  border:1px solid var(--line);font-family:var(--font-mono);font-size:.6rem;padding:8px;resize:vertical}
+</style>
+</head>
+<body>
+
+<iframe id="page" src="/redesign-lab/final-ramblings.html" title="final ramblings"></iframe>
+<button id="toggle" type="button" hidden>panel</button>
+
+<aside class="panel" id="panel">
+  <h2>Rambling ratios</h2>
+  <p class="note">Tunes the real page in the frame. Every default is read off the rendered page, so
+  opening this changes nothing and nothing is written until you move a dial. Watch <b>search to
+  panel</b> and <b>page vs window</b> below: both have been broken before and both go red.</p>
+  <p id="boot">reading the page&hellip;</p>
+
+  <h3>The gap you asked for</h3>
+  <div class="row">
+    <label for="s-gap">gap under the search field</label><span class="val" id="v-gap"></span>
+    <input type="range" id="s-gap" min="0" max="96" step="1">
+    <span class="hint">this and the two panel bleeds all land on one number. Watch the clearance.</span>
+  </div>
+
+  <h3>The box behind the list</h3>
+  <div class="row">
+    <label for="s-bt">bleed above</label><span class="val" id="v-bt"></span>
+    <input type="range" id="s-bt" min="0" max="72" step="1">
+  </div>
+  <div class="row">
+    <label for="s-bb">bleed below</label><span class="val" id="v-bb"></span>
+    <input type="range" id="s-bb" min="0" max="72" step="1">
+  </div>
+  <div class="row">
+    <label for="s-bh">bleed at the sides</label><span class="val" id="v-bh"></span>
+    <input type="range" id="s-bh" min="0" max="48" step="1">
+    <span class="hint">not free: the column already overhangs its parent, so more side bleed pushes
+      the page wider than the window between about 1200 and 1270.</span>
+  </div>
+
+  <h3>Row rhythm <em>shared</em></h3>
+  <div class="row">
+    <label for="s-rp">space above and below a row</label><span class="val" id="v-rp"></span>
+    <input type="range" id="s-rp" min="0" max="72" step="1">
+  </div>
+  <div class="row">
+    <label for="s-rb">line between rows</label><span class="val" id="v-rb"></span>
+    <input type="range" id="s-rb" min="0" max="4" step="1">
+  </div>
+  <div class="row">
+    <label for="s-lb">line above the list</label><span class="val" id="v-lb"></span>
+    <input type="range" id="s-lb" min="0" max="4" step="1">
+    <span class="hint">this one sits inside the box, so it moves the clearance too.</span>
+  </div>
+
+  <h3>Inside a row <em>shared</em></h3>
+  <div class="row">
+    <label for="s-sm">date row to title</label><span class="val" id="v-sm"></span>
+    <input type="range" id="s-sm" min="0" max="48" step="1">
+  </div>
+  <div class="row">
+    <label for="s-sg">gap between date and tags</label><span class="val" id="v-sg"></span>
+    <input type="range" id="s-sg" min="0" max="32" step="1">
+  </div>
+  <div class="row">
+    <label for="s-bm">title to blurb</label><span class="val" id="v-bm"></span>
+    <input type="range" id="s-bm" min="0" max="48" step="1">
+  </div>
+  <div class="row">
+    <label for="s-ts">title size</label><span class="val" id="v-ts"></span>
+    <input type="range" id="s-ts" min="12" max="64" step=".1">
+    <span class="hint">no rule sets this - the title rides the ladder's h3 rung. A size here
+      re-carves it out. The copy output offers both destinations and names the trade.</span>
+  </div>
+  <div class="row">
+    <label for="s-tl">title line spacing</label><span class="val" id="v-tl"></span>
+    <input type="range" id="s-tl" min="0.9" max="2" step=".05">
+    <span class="hint">half of this is invisible air above and below the title, so the size dial
+      moves two gaps unless you move this with it.</span>
+  </div>
+  <div class="row">
+    <label for="s-tw">how wide a title runs</label><span class="val" id="v-tw"></span>
+    <input type="range" id="s-tw" min="30" max="100" step="1">
+  </div>
+  <div class="row">
+    <label for="s-bw">how wide a blurb runs</label><span class="val" id="v-bw"></span>
+    <input type="range" id="s-bw" min="30" max="100" step="1">
+  </div>
+
+  <h3>The picture <em>shared</em></h3>
+  <div class="row">
+    <label for="s-tiw">picture width</label><span class="val" id="v-tiw"></span>
+    <input type="range" id="s-tiw" min="120" max="360" step="1">
+  </div>
+  <div class="row">
+    <label for="s-tih">picture height</label><span class="val" id="v-tih"></span>
+    <input type="range" id="s-tih" min="90" max="320" step="1">
+    <span class="hint">the space kept clear for the picture follows this height, so they move
+      together.</span>
+  </div>
+  <div class="row">
+    <label for="s-res">space kept clear for it</label><span class="val" id="v-res"></span>
+    <input type="range" id="s-res" min="120" max="420" step="1">
+    <span class="hint">must stay above the picture width or the text runs under it.</span>
+  </div>
+
+  <h3>The column</h3>
+  <div class="row">
+    <label for="s-cw">column width</label><span class="val" id="v-cw"></span>
+    <input type="range" id="s-cw" min="800" max="1400" step="1">
+  </div>
+  <div class="row">
+    <label for="s-cc">column cap on small windows</label><span class="val" id="v-cc"></span>
+    <input type="range" id="s-cc" min="80" max="100" step="1">
+  </div>
+
+  <h3>Readout</h3>
+  <div class="read">
+    <span>window</span><b id="r-vw"></b>
+    <span>column</span><b id="r-col"></b>
+    <span>off centre by</span><b id="r-off"></b>
+    <span>page vs window</span><b id="r-over"></b>
+    <span>search to panel</span><b id="r-clear"></b>
+    <span>gap between rows</span><b id="r-gap"></b>
+    <span>titles on two lines</span><b id="r-wrap"></b>
+    <span>clear space by the picture</span><b id="r-gut"></b>
+    <span>list height</span><b id="r-list"></b>
+    <span>page height</span><b id="r-page"></b>
+  </div>
+
+  <div class="btns">
+    <button type="button" id="b-copy" class="pri">copy tune</button>
+    <button type="button" id="b-css">show CSS</button>
+    <button type="button" id="b-reset">reset</button>
+    <button type="button" id="b-hide">hide panel</button>
+  </div>
+  <p id="saved" hidden></p>
+  <textarea id="out" hidden readonly></textarea>
+</aside>
+
+<script>
+(function () {
+  var fr = document.getElementById('page');
+  var STORE = 'rambling-ratios-v2';
+
+  var RAMB = 'redesign-lab/final-ramblings.html';
+  var ER   = 'redesign-lab/extracted/components/entry-row/entry-row.css';
+
+  /* the old key holds the hand-typed numbers this build threw away */
+  try { localStorage.removeItem('rambling-ratios-v1'); } catch (e) { /* private mode */ }
+
+  /* ---------- formatters ------------------------------------------------------------------- */
+  function px(v){ return v + 'px'; }
+  function pc(v){ return v + '%'; }
+  function vw(v){ return v + 'vw'; }
+  function n1(v){ return (+v).toFixed(1) + 'px'; }
+  function n2(v){ return (+v).toFixed(2); }
+  /* a bleed is written as a NEGATIVE inset, and "-0px" reads like a typo */
+  function neg(v){ return v ? '-' + v + 'px' : '0px'; }
+
+  /* ---------- reading the frame -------------------------------------------------------------
+     `cssom` walks the frame's real stylesheets and hands back the AUTHORED value of a property, so
+     the unit the file wrote survives. Three things it has to get right:
+       - match the selector FIRST, then recurse. A plain rule carries an empty `cssRules` list for
+         CSS nesting, so testing that first skips every rule that is not nested.
+       - `@layer components { ... }` is a block rule, and the recursion is what reaches inside it.
+       - a media rule only counts when `matchMedia` says it applies right now.
+     `want` picks the media context, and five dials need 'none' - the picture, the reserve and the
+     two text widths are all restated at 820px, so a narrow window would otherwise derive the
+     mobile number and paste it over the line the copy-out cites. */
+  function cssom(d, w, sel, prop, want) {
+    var found = null;
+    function walk(rules, media) {
+      for (var i = 0; i < rules.length; i++) {
+        var r = rules[i], m = media;
+        if (r.media) {
+          m = r.media.mediaText;
+          if (want === undefined) { if (!w.matchMedia(m).matches) continue; }
+          else if (want === 'none') continue;
+          else if (m.indexOf(want) === -1) continue;
+        }
+        if (r.style && r.selectorText && (want === undefined || want === 'none' || !!m)) {
+          var parts = r.selectorText.split(',');
+          for (var j = 0; j < parts.length; j++) {
+            if (parts[j].trim() === sel) {
+              var v = r.style.getPropertyValue(prop);
+              if (v !== '') found = v;          /* last match wins, same as the cascade */
+            }
+          }
+        }
+        if (r.cssRules && r.cssRules.length) walk(r.cssRules, m);
+      }
+    }
+    for (var k = 0; k < d.styleSheets.length; k++) {
+      try { walk(d.styleSheets[k].cssRules, null); } catch (e) { /* cross-origin font sheet */ }
+    }
+    return found;
+  }
+
+  /* the two text widths are written as `var(--er-ttl-w, 80%)`. Take the custom property if a page
+     sets one, otherwise the number inside the var(). */
+  function varPc(c, el, name, sel) {
+    var live = c.w.getComputedStyle(el).getPropertyValue(name).trim();
+    if (live) return parseFloat(live);
+    var m = /,\s*([\d.]+)\s*%/.exec(cssom(c.d, c.w, sel, 'max-width', 'none') || '');
+    return m ? parseFloat(m[1]) : NaN;
+  }
+
+  /* ---------- the dials ----------------------------------------------------------------------
+     `get` is handed the frame's document, window and the elements already found, and returns the
+     dial's CURRENT value. Nothing here is a literal. */
+  var DIALS = {
+    gap: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.searchrow', 'margin-bottom')); } },
+
+    /* the panel is a pseudo-element pushed out with a negative inset, so a positive bleed is a
+       negative offset. `inset` is a shorthand and the CSSOM keeps the parts, so read the longhands. */
+    bt: { fmt: px, get: function (c) { return -parseFloat(cssom(c.d, c.w, '.wf .er-list::before', 'top')); } },
+    bb: { fmt: px, get: function (c) { return -parseFloat(cssom(c.d, c.w, '.wf .er-list::before', 'bottom')); } },
+    bh: { fmt: px, get: function (c) { return -parseFloat(cssom(c.d, c.w, '.wf .er-list::before', 'left')); } },
+
+    rp: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-row', 'padding-top')); } },
+
+    /* the two hairlines are written as `border-top: 1px solid var(--color-line-soft, ...)`, and a
+       shorthand holding a var() cannot be split into longhands - the CSSOM hands back an empty
+       string for `border-top-width`. Measure these off the rendered element instead. */
+    rb: { fmt: px, get: function (c) { return parseFloat(c.w.getComputedStyle(c.row).borderBottomWidth); } },
+    lb: { fmt: px, get: function (c) { return parseFloat(c.w.getComputedStyle(c.list).borderTopWidth); } },
+
+    sm: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-strip', 'margin-bottom')); } },
+    sg: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-strip', 'column-gap')); } },
+    bm: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-blurb', 'margin-top')); } },
+
+    /* no rule sets the title size - decisions.css:228 puts `.er-ttl` on the h3 rung - so it is
+       measured off the rendered title */
+    ts: { fmt: n1, get: function (c) { return parseFloat(c.w.getComputedStyle(c.ttl).fontSize); } },
+    tl: { fmt: n2, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-ttl', 'line-height')); } },
+    tw: { fmt: pc, get: function (c) { return varPc(c, c.ttl, '--er-ttl-w', '.er-ttl'); } },
+    bw: { fmt: pc, get: function (c) { return varPc(c, c.blurb, '--er-blurb-w', '.er-blurb'); } },
+
+    tiw: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-thumb', 'width', 'none')); } },
+    tih: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-thumb', 'height', 'none')); } },
+    res: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.er-row--media > .er-body', 'padding-right', 'none')); } },
+
+    cw: { fmt: px, get: function (c) { return parseFloat(cssom(c.d, c.w, '.wf', 'width')); } },
+    cc: { fmt: vw, get: function (c) { return parseFloat(cssom(c.d, c.w, '.wf', 'max-width')); } }
+  };
+
+  var BASE = null, state = null, injected = false;
+
+  /* ---------- what a moved dial writes -------------------------------------------------------
+     One table, walked by BOTH the injected CSS and the clipboard text, so they cannot disagree.
+     A declaration is produced only when one of the dials it depends on has actually moved, which
+     is the whole fix: a dial sitting at the value it read contributes nothing.
+     Line numbers were verified against the files on 2026-08-25; the selector is given as well so a
+     drifted line is still findable. */
+  function TARGETS() {
+    var s = state;
+    return [
+      { file: RAMB, line: 154, sel: '.searchrow', decls: [
+        { on: ['gap'], css: 'margin-bottom: ' + s.gap + 'px' } ] },
+
+      { file: RAMB, line: 217, sel: '.wf .er-list::before', decls: [
+        { on: ['bt', 'bh', 'bb'], css: 'inset: ' + neg(s.bt) + ' ' + neg(s.bh) + ' ' + neg(s.bb),
+          note: 'the comment on that rule works the clearance out from these three. Move one and that comment is stale.' } ] },
+
+      { file: RAMB, line: 119, sel: '.wf', decls: [
+        { on: ['cw'], css: 'width: ' + s.cw + 'px' },
+        { on: ['cc'], css: 'max-width: ' + s.cc + 'vw',
+          note: '.wrap is min(1180px, 92vw). Drop below that and the column stops matching its own gutter.' } ] },
+
+      { file: ER, line: 87, sel: '.er-list', shared: true, decls: [
+        { on: ['lb'], css: 'border-top-width: ' + s.lb + 'px',
+          note: 'the file writes this as the width term of `border-top`.' } ] },
+
+      { file: ER, line: 94, sel: '.er-row', shared: true, decls: [
+        { on: ['rp'], css: 'padding: ' + s.rp + 'px 0' },
+        { on: ['rb'], css: 'border-bottom-width: ' + s.rb + 'px',
+          note: 'the file writes this as the width term of `border-bottom`.' } ] },
+
+      { file: ER, line: 111, sel: '.er-row--media > a, .er-row--media > .er-body', shared: true, decls: [
+        { on: ['res'], css: 'padding-right: ' + s.res + 'px' },
+        { on: ['tih'], css: 'min-height: ' + s.tih + 'px',
+          note: 'the row floor follows the picture height, so moving the height moves this too.' } ] },
+
+      { file: ER, line: 120, sel: '.er-thumb', shared: true, decls: [
+        { on: ['tiw'], css: 'width: ' + s.tiw + 'px' },
+        { on: ['tih'], css: 'height: ' + s.tih + 'px' } ] },
+
+      { file: ER, line: 159, sel: '.er-ttl', shared: true, decls: [
+        { on: ['tl'], css: 'line-height: ' + s.tl },
+        { on: ['tw'], css: 'max-width: var(--er-ttl-w, ' + s.tw + '%)' },
+        { on: ['ts'], css: 'font-size: ' + s.ts + 'px',
+          note: 'PICK A DESTINATION. Here it carves the title back OUT of the ladder, which is what three deleted declarations were fixing. In decisions.css:228 it moves the h3 rung, and every h3 on every final page with it.' } ] },
+
+      { file: ER, line: 224, sel: '.er-blurb', shared: true, decls: [
+        { on: ['bm'], css: 'margin: ' + s.bm + 'px 0 0' },
+        { on: ['bw'], css: 'max-width: var(--er-blurb-w, ' + s.bw + '%)' } ] },
+
+      { file: ER, line: 259, sel: '.er-strip', shared: true, decls: [
+        { on: ['sg'], css: 'gap: ' + s.sg + 'px' },
+        { on: ['sm'], css: 'margin: 0 0 ' + s.sm + 'px' } ] }
+    ];
+  }
+
+  function moved(id) { return BASE && Math.abs(state[id] - BASE[id]) > 1e-9; }
+  function anyMoved(ids) { for (var i = 0; i < ids.length; i++) if (moved(ids[i])) return true; return false; }
+  function movedCount() { var n = 0; Object.keys(DIALS).forEach(function (k) { if (moved(k)) n++; }); return n; }
+
+  /* THE one function. Returns the injected CSS and the blocks the clipboard text renders from, both
+     off the same walk. */
+  function build() {
+    var css = [], blocks = [];
+    if (!BASE) return { css: '', blocks: [] };
+    TARGETS().forEach(function (t) {
+      var live = t.decls.filter(function (dec) { return anyMoved(dec.on); });
+      if (!live.length) return;
+      css.push(t.sel + '{' + live.map(function (dec) { return dec.css; }).join(';') + '}');
+      blocks.push({ file: t.file, line: t.line, sel: t.sel, shared: t.shared, decls: live });
+    });
+    return { css: css.join('\n'), blocks: blocks };
+  }
+
+  /* ---------- applying ------------------------------------------------------------------------
+     The <style> element is created HERE and nowhere else, and only an `input` event or a restore
+     reaches it. The load path never touches the frame. */
+  function styleEl() {
+    var d = fr.contentDocument;
+    if (!d || !d.body) return null;
+    var s = d.getElementById('rambling-tuner');
+    if (!s) { s = d.createElement('style'); s.id = 'rambling-tuner'; d.body.appendChild(s); }
+    return s;
+  }
+  function applyBuild() {
+    var s = styleEl();
+    if (s) s.textContent = build().css;
+    injected = true;
+    save();
+    requestAnimationFrame(read);
+  }
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify({ at: Date.now(), state: state })); }
+    catch (e) { /* private mode */ }
+  }
+
+  function paint() {
+    Object.keys(DIALS).forEach(function (k) {
+      var el = document.getElementById('s-' + k);
+      if (!el) return;
+      el.value = state[k];
+      document.getElementById('v-' + k).textContent = DIALS[k].fmt(state[k]);
+    });
+  }
+
+  /* ---------- derive -------------------------------------------------------------------------- */
+  function derive() {
+    var d = fr.contentDocument, w = fr.contentWindow;
+    if (!d || !w || !d.body) return null;
+    var ttl = d.querySelector('.er-ttl'), blurb = d.querySelector('.er-blurb'),
+        list = d.querySelector('.er-list'), row = d.querySelector('.er-row');
+    if (!ttl || !blurb || !list || !row) return null;
+
+    var ctx = { d: d, w: w, ttl: ttl, blurb: blurb, list: list, row: row };
+    var out = {}, bad = [];
+    Object.keys(DIALS).forEach(function (k) {
+      var v = DIALS[k].get(ctx);
+      if (typeof v !== 'number' || !isFinite(v)) bad.push(k);
+      out[k] = v;
+    });
+    if (bad.length) { document.getElementById('boot').textContent =
+      'could not read: ' + bad.join(', ') + ' - those dials are NOT safe to move'; return null; }
+    return out;
+  }
+
+  /* ---------- readouts ------------------------------------------------------------------------
+     Everything here is MEASURED in the frame. Nothing is computed from `state`, so a readout that
+     disagrees with a slider is telling the truth and the slider is not. */
+  function set(id, text, good) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.className = good === undefined ? '' : (good ? 'ok' : 'bad');
+  }
+  function read() {
+    var d = fr.contentDocument, w = fr.contentWindow;
+    if (!d || !w || !d.body) return;
+    var wf = d.querySelector('.wf'), list = d.querySelector('.er-list'),
+        search = d.querySelector('.sf'), row = d.querySelector('.er-row'),
+        body = d.querySelector('.er-row--media > .er-body'), thumb = d.querySelector('.er-thumb');
+    if (!wf || !list) return;
+
+    var clientW = d.documentElement.clientWidth;
+    var wb = wf.getBoundingClientRect(), lb = list.getBoundingClientRect();
+
+    set('r-vw', w.innerWidth + ' x ' + w.innerHeight);
+    set('r-col', wb.width.toFixed(0) + 'px');
+
+    var off = ((clientW - wb.right) - wb.left) / 2;
+    set('r-off', Math.abs(off).toFixed(1) + 'px ' + (off < 0 ? 'right' : 'left'), Math.abs(off) < 1);
+
+    /* `overflow-x: clip` makes scrollWidth useless here - it reports no overflow while the right
+       edge is being cut off. Measure the furthest right edge instead, and skip the two full-bleed
+       canvases or this reads red forever. */
+    var far = 0;
+    d.querySelectorAll('#main *').forEach(function (el) {
+      if (el.tagName === 'CANVAS') return;
+      var r = el.getBoundingClientRect();
+      if (r.width && r.right > far) far = r.right;
+    });
+    var over = far - clientW;
+    set('r-over', over > 0.5 ? '+' + over.toFixed(1) + 'px over' : 'fits', over <= 0.5);
+
+    /* the number that was -7px once. `inset` resolves against the PADDING box, so the list's own
+       top border sits INSIDE the panel and has to come off before the bleed does. Reading it off
+       the border box put this 1px low and made a healthy +1.00 read as 0.00, and a tripwire that
+       cries wolf gets ignored. */
+    var panelTop = lb.top + parseFloat(w.getComputedStyle(list).borderTopWidth) +
+                   parseFloat(w.getComputedStyle(list, '::before').top);
+    if (search) {
+      var c = panelTop - search.getBoundingClientRect().bottom;
+      set('r-clear', c.toFixed(2) + 'px', c > 0);
+    } else set('r-clear', 'no field found', false);
+
+    if (row) {
+      var rs = w.getComputedStyle(row);
+      set('r-gap', (parseFloat(rs.paddingTop) + parseFloat(rs.paddingBottom) +
+                    parseFloat(rs.borderBottomWidth)).toFixed(0) + 'px');
+    }
+
+    var titles = d.querySelectorAll('.er-ttl'), wrapped = 0;
+    titles.forEach(function (t) {
+      var ts = w.getComputedStyle(t);
+      var lh = parseFloat(ts.lineHeight) || parseFloat(ts.fontSize) * 1.2;
+      if (t.getBoundingClientRect().height > lh * 1.5) wrapped++;
+    });
+    set('r-wrap', wrapped + ' of ' + titles.length, wrapped === 0);
+
+    if (body && thumb) {
+      var gut = parseFloat(w.getComputedStyle(body).paddingRight) -
+                parseFloat(w.getComputedStyle(thumb).width);
+      set('r-gut', gut.toFixed(0) + 'px', gut >= 0);
+    }
+
+    set('r-list', lb.height.toFixed(1) + 'px');
+    set('r-page', d.documentElement.scrollHeight + 'px');
+  }
+
+  /* ---------- the clipboard text -------------------------------------------------------------- */
+  function tuneText() {
+    if (!BASE) return '/* the page has not been read yet - nothing to copy. */';
+    var b = build(), w = fr.contentWindow, d = fr.contentDocument;
+    var wf = d && d.querySelector('.wf');
+    var n = movedCount();
+    var out = [
+      '/* rambling tune from rambling-ratios.html, window ' + (w ? w.innerWidth + 'x' + w.innerHeight : '?') +
+        ', column ' + (wf ? wf.getBoundingClientRect().width.toFixed(0) + 'px' : '?'),
+      '   ' + n + ' of ' + Object.keys(DIALS).length + ' dials moved. ONLY THE MOVED ONES ARE BELOW -',
+      '   anything absent is still at the value the file already holds, so do not go looking for it.',
+      '   Paste each declaration over the cited one. Comments in the originals are NOT reproduced',
+      '   here - keep them. Line numbers were correct on 2026-08-25; the selector is given too. */',
+      ''
+    ];
+    if (!n) { out.push('/* nothing moved. */'); return out.join('\n'); }
+
+    var file = null;
+    b.blocks.forEach(function (blk) {
+      if (blk.file !== file) {
+        file = blk.file;
+        out.push('/* ===== ' + file + '  -  ' +
+          (blk.shared ? 'SHARED COMPONENT FILE ===== ' : 'the page <style>, unlayered ===== ') + '*/');
+        if (blk.shared) out.push(
+          '/* The component bench page renders from this file too, and so does any page that adopts',
+          '   entry-row. Moving it here moves them with it. */');
+        out.push('');
+      }
+      out.push('/* ' + blk.sel + '   ' + blk.file.split('/').pop() + ':' + blk.line + ' */');
+      blk.decls.forEach(function (dec) {
+        out.push('  ' + dec.css + ';');
+        if (dec.note) out.push('  /* ^ ' + dec.note + ' */');
+      });
+      out.push('');
+    });
+    return out.join('\n');
+  }
+
+  /* ---------- wiring --------------------------------------------------------------------------
+     The load path is READ-ONLY. It derives, paints the sliders, offers any saved tune and runs the
+     readouts. It never touches the frame. */
+  var tries = 0;
+  function boot() {
+    if (!BASE) {
+      var got = derive();
+      if (!got) {
+        if (++tries < 40) setTimeout(boot, 250);
+        return;
+      }
+      BASE = got;
+      state = Object.assign({}, BASE);
+      paint();
+      document.getElementById('boot').hidden = true;
+      offerSaved();
+    } else if (injected) {
+      applyBuild();          /* a navigation inside the frame drops the tune - put it back */
+      return;
+    }
+    read();
+  }
+  function offerSaved() {
+    var el = document.getElementById('saved');
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { /* private mode */ }
+    if (!saved || !saved.state) return;
+    var diff = Object.keys(DIALS).filter(function (k) {
+      return typeof saved.state[k] === 'number' && Math.abs(saved.state[k] - BASE[k]) > 1e-9; });
+    if (!diff.length) return;
+    el.hidden = false;
+    el.innerHTML = 'A saved tune from ' + new Date(saved.at).toLocaleString() + ' differs on ' +
+      diff.length + ' dial' + (diff.length === 1 ? '' : 's') +
+      '. It is NOT applied - the sliders above are the file\'s own numbers.' +
+      '<button type="button" id="b-restore">restore it</button>';
+    document.getElementById('b-restore').addEventListener('click', function () {
+      diff.forEach(function (k) { state[k] = saved.state[k]; });
+      paint();
+      applyBuild();
+      el.hidden = true;
+    });
+  }
+
+  Object.keys(DIALS).forEach(function (k) {
+    var el = document.getElementById('s-' + k);
+    if (!el) return;
+    el.addEventListener('input', function () {
+      if (!BASE) return;
+      state[k] = parseFloat(this.value);
+      document.getElementById('v-' + k).textContent = DIALS[k].fmt(state[k]);
+      applyBuild();          /* first call here is what creates the <style> element */
+    });
+  });
+
+  document.getElementById('b-css').addEventListener('click', function () {
+    var t = document.getElementById('out');
+    t.hidden = !t.hidden;
+    t.value = tuneText();
+  });
+  document.getElementById('b-copy').addEventListener('click', function () {
+    var btn = this, text = tuneText();
+    var ok = function () {
+      btn.textContent = 'copied';
+      setTimeout(function () { btn.textContent = 'copy tune'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () { window.prompt('Copy:', text); });
+    } else { window.prompt('Copy:', text); }
+  });
+
+  /* RESET MEANS "BACK TO WHAT THE FILE SAYS", so it throws the derived base away and reloads the
+     frame rather than restoring a literal. If the file changed under us, reset picks that up. */
+  document.getElementById('b-reset').addEventListener('click', function () {
+    try { localStorage.removeItem(STORE); } catch (e) { /* private mode */ }
+    BASE = null; state = null; injected = false; tries = 0;
+    document.getElementById('saved').hidden = true;
+    document.getElementById('boot').hidden = false;
+    document.getElementById('boot').textContent = 're-reading the page...';
+    fr.contentWindow.location.reload();
+  });
+
+  document.getElementById('b-hide').addEventListener('click', function () {
+    document.getElementById('panel').classList.add('hid');
+    document.getElementById('toggle').hidden = false;
+  });
+  document.getElementById('toggle').addEventListener('click', function () {
+    document.getElementById('panel').classList.remove('hid');
+    this.hidden = true;
+  });
+
+  /* The frame may ALREADY be loaded by the time this runs, in which case the `load` listener never
+     fires and the panel sits blank forever - which is exactly what the first build did. Both paths
+     are read-only. */
+  fr.addEventListener('load', function () { tries = 0; setTimeout(boot, 250); });
+  setTimeout(boot, 300);
+  window.addEventListener('resize', function () { requestAnimationFrame(read); });
+})();
+</script>
+</body>
+</html>

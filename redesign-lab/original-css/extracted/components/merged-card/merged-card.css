@@ -1,0 +1,393 @@
+/* merged-card — CARDS pick from final-picks.md: flip-tile LOOK x merged-card FUNCTION.
+   PROVENANCE:
+   - cover-style tile (image fills the cell, body overlaid bottom, 6/12-col bento spans,
+     min 14rem cells): Rod-provided flip-tile CodePen via rework-harumaki .tile-layout/.tile
+   - z-layer parallax, dwell-flip, tilt, gyro, card-back: merged card v2 via rework-harumaki
+     (.post-card family; portable copy merged-card-bundle.html)
+   DEVIATION (documented): inner class names keep the merged-card source vocabulary
+   (.card-tilt/.card-flipper/.z-layer...) instead of strict BEM — renaming a working
+   source's coupled CSS+JS invites exactly the drift the provenance contract exists to stop.
+   TUNABLE Z DEPTHS: --z-* custom props below are the per-layer depths Rod wants to adjust.
+   GLASS: body.no-glass (or .merged-cards.no-glass) hides the glass plane for judging. */
+.merged-cards {
+  /* z-depth tokens (rest / hover) — Rod-adjustable */
+  --z-cover: 2;
+  --z-glass: 26;
+  --z-glass-hover: 36;
+  --z-body: 32;
+  --z-body-hover: 42;
+  --z-title: 12;
+  --z-title-hover: 26;
+  --z-pin: 36;
+  --z-pin-hover: 72;
+
+  --text-muted: var(--color-warm-muted);
+  --cover-hi: var(--color-cover-hi);
+  --cover-lo: var(--color-cover-lo);
+  --gold-35: rgba(251, 191, 36, 0.35);
+  --gold-40: rgba(251, 191, 36, 0.4);
+  --gold-60: rgba(251, 191, 36, 0.6);
+  --gold-80: rgba(251, 191, 36, 0.8);
+
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(6, 1fr);
+  perspective: 80rem;
+}
+
+@media (min-width: 760px) {
+  .merged-cards {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+.merged-cards [data-column-span='6'] {
+  grid-column: span 6;
+}
+
+.merged-cards [data-column-span='12'] {
+  grid-column: span 12;
+}
+
+.merged-cards [data-row-span='2'] {
+  grid-row: span 2;
+}
+
+.merged-cards .post-card {
+  perspective: 1000px;
+  --depth: 1;
+  height: 100%;
+  min-height: 14rem; /* flip-tile cell height */
+}
+
+.merged-cards [data-row-span='2'] .post-card {
+  min-height: calc(28rem + 0.9rem);
+}
+
+@media (hover: none) {
+  .merged-cards .post-card {
+    --depth: 0;
+  }
+}
+
+.merged-cards .card-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+  transform-style: preserve-3d;
+}
+
+.merged-cards .card-tilt {
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+}
+
+.merged-cards .card-flipper {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.merged-cards .card-flipper.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.merged-cards .z-layer {
+  transform: translateZ(calc(var(--z, 0) * var(--depth, 1) * 1px));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  backface-visibility: hidden;
+}
+
+.merged-cards .post-card:hover .z-layer {
+  --z: var(--z-hover, var(--z, 0));
+}
+
+.merged-cards .card-front {
+  position: relative;
+  height: 100%;
+  display: flex;
+  transform-style: preserve-3d;
+}
+
+/* cover = the whole tile (flip-tile look): media fills the cell, gradient seats the text */
+.merged-cards .card-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  /* TOP GLOW REMOVED (Rod 2026-08-18): "on the very top of the cards there's a glow that's ALWAYS
+     active, which is not what i want." It was a radial-gradient anchored at 50% 0% - top-centre -
+     burning at rest on every card whether or not the cursor was near it. The card is meant to be
+     lit BY the cursor, so a permanent hot edge was competing with the thing that does the lighting.
+     The linear cover ramp stays; only the always-on hotspot goes. */
+  background: linear-gradient(160deg, var(--cover-hi), var(--cover-lo));
+  border: 1px solid rgba(245, 158, 11, 0.14);
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.55);
+  transition: border-color 0.5s ease, box-shadow 0.4s ease;
+  --z: var(--z-cover);
+}
+
+.merged-cards .card-cover img,
+.merged-cards .card-cover video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.merged-cards .post-card:hover .card-cover img,
+.merged-cards .post-card:hover .card-cover video {
+  transform: scale(1.05);
+}
+
+.merged-cards .card-cover::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 62%;
+  background: linear-gradient(180deg, transparent 0%, rgba(11, 16, 36, 0.62) 55%, var(--cover-lo) 100%);
+  pointer-events: none;
+}
+
+.merged-cards .posts-grid-hue-a {
+  --glow-hue: 251, 191, 36;
+  --glow-border-hue: 245, 158, 11;
+}
+
+.merged-cards .posts-grid-hue-b {
+  --glow-hue: 255, 106, 0;
+  --glow-border-hue: 234, 88, 12;
+}
+
+.merged-cards .post-card:hover .card-cover {
+  border-color: rgba(var(--glow-border-hue, 245, 158, 11), 0.45);
+  box-shadow:
+    0 14px 30px -10px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(var(--glow-hue, 251, 191, 36), 0.3);
+}
+
+.merged-cards .glass-plane {
+  /* the sheen is a token so a component that adds a layer UNDER it (the expensive card's cursor
+     spill) can restate the stack without duplicating this gradient and drifting from it */
+  --glass-sheen: linear-gradient(0deg, rgba(255, 232, 176, 0.04) 0%, rgba(255, 232, 176, 0.12) 100%);
+  position: absolute;
+  inset: 8px;
+  border-radius: 12px;
+  background: var(--glass-sheen);
+  border-left: 1px solid rgba(251, 191, 36, 0.5);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.16);
+  pointer-events: none;
+  --z: var(--z-glass);
+  --z-hover: var(--z-glass-hover);
+  transition-delay: 0.05s;
+}
+
+body.no-glass .glass-plane,
+.merged-cards.no-glass .glass-plane {
+  display: none;
+}
+
+/* body overlays the cover bottom-left, flip-tile style */
+.merged-cards .card-body {
+  position: relative;
+  align-self: flex-end;
+  width: 100%;
+  padding: 1.3rem 1.5rem;
+  transform-style: preserve-3d;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  --z: var(--z-body);
+  --z-hover: var(--z-body-hover);
+  transition-delay: 0.08s;
+}
+
+.merged-cards .card-title {
+  font-family: var(--font-display); /* T0-B: serif display, not hand */
+  font-weight: 700;
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--color-gold-deep);
+  margin-bottom: 0.2rem;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  --z: var(--z-title);
+  --z-hover: var(--z-title-hover);
+  transition-delay: 0.06s;
+}
+
+.merged-cards .post-card:hover .card-title {
+  color: var(--color-gold);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9), 0 0 14px rgba(var(--glow-hue, 251, 191, 36), 0.35);
+}
+
+.merged-cards .card-meta {
+  font-family: var(--font-body);
+  font-size: 0.7rem; /* T3-E: floor small text for readability */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold-deep);
+  opacity: 0.85;
+}
+
+.merged-cards .card-pin {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--color-gold);
+  color: var(--color-night);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  --z: var(--z-pin);
+  --z-hover: var(--z-pin-hover);
+  transition-delay: 0.1s;
+}
+
+.merged-cards .card-pin--wip {
+  background: var(--color-glow);
+}
+
+/* STAR pin (Rod 2026-08-11): the reference-gallery tier-badge shape (rounded square, radius 5px)
+   holding just a star glyph — no "Pinned" text. Pink = the palette's spot color.
+   PROVENANCE: reference-gallery.html .tier badge (Rod's own gallery UI). */
+.merged-cards .card-pin--star {
+  min-width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: var(--color-pink, #ff7ec8);
+  color: var(--color-night);
+  font-size: 0.9rem;
+  letter-spacing: 0;
+}
+
+.merged-cards .card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 1.4rem 1.6rem;
+  display: grid;
+  align-content: center;
+  gap: 0.55rem;
+  text-align: left;
+  transform: rotateY(180deg) translateZ(1px);
+  backface-visibility: hidden;
+  /* the back's twin of the same always-on top glow, removed with it (Rod 2026-08-18) */
+  background: linear-gradient(160deg, var(--cover-hi), var(--cover-lo));
+  border: 1px solid var(--gold-35);
+}
+
+.merged-cards .card-back .takeaway-quote {
+  font-family: var(--font-display); /* T0-B: serif display */
+  font-weight: 700;
+  font-size: 1.35rem;
+  line-height: 1.15;
+  color: var(--color-gold-deep);
+  margin: 0;
+}
+
+.merged-cards .card-back .takeaway-text {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-glow-soft);
+  margin: 0;
+}
+
+.merged-cards .card-back .back-read {
+  margin-top: 0.4rem;
+  font-size: 0.68rem; /* T3-E: floor small text */
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-family: var(--font-body);
+}
+
+@property --dp {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+.dwell-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-overlay);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.15s;
+  --dp: 0;
+  background: conic-gradient(var(--color-gold) calc(var(--dp) * 1turn), rgba(255, 255, 255, 0.16) 0);
+}
+
+.dwell-ring::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: rgba(8, 12, 30, 0.9);
+}
+
+.dwell-ring.is-on {
+  opacity: 1;
+}
+
+.dwell-ring.is-filling {
+  --dp: 1;
+  transition: opacity 0.15s, --dp 0.9s linear;
+}
+
+.merged-cards-glass-toggle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-glow) 45%, transparent);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  margin-bottom: var(--space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dwell-ring.is-filling {
+    transition: opacity 0.15s;
+  }
+}
+
+/* SQUARE variant (Rod 2026-08-11 shape pass): unrounded perfect squares/rectangles.
+   LAST in the file on purpose — it must out-cascade every base radius above (the first draft sat
+   before .card-back and lost the tie, leaving card backs rounded).
+   The star pin KEEPS its 5px radius — the deliberate exception, like the tier badge. */
+.merged-cards--square .card-cover,
+.merged-cards--square .card-back,
+.merged-cards--square .glass-plane {
+  border-radius: 0;
+}
+
+.merged-cards--square .card-pin {
+  border-radius: 0;
+}
+
+.merged-cards--square .card-pin--star {
+  border-radius: 5px;
+}

@@ -1,0 +1,151 @@
+/* !! CIRCULAR CITATION - CORRECTED 2026-08-16 !!
+   The "PROVENANCE" line below points at a `rework-*.html` / `ref-*.html` page in THIS repo.
+   Those are OUR OWN BUILDS, named after the sites that inspired them. They are source
+   CANDIDATES, not sources. This component therefore has NO EXTERNAL PROVENANCE and is Slop
+   until a real live site is found and its CSS read from source.
+   Rod caught this on the callouts: "you are confidently lying because these are not anywhere
+   to be found on hana, unless you mean our AI generated hana copy."
+   A provenance comment is a CLAIM, not evidence. Check what it points AT. */
+/* button-kit — KIT pick from final-picks.md: stephan SHAPES x hana BEHAVIOR x magnetic cursor-stick.
+   PROVENANCE:
+   - shapes (radius, padding, chip tags): rework-stephan.html (stephan rework, amber-mapped)
+   - primary hover ripple: phojanecki (codepen.io/phojanecki/pen/vwyZpY), recolored
+   - outline/pill fill-sweep: nfranciosi (codepen.io/nfranciosi/pen/eGRKON -> sources/nfranciosi-button-fill.md)
+   - inline link: harumaki rework (Caveat + grow underline)
+   - magnetic: ../magnetic/magnetic.js (sources/magnetic-buttons.md)
+   Font is the body token, not stephan's Inter — type is owned by the cohesion pass. */
+.kit-button {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 0;
+  text-decoration: none;
+}
+
+.kit-button--primary {
+  background: var(--color-gold);
+  color: var(--color-ink);
+  font-weight: 600;
+  outline: 1px solid color-mix(in srgb, var(--color-glow) 50%, transparent);
+  transition: all 0.35s;
+}
+
+/* phojanecki ripple: the outline floats outward and fades while the core ignites */
+.kit-button--primary:hover {
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-glow) 50%, transparent);
+  box-shadow:
+    inset 0 0 16px color-mix(in srgb, var(--color-glow) 20%, transparent),
+    0 0 16px color-mix(in srgb, var(--color-glow) 45%, transparent);
+  outline-offset: 8px;
+  outline-color: transparent;
+}
+
+.kit-button--outline,
+.kit-button--pill {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  background: transparent;
+  color: var(--color-gold);
+  border: 1px solid color-mix(in srgb, var(--color-glow) 50%, transparent);
+}
+
+.kit-button--pill {
+  border-radius: 999px;
+}
+
+.kit-button__label {
+  position: relative;
+  z-index: 5;
+  transition: color 0.35s ease;
+}
+
+.kit-button--outline:hover .kit-button__label,
+.kit-button--pill:hover .kit-button__label {
+  color: var(--color-night);
+}
+
+/* rising-circle fill (dennissnellenberg .btn-fill): an oversized circle parked below, slides up on
+   hover; overflow:hidden on the button clips it. Replaces the old nfranciosi left->right sweep. */
+.kit-button__fill {
+  position: absolute;
+  top: -50%;
+  left: -25%;
+  width: 150%;
+  height: 200%;
+  border-radius: 50%;
+  background: var(--color-gold-deep);
+  transform: translate3d(0, 76%, 0);
+  transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  z-index: 0;
+}
+
+.kit-button--outline:hover .kit-button__fill,
+.kit-button--pill:hover .kit-button__fill {
+  transform: translate3d(0, 0, 0);
+}
+
+/* tags: stephan chip geometry + hana BEHAVIOR (phojanecki ripple — outline floats out and
+   fades while the chip ignites), per Rod's batch-1 feedback. */
+.kit-tag {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  border-radius: 6px;
+  padding: 0.3rem 0.65rem;
+  outline: 1px solid color-mix(in srgb, var(--color-glow) 40%, transparent);
+  transition: all 0.35s;
+  cursor: default;
+}
+
+.kit-tag:hover {
+  color: var(--color-gold);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-glow) 60%, transparent);
+  box-shadow:
+    inset 0 0 12px color-mix(in srgb, var(--color-glow) 15%, transparent),
+    0 0 12px color-mix(in srgb, var(--color-glow) 30%, transparent);
+  outline-offset: 6px;
+  outline-color: transparent;
+}
+
+.inline-link {
+  /* T0-B: hand reserved for the logo; behavior (underline-grow) is what Rod picked, font -> body */
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  color: var(--color-gold);
+  text-decoration: none;
+  position: relative;
+}
+
+.inline-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 2px;
+  background: var(--color-gold-deep);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
+.inline-link:hover {
+  color: var(--color-glow-soft);
+}
+
+.inline-link:hover::after {
+  width: 100%;
+}
+
+.button-kit-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+}

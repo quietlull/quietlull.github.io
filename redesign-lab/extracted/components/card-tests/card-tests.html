@@ -1,0 +1,26 @@
+<!-- card-tests: the two behaviors layered on the REAL merged-card (flip + parallax + tilt), at scale,
+     with activation culling so ~100 cards stay cheap (Rod 2026-06-14).
+     Variant A = magnet + drift (drift-magnet base, on the card wrapper).
+     Variant B = band-reveal (yannesidibe glow border).
+     The cards themselves come from merged-card.css/.js (loaded as a dep). Grids fill from JS. -->
+<div class="ct">
+  <div class="ct-perf" data-ct-perf aria-live="off">-- fps</div>
+
+  <div class="ct-controls">
+    <button type="button" data-ct-cull>Culling &middot; On</button>
+    <button type="button" data-ct-motion>Motion &middot; On</button>
+    <button type="button" data-ct-100>Push to 100 cards</button>
+    <span class="ct-count" data-ct-count></span>
+  </div>
+
+  <h3 class="ct-label">Variant A &mdash; magnet + drift <span>on the real flip / parallax / tilt card</span></h3>
+  <div class="merged-cards ct-grid" data-ct-grid-a data-tune="variant A grid"></div>
+
+  <h3 class="ct-label">Variant B &mdash; band-reveal <span>yannesidibe glow border, on the real card</span></h3>
+  <div class="merged-cards ct-grid" data-ct-grid-b data-tune="variant B grid"></div>
+
+  <p class="ct-hint">
+    scroll the grids and stir the cursor; watch the fps readout (top-right). toggle culling off to see
+    the cost of running every off-screen card at once. "push to 100" stress-tests the project-page count.
+  </p>
+</div>

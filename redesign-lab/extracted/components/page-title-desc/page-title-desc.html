@@ -1,0 +1,211 @@
+<!-- page-title-desc - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=page-title-desc can mount it. Page chrome is scoped to .cb-page-title-desc; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: page-title-desc - 3 versions against the measured reservation -->
+<!--
+  BENCH DEMO for extracted/components/page-title-desc/.
+  Open at a 1440 viewport: .d-h1 is clamp(2.75rem, 7vw, 101px), so its size is a function of the
+  VIEWPORT, not of the stage. At any other width the readouts below are still correct, but they
+  are not the numbers the blockout was measured at.
+
+  The dashed boxes are the RESERVATIONS, drawn behind each version at the exact pixel sizes read
+  off the blockouts. The readout under each version is measured live with getBoundingClientRect,
+  so nothing on this page is a guess or a label.
+
+  NO SCENE HERE. The live three.js ground cannot run in a bench file. Nothing in this component
+  uses a fill, a blur or a shadow, so what it does over the scene is what it does here.
+-->
+<!-- the REAL decisions.css, linked and not copied, so the H1 ladder here cannot drift from it -->
+<div class="cb cb-page-title-desc">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-page-title-desc {
+  background:var(--color-night,#070c23);color:var(--color-text,#f5f3ef);
+  font-family:var(--font-body,sans-serif);padding:48px 0 140px
+
+  & * {box-sizing:border-box;margin:0;padding:0
+  }
+  & .sheet {width:min(1240px,96vw);margin:0 auto
+  }
+  & h2.bh {font-family:var(--font-mono,monospace);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--color-gold,#fbbf24);font-weight:500;margin:56px 0 6px
+  }
+  & .bnote {font-family:var(--font-mono,monospace);font-size:11px;line-height:1.75;
+    color:var(--color-silver,#a3a19d);max-width:96ch;margin-bottom:26px
+  }
+  & .bnote b {color:var(--color-gold-deep,#f59e0b);font-weight:500
+  }
+  & .vlabel {font-family:var(--font-mono,monospace);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--color-silver,#a3a19d);margin:34px 0 10px
+  }
+  /* the reservation. Dashed, behind, and never touching the component. */
+  & .stage {position:relative;margin:0 auto
+  }
+  & .res {position:absolute;left:50%;transform:translateX(-50%);
+    border:1px dashed var(--color-line,rgba(251,191,36,.26));z-index:0;pointer-events:none
+  }
+  & .res span {position:absolute;top:-15px;left:0;font-family:var(--font-mono,monospace);
+    font-size:9px;letter-spacing:.1em;color:var(--color-gold-deep,#f59e0b)
+  }
+  & .stage .ptd {position:relative;z-index:1
+  }
+  & .readout {font-family:var(--font-mono,monospace);font-size:11px;line-height:1.8;
+    margin-top:14px;color:var(--color-silver,#a3a19d)
+  }
+  & .readout .over {color:var(--color-gold,#fbbf24)
+  }
+  & .readout .fits {color:var(--color-silver,#a3a19d)
+  }
+  & .labtag {position:fixed;left:14px;bottom:10px;font-family:var(--font-mono,monospace);font-size:10px;
+    color:var(--color-silver,#a3a19d)
+  }
+  & .vw {position:fixed;right:14px;bottom:10px;font-family:var(--font-mono,monospace);font-size:10px;
+    color:var(--color-gold,#fbbf24)
+  }
+}
+</style>
+<div class="sheet">
+
+<h2 class="bh">page title + description</h2>
+<p class="bnote">
+  The title is <b>.d-h1 from decisions.css</b>, untouched and linked rather than copied. The three
+  versions differ only in the <b>description</b> and, in V3, in one border on the title. Dashed
+  boxes are the reservations read off the blockouts; the readout under each is measured live.
+</p>
+
+<!-- ══════════════════ PROJECTS ══════════════════ -->
+<h2 class="bh">projects - 930 x 44 title, 18px, 930 x 50 description</h2>
+<p class="bnote">
+  <b>projects-blockout.html:232</b> box(44,'PAGE TITLE') + height:18px + box(50,'DESCRIPTION - 2
+  lines'), inside the 1000px panel at 35px padding (<b>final-projects.html:101</b>), so the content
+  width is 930. Both boxes are the <b>same full width</b> and the copy is centred inside them
+  (<b>final-projects.html:104</b>, .panel .head{text-align:center}). Nothing here is narrowed.
+</p>
+
+<p class="vlabel">V1 - the sub line (potg page-header)</p>
+<div class="stage" style="width:930px;min-height:112px" data-title="930x44" data-desc="930x50" data-gap="18">
+  <div class="res" style="top:0;width:930px;height:44px"><span>reserved 930 x 44</span></div>
+  <div class="res" style="top:62px;width:930px;height:50px"><span>reserved 930 x 50</span></div>
+  <div class="ptd ptd--projects ptd--sub">
+    <h1 class="ptd__title d-h1">Projects</h1>
+    <p class="ptd__desc">Shaders, tools and tech art built in Unity and HLSL. Compute Grass, 2D Physics on the GPU, Procedural 3D Mask and Sprite Baker 9000, plus the smaller experiments that never got a writeup.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<p class="vlabel">V2 - the softened paragraph (potg first__text-ja)</p>
+<div class="stage" style="width:930px;min-height:112px" data-title="930x44" data-desc="930x50" data-gap="18">
+  <div class="res" style="top:0;width:930px;height:44px"><span>reserved 930 x 44</span></div>
+  <div class="res" style="top:62px;width:930px;height:50px"><span>reserved 930 x 50</span></div>
+  <div class="ptd ptd--projects ptd--para">
+    <h1 class="ptd__title d-h1">Projects</h1>
+    <p class="ptd__desc">Shaders, tools and tech art built in Unity and HLSL. Compute Grass, 2D Physics on the GPU, Procedural 3D Mask and Sprite Baker 9000, plus the smaller experiments that never got a writeup.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<p class="vlabel">V3 - ruled title (acegikmo) over a lede (potg first__text-en)</p>
+<div class="stage" style="width:930px;min-height:112px" data-title="930x44" data-desc="930x50" data-gap="18">
+  <div class="res" style="top:0;width:930px;height:44px"><span>reserved 930 x 44</span></div>
+  <div class="res" style="top:62px;width:930px;height:50px"><span>reserved 930 x 50</span></div>
+  <div class="ptd ptd--projects ptd--ruled">
+    <h1 class="ptd__title d-h1">Projects</h1>
+    <p class="ptd__desc">Shaders, tools and tech art built in Unity and HLSL. Compute Grass, 2D Physics on the GPU, Procedural 3D Mask and Sprite Baker 9000, plus the smaller experiments that never got a writeup.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<!-- ══════════════════ RAMBLINGS, the reservation this build was handed ══════════════════ -->
+<h2 class="bh">ramblings - 380 x 100 title CENTRED, 12px, 520 x 44 description</h2>
+<p class="bnote">
+  <b>ramblings-blockout.html:125-126</b>, variant <b>?v=rulelog</b> (dimden). This is the
+  reservation this build was handed, and it is the variant the blockout page loads by DEFAULT
+  (<b>line 89</b>, body class="rulelog"; <b>line 252</b>, show(m?m[1]:'rulelog')).
+  <b>It is not the chosen variant</b> - see the next block. Here the title box is deliberately
+  NARROWER than the description box, the inverse of projects, where they are equal.
+</p>
+
+<p class="vlabel">V1 - the sub line</p>
+<div class="stage" style="width:930px;min-height:156px" data-title="380x100" data-desc="520x44" data-gap="12">
+  <div class="res" style="top:0;width:380px;height:100px"><span>reserved 380 x 100</span></div>
+  <div class="res" style="top:112px;width:520px;height:44px"><span>reserved 520 x 44</span></div>
+  <div class="ptd ptd--ramblings ptd--sub">
+    <h1 class="ptd__title d-h1">Ramblings</h1>
+    <p class="ptd__desc">Notes from taking things apart. Shader breakdowns, decompiling the shaders of a 2004 racing game, and the occasional detour.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<p class="vlabel">V2 - the softened paragraph</p>
+<div class="stage" style="width:930px;min-height:156px" data-title="380x100" data-desc="520x44" data-gap="12">
+  <div class="res" style="top:0;width:380px;height:100px"><span>reserved 380 x 100</span></div>
+  <div class="res" style="top:112px;width:520px;height:44px"><span>reserved 520 x 44</span></div>
+  <div class="ptd ptd--ramblings ptd--para">
+    <h1 class="ptd__title d-h1">Ramblings</h1>
+    <p class="ptd__desc">Notes from taking things apart. Shader breakdowns, decompiling the shaders of a 2004 racing game, and the occasional detour.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<p class="vlabel">V3 - ruled title over a lede</p>
+<div class="stage" style="width:930px;min-height:156px" data-title="380x100" data-desc="520x44" data-gap="12">
+  <div class="res" style="top:0;width:380px;height:100px"><span>reserved 380 x 100</span></div>
+  <div class="res" style="top:112px;width:520px;height:44px"><span>reserved 520 x 44</span></div>
+  <div class="ptd ptd--ramblings ptd--ruled">
+    <h1 class="ptd__title d-h1">Ramblings</h1>
+    <p class="ptd__desc">Notes from taking things apart. Shader breakdowns, decompiling the shaders of a 2004 racing game, and the occasional detour.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<!-- ══════════════════ RAMBLINGS, the CHOSEN variant ══════════════════ -->
+<h2 class="bh">ramblings, CHOSEN VARIANT - 220 x 26 title, 12px, 560 x 20 description</h2>
+<p class="bnote">
+  <b>final-ramblings.html:21</b> says, verbatim, "CHOSEN BLOCKOUT: ramblings-blockout.html?v=hairline".
+  The hairline title bar reserves <b>220 x 26</b> over <b>560 x 20</b>
+  (<b>ramblings-blockout.html:164-165</b>, repeated in <b>final-ramblings.html:167</b>), inside a
+  full-width tinted band with 37px padding above and below
+  (<b>final-ramblings.html:106</b>) and a 12px gap (<b>:110</b>).
+  Drawn because it is the reservation the chosen page actually holds. Not resolved here.
+</p>
+
+<p class="vlabel">V1 - the sub line</p>
+<div class="stage" style="width:930px;min-height:58px" data-title="220x26" data-desc="560x20" data-gap="12">
+  <div class="res" style="top:0;width:220px;height:26px"><span>reserved 220 x 26</span></div>
+  <div class="res" style="top:38px;width:560px;height:20px"><span>reserved 560 x 20</span></div>
+  <div class="ptd ptd--ramblings-hairline ptd--sub">
+    <h1 class="ptd__title d-h1">Ramblings</h1>
+    <p class="ptd__desc">Notes from taking things apart. Shader breakdowns, decompiling the shaders of a 2004 racing game, and the occasional detour.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<p class="vlabel">V2 - the softened paragraph</p>
+<div class="stage" style="width:930px;min-height:58px" data-title="220x26" data-desc="560x20" data-gap="12">
+  <div class="res" style="top:0;width:220px;height:26px"><span>reserved 220 x 26</span></div>
+  <div class="res" style="top:38px;width:560px;height:20px"><span>reserved 560 x 20</span></div>
+  <div class="ptd ptd--ramblings-hairline ptd--para">
+    <h1 class="ptd__title d-h1">Ramblings</h1>
+    <p class="ptd__desc">Notes from taking things apart. Shader breakdowns, decompiling the shaders of a 2004 racing game, and the occasional detour.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+<p class="vlabel">V3 - ruled title over a lede</p>
+<div class="stage" style="width:930px;min-height:58px" data-title="220x26" data-desc="560x20" data-gap="12">
+  <div class="res" style="top:0;width:220px;height:26px"><span>reserved 220 x 26</span></div>
+  <div class="res" style="top:38px;width:560px;height:20px"><span>reserved 560 x 20</span></div>
+  <div class="ptd ptd--ramblings-hairline ptd--ruled">
+    <h1 class="ptd__title d-h1">Ramblings</h1>
+    <p class="ptd__desc">Notes from taking things apart. Shader breakdowns, decompiling the shaders of a 2004 racing game, and the occasional detour.</p>
+  </div>
+</div>
+<div class="readout"></div>
+
+</div>
+
+<div class="vw"></div>
+</div>

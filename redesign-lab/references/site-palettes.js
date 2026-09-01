@@ -1,0 +1,28 @@
+/* Rod-anchored palettes: primary(bg)+secondary(text/glow) chosen by Rod; tertiary sampled
+   from the cover image (excludes anything near the two anchors) for chip/cover support. */
+window.SITE_PALETTES=[
+  {key:'harumaki',name:'Harumaki (main)',scheme:'harumaki: Rod primary+secondary, tertiary from cover',ground:'night',
+    note:'Background #2351bb + text/glow #f783fe (your picks). Tertiary (chip text, card cover) sampled from the cover: #4d82e6 #1e3460 #9085e4.',
+    raw:['#4d82e6','#235cc5','#2e4f8f','#1e3460','#9085e4','#fe94bc','#01031e','#fdfdfd'],
+    t:{'--color-night':'#2351bb','--color-night-2':'#1e3460','--color-text':'#f783fe','--color-muted':'color-mix(in srgb, #f783fe 52%, #2351bb)',
+      '--color-glow-soft':'color-mix(in srgb, #f783fe 45%, #ffffff)','--color-gold':'#f783fe','--color-gold-deep':'#f783fe','--color-glow':'#f783fe',
+      '--color-warm-muted':'#4d82e6','--color-cover-hi':'color-mix(in srgb, #1e3460 66%, #4d82e6 34%)'}},
+  {key:'ftr',name:'Harumaki (FTR)',scheme:'ftr: Rod primary+secondary, tertiary from cover',ground:'night',
+    note:'Background #2852cf + text/glow #9c69ec (your picks). Tertiary (chip text, card cover) sampled from the cover: #113579 #518cf4.',
+    raw:['#113579','#2270f1','#03102e','#1452cf','#518cf4','#a262de','#bf73fe','#7153c1'],
+    t:{'--color-night':'#2852cf','--color-night-2':'#113579','--color-text':'#9c69ec','--color-muted':'color-mix(in srgb, #9c69ec 52%, #2852cf)',
+      '--color-glow-soft':'color-mix(in srgb, #9c69ec 45%, #ffffff)','--color-gold':'#9c69ec','--color-gold-deep':'#9c69ec','--color-glow':'#9c69ec',
+      '--color-warm-muted':'#518cf4','--color-cover-hi':'color-mix(in srgb, #113579 66%, #518cf4 34%)'}},
+  {key:'tuyu',name:'It\'s Raining After All',scheme:'tuyu: Rod primary+secondary, tertiary from cover',ground:'night',
+    note:'Background #222657 + text/glow #ecde56 (your picks). Tertiary (chip text, card cover) sampled from the cover: #f2ecde #9ccec0 #d1cec3 #8f92a0.',
+    raw:['#232b5f','#f6e45b','#124c83','#f2ecde','#9ccec0','#414d73','#d1cec3','#8f92a0'],
+    t:{'--color-night':'#222657','--color-night-2':'#8f92a0','--color-text':'#ecde56','--color-muted':'color-mix(in srgb, #ecde56 52%, #222657)',
+      '--color-glow-soft':'color-mix(in srgb, #ecde56 45%, #ffffff)','--color-gold':'#ecde56','--color-gold-deep':'#ecde56','--color-glow':'#ecde56',
+      '--color-warm-muted':'#f2ecde','--color-cover-hi':'color-mix(in srgb, #8f92a0 66%, #f2ecde 34%)'}},
+  {key:'sleepsheep',name:'Sleep Sheep Sunroom',scheme:'sleepsheep: Rod primary+secondary, tertiary from cover',ground:'night',
+    note:'Background #1e303c + text/glow #efe4a1 (your picks). Tertiary (chip text, card cover) sampled from the cover: #afa270 #827e5f.',
+    raw:['#efe59e','#5f442b','#192f3b','#afa270','#827e5f','#cec182','#3b271b','#505c52'],
+    t:{'--color-night':'#1e303c','--color-night-2':'#827e5f','--color-text':'#efe4a1','--color-muted':'color-mix(in srgb, #efe4a1 52%, #1e303c)',
+      '--color-glow-soft':'color-mix(in srgb, #efe4a1 45%, #ffffff)','--color-gold':'#efe4a1','--color-gold-deep':'#efe4a1','--color-glow':'#efe4a1',
+      '--color-warm-muted':'#afa270','--color-cover-hi':'color-mix(in srgb, #827e5f 66%, #afa270 34%)'}},
+];

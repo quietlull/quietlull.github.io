@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ref: dimden.dev — retro personal site + cursor cat</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== dimden.dev recreation in its OWN palette =====
+   Neon-green-on-near-black retro personal site: DIMDEN banner, link-list columns,
+   STARS nav sidebar + status/blinkie widgets, cursor-following cat, toggleable neon sign. */
+:root{--bg:#07140d;--panel:#0b1f15;--green:#74f7a8;--green2:#37c878;--link:#aef7c8;--pink:#ff5dd0;--line:#1c3b2a}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+body{font-family:"IBM Plex Mono",monospace;background:var(--bg);color:var(--green);min-height:100vh;
+  background-image:repeating-linear-gradient(0deg,rgba(116,247,168,.03) 0 1px,transparent 1px 3px);cursor:default}
+a{color:var(--link);text-decoration:none}a:hover{color:#fff;text-shadow:0 0 6px var(--green)}
+
+.banner{text-align:center;padding:1.4rem;font-family:"VT323",monospace;font-size:clamp(3rem,9vw,6rem);letter-spacing:.1em;color:#bdfcd6;
+  text-shadow:0 0 8px var(--green2),0 0 22px rgba(55,200,120,.6)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 1rem 4rem;display:grid;grid-template-columns:1fr 280px;gap:1.4rem}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}}
+.box{border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:1rem 1.2rem;margin-bottom:1.4rem}
+.box h2{font-family:"VT323",monospace;font-size:1.7rem;color:#bdfcd6;margin-bottom:.5rem;letter-spacing:.05em}
+.box h2::before{content:"\2737 "}
+.box ul{list-style:none;line-height:2}
+.box li::before{content:"> ";color:var(--green2)}
+.muted{color:var(--green2);font-size:.85rem;line-height:1.7}
+
+/* sidebar */
+.stars ul{line-height:2.1}
+.status{font-size:.82rem}.status .on{color:var(--pink)}
+.blinkies{display:flex;flex-wrap:wrap;gap:6px;margin-top:.6rem}
+.blink{font-family:"VT323",monospace;font-size:.85rem;padding:2px 6px;border:1px solid var(--line);border-radius:2px;color:#bdfcd6;
+  animation:blink 1.1s steps(2) infinite}
+.blink:nth-child(2){animation-delay:.3s;color:var(--pink)}
+.blink:nth-child(3){animation-delay:.6s}
+@keyframes blink{50%{opacity:.35}}
+
+/* neon sign toggle */
+.sign{margin-top:.4rem;display:flex;align-items:center;gap:.7rem}
+.neon{font-family:"VT323",monospace;font-size:1.6rem;color:#1a2a22;transition:.25s}
+.neon.lit{color:var(--pink);text-shadow:0 0 6px var(--pink),0 0 16px var(--pink),0 0 30px rgba(255,93,208,.7)}
+.signbtn{font-family:"IBM Plex Mono",monospace;font-size:.7rem;background:transparent;border:1px solid var(--line);color:var(--green);
+  padding:.25rem .6rem;border-radius:3px;cursor:pointer}
+
+/* cursor cat */
+#cat{position:fixed;left:0;top:0;z-index:90;width:42px;height:42px;pointer-events:none;transform:translate(-100px,-100px)}
+#cat svg{display:block;animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.labtag{position:fixed;left:14px;bottom:14px;z-index:95;font-size:10px;color:rgba(116,247,168,.55)}
+.labtag a{color:var(--pink)}
+</style>
+</head>
+<body>
+<div class="banner">DIMDEN</div>
+<div class="wrap">
+  <div class="main">
+    <div class="box"><h2>Welcome to dimden.dev!</h2>
+      <p class="muted">This is my little website and blog. It's layered out the way a real homepage should be &mdash; chaotic, hand-built, and full of things only I find interesting. There's a cat following your cursor. Try the neon sign in the sidebar.</p></div>
+    <div class="box"><h2>Blog</h2>
+      <ul><li><a href="#">why i still hand-write my html</a> &mdash; <span class="muted">feb 2026</span></li>
+      <li><a href="#">the cat, explained</a> &mdash; <span class="muted">jan 2026</span></li>
+      <li><a href="#">building a guestbook in 2026</a> &mdash; <span class="muted">dec 2025</span></li></ul></div>
+    <div class="box"><h2>Projects</h2>
+      <ul><li><a href="#">esoteric.js</a> &mdash; <span class="muted">a cursed templating lang</span></li>
+      <li><a href="#">cat-cursor</a> &mdash; <span class="muted">the thing chasing your pointer</span></li>
+      <li><a href="#">neon-sign</a> &mdash; <span class="muted">toggleable CSS signage</span></li></ul></div>
+  </div>
+
+  <aside class="side">
+    <div class="box stars"><h2>Stars</h2>
+      <ul><li><a href="#">Home</a></li><li><a href="#">Shop</a></li><li><a href="#">Photo Album</a></li>
+      <li><a href="#">Discord</a></li><li><a href="#">Guestbook</a></li><li><a href="#">Webring &rarr;</a></li></ul></div>
+    <div class="box status"><h2>Status</h2>
+      <p>currently: <span class="on">online</span></p>
+      <div class="sign"><span class="neon" id="neon">dimden</span><button class="signbtn" id="signbtn">toggle</button></div>
+      <div class="blinkies"><span class="blink">best viewed 1024px</span><span class="blink">no AI</span><span class="blink">made by hand</span></div></div>
+  </aside>
+</div>
+
+<div id="cat"><svg viewBox="0 0 42 42"><g fill="#74f7a8"><path d="M8 14 L8 4 L15 11 Z"/><path d="M34 14 L34 4 L27 11 Z"/><ellipse cx="21" cy="24" rx="14" ry="13"/></g><g fill="#07140d"><circle cx="15" cy="22" r="2"/><circle cx="27" cy="22" r="2"/></g><g stroke="#07140d" stroke-width="1"><path d="M21 27 l0 3M21 30 l-3 2M21 30 l3 2M9 25 l-7 -2M9 28 l-7 1M33 25 l7 -2M33 28 l7 1" fill="none"/></g></svg></div>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab index</a> &middot; ref: dimden.dev</div>
+<script>
+(function(){
+  /* cursor-following cat with easing */
+  var cat=document.getElementById('cat'), tx=-100,ty=-100,cx=-100,cy=-100,flip=1;
+  document.addEventListener('mousemove',function(e){tx=e.clientX+16;ty=e.clientY+16;flip=(e.movementX<0)?-1:1;});
+  (function loop(){ cx+=(tx-cx)*0.12; cy+=(ty-cy)*0.12;
+    cat.style.transform='translate('+cx+'px,'+cy+'px) scaleX('+flip+')'; requestAnimationFrame(loop); })();
+  /* neon sign toggle */
+  var neon=document.getElementById('neon');neon.classList.add('lit');
+  document.getElementById('signbtn').addEventListener('click',function(){neon.classList.toggle('lit');});
+})();
+</script>
+</body>
+</html>

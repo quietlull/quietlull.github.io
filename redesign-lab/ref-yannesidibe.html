@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ref: yannesidibe.com — kinetic hero + dual-layer spotlight about grid</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ===== yannesidibe.com recreation in its OWN palette =====
+   Near-black + purple top glow, rotating circular greeting hero, and the real about grid
+   (portrait | intro + 5+ years | SEO/UX/Dev cards) with the PRECISE dual-layer spotlight border:
+   ::before wide magenta 262px + ::after tight pale-pink 175px, masked to a 2px ring, pointermove. */
+:root{--bg:#000;--purple2:#9b7bff;--text:#f0f1fa;--soft:#e7d8ff}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+html,body{background:var(--bg);font-family:"Poppins",system-ui,sans-serif;color:var(--text);overflow-x:hidden}
+.glow-top{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(40% 30% at 50% 6%,rgba(109,75,255,.4),transparent 60%)}
+
+.hero{height:100vh;min-height:560px;display:grid;place-items:center;position:relative;z-index:1}
+.ring{width:min(70vmin,440px);height:min(70vmin,440px);animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring text{fill:var(--text);font-family:"IBM Plex Mono",monospace;font-size:15px;letter-spacing:2px}
+.hero .center{position:absolute;text-align:center}
+.hero .center .role{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.4em;color:var(--purple2);text-transform:uppercase}
+.hero .center h1{font-size:clamp(1.6rem,4vw,2.6rem);font-weight:700;margin-top:.5rem;letter-spacing:-.02em}
+
+/* === PRECISE dual-layer spotlight border (from the live site) === */
+.glow{position:relative}
+.glow::before,.glow::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.glow::before{background:radial-gradient(262px 262px at var(--mx,-9999px) var(--my,-9999px),rgb(255,0,187),rgba(0,0,0,0) 100%)}
+.glow::after{background:radial-gradient(175px 175px at var(--mx,-9999px) var(--my,-9999px),rgb(255,204,241),rgba(0,0,0,0) 100%)}
+
+/* === real about grid === */
+.about{display:grid;max-width:1280px;margin:0 auto;padding:72px 24px 120px;grid-template-columns:minmax(150px,190px) minmax(0,1fr) minmax(150px,190px);gap:24px 48px;align-items:stretch;position:relative;z-index:1}
+.ab-portrait{grid-row:1 / span 2;width:100%;align-self:stretch;min-height:360px;border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden}
+.ab-portrait-inner{width:100%;height:100%;background:linear-gradient(160deg,#3a3a40,#101015);filter:grayscale(1)}
+.ab-intro{background:rgba(16,3,42,.2);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:48px 28px;align-self:start}
+.ab-intro p{font-size:24px;line-height:34px;color:var(--soft);font-weight:400}
+.ab-years{width:100%;min-height:340px;border:1px solid rgba(255,255,255,.07);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;overflow:hidden;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(rgba(16,3,42,.45),rgba(16,3,42,.45));background-size:7px 7px,cover}
+.ab-big{font-size:80px;font-weight:700;color:transparent;-webkit-text-stroke:2px rgba(240,241,250,.85);line-height:1;margin-bottom:16px}
+.ab-label{font-size:24px;line-height:36px;color:var(--soft)}
+.ab-cards{grid-column:2 / span 2;display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:24px;align-items:start}
+.ab-card{background:rgba(16,3,42,.2);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:40px 24px 32px;min-height:340px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.ab-card.raised{margin-top:-24px;min-height:384px;background:rgba(20,4,52,.5)}
+.ab-card h3{font-size:32px;font-weight:700;color:var(--text);line-height:1.1;margin-bottom:24px}
+.ab-card p{font-size:20px;line-height:30px;color:var(--soft)}
+.ab-icon{margin-top:auto;padding-top:24px;font-size:40px;opacity:.85}
+@media(max-width:900px){.about{grid-template-columns:1fr;gap:18px}.ab-portrait{grid-row:auto;width:100%;height:280px}.ab-years{width:100%}.ab-cards{grid-column:auto;grid-template-columns:1fr}.ab-card.raised{margin-top:0}}
+body.cap .hero{height:auto;min-height:30vh;padding:3rem 0}  /* ?spot capture mode only */
+.labtag{position:fixed;left:14px;bottom:14px;z-index:5;font-family:"IBM Plex Mono",monospace;font-size:10px;color:rgba(240,241,250,.5)}
+.labtag a{color:var(--purple2)}
+</style>
+</head>
+<body>
+<div class="glow-top"></div>
+<div class="hero">
+  <svg class="ring" viewBox="0 0 400 400"><defs><path id="c" d="M200,200 m-160,0 a160,160 0 1,1 320,0 a160,160 0 1,1 -320,0"/></defs>
+    <text><textPath href="#c" startOffset="0%">Здравейте &#183; hey &#183; γεια σας &#183; bonjour &#183; hola &#183; ciao &#183; hallo &#183; ola &#183; </textPath></text></svg>
+  <div class="center"><div class="role">Creative Developer</div><h1>Yanne Sidibe</h1></div>
+</div>
+
+<section class="about">
+  <div class="ab-portrait"><div class="ab-portrait-inner"></div></div>
+  <div class="ab-intro glow"><p>An award-winning creative developer with a passion for design and avionics. From concept to launch, I am involved in every step of the process. User experience, visually striking design, engaging interactions and impeccable typography are my top priorities.</p></div>
+  <div class="ab-years glow"><div class="ab-big">5+</div><div class="ab-label">years of experience</div></div>
+  <div class="ab-cards">
+    <div class="ab-card glow"><h3>SEO</h3><p>Optimizing data to improve search engine rankings.</p><div class="ab-icon">&#128269;</div></div>
+    <div class="ab-card raised glow"><h3>UX Design</h3><p>From product's exploration to evaluation.</p><div class="ab-icon">&#9986;</div></div>
+    <div class="ab-card glow"><h3>Web &amp; Mobile Development</h3><p>Industry-leading tools such as React, Three, Framer will be used to build your app.</p><div class="ab-icon">&#128421;</div></div>
+  </div>
+</section>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab index</a> &middot; ref: yannesidibe</div>
+<script>
+(function(){
+  var targets=[].slice.call(document.querySelectorAll('.glow'));
+  document.addEventListener('pointermove',function(e){
+    for(var i=0;i<targets.length;i++){var r=targets[i].getBoundingClientRect();
+      targets[i].style.setProperty('--mx',(e.clientX-r.left)+'px');targets[i].style.setProperty('--my',(e.clientY-r.top)+'px');}
+  });
+  if(/spot/.test(location.search)){ /* dev: collapse hero + park spotlight on each card's top edge for headless capture */
+    document.body.classList.add('cap');
+    setTimeout(function(){targets.forEach(function(el){var r=el.getBoundingClientRect();
+      el.style.setProperty('--mx',(r.width*0.5)+'px');el.style.setProperty('--my','12px');});},300); }
+})();
+</script>
+</body>
+</html>

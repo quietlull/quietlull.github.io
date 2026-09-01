@@ -1,0 +1,179 @@
+<!-- portrait-frame - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=portrait-frame can mount it. Page chrome is scoped to .cb-portrait-frame; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: PORTRAIT FRAME - 3 versions in the measured 191 x 200 rail slot -->
+<!--
+  The ABOUT rail portrait, drawn at its MEASURED reservation.
+  191 x 200 inside the 225px rail (about-blockout.html:40,41,170; confirmed in
+  analysis/2026-08-23-blockout-contract.md:39). The dashed gold ring behind each version IS that
+  reservation, drawn as an outline so it costs no space and any overflow would cross it visibly.
+
+  Every version is a fixed 191 x 200 border-box, so the fit is exact by construction.
+  There is NO portrait image anywhere in the repo, so the media slot says so in words rather
+  than borrowing someone else's face.
+-->
+<div class="cb cb-portrait-frame">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 300;400;500. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+.cb-portrait-frame {
+  --color-silver: #a3a19d;
+  background: var(--color-night, #070c23);
+  color: var(--color-text, #f5f3ef);
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+  padding: 0 0 90px;
+
+  /* bench chrome only. Nothing below styles the component. */
+  & * { box-sizing: border-box; margin: 0; padding: 0;
+  }
+  & .top {
+    border-bottom: 1px solid var(--color-line-faint, rgba(255,255,255,.06));
+    padding: 18px 34px 20px;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  & .top h1 {
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--color-gold, #fbbf24);
+  }
+  & .top p { font-size: .68rem; color: var(--color-silver); margin-top: 8px; max-width: 96ch;
+  }
+  & .top b { color: var(--color-text, #f5f3ef); font-weight: 500;
+  }
+  & .row { display: flex; flex-wrap: wrap; gap: 64px; padding: 46px 34px 0;
+  }
+  & .case { width: 260px;
+  }
+  /* THE RESERVATION. Exactly 191 x 200. `outline` sits outside the border box, so the dash never
+     eats a pixel of the component and an overflow would be visible as content crossing it. */
+  & .slot { position: relative; width: 191px; height: 200px;
+  }
+  & .slot__res {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    outline: 1px dashed rgba(251, 191, 36, .55);
+  }
+  & .slot .pf { position: relative; z-index: 1;
+  }
+  & .case h2 {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .66rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--color-gold-deep, #f59e0b);
+    margin-bottom: 12px;
+  }
+  & .meta {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .6rem; line-height: 1.75; color: var(--color-silver); margin-top: 16px;
+  }
+  & .meta b { color: var(--color-text, #f5f3ef); font-weight: 500;
+  }
+  & .note { padding: 54px 34px 0; max-width: 92ch; font-size: .82rem; color: var(--color-silver);
+  }
+  & .note h3 {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .64rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--color-gold, #fbbf24); margin-bottom: 10px;
+  }
+  & .note p + p { margin-top: 10px;
+  }
+  & .note code { font-family: "IBM Plex Mono", monospace; font-size: .92em; color: var(--color-text, #f5f3ef);
+  }
+}
+</style>
+<div class="top">
+  <h1>Portrait frame - about rail</h1>
+  <p>Reservation <b>191 x 200</b>, inside the <b>225px</b> rail. 225 minus the panel's 2px borders
+    and 15px padding leaves 191 (about-blockout.html:40,41); the 200 is the box() call at line 170.
+    The dashed ring behind each version is that reservation at 1:1. All three are a fixed
+    191 x 200 border-box, so <b>every version fits exactly, 0px over on both axes</b>.</p>
+</div>
+
+<div class="row">
+
+  <div class="case">
+    <h2>V1 &middot; no frame</h2>
+    <div class="slot">
+      <div class="slot__res"></div>
+      <figure class="fig fig--v2 pf pf--plain">
+        <div class="pf__media pf__media--empty">no portrait asset<br>in the repo yet</div>
+        <figcaption>Rod, technical artist</figcaption>
+      </figure>
+    </div>
+    <p class="meta">
+      <b>Remixed</b> &middot; origin theirs + Rod<br>
+      catlikecoding, via figure-real<br>
+      image cell <b>191 x 173.8</b><br>
+      caption block 26.2
+    </p>
+  </div>
+
+  <div class="case">
+    <h2>V2 &middot; corner brackets</h2>
+    <div class="slot">
+      <div class="slot__res"></div>
+      <figure class="fig fig--v2 pf pf--brackets">
+        <span class="pf__corners" aria-hidden="true">
+          <i class="pf__corner pf__corner--tl"></i>
+          <i class="pf__corner pf__corner--tr"></i>
+          <i class="pf__corner pf__corner--br"></i>
+          <i class="pf__corner pf__corner--bl"></i>
+        </span>
+        <div class="pf__media pf__media--empty">no portrait asset<br>in the repo yet</div>
+        <figcaption>Rod, technical artist</figcaption>
+      </figure>
+    </div>
+    <p class="meta">
+      <b>Remixed</b> &middot; origin theirs<br>
+      filipporuffini.com, verified live<br>
+      arms 40px, padding 15px<br>
+      image cell <b>161 x 143.8</b>
+    </p>
+  </div>
+
+  <div class="case">
+    <h2>V3 &middot; named window</h2>
+    <div class="slot">
+      <div class="slot__res"></div>
+      <div class="pf pf--window">
+        <div class="pf__inner">
+          <div class="pf__bar"><span class="pf__name">Rod</span></div>
+          <div class="pf__body">
+            <div class="pf__media pf__media--empty">no portrait asset<br>in the repo yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="meta">
+      <b>Remixed</b> &middot; origin theirs<br>
+      109ichiki.com, verified live<br>
+      bar 32px, no caption<br>
+      image cell <b>187 x 164</b>
+    </p>
+  </div>
+
+</div>
+
+<div class="note">
+  <h3>What the three actually differ on</h3>
+  <p>Only one thing is still open for this component: <b>how much chrome a portrait gets</b>.
+    V1 gives it none, which is the figure decision already locked (catlikecoding, no mat, no
+    border, no fill, left caption) applied to this box. V2 puts a frame on it that is not a box -
+    four 1px elbows, nothing in between, so the scene reads straight through the corners. V3 makes
+    it an object with a title bar that names it, which is the register Rod already picked when he
+    named 109ichiki's windows.</p>
+  <p>Nothing in this file animates. Two motions were available in the sources and both were
+    dropped on purpose: filipporuffini's arms-grow-on-hover belongs to their cursor, not their
+    frame, and 109ichiki's <code>cursor:grab</code> would promise a drag that a fixed rail cannot
+    deliver. Their <code>[data-blink]</code> is a 10Hz flash and is out under STYLE.md Section J.</p>
+  <p>The media is a placeholder because <code>.profile-container</code> is
+    <code>flex:0 0 300px</code> with <code>&amp;:empty{display:none}</code> and there is no
+    portrait file in the repo. Swap in <code>&lt;img class="pf__media" src alt&gt;</code> and all
+    three work unchanged - the image will be <b>cropped</b> to fill, which is the one thing the
+    fixed reservation forces on catlikecoding's intrinsic-size premise.</p>
+</div>
+</div>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ref: norikura-hanabi.com — night fireworks, lake, nav + program cards</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ===== norikura-hanabi.com recreation in its OWN palette =====
+   Deep navy night, dense JS fireworks over a silhouetted treeline + reflecting lake,
+   vertical serif title, top nav + right vertical rail, and a program-card section. */
+:root{--navy:#0a1130;--navy2:#141d44;--text:#e9ecff;--muted:#9aa6d6;--gold:#e8c98a;--card:#101a3e}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+html{scroll-behavior:smooth}
+body{font-family:"Shippori Mincho",serif;color:var(--text);overflow-x:hidden;background:#070c24}
+
+/* fixed scene */
+.scene{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(130% 90% at 50% -6%,#1d2c66 0%,#0d1640 42%,#070c24 100%)}
+#sky{position:absolute;left:0;right:0;top:0;height:64%}
+.treeline{position:absolute;left:0;right:0;bottom:34%;height:120px;background:#04060e;
+  clip-path:polygon(0 100%,0 60%,4% 42%,7% 64%,11% 38%,15% 60%,19% 30%,24% 58%,28% 44%,33% 18%,38% 52%,43% 40%,48% 64%,52% 34%,57% 56%,62% 28%,67% 58%,72% 42%,77% 60%,82% 32%,87% 58%,92% 46%,96% 62%,100% 50%,100% 100%)}
+#water{position:absolute;left:0;right:0;bottom:0;height:34%;overflow:hidden;background:linear-gradient(180deg,#0a1336 0%,#0c1a48 100%)}
+#water::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(180,200,255,.04) 0 2px,transparent 2px 7px)}
+#water .refl{position:absolute;inset:0;transform:scaleY(-1);filter:blur(2px);opacity:.38}
+.burst-p{position:absolute;width:3px;height:3px;border-radius:50%;will-change:transform,opacity}
+
+/* top nav */
+.topnav{position:fixed;left:0;top:0;width:100%;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 1.8rem;font-family:"IBM Plex Mono",monospace}
+.topnav .brand{font-family:"Shippori Mincho",serif;font-size:1.05rem;letter-spacing:.18em;color:#fff}
+.topnav .links{display:flex;gap:1.5rem;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase}
+.topnav .links a{color:var(--muted);text-decoration:none}.topnav .links a:hover{color:#fff}
+@media(max-width:720px){.topnav .links{display:none}}
+
+/* right vertical rail */
+.rail{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:1.1rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase}
+.rail a{color:var(--muted);text-decoration:none;writing-mode:vertical-rl}.rail a:hover{color:#fff}
+
+.wrap{position:relative;z-index:2}
+.hero{text-align:center;padding:clamp(5rem,16vh,9rem) 1rem 2rem}
+.hero .jp{font-weight:700;font-size:clamp(2.4rem,7vw,4.6rem);letter-spacing:.16em;text-shadow:0 0 26px rgba(180,200,255,.45)}
+.hero .en{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.5em;color:var(--muted);margin-top:.7rem;text-transform:uppercase}
+.stamp{display:inline-block;margin-top:1.3rem;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:.5rem 1.5rem;font-size:.76rem;letter-spacing:.2em}
+.hero .lede{max-width:30rem;margin:8rem auto 0;line-height:2.1;opacity:.95}
+
+/* program cards */
+.program{max-width:64rem;margin:7rem auto 4rem;padding:0 1.5rem}
+.program h2{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:2.2rem}
+.program h2::before{content:"/ "}.program h2::after{content:" /"}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem}
+@media(max-width:720px){.cards{grid-template-columns:1fr}}
+.pcard{background:var(--card);border:1px solid rgba(180,200,255,.14);border-radius:8px;overflow:hidden;text-decoration:none;color:var(--text);
+  transition:transform .4s cubic-bezier(.2,.7,.2,1),box-shadow .4s,border-color .4s}
+.pcard:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 18px 50px rgba(120,150,255,.22)}
+.pcard .thumb{aspect-ratio:16/10;background:radial-gradient(80% 120% at 50% 0%,#2a3a7a,#0c1640)}
+.pcard:nth-child(2) .thumb{background:radial-gradient(80% 120% at 50% 0%,#6a2a55,#0c1640)}
+.pcard:nth-child(3) .thumb{background:radial-gradient(80% 120% at 50% 0%,#2a6a5a,#0c1640)}
+.pcard .b{padding:1rem 1.1rem}
+.pcard .t{font-size:1.05rem}.pcard .m{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--muted);margin-top:.35rem;letter-spacing:.12em}
+
+.about{max-width:40rem;margin:0 auto 7rem;padding:0 1.5rem;text-align:center}
+.about h2{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;margin-bottom:1.2rem}
+.about p{color:var(--muted);line-height:2.1}
+.ticket{position:fixed;right:16px;bottom:16px;z-index:20;border:1px solid var(--gold);color:var(--gold);
+  font-family:"IBM Plex Mono",monospace;font-size:.64rem;letter-spacing:.18em;padding:.5rem .8rem;text-transform:uppercase}
+.labtag{position:fixed;left:14px;bottom:14px;z-index:20;font-family:"IBM Plex Mono",monospace;font-size:10px;color:rgba(233,236,255,.5)}
+.labtag a{color:var(--gold)}
+</style>
+</head>
+<body>
+<!-- background = Rod's real Three.js about-scene (injected canvas) -->
+
+<nav class="topnav"><span class="brand">NORIKURA HANABI</span>
+  <span class="links"><a href="#">Top</a><a href="#program">Program</a><a href="#about">About</a><a href="#">Tickets</a><a href="#">Access</a></span></nav>
+<div class="rail"><a href="#">Top</a><a href="#program">Program</a><a href="#about">About</a><a href="#">FAQ</a><a href="#">News</a></div>
+<div class="ticket">Fully Ticketed &rsaquo;</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="jp">NORIKURA HANABI</div>
+    <div class="en">norikura kogen fireworks &middot; 2026</div>
+    <div class="stamp">2026 . 05 . 09 (SAT)</div>
+    <div class="lede">Felt with all five senses &mdash; the night sky at 1,500m. Fireworks open above, and bloom again in the lake below.</div>
+  </div>
+
+  <section class="program" id="program">
+    <h2>Program</h2>
+    <div class="cards">
+      <a class="pcard" href="#"><div class="thumb"></div><div class="b"><div class="t">Opening Star Mine</div><div class="m">19:30 / sky</div></div></a>
+      <a class="pcard" href="#"><div class="thumb"></div><div class="b"><div class="t">Highland Bloom</div><div class="m">20:00 / lake mirror</div></div></a>
+      <a class="pcard" href="#"><div class="thumb"></div><div class="b"><div class="t">Finale Cascade</div><div class="m">20:40 / grand</div></div></a>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <h2>About</h2>
+    <p>A fireworks festival on the Norikura highlands. The bursts paint the alpine dark, then fall mirrored across the still lake &mdash; a doubled sky you watch from the shore.</p>
+  </section>
+</div>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab index</a> &middot; ref: norikura-hanabi</div>
+
+<!-- Rod's REAL Three.js about-scene (water / dock / lanterns / embers) as the background -->
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+</body>
+</html>

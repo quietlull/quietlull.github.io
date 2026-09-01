@@ -1,0 +1,75 @@
+/* section-head — centred label flanked by an ornament, hairline under.
+
+   PICKED BY ROD 2026-08-22 from four candidates on section-head-tests.html: "Lets go with C for
+   now remove the number above and add a hairline below it."
+   Two changes from candidate C as it was: the mono number/kicker is GONE, and a hairline is added.
+
+   ── PROVENANCE, stated precisely because this one is easy to overstate ────────────────────────
+   PARENT DEVICE: harumakigohan.com. Its section headers were read from the live site on
+   2026-08-22 and saved to redesign-lab/references/harumaki-heads/. They are drawn PNGs under
+   `wp-content/themes/gohantheme/img/m_*.png` (`m_` = midashi, heading). Measured:
+       structure   drawn squiggle | white label | drawn squiggle   (identical in all four)
+       size        fixed 30px tall on main sections, 22px on minor; width follows the word
+       colour      label #f0f0f0, ornament #f078f0 magenta-pink   (pixel census)
+   That page carries 124 images and ZERO html headings — not one h1..h6 anywhere.
+
+   TIER: Remixed. The flanking-ornament idea is theirs. What is OURS:
+     - the typed `~` is a STAND-IN for their drawn wave. It is not their glyph; they have no tilde
+       character anywhere on the site.
+     - the colour is our gold, not their pink, because the palette law bans pink.
+     - the hairline is Rod's addition, and matches the one candidate A already used.
+   IDEA ORIGIN: ROD.
+
+   ── ASSET OWED ───────────────────────────────────────────────────────────────────────────────
+   Rod 2026-08-22: "I'm thinking we will replace this with hand drawn text later like the header
+   art." So BOTH the tilde and the label are placeholders for drawn artwork. This is the D10 line:
+   harumaki's warmth lives in the drawn asset, and matching it properly means drawing an ornament,
+   not typing a character. Until that art exists this component is a stand-in that reads correctly.
+
+   A11Y: the container is an <h2>, not a div. A 2.4rem section label that is not in the heading
+   outline is invisible to anyone navigating by headings, and the landing already jumps h1 -> h4.
+   Caught by the ship-check on 2026-08-22 and fixed rather than noted.
+
+   NOT YET TUNED: the hairline's reach (it currently spans the container, not the label), the
+   ornament's gap from the word, and the size relationship to the page's other headings. */
+
+.section-head {
+  text-align: center;
+  margin: 0 0 1.8rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+}
+
+.section-head__name {
+  font-family: var(--font-display, "M PLUS Rounded 1c", sans-serif);
+  font-weight: 700;
+  font-size: 2.4rem;
+  color: var(--color-gold-deep, #f59e0b);
+}
+
+/* the flanking ornament. A typed character standing in for harumaki's drawn wave — see ASSET OWED.
+   aria-hidden is not available on a pseudo-element, but generated content is not exposed as text
+   by any current screen reader, so the label reads clean. */
+.section-head__name::before {
+  content: "~ ";
+  color: var(--color-gold, #fbbf24);
+}
+
+.section-head__name::after {
+  content: " ~";
+  color: var(--color-gold, #fbbf24);
+}
+
+/* the label LINKS to the section it heads. Rod 2026-08-22: "make the text link to projects so we
+   have a quick way to access it". Colour and ornament are inherited, so the link is invisible as a
+   link until you touch it - the head still reads as a heading, not as navigation. */
+.section-head__name {
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.section-head__name:hover,
+.section-head__name:focus-visible {
+  color: var(--color-gold, #fbbf24);
+}

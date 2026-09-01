@@ -1,0 +1,34 @@
+<!-- drift-magnet demo: the BASE engine on the element types that derive from it.
+     Socials = drift + magnet + rising-circle fill; favicon = clamped magnet + spin; the toggle
+     shows the graceful motion-off (ramps to origin, never freezes mid-drift). -->
+<div class="dm-demo">
+
+  <div class="dm-row" data-tune="drift magnet socials">
+    <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="#" aria-label="GitHub">
+      <span class="dm-social__fill" aria-hidden="true"></span>
+      <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true">GH</span>
+    </a>
+    <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="#" aria-label="ArtStation">
+      <span class="dm-social__fill" aria-hidden="true"></span>
+      <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true">AS</span>
+    </a>
+    <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="#" aria-label="Email">
+      <span class="dm-social__fill" aria-hidden="true"></span>
+      <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true">@</span>
+    </a>
+
+    <span class="dm-favicon js-magnetic" data-drift="3" data-strength="60" data-strength-text="0" data-magnet-clamp="8" data-drift-speed="0.7" aria-label="Home">
+      <span class="dm-favicon__icon js-magnetic-inner" aria-hidden="true"></span>
+    </span>
+  </div>
+
+  <p class="dm-demo__hint">
+    move across a circle &mdash; it drifts on its own, sticks to the cursor (magnet overrides drift),
+    fill rises on hover. the square favicon is magnetic but clamped to its box + spins on hover.
+  </p>
+
+  <button class="dm-motion-btn" type="button" data-motion-toggle>turn motion off</button>
+  <p class="dm-demo__hint dm-demo__hint--small">
+    toggling off ramps every element back to origin first &mdash; it never stops mid-drift.
+  </p>
+</div>

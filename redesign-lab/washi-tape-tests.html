@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WASHI TAPE - edge treatments, sourced</title>
+<!--
+  ===== WASHI TAPE EDGE TESTS (2026-08-22) =====
+  Rod, P51 then P52: "can you try to look at how other sites do washi tape? yours look really fake
+  they need serrated tips" ... "i want serrated edges like the tape was taken out from a roller but
+  overall there alot that looks wrong with the washi tape".
+
+  The look-at-other-sites step had NEVER been done. It has now. This page is the result: the real
+  reference asset next to our current strip, and six edge mechanisms, each transcribed from a named
+  source read from that source on 2026-08-22.
+
+  SOURCE NOTES, verbatim, saved before this page was written:
+    sources/gneiss-washi-tape.md        the real asset + the rule that places it + its measurements
+    sources/torn-edge-svg-filters.md    Daniel Jones squiggle; TornPaper.js (MIT) full chain
+    sources/serrated-edge-css.md        CSS-Tricks mask sawtooth; winterwind clip-path; Coding
+                                        Artist stripe; Code It Pretty corner tape
+
+  THE THING ROD SHOULD KNOW BEFORE HE JUDGES, because it disagrees with the ask:
+  the one REAL washi asset we hold (gneiss.place tape1.png) measures as a TEAR, not a serration.
+  Its ends wander +/- 6 px on a 116 px width in two or three broad lobes. A dispenser blade would
+  give ten to twenty alternations. So "serrated like off a roller" and "what real tape looks like"
+  are two different targets, and both are drawn here rather than one being chosen for him.
+
+  BADGES
+    SOURCED  transcribed from an external site, mechanism unchanged
+    REMIX    a source's mechanism, our numbers or our recombination - stated per case
+    OURS     no external source. Currently only case 0, the control.
+
+  NOT DONE HERE, on purpose: no tuning. Numbers are the sources' own or arithmetic on them, shown
+  in each panel. The bench tune is stage 5 and it is Rod's, not this page's.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+/* overflow-x:clip not hidden - foundations.css sets hidden on body, which makes body a scroll
+   container and silently kills position:sticky for every descendant. See docs/TRAPS.md. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+/* ---- page chrome (lab only - must never move the design) ---- */
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:48px 0 140px;position:relative;z-index:1}
+
+.lede{font-family:var(--font-mono);font-size:12px;line-height:1.9;color:var(--color-muted);
+  border:1px solid var(--color-line-faint);padding:18px 20px;margin-bottom:56px;max-width:92ch}
+.lede b{color:var(--color-text);font-weight:500}
+.lede code{color:var(--color-gold)}
+
+.case{margin-bottom:80px}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;background:#8a8a8a;color:#141414}
+.badge--src{background:#7fa87f;color:#141414}
+.badge--remix{background:#c9a227;color:#141414}
+.badge--ours{background:#b06a6a;color:#141414}
+.case h2{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400}
+.prov{font-family:var(--font-mono);font-size:11px;line-height:1.85;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:12px 0 24px;max-width:88ch}
+.prov b{color:var(--color-text);font-weight:500}
+.prov code{color:var(--color-gold)}
+.prov a{color:var(--color-gold)}
+
+/* ==========================================================================================
+   THE STAGE.  Cards are the BLOCKOUT GREYS Rod asked for in P53 - #141414 ground, #1b1b1b box,
+   #555 dashed / #666 solid border, #d9d9d9 text, taken from post-blockout.html unchanged.
+   Two cards per case: one on the flat ground, one over a lighter panel, because tape that reads
+   on black can vanish on a lit card and the scene behind the real page is not one value.
+   ========================================================================================== */
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:34px;
+  background:#141414;border:1px solid var(--color-line-faint);padding:52px 46px}
+@media(max-width:820px){.stage{grid-template-columns:1fr}}
+.card{position:relative;background:#1b1b1b;border:1px solid #333;
+  /* leave the overhang room: the strip hangs (tape-w - tape-bite) past each side */
+  width:calc(100% - 2 * (26px - 7px));margin-left:19px;padding:20px 22px;
+  color:#d9d9d9;font-size:.86rem;line-height:1.7}
+.card--lit{background:#2a2a2a}
+.card p{margin:0}
+.card .lab{display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:#6f6f6f;margin-bottom:8px}
+
+/* the host, per gneiss: a positioning context and a sub-degree rotation */
+.taped{position:relative;transform:rotate(-.5deg);box-shadow:0 3px 5px rgba(0,0,0,.45)}
+
+/* ==========================================================================================
+   THE STRIP.  One base, then one edge treatment per case. The BODY of the strip is identical
+   everywhere so the ends are the only thing being compared - that is the whole point of the page.
+   ========================================================================================== */
+.tape{
+  --tape-hue:#ff6a00;                       /* --color-glow, the ember. One colour on this page:
+                                               the four section colours are settled (D27) and are
+                                               not what is being judged here. */
+  --tape-hue-2:color-mix(in srgb,#ff6a00 62%,#000);
+  --tape-w:26px;
+  --tape-bite:16px;
+  position:absolute;
+  top:calc(var(--tape-bite) - 30px);
+  left:38%;
+  width:110px;height:30px;
+  background:repeating-linear-gradient(45deg,
+    var(--tape-hue) 0 5px, var(--tape-hue-2) 5px 10px);
+}
+
+/* ---- 0 · CONTROL, exactly what extracted/components/washi-tape/ ships today -------------- */
+.t0{border:1px solid color-mix(in srgb,var(--tape-hue) 55%,#000)}
+
+/* ---- R · THE REAL ASSET.  gneiss.place tape1.png at gneiss.place's own rule ---------------
+   VERBATIM from https://gneiss.place/nonhtml/css/deco.css:
+     background-repeat:no-repeat; background-size:contain; height:50px; width:150px;
+     top:-20px; left:40%;
+   The only change is the file path, because the PNG is served from our references folder. ---- */
+.tR{background:url(/redesign-lab/references/washi/gneiss-tape1.png) no-repeat;
+  background-size:contain;height:50px;width:150px;top:-20px;left:40%;border:0}
+
+/* ---- A · feTurbulence + feDisplacementMap.  Daniel Jones -------------------------------- */
+.tA{filter:url(#tape-squiggle);border:0}
+
+/* ---- B · TornPaper.js edge half.  happy358, MIT ----------------------------------------- */
+.tB{filter:url(#tape-torn);border:0}
+
+/* ---- C · TWO-GRADIENT MASK SAWTOOTH.  CSS-Tricks / Stuart Langridge --------------------
+   His tooth, verbatim:  linear-gradient(to bottom right, white, white 50%, transparent 50%, transparent)
+   His rule, in his words: the sawtooth ALONE cannot be the mask, because confining it with
+   mask-size leaves the rest of the element unmasked and therefore invisible. So it is two images -
+   the tooth repeating along the edge, plus a second gradient covering everything else.
+
+   Here the serration is on the two ENDS (left and right), not the bottom, because that is where a
+   blade cuts tape. That transposition is OURS. So are the second gradient's stops - the article
+   describes it in prose and gives code only for the tooth.
+   PITCH: 6px. Chosen as roughly a tenth of the reference asset's 116px width scaled to our 26px
+   strip - i.e. arithmetic on a measured number, not a taste pick. It is the one number here most
+   obviously wanting a bench slider.  ------------------------------------------------------- */
+.tC{border:0;
+  --tooth:linear-gradient(to bottom right,#000,#000 50%,transparent 50%,transparent);
+  --core:linear-gradient(to right,transparent 0 6px,#000 6px calc(100% - 6px),transparent calc(100% - 6px));
+  -webkit-mask-image:var(--tooth),var(--tooth),var(--core);
+  mask-image:var(--tooth),var(--tooth),var(--core);
+  -webkit-mask-size:6px 6px,6px 6px,100% 100%;
+  mask-size:6px 6px,6px 6px,100% 100%;
+  -webkit-mask-repeat:repeat-y,repeat-y,no-repeat;
+  mask-repeat:repeat-y,repeat-y,no-repeat;
+  -webkit-mask-position:left center,right center,center;
+  mask-position:left center,right center,center}
+
+/* ---- D · IRREGULAR clip-path tear.  winterwind.com ---------------------------------------
+   Their pitch, verbatim, is the interesting part: 21 points at 1,4,9,13,19,21,26,30,36,43,50,52,
+   61,69,70,76,81,84,91,97,99 percent - IRREGULAR spacing is what separates "torn" from "zigzag".
+   Theirs runs along a horizontal 2px strip. Ours has to run down the two vertical ENDS, so the
+   polygon is rebuilt on that axis using THEIR pitch numbers as the y positions and their 0-5% /
+   94-100% amplitude as the x. The numbers are theirs; the transposition is OURS.  ------------ */
+.tD{border:0;
+  clip-path:polygon(
+    4% 1%, 0% 4%, 5% 9%, 1% 13%, 3% 19%, 0% 21%, 5% 26%, 2% 30%, 4% 36%, 1% 43%,
+    3% 50%, 0% 52%, 4% 61%, 2% 69%, 5% 70%, 1% 76%, 3% 81%, 0% 84%, 4% 91%, 2% 97%, 3% 99%,
+    97% 99%, 100% 97%, 96% 91%, 99% 84%, 97% 81%, 100% 76%, 95% 70%, 98% 69%, 96% 61%,
+    100% 52%, 97% 50%, 99% 43%, 96% 36%, 98% 30%, 95% 26%, 100% 21%, 97% 19%, 99% 13%,
+    95% 9%, 100% 4%, 96% 1%)}
+
+/* ---- E · THREE-STOP TRANSPARENT STRIPE.  Coding Artist -----------------------------------
+   VERBATIM period from https://codingartistweb.com/2021/10/how-to-create-washi-tape-notes-with-pure-css/
+     repeating-linear-gradient(45deg, C 0, C 5px, transparent 5px, transparent 10px, D 10px, D 15px)
+   Three stops over 15px with a TRANSPARENT band, not our two-tone opaque repeat over 10px. Their
+   colours are #f7c61a / #101010; ours substitute the section hue, which is the only change.
+   This is the case that tests whether "looks like a painted bar" is the ENDS at all, or the fill.
+   Ends left square deliberately so the fill is the only variable.  --------------------------- */
+.tE{border:0;
+  background:repeating-linear-gradient(45deg,
+    var(--tape-hue) 0, var(--tape-hue) 5px,
+    transparent 5px, transparent 10px,
+    var(--tape-hue-2) 10px, var(--tape-hue-2) 15px)}
+
+/* ---- F · THE REAL ASSET AS A MASK.  REMIX - the shape is gneiss's, the idea is ours --------
+   A photograph is one colourway and D27 needs four. Using tape1.png as a MASK keeps its real torn
+   silhouette and lets the stripe show through it. Nothing on gneiss.place does this - it is ours,
+   labelled at the moment it is added per the standing rule.  --------------------------------- */
+.tF{border:0;height:38px;width:114px;
+  -webkit-mask-image:url(/redesign-lab/references/washi/gneiss-tape1.png);
+  mask-image:url(/redesign-lab/references/washi/gneiss-tape1.png);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+
+/* ---- G · F, plus the two other measured differences: NO BORDER + the tape's OWN rotation ---
+   Measured off tape1.png: the tape is drawn at 5.42 degrees off its own bitmap axis, i.e. it is
+   NOT parallel to the card edge it sits on. Our .taped rotates the CARD; nothing has ever rotated
+   the STRIP. Applying the measured angle is transcription; picking a different angle would not be.
+   ------------------------------------------------------------------------------------------ */
+.tG{border:0;height:38px;width:114px;transform:rotate(5.42deg);
+  -webkit-mask-image:url(/redesign-lab/references/washi/gneiss-tape1.png);
+  mask-image:url(/redesign-lab/references/washi/gneiss-tape1.png);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+
+.meas{font-family:var(--font-mono);font-size:10.5px;line-height:1.9;color:#8a8a8a;
+  border:1px dashed #3a3a3a;padding:14px 16px;margin-top:22px;max-width:88ch}
+.meas b{color:#d9d9d9;font-weight:500}
+.meas table{border-collapse:collapse;margin-top:8px}
+.meas td{padding:2px 16px 2px 0;vertical-align:top}
+</style>
+</head>
+<body>
+
+<!-- The filters. Height/width 0 so they occupy no space and cannot move any layout. -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="0" width="0"
+     style="position:absolute" aria-hidden="true"><defs>
+
+  <!-- A - Daniel Jones, danieldarrenjones.com/articles/how-to-make-rough-edges-with-css-and-svgs
+       VERBATIM primitives. The ONE change is scale: his 4 is in user units on a page-sized
+       element; our strip is 26px thick where the reference asset is 116px, so his 4 would be
+       ~4.5x proportionally rougher on ours. 4 * (26/116) = 0.90, rounded to 1.
+       That is arithmetic on his number, not a new number. -->
+  <filter id="tape-squiggle">
+    <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="4"/>
+    <feDisplacementMap in="SourceGraphic" scale="1"/>
+  </filter>
+
+  <!-- B - TornPaper.js v0.0.3, happy358, MIT. THE EDGE HALF ONLY.
+       Dropped on purpose: the feTurbulence/feDiffuseLighting pair that paints paper GRAIN, because
+       D27 took paper texture off the cards and putting it back here would reverse a decision.
+       Taking a subset makes this REMIX, not a straight transcription - said out loud.
+       erode radius scaled: theirs is 5 on a page-sized sheet; 5 on a 26px strip would eat 38% of
+       its width. 5 * (26/116) = 1.1, rounded to 1. dx/dy scaled the same way, 2 -> 0.
+       tornScale 10 -> 10 * (26/116) = 2.2. -->
+  <filter id="tape-torn">
+    <feTurbulence baseFrequency="0.05" type="turbulence" numOctaves="10" seed="4242"
+                  result="edge_noise"/>
+    <feGaussianBlur stdDeviation="0.5" in="SourceGraphic"/>
+    <feMorphology operator="erode" radius="1"/>
+    <feDisplacementMap scale="2.2" xChannelSelector="B" yChannelSelector="G" in2="edge_noise"/>
+  </filter>
+</defs></svg>
+
+<header class="top">
+  <h1>Washi tape &mdash; edge treatments</h1>
+  <span class="sub">8 cases &middot; 1 control, 1 real reference, 6 sourced mechanisms</span>
+  <span class="sub"><a href="/redesign-lab/">&larr; lab index</a></span>
+  <span class="sub"><a href="/redesign-lab/sources/gneiss-washi-tape.md">source notes</a></span>
+</header>
+
+<div class="wrap">
+
+<div class="lede">
+  <b>Read this before judging.</b> You asked for <i>serrated edges like the tape was taken out from
+  a roller</i>. The one real washi asset found on a live site measures as a <b>tear</b>, not a
+  serration: its ends wander <code>&plusmn;6px on a 116px width</code> in two or three broad lobes,
+  where a dispenser blade would give ten to twenty alternations. Both targets are drawn below
+  &mdash; <b>C</b> is the roller cut you asked for, <b>R / D / F / G</b> are what real tape measures
+  as. Picking is yours.<br><br>
+  <b>Three things about our current strip are wrong independently of the tips</b>, all measured,
+  all in the table at the bottom: it carries a <code>1px border</code> that no real tape has, it is
+  <code>axis-aligned</code> where the real one sits at 5.42&deg; to its own edge, and its fill is an
+  <code>opaque two-tone repeat</code> where the sourced stripe has a <b>transparent</b> third band.
+  Case <b>E</b> tests the fill alone, with square ends, so you can see which problem is which.
+</div>
+
+<!-- ============================== 0 · CONTROL ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--ours">Ours &mdash; control</span>
+    <h2>0 &middot; what the bench ships today</h2></div>
+  <div class="prov"><b>No edge treatment.</b> A plain rectangle, square ends,
+    <code>1px solid</code> hue-matched border, opaque two-tone stripe at a 10px period. This is the
+    thing being called fake. It is here so every case below has something to be better than.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape t0"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape t0"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== R · THE REAL ONE ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--src">Sourced &mdash; the reference</span>
+    <h2>R &middot; gneiss.place, its actual asset at its actual rule</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://gneiss.place/nonhtml/css/deco.css">gneiss.place/nonhtml/css/deco.css</a>,
+    selector <code>.taped::before</code>, asset <code>/assets/images/tape/tape1.png</code>.
+    Read from the site's own served CSS 2026-08-22.<br>
+    <b>Premise check that nearly failed:</b> the rule is <b>not</b> in <code>index.css</code>, which
+    the earlier note named &mdash; that file has zero occurrences of "tape". It is in
+    <code>deco.css</code>, one of six <code>@import</code>s. The citation was right and the file
+    reference was wrong.<br>
+    <b>Verbatim geometry:</b> <code>height:50px; width:150px; background-size:contain; top:-20px;
+    left:40%</code>. Only the file path is changed here.<br>
+    <b>Why it cannot just be adopted:</b> it is a photograph of one physical tape in one colourway.
+    D27 needs four section colours out of one definition and a photo cannot recolour. That is what
+    F and G are for.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tR"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tR"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== C · THE ROLLER CUT ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--remix">Remix</span>
+    <h2>C &middot; serrated &mdash; two-gradient mask sawtooth (the roller cut you asked for)</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://css-tricks.com/using-css-masks-to-create-jagged-edges/">CSS-Tricks,
+    Stuart Langridge, 2020-05-12</a>. His tooth verbatim:
+    <code>linear-gradient(to bottom right, white, white 50%, transparent 50%, transparent)</code>.<br>
+    <b>The trap his article exists to document:</b> the sawtooth alone cannot be the mask &mdash;
+    confining it with <code>mask-size</code> leaves the rest of the element unmasked and therefore
+    invisible. It has to be <b>two</b> mask images, tooth plus a core covering everything else.<br>
+    <b>Ours, not his:</b> the serration is transposed to the two <b>ends</b> rather than the bottom
+    edge, because that is where a blade cuts tape; and the core gradient's stops are ours, since the
+    article gives that half in prose only. His pens are <code>403</code> to this session, so no pen
+    is cited &mdash; only the article body.<br>
+    <b>Pitch 6px</b> = roughly a tenth of the reference's 116px width scaled to our 26px strip.
+    Arithmetic on a measured number. The most obvious bench slider on the page.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tC"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tC"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== A · SQUIGGLE ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--src">Sourced</span>
+    <h2>A &middot; torn &mdash; feTurbulence + feDisplacementMap, two primitives</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://danieldarrenjones.com/articles/how-to-make-rough-edges-with-css-and-svgs">Daniel
+    Jones, "How to make rough edges with CSS and SVGs"</a>, corroborated by
+    <a href="https://bengammon.co.uk/rough-css-borders-with-svg-filters/">bengammon.co.uk</a> which
+    credits it. Verbatim: <code>feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="4"</code>
+    then <code>feDisplacementMap in="SourceGraphic" scale="4"</code>, applied as
+    <code>filter:url(#squiggle)</code>.<br>
+    <b>The one change, and the arithmetic for it:</b> <code>scale</code> is in user units, so it does
+    not scale with the strip. His 4 on our 26px tape is ~4.5x proportionally rougher than on the
+    116px reference. <code>4 &times; (26/116) = 0.90</code>, used as <b>1</b>.<br>
+    <b>Cost:</b> it roughens all four edges, not just the ends. On paper tape that is arguably
+    correct, but it changes the long edges too &mdash; which means it moves how the strip meets the
+    card, and that is a layout question, not only a look.<br>
+    <b>Also:</b> one filter id = one tear shape shared by every strip on the page unless each gets
+    its own <code>seed</code>.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tA"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tA"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== B · TORNPAPER ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--remix">Remix</span>
+    <h2>B &middot; torn &mdash; TornPaper.js chain, edge half only</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://github.com/happy358/TornPaper">TornPaper.js
+    v0.0.3</a>, Wakana Y.K./happy358, MIT, read from <code>tornpaper.js</code> itself rather than
+    the README.<br>
+    <b>The three primitives that make this a tear and not a wobble</b>, which A does not have:
+    <code>feGaussianBlur 0.5</code> feathers the alpha first so the edge has fibre;
+    <code>feMorphology erode</code> eats inward so the tear can bite in rather than only bulge out;
+    <code>feOffset</code> shifts it back so the erosion is asymmetric. Its
+    <code>xChannelSelector="B" yChannelSelector="G"</code> pair takes x and y from <b>different</b>
+    noise channels so the edge wanders in two axes.<br>
+    <b>REMIX because a subset was taken:</b> its <code>feTurbulence + feDiffuseLighting</code> half
+    paints paper <b>grain</b>, and D27 removed paper texture from the cards. Keeping it would
+    reverse a decision, so it is dropped.<br>
+    <b>Scaled, with the arithmetic:</b> erode 5 &rarr; 1, offset 2 &rarr; 0, tornScale 10 &rarr; 2.2,
+    all <code>&times;(26/116)</code>. Their 5px erode on a 26px strip would eat 38% of its width.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tB"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tB"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== D · CLIP-PATH ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--remix">Remix</span>
+    <h2>D &middot; torn &mdash; irregular clip-path, their pitch on our axis</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://www.winterwind.com/tutorials/css/29">winterwind.com/tutorials/css/29</a>,
+    a 21-point <code>clip-path: polygon()</code>.<br>
+    <b>The numbers are the point.</b> Their points sit at 1, 4, 9, 13, 19, 21, 26, 30, 36, 43, 50,
+    52, 61, 69, 70, 76, 81, 84, 91, 97, 99 percent &mdash; <b>irregular spacing</b>. That is the
+    whole difference between "torn" and "zigzag" in a polygon; a uniform pitch reads as a postage
+    stamp.<br>
+    <b>Ours:</b> theirs runs along a horizontal strip painted in the background colour <i>over</i>
+    the sheet. That works on a flat ground and cannot work here, where a live scene shows through.
+    So it becomes a clip on the tape itself, with their pitch numbers as the y positions and their
+    0-5% / 94-100% amplitude as the x. Their numbers, our axis.<br>
+    <b>Cheapest of the three tear routes</b> &mdash; no filter, no rasterisation, no asset.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tD"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tD"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== E · THE FILL ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--src">Sourced</span>
+    <h2>E &middot; the FILL, not the ends &mdash; three-stop stripe with a transparent band</h2></div>
+  <div class="prov"><b>Source:</b> <a href="https://codingartistweb.com/2021/10/how-to-create-washi-tape-notes-with-pure-css/">Coding
+    Artist, "How To Create Washi Tape Notes With Pure CSS"</a>. Verbatim period:
+    <code>repeating-linear-gradient(45deg, C 0, C 5px, transparent 5px, transparent 10px, D 10px, D 15px)</code>.<br>
+    <b>This is the citation our stripe has been missing.</b> <code>washi-tape.css</code> already
+    builds a 45&deg; repeating gradient and had no source for that choice. Theirs is closer than
+    ours: <b>three stops over 15px with a transparent band</b>, so the card shows through every
+    third band. Ours is a two-tone <b>opaque</b> repeat over 10px, which is exactly why it reads as
+    a painted bar.<br>
+    <b>Ends deliberately left square</b> so the fill is the only variable. If E already fixes most
+    of "looks fake", the tips were never the main problem &mdash; worth knowing before we spend a
+    tune on them.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tE"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tE"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== F · REAL SHAPE, OUR COLOUR ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--remix">Remix &mdash; ours</span>
+    <h2>F &middot; the real silhouette as a MASK, so the stripe shows through it</h2></div>
+  <div class="prov"><b>Shape:</b> gneiss.place <code>tape1.png</code>, unaltered.
+    <b>Idea:</b> ours. Nothing on gneiss.place uses the asset as a mask &mdash; labelled at the
+    moment it is added, per the rule that an invention must not inherit a source's credibility.<br>
+    <b>What it buys:</b> the exact torn silhouette of a real tape, recolourable into all four D27
+    section colours, because the PNG carries only alpha here.<br>
+    <b>What it costs:</b> an asset, and every strip on the site gets the <b>same</b> tear. Real tape
+    is torn differently every time. Rotating or flipping the mask per placement is the obvious
+    mitigation and it is not built here.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tF"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tF"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<!-- ============================== G · F + THE MEASURED ANGLE ============================== -->
+<div class="case">
+  <div class="tagrow"><span class="badge badge--remix">Remix &mdash; ours</span>
+    <h2>G &middot; F, plus the two other measured differences</h2></div>
+  <div class="prov"><b>F, with no border and the tape's own 5.42&deg;.</b> Measured off
+    <code>tape1.png</code>: the tape is drawn at <b>5.42&deg; off its own bitmap axis</b>, so it is
+    not parallel to the card edge it sits on. Our <code>.taped</code> rotates the <b>card</b>;
+    nothing has ever rotated the <b>strip</b>. Using the measured angle is transcription. Picking a
+    different one would not be, so it is not done here.<br>
+    <b>If G is the winner, the fix list is: drop the border, rotate the strip, mask the shape</b>
+    &mdash; and the tips were only one third of the problem.</div>
+  <div class="stage">
+    <div class="taped card"><i class="tape tG"></i><span class="lab">on the ground</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+    <div class="taped card card--lit"><i class="tape tG"></i><span class="lab">on a lit card</span>
+      <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer
+        reallocated, not just the uniform updated.</p></div>
+  </div>
+</div>
+
+<div class="meas">
+  <b>MEASURED &mdash; gneiss.place tape1.png vs our current strip.</b> Alpha threshold 128, then
+  rotated onto the strip's own principal axis so the ends read perpendicular to the tape rather than
+  to the canvas. Full working in <code>sources/gneiss-washi-tape.md</code>.
+  <table>
+    <tr><td>bitmap</td><td>316 &times; 136</td><td></td></tr>
+    <tr><td>tape drawn at</td><td><b>5.42&deg;</b> off its own axis</td><td>ours: 0&deg;</td></tr>
+    <tr><td>strip on its own axis</td><td>298 &times; 116 = <b>2.57 : 1</b></td><td>ours: 110 &times; 30 = 3.67 : 1</td></tr>
+    <tr><td>displayed at</td><td>150 &times; 50 = 3 : 1</td><td></td></tr>
+    <tr><td>end raggedness, left</td><td>spread 21px, stdev <b>6.12px</b></td><td>ours: 0</td></tr>
+    <tr><td>end raggedness, right</td><td>spread 22px, stdev <b>5.80px</b></td><td>ours: 0</td></tr>
+    <tr><td>long edge, top</td><td>spread 27px, stdev 4.16px</td><td>ours: 0</td></tr>
+    <tr><td>long edge, bottom</td><td>spread 92px, stdev 12.06px</td><td>ours: 0</td></tr>
+    <tr><td>alpha</td><td><b>essentially binary</b> &mdash; 3,670 opaque : 1,124 clear, ~85 between</td><td>ours: opaque</td></tr>
+    <tr><td>outline</td><td><b>none</b></td><td>ours: <b>1px solid</b></td></tr>
+  </table>
+  <br>
+  <b>The end profile, row by row down the 116px width, as deviation from its own mean:</b><br>
+  <code>-6 -12 -13 -11 -11 -6 -3 -1 -1 +0 +0 +0 +1 +6 +6 +6 +6 +6 +5 +2 +1 +0 +2 +2 +1 +0 +1</code><br>
+  Two or three broad lobes of 30-40px each. Not a serration. This is the number the ask disagrees
+  with, and it is why C is drawn alongside rather than instead.
+</div>
+
+</div>
+</body>
+</html>

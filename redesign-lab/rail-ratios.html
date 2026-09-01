@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rail ratios - tuner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&family=IBM+Plex+Mono:wght@300;400&display=swap">
+<style>
+/* ================================================================================================
+   RAIL TUNER. Rod: "Give me a place to tune and copy paste the tune data for the rail on posts i
+   want to do it direcly now."
+
+   IT RENDERS THE REAL POST IN AN IFRAME, not a copy of the rail. A second copy of the rail is
+   exactly the wrong-copy hazard this repo keeps getting bitten by, and both files are served from
+   the same origin so the frame is fully reachable.
+
+   IT IS FULL BLEED ON PURPOSE, the same reason hero-ratios.html is. `.page` is
+   `min(1401px, 100% - 4rem)`, so a preview narrower than the real window resolves that against the
+   wrong box and every readout lies.
+
+   THE PANEL LIVES IN THIS DOCUMENT, NOT THE FRAME, so it cannot contribute layout to the design at
+   all. That is stronger than hero-ratios' fixed-position panel: the design's containing block never
+   even sees this markup.
+
+   HOW THE TUNE REACHES THE PAGE. Not `setProperty` - the values it tunes are hardcoded in
+   final-post.html (`grid-column:1/span 6` and the rest), so there are no custom properties to
+   drive. It injects one `<style id="rail-tuner">` into the FRAME'S BODY, which puts it after every
+   component <link> and after the page's own <style>, so it wins on document order at equal
+   specificity and beats the layered component CSS outright. No !important anywhere.
+
+   ONE FUNCTION BUILDS BOTH the injected CSS and the clipboard text, so what he pastes is provably
+   what he saw.
+
+   THE TRIPWIRE IS THE PROSE MEASURE. Rail + gap of 8 columns or fewer keeps the article at 16+
+   columns and the prose at 767. At 9 the article drops to 15, the prose to 13 columns, and
+   13 x 58.375 = 759 - the measure breaks SILENTLY with no other warning. The readout is what stops
+   that, so it is always visible and turns red the moment it moves.
+   ============================================================================================== */
+:root{
+  --ink:#f5f3ef; --muted:#9aa3bd; --gold:#fbbf24; --night:#070c23;
+  --line:rgba(251,191,36,.26);
+  --font-body:"M PLUS Rounded 1c",sans-serif; --font-mono:"IBM Plex Mono",monospace;
+}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--night)}
+#post{position:fixed;inset:0;width:100%;height:100%;border:0}
+
+.panel{position:fixed;top:12px;right:12px;z-index:50;width:330px;max-height:calc(100vh - 24px);
+  overflow:auto;background:rgba(7,12,35,.94);border:1px solid var(--line);
+  padding:16px 18px 20px;font-family:var(--font-body);color:var(--ink);
+  transition:transform .25s ease}
+.panel.hid{transform:translateX(calc(100% + 20px))}
+.panel h2{margin:0 0 2px;font-size:1.05rem;font-weight:300;color:var(--gold)}
+.panel .note{margin:0 0 14px;font-size:.72rem;color:var(--muted);line-height:1.5}
+.panel h3{margin:16px 0 8px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.08);
+  padding-bottom:5px}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:0 0 11px}
+.row label{font-size:.76rem}
+.row .val{font-family:var(--font-mono);font-size:.68rem;color:var(--gold)}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--gold);margin:2px 0 0}
+.row .hint{grid-column:1/-1;font-size:.64rem;color:var(--muted);line-height:1.45;margin:2px 0 0}
+.read{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:.7rem;margin:0 0 4px}
+.read span{color:var(--muted)}
+.read b{font-family:var(--font-mono);font-weight:400}
+.read b.ok{color:#7fd18b}
+.read b.bad{color:#e0713f}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.btns button{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:7px 11px;
+  cursor:pointer}
+.btns button.pri{color:var(--gold)}
+.btns button:hover{border-color:var(--gold)}
+#toggle{position:fixed;top:12px;right:12px;z-index:51;font-family:var(--font-mono);font-size:.64rem;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--gold);background:rgba(7,12,35,.94);
+  border:1px solid var(--line);padding:7px 11px;cursor:pointer}
+#out{width:100%;height:150px;margin-top:10px;background:#04070f;color:var(--ink);
+  border:1px solid var(--line);font-family:var(--font-mono);font-size:.6rem;padding:8px;resize:vertical}
+</style>
+</head>
+<body>
+
+<iframe id="post" src="/redesign-lab/final-post.html" title="final post"></iframe>
+
+<button id="toggle" type="button" hidden>panel</button>
+
+<aside class="panel" id="panel">
+  <h2>Rail ratios</h2>
+  <p class="note">Tunes the real post in the frame. Watch <b>prose</b> below: it must stay 767. Rail
+  plus gap over 8 columns breaks it silently.</p>
+
+  <h3>Grid</h3>
+  <div class="row">
+    <label for="s-cols">rail columns</label><span class="val" id="v-cols"></span>
+    <input type="range" id="s-cols" min="3" max="12" step="1">
+    <span class="hint">of 24. The article start is derived from this so the two cannot collide.</span>
+  </div>
+  <div class="row">
+    <label for="s-gapc">empty columns to the text</label><span class="val" id="v-gapc"></span>
+    <input type="range" id="s-gapc" min="0" max="4" step="1">
+  </div>
+  <div class="row">
+    <label for="s-top">drop below the top bar</label><span class="val" id="v-top"></span>
+    <input type="range" id="s-top" min="0" max="200" step="1">
+    <span class="hint">where the rail parks once it sticks. Added to the bar's own height, so 0
+      means flush under it. Scroll the frame to see it.</span>
+  </div>
+
+  <h3>The panel behind it</h3>
+  <div class="row">
+    <label for="s-insv">above and below</label><span class="val" id="v-insv"></span>
+    <input type="range" id="s-insv" min="0" max="72" step="1">
+    <span class="hint">how far the dark box bleeds past the content. Applies at BOTH ends.</span>
+  </div>
+  <div class="row">
+    <label for="s-insh">left and right</label><span class="val" id="v-insh"></span>
+    <input type="range" id="s-insh" min="0" max="48" step="1">
+  </div>
+
+  <h3>Blocks and headers</h3>
+  <div class="row">
+    <label for="s-blk">gap between blocks</label><span class="val" id="v-blk"></span>
+    <input type="range" id="s-blk" min="0" max="48" step="1">
+    <span class="hint">the dead space at the top is this plus the panel bleed above.</span>
+  </div>
+  <div class="row">
+    <label for="s-hfs">header text size</label><span class="val" id="v-hfs"></span>
+    <input type="range" id="s-hfs" min="9" max="18" step=".5">
+  </div>
+  <div class="row">
+    <label for="s-hpb">header to its rule</label><span class="val" id="v-hpb"></span>
+    <input type="range" id="s-hpb" min="0" max="20" step="1">
+  </div>
+  <div class="row">
+    <label for="s-hmb">rule to the content</label><span class="val" id="v-hmb"></span>
+    <input type="range" id="s-hmb" min="0" max="20" step="1">
+  </div>
+  <div class="row">
+    <label for="s-mrow">metadata row height</label><span class="val" id="v-mrow"></span>
+    <input type="range" id="s-mrow" min="0" max="24" step="1">
+    <span class="hint">the biggest single driver of how tall the rail is.</span>
+  </div>
+
+  <h3>Socials <span style="color:#e0713f">shared</span></h3>
+  <div class="row">
+    <label for="s-soc">circle size</label><span class="val" id="v-soc"></span>
+    <input type="range" id="s-soc" min="32" max="72" step=".1">
+    <span class="hint">these two write drift-magnet.css, which the LANDING also uses.</span>
+  </div>
+  <div class="row">
+    <label for="s-sgap">gap between circles</label><span class="val" id="v-sgap"></span>
+    <input type="range" id="s-sgap" min="0" max="64" step="1">
+  </div>
+  <div class="row">
+    <label for="s-sair">air above and below the row</label><span class="val" id="v-sair"></span>
+    <input type="range" id="s-sair" min="0" max="64" step="1">
+  </div>
+  <div class="row">
+    <label for="s-mark">icon inside the circle</label><span class="val" id="v-mark"></span>
+    <input type="range" id="s-mark" min="12" max="32" step="1">
+  </div>
+
+  <h3>Readout</h3>
+  <div class="read">
+    <span>window</span><b id="r-vw"></b>
+    <span>rail width</span><b id="r-rail"></b>
+    <span>gap to the text</span><b id="r-gap"></b>
+    <span>prose</span><b id="r-prose"></b>
+    <span>prose in characters</span><b id="r-ch"></b>
+    <span>rail height</span><b id="r-rh"></b>
+    <span>fits the sticky band</span><b id="r-stick"></b>
+    <span>socials one line below</span><b id="r-wrap"></b>
+    <span>dead space at the top</span><b id="r-dead"></b>
+    <span>header height</span><b id="r-lab"></b>
+  </div>
+
+  <div class="btns">
+    <button type="button" id="b-copy" class="pri">copy tune</button>
+    <button type="button" id="b-css">show CSS</button>
+    <button type="button" id="b-reset">reset</button>
+    <button type="button" id="b-hide">hide panel</button>
+  </div>
+  <textarea id="out" hidden readonly></textarea>
+</aside>
+
+<script>
+(function () {
+  var fr = document.getElementById('post');
+
+  /* Defaults are the page's CURRENT rendered values, read from the files rather than chosen, so
+     opening the tuner changes nothing. */
+  var PRESET = {
+    cols: 6, gapc: 1,          // .rail grid-column:1/span 6, article starts at 8
+    top: 20,                   // the trailing term in .rail's sticky top calc, Rod's 2026-08-24 value
+    insv: 32, insh: 16,        // .rail::before inset:-2rem -1rem
+    blk: 10,                   // .railblock margin-top
+    hfs: 12, hpb: 6, hmb: 4,   // .raillabel
+    mrow: 12,                  // .mrow padding
+    soc: 54.4, sgap: 40, sair: 40, mark: 23
+  };
+  var KNOBS = {
+    cols:{el:'s-cols',out:'v-cols',fmt:function(v){return v+' of 24';}},
+    gapc:{el:'s-gapc',out:'v-gapc',fmt:function(v){return v+(v==1?' column':' columns');}},
+    top:{el:'s-top',out:'v-top',fmt:px},
+    insv:{el:'s-insv',out:'v-insv',fmt:px}, insh:{el:'s-insh',out:'v-insh',fmt:px},
+    blk:{el:'s-blk',out:'v-blk',fmt:px},
+    hfs:{el:'s-hfs',out:'v-hfs',fmt:px}, hpb:{el:'s-hpb',out:'v-hpb',fmt:px},
+    hmb:{el:'s-hmb',out:'v-hmb',fmt:px}, mrow:{el:'s-mrow',out:'v-mrow',fmt:px},
+    soc:{el:'s-soc',out:'v-soc',fmt:px}, sgap:{el:'s-sgap',out:'v-sgap',fmt:px},
+    sair:{el:'s-sair',out:'v-sair',fmt:px}, mark:{el:'s-mark',out:'v-mark',fmt:px}
+  };
+  function px(v){ return v + 'px'; }
+
+  var STORE = 'rail-ratios-v1';
+  var state = Object.assign({}, PRESET);
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved) state = Object.assign(state, saved);
+  } catch (e) { /* private mode */ }
+
+  /* The socials percentages are DERIVED, never sliders. They encode the invariant that four circles
+     plus three gaps are exactly 100% of the row, which is what makes wrapping structurally
+     impossible. A hand-moved percentage would silently break that. */
+  function pcts() {
+    var cross = 4 * state.soc + 3 * state.sgap;
+    return { c: (state.soc / cross * 100).toFixed(4), g: (state.sgap / cross * 100).toFixed(4), cross: cross };
+  }
+
+  function buildCss() {
+    var start = 1 + state.cols + state.gapc;          // article's first column
+    var span  = 25 - start;                            // its column count
+    var p = pcts();
+    return [
+      '.rail{grid-column:1/span ' + state.cols + ';top:calc(var(--top-bar-height,5.875rem) + '
+        + 'var(--top-bar-border,1px)*2 + ' + state.top + 'px)}',
+      '.article{grid-column:' + start + '/25;grid-template-columns:repeat(' + span + ',1fr)}',
+      '.prose{grid-column:1/' + (span - 1) + '}',
+      '.rail::before{inset:-' + state.insv + 'px -' + state.insh + 'px}',
+      '.railblock{margin-top:' + state.blk + 'px}',
+      '.raillabel{font-size:' + state.hfs + 'px;padding-bottom:' + state.hpb + 'px;margin:0 0 ' + state.hmb + 'px}',
+      '.mrow{padding:' + state.mrow + 'px 0}',
+      '.dm-row{gap:min(' + (state.sgap / 16) + 'rem,' + p.g + '%);padding:' + state.sair + 'px 0}',
+      '.dm-social{width:min(' + (state.soc / 16) + 'rem,' + p.c + '%)}',
+      '.dm-social__mark{width:' + state.mark + 'px;height:' + state.mark + 'px}'
+    ].join('\n');
+  }
+
+  function styleEl() {
+    var d = fr.contentDocument;
+    if (!d) return null;
+    var s = d.getElementById('rail-tuner');
+    if (!s) { s = d.createElement('style'); s.id = 'rail-tuner'; d.body.appendChild(s); }
+    return s;
+  }
+
+  function apply() {
+    Object.keys(KNOBS).forEach(function (k) {
+      var K = KNOBS[k];
+      document.getElementById(K.el).value = state[k];
+      document.getElementById(K.out).textContent = K.fmt(state[k]);
+    });
+    var s = styleEl();
+    if (s) s.textContent = buildCss();
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* private mode */ }
+    requestAnimationFrame(read);
+  }
+
+  function set(id, text, good) {
+    var el = document.getElementById(id);
+    el.textContent = text;
+    el.className = good === undefined ? '' : (good ? 'ok' : 'bad');
+  }
+
+  /* Everything below is MEASURED inside the frame. Nothing is computed from `state`, so a readout
+     that disagrees with a slider is telling the truth and the slider is not. */
+  function read() {
+    var d = fr.contentDocument, w = fr.contentWindow;
+    if (!d || !w) return;
+    var rail = d.querySelector('aside.rail'), art = d.querySelector('.article'),
+        prose = d.querySelector('.prose'), lab = d.querySelector('.raillabel'),
+        first = rail && rail.firstElementChild;
+    if (!rail || !art || !prose) return;
+
+    var rb = rail.getBoundingClientRect(), ab = art.getBoundingClientRect(),
+        pb = prose.getBoundingClientRect();
+
+    set('r-vw', w.innerWidth + ' x ' + w.innerHeight);
+    set('r-rail', rb.width.toFixed(2) + 'px');
+    set('r-gap', (ab.left - rb.right).toFixed(2) + 'px');
+
+    var pw = pb.width;
+    set('r-prose', pw.toFixed(2) + 'px', pw >= 766.5);
+    set('r-ch', (pw / 8.16).toFixed(1), pw >= 766.5);
+    set('r-rh', rb.height.toFixed(2) + 'px');
+
+    var band = w.innerHeight - (94 + 2 + 60);
+    set('r-stick', rb.height <= band ? 'yes' : 'no, ' + (rb.height - band).toFixed(0) + 'px over',
+        rb.height <= band);
+
+    var p = pcts();
+    set('r-wrap', 'never - ' + p.cross.toFixed(1) + 'px crossover', true);
+
+    if (first) set('r-dead', (first.getBoundingClientRect().top - rb.top + state.insv).toFixed(1) + 'px');
+    if (lab) set('r-lab', lab.getBoundingClientRect().height.toFixed(2) + 'px');
+  }
+
+  function tuneCss() {
+    var d = fr.contentDocument, w = fr.contentWindow;
+    var prose = d && d.querySelector('.prose');
+    var rail = d && d.querySelector('aside.rail');
+    var p = pcts();
+    var start = 1 + state.cols + state.gapc, span = 25 - start;
+    return [
+      '/* rail tune from rail-ratios.html, window ' + (w ? w.innerWidth : '?') +
+        ', rail ' + (rail ? rail.getBoundingClientRect().width.toFixed(2) : '?') +
+        'px, prose ' + (prose ? prose.getBoundingClientRect().width.toFixed(1) : '?') + 'px',
+      '   Paste each block over the cited rule. The comments in the originals are NOT reproduced',
+      '   below - keep them. The socials block edits a SHARED component. */',
+      '',
+      '/* ===== redesign-lab/final-post.html, the page <style> (unlayered) ===== */',
+      '',
+      '/* .rail - the top calc keeps the bar height as a LIVE reference, so the two cannot drift */',
+      'grid-column: 1/span ' + state.cols + ';',
+      'top: calc(var(--top-bar-height,5.875rem) + var(--top-bar-border,1px)*2 + ' + state.top + 'px);',
+      '',
+      '/* .article - start derived: 1 + rail(' + state.cols + ') + gap(' + state.gapc + ') = ' + start + ' */',
+      'grid-column: ' + start + '/25;',
+      'grid-template-columns: repeat(' + span + ', 1fr);',
+      '',
+      '/* .prose - span derived: article span (' + span + ') minus 2. Measure must stay 767. */',
+      'grid-column: 1/' + (span - 1) + ';',
+      '',
+      '/* .rail::before */',
+      'inset: -' + state.insv + 'px -' + state.insh + 'px;',
+      '',
+      '/* .railblock */',
+      'margin-top: ' + state.blk + 'px;',
+      '',
+      '/* .raillabel */',
+      'font-size: ' + state.hfs + 'px;',
+      'padding-bottom: ' + state.hpb + 'px;',
+      'margin: 0 0 ' + state.hmb + 'px;',
+      '',
+      '/* .mrow */',
+      'padding: ' + state.mrow + 'px 0;',
+      '',
+      '/* .dm-social__mark */',
+      'width: ' + state.mark + 'px; height: ' + state.mark + 'px;',
+      '',
+      '/* ===== drift-magnet.css - SHARED, final-landing.html renders these too. =====',
+      '   The percentages are DERIVED so 4 circles + 3 gaps always total 100% of the row. Do not',
+      '   hand-edit them, or the no-wrap guarantee breaks. Crossover ' + p.cross.toFixed(2) + 'px. */',
+      '',
+      '/* .dm-row  */  gap: min(' + (state.sgap / 16) + 'rem, ' + p.g + '%);',
+      '/* .dm-row  */  padding: ' + state.sair + 'px 0;',
+      '/* .dm-social */ width: min(' + (state.soc / 16) + 'rem, ' + p.c + '%);',
+      ''
+    ].join('\n');
+  }
+
+  Object.keys(KNOBS).forEach(function (k) {
+    document.getElementById(KNOBS[k].el).addEventListener('input', function () {
+      state[k] = parseFloat(this.value);
+      apply();
+    });
+  });
+
+  document.getElementById('b-css').addEventListener('click', function () {
+    var t = document.getElementById('out');
+    t.hidden = !t.hidden;
+    t.value = tuneCss();
+  });
+
+  document.getElementById('b-copy').addEventListener('click', function () {
+    var btn = this, text = tuneCss();
+    var ok = function () {
+      btn.textContent = 'copied';
+      setTimeout(function () { btn.textContent = 'copy tune'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () { window.prompt('Copy:', text); });
+    } else { window.prompt('Copy:', text); }
+  });
+
+  document.getElementById('b-reset').addEventListener('click', function () {
+    state = Object.assign({}, PRESET);
+    apply();
+  });
+
+  document.getElementById('b-hide').addEventListener('click', function () {
+    document.getElementById('panel').classList.add('hid');
+    document.getElementById('toggle').hidden = false;
+  });
+  document.getElementById('toggle').addEventListener('click', function () {
+    document.getElementById('panel').classList.remove('hid');
+    this.hidden = true;
+  });
+
+  /* Re-inject after any reload inside the frame, or a navigation silently drops the tune. */
+  fr.addEventListener('load', function () { setTimeout(apply, 250); });
+  window.addEventListener('resize', function () { requestAnimationFrame(read); });
+})();
+</script>
+</body>
+</html>

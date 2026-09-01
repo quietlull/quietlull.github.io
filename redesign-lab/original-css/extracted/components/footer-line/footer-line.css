@@ -1,0 +1,72 @@
+/* footer-line — the whole footer as one quiet line.
+
+   PICKED BY ROD 2026-08-22: "i actually really like the way we do our lab footers i think we should
+   do them all like this."
+
+   ── PROVENANCE ───────────────────────────────────────────────────────────────────────────────
+   ORIGIN: ROD. This is the `.labtag` treatment from our own lab pages, promoted from tooling into
+   a real element on his call. It is OURS, not sourced, and it must never be filed as though a
+   reference site supplied it.
+
+   That matters because there is an OLDER `site-footer` component in this folder carrying a
+   CIRCULAR CITATION banner - it cites a `rework-*.html` inside this repo. This component does not
+   replace it by fixing it; it replaces it by being a different, honestly-attributed thing. The old
+   one should be retired at port time rather than quietly kept.
+
+   ── WHY IT WORKS, since "I like the lab footer" is worth turning into a reason ────────────────
+   The lab footer is small mono, low contrast, one line, links separated by a middot. It reads as a
+   FOOTNOTE rather than a second navigation - which is exactly what a footer on this site should be,
+   because the top bar already carries the nav. Everything the old footer was reaching for (columns,
+   headings, a sitemap) is a duplicate of the bar.
+
+   NOT FIXED-POSITION. The lab version is `position: fixed` because it is chrome that must stay
+   reachable while you scroll a test page. A real footer sits at the end of the document. That is
+   the one deliberate difference. */
+
+.footer-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  padding: 2.5rem 0 3rem;
+  border-top: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--color-muted, #9aa3bd);
+}
+
+/* the middot separators are generated, so the markup stays a plain list of links and the
+   separators can never end up orphaned at a wrap point */
+.footer-line__item + .footer-line__item::before {
+  content: "\00b7";
+  margin-right: 0.75rem;
+  color: var(--color-line-soft, rgba(255, 255, 255, 0.25));
+}
+
+.footer-line__name {
+  color: var(--color-text, #f5f3ef);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.footer-line a {
+  color: var(--color-gold, #fbbf24);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-line a:hover,
+.footer-line a:focus-visible {
+  color: var(--color-glow-soft, #ffd9a8);
+}
+
+/* pushed to the far end rather than given its own row - the line stays one line for as long as
+   the width allows, and only wraps when it genuinely has to */
+.footer-line__end {
+  margin-left: auto;
+}
+
+.footer-line__end::before {
+  content: none;
+}

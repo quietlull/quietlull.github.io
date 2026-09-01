@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Waiting on you</title>
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&family=IBM+Plex+Mono:wght@300;400&display=swap">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* ================================================================================================
+   WAITING ON YOU - the review queue. REBUILT 2026-08-24.
+
+   Rod: "as something finishes place them into the todo page remove the bulk there currently."
+
+   WHAT THIS PAGE IS NOW. Things that are FINISHED and waiting on his eye, each with the link to
+   look at. It is not a list of everything outstanding - `docs/REQUESTS.md` is already that, and two
+   hand-maintained lists of the same thing drift. This one only ever holds work that is done.
+
+   WHAT WENT, and why the old page had to be gutted rather than trimmed. It was 596 lines and stated
+   its own slot counts THREE ways internally - a header chip said 25/104, a table said 24/97, and
+   that table's own rows summed to 23. None matched the pages (25/102). Roughly 13 of its 34
+   checkboxes were already done. The drift was not coming from the row list, it was coming from
+   RESTATED NUMBERS: five header chips, a debt table, per-page merge tallies, a footer. Nothing
+   checked them, so they rotted. **There is not a single derived number on this page now.** Link to
+   a page rather than quoting a figure about it.
+
+   THE TICKS ARE KEYED ON THE REQUEST ID, and that is the whole fix for the other failure. The old
+   store held four keys in a `page::slot` format that no checkbox had used since someone added
+   `mg::`/`bo::` prefixes - so four of Rod's ticks were silently discarded and the page had been
+   reading "0 of 34" ever since without anyone noticing. Prose gets edited; ids do not. The old
+   store `rp-ticks-v1` is deliberately LEFT IN PLACE rather than cleared - deleting it is the only
+   irreversible thing available here and keeping it costs nothing.
+
+   HOW A ROW LEAVES. Rod ticks it, the tick is read out of localStorage, the slot's `data-state`
+   goes to approved on the real page, the REQUESTS row moves to PHANTOMS, and the row is deleted
+   from here. Rows leave; the tick is a marker between his pass and the next write, not an archive.
+   ============================================================================================== */
+:root{color-scheme:dark}
+body{background:var(--color-night);color:var(--color-text);font-family:var(--font-body);
+  margin:0;padding:48px 32px 120px;line-height:1.6}
+.wrap{max-width:900px;margin:0 auto}
+h1{margin:0 0 6px;font-size:2.4rem;font-weight:300;color:var(--color-orange)}
+.sub{color:var(--color-muted);margin:0 0 22px}
+.warn{border:1px solid var(--color-line);background:rgba(28,26,24,.55);padding:14px 18px;
+  margin:0 0 34px;font-size:.9rem;color:var(--color-muted)}
+.warn b{color:var(--color-gold)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 28px}
+.bar button{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--color-text);background:rgba(255,255,255,.05);border:1px solid var(--color-line);
+  padding:8px 14px;cursor:pointer}
+.bar button:hover{border-color:var(--color-gold);color:var(--color-gold)}
+.row{display:grid;grid-template-columns:26px 1fr;gap:0 12px;padding:16px 0;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.row input{width:16px;height:16px;margin:5px 0 0;accent-color:var(--color-gold);cursor:pointer}
+.id{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;color:var(--color-muted);
+  margin:0 0 2px}
+.said{margin:0 0 4px;color:var(--color-text)}
+.did{margin:0 0 6px;color:var(--color-muted);font-size:.9rem}
+.look{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em}
+.look a{color:var(--color-gold);text-decoration:none;border-bottom:1px solid transparent}
+.look a:hover{border-bottom-color:var(--color-gold)}
+.look span{color:var(--color-muted)}
+.row.seen{opacity:.32}
+.row.seen.hide{display:none}
+.none{color:var(--color-muted);padding:40px 0}
+h2.sec{margin:46px 0 3px;font-size:1.15rem;font-weight:300;color:var(--color-gold)}
+h2.sec:first-of-type{margin-top:0}
+.secnote{margin:0 0 16px;color:var(--color-muted);font-size:.84rem}
+.row--info{grid-template-columns:1fr}
+.row--info .id{color:var(--color-gold)}
+.doors{margin:52px 0 0;padding:22px 0 0;border-top:1px solid var(--color-line)}
+.doors b{display:block;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--color-muted);margin:0 0 10px}
+.doors a{color:var(--color-gold);text-decoration:none;margin-right:18px;font-size:.9rem}
+.doors a:hover{text-decoration:underline}
+
+.num{display:inline-block;min-width:2.1em;color:var(--gold,#fbbf24);font-variant-numeric:tabular-nums;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Waiting on you</h1>
+<p class="sub">Four states: done and waiting on your eye, blocked on a word from you, running right now, and queued with nothing on it.</p>
+
+<div class="warn">Tick anything in the first two groups, then hit <b>copy the ticked ones</b> and
+paste it into chat. The last two groups have no checkboxes because there is nothing to decide yet,
+they are there so you can see what is moving and what is not. Full history lives in
+<b>docs/REQUESTS.md</b>; this page is only what is live.</div>
+
+<div class="bar">
+  <button type="button" id="b-copy">copy the ticked ones</button>
+  <button type="button" id="b-hide">hide the ones I've seen</button>
+  <button type="button" id="b-reset">reset</button>
+</div>
+
+<div id="list">
+
+<h2 class="sec">START HERE &middot; the order I would go in</h2>
+<p class="secnote">Ordered by what could change everything soonest. The rule underneath it:
+  <b>look before you decide, decide before you delete.</b> Roughly 30 minutes to the end of round 4.</p>
+
+
+
+  <div class="row"><input type="checkbox" data-key="s::3"><div>
+    <p class="id"><b class="num">1</b> the rest of the moving things &nbsp;<span class="said">10 min</span></p>
+    <p class="did">Now go through them properly - the full list is in the row below this section.
+      The scene, fireworks, card flip, skills drawing in, the achievement glow orbiting a pinned
+      tile, portal windows drifting and throwing.
+      <b>Do this before any decision below</b>, because a broken effect might change what you want
+      to do about the thing it lives on.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="s::4"><div>
+    <p class="id"><b class="num">2</b> live against lab, page by page &nbsp;<span class="said">10 min</span></p>
+    <p class="did">Two tabs, same page, flick between them. Every number I can measure already
+      matches, so what you are hunting is the stuff numbers do not catch - weight, spacing, whether
+      it feels like the same page. <b>You caught three things this way last night that every
+      measurement I ran called fine.</b></p>
+  </div></div>
+
+
+  <div class="row"><input type="checkbox" data-key="s::6"><div>
+    <p class="id"><b class="num">3</b> the two audits I have not run &nbsp;<span class="said">your call</span></p>
+    <p class="did">Code quality and the anti-AI pass. I held them because a moving tree is harder to
+      review than a still one. Say go whenever - they change nothing on their own, they only report.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="s::7"><div>
+    <p class="id"><b class="num">4</b> writing, whenever suits you &nbsp;<span class="said">no rush</span></p>
+    <p class="did">The takeaway lines, the portal welcome, the skills lists, the achievement flavour
+      text. None of it blocks anything - the placeholders are marked as placeholders and will not
+      ship by accident.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="s::8"><div>
+    <p class="id"><b class="num">5</b> LAST &middot; delete the two folders &nbsp;<span class="said">1 min, permanent</span></p>
+    <p class="did"><b>Only when you are happy with everything above.</b> This is the one action
+      tonight that cannot be undone - those folders are not in version control, so once they are gone
+      they are gone. Everything else on this page reverses with a git command.
+      Leave them a week if you want. They cost 34MB and nothing else.</p>
+  </div></div>
+
+<h2 class="sec">AUDIT &middot; did the old fixes survive the merge?</h2>
+<p class="secnote">You asked whether previously fixed things still land now the site is merged. Five agents read the tracker, the decisions, the traps, every component against its ported copy, and every element styled by two files at once. <b>Seven of these I measured on the live site myself, so they are facts and not suspicions</b> - those say I MEASURED IT. The rest come from reading the code and are marked that way. One is already fixed and just needs your eye. <b>Ordered by how much it matters, not by how hard it is.</b></p>
+
+  <div class="row"><input type="checkbox" data-key="aud::barmagnets"><div>
+    <p class="id"><b class="num">6</b> the top bar magnets do not move &nbsp;<span class="said">I MEASURED IT, new</span></p>
+    <p class="did"><b>All four magnetic things in the bar are dead</b>, the favicon and the three nav
+      links. A card magnet on the same page moves fine from the same test, and their settings are
+      correct, so it is not the engine and not the markup. <b>It is not from tonight</b> - I checked by
+      re-running the engine and by unsticking the bar, and neither woke them. Cause still unknown.</p>
+    <p class="look"><span>look at:</span> <a href="/tech-art/">landing, hover the nav</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::sticky"><div>
+    <p class="id"><b class="num">7</b> the top bar does not stay put when you scroll &nbsp;<span class="said">DONE</span></p>
+    <p class="said">"do all previously fixed issues land in the new environment?"</p>
+    <p class="did">The top bar scrolled away on every page, and the post contents rail with it. One word: <code>hidden</code> became <code>clip</code>. Measured after: the bar holds at the top through a 600px scroll.</p>
+    <p class="look"><span>look at:</span> <a href="/tech-art/posts/ComputeGrass/">any post, scroll it</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::cardglow"><div>
+    <p class="id"><b class="num">8</b> card titles still glow on hover instead of underlining &nbsp;<span class="said">DONE</span></p>
+    <p class="said">"we probably need to fix underline behavior"</p>
+    <p class="did">The old rule that beat the underline is deleted. Verified in the built CSS: the only hover left is your gold underline, no glow.</p>
+    <p class="look"><span>look at:</span> <a href="/tech-art/projects/">projects, hover a card</a></p>
+  </div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="row"><input type="checkbox" data-key="aud::tocnarrow"><div>
+    <p class="id"><b class="num">9</b> below 1152px a post shows the old contents bar &nbsp;<span class="said">open</span></p>
+    <p class="did">Below 1152px a post falls back to the old contents bar, because its replacement has styling but no markup.</p>
+    <p class="look"><span>look at:</span> <a href="/tech-art/posts/ComputeGrass/">post, narrow the window</a></p>
+  </div></div>
+
+
+  <div class="row"><input type="checkbox" data-key="aud::prosesize"><div>
+    <p class="id"><b class="num">10</b> post text is 6% bigger than the bench &nbsp;<span class="said">open</span></p>
+    <p class="did">Everything in a post body except paragraphs runs 6% large, from a container size the lab never had.</p>
+  </div></div>
+
+
+
+
+
+  <div class="row"><input type="checkbox" data-key="aud::deadtoggle"><div>
+    <p class="id"><b class="num">11</b> the removed bar toggles still ship their styling and script &nbsp;<span class="said">DONE</span></p>
+    <p class="did">Removed: the empty init module, the stylesheet, its forward, and the two dead blocks in the bar. The magnetic engine is called directly and is idempotent, so nothing lost it. <b>The behaviour file is kept on purpose</b> - it names two unported homes and the planned motion switch.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::deadabout"><div>
+    <p class="id"><b class="num">12</b> 260 lines of dead about-page CSS, using names that do not exist &nbsp;<span class="said">DONE</span></p>
+    <p class="did">Deleted, 320 lines. Nothing on the site matched any of it.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::pills"><div>
+    <p class="id"><b class="num">13</b> seven hard-coded colours are written onto the filter pills &nbsp;<span class="said">open</span></p>
+    <p class="said">"make sure you keep all colors to have tokens so we can return later if need be"</p>
+    <p class="did">Seven colours written straight onto the elements, two of them off palette.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::npmtest"><div>
+    <p class="id"><b class="num">14</b> the test command fails on both halves &nbsp;<span class="said">open</span></p>
+    <p class="did">Five real script errors. Some of the style errors are a rule conflict, not mess, and need one line in one config file.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::cursorglowscope"><div>
+    <p class="id"><b class="num">15</b> the mouse glow ships everywhere but was never approved for a page &nbsp;<span class="said">your call</span></p>
+    <p class="did">It ships on every page but was never on an approved page. Its numbers do match what you tuned.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::docs"><div>
+    <p class="id"><b class="num">16</b> four docs now describe a site that no longer exists &nbsp;<span class="said">open</span></p>
+    <p class="did">Four docs describe a site that no longer exists. Code wins, so the docs are what change.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::backup"><div>
+    <p class="id"><b class="num">17</b> the backup folder mirrors the live folder names &nbsp;<span class="said">open</span></p>
+    <p class="did">The backup folder uses the same paths as the real one, so a search can land in the wrong tree and look right.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::cssorder"><div>
+    <p class="id"><b class="num">18</b> the CSS load order is unsafe by design, not just wrong once &nbsp;<span class="said">open</span></p>
+    <p class="did">This is why the wordmark broke, and it will keep producing new faults. The note justifying the load order tests the wrong thing.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="aud::flash"><div>
+    <p class="id"><b class="num">19</b> the fireworks flash rate has still never been measured &nbsp;<span class="said">open</span></p>
+    <p class="did">The one real safety check on the site and it has never been run. Needs a frame capture.</p>
+    <p class="look"><span>look at:</span> <a href="/tech-art/">landing, on load</a></p>
+  </div></div>
+
+<h2 class="sec">STRANDED HTML &middot; what is actually left lying around</h2>
+<p class="secnote">You said you were seeing weird leftover HTML all over the place. An agent read the BUILT pages rather than the templates, which is the real markup. <b>Read the first row before the rest</b>, because it changes how much of this you should care about. <b>Three things I told it were leftovers turned out to be live</b> and are not listed here: the contents popup, the previous/next links and the code-block clipboard bar all work, they are just invisible on a wide desktop window.</p>
+
+  <div class="row"><input type="checkbox" data-key="str::phantom"><div>
+    <p class="id"><b class="num">20</b> a lot of what you are seeing in devtools is not on the real site &nbsp;<span class="said">read first</span></p>
+    <p class="did"><b>Bigger than it looked.</b> Your local preview is missing Bootstrap entirely as well as keeping comments the real site strips. So a class looking dead in devtools, or a layout looking wrong, may be correct in production. <b>Judge layout on a production build, not localhost.</b></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::bootstrap"><div>
+    <p class="id"><b class="num">21</b> 1,646 leftover class names that no longer do anything, and a few break layout &nbsp;<span class="said">I WAS WRONG - not dead</span></p>
+    <p class="did"><b>Withdrawn.</b> Those classes are NOT dead. Your local preview builds without Bootstrap at all; production builds with it, and the purge keeps them. So they work on the real site and only vanish on localhost. Nothing to do here.</p>
+    <p class="look"><span>look at:</span> <a href="/tags/shader/">a tag page</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::rouge"><div>
+    <p class="id"><b class="num">22</b> code is one flat colour, and there are 1,001 spans doing nothing &nbsp;<span class="said">DONE</span></p>
+    <p class="did">Fixed with the code colours above. The spans now have rules.</p>
+    <p class="look"><span>look at:</span> <a href="/tech-art/posts/ComputeGrass/">a post with code</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::mask"><div>
+    <p class="id"><b class="num">23</b> a leftover dimming panel on all 53 pages &nbsp;<span class="said">DONE</span></p>
+    <p class="did">Removed from the layout and its leftover rule with it. Verified gone from all 53 pages.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::tailwrap"><div>
+    <p class="id"><b class="num">24</b> an empty box at the bottom of 25 pages &nbsp;<span class="said">DONE</span></p>
+    <p class="did">Removed. Checked first that nothing feeds it and that all 25 rendered copies were empty.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::panel"><div>
+    <p class="id"><b class="num">25</b> 89 lines of styling for a panel that never renders &nbsp;<span class="said">DONE</span></p>
+    <p class="did">Deleted, 90 lines.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::deadclasses"><div>
+    <p class="id"><b class="num">26</b> five elements carrying a class name nothing uses &nbsp;<span class="said">DONE</span></p>
+    <p class="did">All five class attributes removed.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::headingspan"><div>
+    <p class="id"><b class="num">27</b> every post heading has a wrapper span that lost its job &nbsp;<span class="said">not a bug, kept</span></p>
+    <p class="did">The gap class is live in production, so the span is doing its job. Deleting it would have been a silent layout change on every post heading.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::labcss"><div>
+    <p class="id"><b class="num">28</b> lab bench furniture still shipping to visitors &nbsp;<span class="said">part done</span></p>
+    <p class="did">The bench panel and the demo rules are out. The tape and bio block remain, unused only because they were never wired up, which is the callout job.</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::ramblings"><div>
+    <p class="id"><b class="num">29</b> the ramblings page shows a search box over an empty list &nbsp;<span class="said">DONE</span></p>
+    <p class="did">The search box now only renders when there are rows to filter.</p>
+    <p class="look"><span>look at:</span> <a href="/ramblings/">ramblings</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="str::includes"><div>
+    <p class="id"><b class="num">30</b> three template files nothing includes &nbsp;<span class="said">DONE</span></p>
+    <p class="did">Four unreachable template files deleted, 131 lines that could never run.</p>
+  </div></div>
+
+<h2 class="sec">MERGE NIGHT &middot; things only you can check</h2>
+<p class="secnote">The site is merged and live on the real URLs. Everything below needs a human,
+  either because a machine cannot see it or because it is your call to make.</p>
+
+
+
+
+
+
+
+
+  <div class="row"><input type="checkbox" data-key="m::a11ysmall"><div>
+    <p class="id"><b class="num">31</b> five smaller accessibility things</p>
+    <p class="did">All measured, roughly in order of how much they hurt: <b>project card titles are
+      the hardest text on the card to read</b> (worst 3.03 against a 4.5 bar); <b>the portal has no
+      heading and its browser tab just says "| Rodney Fan"</b>; <b>the blogs search box has no
+      label</b>; <b>the back of a project card can only be reached with a mouse</b>, and it holds
+      text found nowhere else; and <b>locked achievements announce a switch they do not have</b>.</p>
+  </div></div>
+
+
+
+
+
+<h2 class="sec">Waiting on your eye</h2>
+<p class="secnote">Done. Look, then tick.</p>
+
+  <div class="row"><input type="checkbox" data-key="q::lanefix"><div>
+    <p class="id"><b class="num">32</b> the transform lane fix</p>
+    <p class="said">"yes add the transform lane fix to the clean up"</p>
+    <p class="did">Done, and it removes code rather than adding it. <b>The dead 86-line file is
+      gone</b> - nothing had imported it in a long time.
+      The real fix: things that move, things that resize and things that tilt were all writing to
+      <b>the same one setting</b>, so whichever ran last won and the rest silently did nothing. They
+      now each write their own, and the browser combines them for free. <b>The tilt no longer has
+      your hover effect's number written inside it</b>, which was the thing you wanted gone.
+      Checked in a real browser: a test box with all three applied moved, grew and tilted at once.</p>
+    <p class="look"><span>look at:</span>
+      <a href="/redesign-lab/final-about.html">about</a>
+      <a href="/redesign-lab/final-landing.html">landing, for the magnets</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="q::abouttune"><div>
+    <p class="id"><b class="num">33</b> your about tune, all 24</p>
+    <p class="said">24 of 42 dials moved</p>
+    <p class="did">In, including the two values written directly on the elements. Portrait is 199
+      and still lines up exactly with the heading beside it.
+      <b>Two things changed more than a number.</b> The first screen is no longer a full screen - it
+      is 590px now, which reverses an earlier call of yours that About should fill the first page.
+      That is yours to reverse, but it is written into the page as a decision so I am naming it. It
+      does happen to fix the 96px overhang I flagged earlier.
+      And <b>About's panels no longer match posts and ramblings</b> - yours are now solid rather than
+      letting the scene through, with an edge over three times stronger. Those three pages were
+      deliberately identical yesterday.</p>
+    <p class="look"><span>look at:</span>
+      <a href="/redesign-lab/final-about.html">about</a>
+      <a href="/redesign-lab/final-post.html">post, for comparison</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="q::bronzeedge"><div>
+    <p class="id"><b class="num">34</b> the bronze edge glow</p>
+    <p class="said">"Bronze edge glow still exists the color was fine before now its too blue"</p>
+    <p class="did"><b>You were right twice and I was wrong twice.</b> The fill was fine - it is back
+      to the warm grey. The actual culprit was <b>the glow that follows your cursor</b>, which was
+      orange on every tile no matter its tier. So the tier work from the message before fixed the
+      border and left exactly the same complaint one layer underneath.
+      At your glow size, <b>13 of the 29 tiles light up from a single cursor position</b>, all of
+      them orange - so the whole wall washed bronze wherever you moved.
+      Each tier now glows its own colour. And the last bronze was hiding deeper still: <b>every
+      bronze achievement is locked</b>, so ten locked tiles were glowing bronze. Locked already hid
+      the tier on the border, so it hides it on the glow now too.
+      <b>Why I missed it twice:</b> I was testing with no cursor on the page, so the glow measured as
+      switched off every single time. It only exists while a mouse is moving.</p>
+    <p class="look"><span>look at:</span>
+      <a href="/redesign-lab/final-about.html">final about</a></p>
+  </div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+<h2 class="sec">Needs a word from you</h2>
+<p class="secnote">Nothing moves on these until you answer.</p>
+
+
+  <div class="row"><input type="checkbox" data-key="q::benchwording"><div>
+    <p class="id"><b class="num">35</b> one sentence decides 38 files</p>
+    <p class="said">"keep references, blockouts, finals, merge places where we test components and
+      delete things we no longer need"</p>
+    <p class="did">That reads two ways and I do not want to guess: <b>keep</b> the component test
+      pages, or <b>merge</b> them together? I assumed merge and planned for it. Good news either
+      way - <b>two thirds of them are already merged</b> into one page you can flip through, so the
+      job is adding the remaining 18 to it rather than building anything new.</p>
+  </div></div>
+
+
+
+
+
+
+
+  <div class="row"><input type="checkbox" data-key="q::bronzeunreachable"><div>
+    <p class="id"><b class="num">36</b> bronze can never be seen</p>
+    <p class="did">Tier borders work now, each one its own colour. <b>But bronze is unreachable.</b>
+      Achievements without a progress number get bronze if they are not earned yet and gold if they
+      are, and locked tiles keep the black edge whatever their tier. So a bronze tile is by
+      definition always locked, and its border never shows.
+      <b>That is a rule bumping into another rule, not a bug in the colours.</b> The tier is supposed
+      to say how rare something is, but for 18 of the 29 it is really just saying "not earned yet".
+      Do you want bronze to mean something else, or is bronze meant to be the invisible bottom rung?</p>
+    <p class="look"><span>look at:</span>
+      <a href="/redesign-lab/final-about.html">final about</a></p>
+  </div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 class="sec">In the works</h2>
+<p class="secnote">Agents are on these right now.</p>
+
+  <div class="row row--info"><div>
+    <p class="id"><b class="num">37</b> the code audit, before any porting</p>
+    <p class="said">"clean up alot of the code in a audit before doing so we have alot of repeated
+      code"</p>
+    <p class="did">Now that the main site is back in scope, this is the first look at both sides at
+      once - which is the point, because <b>a lot of the repetition is the same thing written once in
+      the lab and once live</b>, and nobody has been able to compare them until now.
+      It also produces the actual token list: all 39 lab names matched to their real counterparts.
+      <b>The one it is told to flag loudly</b> is any lab name whose live twin holds a different
+      value, because renaming those would change the design without anything looking wrong.</p>
+  </div></div>
+
+
+
+
+  <div class="row row--info"><div>
+    <p class="id"><b class="num">38</b> mixing behaviours together</p>
+    <p class="said">"decoupling the element components so they can be mixed and matched"</p>
+    <p class="did">Thinking it through rather than building it. <b>The real problem underneath is
+      smaller and nastier than it looks:</b> magnet, drift, tilt and the hover scale all write the
+      same one CSS property, so whichever runs last wins and the others quietly do nothing. Any
+      mix-and-match scheme has to solve that first or it is decoration. It is also weighed against
+      your own anti-bloat rule, and it will tell you if the honest answer is "not worth it yet".</p>
+  </div></div>
+
+
+  
+  
+  
+  
+  
+
+  <div class="row row--info"><div>
+    <p class="id"><b class="num">39</b> P392 &middot; P395</p>
+    <p class="said">"separate the date and read time put them in same row as tags" and "make the
+      tags symbols instead"</p>
+    <p class="did">Measuring whether the freed line gives the description its third line back at no
+      change in card height, and what the live site's tag symbol actually is. One thing it will put
+      to you: if the symbol is generic, four tags become four identical marks carrying nothing.</p>
+  </div></div>
+
+  <div class="row row--info"><div>
+    <p class="id"><b class="num">40</b> P393</p>
+    <p class="said">"h2 is too big for ramblings"</p>
+    <p class="did">Pricing the rungs below it, and checking whether dropping the tag as well as the
+      size would create a heading skip.</p>
+  </div></div>
+
+  <div class="row row--info"><div>
+    <p class="id"><b class="num">41</b> P330</p>
+    <p class="said">"the text needs a bit of padding from the edge of the box"</p>
+    <p class="did">Measuring the four inner distances and pricing the version that moves only the
+      box rather than the rows you have already approved.</p>
+  </div></div>
+
+<h2 class="sec">Queued, nothing running</h2>
+<p class="secnote">Ready to start. Say which to pick up.</p>
+
+
+
+
+
+  <div class="row row--info"><div>
+    <p class="id"><b class="num">42</b> 19b</p>
+    <p class="said">export the palette</p>
+    <p class="did">The approved colours live in your browser's local storage and in no tracked file.
+      If that browser profile goes, they go. Long standing.</p>
+  </div></div>
+
+</div>
+
+
+<div class="doors">
+  <b>doors</b>
+  <a href="/redesign-lab/index.html">lab index</a>
+  <a href="/redesign-lab/final-landing.html">landing</a>
+  <a href="/redesign-lab/final-post.html">post</a>
+  <a href="/redesign-lab/final-projects.html">projects</a>
+  <a href="/redesign-lab/final-ramblings.html">ramblings</a>
+  <a href="/redesign-lab/final-about.html">about</a>
+  <a href="/redesign-lab/final-portal.html">portal</a>
+  <a href="/redesign-lab/component-review.html">component review</a>
+</div>
+
+</div>
+
+<script>
+(function () {
+  /* Keyed on the REQUEST ID, not on prose. The old store keyed on `page::slot`, a format that
+     stopped matching the markup when prefixes were added, and four of Rod's ticks were discarded
+     silently. `rp-ticks-v1` is left on disk deliberately - clearing it is the only irreversible
+     act here and keeping it costs nothing. */
+  var STORE = 'review-seen-v1';
+  var boxes = [].slice.call(document.querySelectorAll('#list input[type=checkbox]'));
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { state = {}; }
+
+  function paint() {
+    boxes.forEach(function (b) {
+      var on = !!state[b.dataset.key];
+      b.checked = on;
+      b.closest('.row').classList.toggle('seen', on);
+    });
+  }
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* private mode */ }
+  }
+
+  boxes.forEach(function (b) {
+    b.addEventListener('change', function () {
+      if (b.checked) state[b.dataset.key] = 1; else delete state[b.dataset.key];
+      save(); paint();
+    });
+  });
+
+  document.getElementById('b-hide').addEventListener('click', function () {
+    var hidden = document.querySelector('.row.hide');
+    [].forEach.call(document.querySelectorAll('.row'), function (r) { r.classList.toggle('hide', !hidden); });
+    this.textContent = hidden ? "hide the ones I've seen" : 'show everything';
+  });
+
+  document.getElementById('b-reset').addEventListener('click', function () {
+    state = {}; save(); paint();
+    [].forEach.call(document.querySelectorAll('.row'), function (r) { r.classList.remove('hide'); });
+  });
+
+  /* Same idiom as hero-ratios.html's copy button. localhost is a secure context, so the clipboard
+     API is there; both fallbacks kept because they cost three lines. */
+  document.getElementById('b-copy').addEventListener('click', function () {
+    var ids = boxes.filter(function (b) { return b.checked; })
+                   .map(function (b) { return b.dataset.key.replace('q::', ''); });
+    var text = ids.length ? 'seen: ' + ids.join(', ') : 'nothing ticked';
+    var btn = this;
+    var ok = function () {
+      btn.textContent = 'copied';
+      setTimeout(function () { btn.textContent = 'copy the ticked ones'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () { window.prompt('Copy:', text); });
+    } else { window.prompt('Copy:', text); }
+  });
+
+  paint();
+})();
+</script>
+</body>
+</html>

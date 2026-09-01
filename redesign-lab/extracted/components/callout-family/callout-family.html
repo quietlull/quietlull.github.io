@@ -1,0 +1,275 @@
+<!-- callout-family - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=callout-family can mount it. Page chrome is scoped to .cb-callout-family; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: CALLOUT FAMILY - 3 versions of the box under the tape -->
+<!--
+  Three versions of the BOX. The tape is already decided and is NOT being re-judged here.
+  Every category is drawn in every version so a run of callouts can be compared, which is the
+  thing a single-callout card cannot show.
+  Copy is Rod's own, from _posts/tech-art/2026-03-20-ComputeGrass.md, plus the two callouts the
+  placement analysis identified as having real homes.
+-->
+<div class="cb cb-callout-family">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-callout-family {
+  /* CONVERSION NOTE: the page pinned its scene layers to the VIEWPORT. In the bench they belong
+     to the component, so the wrapper is their stacking context and they are absolute inside it.
+     Nothing about the callouts themselves moved. */
+  position: relative;
+  isolation: isolate;
+  background:var(--color-night,#070C23);color:var(--color-text,#f5f3ef);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;padding:0 0 140px
+
+  & * {box-sizing:border-box;margin:0;padding:0
+  }
+  & header.top {position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)
+  }
+  & header.top h1 {font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase
+  }
+  & header.top .sub {font-size:10px;color:var(--color-muted)
+  }
+  & .wrap {width:min(1180px,92vw);margin:0 auto;padding:40px 0 0
+  }
+  & .lede {font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:44px;max-width:96ch;
+    background:rgba(8,10,18,.72)
+  }
+  & .lede b {color:#e4e4e4;font-weight:500
+  }
+  & .lede code {color:var(--color-gold)
+  }
+  & h2.v {font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold);font-weight:400;margin:56px 0 6px;border-top:1px solid #2c2c2c;
+    padding-top:22px
+  }
+  & .vsrc {font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;
+    margin-bottom:22px;max-width:92ch
+  }
+  & .vsrc b {color:#ccc;font-weight:400
+  }
+  & .vsrc .tier {color:var(--color-gold)
+  }
+  /* the real reading measure, so a callout is judged between real prose */
+  & .stage {width:767px;max-width:100%;background:rgba(8,15,27,.92);
+    border:1px solid rgba(245,158,11,.15);padding:30px 34px 36px
+  }
+  & .stage p.body {font-size:1.0625rem;line-height:1.8;color:var(--color-text);margin:0 0 18px
+  }
+  & .stage p.body:last-child {margin-bottom:0
+  }
+  & .cap {font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:#6f6f6f;margin:22px 0 6px
+  }
+  /* the live scene behind, because every one of these sits on it */
+  & #hana-bg {position:absolute;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+    pointer-events:none;
+    -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+    mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)
+  }
+  & #scrim {position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)
+  }
+  &.noscene #hana-bg,
+  &.noscene #scrim {display:none
+  }
+  & #scenetoggle {position:sticky;bottom:14px;align-self:end;margin-left:auto;z-index:80;background:rgba(8,10,18,.95);
+    border:1px solid #555;color:#ddd;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;cursor:pointer
+  }
+}
+</style>
+<div id="hana-bg"></div><div id="scrim"></div>
+
+<header class="top">
+  <h1>Callout family</h1>
+  <span class="sub">3 versions of the BOX &middot; the tape is already decided &middot;
+    brief: analysis/reference-briefs/callout-family-the-box-under-the-tape.md</span>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <b>The stated source does not cover this component, and that is stated rather than papered over.</b>
+    gneiss supplies the TAPE, and all six of its stylesheets return <b>zero hits</b> for
+    callout|notice|warning|admonition|aside. It has no callout system. So the box comes from four other
+    sites already in <code>sources/</code>, each named per version below.<br><br>
+    <b>The tape is the differentiator</b>, which is why the strongest box answer is the one that differs
+    LEAST between categories. A box that also differentiated would say the same thing twice.<br><br>
+    <b>Every category is drawn in every version</b> so you can see a RUN of them. That is the thing a
+    single card cannot show, and it is what killed the last callout round.
+  </div>
+
+  <!-- ══════════════════════════ V1 ══════════════════════════ -->
+  <h2 class="v">Version 1 &middot; one shell, the variant changes one thing</h2>
+  <div class="vsrc"><b>flamedfury.com</b> &mdash; <code>z2Ai70SrDv.css</code>, re-fetched and
+    byte-matched. <span class="tier">Tier: Remixed</span>, idea-origin theirs.<br>
+    Their <code>aside</code> is ONE box; the role class changes only the icon. Square is a
+    <b>transcription, not a deviation</b> &mdash; their <code>border-radius: var(--border-radius)</code>
+    references a token defined zero times in their file, so their aside renders square too.
+    Shadow is gneiss <code>.pinned-note</code>'s <b>hard 3px offset, zero blur</b> &mdash; a blurred
+    shadow smears the live scene, a hard one does not.</div>
+  <div class="stage">
+    <p class="body">My implementation draws from research into techniques dating back to GPU Gems (2004)
+      while incorporating 22 years of community experimentation on top of that foundation.</p>
+
+    <aside class="co co--v1 co--tldr taped tape--orange"><i class="tape tape--left"></i>
+      <span class="co__label">TL;DR</span>
+      <p>A script bakes blade positions into a buffer, one compute pass builds the geometry, and a
+        single indirect draw renders every blade at once regardless of count.</p>
+    </aside>
+
+    <p class="body">Each frame the compute shader reads that position buffer and generates the grass
+      blade geometry, feeding it into a vertex buffer.</p>
+
+    <aside class="co co--v1 co--warning taped tape--pink">
+      <i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i>
+      <i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+      <span class="co__label">Warning</span>
+      <p>Smooth the return of the grass in the shader. Without it the blades twitch every time an
+        interactor leaves, and it looks like a physics bug rather than a missing lerp.</p>
+    </aside>
+
+    <p class="body">A top-down orthographic camera renders any interactor objects into a render texture
+      used to control interaction, creation, and culling of the grass blades.</p>
+
+    <aside class="co co--v1 co--note taped tape--green"><i class="tape tape--top"></i>
+      <span class="co__label">Note</span>
+      <p>Originally I used a ping-pong to decay the render texture, but that did not give me the control
+        I wanted, so I went with this method instead.</p>
+    </aside>
+
+    <p class="cap">quote &mdash; boxed (SLOP, no source) vs boxless (sourced)</p>
+    <aside class="co co--v1 co--quote taped tape--blue">
+      <i class="tape tape--v tape--tl"></i><i class="tape tape--h tape--tl"></i>
+      <i class="tape tape--v tape--br"></i><i class="tape tape--h tape--br"></i>
+      <p style="font-style:italic">The slow part was never the part that looked slow.</p>
+    </aside>
+    <blockquote class="co-quote--boxless">The slow part was never the part that looked slow.
+      <cite>Compute Grass</cite></blockquote>
+
+    <p class="cap">reference / links &mdash; no tape, no box</p>
+    <div class="co-ref"><ul>
+      <li><a href="#">Cyanilux &mdash; GPU instanced grass breakdown</a></li>
+      <li><a href="#">GPU Gems 7 &mdash; Rendering Countless Blades of Waving Grass</a></li>
+    </ul></div>
+  </div>
+
+  <!-- ══════════════════════════ V2 ══════════════════════════ -->
+  <h2 class="v">Version 2 &middot; the quiet secondary rail</h2>
+  <div class="vsrc"><b>catlikecoding.com</b> &mdash; <code>tutorials.css</code> line 236, re-fetched.
+    <span class="tier">Tier: Remixed</span>, idea-origin theirs.<br>
+    The idea worth having: <b>the box is one notch SMALLER than prose</b> (14px against 16px), so a run
+    of callouts reads as a quiet secondary rail rather than a stack of banners. Their heading gets no
+    size hierarchy at all. Already square, 2px flat border, no radius, <b>no shadow</b>.
+    Their disclosure behaviour is NOT taken &mdash; a callout that hides its own content is a different
+    device from the one you decided.</div>
+  <div class="stage">
+    <p class="body">My implementation draws from research into techniques dating back to GPU Gems (2004)
+      while incorporating 22 years of community experimentation on top of that foundation.</p>
+
+    <aside class="co co--v2 co--tldr taped tape--orange"><i class="tape tape--left"></i>
+      <span class="co__label">TL;DR</span>
+      <p>A script bakes blade positions into a buffer, one compute pass builds the geometry, and a
+        single indirect draw renders every blade at once regardless of count.</p>
+    </aside>
+
+    <p class="body">Each frame the compute shader reads that position buffer and generates the grass
+      blade geometry, feeding it into a vertex buffer.</p>
+
+    <aside class="co co--v2 co--warning taped tape--pink">
+      <i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i>
+      <i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+      <span class="co__label">Warning</span>
+      <p>Smooth the return of the grass in the shader. Without it the blades twitch every time an
+        interactor leaves, and it looks like a physics bug rather than a missing lerp.</p>
+    </aside>
+
+    <p class="body">A top-down orthographic camera renders any interactor objects into a render texture
+      used to control interaction, creation, and culling of the grass blades.</p>
+
+    <aside class="co co--v2 co--note taped tape--green"><i class="tape tape--top"></i>
+      <span class="co__label">Note</span>
+      <p>Originally I used a ping-pong to decay the render texture, but that did not give me the control
+        I wanted, so I went with this method instead.</p>
+    </aside>
+
+    <p class="cap">quote &mdash; boxed (SLOP, no source) vs boxless (sourced)</p>
+    <aside class="co co--v2 co--quote taped tape--blue">
+      <i class="tape tape--v tape--tl"></i><i class="tape tape--h tape--tl"></i>
+      <i class="tape tape--v tape--br"></i><i class="tape tape--h tape--br"></i>
+      <p style="font-style:italic">The slow part was never the part that looked slow.</p>
+    </aside>
+    <blockquote class="co-quote--boxless">The slow part was never the part that looked slow.
+      <cite>Compute Grass</cite></blockquote>
+
+    <p class="cap">reference / links &mdash; no tape, no box</p>
+    <div class="co-ref"><ul>
+      <li><a href="#">Cyanilux &mdash; GPU instanced grass breakdown</a></li>
+      <li><a href="#">GPU Gems 7 &mdash; Rendering Countless Blades of Waving Grass</a></li>
+    </ul></div>
+  </div>
+
+  <!-- ══════════════════════════ V3 ══════════════════════════ -->
+  <h2 class="v">Version 3 &middot; the tape's actual partner box</h2>
+  <div class="vsrc"><b>gneiss.place</b> &mdash; <code>box.css</code> <code>.box</code> + <code>.polaroid</code>,
+    re-fetched. <span class="tier">Tier: Remixed</span>, idea-origin theirs.<br>
+    <b>This is the box the tape was designed against.</b> gneiss's own taped markup is
+    <code>class="taped polaroid"</code>, so the tape's real partner is not an evenly padded card &mdash;
+    it is the polaroid, whose <b>deep bottom sill</b> (<code>padding: 1rem 1rem 3rem</code>) is the
+    device. That asymmetry is theirs and free, and it gives the bottom corner tapes somewhere to sit.<br>
+    <b>The trade:</b> the warm shadow <code>0 3px 5px rgba(88,70,48,.5)</code> is their real value, but it
+    BLURS &mdash; which smears the scene. V1 and V3 are deliberately opposite on exactly this point.</div>
+  <div class="stage">
+    <p class="body">My implementation draws from research into techniques dating back to GPU Gems (2004)
+      while incorporating 22 years of community experimentation on top of that foundation.</p>
+
+    <aside class="co co--v3 co--tldr taped tape--orange"><i class="tape tape--left"></i>
+      <span class="co__label">TL;DR</span>
+      <p>A script bakes blade positions into a buffer, one compute pass builds the geometry, and a
+        single indirect draw renders every blade at once regardless of count.</p>
+    </aside>
+
+    <p class="body">Each frame the compute shader reads that position buffer and generates the grass
+      blade geometry, feeding it into a vertex buffer.</p>
+
+    <aside class="co co--v3 co--warning taped tape--pink">
+      <i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i>
+      <i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+      <span class="co__label">Warning</span>
+      <p>Smooth the return of the grass in the shader. Without it the blades twitch every time an
+        interactor leaves, and it looks like a physics bug rather than a missing lerp.</p>
+    </aside>
+
+    <p class="body">A top-down orthographic camera renders any interactor objects into a render texture
+      used to control interaction, creation, and culling of the grass blades.</p>
+
+    <aside class="co co--v3 co--note taped tape--green"><i class="tape tape--top"></i>
+      <span class="co__label">Note</span>
+      <p>Originally I used a ping-pong to decay the render texture, but that did not give me the control
+        I wanted, so I went with this method instead.</p>
+    </aside>
+
+    <p class="cap">quote &mdash; boxed (SLOP, no source) vs boxless (sourced)</p>
+    <aside class="co co--v3 co--quote taped tape--blue">
+      <i class="tape tape--v tape--tl"></i><i class="tape tape--h tape--tl"></i>
+      <i class="tape tape--v tape--br"></i><i class="tape tape--h tape--br"></i>
+      <p style="font-style:italic">The slow part was never the part that looked slow.</p>
+    </aside>
+    <blockquote class="co-quote--boxless">The slow part was never the part that looked slow.
+      <cite>Compute Grass</cite></blockquote>
+
+    <p class="cap">reference / links &mdash; no tape, no box</p>
+    <div class="co-ref"><ul>
+      <li><a href="#">Cyanilux &mdash; GPU instanced grass breakdown</a></li>
+      <li><a href="#">GPU Gems 7 &mdash; Rendering Countless Blades of Waving Grass</a></li>
+    </ul></div>
+  </div>
+</div>
+
+<button id="scenetoggle">scene: on</button>
+</div>

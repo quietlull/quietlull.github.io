@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The palette - current swatches</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/decisions.css">
+<style>
+:root{--pal-line:rgba(255,255,255,.08)}
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{
+  background:radial-gradient(120% 80% at 80% -10%,#101a3e 0%,transparent 55%),
+             linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+  color:#F5F3EF;font-family:"IBM Plex Mono",monospace;min-height:100vh;
+  padding:clamp(2.5rem,6vw,5rem) clamp(1.2rem,5vw,3rem);line-height:1.6;
+}
+.pal-wrap{max-width:74rem;margin:0 auto}
+header{margin-bottom:1.6rem;padding-bottom:1.4rem;border-bottom:1px solid var(--pal-line)}
+h1{font-family:"Playfair Display",serif;font-weight:600;font-size:clamp(1.8rem,4.5vw,2.5rem)}
+.pal-sub{color:#9aa3bd;font-size:.8rem;margin-top:.5rem;max-width:52rem}
+.pal-meta{display:flex;flex-wrap:wrap;gap:.5rem .4rem;margin-top:1rem}
+.pal-chip{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#9aa3bd;
+  border:1px solid var(--pal-line);border-radius:999px;padding:.22rem .6rem}
+.pal-chip b{color:#F3B53C;font-weight:500}
+a{color:#F3B53C;text-decoration:none}
+a:hover{filter:drop-shadow(0 0 8px rgba(255,232,176,.55))}
+a:focus-visible{outline:2px solid #FFE8B0;outline-offset:2px}
+
+h2{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:#F3B53C;
+  margin:2.2rem 0 .2rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+h2::before{content:"/"}
+h2 .pal-note{color:#9aa3bd;letter-spacing:.06em;font-size:.62rem;text-transform:none}
+
+.pal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.9rem;
+  margin-top:1rem}
+.pal-sw{border:1px solid var(--pal-line);overflow:hidden;background:rgba(20,20,20,.35)}
+.pal-chipbox{height:5.2rem;position:relative;
+  background-image:linear-gradient(45deg,#1c1c1c 25%,transparent 25%,transparent 75%,#1c1c1c 75%),
+                   linear-gradient(45deg,#1c1c1c 25%,transparent 25%,transparent 75%,#1c1c1c 75%);
+  background-size:14px 14px;background-position:0 0,7px 7px;background-color:#0b0f1e}
+.pal-fill{position:absolute;inset:0}
+.pal-body{padding:.6rem .7rem;font-size:.66rem;line-height:1.75}
+.pal-name{color:#F5F3EF;letter-spacing:.03em;word-break:break-all}
+.pal-val{color:#9aa3bd;letter-spacing:.02em}
+.pal-ratio{color:#9aa3bd;font-size:.6rem;letter-spacing:.06em;margin-top:.15rem}
+.pal-ratio b{font-weight:500}
+.pal-pass{color:#b7d29a}.pal-fail{color:#e08b8b}
+
+.pal-warn{border:1px solid rgba(243,181,60,.35);background:rgba(243,181,60,.06);
+  padding:.8rem 1rem;font-size:.74rem;color:#9aa3bd;line-height:1.75;margin:1.2rem 0}
+.pal-warn b{color:#F3B53C;font-weight:500}
+code{color:#FFE8B0;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="pal-wrap">
+
+  <header>
+    <h1>The palette</h1>
+    <div class="pal-sub">Every colour token the redesign actually defines, read off the live
+      stylesheets on load rather than typed out here, so this page cannot go stale.
+      Contrast is measured against the night ground each swatch would really sit on.
+      <a href="/redesign-lab/index.html">back to the lab</a> &middot;
+      <a href="/redesign-lab/palette-explorer.html">palette explorer</a></div>
+    <div class="pal-meta" id="pal-summary"></div>
+  </header>
+
+  <div class="pal-warn"><b>This replaced the export page.</b> Rod 2026-08-23: <i>"i dont think we
+    need a palette backup please change it to just swatches of the current palette instead."</i>
+    The old page existed to rescue colours that lived only in <code>localStorage</code>. The tokens
+    below live in <code>foundations.css</code> and <code>extracted/styles/settings.css</code>, which
+    are real files on disk, so there is nothing left to rescue.
+    <b>The checkerboard behind a swatch means the colour is translucent</b> and what you see is it
+    composited over the night ground.</div>
+
+  <div id="pal-out"></div>
+
+</div>
+
+<script>
+// Ordered so the page reads as a palette rather than as a dump. Anything defined but not listed
+// here still shows up, under "everything else", so a new token can never go missing.
+var GROUPS = [
+  { title: 'Ground',   note: 'the night, and the surfaces that sit on it',
+    keys: ['--color-night','--color-night-2','--color-panel','--color-panel-solid','--color-surface',
+           '--color-surface-faint','--color-glass','--color-ink'] },
+  { title: 'Type',     note: 'text and its quiet tiers',
+    keys: ['--color-text','--color-silver','--color-muted','--color-warm-muted'] },
+  { title: 'The warm accent', note: 'the signature. gold ignites, it does not glow constantly',
+    keys: ['--color-gold','--color-gold-deep','--color-glow','--color-glow-soft','--color-icon-stroke'] },
+  { title: 'Lines',    note: 'every hairline on the site',
+    keys: ['--color-line','--color-line-soft','--color-line-faint'] },
+  { title: 'Cards',    note: 'the project card cover gradient',
+    keys: ['--color-cover-hi','--color-cover-lo'] },
+  { title: 'Code',     note: 'the palette-law carve-out (D26/D35) - scoped to pre code only',
+    keys: ['--color-code-bg','--color-code-text','--color-code-green',
+           '--syn-type','--syn-const','--syn-var','--syn-class','--syn-func','--syn-comment',
+           '--syn-number','--syn-string'] },
+  { title: 'Tape',     note: 'the one loud object (D27). Colour encodes callout TYPE (D30)',
+    keys: [] },
+  { title: 'Odd ones out', note: 'flagged rather than hidden',
+    keys: ['--color-accent-cool','--color-stamp-paper'] }
+];
+
+function parseColor(str, ctx) {
+  ctx.fillStyle = '#000';
+  ctx.fillStyle = str;
+  var norm = ctx.fillStyle;                       // browser normalises to #rrggbb or rgba(...)
+  if (norm.charAt(0) === '#') {
+    return [parseInt(norm.substr(1,2),16), parseInt(norm.substr(3,2),16), parseInt(norm.substr(5,2),16), 1];
+  }
+  var n = (norm.match(/[\d.]+/g) || []).map(Number);
+  return [n[0], n[1], n[2], n.length > 3 ? n[3] : 1];
+}
+function over(fg, bg) {                            // composite fg onto bg
+  var a = fg[3];
+  return [0,1,2].map(function (i) { return Math.round(fg[i]*a + bg[i]*(1-a)); });
+}
+function lum(c) {
+  var v = c.map(function (x) { x /= 255; return x <= 0.03928 ? x/12.92 : Math.pow((x+0.055)/1.055, 2.4); });
+  return 0.2126*v[0] + 0.7152*v[1] + 0.0722*v[2];
+}
+function ratio(a, b) {
+  var l1 = lum(a), l2 = lum(b);
+  return (Math.max(l1,l2) + 0.05) / (Math.min(l1,l2) + 0.05);
+}
+function hex(c) {
+  return '#' + c.slice(0,3).map(function (x) { return ('0'+x.toString(16)).slice(-2); }).join('');
+}
+
+(function () {
+  var ctx = document.createElement('canvas').getContext('2d');
+  var root = getComputedStyle(document.documentElement);
+
+  // collect every custom property the loaded sheets define
+  var found = {};
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    var sheet = document.styleSheets[i], rules;
+    try { rules = sheet.cssRules; } catch (e) { continue; }   // cross-origin (fonts)
+    if (!rules) continue;
+    for (var j = 0; j < rules.length; j++) {
+      var st = rules[j].style;
+      if (!st) continue;
+      for (var k = 0; k < st.length; k++) {
+        var prop = st[k];
+        if (prop.indexOf('--') !== 0) continue;
+        if (prop.indexOf('--pal-') === 0) continue;   // this page's own chrome, not the palette
+        var val = st.getPropertyValue(prop).trim();
+        if (!val) continue;
+        // only keep things that resolve to a colour
+        ctx.fillStyle = '#123456';
+        ctx.fillStyle = val;
+        if (ctx.fillStyle === '#123456' && val.toLowerCase() !== '#123456') continue;
+        found[prop] = val;
+      }
+    }
+  }
+
+  var night = parseColor(root.getPropertyValue('--color-night').trim() || '#070C23', ctx).slice(0,3);
+  var used = {}, out = document.getElementById('pal-out'), shown = 0, failing = 0, translucent = 0;
+
+  function card(name, value) {
+    var c = parseColor(value, ctx);
+    var flat = c[3] < 1 ? over(c, night) : c.slice(0,3);
+    if (c[3] < 1) translucent++;
+    // A hairline is not text. Measuring a 1px border against the 4.5:1 TEXT threshold
+    // reports every rule on the site as a failure, which is noise, not a finding.
+    var isGround = /night|panel|surface|glass|ink|code-bg|cover|line|stamp-paper|tape/.test(name);
+    var r = isGround ? null : ratio(flat, night);
+    if (r !== null && r < 4.5) failing++;
+    shown++;
+    var el = document.createElement('div');
+    el.className = 'pal-sw';
+    el.innerHTML =
+      '<div class="pal-chipbox"><div class="pal-fill" style="background:' + value + '"></div></div>' +
+      '<div class="pal-body">' +
+        '<div class="pal-name">' + name + '</div>' +
+        '<div class="pal-val">' + value + (c[3] < 1 ? ' &rarr; ' + hex(flat) + ' on night' : '') + '</div>' +
+        (r === null
+          ? '<div class="pal-ratio">' + (/line/.test(name) ? 'hairline' : /tape/.test(name) ? 'tape fill' : 'ground colour') +
+            ', not measured against a text threshold</div>'
+          : '<div class="pal-ratio">on night <b class="' + (r >= 4.5 ? 'pal-pass' : 'pal-fail') + '">' +
+            r.toFixed(2) + ':1</b> ' + (r >= 4.5 ? 'AA' : 'under AA') + '</div>') +
+      '</div>';
+    return el;
+  }
+
+  GROUPS.forEach(function (g) {
+    var keys = g.keys.filter(function (k) { return found[k] !== undefined; });
+    if (g.title === 'Tape') {
+      keys = Object.keys(found).filter(function (k) { return /tape/.test(k); });
+    }
+    if (!keys.length) return;
+    var h = document.createElement('h2');
+    h.innerHTML = g.title + '<span class="pal-note">' + g.note + '</span>';
+    out.appendChild(h);
+    var grid = document.createElement('div');
+    grid.className = 'pal-grid';
+    keys.forEach(function (k) { used[k] = 1; grid.appendChild(card(k, found[k])); });
+    out.appendChild(grid);
+  });
+
+  var rest = Object.keys(found).filter(function (k) { return !used[k]; }).sort();
+  if (rest.length) {
+    var h2 = document.createElement('h2');
+    h2.innerHTML = 'Everything else<span class="pal-note">defined but not grouped above ' +
+      '&mdash; listed so a new token cannot go missing</span>';
+    out.appendChild(h2);
+    var grid2 = document.createElement('div');
+    grid2.className = 'pal-grid';
+    rest.forEach(function (k) { grid2.appendChild(card(k, found[k])); });
+    out.appendChild(grid2);
+  }
+
+  document.getElementById('pal-summary').innerHTML =
+    '<span class="pal-chip"><b>' + shown + '</b> colour tokens</span>' +
+    '<span class="pal-chip"><b>' + translucent + '</b> translucent</span>' +
+    '<span class="pal-chip"><b>' + failing + '</b> text tokens under AA</span>' +
+    '<span class="pal-chip">read live from the stylesheets</span>';
+})();
+</script>
+</body>
+</html>

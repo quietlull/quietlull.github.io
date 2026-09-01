@@ -1,0 +1,64 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: overrides
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer overrides {
+/* ============================================================================================
+   focus-ring.css - the global :focus-visible indicator, extracted 2026-08-23.
+
+   WHY THIS FILE EXISTS. An audit found that `extracted/styles/generic.css` - which holds this
+   rule - is linked by ZERO of the six final pages and zero of the component demos. Verified.
+   So the ring did not exist anywhere, and every component that declined to write its own on the
+   grounds that it "inherits the global ring" was inheriting nothing.
+
+   `prevnext-real.css:96-99` says exactly that, in good faith. It was wrong through no fault of its
+   own, and so were five others. THAT IS A WCAG 2.4.7 AND 2.4.11 FAILURE ON ALL SIX PAGES.
+
+   WHY NOT JUST LINK generic.css. Because it also sets `body { background }`, which would flatten
+   the scene ground the whole design sits on. Lifting the one rule is the smaller change and does
+   not drag a page-level paint along with it.
+
+   SOURCE: sources/focus-ring.md - Bootstrap 5.3's focus-ring helper, dev.to hybrid_alex "Better
+   CSS outlines with box-shadows", darekkay. TIER: Remixed. IDEA-ORIGIN: theirs.
+   Rule copied verbatim from generic.css:25-32, which is where it was already approved.
+
+   `outline: 2px solid transparent` IS NOT DECORATION and must not be "cleaned up" to
+   `outline: none`. Windows High Contrast Mode drops box-shadows entirely; the transparent outline
+   is what survives there and becomes a real ring. Removing it makes the site unusable for HCM
+   users while looking identical to everyone else.
+   ============================================================================================ */
+
+:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--color-gold),
+    0 0 12px 2px color-mix(in srgb, var(--color-glow) 45%, transparent);
+}
+
+/* --nav-h - ADDED 2026-08-23. It was USED nine times in toc-real.css and DEFINED NOWHERE, so every
+   use silently fell back to 3.5rem (56px) while the real bar is 96px, and 107.6px at <=780px.
+   Measured consequence: the mobile TOC bar sat UNDER the top bar, entirely hidden at <=780px, and
+   the sticky rail parked 40px beneath it. Same failure shape as --color-muted-warm: a plausible
+   name that resolves to a fallback and renders wrong without erroring.
+   Derived from the real bar rather than restated, so it cannot drift again. */
+:root {
+  --nav-h: calc(var(--top-bar-height, 5.875rem) + var(--top-bar-border, 1px) * 2);
+}
+}

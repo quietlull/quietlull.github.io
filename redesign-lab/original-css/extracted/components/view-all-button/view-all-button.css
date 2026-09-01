@@ -1,0 +1,329 @@
+/* ============================================================================================
+   view-all-button - the "View all" affordance that sits at the right end of a section header
+   band. D9: every layout keeps "View all".
+
+   MEASURED RESERVATION, read off landing-blockout.html at viewport 1440 on 2026-08-23 with
+   getBoundingClientRect(), not from a label:
+     band  .sec.rowhead (PROJECTS HEADER)  1425 x 64, padding 0 20px, flex, align-items:center
+     slot  .rowhead .r                     84.98 x 28, right edge at x=1405 (band right - 20)
+   The band number DISAGREES with analysis/2026-08-23-blockout-contract.md, which records
+   1421 x 64. The 4px is scrollbar width (my innerWidth 1440 -> clientWidth 1425, a 15px bar;
+   1421 implies a 19px bar). Height 64 agrees exactly. The .md records this rather than picking
+   a winner silently.
+
+   THE SLOT MEASUREMENT NEEDED CLEANING, and the reason matters. landing-blockout.html:490 reads
+       <span class="r">VIEW ALL -> /span>
+   with the closing bracket missing, so "/span>" renders as literal text AND the following
+   <span class="yy">616 -> 680</span> nests inside .r. The live box is therefore 123.47 x 28 and
+   that number is a typo, not a reservation. Measured again on a clone of the same element with
+   the same computed style and textContent set to exactly "VIEW ALL ->": 84.98 x 28. That is the
+   number every version below is fitted against. Same 84.98 x 28 in the base, m3, a3seam and v1
+   variants, so it is not variant-specific.
+
+   -- TYPE REGISTER: REUSED, NOT REINVENTED ----------------------------------------------------
+   Told to reuse extracted/components/section-head/, and it is reused rather than paralleled:
+     face    var(--font-display)  section-head.css:44        (= "M PLUS Rounded 1c")
+     hover   var(--color-gold)    section-head.css:74        (the head's own hover colour)
+   Resting colour is var(--color-silver), decisions.css:20 - the head takes gold, so the
+   affordance beside it has to sit under the head or they compete. Silver is the tier below gold
+   in that same file's ladder (H3/H4), so this is one step down an existing ramp, not a new tone.
+   NOT USED: --color-muted (#9aa3bd). Palette law - it is the last blue in a text token.
+
+   FONT-WEIGHT TRAP, verified rather than assumed: final-landing.html:25 requests
+   `M+PLUS+Rounded+1c:wght@400;500;700`. decisions.css asks for 100 and 300 all over, and NEITHER
+   IS LOADED there, so every 300 in that file silently renders 400 on that page. This component
+   declares 300 to stay on the register and the demo loads 300 so Rod sees the truth. The fix is
+   one character in that font URL and it is not mine to make (D22).
+
+   -- SHAPE ------------------------------------------------------------------------------------
+   Every box is square. The single round thing is version C's fill ellipse, and it is round
+   because roundness IS the mechanism: it is a 150% x 200% circle parked below the button and
+   clipped by overflow:hidden, so it never reads as a rounded box, only as a rising wave.
+
+   -- NO GLASS, NO BLUR ------------------------------------------------------------------------
+   Nothing here sets backdrop-filter or box-shadow. A live three.js scene is behind the band.
+
+   -- MEASURED FIT, taken off the rendered demo at viewport 1440, not predicted ----------------
+     A  84.61 x 43.00   width fits (0.37 spare), height OVER by 15.00   see the note on A
+     B  53.67 x 18.00   fits: 31.31 spare wide, 10.00 spare tall
+     C  83.67 x 28.00   fits: 1.31 spare wide, 0.00 spare tall (lands on the reservation)
+   The register's line box at 12px is a MEASURED 18.00px (M PLUS Rounded 1c, line-height normal).
+   Every derived padding below is derived from that 18, not from an estimate.
+   ============================================================================================ */
+
+/* Shared. Deliberately almost empty - everything else belongs to a version, and a shared block
+   that carries version decisions is how two versions stop being real alternatives.
+   white-space:nowrap is OURS and it is here to keep the build honest rather than to style
+   anything: without it "View all" wraps to two lines inside the 84.98px slot and version A
+   reports 84.97 x 61 - a box that "fits" on width only because the content silently broke. */
+.va {
+  font-family: var(--font-display, "M PLUS Rounded 1c", sans-serif);
+  font-weight: 300;
+  text-decoration: none;
+  color: var(--color-silver, #a3a19d);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* The arrow glyph. VERBATIM PATH from sources/chriskalafatis-chevron-divider.md (Tier: True,
+   captured 2026-06-11 from the inline SVG on chriskalafatis.com, the only inline SVG on that
+   page). Their glyph points DOWN on a 26 x 27 viewBox; it is rotated -90deg here to point right,
+   and that rotation is OURS.
+   WHY NOT STRIPE'S OWN ARROW, since version A is otherwise stripe's row: their markup shows
+   `<svg class="...__arrow ArrowIcon..." viewBox="0 0 7 7" ...>` but the note truncates before the
+   path data (sources/stripe-dev-prose.md:166), so their path was never captured. Borrowing a
+   different site's glyph and saying so beats inventing one.
+   currentColor is what makes the whole hover story work in all three versions for free. */
+.va__arrow {
+  width: 0.72em;
+  height: 0.72em;
+  flex: none;
+  transform: rotate(-90deg);
+  fill: currentColor;
+}
+
+
+/* ============================================================================================
+   VERSION A - THE SPEC ROW.  Tier: Remixed.  Idea origin: theirs (stripe.dev).
+   SOURCE: sources/stripe-dev-prose.md:149-169, the "additional resources / more from this
+   author" directory row. Verified there verbatim against
+   https://stripe.dev/_next/static/immutable/chunks/12lm5yee46pgk.css, and the markup is directly
+   observable in the served HTML (15 rows per page), so this is a working system on that site.
+
+   VERBATIM FROM THEM:
+     .SquareIcon icon      width/height 8px + min-width/min-height 8px + margin-top .5px
+     .text-smallcaps       text-transform:uppercase; font-size:12px; font-weight:300;
+                           letter-spacing:-.012em      <- their tracking really is NEGATIVE on
+                                                          uppercase, which is worth having and is
+                                                          not what anyone would guess
+     .__link               padding:12px 0   (no horizontal padding at all)
+     .ListItem             border-bottom:.5px solid
+     .__label / .__arrow   label at the start, arrow pinned to the far end
+     @media (pointer:fine) gate on the hover, so touch never gets a stuck flood
+     :hover flood          the WHOLE row takes the highlight and every child inverts
+
+   OURS, and each one is a swap with a reason rather than a preference:
+     face        sohne-mono -> var(--font-display). Their label is monospace. Keeping it would
+                 put a second type register in a band that already has the section head's, which
+                 is exactly what this build was told not to do. OPEN QUESTION in the .md.
+     grid        theirs is grid-template-columns:subgrid on a 24-column page grid, with the arrow
+                 at grid-column -2/-1. There is no 24-column grid in this band, so the arrow is
+                 pinned with margin-left:auto in a flex row. Same result, different mechanism.
+     square fill their square reads var(--squareTextColor) and the hover rebinds that custom
+                 property alongside color. currentColor does the same job in one declaration
+                 instead of two, so the two-variable dance is dropped (D5).
+     colours     highlight -> --color-gold; inverted text -> --color-panel-solid. The second one
+                 is the same correction decisions.css:203-221 already made for the prose link,
+                 for the same reason: our panel token is 55% translucent over a live scene and
+                 inverted text on a see-through fill reads as mud.
+
+   COST THAT DID NOT TRANSFER, stated because it is visible: their padding:12px 0 gives the flood
+   no horizontal inset. On their 700px-wide grid row the text has room; in an 85px slot the gold
+   floods right up to the glyphs. Their value is kept rather than padded out, because padding it
+   would be inventing a number to fix a problem their design does not have.
+
+   *** THIS VERSION DOES NOT FIT THE RESERVATION ON HEIGHT AND IS SHIPPED THAT WAY ON PURPOSE. ***
+   Measured 84.61 x 43.00 against 84.98 x 28. Width fits with 0.37 to spare; height is OVER by 15.
+     WIDTH is structural and it only just made it: 8 square + 8 gap + 51.98 label + 8 gap + 8.63
+       arrow = 84.61. There is nothing left to trim - the next thing to go would be the square,
+       a gap, or the uppercase, and those three ARE what makes it stripe's.
+     HEIGHT is entirely their padding: 18.00 line box + 12 + 12 + 0.5 border = 42.5.
+       Dropping the padding to 4.5px 0 gives 27.5 and fits - but 12px is THEIR number and
+       overwriting it silently is how a sourced component quietly becomes ours. Rod's call.
+   The band is 64 tall, so 43 still clears the BAND. It is the 28px chip reservation it breaks,
+   and that reservation was drawn around 10px placeholder monospace, which is smaller than any
+   real UI type in this register. Same shape of problem as mismatch 3 in the blockout contract.
+   ============================================================================================ */
+/* font-size sits on the ROW, not on the label. Stripe bundles it into .text-smallcaps with the
+   uppercase, but .va__arrow is sized in em, and with the 12px on the label only the arrow sized
+   itself off the inherited 16px root instead: 11.52px next to a 12px word. Same rendered label,
+   arrow now 8.64px, and version A's width went 87.50 -> 84.62. Mechanical, and logged because it
+   is the one place stripe's rule was reorganised rather than copied. */
+.va--row {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  gap: 8px;                    /* theirs: .__label{gap:8px} between the square and the text */
+  padding: 12px 0;             /* theirs, verbatim */
+  border-bottom: 0.5px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.va--row .va__square {
+  background-color: currentColor;
+  width: 8px;
+  min-width: 8px;
+  height: 8px;
+  min-height: 8px;
+  margin-top: 0.5px;
+}
+.va--row .va__label {
+  text-transform: uppercase;
+  letter-spacing: -0.012em;
+}
+.va--row .va__arrow { margin-left: auto; }
+
+/* their pointer:fine gate, kept. :focus-visible is added and is OURS - a keyboard user gets no
+   hover, and a link whose only affordance is a hover flood is a 2.4.7 failure. */
+@media (pointer: fine) {
+  .va--row:hover {
+    background-color: var(--color-gold, #fbbf24);
+    color: var(--color-panel-solid, #1c1a18);
+  }
+}
+.va--row:focus-visible {
+  background-color: var(--color-gold, #fbbf24);
+  color: var(--color-panel-solid, #1c1a18);
+}
+@media (prefers-reduced-motion: reduce) { .va--row { transition: none; } }
+
+
+/* ============================================================================================
+   VERSION B - THE QUIET LINK.  Tier: Remixed.  Idea origin: theirs (two parents).
+   No box, no fill, no border. The lightest thing that can still be a link.
+
+   PARENT 1, the underline: sources/mauriciabad-underline-link.md (Tier: True, Rod picked and
+   pasted the pen himself, codepen.io/MauriciAbad/pen/QJmwOY). VERBATIM: the ::after at
+   width:100%, height:.05em, bottom:0, left:0, background:currentcolor, scaleX(0) with
+   transform-origin:bottom right at rest, scaleX(1) with transform-origin:bottom left on hover,
+   transition transform .25s ease-out. That origin flip is the whole trick: it draws in from the
+   left and retracts to the right rather than mirroring itself.
+     DROPPED: their border-radius:5px. Square by default, and on a 0.6px-tall bar it is invisible
+     anyway, so nothing is lost by obeying the rule.
+     CHANGED: their display:inline-block -> inline-flex, to seat the arrow on the text baseline.
+
+   PARENT 2, the arrow spacing: sources/maximeheckel-prose.md:246, their external-link mark,
+   margin-left:0.18em. Their icon is a mask-image pseudo and ours is a real inline SVG, so only
+   the SPACING transfers - and it transfers rather than being guessed, which is the point.
+     NOT TAKEN: their margin-right:-0.36em, which exists to pull FOLLOWING text back under the
+     mark. Nothing follows this arrow, so the negative margin would only shorten the underline.
+     NOT TAKEN: their --arrow-translation / --hover-translation-distance pair. The custom
+     properties are set on :hover and :focus in the fetched CSS but NOTHING IN EITHER FETCHED
+     STYLESHEET CONSUMES THEM, so the actual travel distance was never captured. The arrow
+     therefore does not move on hover. A distance would have to be invented and it is not.
+
+   The hover colour is section-head.css:74, the head's own hover. Same band, same gesture.
+   ============================================================================================ */
+.va--link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  transition: color 0.2s ease;
+}
+.va--link .va__arrow { margin-left: 0.18em; }
+.va--link::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 0.05em;
+  bottom: 0;
+  left: 0;
+  background: currentcolor;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+.va--link:hover,
+.va--link:focus-visible { color: var(--color-gold, #fbbf24); }
+.va--link:hover::after,
+.va--link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+/* the underline is the ONLY affordance here, so it cannot simply be switched off. Reduced motion
+   gets the same underline with no draw. */
+@media (prefers-reduced-motion: reduce) {
+  .va--link, .va--link::after { transition: none; }
+  .va--link:hover::after, .va--link:focus-visible::after { transform: scaleX(1); }
+}
+
+
+/* ============================================================================================
+   VERSION C - THE OUTLINED BUTTON.  Tier: Remixed.  Idea origin: theirs (dennissnellenberg).
+   REUSED, NOT REBUILT: this is extracted/components/button-kit/ .kit-button--outline plus
+   .kit-button__fill. Put `class="va va--outline kit-button kit-button--outline"` on the element
+   and the kit supplies the border, the transparent ground, the label z-index and the whole fill
+   block. Only the four declarations below are added, and each is forced by this slot.
+
+   The kit's own header warns it is Slop. decisions.css:398-416 already corrected that warning and
+   the correction is what this build follows: the ripple (phojanecki), the fill-sweep and the
+   magnetic behaviour are genuinely sourced and external; only the SHAPES line is circular. The
+   piece reused here is the FILL, whose parent is real:
+     SOURCE: sources/dennissnellenberg-buttons.md, .btn-fill, verbatim -
+     width:150%; height:200%; border-radius:50%; top:-50%; left:-25%; parked at translateY,
+     slid to 0 on hover, clipped by overflow:hidden on the button. Their own source credits
+     codepen.io/tdesero/pen/RmoxQg upstream.
+     Their easing cubic-bezier(.7,0,.3,1) is their --animation-smooth, also verbatim.
+   The kit already carries all of that at .kit-button__fill, which is why it is not repeated here.
+
+   THE FOUR ADDITIONS:
+     1. border-radius:0 - the kit is 8px. Shape pass; decisions.css:406 already squares the kit
+        for .d-meta for exactly this reason.
+     2. padding - the kit is 0.7rem 1.5rem, which builds a 36px-tall button against a 28px
+        reservation. HORIZONTAL 14px is the blockout's own measured value (landing-blockout.html:57
+        `.rowhead .r{padding:7px 14px}`). VERTICAL is DERIVED from the reservation, not chosen:
+        (28 reserved - 18.00 MEASURED line box at 12px - 2 border) / 2 = 4px, and the built
+        component then measures 84.98 x 28.00, hitting the reservation exactly on both axes.
+        The 18.00 was measured on the page, not assumed - a first pass guessed 14 and shipped a
+        32px button, which the demo's own readout caught.
+     3. font-size 12px, matching version A's stripe-measured label so the three are comparable.
+     4. the label inverts to --color-panel-solid, not the kit's --color-night. Same correction as
+        version A and decisions.css:203-221: the warm solid, not the blue-black.
+   ============================================================================================ */
+.va--outline {
+  border-radius: 0;
+  padding: 4px 14px;
+  font-size: 12px;
+  gap: 0.18em;
+  display: inline-flex;
+  align-items: center;
+}
+.va--outline:hover .kit-button__label,
+.va--outline:focus-visible .kit-button__label { color: var(--color-panel-solid, #1c1a18); }
+.va--outline:focus-visible .kit-button__fill { transform: translate3d(0, 0, 0); }
+
+/* Reduced motion: the rising wave is the point of this version, so there is no quiet version of
+   it - it is replaced rather than slowed. The border going gold is the substitute, which is the
+   pattern decisions.css:465-475 already uses on .d-relcard for the same "no motion" requirement. */
+@media (prefers-reduced-motion: reduce) {
+  .va--outline .kit-button__fill { display: none; }
+  .va--outline { transition: border-color 0.2s ease; }
+  .va--outline:hover,
+  .va--outline:focus-visible { border-color: var(--color-gold, #fbbf24); }
+  .va--outline:hover .kit-button__label,
+  .va--outline:focus-visible .kit-button__label { color: var(--color-gold, #fbbf24); }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   *** PICKED 2026-08-23: C, AS A DROP-IN SWAP. ***
+   Rod: "for view all button I guess I like C but also this is changing the layout? not really
+   what I asked for just replace the button the way its laid out now."
+
+   HE IS RIGHT, AND THE CORRECTION MATTERS. Versions A and C both shipped a `.va--row` wrapper
+   with a `.va__square` marker, which REPLACES the row rather than the button. The landing already
+   has its layout:
+
+       <div class="viewall-row slot-lite" data-slot="view all button">
+         <a class="kit-button kit-button--primary js-magnetic" ...>
+           <span class="kit-button__label js-magnetic-inner">View projects</span>
+         </a>
+       </div>
+
+   The ask was to swap the ANCHOR's treatment inside that row. Nothing about `.viewall-row`, the
+   magnetic hooks, the label span or the position changes.
+
+   THE SWAP IS ONE CLASS: `kit-button--primary` -> `kit-button--outline`, plus the fill span the
+   outline variant needs. Both come from button-kit, which already ships them, so this is a class
+   change and not new CSS. Everything below is scoped to `.va--swap` so it CANNOT reach the row.
+
+   `.va--row` and `.va__square` above are KEPT as the provenance copy of what was built, but they
+   are NOT the pick and must not be used on the landing - they are the layout change he rejected.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.va--swap {
+  /* deliberately EMPTY of layout. No display, no margin, no width, no position.
+     The row owns all of that and this must not touch it. */
+  border-radius: 0;                 /* the one thing forced by the shape rule */
+}
+/* the outline variant's own fill sweep is button-kit's and is left to button-kit. Nothing is
+   redeclared here - if this file grows a `display` or a `margin`, it has stopped being a swap. */

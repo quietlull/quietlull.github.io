@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TEXT DECISIONS - everything that displays text, pick one per row</title>
+<!--
+  ===== TEXT DECISIONS (was COMPONENT BLOCKOUT; renamed 2026-08-23, ROD) =====
+
+  Rod: "Rather than making alot of comparison pages just add things to the component block out
+  rename it to Text decisions, include things like headers and just everything meant to display
+  text and add tabs so i can just see and choose the things i like the most."
+
+  ONE page, tabbed, every text-bearing role in a post. No more comparison pages. Two surfaces were
+  folded in and DELETED rather than left to rot: prose-blockout.html (briefly callout-selection)
+  and orb-callout-tests.html.
+
+  ===== THE MEASUREMENT THAT RESHAPED THIS PAGE =====
+
+  Rod: "im realizing we might have been doing all of this for nothing since i was thinking of using
+  the stamp takeaway and the washi tape components for the other callouts."
+
+  He was right. Counted across all 19 posts in _posts/:
+
+      takeaway: (front matter) ....  14 of 19 posts   <- the ONLY callout his writing uses
+      TL;DR .......................   0
+      blockquote > ................   0
+      admonition (tip/info/warn) ..   0
+      pull quote ..................   0
+      margin note .................   0
+      h4 ..........................   0
+      horizontal rule .............   0
+
+  Six of the seven callout candidates were answering a question the writing never asked. The
+  callout tabs are KEPT but re-framed: the takeaway is the decision; the rest are explicitly
+  "do you want to start writing this device", not "pick your favourite".
+
+  What the posts DO contain, which is what the other tabs are sized around:
+      images 46 (7 posts) - list items 45 (7) - h3 24 (6) - inline code 24 (2) - h2 15 (6)
+      code blocks 12 (3) - videos 10 (3) - links 6 (4) - table 7 rows (1 post)
+
+  ===== RULES =====
+  - GREYBOX (D8): geometry only, one grey ramp, no colour. Where a source's COLOUR is the device
+    (links, inline code) the geometry is drawn in grey and the colour is described, not drawn.
+  - Every variant names a real file in sources/. Nothing invented. Roles with no source stay in
+    the "No source" tab, empty.
+  - Every group carries a genuine no-treatment option WHERE A SOURCE ACTUALLY DOES WITHOUT ONE,
+    so the ask gets tested rather than proved.
+-->
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<style>
+@layer reset, tokens, prose, components, overrides;
+/* box-sizing only, but layered for the same reason as everywhere else: an unlayered rule
+   outranks every layer, and a page-level reset must not be able to do that. */
+@layer reset{*{box-sizing:border-box}}
+  body{background:#141414;color:#d9d9d9;font-family:ui-monospace,"SF Mono",Consolas,monospace;
+    margin:0;padding:0 0 140px}
+  .box{border:1.5px dashed #555;background:#1b1b1b}
+  .fill{display:grid;place-items:center;height:100%;color:#666;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;text-align:center;padding:4px}
+  .yy{font-size:9px;color:#777;letter-spacing:.06em}
+
+  header.top{position:sticky;top:0;z-index:20;background:#1f1f1f;border-bottom:1.5px solid #666;
+    padding:18px 28px;display:flex;align-items:baseline;gap:18px}
+  header.top h1{font-size:15px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;margin:0}
+  header.top .sub{font-size:10px;color:#777}
+
+  .wrap{width:min(1400px,94vw);margin:0 auto}
+
+  section.comp{margin-top:70px;border-top:1px solid #2c2c2c;padding-top:26px}
+  section.comp > h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;
+    margin:0 0 4px;font-weight:400}
+  section.comp > .status{font-size:10px;color:#777;margin-bottom:22px}
+  section.comp > .status b{color:#ddd;font-weight:400}
+  .no-source{color:#8a8a8a;border:1.5px dashed #444;padding:14px 16px;font-size:11px;line-height:1.6}
+
+  .variants{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+  .v{border:1px solid #2c2c2c;padding:18px;background:#171717}
+  .v__name{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#ddd;margin-bottom:3px}
+  .v__src{font-size:9px;color:#777;margin-bottom:4px;word-break:break-all}
+  .v__geo{font-size:9px;color:#8a8a8a;line-height:1.55;margin-bottom:14px}
+  .v__demo{margin-top:12px}
+  .v__note{font-size:9px;color:#7d7d7d;line-height:1.5;margin-top:12px;border-top:1px solid #2c2c2c;padding-top:8px}
+
+  /* ---------- CODE BLOCK ---------- */
+  .cb{border:1.5px dashed #555;background:#1b1b1b;overflow:hidden}
+  .cb__bar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;
+    border-bottom:1.5px dashed #555;background:#202020}
+  .cb__pre{padding:14px 12px;background:#101010;min-height:120px}
+  .cb__line{height:8px;background:#2a2a2a;margin-bottom:8px}
+  .cb__gutter{width:26px;border-right:1px solid #2c2c2c;margin-right:10px}
+  /* B: protruding TAB — radius top-two only, no bottom border; body zeroes its top radius */
+  .cb--tab .cb__bar{display:inline-flex;gap:10px;border-radius:8px 8px 0 0;border-bottom:none;
+    border:1.5px dashed #555;border-bottom:none;padding:6px 16px}
+  .cb--tab .cb__pre{border-radius:0 8px 8px 8px;border:1.5px dashed #555;border-top:none}
+  /* C: no bar at all; the copy button STICKS while long code scrolls */
+  .cb--sticky{position:relative;max-height:190px;overflow:auto}
+  .cb--sticky .cb__copy{position:sticky;top:8px;float:right;width:44px;height:44px;margin:8px;
+    border:1.5px dashed #666;background:#1b1b1b}
+
+  /* ---------- META CHIPS ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:0}
+  .chip-a{line-height:30px;padding:0 10px;border:1.5px dashed #555;background:#1b1b1b;
+    font-size:10px;color:#888;margin:5px 10px 5px 0}
+  .chip-b{display:flex;align-items:center;justify-content:center;height:21px;padding:0 12px;
+    border:1px dashed #555;border-radius:100vh;font-size:10px;color:#888;margin-right:8px}
+  .chip-c{display:inline-flex;align-items:center;line-height:1;padding:4px 8px;
+    border:1px dashed #555;font-size:11px;color:#888;margin-right:8px}
+
+  /* ---------- PREV / NEXT ---------- */
+  .pn-a{display:flex;justify-content:space-between;margin-top:1.5em}
+  .pn-a a{flex-basis:50%;flex-grow:1;border:1.5px dashed #555;background:#1b1b1b;padding:12px;
+    font-size:10px;color:#888;text-decoration:none}
+  .pn-a .prev{text-align:right;padding-left:5px}
+  .pn-a .next{text-align:left;padding-right:5px}
+  .pn-b{text-align:center;padding:0}
+  .pn-b li{list-style:none;display:inline;margin:20px;font-size:16px;font-style:italic;color:#999}
+  .pn-b hr{border:0;border-top:1px solid #2c2c2c;margin:12px 0}
+  .pn-c{display:flex;justify-content:space-between;gap:10px;list-style:none;padding:0}
+  .pn-c li a{display:inline-block;padding:10px 20px;border:1px dashed #555;background:#1b1b1b;
+    font-size:10px;color:#888;text-decoration:none}
+
+  /* ---------- HERO MEDIA ---------- */
+  .hero-oct{height:150px;background:#232323;border:1.5px dashed #555;
+    clip-path:polygon(2rem 0,calc(100% - 2rem) 0,100% 2rem,100% calc(100% - 2rem),
+      calc(100% - 2rem) 100%,2rem 100%,0 calc(100% - 2rem),0 2rem)}
+  .hero-mask{height:150px;background:#232323;border:1.5px dashed #555;
+    -webkit-mask-image:radial-gradient(ellipse 120% 100% at 50% 0,#000 60%,transparent 100%);
+    mask-image:radial-gradient(ellipse 120% 100% at 50% 0,#000 60%,transparent 100%)}
+  .hero-wave{height:150px;background:#232323;border:1.5px dashed #555;
+    -webkit-mask-image:radial-gradient(ellipse 50% 22px at 50% 100%,transparent 70%,#000 71%);
+    mask-image:radial-gradient(ellipse 50% 22px at 50% 100%,transparent 70%,#000 71%)}
+
+  /* ---------- CALLOUTS ---------- */
+  .co{display:flex;border:3px dashed #555;background:#1b1b1b;min-height:86px;margin:5px 0}
+  .co__gut{width:24px;flex:none;margin-right:10px;
+    background:repeating-linear-gradient(45deg,#232323,#232323 12px,#191919 12px,#191919 24px)}
+  .co__chip{width:28px;height:28px;border-radius:100%;border:1.5px dashed #666;margin:15px 10px;flex:none}
+  .co__body{padding:12px 14px 12px 0;flex:1}
+  .co-stamp{border:1.5px dashed #555;background:#1b1b1b;padding:18px 20px;position:relative;margin:14px 6px}
+  .co-stamp::before{content:'';position:absolute;inset:-7px;border:1.5px dotted #4a4a4a}
+
+  /* ---------- CALLOUTS, sourced 2026-08-18 ---------- */
+  /* Maxime: border and fill are the SAME token, so the box is an almost-borderless wash */
+  .co-wash{position:relative;padding:16px;border-radius:6px;border:1px solid #3a3a3a;background:#1e1e1e;margin:26px 0 14px}
+  /* the badge ESCAPES the box: 6px ring painted in the PAGE colour knocks the ground back in */
+  .co-wash__badge{position:absolute;top:-20px;right:-20px;width:32px;height:32px;border-radius:50%;
+    padding:4px;border:6px solid #141414;background:#5a5a5a}
+  /* same escape trick as a WORD tab instead of a glyph */
+  .co-wash__tab{position:absolute;top:-16px;right:-8px;padding:6px 10px;border-radius:6px;
+    background:#5a5a5a;color:#141414;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+  /* catlikecoding: the question IS the box; the answer is display:none until .expanded */
+  .co-disc{border:2px solid #4a4a4a;background:#1e1e1e;margin:1em 0;padding:0 1em;font-size:12px}
+  .co-disc__q{text-align:center;padding:1em 0 0;margin:0 0 1em;font-size:12px;color:#aaa;cursor:pointer}
+  .co-disc__a{display:none;padding-bottom:1em}
+  .co-disc--open .co-disc__a{display:block}
+  /* MinionsArt: separates by FILL alone - no border, no rule, no accent bar */
+  .co-fill{padding:7px 20px;margin:10px 0;border-radius:2px;background:#242424}
+  /* MinionsArt: a darker panel with a DOWNWARD shadow, so it reads as below the page */
+  .co-drop{background:#0b0b0b;box-shadow:0 8px 16px 0 rgba(0,0,0,.6);padding:14px;margin:10px 0;font-size:12px}
+  /* stripe.dev: there is no box. The emphasis is a plain italic paragraph in the flow. */
+  .co-none{font-style:italic;color:#9a9a9a;margin:14px 0}
+  /* the measure, so an escaping pull quote has something to escape */
+  .measure{width:78%;margin:0 auto}
+  .pq-escape{width:118%;margin-left:-9%;text-align:center;padding:32px 8px;font-style:italic;
+    font-size:19px;line-height:1.68;color:#b4b4b4}
+  .tldr-flush{font-style:italic;list-style:none;margin:1.5em;padding:0;font-size:12px;color:#9a9a9a}
+  .tldr-flush li{margin:0;padding:0}
+  .ln{height:8px;background:#2a2a2a;margin-bottom:8px}
+  .ln.s{width:64%}
+
+  /* ---------- TOC ---------- */
+  .toc{border-left:1.5px dashed #555;padding-left:14px}
+  .toc div{height:12px;background:#2a2a2a;margin-bottom:10px}
+  .toc .d1{margin-left:16px;width:78%}
+  .toc .active{background:#5a5a5a}
+  .toc-mobile{border:1.5px dashed #555;background:#1b1b1b;padding:10px 12px;
+    display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#888}
+
+  /* ================= TABS (2026-08-23, Rod's ask) ================= */
+  .tabs{position:sticky;top:59px;z-index:19;display:flex;flex-wrap:wrap;
+    background:#1a1a1a;border-bottom:1.5px solid #666;padding:0 20px}
+  .tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+    color:#8a8a8a;font:inherit;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    padding:14px 15px;cursor:pointer}
+  .tabs button:hover{color:#ccc}
+  .tabs button[aria-selected="true"]{color:#fff;border-bottom-color:#c9a227;background:#141414}
+  .tabs .n{color:#5f5f5f;margin-left:7px;font-size:9px}
+  .panel[hidden]{display:none}
+  .panel > section.comp:first-of-type{border-top:0;margin-top:30px}
+
+  .lede{border:1px solid #333;background:#181818;padding:16px 18px;margin-top:34px;
+    font-size:11px;line-height:1.85;color:#9a9a9a;max-width:98ch}
+  .lede b{color:#e4e4e4;font-weight:400}
+  .lede code{color:#c9a227}
+  .status .pick{color:#c9a227}
+  .v--settled{border-color:#4a5f3a;background:#171b15}
+  .v--settled .v__name{color:#b7d29a}
+  .v--never{border-color:#5a3a3a;background:#1b1616;opacity:.72}
+  .v--never .v__name{color:#c58a8a;text-decoration:line-through;text-decoration-thickness:1px}
+  .v--never .v__demo{filter:grayscale(1)}
+
+  .tally{display:grid;grid-template-columns:auto 1fr;gap:3px 16px;font-size:11px;
+    margin:12px 0 0;color:#9a9a9a}
+  .tally b{color:#e4e4e4;font-weight:400}
+  .tally .z{color:#6b6b6b}
+
+  /* ---------- HEADINGS ---------- */
+  .hd-title{font-size:28px;line-height:1.08;color:#d9d9d9;letter-spacing:-.03em;font-weight:300}
+  .hd-sub{font-size:9px;color:#777;margin-top:8px;letter-spacing:.08em}
+  .hd-count{display:flex;align-items:baseline;gap:10px}
+  .hd-count .num{font-size:11px;color:#7d7d7d}
+  .hd-count .txt{font-size:15px;color:#ccc;font-weight:300}
+  .hd-count .rule{flex:1;height:1px;background:#3a3a3a}
+  .hd-anchor,.hd-plain{font-size:15px;color:#ccc;font-weight:300}
+  .hd-anchor .a{color:#5f5f5f;margin-left:6px;font-size:12px}
+
+  /* ---------- BODY: links, inline code, lists ---------- */
+  .bd{font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;line-height:1.8;color:#b4b4b4}
+  .bd a{cursor:pointer}
+  .lk-border{border-bottom:1px solid #555;color:#ccc;text-decoration:none}
+  .lk-border:hover{background:#5a5a5a;color:#141414}
+  .lk-hair{border-bottom:1px solid #3d3d3d;color:#a8a8a8;text-decoration:none}
+  .lk-under{color:#ccc;text-decoration:none}
+  .lk-under:hover{text-decoration:underline}
+  .lk-tint{color:#8f8f8f;text-decoration:none;transition:color .2s}
+  .lk-tint:hover{color:#fff}
+
+  .ic-chip{background:#2a2a2a;color:#cfcfcf;border-radius:3px;padding:1px 6px;
+    font-family:ui-monospace,monospace;font-size:12px;display:inline-block}
+  .ic-ring{background:#1e1e1e;color:#cfcfcf;border:1px solid #3d3d3d;border-radius:3px;
+    padding:2px 6px;font-family:ui-monospace,monospace;font-size:12px;
+    box-shadow:.5px 1px 1px rgba(0,0,0,.45);-webkit-box-decoration-break:clone}
+  .ic-soft{background:#2f2f2f;color:#ddd;border-radius:4px;padding:0 4px;
+    font-family:ui-monospace,monospace;font-size:12px}
+  .ic-nowrap{font-family:Courier,monospace;font-size:13px;white-space:nowrap;color:#cfcfcf}
+  .ic-bare{font-family:ui-monospace,monospace;font-size:13px;color:#cfcfcf}
+
+  .ls-grid{display:grid;gap:8px;padding-left:24px;margin:0}
+  .ls-grid li{color:#b4b4b4;font-size:13px;line-height:1.3}
+  .ls-count{list-style:none;padding:0;margin:0;counter-reset:li}
+  .ls-count li{counter-increment:li;font-size:13px;color:#b4b4b4;margin-bottom:7px;line-height:1.5}
+  .ls-count li:before{content:counters(li,'.') '. ';color:#c9a227;margin-right:6px}
+  .ls-dia{list-style:none;padding:0;margin:0}
+  .ls-dia li{display:list-item;list-style-type:none;padding-left:12px;font-size:13px;
+    color:#b4b4b4;margin-bottom:5px}
+  .ls-dia li:before{content:"\25C6";padding-right:5px;color:#7d7d7d}
+  .ls-bare{padding-left:18px;margin:0}
+  .ls-bare li{padding-bottom:12px;font-size:13px;color:#b4b4b4}
+
+  /* ---------- INLINE EMPHASIS ---------- */
+  .em-nowrap{white-space:nowrap}
+  .em-plain{}
+  .em-role{color:#c9a227;font-weight:bold;font-family:ui-monospace,monospace;font-size:12px}
+  .em-faded{color:#7d7d7d}
+  .del-hl,.ins-hl{background-color:#412c11;color:inherit;font-style:inherit;font-weight:inherit;
+    text-decoration:none;padding:0 3px}
+  .del-hl{text-decoration:line-through}
+
+  /* ---------- THE REMAINING FIVE INLINE ELEMENTS ---------- */
+  .kbd-mdn{background:#1b1b1b;border:solid #6a6a6a;border-width:1px 1px 2px;border-radius:3px;
+    color:#cfcfcf;font-family:ui-monospace,monospace;font-size:12px;padding:.0625em .35em}
+  .mark-fill{background-color:#5a4a12;color:unset;padding:0 2px}
+  .mark-tint{color:#e0c76a;background:0 0}
+  .sup-base{font-size:.75em;vertical-align:baseline}
+  .sup-base a{color:#c9a227;margin-left:.10em;margin-right:.13em}
+  .sup-base + .sup-base{margin-left:.125em}
+  .sup-raise{line-height:0;color:#c9a227}
+  .sub-base{color:#b4b4b4}
+  .abbr-def{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;cursor:help}
+
+  /* ---------- THE HEADING SCALE ---------- */
+  .sc{--h-orange:#ff6a00;--h-yellow:#fbbf24;--h-silver:#a3a19d;
+    --h-body:#f5f3ef;
+    display:grid;grid-template-columns:34px minmax(200px,1fr) minmax(240px,1.1fr);
+    gap:20px 16px;align-items:baseline}
+  .sc__k{font-size:10px;letter-spacing:.16em;color:#c9a227;padding-top:.4em}
+  .sc__n{font-size:10px;line-height:1.7;color:#8a8a8a}
+  .sc__n b{color:#ddd;font-weight:400}
+  .lv0{font-size:33px;font-weight:700;color:var(--h-orange);line-height:1.1}
+  .lv1{font-size:44px;font-weight:300;color:var(--h-orange);letter-spacing:-.03em;line-height:1.05}
+  .lv2{font-size:22px;font-weight:100;color:var(--h-yellow)}
+  .lv2 .cnum{font-size:.68em;color:#7d7d7d;margin-right:.5em}
+  .lv3{font-size:17px;font-weight:100;color:var(--h-silver)}
+  .lv4{font-size:15px;font-weight:300;color:var(--h-silver)}
+  .inv td,.inv th{padding:3px 12px 3px 0;vertical-align:top;font-size:10.5px}
+  .inv code{color:#c9a227}
+  .inv .w7{color:#e08a5a}
+  .inv .w3{color:#8ab77a}
+  .inv .bad{color:#e08a5a}
+  .inv .none{color:#6b6b6b;font-style:italic}
+
+  /* ---------- TAG / META CHIP SHAPES (settled: squares + button rectangles) ---------- */
+  .chip-sq{display:inline-block;border:1px solid rgba(245,158,11,.35);color:#cfc6b8;
+    border-radius:0;font-size:11px;line-height:1;padding:5px 9px;margin:0 8px 8px 0}
+  .chip-rect{display:inline-block;border:1px solid #5a5a5a;color:#b4b4b4;border-radius:0;
+    font-size:11px;line-height:1;padding:9px 16px;margin:0 8px 8px 0}
+  .chip-rect--search{color:#c9a227;border-color:rgba(245,158,11,.35);min-width:180px}
+
+  /* ---------- MARGIN NOTE: before / after ---------- */
+  /* Both rows use the SAME total width and the SAME prose measure. Only the prose POSITION and
+     where the leftover space collects differ - that is the entire decision. */
+  .mn{display:grid;gap:0 22px;align-items:start;border:1px dashed #333;padding:14px;background:#141414}
+  .mn--before{grid-template-columns:1fr minmax(0,44ch) 1fr}
+  .mn--after{grid-template-columns:minmax(0,44ch) 1fr}
+  .mn__prose p{font-size:12px;line-height:1.75;color:#b4b4b4;margin:0 0 10px}
+  .mn__prose code{color:#c9a227}
+  .mn__gut--dead{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#4f4f4f;
+    text-align:center;border:1px dashed #2e2e2e;padding:6px 2px;align-self:stretch;
+    display:grid;place-items:center}
+  .mn__note{font-size:10.5px;line-height:1.7;color:#8a8a8a;border-top:1px solid #3a3a3a;
+    padding-top:7px}
+  @media(max-width:820px){.mn--before,.mn--after{grid-template-columns:1fr}
+    .mn__gut--dead{display:none}}
+
+  /* ---------- WORKED EXAMPLES: pull quote vs margin note ---------- */
+  .ex{border-left:2px solid #333;padding-left:16px;margin:14px 0 18px}
+  .ex__p{font-size:12px;line-height:1.8;color:#9a9a9a;margin:0 0 10px;max-width:62ch}
+  .ex__p code{color:#c9a227}
+  .ex__q{font-size:17px;line-height:1.5;font-style:italic;color:#d9d9d9;text-align:center;
+    margin:16px 0;max-width:none}
+  .ex--margin{display:grid;grid-template-columns:1fr 190px;gap:22px;align-items:start}
+  .ex__note{font-size:10.5px;line-height:1.7;color:#8a8a8a;border-top:1px solid #3a3a3a;padding-top:7px}
+  @media(max-width:720px){.ex--margin{grid-template-columns:1fr}}
+
+  /* ---------- BOXLESS PULL QUOTE, for the tape comparison ---------- */
+  /* .tape-card lives in the imported washi-tape.css; this is its no-box sibling, defined HERE
+     because the component file must not grow a bench-only variant. */
+  .pq-bare{position:relative;width:calc(100% - 38px);margin-left:19px}
+  .pq-bare p{margin:0;font-style:italic;font-size:1rem;line-height:1.7;text-align:center;color:#c4c4c4}
+
+  /* ---------- RELATED POST CARD (project card, stripped) ---------- */
+  .relcard{border:1px solid #3d3d3d;background:#1b1b1b;padding:14px 16px;margin-bottom:10px}
+  .relcard__t{font-size:13px;color:#d9d9d9;line-height:1.35;margin-bottom:6px}
+  .relcard__m{font-size:10px;color:#8a8a8a;letter-spacing:.06em;text-transform:uppercase}
+
+  /* ---------- HEADING COLOUR RAMP ---------- */
+  .sv{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:12px}
+  .sv__c{border:1px solid #333;padding:12px 14px;background:#141414}
+  .sv__sw{display:block;font-size:17px;font-weight:100;margin-bottom:8px}
+  .sv__l{display:block;font-size:9.5px;line-height:1.65;color:#7d7d7d}
+  .sv__l code{color:#c9a227}
+  .ch{display:flex;flex-direction:column;gap:9px}
+  .ch__r{font-weight:300;line-height:1.2}
+
+  /* ---------- TABLE ---------- */
+  .tb{border-collapse:separate;border-spacing:1px;font-size:11px;color:#b4b4b4}
+  .tb-box{border:1px solid #4a4a4a;border-radius:8px;padding:8px;text-align:center;margin:0 auto}
+  .tb-box th{font-weight:100;color:#c9a227;padding:0 4px}
+  .tb-box td{border-radius:4px;padding:3px 7px;background:#242424}
+  .tb-bare td{padding-right:1rem;padding-bottom:5px}
+  /* .tb.tb-picked, not .tb-picked: the generic `.tb-bare th` rule below has equal specificity and
+     comes later in the file, so a single class lost on source order. Found by measuring, not reading. */
+  .tb.tb-picked{border-collapse:collapse}
+  .tb.tb-picked th{color:#fbbf24;font-weight:100;border-radius:0;
+    border-bottom:1px solid rgba(251,191,36,.35);padding:4px 1rem 6px 0;text-align:left}
+  .tb.tb-picked td{border-radius:0;padding:5px 1rem 5px 0}
+  .tb-bare th{text-align:left;color:#8a8a8a;font-weight:400;padding-right:1rem;padding-bottom:5px}
+
+  /* ---------- FIGURE ---------- */
+  .fg{margin:0}
+  .fg-mat{border:1px solid #4a4a4a;background:#1e1e1e;border-radius:4px;padding:8px}
+  .fg-ring{border:2px solid #4a4a4a;border-radius:6px;overflow:hidden;line-height:0}
+  .fg-box .fill{height:92px;background:#232323}
+  .fg-plain .fill{height:92px;border:1.5px dashed #555;background:#1b1b1b}
+  .fg-cap{font-size:11px;font-style:italic;color:#8a8a8a;margin-top:7px}
+  .fg-cap--right{text-align:right}
+  .fg-cap--centre{text-align:center}
+</style>
+<link rel="stylesheet" href="/redesign-lab/focus-ring.css">
+</head>
+<body>
+
+<header class="top">
+  <h1>Text decisions</h1>
+  <span class="sub">everything in a post that displays text &middot; pick one per row &middot;
+    greybox, every variant sourced</span>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" aria-selected="true"  data-p="headings">Headings<span class="n">6</span></button>
+  <button role="tab" aria-selected="false" data-p="body">Body text<span class="n">6</span></button>
+  <button role="tab" aria-selected="false" data-p="callouts">Callouts<span class="n">7</span></button>
+  <button role="tab" aria-selected="false" data-p="code">Code colour<span class="n">4</span></button>
+  <button role="tab" aria-selected="false" data-p="media">Media<span class="n">2</span></button>
+  <button role="tab" aria-selected="false" data-p="nav">Navigation<span class="n">3</span></button>
+  <button role="tab" aria-selected="false" data-p="tables">Tables<span class="n">1</span></button>
+  <button role="tab" aria-selected="false" data-p="nosource">No source<span class="n">1</span></button>
+</div>
+
+<div class="wrap">
+
+<!-- ============================================================ HEADINGS -->
+<div class="panel" id="p-headings">
+
+<div class="lede">
+  <b>Counted from your 19 posts, not guessed.</b> This is what your writing actually contains, and it
+  is why some tabs below hold one decision and others hold four.
+  <div class="tally">
+    <b>takeaway:</b><span>14 of 19 posts &mdash; the only callout you use</span>
+    <b>images</b><span>46 across 7 posts</span>
+    <b>list items</b><span>45 across 7 posts</span>
+    <b>h3 / h2</b><span>24 / 15 across 6 posts</span>
+    <b>inline code</b><span>24 across 2 posts</span>
+    <b>code blocks</b><span>12 across 3 posts</span>
+    <b>videos</b><span>10 across 3 posts</span>
+    <b>links</b><span>6 across 4 posts</span>
+    <b>table</b><span>7 rows in 1 post</span>
+    <span class="z">TL;DR &middot; blockquote &middot; admonition &middot; pull quote &middot; margin note &middot; h4 &middot; hr</span><span class="z">zero. never written once.</span>
+  </div>
+</div>
+
+<section class="comp">
+  <h2>The scale &mdash; H0 to H4, one ladder for every page</h2>
+  <div class="status"><b>Rod 2026-08-23:</b> <i>"im fairly certain we are about to have many different headings
+    ... these should be consistent throughout the pages ... Maybe we need to update it so for example landing
+    page heading is H0 H1 is the stripe heading H2 is another etc."</i>
+    <b class="pick">He is right, and it is already broken.</b> Everything below was MEASURED off the six
+    <code>final-*</code> pages at 1440, computed styles, not read off class names.</div>
+
+  <div class="lede" style="margin-top:0">
+    <b>Five contradictions in what is on the pages today.</b> None of these is a style opinion; they are all
+    measurements.
+    <div class="tally" style="grid-template-columns:auto 1fr">
+      <b>1.</b><span><b>H1 means two different things.</b> Landing's H1 is <b>33px weight 700</b>. The post's
+        H1 is <b>101px weight 300</b>. Same tag, 3&times; the size, opposite weight.</span>
+      <b>2.</b><span><b>H3 means three different things.</b> Post <b>36px w100</b>, landing card title
+        <b>27px w700</b>, about bio head <b>20px w700</b>.</span>
+      <b>3.</b><span><b>The landing's scale is inverted.</b> Its H3 (27px) is <b>larger than its H2</b>
+        (24px).</span>
+      <b>4.</b><span><b>Weight is doing opposite jobs.</b> The post runs 300 and 100 &mdash; stripe's rule
+        that hierarchy never uses weight, which you approved. The landing and about run <b>700
+        everywhere</b>, which is that rule inverted.</span>
+      <b>5.</b><span><b>The post skips H2 entirely</b> &mdash; it goes H1 straight to H3. That is why post-H3
+        is bigger than landing-H2, and it is also a <b>WCAG 1.3.1 heading-order failure</b>, so it has to be
+        fixed regardless of which scale wins.</span>
+    </div>
+  </div>
+
+  <div class="variants" style="grid-template-columns:1fr">
+    <div class="v v--settled">
+      <div class="v__name">ACCEPTED &middot; the H0-H4 ladder</div>
+      <div class="v__src">Structure is ROD'S (H0 for the landing mark). Sizes are the measured current values
+        and stripe's confirmed scale &mdash; nothing here is invented, but <b>the ladder itself is ours</b>.</div>
+      <div class="v__geo">Shown at true relative size, and <b>now carrying the colour ramp you picked</b> (signature orange, orange, yellow, silver, silver, with body white brightest of all).<br><br><b>Weight is the argument</b>: if the stripe rule holds
+        (hierarchy = size + tracking, never weight) then every 700 below becomes a 300 and the landing and
+        about pages both change.<br><br>
+        <b>H0 renders SMALLER than H1 below, and that is not a mistake in the ladder &mdash; it is the
+        measurement.</b> The landing mark is 33px today; the post title is 101px. H0 is a ROLE (the site's
+        name, once per site), not the top of a size ramp, so it does not have to be the biggest thing. Worth
+        deciding on purpose rather than inheriting: <b>should the site's own name be the largest type on the
+        site, or the quietest?</b> The line boil replacing it makes this the right moment to answer that.</div>
+
+      <div class="v__demo">
+        <div class="sc">
+          <div class="sc__k">H0</div>
+          <div class="sc__v"><span class="lv0">rodney fan</span></div>
+          <div class="sc__n"><b>the site mark.</b> Landing hero only, one per SITE not per page.
+            Now <code>.h__name</code> 33px w700. <b class="pick">Being replaced by the line boil</b> &mdash;
+            blocked on your three scratch fonts, so its type is provisional by definition.</div>
+
+          <div class="sc__k">H1</div>
+          <div class="sc__v"><span class="lv1">Compute Grass</span></div>
+          <div class="sc__n"><b>the page title.</b> One per page. Post has it at <b>101px w300</b>, stripe's
+            measured value, already built. <b>Projects, ramblings, about and portal have none at all.</b></div>
+
+          <div class="sc__k">H2</div>
+          <div class="sc__v"><span class="lv2"><span class="cnum">2</span>The Compute Pipeline</span></div>
+          <div class="sc__n"><b>the section break.</b> <b class="pick">Already decided &mdash; case G</b>
+            (counter + rule). <b>But it is currently applied to H3, not H2</b>, which is contradiction 5.
+            Fixing that is a tag change, not a design change.</div>
+
+          <div class="sc__k">H3</div>
+          <div class="sc__v"><span class="lv3">Culling and creation</span></div>
+          <div class="sc__n"><b>the subsection.</b> Case G's nested counter (<code>2.1</code>) already handles
+            this level. Today the landing's section head sits here at 24px w700 and does not match.</div>
+
+          <div class="sc__k">H4</div>
+          <div class="sc__v"><span class="lv4">Compute Grass</span></div>
+          <div class="sc__n"><b>the card / item title.</b> Highest traffic of the lot &mdash; 8 on the landing
+            alone, plus every project and rambling. Now <code>.card-title</code> <b>27px w700</b> and
+            <code>.bio-h</code> <b>20px w700</b>: two different sizes for the same job.</div>
+        
+          <div class="sc__k" style="color:#8a8a8a">body</div>
+          <div class="sc__v"><span style="font-size:13px;color:var(--h-body);line-height:1.7">Compute shaders dispatch in groups of 64 on most desktop GPUs.</span></div>
+          <div class="sc__n"><b class="pick">The brightest thing on the page, on purpose.</b> Your call
+            2026-08-23: pristine white for what gets read most. <b>So H3 and H4 sit UNDER body copy, not
+            above it</b> &mdash; headings recede and the prose leads. That inversion is the whole idea of the
+            ramp and it is the part worth checking on a real post.</div>
+</div>
+      </div>
+
+      <div class="v__note"><b>What picking this costs, stated plainly:</b> the post already matches. The
+        landing and about do not, so adopting one ladder <b>changes every heading on both pages</b> &mdash;
+        that is a layout-affecting change and it needs your direct go, not an inference from this page.
+        Projects, ramblings and portal have no headings yet, so they cost nothing. <b class="pick">ACCEPTED 2026-08-23:</b> Rod: <i>"I accept the ladder proposal."</i> <b>This is layout-affecting and he has now given the direct go it needed.</b> Consequences, stated so the port is not a surprise: <b>the post already matches and does not move.</b> <b>The landing changes on every heading</b> - H1 33px w700 -> the H0 role in orange, H2 24px w700 -> yellow at the H2 step, and its 8 card titles move from 27px w700 to the H4 step, which also fixes its inverted scale. <b>About changes both bio heads</b> and loses its two-different-golds contradiction. <b>The post must also stop skipping H2</b> - it currently runs H1 straight to H3, a WCAG 1.3.1 heading-order failure, so its five section breaks become H2 and case G follows them. <b>Projects, ramblings and portal adopt it for free</b>, having no headings yet.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Every heading on the site today &mdash; measured, all six pages</h2>
+  <div class="status">The raw inventory behind the five contradictions above. Lab chrome excluded (the
+    <code>approved</code> / <code>waiting on you</code> state panel is an H4 on every page and is not design).
+    <b>Nothing here is a proposal</b> &mdash; it is what renders right now at 1440.</div>
+  <div class="variants" style="grid-template-columns:1fr">
+    <div class="v">
+      <div class="v__name">Measured inventory</div>
+      <div class="v__src">computed styles read from the six <code>final-*</code> pages, 2026-08-23</div>
+      <div class="v__demo">
+        <table class="tb tb-bare inv">
+          <tr><th>page</th><th>tag</th><th>class</th><th>size</th><th>weight</th><th>reads</th></tr>
+          <tr><td>landing</td><td>H1</td><td><code>.h__name</code></td><td>33px</td><td class="w7">700</td><td>rodney fan</td></tr>
+          <tr><td>landing</td><td>H2</td><td><code>.section-head</code></td><td>24px</td><td class="w7">700</td><td>Featured Projects, Skills, Reel</td></tr>
+          <tr><td>landing</td><td>H3</td><td><code>.card-title</code> &times;8</td><td class="bad">27px</td><td class="w7">700</td><td>Compute Grass, ...</td></tr>
+          <tr><td>post</td><td>H1</td><td>&mdash;</td><td>101px</td><td class="w3">300</td><td>Compute Grass</td></tr>
+          <tr><td>post</td><td class="bad">H3</td><td>&mdash; &times;5</td><td>36px</td><td class="w3">100</td><td>The Compute Pipeline, ...</td></tr>
+          <tr><td>about</td><td>H3</td><td><code>.bio-h</code></td><td>20px</td><td class="w7">700</td><td>Hey There, I'm Rod</td></tr>
+          <tr><td>about</td><td>H3</td><td><code>.bio-h--lesser</code></td><td>17px</td><td class="w7">700</td><td>More About Me</td></tr>
+          <tr><td>projects</td><td colspan="5" class="none">no design headings &mdash; still blockout</td></tr>
+          <tr><td>ramblings</td><td colspan="5" class="none">no design headings &mdash; still blockout</td></tr>
+          <tr><td>portal</td><td colspan="5" class="none">no design headings &mdash; still blockout</td></tr>
+        </table>
+      </div>
+      <div class="v__note">Every heading on the site is <b>M PLUS Rounded 1c</b>, so the family is already
+        consistent &mdash; <b>size and weight are the whole problem</b>. Three of six pages have no headings at
+        all, which is the cheap half: whatever ladder you pick, half the site adopts it for free.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Heading colour &mdash; is there a hierarchy, or isn't there</h2>
+  <div class="status"><b>Rod 2026-08-23: "show the headers with color as well so there is a default color
+    hierarchy as well."</b> Measured first, and the answer is that <b class="pick">DECIDED &mdash; B with silver tiers</b> (Rod 2026-08-23). Measured first, and the answer was that colour tracked <b>nothing</b>. Three more contradictions on top of the five above, all measured:</div>
+
+  <div class="lede" style="margin-top:0">
+    <div class="tally" style="grid-template-columns:auto 1fr">
+      <b>6.</b><span><b>The landing has it backwards.</b> Its most important heading (H1, your name) is plain
+        white <code>--color-text</code>. Its least important (the card title) is the loudest,
+        <code>--color-gold-deep</code>. Importance and colour run in opposite directions.</span>
+      <b>7.</b><span><b>The post uses ONE colour for two levels.</b> H1 and H3 are both
+        <code>#f59e0b</code>, so colour carries no hierarchy there at all &mdash; which is arguably correct,
+        but it is correct by accident rather than by rule.</span>
+      <b>8.</b><span><b>About contradicts itself inside one page.</b> Two headings at the same level, two
+        different colours: <code>.bio-h</code> is <code>#f59e0b</code> and <code>.bio-h--lesser</code> is
+        <code>#fbbf24</code>.</span>
+    </div>
+    <br><b>A hazard worth knowing before you pick:</b> <code>--color-muted</code> is
+    <code>#9aa3bd</code>, which is a <b>blue</b> grey. It is the last blue left in any text token, and the
+    palette law puts blue only in the sky. <b>Do not reach for it as the bottom of a colour ramp</b> &mdash;
+    if a ramp needs a quiet step, it needs a warm one that does not exist yet.
+  </div>
+
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; one accent for every heading &mdash; acegikmo</div>
+      <div class="v__src">sources/acegikmo-prose.md (CONFIRMED)</div>
+      <div class="v__geo">Every heading level takes the <b>same</b> accent: <code>h1</code>,
+        <code>h3</code>, <code>h4</code>, <code>h5</code> are all <code>color:#ff1155;font-weight:100</code>.
+        <b>Colour says "this is a heading". Size says which one.</b> Colour is not a ladder at all.</div>
+      <div class="v__demo"><div class="ch">
+        <span class="ch__r" style="font-size:22px;color:#f59e0b">Compute Grass</span>
+        <span class="ch__r" style="font-size:16px;color:#f59e0b">The Compute Pipeline</span>
+        <span class="ch__r" style="font-size:13px;color:#f59e0b">Culling and creation</span>
+        <span class="ch__r" style="font-size:13px;color:#b4b4b4">Body copy for comparison.</span></div></div>
+      <div class="v__note"><b>Closest to what the post already does</b> (H1 and H3 both <code>#f59e0b</code>),
+        so picking this makes the post correct-by-rule instead of correct-by-accident, and only the landing
+        and about have to move.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; B &mdash; descending, silver at tiers 3-4</div>
+      <div class="v__src">NO SOURCE &mdash; none of the seven prose references does this</div>
+      <div class="v__geo">The intuitive answer: brightest at the top, fading toward body copy.
+        <code>--color-gold</code> &rarr; <code>--color-gold-deep</code> &rarr; <code>--color-text</code>
+        &rarr; body. <b>Not one reference site does it</b>, which is itself the finding &mdash; and the ramp
+        runs out of warm steps after three, which is why <code>--color-muted</code> is tempting and why that
+        would put blue back in the text.</div>
+      <div class="v__demo"><div class="ch">
+        <span class="ch__r" style="font-size:22px;color:#fbbf24">Compute Grass</span>
+        <span class="ch__r" style="font-size:16px;color:#f59e0b">The Compute Pipeline</span>
+        <span class="ch__r" style="font-size:13px;color:#f5f3ef">Culling and creation</span>
+        <span class="ch__r" style="font-size:13px;color:#b4b4b4">Body copy for comparison.</span></div></div>
+      <div class="v__note"><b>Listed because you asked for a colour hierarchy and this is what one looks
+        like</b> &mdash; but it is UNSOURCED, so taking it is originating a device, not transcribing one.
+        Flagged rather than dressed up. <b class="pick">PICKED 2026-08-23:</b> Rod: <i>"i think we should do B but silver for the 3rd and 4th tiers and keep the pristine white text for the things we are going to be reading the most often."</i> <b>Two things follow, and both are worth stating.</b> (1) <b>B was the UNSOURCED option</b> - no reference site does a descending colour ramp - so this is ORIGINATED, idea origin ROD, and the ledger must file it that way rather than borrow a citation. (2) <b>The ramp now inverts at the bottom on purpose:</b> body copy is the BRIGHTEST thing on the page and tiers 3-4 sit UNDER it. Headings recede, prose leads. That is unusual and it is the interesting part of the call - worth checking it reads as intended on a real post rather than in a swatch.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">C &middot; headings stay body colour, only the STRUCTURE is coloured</div>
+      <div class="v__src">sources/catlikecoding-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>h2:before,h3:before{color:#888;font-size:14px}</code> &mdash; the heading text
+        itself gets no colour rule at all and inherits body ink. <b>Only the counter is tinted, and it is
+        tinted DOWN, not up.</b> Colour marks the scaffolding; the words stay words.</div>
+      <div class="v__demo"><div class="ch">
+        <span class="ch__r" style="font-size:22px;color:#f5f3ef"><span style="color:#8a8a8a;font-size:.68em">1 </span>Compute Grass</span>
+        <span class="ch__r" style="font-size:16px;color:#f5f3ef"><span style="color:#8a8a8a;font-size:.68em">2 </span>The Compute Pipeline</span>
+        <span class="ch__r" style="font-size:13px;color:#f5f3ef"><span style="color:#8a8a8a;font-size:.68em">2.1 </span>Culling and creation</span>
+        <span class="ch__r" style="font-size:13px;color:#b4b4b4">Body copy for comparison.</span></div></div>
+      <div class="v__note"><b>This is half of the section break you already approved</b> &mdash; case G is
+        catlikecoding's counter on acegikmo's rule. Taking C here would make the whole system one source's
+        logic. <b>But it contradicts the post as built</b>, where the heading text IS gold. That is the real
+        trade: consistency with your approved counter, or with your approved post.</div>
+    </div>
+  </div>
+
+  <div class="lede" style="margin-top:26px">
+    <b class="pick">SILVER DOES NOT EXIST YET, and it must not be guessed.</b> There is no silver token, and
+    <code>--color-muted</code> <code>#9aa3bd</code> is the blue one the palette law rules out. So rather than
+    pull a hex from nowhere, here are three silvers <b>DERIVED from tokens already on the site</b> - each is a
+    mix of the white you are keeping and a surface you already approved, so none of them introduces a new hue.
+    <b>Pick one, or say "warmer" / "cooler" and I will re-derive.</b>
+    <div class="sv">
+      <div class="sv__c"><span class="sv__sw" style="color:color-mix(in srgb, #f5f3ef 72%, #1c1a18)">Culling and creation</span>
+        <span class="sv__l">i &middot; <code>mix(--color-text 72%, --color-panel-solid)</code><br>warm silver, follows the panel</span></div>
+      <div class="sv__c"><span class="sv__sw" style="color:color-mix(in srgb, #f5f3ef 62%, #1c1a18)">Culling and creation</span>
+        <span class="sv__l">ii &middot; <code>mix(--color-text 62%, --color-panel-solid)</code><br>the same, one step quieter</span></div>
+      <div class="sv__c"><span class="sv__sw" style="color:color-mix(in srgb, #f5f3ef 92%, #f59e0b 8%)">Culling and creation</span>
+        <span class="sv__l">iii &middot; <code>mix(--color-text 92%, --color-gold-deep 8%)</code><br>silver carrying a trace of the accent</span></div>
+    </div>
+    <br><b class="pick">MEASURED against the real reading well (<code>#080f1b</code>), and it changes the
+    recommendation.</b> All three clear WCAG AA at 4.5:1, so contrast is not the deciding factor. <b>What
+    decides it is whether the ramp actually descends</b>, and two of the three break it:
+    <div class="tally" style="grid-template-columns:auto auto 1fr;margin-top:10px">
+      <b>i</b><span><code>#b8b6b3</code> &middot; <b>9.51</b></span>
+        <span><b>BREAKS THE RAMP.</b> Brighter than gold-deep (8.93), so H3/H4 would out-shout H2.</span>
+      <b>ii</b><span><code>#a3a19d</code> &middot; <b>7.40</b></span>
+        <span><b class="pick">The only one that works.</b> Sits below gold-deep and above nothing else &mdash;
+          gold 11.49 &gt; gold-deep 8.93 &gt; silver 7.40, a genuinely monotonic descent.</span>
+      <b>iii</b><span><code>#f5ecdd</code> &middot; <b>16.40</b></span>
+        <span><b>Not silver at all.</b> Within a hair of body white (17.31), so it reads as warm white and
+          erases the step entirely.</span>
+    </div>
+    <br><b class="pick">PICKED 2026-08-23: ii, <code>#a3a19d</code>.</b> Rod: <i>"Lets take ii."</i> It is <code>color-mix(in srgb, --color-text 62%, --color-panel-solid)</code>, so it is derived from two tokens you already approved rather than being a new hue - worth baking as a real token, <code>--color-silver</code>, so H3/H4 reference a name and not a literal.<br><br>The one thing to watch: The one thing to
+    weigh is that ii is the dimmest text on the page and it lands on H3/H4, which on the post are your
+    section headings &mdash; check it on a real post rather than in a swatch. Body white measures 17.31, so
+    the inversion you asked for is real and large: <b>prose is more than twice the contrast of the headings
+    above it.</b>
+  </div>
+
+  <div class="lede" style="margin-top:14px">
+    <b class="pick">MEASURED, and the finished ramp no longer descends by brightness.</b> All five values clear
+    WCAG comfortably, so nothing here is a failure &mdash; but the ORDER is not what "descending" implied, and
+    you should see it before it ships. Against the reading well <code>#080f1b</code>:
+    <div class="tally" style="grid-template-columns:auto auto 1fr;margin-top:10px">
+      <b>body</b><span>white <code>#f5f3ef</code> &middot; <b>17.31</b></span><span>brightest thing on the page &mdash; your call, and it works</span>
+      <b>H2</b><span>yellow <code>#fbbf24</code> &middot; <b>11.49</b></span><span>brightest HEADING</span>
+      <b>H3/H4</b><span>silver <code>#a3a19d</code> &middot; <b>7.44</b></span><span>as intended, sits under H2</span>
+      <b>H0/H1</b><span>orange <code>#ff6a00</code> &middot; <b>6.68</b></span><span><b>the dimmest of the lot</b></span>
+    </div>
+    <br><b>So your two most important headings are the lowest-contrast text on the page</b>, and H3/H4 silver
+    is brighter than them. <b>That may well be right</b> &mdash; orange is a saturated hue that reads loud at
+    low luminance, H1 is 101px so size is doing the shouting, and the signature colour arguably should be an
+    identity rather than a volume. But it is the opposite of what a brightness ramp does, so it is worth
+    owning deliberately.<br><br>
+    <b>If you want H0/H1 to lead on brightness too</b>, the cheap fix is a lighter tint of the same signature
+    hue for text use only, leaving <code>--color-glow</code> untouched where it lights the scene &mdash; the
+    ember and the wordmark do not have to be the same value to be the same colour.
+  </div>
+
+  <div class="lede" style="margin-top:14px">
+    <b>This pick just changed the bold question one tab over.</b> I had offered "bold takes pristine white while
+    body sits slightly under it" as the cheapest way to avoid spending an accent. <b>That option is now dead</b>
+    &mdash; you have made body copy itself pristine white, so bold cannot be brighter than its surroundings.
+    Coloured bold therefore has to take <b>gold</b>, which is the same colour tiers 1-2 use. Not necessarily
+    wrong (bold is inline, headings are blocks, so they rarely touch) but it is now a deliberate reuse rather
+    than an accident, and it wants your word.
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Post title &mdash; the h1</h2>
+  <div class="status">Built on <code>final-post.html</code> at stripe's measured 101px / 93 line, weight 300,
+    -0.06em, with an <code>::after</code> backing (P30). <b class="pick">DECIDED &mdash; A, stripe.dev</b> (Rod 2026-08-23). It was already built, so nothing has to change.</div>
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; A &mdash; stripe.dev, size carries it</div>
+      <div class="v__src">sources/stripe-dev-prose.md (CONFIRMED)</div>
+      <div class="v__geo">Headings take <code>margin:40px 0 0</code> &mdash; margin-TOP only, never bottom &mdash;
+        and <code>strong</code> inside a heading is forced back to <b>weight 300</b>. The whole hierarchy is
+        size plus negative tracking; nothing is ever bolded. <b>This is what is built now.</b></div>
+      <div class="v__demo"><div class="hd-title">A post title that runs to two lines</div>
+        <div class="hd-sub">101 / 93 &middot; WEIGHT 300 &middot; -0.06EM</div></div>
+      <div class="v__note">Approving this closes the slot. Rejecting it needs B, C, or a new source. <b class="pick">PICKED 2026-08-23:</b> Rod 2026-08-23. Already what `final-post.html` renders, so <b>this slot is now closed and needs no rebuild</b> - 101px / 93 line, weight 300, -0.06em. The `margin-TOP only` rhythm and `strong{font-weight:300}` inside headings come with it.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">B &middot; acegikmo &mdash; centred, ruled under</div>
+      <div class="v__src">sources/acegikmo-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>text-align:center; margin-top:60px; font-weight:100;
+        border-bottom:solid 1px</code>. The rule under the title is the device, and the weight is
+        <b>100</b> &mdash; lighter than stripe's 300.</div>
+      <div class="v__demo"><div class="hd-title" style="text-align:center;font-weight:100;border-bottom:1px solid #3a3a3a;padding-bottom:10px">A post title that runs to two lines</div></div>
+      <div class="v__note">Half of your section-break pick (case G) is already acegikmo, so this would rhyme
+        with your h2s rather than contrast with them.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">C &middot; Book of Shaders &mdash; italic, tight</div>
+      <div class="v__src">sources/bookofshaders-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>font-size:46px; font-style:italic; line-height:0; margin-top:60px;
+        font-weight:normal</code>. The <code>line-height:0</code> is real, and is why their titles sit so
+        tight to whatever follows.</div>
+      <div class="v__demo"><div class="hd-title" style="font-style:italic;font-size:25px">A post title that runs to two lines</div></div>
+      <div class="v__note">The only slanted one. Their <code>line-height:0</code> collapses any title that
+        wraps, so taking it means fixing it &mdash; which makes it a remix, not a transcription.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Section heads &mdash; h2 and h3</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; case G</b> (D28, pushed live to the post in P97).
+    Catlike Coding's nested COUNTERS on acegikmo's ruled chapter DIVIDER. Shown so the page is complete,
+    not to re-open it.</div>
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">SETTLED &middot; case G &mdash; counter + rule</div>
+      <div class="v__src">sources/catlikecoding-prose.md + sources/acegikmo-prose.md (both CONFIRMED)</div>
+      <div class="v__geo">Catlike: <code>body{counter-reset:h2}</code>, <code>h2{counter-reset:h3}</code>,
+        <code>h2:before{content:counter(h2)" "}</code>, <code>h3:before{content:counter(h2)"."counter(h3)" "}</code>
+        at <b>14px against a 20px heading</b> &mdash; the 0.68 ratio you asked to keep as an <code>em</code>.
+        acegikmo supplies the 1px rule. They merge because <b>neither uses SIZE to carry hierarchy</b>.</div>
+      <div class="v__demo">
+        <div class="hd-count"><span class="num">2</span><span class="txt">The compute pipeline</span><span class="rule"></span></div>
+        <div class="hd-count" style="margin-top:16px;padding-left:14px"><span class="num">2.1</span><span class="txt">Culling and creation</span><span class="rule"></span></div>
+      </div>
+      <div class="v__note">Verified live: weight 100, deep gold, centred, counter at 0.68em, margins 72px above
+        / 36px below. <b>You have no h4 in any of 19 posts</b>, so the scale stops at h3 on purpose.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Heading anchors &mdash; the link-to-this-section mark</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; A, Maxime Heckel</b> (Rod 2026-08-23). Three sources that disagreed on whether the mark shows at rest.
+    <b>39 headings across 6 posts</b>, so whatever this is, it repeats.</div>
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; A &mdash; Maxime Heckel, appears on hover</div>
+      <div class="v__src">sources/maximeheckel-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>.anchor-link{opacity:0;transition:opacity .2s ease;margin-left:.33rem}</code>
+        with <code>h2:hover .anchor-link{opacity:1}</code>, plus <code>h2,h3{scroll-margin-top:6.6rem}</code>
+        so the jump does not park the heading under a sticky bar. Also <code>:focus-visible{opacity:1}</code>
+        &mdash; keyboard users get it too, which most implementations forget.</div>
+      <div class="v__demo"><div class="hd-anchor">The compute pipeline<span class="a" style="opacity:.12">#</span></div>
+        <div class="hd-anchor" style="margin-top:10px">Same heading, hovered<span class="a">#</span></div></div>
+      <div class="v__note">Invisible until wanted, costs nothing at rest, and the only one handling the
+        sticky-bar offset and keyboard focus. <b>Unreachable on a phone</b> &mdash; there is no hover. <b class="pick">PICKED 2026-08-23:</b> Rod 2026-08-23. <b>Carries an open consequence:</b> a hover-only anchor is unreachable on touch, which the variant note already flagged. Either the TOC covers phones or this needs a touch path - worth one word, not a blocker.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">B &middot; Ronja &mdash; always visible, quiet</div>
+      <div class="v__src">sources/ronja-tutorials-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>.hanchor:link,.hanchor:visited{color:silver;text-decoration:none}</code>,
+        <code>.hanchor:hover{visibility:visible;color:gray}</code>. Permanently present, just quiet.
+        Same subject matter as your posts (Unity shader tutorials).</div>
+      <div class="v__demo"><div class="hd-anchor">The compute pipeline<span class="a">#</span></div>
+        <div class="hd-anchor" style="margin-top:10px">Culling and creation<span class="a">#</span></div></div>
+      <div class="v__note">Works on touch, which A does not. The trade is a permanent mark next to all 39
+        headings.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">C &middot; no anchor at all</div>
+      <div class="v__src">sources/stripe-dev-prose.md + sources/acegikmo-prose.md &mdash; neither has one</div>
+      <div class="v__geo">Nothing. Two of the seven prose sources read simply do not offer per-heading links.
+        Here so the ask gets tested rather than proved &mdash; the same reason the section-break page carried
+        three box-free options.</div>
+      <div class="v__demo"><div class="hd-plain">The compute pipeline</div>
+        <div class="hd-plain" style="margin-top:10px">Culling and creation</div></div>
+      <div class="v__note"><b>Decide this together with the TOC</b> in the Navigation tab &mdash; if the TOC
+        lands, per-heading anchors largely duplicate it.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============================================================ BODY TEXT -->
+<div class="panel" id="p-body" hidden>
+
+<section class="comp">
+  <h2>The measure &mdash; how wide the text runs</h2>
+  <div class="status"><b class="pick">DECIDED</b> &mdash; 94 characters (P33, your call: "lets go with 94 it
+    feels about right"), rendered as <code>94ch &times; 8.16px = 767px</code>. Body is stripe's weight 300
+    at 130% line-height (P24).</div>
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">SETTLED &middot; 94 characters, weight 300</div>
+      <div class="v__src">sources/stripe-dev-prose.md (CONFIRMED) &mdash; your width, their type</div>
+      <div class="v__geo">stripe: <code>p,li{font-size:16px;font-weight:300;line-height:130%;
+        letter-spacing:-.18px}</code>, rising to <b>18px above 960px</b>. The corrected rhythm is
+        <b>margin-TOP only</b>, 40px for headings and 24px for lists &mdash; never margin-bottom.</div>
+      <div class="v__demo"><div class="bd" style="max-width:46ch">Compute shaders dispatch in groups of 64
+        on most desktop GPUs, so a thread count that is not a multiple of 64 leaves lanes sitting idle.</div></div>
+      <div class="v__note">This is what <code>final-post.html</code> renders at now. Nothing to pick.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Prose links</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; A, stripe.dev</b> (Rod 2026-08-23). Four sources, four genuinely different mechanisms. <b>Only 6 links across 4 posts</b>,
+    so this is low-traffic &mdash; but it also sets how every link on the site behaves.</div>
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; A &mdash; stripe.dev, hairline that inverts</div>
+      <div class="v__src">sources/stripe-dev-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>a{border-bottom:1px solid var(--borderColor);transition:background-color
+        .1s linear}</code> and <code>a:hover{background-color:var(--highlightColor);
+        color:var(--invertedTextColor)}</code>. The hover FILLS the link and flips the text to the page
+        colour &mdash; a highlighter, not an underline.</div>
+      <div class="v__demo"><div class="bd">The pipeline follows <a class="lk-border">GPU Gems (2004)</a>
+        closely, with <a class="lk-border">22 years of community work</a> layered on.
+        <span style="color:#777;font-size:10px">&larr; hover them</span></div></div>
+      <div class="v__note">Loudest on hover, quietest at rest. The inversion needs a solid highlight colour,
+        which over the live scene means an opaque swatch &mdash; the one thing to check before picking it. <b class="pick">PICKED 2026-08-23:</b> Rod 2026-08-23. <b>One thing to check before it ships:</b> the hover fills the link with a solid highlight and flips the text to the page colour. Over the live scene that highlight must be OPAQUE or the inversion reads as mud - so it takes `--color-panel-solid`, not `--color-panel`.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">B &middot; Book of Shaders &mdash; permanent hairline, no hover</div>
+      <div class="v__src">sources/bookofshaders-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>a{text-decoration:none;color:#555;border-bottom:1px solid #ccc}</code>, and
+        <code>a:hover,a:visited,a:link,a:active</code> all collapse to the same rule &mdash;
+        <b>the link never reacts at all</b>. Deliberate: it is a book, not an app.</div>
+      <div class="v__demo"><div class="bd">The pipeline follows <a class="lk-hair">GPU Gems (2004)</a>
+        closely, with <a class="lk-hair">22 years of community work</a> layered on.</div></div>
+      <div class="v__note">The rule under the text is lighter than the text, so links read as annotated rather
+        than highlighted. No hover state at all is a real position, not an oversight.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">C &middot; acegikmo &mdash; colour at rest, underline on hover</div>
+      <div class="v__src">sources/acegikmo-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>a{color:#ff1155;text-decoration:none}</code> then
+        <code>a:hover{color:#ff1155;text-decoration:underline}</code> &mdash; the colour never changes, only
+        the underline arrives. The conventional web behaviour, done deliberately.</div>
+      <div class="v__demo"><div class="bd">The pipeline follows <a class="lk-under">GPU Gems (2004)</a>
+        closely, with <a class="lk-under">22 years of community work</a> layered on.
+        <span style="color:#777;font-size:10px">&larr; hover them</span></div></div>
+      <div class="v__note">Their hot pink cannot transfer (palette law). Drawn in grey; the real question is
+        the mechanism, and this one leans entirely on colour to mark a link at rest.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">D &middot; iquilezles &mdash; tint that brightens</div>
+      <div class="v__src">sources/iquilezles-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>a{color:#ffa0a0;text-decoration:none;transition:0.2s}</code> and
+        <code>a:hover{color:#ffffff}</code> &mdash; a muted tint that goes to full white. No rule, no fill,
+        no underline anywhere. Also a shader site, same audience as yours.</div>
+      <div class="v__demo"><div class="bd">The pipeline follows <a class="lk-tint">GPU Gems (2004)</a>
+        closely, with <a class="lk-tint">22 years of community work</a> layered on.
+        <span style="color:#777;font-size:10px">&larr; hover them</span></div></div>
+      <div class="v__note">The quietest of the four and the only one with no geometry at all &mdash; which means
+        it is <b>the one most at risk on the a11y check</b>: colour alone cannot be the sole indicator
+        (WCAG 1.4.1). Would need a rule adding, making it a remix.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Inline code</h2>
+  <div class="status"><b>24 uses across 2 posts</b> &mdash; and both are your densest technical writing, so
+    this shows up in runs rather than one at a time. Four sources, plus one that draws nothing.</div>
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; stripe.dev &mdash; filled chip</div>
+      <div class="v__src">sources/stripe-dev-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>background:var(--navButtonBG);border-radius:3px;font-size:16px;
+        display:inline-block;text-wrap:pretty</code>. Fill, no border. <code>display:inline-block</code> is
+        the notable part &mdash; it stops the chip breaking across a line, at the cost of ragging the measure.</div>
+      <div class="v__demo"><div class="bd">Call <span class="ic-chip">Graphics.DrawProceduralIndirect</span>
+        once per frame and the <span class="ic-chip">RWStructuredBuffer</span> does the rest.</div></div>
+      <div class="v__note">Radius 3px would be squared under your shape rule (D20), which is a one-line change
+        and does not damage the device.</div>
+    </div>
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; B &mdash; Maxime Heckel, bordered chip</div>
+      <div class="v__src">sources/maximeheckel-prose.md (CONFIRMED)</div>
+      <div class="v__geo">Fill plus <code>border:1px solid var(--border-color)</code> plus
+        <code>box-shadow:0.5px 1px 1px</code>, and <code>-webkit-box-decoration-break:clone</code> so a chip
+        that DOES wrap keeps its border on both fragments. The most carefully built of the four.</div>
+      <div class="v__demo"><div class="bd">Call <span class="ic-ring">Graphics.DrawProceduralIndirect</span>
+        once per frame and the <span class="ic-ring">RWStructuredBuffer</span> does the rest.</div></div>
+      <div class="v__note">The shadow is a lift, which is close to the glass tell you have been stripping
+        elsewhere. <code>box-decoration-break</code> is the genuinely useful idea and transfers on its own. <b class="pick">PICKED 2026-08-23:</b> Rod chose this over the three others. <b>The coupling warning does not bite:</b> catlikecoding's <code>b,code,i</code> single rule was the reason inline code and bold could not be decided apart - by taking Maxime here and acegikmo for bold, that knot never forms. <b>Two things to settle at build time:</b> its <code>box-shadow</code> is a lift, which is close to the glass tell being stripped elsewhere, and the radius squares under D20. <code>box-decoration-break:clone</code> is the part worth keeping whatever else changes - it keeps the border intact on a chip that wraps.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">C &middot; acegikmo &mdash; soft chip, no border</div>
+      <div class="v__src">sources/acegikmo-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>msp{font-family:monospace;background:#eee;padding:0px 4px;
+        border-radius:4px}</code>. Four declarations, nothing else. They also carry a second inline role,
+        <code>propname</code>, that is colour-only with no chip &mdash; two registers for two jobs.</div>
+      <div class="v__demo"><div class="bd">Call <span class="ic-soft">Graphics.DrawProceduralIndirect</span>
+        once per frame and the <span class="ic-soft">RWStructuredBuffer</span> does the rest.</div></div>
+      <div class="v__note">Tightest vertical padding of the four, so it disturbs the line rhythm least &mdash;
+        worth weighing given 24 of these land in two posts.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">D &middot; catlikecoding &mdash; no chip, just monospace that cannot break</div>
+      <div class="v__src">sources/catlikecoding-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>code{font:13px Courier,monospace}</code> and
+        <code>b,code,i{white-space:nowrap}</code>. No fill, no border, no radius. The only marking is the
+        typeface and the refusal to wrap. Same subject matter as your posts.</div>
+      <div class="v__demo"><div class="bd">Call <span class="ic-nowrap">Graphics.DrawProceduralIndirect</span>
+        once per frame and the <span class="ic-nowrap">RWStructuredBuffer</span> does the rest.</div></div>
+      <div class="v__note">The no-treatment option, and it is a real one rather than a strawman &mdash; a whole
+        shader-tutorial site runs on it. <b>Quietest by a distance in a paragraph carrying 12 of them.</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Inline emphasis &mdash; bold, italic, strikethrough</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; C's coloured bold + D's strikeout</b> (Rod 2026-08-23). <b>That is two sources combined, so the RESULT is ours and is filed as a remix</b>: acegikmo supplies the bold treatment, catlikecoding supplies <code>del</code>/<code>ins</code>, and no single reference does both. <b>Rod 2026-08-23: "we should have the full set even if we dont use everything."</b>
+    Measured first, so the page is honest about why it exists: <b>bold appears 2 times in 1 post; italic,
+    strikethrough, <code>&lt;sup&gt;</code>, <code>&lt;sub&gt;</code>, <code>&lt;kbd&gt;</code>,
+    <code>&lt;mark&gt;</code>, <code>&lt;abbr&gt;</code>, underline and footnotes appear ZERO times</b> across
+    all 19 posts. This is a completeness decision, not a traffic decision &mdash; which is exactly how he
+    framed it. Only three sources define these at all.</div>
+
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; catlikecoding &mdash; bold, italic and code are ONE rule</div>
+      <div class="v__src">sources/catlikecoding-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>b,code,i{white-space:nowrap}</code> &mdash; that is the entire generic
+        treatment. No weight, no size, no colour: <b>the only thing bold and italic are given is a refusal to
+        break across lines</b>, inherited from the browser otherwise. Emphasis then happens through
+        <b>named roles</b>, not tags: <code>.directive{font-weight:700}</code>,
+        <code>.comment{font-style:italic}</code>, <code>.keyword</code>, <code>.constant</code> and five
+        typed variants, each a colour plus a weight.</div>
+      <div class="v__demo"><div class="bd">The buffer is <b class="em-nowrap">written once</b> at bake time,
+        and the <i class="em-nowrap">dispatch order</i> is what actually matters.</div></div>
+      <div class="v__note"><b>This one is already half-picked.</b> catlikecoding is option D in the Inline code
+        row above, and <code>b,code,i</code> is a single rule &mdash; taking their inline code takes this bold
+        and italic with it. The two rows are coupled; deciding them apart is how you end up with a
+        contradiction.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">B &middot; stripe.dev &mdash; bold exists, but never in a heading</div>
+      <div class="v__src">sources/stripe-dev-prose.md (CONFIRMED)</div>
+      <div class="v__geo">The only rule they write for <code>strong</code> actively <b>cancels</b> it:
+        <code>:is(articleBody&gt;h2, &gt;h3, &gt;h4, &gt;h5, &gt;h6) strong{font-weight:300}</code>. Bold in
+        body copy is left at the browser default, which reads strongly because their body is
+        <b>weight 300</b>. Bold inside a heading is dragged back down to 300 so it cannot exist.</div>
+      <div class="v__demo"><div class="bd">The buffer is <b class="em-plain">written once</b> at bake time,
+        and the <i class="em-plain">dispatch order</i> is what actually matters.</div>
+        <div class="hd-count" style="margin-top:14px"><span class="num">2</span><span class="txt">A heading with <b style="font-weight:300">bold</b> in it</span><span class="rule"></span></div></div>
+      <div class="v__note">Consistent with the heading rule you already have: <b>their whole hierarchy refuses
+        to use weight</b>, so letting bold into a heading would break the one device the reference is built
+        on. Worth taking on that argument alone, even if you pick another source for the emphasis itself.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; C &mdash; coloured bold (acegikmo treatment)</div>
+      <div class="v__src">sources/acegikmo-prose.md (CONFIRMED)</div>
+      <div class="v__geo">There is no <code>b</code> or <code>strong</code> rule at all. Instead custom
+        elements carry meaning: <code>propname{color:#ff1155;font-weight:bold;font-family:monospace}</code>
+        and <code>faded{color:#ccc}</code>. <b>Emphasis is a vocabulary, not a toggle</b> &mdash; you mark what
+        a thing IS, and the styling follows.</div>
+      <div class="v__demo"><div class="bd">The buffer is <span class="em-role">_BladeTipOffsets</span> at bake
+        time, and the <span class="em-faded">dispatch order</span> is what actually matters.</div></div>
+      <div class="v__note">The most disciplined and the most expensive: it needs you to write
+        <code>&lt;propname&gt;</code> rather than <code>**bold**</code>, which markdown does not give you
+        without a plugin. <b>Their pink cannot transfer</b> (palette law). Realistically a long-term direction,
+        not this week's pick. <b class="pick">PICKED 2026-08-23:</b> Rod: <i>"C's colored bold"</i>. <b>He is taking the LOOK, not the mechanism</b> - acegikmo marks bold with custom elements (<code>&lt;propname&gt;</code>) and markdown cannot emit those without a plugin, which the note above flagged. So this becomes <code>strong{color:&lt;accent&gt;;font-weight:bold}</code> driven by ordinary <code>**bold**</code>. <b>That drops acegikmo's semantic-vocabulary idea and keeps its appearance, which makes this a REMIX, not a transcription</b> - filed as such rather than cited clean. <b>Their <code>#ff1155</code> cannot transfer</b> (palette law), so the accent is unchosen - see the note below the demo.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; D &mdash; catlikecoding del / ins</div>
+      <div class="v__src">sources/catlikecoding-prose.md (CONFIRMED) &mdash; no other prose source defines
+        <code>del</code> or <code>ins</code></div>
+      <div class="v__geo"><code>del,ins{background-color:#fafa99;color:inherit;font-style:inherit;
+        font-weight:inherit;text-decoration:none}</code>, then <code>del{text-decoration:line-through}</code>,
+        and <code>.dark del,.dark ins{background-color:#411}</code>. <b>Both get a highlight; only
+        <code>del</code> gets the line.</b> Note <code>text-decoration:none</code> on the shared rule &mdash;
+        they explicitly strip the default underline from <code>ins</code> and let the highlight carry it.</div>
+      <div class="v__demo"><div class="bd">Set the thread count to <del class="del-hl">32</del>
+        <ins class="ins-hl">64</ins> so no lanes sit idle.</div>
+        <div class="hd-sub" style="margin-top:8px">HIGHLIGHT + LINE &middot; HIGHLIGHT ONLY</div></div>
+      <div class="v__note"><b>The one on this page most likely to earn its place despite zero current use.</b>
+        You write shader tutorials, and "this value changed" is a thing that recurs &mdash; catlikecoding
+        built this for exactly that. Their <code>#411</code> dark-mode highlight is a warm near-black and is
+        one of the few source colours that would survive the palette law almost unchanged. <b class="pick">PICKED 2026-08-23:</b> Rod: <i>"D's strikeout"</i>. Taken verbatim - both get the highlight, only <code>del</code> gets the line, and <code>ins</code>'s default underline is explicitly stripped. <b>ONE TENSION HE SHOULD SEE:</b> he rejected <code>mark</code> because he dislikes the highlight look, and this device uses a highlight too. They are different objects, so keeping both is coherent - but if the highlight is what he disliked, the fix is to drop the fill and keep <code>line-through</code> alone. One line either way.</div>
+    </div>
+  </div>
+
+  <div class="lede" style="margin-top:26px">
+    <b class="pick">DECIDED &mdash; bold takes the H2 yellow.</b> Rod 2026-08-23: <i>"i wanted bold to take on a
+    yellow color that we use for H2."</i> So <code>strong{color:var(--color-gold);font-weight:bold}</code>,
+    <code>#fbbf24</code>, the same value H2 uses.<br><br>
+    <b>This is deliberate reuse, not a clash</b>, and the earlier warning is withdrawn: bold is inline and H2
+    is a block, so they almost never sit adjacent. <b>Measured:</b> <code>#fbbf24</code> against the reading
+    well is <b>11.49:1</b>, well past the 4.5:1 inline text needs. One thing to watch at build:
+    <b>a whole sentence in bold becomes a whole sentence in yellow</b>, which is louder than a bolded phrase.
+    If that reads badly on a real post the fix is a weight change, not a colour change.
+  </div>
+</section>
+
+<section class="comp">
+  <h2>The remaining five &mdash; kbd, mark, sup, sub, abbr</h2>
+  <div class="status">Sourced 2026-08-23 on Rod's ask. <b>Nine sites fetched and grepped</b>, not assumed:
+    MDN (all 8 bundles), Starlight/astro (8), catlikecoding, acegikmo, iquilezles, Book of Shaders, Ronja,
+    Tufte CSS, gwern.net. Full note: <code>sources/inline-elements-kbd-mark-sup-sub-abbr.md</code>.
+    <b>Three of the five come from sites already in the ledger.</b> <b class="pick">One of the five has no
+    designed treatment anywhere and that is a finding, not a gap.</b></div>
+
+  <div class="variants">
+    <div class="v v--never">
+      <div class="v__name">REJECTED &middot; kbd &mdash; MDN</div>
+      <div class="v__src">developer.mozilla.org &mdash; styles-content-section bundle (CONFIRMED)</div>
+      <div class="v__geo"><b>The whole device is <code>border-width: 1px 1px 2px</code></b> &mdash; a thicker
+        BOTTOM border and nothing else. No shadow, no gradient, no inset. That one asymmetry is what makes it
+        read as a physical key. Everything else is a mono chip:
+        <code>border-radius:var(--radius-normal); padding:.0625em .125em;
+        font-family:var(--font-family-code)</code>.</div>
+      <div class="v__demo"><div class="bd">Press <kbd class="kbd-mdn">Ctrl</kbd> +
+        <kbd class="kbd-mdn">Shift</kbd> + <kbd class="kbd-mdn">C</kbd> to open the inspector.</div></div>
+      <div class="v__note">Every colour is a token reference, so it survives the palette law untouched. MDN is
+        already cited on this page for the TOC rail, so this adds no new site to the ledger. <b class="pick">REJECTED 2026-08-23:</b> Rod: <i>"i dont like the way KBD looks."</i> No fallback needed - <code>&lt;kbd&gt;</code> still renders as the browser's mono default and your posts use it <b>zero</b> times. Kept on the page rather than deleted so the rejection is visible and nobody re-proposes it.</div>
+    </div>
+
+    <div class="v v--never">
+      <div class="v__name">REJECTED &middot; mark &mdash; both treatments</div>
+      <div class="v__src">MDN styles-left-sidebar + Starlight/DocSearch middleware bundle (both CONFIRMED)</div>
+      <div class="v__geo"><b>MDN paints the ground:</b>
+        <code>mark{background-color:var(--color-background-yellow);color:unset}</code> &mdash;
+        <code>color:unset</code> is deliberate, it undoes the browser's forced black-on-yellow.
+        <b>Starlight kills the ground:</b> <code>mark{color:var(--highlight);background:0 0}</code>, then
+        <code>[aria-selected=true] mark{text-decoration:underline}</code> so the mark only gains an underline
+        once the row is already selected and can no longer compete with it.</div>
+      <div class="v__demo"><div class="bd">The buffer is <mark class="mark-fill">written once</mark> at bake
+        time. <span style="color:#777;font-size:10px">&larr; MDN</span></div>
+        <div class="bd" style="margin-top:8px">The buffer is <mark class="mark-tint">written once</mark> at bake
+        time. <span style="color:#777;font-size:10px">&larr; Starlight</span></div></div>
+      <div class="v__note"><b>Honest caveat:</b> both are search-result highlighting, not prose
+        <code>&lt;mark&gt;</code> &mdash; neither site uses the tag in body copy. The mechanisms transfer, the
+        context does not. Starlight's colour-only version has the same WCAG 1.4.1 exposure as the
+        colour-only link option. <b class="pick">REJECTED 2026-08-23:</b> Rod: <i>"same with mark."</i> Both the MDN highlight and the Starlight colour-only version are out. Zero uses in your posts, so nothing regresses. <b>See the del/ins note above</b> - that device also carries a highlight, and whether this rejection extends to it is the one open thread.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">ACCEPTED &middot; sup &mdash; gwern, stays on the baseline</div>
+      <div class="v__src">gwern.net/static/css/style.css (CONFIRMED)</div>
+      <div class="v__geo"><code>a.footnote-ref sup{font-size:0.75em;vertical-align:baseline}</code>.
+        <b>A footnote marker does not go up</b> &mdash; it shrinks and stays on the line, which keeps the
+        leading perfectly even. That is the usual cost of superscripts in body copy, removed.
+        Then optical spacing only a site with real footnotes would find:
+        <code>sup+sup{margin-left:.125em}</code>, <code>sup a,sub a{margin-left:.10em;margin-right:.13em}</code>,
+        <code>sup a+a{margin-left:.20em}</code>.</div>
+      <div class="v__demo"><div class="bd">Dispatch in groups of 64<sup class="sup-base"><a>1</a></sup><sup class="sup-base"><a>2</a></sup>
+        on most desktop GPUs.</div>
+        <div class="bd" style="margin-top:8px">Dispatch in groups of 64<sup class="sup-raise">1</sup> &mdash;
+        <span style="color:#777;font-size:10px">Tufte's <code>sup{line-height:0}</code>, raised but not
+        expanding the line box</span></div></div>
+      <div class="v__note"><b>They separate ordinals from footnotes</b> &mdash; <code>sup.ordinal</code> is its
+        own role ("1st" is not "footnote 1"). Worth copying that distinction whatever the CSS.
+        The <code>per Charuru</code> comment is theirs; the spacing fix came from a reader. <b class="pick">PICKED 2026-08-23:</b> Rod: <i>"sub and superscript is fine too"</i>. Takes <code>vertical-align:baseline</code> so footnote markers shrink without rising, plus the optical spacing. Their <code>sup.ordinal</code> / footnote split comes with it.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">ACCEPTED &middot; sub &mdash; browser default plus shared spacing</div>
+      <div class="v__src">gwern.net (CONFIRMED) &mdash; shared rules only</div>
+      <div class="v__geo"><code>sub</code> is covered only by the shared <code>sup a, sub a</code> optical
+        spacing above. <b>The one <code>sub</code>-specific rule anywhere is
+        <code>.logotype-tex sub</code></b>, which exists to set the lowered E in the TeX logo &mdash;
+        <code>vertical-align:-0.50ex;margin:0 -.08em;text-transform:uppercase</code>.</div>
+      <div class="v__demo"><div class="bd">The value H<sub class="sub-base">0</sub> feeds the
+        buffer at index n<sub class="sub-base">i</sub>.</div></div>
+      <div class="v__note"><b>That TeX rule does not generalise and is NOT being cited as a sub treatment</b>
+        &mdash; recorded in the source note so nobody re-finds it and mistakes it for one. If <code>sub</code>
+        needs a real design it is still unsourced; the browser default is what is drawn here. <b class="pick">PICKED 2026-08-23:</b> Rod accepted it in the same breath as sup. <b>Nothing is being invented here</b> - it takes the shared <code>sup a, sub a</code> optical spacing and otherwise leaves the browser default alone, because no source has a general <code>sub</code> design and the one that exists is a TeX logo.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">ACCEPTED &middot; abbr &mdash; the dotted underline, unstyled</div>
+      <div class="v__src">NO SOURCE. Zero designed rules across all nine sites fetched.</div>
+      <div class="v__geo">The only <code>abbr</code> rule found anywhere is normalize.css boilerplate, shipped
+        inside Ronja's bundle: <code>abbr[title]{border-bottom:none;text-decoration:underline;
+        text-decoration:underline dotted}</code>. The duplicated declaration is normalize's own fallback
+        pattern. <b>Ronja did not choose it, Bootstrap put it there.</b></div>
+      <div class="v__demo"><div class="bd">The <abbr class="abbr-def" title="Graphics Processing Unit">GPU</abbr>
+        dispatches in groups of 64.</div></div>
+      <div class="v__note"><b>Presenting this as a sourced choice would be a false citation</b>, so it is marked
+        UNSOURCED instead. Every site read simply lets the browser default happen. If you want a designed
+        <code>abbr</code> it needs its own reference hunt &mdash; say so and I will go looking with that as
+        the goal rather than as a by-catch. <b class="pick">PICKED 2026-08-23:</b> Rod: <i>"lets take the ABBR"</i>. <b>This is a decision to NOT style it</b> - the dotted underline is the browser/normalize default that every site read simply allows. Recorded as accepted-as-default rather than as a sourced pick, because there is still no design to cite. Zero code ships for this.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Lists</h2>
+  <div class="status"><b>45 items across 7 posts &mdash; your second most used construct after images</b>, and
+    34 of the 45 are NUMBERED. Four sources.</div>
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; stripe.dev &mdash; the list is a grid</div>
+      <div class="v__src">sources/stripe-dev-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>ol,ul{display:grid;gap:8px;margin:24px 0 0}</code> with
+        <code>padding-left:24px</code> (ol) / <code>28px</code> (ul). <b>Gap, not margin</b>, so nested lists
+        cannot collapse their spacing &mdash; and margin-TOP only, matching their heading rhythm.</div>
+      <div class="v__demo"><ol class="ls-grid">
+        <li>A script generates blade positions and feeds a position buffer on the GPU</li>
+        <li>The compute shader reads that buffer and builds the blade geometry</li>
+        <li>One indirect draw call renders every blade at once</li></ol></div>
+      <div class="v__note">Markers stay the browser default. The contribution is purely the spacing model, which
+        makes it the easiest to combine with any of the others.</div>
+    </div>
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; B &mdash; Maxime Heckel, nested counters</div>
+      <div class="v__src">sources/maximeheckel-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>li{counter-increment:li}</code> and
+        <code>li:before{content:counters(li,'.') '. ';color:var(--accent);margin-right:6px}</code>.
+        <code>counters()</code> plural, so nesting gives <b>2.1, 2.1.1</b> automatically. Unordered lists get
+        <code>list-style:none</code> and a separate marker element.</div>
+      <div class="v__demo"><ol class="ls-count">
+        <li>A script generates blade positions and feeds a position buffer on the GPU</li>
+        <li>The compute shader reads that buffer and builds the blade geometry</li>
+        <li>One indirect draw call renders every blade at once</li></ol></div>
+      <div class="v__note"><b>Same mechanism as your approved section break</b> (case G is Catlike's nested
+        counters). Picking this makes lists and headings numerically consistent. 34 of your 45 items are
+        numbered, so this is the highest-traffic option. <b class="pick">PICKED 2026-08-23:</b> Rod 2026-08-23. <b>The highest-traffic pick on the page</b> - 34 of your 45 list items are numbered. <code>counters(li,'.')</code> is plural, so nesting gives 2.1 / 2.1.1 for free. <b>It is also the same mechanism as your approved section break</b> (case G is Catlike's nested counters), so headings and lists now share one numbering logic rather than two. <b>Their accent applies to the NUMBER only</b> - with bold already taking the H2 yellow, the list number should take it too or the page grows a second accent for no reason. Worth confirming when it is built.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">C &middot; MinionsArt &mdash; diamond bullet</div>
+      <div class="v__src">sources/minionsart-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>bullet{display:list-item;list-style-type:none;padding-left:12px}</code> with
+        <code>bullet:before{content:"\25C6";padding-right:5px}</code>, and a DIFFERENT glyph for nested
+        levels. Note they use custom elements, not <code>li</code> &mdash; the mechanism transfers, the markup
+        does not.</div>
+      <div class="v__demo"><ul class="ls-dia">
+        <li>A script generates blade positions and feeds a position buffer on the GPU</li>
+        <li>The compute shader reads that buffer and builds the blade geometry</li>
+        <li>One indirect draw call renders every blade at once</li></ul></div>
+      <div class="v__note">Only handles UNORDERED lists, which are 11 of your 45. Would need pairing with A or
+        B for the numbered ones &mdash; so it is a partial answer, not a whole one.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">D &middot; iquilezles &mdash; one declaration</div>
+      <div class="v__src">sources/iquilezles-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>li{padding-bottom:12px}</code>. That is the entire list styling on the site.
+        Default markers, default indent, one line of breathing room per item.</div>
+      <div class="v__demo"><ul class="ls-bare">
+        <li>A script generates blade positions and feeds a position buffer on the GPU</li>
+        <li>The compute shader reads that buffer and builds the blade geometry</li>
+        <li>One indirect draw call renders every blade at once</li></ul></div>
+      <div class="v__note">The do-nothing option, and again a real one &mdash; it is how a very well regarded
+        shader site handles the same content. Cheapest to maintain by a wide margin.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============================================================ CALLOUTS -->
+<div class="panel" id="p-callouts" hidden>
+
+<div class="lede">
+  <b>Read this before picking anything in this tab.</b> Counted across all 19 posts:
+  <code>takeaway:</code> appears in <b>14 of them</b>, and TL;DR, blockquote, admonition, pull quote and
+  margin note appear in <b>zero</b>. Not rarely &mdash; never, not once.<br><br>
+  So there is <b>one</b> callout decision here (the takeaway), and the other three groups are asking a
+  different question: <b>do you want to start writing a device you have never used?</b> That is a content
+  question, not a design one. Your own instinct &mdash; the stamp for the takeaway, washi tape if a second
+  device is ever wanted &mdash; is the cheapest answer and uses two components you have already approved.<br><br>
+  <b>The code block is at the bottom of this tab</b>, not on its own any more &mdash; a callout and a code
+  block are both blocks that interrupt the prose column, and in your posts they sit next to each other.
+  <b>12 code blocks across 3 posts.</b> It is the one thing here you genuinely do write, after the takeaway.
+  No source groups the two, so the grouping is <b>ours</b> and is marked that way in the page source rather
+  than quietly implied.
+</div>
+
+<section class="comp">
+  <h2>The categories &mdash; what a "callout" actually is here</h2>
+  <div class="status"><b>Rod 2026-08-23:</b> <i>"here in note/admonition you lump takeaway, TLDR and other
+    stuff into the same area. What are all the categories?"</i> <b class="pick">Fair hit &mdash; role 1 was a
+    grab-bag.</b> It offered eight variants that included your takeaway stamp, an admonition, a disclosure
+    widget and a no-callout option &mdash; things that are not alternatives to each other. Here is the actual
+    list, taken from the slots <code>final-post.html</code> reserves plus what your 19 posts contain.</div>
+
+  <div class="lede" style="margin-top:26px">
+    <b class="pick">What a pull quote and a margin note actually ARE</b>, since neither appears in your writing
+    and the names are doing a lot of work. Both examples below are real sentences from your ComputeGrass post.
+    <br><br>
+    <b>1. PULL QUOTE &mdash; a line already in the prose, repeated bigger.</b> It is not new text. You take a
+    sentence the reader has just read (or is about to), and set it large so it acts as a visual rest and a
+    pull-through. Magazines use them to break a long column. <b>The words are duplicated on purpose</b> &mdash;
+    that is the whole device, and it is why it needs no box: it IS the prose, just louder.
+    <div class="ex">
+      <p class="ex__p">...and a final per-blade buffer stores smoothed tip offsets, preventing jitter as blades
+        return to resting. The slow part was never the part that looked slow.</p>
+      <p class="ex__q">"The slow part was never the part that looked slow."</p>
+      <p class="ex__p">Profiling the dispatch showed the cost was in the readback, not the blade generation...</p>
+    </div>
+    <b>The catch for you specifically:</b> a pull quote needs prose long enough to need a rest. Your longest
+    post has 5 sections. <b>It is the category most likely to look like decoration rather than structure.</b>
+    <br><br>
+    <b>2. MARGIN NOTE &mdash; an aside that leaves the column entirely.</b> Everything else on this page
+    interrupts the text: you stop reading, read the box, resume. A margin note does not interrupt. It sits
+    <b>beside</b> the paragraph in the empty gutter, at small size, and you read it only if you want to. Think
+    a footnote that did not make you go to the bottom of the page.
+    <div class="ex ex--margin">
+      <div>
+        <p class="ex__p">Each frame the compute shader reads that position buffer, generates the blade geometry,
+          and feeds it into a vertex buffer. A single <code>DrawProceduralIndirect</code> renders it all at once
+          regardless of blade count.</p>
+      </div>
+      <aside class="ex__note">Dispatch groups are 64 wide on most desktop GPUs, so a count that is not a
+        multiple of 64 leaves lanes idle.</aside>
+    </div>
+    <b>Why this one is a LAYOUT decision and not a style one:</b> it needs the gutter your rail already
+    occupies, and <code>final-post.html</code> currently centres the prose column, which splits that empty
+    space in two. <b>Un-parking the margin note means un-centring the prose.</b> That is the actual cost, and
+    it is why you parked it.
+  </div>
+
+  <div class="lede" style="margin-top:0">
+    <b class="pick">Rod 2026-08-23: "do we have more than 4 + takeaways? if we dont we use washi tape."</b>
+    Straight answer: <b>4 active, plus 1 you parked.</b> Non-takeaway, non-code-block, these are every slot
+    <code>final-post.html</code> reserves:
+    <div class="tally" style="grid-template-columns:auto auto 1fr;margin-top:10px">
+      <b>1</b><span>Note / warning</span><span>tapeable &mdash; it is a box in the column</span>
+      <b>2</b><span>TL;DR / summary</span><span>tapeable</span>
+      <b>3</b><span>Reference / links</span><span>tapeable</span>
+      <b>4</b><span>Pull quote</span><span>tapeable, but it has <b>no box</b> in either source &mdash; see below</span>
+      <b>5</b><span>Margin note</span><span>PARKED by you; also has no box to stick tape to</span>
+    </div>
+    <br>
+    <b class="pick">So it is 4 tapeable categories against 4 placements &mdash; the pull quote counts, with a caveat.</b>
+    Two things cause that, and both are real rather than bookkeeping:<br><br>
+    <b class="pick">CORRECTED 2026-08-23 &mdash; I overstated this and Rod was right to push.</b> <i>"any reason the pull quote cannot be taped?"</i> <b>No hard reason. It can.</b> Tape is absolutely positioned against a host that only needs <code>position:relative</code> &mdash; it does not need a border, a fill, or a card. I said "cannot" when the honest word was "has no precedent".<br><br><b>The two real concerns, neither of which is a blocker:</b> (1) <b>gneiss always tapes a CARD.</b> Every use on the source site fastens something with visible edges, so tape on boxless text is an extension of theirs, not a transcription &mdash; it would be filed as ours. (2) <b>Tape reads as fastening.</b> With no visible card there is nothing visibly fastened, so it can read as stuck to the page rather than to the quote. <b>That is a taste call, not a rule</b> &mdash; which is why it is drawn below rather than argued about.<br><br>
+    <b>The one question that decides 3 or 4:</b> <code>final-post.html</code> reserves "note / warning" as a
+    SINGLE slot. If a warning should look different from a note, that splits into two and you get exactly four
+    tapeable categories for four placements. <b>If it stays one, you have a spare placement</b> &mdash; which is
+    fine, nothing says all four must be used.<br><br>
+    <b>And one constraint worth restating before you map them:</b> tape COLOUR is per SECTION (D27, orange /
+    pink / blue / green for the four site sections), not per callout type. <b>So callout type has to be carried
+    by PLACEMENT</b> &mdash; top edge, left edge, L corners, diagonal tabs &mdash; because colour is already
+    spoken for.
+  </div>
+
+  <div class="variants" style="grid-template-columns:1fr">
+    <div class="v">
+      <div class="v__name">The seven blocks that interrupt prose</div>
+      <div class="v__src">Slots from <code>final-post.html</code>; counts measured across all 19 posts</div>
+      <div class="v__demo">
+        <table class="tb tb-bare inv" style="width:100%">
+          <tr><th>#</th><th>category</th><th>what it is</th><th>you use it</th><th>state</th></tr>
+          <tr><td>1</td><td><b>Takeaway</b></td><td>"What I Learned", once, at the end</td><td class="w3"><b>14 of 19</b></td><td class="w3">SETTLED &mdash; the stamp</td></tr>
+          <tr><td>2</td><td><b>Note</b></td><td>an aside, mid-prose</td><td class="none">0</td><td class="w3">DECIDED &mdash; tape A</td></tr>
+          <tr><td>2b</td><td><b>Warning</b></td><td>a gotcha &mdash; <b>split from note 08-23</b></td><td class="none">0</td><td class="w3">DECIDED &mdash; tape D</td></tr>
+          <tr><td>3</td><td><b>TL;DR / summary</b></td><td>a summary at the top of a post</td><td class="none">0</td><td class="w3">DECIDED &mdash; tape B</td></tr>
+          <tr><td>4</td><td><b>Reference / links</b></td><td>further reading, end matter</td><td class="none">0</td><td class="bad">the only one left</td></tr>
+          <tr><td>5</td><td><b>Quote</b></td><td>was "pull quote" &mdash; now a boxed quote callout</td><td class="none">0</td><td class="w3">DECIDED &mdash; tape C</td></tr>
+          <tr><td>6</td><td><b><s>Margin note</s></b></td><td>stepped OUT of the column into the gutter</td><td class="none">0</td><td class="bad">DROPPED 2026-08-23</td></tr>
+          <tr><td>7</td><td><b>Code block</b></td><td>fenced code, filename + copy</td><td class="w3"><b>12 in 3 posts</b></td><td class="w3">SETTLED &mdash; A (D20)</td></tr>
+        </table>
+      </div>
+      <div class="v__note"><b>Two of the seven are real; five are speculative.</b> Takeaway and code block are
+        the only ones your writing contains, and both are now decided &mdash;
+        <b class="pick">so the callout system is finished for the content you actually have.</b>
+        Categories 2-5 are "do you want to start writing this", a content question, not a design one.<br><br>
+        <b>And 2, 3 and 4 are ONE component in three roles</b>, not three components. That is what alevirita's
+        note meant and what <code>final-post.html</code> reserves: three slots, same block, the label changes.
+        So the largest open question here is <b>one</b> design used three ways.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>The takeaway &mdash; your only real callout</h2>
+  <div class="status"><b>14 of 19 posts.</b> Renders from <code>_layouts/post.html:157</code> as
+    <code>.post-takeaway</code> with a "What I Learned" label. <b class="pick">The one callout with a
+    legitimate attribution</b> &mdash; it is your own CSS.</div>
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">SETTLED &middot; the stamp &mdash; ROD'S OWN, keep</div>
+      <div class="v__src">Rod-provided stamp CSS &mdash; perforated edge, a radial-gradient dot cutout
+        repeated along an inset ring</div>
+      <div class="v__geo">The perforation is the device: <code>::before</code> at <code>inset:-7px</code>
+        carrying the dotted ring, with the block's paper colour as one local custom property so the dots
+        match the fill exactly.</div>
+      <div class="v__demo"><div class="co-stamp"><div class="ln" style="width:82%"></div>
+        <div class="ln" style="width:94%"></div><div class="ln s"></div></div></div>
+      <div class="v__note">You have already said to keep this. Listed so the tab is honest about what the
+        callout system actually is: <b>this, and nothing else, in every post you have written.</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>The callout family &mdash; DECIDED, one placement each</h2>
+  <div class="status"><b class="pick">DECIDED 2026-08-23.</b> Rod: <i>"lets create the callout categories im sure
+    we can find places to use them for warning use the green D washi tape, for notes use A, for TLDR use B, for
+    qoutes lets use the L shaped C."</i> <b>This also answers the split question</b> &mdash; he named "warning"
+    and "notes" separately, so <code>final-post.html</code>'s single "note / warning" slot becomes <b>two</b>.
+    All four are drawn below from the one shared tape definition, at the real 767px measure.</div>
+
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">WARNING &middot; D &mdash; four diagonal corner tabs</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). Diagonal placement: <b>OURS</b>, Rod 2026-08-23</div>
+      <div class="v__geo">Four strips laid across the corners at &plusmn;45&deg;, 2.6&times; the roll width.
+        <b>The loudest of the four placements</b>, which suits the category that most needs to stop you.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped tape--pink">
+        <i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i>
+        <i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+        <p><b>Do not read from a RWStructuredBuffer you are also writing to in the same pass.</b> It compiles,
+          and it will give you a different answer on every vendor.</p>
+      </div></div></div>
+      <div class="v__note"><b class="pick">PINK.</b> Rod corrected this 2026-08-23: <i>"do pink for warning
+        instead my mistake."</i> Pink is the one tape colour with a measured external origin &mdash; it is
+        sampled from harumakigohan's own section-header PNGs, not chosen.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">NOTE &middot; A &mdash; over the top edge</div>
+      <div class="v__src">Tape and placement: gneiss (CONFIRMED) &mdash; their own <code>.taped</code></div>
+      <div class="v__geo"><code>left:38%</code>, 110&times;30, a 16px bite with the rest overhanging. Off-centre
+        on purpose so it never reads as a centred label. <b>The only placement with real provenance behind the
+        placement itself</b>, which suits the most ordinary category.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped tape--green">
+        <i class="tape tape--top"></i>
+        <p>Compute shaders dispatch in groups of 64 on most desktop GPUs, so a thread count that is not a
+          multiple of 64 leaves lanes sitting idle.</p>
+      </div></div></div>
+      <div class="v__note">Quietest of the four &mdash; one strip. Correct for the category you would use most
+        often, if you start using any of them.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">TL;DR &middot; B &mdash; down the left edge</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). Placement: <b>OURS</b>, Rod 2026-08-21</div>
+      <div class="v__geo">Pinned <code>top:0;bottom:0</code>, so it matches the card's full height at any
+        content length. Replaces the 3px orange bar our live <code>.post-takeaway</code> uses.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped tape--orange">
+        <i class="tape tape--left"></i>
+        <p>A script bakes blade positions into a buffer, one compute pass builds the geometry, and a single
+          indirect draw renders every blade at once regardless of count.</p>
+      </div></div></div>
+      <div class="v__note"><b>Worth noticing:</b> this is the placement that most resembles the takeaway's old
+        left bar, and TL;DR and takeaway are the two summary-shaped devices. If they end up adjacent in a post
+        they may read as a pair &mdash; which could be good or confusing, and only a real post will tell.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">QUOTE &middot; C &mdash; L-shaped corners</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). L geometry: miroirs. Composition: <b>OURS</b></div>
+      <div class="v__geo">Two strips crossing at each corner, arms clamped off the card so they track any size.
+        The vertical arm sits on top, your call 2026-08-23.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped tape--blue">
+        <i class="tape tape--v tape--tl"></i><i class="tape tape--h tape--tl"></i>
+        <i class="tape tape--v tape--br"></i><i class="tape tape--h tape--br"></i>
+        <p style="font-style:italic">Honestly, the first version of this ran at 9fps and I shipped it anyway.
+          Fixing it afterwards taught me more than building it did.</p>
+      </div></div></div>
+      <div class="v__note"><b class="pick">This settles the boxless question by implication, and it is worth
+        saying out loud:</b> L-corners need corners to sit on, so the quote now has a CARD. That contradicts
+        both its sources &mdash; Maxime escapes the measure with no box, stripe uses a plain italic line. <b>It
+        stops being a pull quote and becomes a quote callout.</b> Defensible, and it is your call, but it is
+        originated rather than transcribed and the ledger will say so.</div>
+    </div>
+  </div>
+
+  <div class="lede" style="margin-top:26px">
+    <b class="pick">BOTH THREADS CLOSED 2026-08-23 &mdash; and one of them overturns a standing decision.</b>
+    <br><br>
+    <b>1. Colour now encodes callout TYPE, not site section.</b> Rod: <i>"that makes sense we should hard code
+    the colors in a way that makes sense"</i>, then <i>"do pink for warning instead my mistake."</i>
+    <div class="tally" style="grid-template-columns:auto auto 1fr;margin-top:10px">
+      <b>warning</b><span><b style="color:#f078f0">PINK</b></span><span>tape D &middot; four diagonal corner tabs</span>
+      <b>note</b><span><b style="color:#6fbf73">GREEN</b></span><span>tape A &middot; over the top edge</span>
+      <b>tldr</b><span><b style="color:#ff6a00">ORANGE</b></span><span>tape B &middot; down the left edge, by elimination</span>
+      <b>quote</b><span><b style="color:#3090a8">BLUE</b></span><span>tape C &middot; L-shaped corners</span>
+      <b>reference</b><span>&mdash;</span><span><b>no tape.</b> End matter, not an interruption</span>
+    </div>
+    <br>
+    <b class="pick">THIS OVERTURNS THE COLOUR HALF OF D27.</b> D27 assigned the four tape colours to the four
+    SITE SECTIONS, so the tape told you where you were. Both cannot be true: a warning inside the blue section
+    would have to be pink (breaking the section rule) or blue (breaking the warning rule). <b>You chose meaning
+    over location with the conflict in front of you</b>, so it is recorded as an overturn rather than slipped
+    in. <b>D27's other half is untouched and still holds</b> &mdash; the tape is the site's one loud object and
+    the cards stay plain grey.<br>
+    <b>Consequence to carry into the port:</b> sections no longer have a colour identity via the tape. If they
+    still need one it has to come from somewhere else, and that is a new question rather than a solved one.
+    <br><br>
+    <b>2. reference / links takes no tape.</b> Rod: <i>"reference i guess should have no tape."</i> Nothing had
+    to be originated, and it stays the quietest member of the family &mdash; which suits end matter.
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Washi tape &mdash; the four placements, for reference</h2>
+  <div class="status"><b class="pick">ALL FOUR ARE NOW ASSIGNED</b> &mdash; see the family above. Kept here as the reference for what each placement IS, since the family section shows them in use rather than in isolation. <b>These are TREATMENTS assigned to categories, not a category of their own.</b> Rod 2026-08-23: <i>"arent they meant to be part of the different callouts?"</i> Yes &mdash; the page was presenting them as a standalone pick and that was wrong. <b>Category 1, the takeaway, already has its answer and it is not tape, it is your stamp.</b> So these four are candidates for categories 2-5, if you decide those categories exist at all.<br><br><b class="pick">Also restored 2026-08-23 &mdash; they had gone missing and that was my error.</b>
+    They lived on <code>prose-blockout.html</code>, which I folded into this page and deleted without carrying
+    the tape variants across. The component itself was never touched:
+    <code>extracted/components/washi-tape/</code>, tips locked to <b>case D</b> (winterwind irregular tear),
+    border deleted, opaque fill, axis-aligned &mdash; all your calls. <b>Its real CSS is imported by this
+    page rather than retyped</b>, so there is one definition, not a copy.</div>
+
+  <div class="lede" style="margin-top:0">
+    <b>Your answer already exists and this page should have been showing it.</b> 2026-08-22:
+    <i>"For the washi tape ones i think it would be nice to have them overlay on top of the posts content box
+    like a section is being stuck on the page."</i> That is <b>placement</b>, not style &mdash; and the tape
+    is a settled site CONVENTION (D27), so the only question below is <b>which placement</b>. All four come
+    from the one shared definition.<br><br>
+    Colour is per SECTION, not per callout: orange, pink, blue, green. <b>Green is the one colour with no source</b>, and Rod closed that thread 2026-08-23: <i>"Green tape is ok its already approved."</i> <b>It stays filed as ORIGINATED with no reference</b> - approved is not the same as sourced, and the ledger keeps the distinction. The neutral hatch shows here because these are drawn
+    without a section class.
+  </div>
+
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; over the top edge &mdash; gneiss's own placement</div>
+      <div class="v__src">sources/gneiss-washi-tape.md (CONFIRMED) &mdash; their <code>.taped</code>, verbatim</div>
+      <div class="v__geo"><code>.tape--top{left:38%;width:110px;height:30px;--tape-bite:16px}</code>. Sits
+        <b>off-centre on purpose</b> so it never reads as a centred label, and takes a 16px bite with the rest
+        overhanging. <b>The only placement gneiss actually has</b> &mdash; the other three are extensions.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--top"></i>
+        <p>If the grass never moves you are almost certainly writing to the buffer and never binding it back.</p>
+      </div></div></div>
+      <div class="v__note">The most literal reading of "stuck on the page", and the only one whose PLACEMENT
+        has provenance rather than just the tape.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">B &middot; down the left edge &mdash; replaces our own 3px bar</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). Placement: <b>OURS</b> &mdash; your call 2026-08-21,
+        "these cards with the left side bar lets make that washi tape too"</div>
+      <div class="v__geo">Pinned <code>top:0;bottom:0</code>, so it always matches the card's full height at
+        any content length &mdash; the one placement the length clamp deliberately does not govern, because you
+        asked for it to match the card exactly. Swaps the 3px orange bar our live
+        <code>.post-takeaway</code> uses.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--left"></i>
+        <p>What I would tell myself starting this: profile before optimising. The slow part was never the part
+          that looked slow.</p>
+      </div></div></div>
+      <div class="v__note"><b>The closest fit to the takeaway you already keep</b>, since it replaces a bar
+        that block already has. Marked REMIX not SOURCED &mdash; half of it is our own CSS and the idea is
+        yours, so citing it as transcribed would be false.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">C &middot; L-shaped corners &mdash; two strips crossing</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). L geometry: miroirs, corner positions kept.
+        Composition: <b>OURS</b></div>
+      <div class="v__geo">Each L is <b>two</b> strips overlapping the way real tape does, arms clamped
+        <code>clamp(44px, 60%/22%, 84px)</code> off the card so they track any size. The two arms take
+        <b>different</b> percentages on purpose &mdash; a callout is far wider than tall (625&times;76), so one
+        shared percentage cannot serve both. <b>The vertical arm sits on top</b>, your call 2026-08-23,
+        set as an explicit <code>z-index</code> rather than by reordering the markup.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--v tape--tl"></i><i class="tape tape--h tape--tl"></i>
+        <i class="tape tape--v tape--br"></i><i class="tape tape--h tape--br"></i>
+        <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer reallocated.</p>
+      </div></div></div>
+      <div class="v__note">Loudest of the four &mdash; four strips per callout. Fine on a rare block, heavy if
+        the callout repeats through a post.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">D &middot; four diagonal corner tabs &mdash; your green-card ask</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). Diagonal placement: <b>OURS</b> &mdash; your call
+        2026-08-23, "for the green one the tape should have 4 diagonal strips on each corner"</div>
+      <div class="v__geo">One strip laid <b>across</b> each corner at 45&deg;, the way tape holds a photo
+        down. <b>The angle is not a preference</b>: a strip across the top-left joins the top edge to the left
+        edge, which is a "/" &mdash; so (tl, br) run at -45&deg; and (tr, bl) at +45&deg;. Length is
+        <b>2.6&times; the roll width</b>, because a 45&deg; rotation needs ~1.41&times; the diagonal reach and
+        anything under ~2&times; leaves the corner poking out past the tape.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i>
+        <i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+        <p>Do not read from a RWStructuredBuffer you are also writing to in the same pass. It compiles.</p>
+      </div></div></div>
+      <div class="v__note">Reads most like a physical thing stuck down and least like a UI border. Also the
+        only one needing no edge to attach to, so it survives on a card with no visible box.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Tape on a boxless pull quote &mdash; drawn, so you can judge it</h2>
+  <div class="status">Rod asked whether the pull quote can be taped. <b>It can</b>, and arguing about it in prose
+    was the wrong answer, so here it is both ways at the real 767px measure. <b>Left is the pull quote exactly as
+    its sources define it</b> (Maxime: 118% width, centred, italic, no box; stripe: a plain italic line).
+    <b>Right is the same thing with a card behind it</b> so the tape has something to fasten.</div>
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">Tape on the quote as sourced &mdash; no box</div>
+      <div class="v__src">Quote: sources/maximeheckel-prose.md. Tape: gneiss. <b>The COMBINATION is ours</b> &mdash;
+        no source tapes boxless text</div>
+      <div class="v__geo">The host takes <code>position:relative</code> and nothing else &mdash; no border, no
+        fill. The tape hangs off the top edge of the text block itself.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="pq-bare taped">
+        <i class="tape tape--top"></i>
+        <p>Honestly, the first version of this ran at 9fps and I shipped it anyway. Fixing it afterwards taught
+          me more than building it did.</p>
+      </div></div></div>
+      <div class="v__note"><b>The question to answer by looking:</b> does the tape read as holding the quote, or
+        as a loose strip floating above some italic text? If the latter, that is the concern I meant.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">Tape on a quote WITH a card</div>
+      <div class="v__src">Tape + card: gneiss, as they actually use it. <b>But the quote gains a box neither of
+        its sources has</b></div>
+      <div class="v__geo">Same tape, same measure, with the panel behind it. This is gneiss's real pattern.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--top"></i>
+        <p style="font-style:italic;font-size:1rem">Honestly, the first version of this ran at 9fps and I shipped
+          it anyway. Fixing it afterwards taught me more than building it did.</p>
+      </div></div></div>
+      <div class="v__note"><b>The trade:</b> the tape works, but a boxed pull quote contradicts both sources, which
+        deliberately have no box. <b>It also stops being a pull quote and starts being a callout with italic
+        text</b> &mdash; which may be fine, but it is worth naming.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Margin note &mdash; DROPPED. Before and after kept for the reasoning</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; no margin note.</b> Rod 2026-08-23, after seeing this:
+    <i>"lets do no margin note replace the single instance with the next closest thing probably the regular
+    note."</i> <b>The one candidate instance</b> &mdash; the Cyanilux pointer buried mid-paragraph in
+    ComputeGrass &mdash; <b>becomes a regular NOTE</b> (green, tape A).<br><br>
+    <b>Two things this settles by NOT happening:</b> the prose column stays centred, and the Starlight TOC
+    keeps the gutter it would otherwise have had to share. Both drawn at <code>final-post.html</code>'s real
+    geometry: article 17 columns ending at
+    1308, prose nested inside it at the 94-character measure. <b>The only thing that changes between them is
+    where the prose sits inside the article.</b></div>
+
+  <div class="variants" style="grid-template-columns:1fr">
+    <div class="v">
+      <div class="v__name">BEFORE &mdash; what the post does today</div>
+      <div class="v__src">Measured off <code>final-post.html</code>: <code>.prose</code> is centred inside the
+        article column</div>
+      <div class="v__geo">The prose is <b>centred</b>, so the space stripe leaves empty is <b>split in two</b>
+        &mdash; half on each side, and neither half is wide enough to hold anything. That is the whole
+        problem: the gutter exists, but as two useless halves rather than one usable one.</div>
+      <div class="v__demo">
+        <div class="mn mn--before">
+          <div class="mn__gut mn__gut--dead">dead space</div>
+          <div class="mn__prose">
+            <p>A camera renders only the GrassRT layer into <code>_camRT</code> each frame, which makes it
+              easy to influence and test in the scene and very simple to add objects to the RenderTexture.</p>
+            <p>Originally I used a ping-pong to decay the render texture, but that did not give me the control
+              I wanted.</p>
+          </div>
+          <div class="mn__gut mn__gut--dead">dead space</div>
+        </div>
+      </div>
+      <div class="v__note">Nothing is wrong with this. It is the safe arrangement and it is why the margin
+        note has never been possible.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">AFTER &mdash; prose un-centred, note in the gutter</div>
+      <div class="v__src">Layout device: famicom.party (the aside leaves the column). Their own note is that
+        it only works because the space is already empty.</div>
+      <div class="v__geo">The prose moves to the <b>left edge of the article</b> and the whole empty space
+        collects on <b>one side</b>, wide enough to hold a note. <b>The measure does not change</b> &mdash; the
+        prose is still 94 characters, it just stops being centred. Nothing is squeezed; the reading column is
+        identical, only its position moves.</div>
+      <div class="v__demo">
+        <div class="mn mn--after">
+          <div class="mn__prose">
+            <p>A camera renders only the GrassRT layer into <code>_camRT</code> each frame, which makes it
+              easy to influence and test in the scene and very simple to add objects to the RenderTexture.</p>
+            <p>Originally I used a ping-pong to decay the render texture, but that did not give me the control
+              I wanted.</p>
+          </div>
+          <aside class="mn__note">Cyanilux built a version of this that adds camera culling for a moving
+            character. Worth reading if your camera moves.</aside>
+        </div>
+      </div>
+      <div class="v__note"><b>The real cost, stated plainly:</b> the article stops being symmetrical. On a
+        section with no margin note the right side is simply empty, so the page reads lopsided unless notes
+        appear often enough to justify the space. <b>In your posts that is once</b> &mdash; the Cyanilux
+        pointer, which is the note drawn above.</div>
+    </div>
+  </div>
+
+  <div class="lede" style="margin-top:26px">
+    <b>What to weigh, since this is a layout call and layout is yours alone (D25).</b>
+    <div class="tally" style="grid-template-columns:auto 1fr;margin-top:10px">
+      <b>for</b><span>The Cyanilux link is currently <b>buried mid-paragraph</b>, where a reader who wants it
+        must find it and a reader who does not must read past it. A margin note is exactly the fix.</span>
+      <b>for</b><span>It is the only device in the family that <b>does not interrupt</b>. Everything else
+        stops the reader; this one waits to be looked at.</span>
+      <b>against</b><span>One instance across 19 posts. <b>An asymmetric layout permanently, for a device used
+        once</b>, is a poor trade unless you expect to write more of them.</span>
+      <b>against</b><span>It <b>collides with the TOC pick</b>. Starlight's rail wants a side too, and there is
+        only one gutter once the prose is un-centred. Worth checking they can coexist before committing.</span>
+    </div>
+    <br>
+    <b>The cheap middle option, if you want the effect without the layout change:</b> keep the prose centred
+    and render the note <b>inline but visually set back</b> - smaller, quieter, indented, not in the gutter.
+    It loses the "does not interrupt" property, which is the entire point of the device, so it is offered
+    honestly rather than recommended.
+  </div>
+</section>
+
+<!-- Code block lives HERE, with the callouts, on Rod's instruction 2026-08-23:
+     "please just add code blocks here lets just decide all text based things in one single area."
+     The grouping is defensible on its own terms - a callout and a code block are both BLOCKS that
+     interrupt the prose column, they are neighbours in every real post, and 12 code blocks across
+     3 posts sit directly beside the takeaway in the same reading order. NO SOURCE treats them as
+     one family, so the grouping is OURS and is labelled so rather than implied. -->
+<section class="comp">
+  <h2>Code block + copy</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; A (D20, 2026-08-18)</b>, re-confirmed 2026-08-23. Only the COLOURS remain open. Three verified sources. <b>Rod's constraint:</b> terminal-frame family,
+    filename + copy, NO traffic lights. &nbsp;&middot;&nbsp; The old shadcn pick is DEAD (registry returns HTTP 401).</div>
+
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; A &mdash; Maxime Heckel header strip, squared</div>
+      <div class="v__src">blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/</div>
+      <div class="v__geo">bordered overflow-hidden card &middot; flex header bar, space-between: filename left,
+        copy right &middot; separated by border-bottom &middot; line-number gutter &middot; NO traffic lights.
+        Hand-made shader blog.</div>
+      <div class="v__demo">
+        <div class="cb">
+          <div class="cb__bar"><span class="yy">dissolve.vert</span><span class="yy">COPY</span></div>
+          <div class="cb__pre" style="display:flex">
+            <div class="cb__gutter"></div>
+            <div style="flex:1">
+              <div class="cb__line" style="width:82%"></div><div class="cb__line" style="width:64%"></div>
+              <div class="cb__line" style="width:91%"></div><div class="cb__line" style="width:47%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="v__note">Full-WIDTH header strip, not a protruding tab &mdash; that is the fork vs B.
+        Its background token is a COOL grey slot; fill with the night ground. <b class="pick">ALREADY DECIDED &mdash; D20, 2026-08-18, and this page was still asking.</b> Rod then: <i>"i like Maxime Heckel's, i however do need it to be a square instead of a rounded shape and i like the colors of other code blocks"</i>. He is right that he had chosen it. <b>The ONLY open part is the colours</b> - "the colors of other code blocks" never named which block, so the scheme is still drawn in grey rather than guessed at. Name one and this closes completely.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">B &middot; Starlight &mdash; protruding TAB</div>
+      <div class="v__src">starlight.astro.build/_astro/ec.v4551.css</div>
+      <div class="v__geo">filename is a real tab: radius on the TOP TWO corners only, border-bottom:none,
+        and the body zeroes its own top border + radii so tab and body read as one sheet.</div>
+      <div class="v__demo">
+        <div class="cb--tab">
+          <div class="cb__bar"><span class="yy">dissolve.vert</span></div>
+          <div class="cb__pre">
+            <div class="cb__line" style="width:76%"></div><div class="cb__line" style="width:58%"></div>
+            <div class="cb__line" style="width:88%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="v__note">Their terminal dots are a CSS <code>mask-image</code>, not artwork &mdash; so
+        droppable without losing anything. Copy button HIDES until frame hover on desktop (2rem, not 2.5).</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">C &middot; Josh Comeau &mdash; STICKY copy, no bar</div>
+      <div class="v__src">joshwcomeau.com/animation/keyframe-animations/</div>
+      <div class="v__geo">no filename bar at all. One real idea: <code>position:sticky</code> on a 44px
+        copy button so it stays reachable when you have scrolled halfway down a 200-line shader.</div>
+      <div class="v__demo">
+        <div class="cb cb--sticky">
+          <div class="cb__copy"></div>
+          <div class="cb__pre">
+            <div class="cb__line" style="width:80%"></div><div class="cb__line" style="width:62%"></div>
+            <div class="cb__line" style="width:90%"></div><div class="cb__line" style="width:55%"></div>
+            <div class="cb__line" style="width:74%"></div><div class="cb__line" style="width:68%"></div>
+            <div class="cb__line" style="width:84%"></div><div class="cb__line" style="width:49%"></div>
+            <div class="cb__line" style="width:77%"></div><div class="cb__line" style="width:60%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="v__note">Scroll this one &mdash; the button holds. Not a whole code block on its own;
+        it is a DEVICE to graft onto A or B. Rod's long shader listings are exactly its use case.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+
+<!-- ============================================================ MEDIA -->
+<!-- ============================================================ CODE COLOUR -->
+<div class="panel" id="p-code" hidden>
+
+<style>
+  #p-code .syn{background:#111;border:1px solid #2a2a2a;padding:14px 16px;overflow-x:auto;
+    font:12px/1.75 ui-monospace,"SF Mono",Menlo,Consolas,monospace;white-space:pre}
+  #p-code .syn .sy-c{color:#6a6a6a;font-style:italic}
+  #p-code .syn .sy-n{color:#b5cea8}
+  /* minmax(0,1fr), NOT 1fr. A 1fr track's automatic minimum is auto, so the white-space:pre block
+     below sizes the TRACK to its longest line and pushes the whole page sideways. Measured: 1fr
+     gave two 775px tracks inside a 1354px container. min-width:0 on the ITEM does not fix this -
+     the floor is on the TRACK. Related to the grid min-width trap in TRAPS, one level up. */
+  #p-code .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+  @media(max-width:900px){#p-code .pair{grid-template-columns:1fr}}
+  /* A - PICKED. Rod's role list, constants split onto the dark blue types vacated. */
+  #p-code .sy-a .sy-t{color:#ce9178} #p-code .sy-a .sy-v{color:#9cdcfe}
+  #p-code .sy-a .sy-k{color:#4ec9b0} #p-code .sy-a .sy-f{color:#c586c0}
+  #p-code .sy-a .sy-const{color:#569cd6}
+  /* B - REJECTED. Dark+'s own mapping, what the CSS wrongly held until 2026-08-23. */
+  #p-code .sy-b .sy-t{color:#569cd6} #p-code .sy-b .sy-v{color:#9cdcfe}
+  #p-code .sy-b .sy-k{color:#4ec9b0} #p-code .sy-b .sy-f{color:#dcdcaa}
+  #p-code .sy-b .sy-const{color:#9cdcfe}
+  #p-code .roles{display:grid;grid-template-columns:6.5rem 1fr;gap:.35rem 1rem;font-size:.78rem;margin:10px 0 0}
+  #p-code .roles b{font-weight:500}
+  #p-code .sw{display:inline-block;width:.75rem;height:.75rem;vertical-align:-1px;margin-right:.4rem;border:1px solid #333}
+</style>
+
+<div class="lede">
+  <b>Split out of the callouts tab 2026-08-23, because you could not find this and you were right that
+  it was not there.</b> The callouts tab holds the code block's CHROME - the header strip, the copy
+  button, the gutter - which was decided as A in D20. It never showed a single colour.
+  <b>The colour decision was real the whole time</b> and lives in <code>decisions.css:634-692</code>:
+  your role list, the carve-out rationale, and seven <code>--syn-*</code> tokens. It was just never
+  put on a page you look at.
+</div>
+
+<section class="comp">
+  <h2>The carve-out &mdash; already decided, restated so it is visible</h2>
+  <div class="status"><b class="pick">DECIDED (D26)</b> &mdash; you: <i>"this is ok because its
+    important for readability and convention."</i> Syntax colour is exempt from the palette law's
+    no-cool-accent / no-red rule, and from D18's colour-last sequencing.
+    <b>Scoped to <code>pre code</code> only</b> &mdash; these hues never touch UI, prose, links,
+    headings or chrome, and inline code stays on the warm text token.
+    The supporting finding: <b>no sourced dark syntax scheme in the lab is palette-law clean.</b>
+    Every real one spends a cool hue on keywords, because that is what highlighting has done for
+    thirty years. There is no warm-only precedent to follow, so the carve-out is a carve-out rather
+    than a violation.</div>
+</section>
+
+<section class="comp">
+  <h2>The roles you named &mdash; this is the spec</h2>
+  <div class="status">Your words, 2026-08-23: <i>"same as VS code orange for structs like void,
+    const, float, etc blue for named constants and variables green for classes and pink for
+    functions."</i> Then: <i>"so it seems my vs code isnt using vs code dark+ but i like it anyways
+    its fine"</i> &mdash; which settled that <b class="pick">the ROLE LIST is the spec and "same as
+    VS Code" is dropped as the citation.</b> Origin ROD.</div>
+  <div class="roles">
+    <b><span class="sw" style="background:#ce9178"></span>orange</b>
+    <span>types and storage keywords &mdash; <code>void const float float4 RWStructuredBuffer
+      struct return if for</code></span>
+    <b><span class="sw" style="background:#9cdcfe"></span>blue</b>
+    <span>named constants and variables &mdash; identifiers, parameters, buffer names</span>
+    <b><span class="sw" style="background:#4ec9b0"></span>green</b>
+    <span>classes and type NAMES</span>
+    <b><span class="sw" style="background:#c586c0"></span>pink</b>
+    <span>functions, both declarations and call sites</span>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>SETTLED &mdash; A, with constants split onto the dark blue</h2>
+  <div class="status"><b class="pick">DECIDED 2026-08-23, ROD:</b> <i>"Keep dark blue for constants
+    but 100% a."</i> <b>Applied to <code>decisions.css</code>, so the built CSS now matches your role
+    list for the first time.</b>
+    <br><br>
+    <b>What it corrected.</b> The stylesheet's header comment claimed it followed your list and it did
+    not: <code>--syn-type</code> was <b>#569cd6 blue</b> where you said orange, and
+    <code>--syn-func</code> was <b>#dcdcaa yellow</b> where you said pink. Two of four roles rendered
+    against spec for as long as the file has existed, under a comment asserting the opposite. Nothing
+    errored, because a wrong colour is still a valid colour.
+    <br><br>
+    <b>Your refinement, and why it needed a new token.</b> Your original list gave constants and
+    variables ONE hue. Seeing it drawn, you split them, and the dark blue you want for constants is
+    exactly the <code>#569cd6</code> that types just vacated by going orange. So
+    <code>--syn-const</code> is new and <code>.tok-const</code> no longer shares
+    <code>--syn-var</code>. <b>Nothing was invented</b> &mdash; the hue was already in the file and is
+    now simply on the role you want it on. Every value here is still from Dark+'s own palette, just
+    mapped to your roles instead of theirs, which is what made A cost no new colour.
+    <br><br>
+    <b>What counts as a constant, which you corrected.</b> <i>"constants should be in SCREAMING but
+    alot of the uses of the constants are in _camelCase."</i> Right, and the first sample taught the
+    wrong rule. <code>_Cutoff</code> and friends are shader UNIFORMS, and the leading underscore is
+    Unity's property convention: their values change per material and per frame, so they are
+    variables that happen to be set from outside. The samples below are rebuilt around real
+    constants, and the rule is now written into <code>decisions.css</code> by NAMING rather than by
+    position: <b><code>.tok-const</code> is SCREAMING_SNAKE_CASE only</b>, everything that varies
+    including <code>_Prefixed</code> uniforms goes to <code>.tok-var</code>.
+    <br><br>
+    <b class="pick">TWO SMALL THINGS STILL OPEN.</b>
+    (1) Types now hold <code>#ce9178</code>, which is also what strings hold, so a string and a type
+    render identically. Left alone rather than invented around: Dark+ has no second string hue, and
+    HLSL barely uses strings, so it may never show. (2) <b>HLSL semantics</b>
+    (<code>POSITION</code>, <code>TEXCOORD0</code>, <code>SV_Target</code>) sit on the constant blue
+    because they are fixed reserved names, but <code>SV_Target</code> is not screaming and they are
+    arguably closer to keywords. One word moves them; nothing depends on it.</div>
+
+  <div class="pair">
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; A &mdash; your role list, constants on the dark blue</div>
+      <div class="v__src">orange types &middot; DARK blue constants &middot; light blue variables &middot; green classes &middot; pink functions</div>
+<div class="syn sy-a"><span class="sy-c">// dissolve.hlsl - edge burn</span>
+<span class="sy-t">#define</span> <span class="sy-const">MAX_STEPS</span> <span class="sy-n">64</span>
+<span class="sy-t">static const float</span> <span class="sy-const">EDGE_SOFTNESS</span> = <span class="sy-n">0.15</span>;
+
+<span class="sy-t">struct</span> <span class="sy-k">Attributes</span> {
+    <span class="sy-t">float4</span> <span class="sy-v">positionOS</span> : <span class="sy-const">POSITION</span>;
+    <span class="sy-t">float2</span> <span class="sy-v">uv</span>        : <span class="sy-const">TEXCOORD0</span>;
+};
+
+<span class="sy-t">float</span> <span class="sy-f">InverseLerp</span>(<span class="sy-t">float</span> <span class="sy-v">a</span>, <span class="sy-t">float</span> <span class="sy-v">b</span>, <span class="sy-t">float</span> <span class="sy-v">v</span>) {
+    <span class="sy-t">return</span> (<span class="sy-v">v</span> - <span class="sy-v">a</span>) / (<span class="sy-v">b</span> - <span class="sy-v">a</span>);
+}
+
+<span class="sy-t">float4</span> <span class="sy-f">Frag</span>(<span class="sy-k">Varyings</span> <span class="sy-v">i</span>) : <span class="sy-const">SV_Target</span> {
+    <span class="sy-t">float</span> <span class="sy-v">noise</span> = <span class="sy-f">SAMPLE_TEXTURE2D</span>(<span class="sy-v">_NoiseTex</span>, <span class="sy-v">sampler_NoiseTex</span>, <span class="sy-v">i</span>.<span class="sy-v">uv</span>).<span class="sy-v">r</span>;
+    <span class="sy-t">float</span> <span class="sy-v">edge</span>  = <span class="sy-f">InverseLerp</span>(<span class="sy-v">_Cutoff</span>, <span class="sy-v">_Cutoff</span> + <span class="sy-const">EDGE_SOFTNESS</span>, <span class="sy-v">noise</span>);
+    <span class="sy-f">clip</span>(<span class="sy-v">noise</span> - <span class="sy-v">_Cutoff</span>);
+    <span class="sy-t">return</span> <span class="sy-f">lerp</span>(<span class="sy-v">_EdgeColor</span>, <span class="sy-v">baseColor</span>, <span class="sy-f">saturate</span>(<span class="sy-v">edge</span>));
+}</div>
+      <div class="v__note">Orange <code>#ce9178</code> is Dark+'s STRING colour and pink
+        <code>#c586c0</code> is its control-flow keyword colour, both borrowed rather than invented.
+        Cost: strings would need a different hue, since orange is spent here.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">REJECTED &middot; B &mdash; Dark+&#39;s own mapping</div>
+      <div class="v__src">what decisions.css wrongly held until you settled this</div>
+<div class="syn sy-b"><span class="sy-c">// dissolve.hlsl - edge burn</span>
+<span class="sy-t">#define</span> <span class="sy-const">MAX_STEPS</span> <span class="sy-n">64</span>
+<span class="sy-t">static const float</span> <span class="sy-const">EDGE_SOFTNESS</span> = <span class="sy-n">0.15</span>;
+
+<span class="sy-t">struct</span> <span class="sy-k">Attributes</span> {
+    <span class="sy-t">float4</span> <span class="sy-v">positionOS</span> : <span class="sy-const">POSITION</span>;
+    <span class="sy-t">float2</span> <span class="sy-v">uv</span>        : <span class="sy-const">TEXCOORD0</span>;
+};
+
+<span class="sy-t">float</span> <span class="sy-f">InverseLerp</span>(<span class="sy-t">float</span> <span class="sy-v">a</span>, <span class="sy-t">float</span> <span class="sy-v">b</span>, <span class="sy-t">float</span> <span class="sy-v">v</span>) {
+    <span class="sy-t">return</span> (<span class="sy-v">v</span> - <span class="sy-v">a</span>) / (<span class="sy-v">b</span> - <span class="sy-v">a</span>);
+}
+
+<span class="sy-t">float4</span> <span class="sy-f">Frag</span>(<span class="sy-k">Varyings</span> <span class="sy-v">i</span>) : <span class="sy-const">SV_Target</span> {
+    <span class="sy-t">float</span> <span class="sy-v">noise</span> = <span class="sy-f">SAMPLE_TEXTURE2D</span>(<span class="sy-v">_NoiseTex</span>, <span class="sy-v">sampler_NoiseTex</span>, <span class="sy-v">i</span>.<span class="sy-v">uv</span>).<span class="sy-v">r</span>;
+    <span class="sy-t">float</span> <span class="sy-v">edge</span>  = <span class="sy-f">InverseLerp</span>(<span class="sy-v">_Cutoff</span>, <span class="sy-v">_Cutoff</span> + <span class="sy-const">EDGE_SOFTNESS</span>, <span class="sy-v">noise</span>);
+    <span class="sy-f">clip</span>(<span class="sy-v">noise</span> - <span class="sy-v">_Cutoff</span>);
+    <span class="sy-t">return</span> <span class="sy-f">lerp</span>(<span class="sy-v">_EdgeColor</span>, <span class="sy-v">baseColor</span>, <span class="sy-f">saturate</span>(<span class="sy-v">edge</span>));
+}</div>
+      <div class="v__note">This is what every page renders right now. It is a scheme people read
+        fluently, which was the original argument for it &mdash; but it is not the list you gave.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>One collision underneath it, either way</h2>
+  <div class="status">In Dark+, <b>green is COMMENTS</b> (<code>#6a9955</code>) and classes are the
+    teal-green <code>#4ec9b0</code>. You said green for classes. If comments also go green the two
+    read as the same thing at 12px. <b>Comments are held on neutral grey <code>#6a6a6a</code></b>
+    until you say otherwise &mdash; that is what both samples above show, and it was never guessed at.</div>
+</section>
+
+</div>
+
+<div class="panel" id="p-media" hidden>
+
+<section class="comp">
+  <h2>Figure &mdash; the image mat and its caption</h2>
+  <div class="status"><b>46 images and 10 videos &mdash; by a distance the most common thing in your posts.</b>
+    <b class="pick">DECIDED &mdash; B, catlikecoding</b> (Rod 2026-08-23). Paper on the mat was <b>already decided: A0, none</b> (D29, "texture comes in from the
+    background anyways"). What is still open is whether the mat exists at all, and where the caption sits.</div>
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; stripe.dev &mdash; a padded mat around the image</div>
+      <div class="v__src">sources/stripe-dev-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>imageContainer{border:1px solid var(--blogImageBorder);
+        background:var(--blogImageBG);border-radius:4px;padding:8px}</code>, wrapper is
+        <code>display:flex;justify-content:center</code>, and the image itself takes the same 4px radius.
+        <b>The 8px padding is the mat</b> &mdash; a visible margin between frame and picture.</div>
+      <div class="v__demo"><figure class="fg fg-mat fg-box"><div class="fill">IMAGE 16:9</div></figure>
+        <div class="fg-cap">A caption, left aligned under the mat.</div></div>
+      <div class="v__note">Also carries a zoom affordance (<code>cursor:zoom-in</code> + an expand icon),
+        which is the lightbox slot currently sitting unsourced in the last tab. <b>Picking this could close
+        two slots at once.</b></div>
+    </div>
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; B &mdash; catlikecoding, no mat</div>
+      <div class="v__src">sources/catlikecoding-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>figure{text-align:center;display:block;margin:2em auto;padding:0}</code>,
+        <code>figure img{max-width:100%;height:auto}</code>, and
+        <code>figcaption{font-size:14px;font-style:italic}</code>. No border, no fill, no radius &mdash; the
+        2em vertical margin does all the separating.</div>
+      <div class="v__demo"><figure class="fg fg-plain"><div class="fill">IMAGE 16:9</div></figure>
+        <div class="fg-cap fg-cap--centre">A caption, centred and italic.</div></div>
+      <div class="v__note">The no-mat option, and a real one &mdash; same subject matter as your posts. With 46
+        images, a mat on every one is 46 frames competing with the scene behind them. <b class="pick">PICKED 2026-08-23:</b> Rod 2026-08-23 ("for media i choose B"). <b>With 46 images this is the high-leverage one:</b> no mat means 46 fewer frames competing with the scene, and the 2em vertical margin does all the separating. <b>Read as the FIGURE row, since that is the Media tab's first decision - if you meant Hero media B, say so and I will swap it in one line.</b></div>
+    </div>
+    <div class="v">
+      <div class="v__name">C &middot; Maxime Heckel &mdash; ring, clipped, no padding</div>
+      <div class="v__src">sources/maximeheckel-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>border:2px solid var(--border-color);border-radius:var(--border-radius-3);
+        overflow:hidden;line-height:0</code>. The border sits <b>hard against the image</b> with no mat
+        between, and <code>line-height:0</code> kills the inline-descender gap. Caption is a separate
+        element at <code>padding-top:10px</code>.</div>
+      <div class="v__demo"><figure class="fg fg-ring fg-box"><div class="fill">IMAGE 16:9</div></figure>
+        <div class="fg-cap">A caption, left aligned, 10px below.</div></div>
+      <div class="v__note">Heavier ring than A but no mat, so it reads as a frame rather than a mount. The
+        <code>line-height:0</code> trick is worth stealing regardless of which one wins.</div>
+    </div>
+    <div class="v">
+      <div class="v__name">D &middot; Book of Shaders &mdash; caption right-aligned</div>
+      <div class="v__src">sources/bookofshaders-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>img{display:block;margin-left:auto;margin-right:auto;max-width:520px}</code>
+        and <code>.caption{font-style:italic;font-size:16px;line-height:1.3;text-align:right}</code>.
+        <b>The image is capped narrower than the measure</b> and the caption hangs off its right edge.</div>
+      <div class="v__demo"><figure class="fg fg-plain" style="max-width:78%"><div class="fill">IMAGE &mdash; CAPPED NARROW</div></figure>
+        <div class="fg-cap fg-cap--right" style="max-width:78%">A caption, right aligned.</div></div>
+      <div class="v__note">The only one where the caption is not left or centre. Their own
+        <code>.imgcontainer</code>/<code>.caption</code> pair is <b>declared but never used</b> in the fetched
+        pages, so this is the rule as written, not as observed &mdash; weaker evidence than the other three.</div>
+    </div>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Hero media &mdash; masked, not boxed</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; none of them. Hero media gets no special treatment</b> (Rod 2026-08-23): <i>"lets just go with the normal A where its centered with a left aligned caption (if applicable)"</i>. The hero is simply a figure and follows the figure rules - <b>centred image, left-aligned caption</b>. All three masks below are rejected and kept visible so nobody re-proposes them. Three verified sources. <b>NELU is already in Rod's gallery</b>, tagged by him as
+    the glowing-doorway / lantern principle.</div>
+  <div class="lede" style="margin-top:0">
+    <b class="pick">ONE CONFLICT THIS CREATES, and it is one word to settle.</b> You picked <b>Figure B</b>
+    (catlikecoding) for images, and catlikecoding's caption is <code>text-align:center</code> and italic.
+    You have now asked for hero captions <b>left aligned</b>. Those disagree.<br><br>
+    <b class="pick">RESOLVED 2026-08-23.</b> Rod: <i>"caption should be the figure B but change it to left
+    aligned."</i> So the figure rule is <b>catlikecoding's no-mat geometry with a LEFT-ALIGNED caption</b> -
+    their <code>figure{text-align:center;margin:2em auto}</code> and <code>figcaption{font-size:14px;
+    font-style:italic}</code> kept, their <code>text-align:center</code> on the caption dropped.
+    <b>That one change makes it a REMIX rather than a transcription</b> and it is filed as one. Hero and body
+    images now behave identically, which is what "nothing special for hero media" asked for.
+  </div>
+
+  <div class="variants">
+    <div class="v v--never">
+      <div class="v__name">A &middot; NELU &mdash; chamfered octagon</div>
+      <div class="v__src">restaurant.nelu.osaka/topics/detail.php?id=26</div>
+      <div class="v__geo">ONE <code>clip-path:polygon()</code> chamfering all four corners by 2rem, applied
+        to the hero eyecatch AND every in-body image identically &mdash; so the whole article reads as one
+        material. Pure CSS, no asset.</div>
+      <div class="v__demo"><div class="hero-oct"><div class="fill">HERO 16:9</div></div></div>
+      <div class="v__note">Recommended on PROVENANCE, not looks: it is already in the gallery with Rod's
+        own note on it. Cheapest of the three and the most reusable, since it also styles body images. <b class="pick">REJECTED 2026-08-23:</b> Rod: <i>"Dont do anything special to hero media."</i> All three candidates are MASKS - octagon, gradient mask, animated wave - and a mask is exactly the special treatment he is declining. Its own argument was that the hero and body images share one shape; that argument survives, it just resolves to <b>no shape</b> rather than an octagon.</div>
+    </div>
+
+    <div class="v v--never">
+      <div class="v__name">B &middot; HERALBONY &mdash; mask carrier</div>
+      <div class="v__src">heralbony.jp/inclusive/with-google</div>
+      <div class="v__geo">inner div is the MASK CARRIER holding a fixed aspect-ratio; the img inside is
+        height:100% + object-fit:cover so the photo OVERFILLS and the mask does the cropping.
+        A data attribute swaps mask shape per hero format.</div>
+      <div class="v__demo"><div class="hero-mask"><div class="fill">HERO &mdash; MASKED</div></div></div>
+      <div class="v__note">The most flexible mechanism: swap the mask, keep the markup. Costs a mask
+        asset per shape unless the shape is expressible as a gradient. <b class="pick">REJECTED 2026-08-23:</b> Rod: <i>"Dont do anything special to hero media."</i> All three candidates are MASKS - octagon, gradient mask, animated wave - and a mask is exactly the special treatment he is declining. Also the most expensive of the three, needing a mask asset per shape.</div>
+    </div>
+
+    <div class="v v--never">
+      <div class="v__name">C &middot; UGOKKO &mdash; animated wave band</div>
+      <div class="v__src">ugokko.jp/blog/954/</div>
+      <div class="v__geo">TWO masks stacked. The whole hero BAND is masked by a wave whose
+        <code>mask-repeat:repeat-x</code> and <code>mask-position:0 100%</code> let it ANIMATE sideways on a
+        100s loop &mdash; the wave literally scrolls.</div>
+      <div class="v__demo"><div class="hero-wave"><div class="fill">HERO BAND &mdash; WAVE EDGE</div></div></div>
+      <div class="v__note">The only one with motion, and the closest to the site&rsquo;s own water.
+        Flagged as an optional &ldquo;alive layer&rdquo; rather than a base. Needs a reduced-motion path. <b class="pick">REJECTED 2026-08-23:</b> Rod: <i>"Dont do anything special to hero media."</i> All three candidates are MASKS - octagon, gradient mask, animated wave - and a mask is exactly the special treatment he is declining. Also the only one with motion, so declining it removes a reduced-motion obligation as a side effect.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============================================================ NAVIGATION -->
+<div class="panel" id="p-nav" hidden>
+<section class="comp">
+  <h2>TOC &mdash; scroll-spy rail + mobile popup</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; A, Starlight</b> (Rod 2026-08-23). <b>stripe.dev has NO TOC</b> (verified) &mdash; the <code>/ contents</code> block in the
+    post blockout was Claude&rsquo;s invention and is now labelled as such. This slot needed its own source.</div>
+
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; A &mdash; Starlight, rail + popup</div>
+      <div class="v__src">docs.astro.build/en/guides/troubleshooting/</div>
+      <div class="v__geo">the only candidate covering the WHOLE brief in one place: a desktop rail AND a
+        <code>&lt;details&gt;</code> mobile popup. Nesting depth is a real inline <code>--depth</code> custom
+        property per item, so the indent formula is genuinely how it works.</div>
+      <div class="v__demo">
+        <div class="toc">
+          <div style="width:70%"></div><div class="d1"></div>
+          <div class="active" style="width:64%"></div><div class="d1"></div><div style="width:58%"></div>
+        </div>
+        <div class="toc-mobile" style="margin-top:14px"><span>ON THIS PAGE</span><span>&#9662;</span></div>
+      </div>
+      <div class="v__note">Their accent is BLUE and does not transfer. Every selector carries an Astro
+        <code>:where(.astro-XXXX)</code> scope hash to strip. <b class="pick">PICKED 2026-08-23:</b> Rod 2026-08-23. The only candidate covering the whole brief in one place, desktop rail AND mobile <code>&lt;details&gt;</code> popup. <b>This also rescues the heading-anchor pick:</b> anchors are hover-only and unreachable on touch, and Starlight's popup is the mobile route to a section. Their blue accent does not transfer; every selector carries an Astro <code>:where(.astro-XXXX)</code> scope hash to strip.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">B &middot; MDN &mdash; the rail&rsquo;s visual trick</div>
+      <div class="v__src">developer.mozilla.org/en-US/docs/Web/CSS/position</div>
+      <div class="v__geo">contributes the RAIL treatment rather than the whole system &mdash; how the active
+        item is marked against a continuous vertical line.</div>
+      <div class="v__demo">
+        <div class="toc">
+          <div style="width:66%"></div><div class="active" style="width:72%"></div><div style="width:54%"></div>
+        </div>
+      </div>
+      <div class="v__note">Take the rail mark, not the docs-site chrome around it.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">C &middot; brittanychiang &mdash; active-state FEEL</div>
+      <div class="v__src">brittanychiang.com &mdash; the ledger&rsquo;s original lead</div>
+      <div class="v__geo">her sticky-sidebar active state: non-active items DIM and the active one lifts,
+        rather than a marker moving. Rod already picked her register for the resume.</div>
+      <div class="v__demo">
+        <div class="toc" style="border-left-color:#666">
+          <div style="width:60%;opacity:.45"></div><div class="active" style="width:74%"></div>
+          <div style="width:52%;opacity:.45"></div>
+        </div>
+      </div>
+      <div class="v__note">Feel only &mdash; combine with A&rsquo;s structure; she has no mobile popup.</div>
+    </div>
+  </div>
+</section>
+<section class="comp">
+  <h2>Prev / next</h2>
+  <div class="status">Three verified sources. Was <b>&ldquo;no ref yet&rdquo;</b> in the ledger until 2026-08-16.</div>
+
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; A &mdash; TheRealMJP, split halves</div>
+      <div class="v__src">therealmjp.github.io/posts/shader-permutations-part1/</div>
+      <div class="v__geo">flex space-between, each child flex-basis 50% + flex-grow 1, so the two links
+        TILE the measure and each whole half is the hit target. Text aligns outward. 5px inner padding.
+        Five declarations, zero colour &mdash; transfers whole.</div>
+      <div class="v__demo"><div class="pn-a">
+        <a class="prev"><span class="yy">&larr; PREVIOUS</span><br>Bloom wants a hard edge</a>
+        <a class="next"><span class="yy">NEXT &rarr;</span><br>Compute grass at half a million</a>
+      </div></div>
+      <div class="v__note">A graphics/shader programmer's own blog, not a theme demo. Biggest hit
+        targets of the three, which matters for the 44px rule. <b class="pick">PICKED 2026-08-23:</b> Rod 2026-08-23. No box, which sits well with a live scene behind it - the two rejected options both add a fill. Same audience as your posts, too.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">B &middot; Book of Shaders &mdash; centred triptych</div>
+      <div class="v__src">thebookofshaders.com/css/style.css</div>
+      <div class="v__geo">three items set <code>display:inline</code> in a centred list, flowing as ONE
+        line of 24px italic type with 20px margins as the only separator, an <code>&lt;hr&gt;</code> above.
+        No box, no border, no grid.</div>
+      <div class="v__demo"><div><hr>
+        <ul class="pn-b" style="padding:0"><li>&lt; &lt; Previous</li><li>Index</li><li>Next &gt; &gt;</li></ul>
+      </div></div>
+      <div class="v__note">Contributes the MIDDLE slot &mdash; a third control between prev and next.
+        Smallest hit targets; would need enlarging to clear 44px.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">C &middot; Jendrik Illner &mdash; two pills</div>
+      <div class="v__src">jendrikillner.com/css/article.css</div>
+      <div class="v__geo">two pill buttons pushed to opposite ends by space-between. 10px 20px padding,
+        1px border. Honest note from the extraction: <code>.previous</code>/<code>.next</code> are DEAD
+        Bootstrap 3 classes carrying no CSS.</div>
+      <div class="v__demo"><ul class="pn-c">
+        <li><a>&larr; PREVIOUS</a></li><li><a>NEXT &rarr;</a></li>
+      </ul></div>
+      <div class="v__note">Most conventional. Also the one that reads most like a framework default,
+        which is the tell to watch.</div>
+    </div>
+  </div>
+</section>
+<section class="comp">
+  <h2>Meta chips / tags</h2>
+  <div class="status"><b class="pick">SETTLED &mdash; and this section was asking a question you had already
+    closed.</b> Same failure the callouts had. On 2026-08-21 you overrode the external sources outright:
+    <i>"Tags in general shouldnt be with doted lines like in the reference we can use the tag badges we already
+    have on the main site"</i>, then chose SQUARE over the live <code>0.5rem</code> radius when that conflict
+    was put to you. <code>element-tracker.md</code> already files this as <b>OURS, idea origin ROD</b>, and
+    already records the ameye / chriskirknielsen research as <b>UNUSED</b>. The three sourced variants that
+    used to sit here have been removed rather than left to re-ask it.</div>
+
+  <div class="lede" style="margin-top:0">
+    <b>Rod 2026-08-23, the finer structure:</b> <i>"we already agreed on a structure squares for tags on
+    project cards, rectangles from the buttons for the search and post meta data."</i>
+    <b>That is TWO shapes doing two different jobs</b>, which is more specific than anything previously
+    written down &mdash; the tracker only recorded "squared". Recorded here as the spec.
+  </div>
+
+  <div class="variants">
+    <div class="v v--settled">
+      <div class="v__name">SETTLED &middot; squares &mdash; tags on project cards</div>
+      <div class="v__src">OURS. The live site's own <code>.post-tag</code>,
+        <code>_sass/base/_base.scss:247</code>, carried forward on your instruction. Bench:
+        <code>extracted/components/tag-badge/</code></div>
+      <div class="v__geo">The live badge verbatim, with <b>one deliberate change</b>:
+        <code>border-radius: 0.5rem &rarr; 0</code>, per the 2026-08-11 shape pass (square by default, round
+        only by exception). Colours resolved from the real dark theme rather than approximated &mdash; border
+        <code>rgba(245,158,11,.2)</code>, text <code>rgba(232,224,212,.78)</code>.</div>
+      <div class="v__demo"><div class="chips">
+        <span class="chip-sq">compute</span><span class="chip-sq">hlsl</span><span class="chip-sq">unity</span>
+      </div></div>
+      <div class="v__note"><b>Filed OURS, never sourced</b> &mdash; the bench makes a thing ours, not sourced.
+        The dashed border this replaced in the blockouts was the greybox placeholder signal, not a design
+        choice, which is what the "dotted lines" objection was about.</div>
+    </div>
+
+    <div class="v v--settled">
+      <div class="v__name">SETTLED &middot; rectangles &mdash; <code>.kit-button</code> from button-kit</div>
+      <div class="v__src">OURS &mdash; reuses <code>extracted/components/button-kit/</code>.
+        <b class="pick">Needs one thing from you before it can be drawn properly.</b></div>
+      <div class="v__geo">Your spec is "rectangles from the buttons", i.e. the metadata chip is the BUTTON
+        shape reused rather than a second chip design. Drawn here as the square badge at button proportions
+        so the two shapes can be compared side by side.</div>
+      <div class="v__demo"><div class="chips">
+        <span class="chip-rect">2026-03-20</span><span class="chip-rect">12 min read</span>
+      </div>
+      <div class="chips" style="margin-top:10px"><span class="chip-rect chip-rect--search">// search</span></div></div>
+      <div class="v__note"><b>The open part, and it is small:</b> "rectangles from the buttons" names a shape,
+        not which button. <code>button-kit</code> holds more than one. <b>Which button is the parent?</b> One
+        word closes it. Also worth knowing: the ledger records a canonical search spec that already differs
+        &mdash; square, <code>//</code> prefix, blinking caret, no animation &mdash; so search may be its own
+        third thing rather than a rectangle. <b class="pick">PARENT NAMED 2026-08-23:</b> Rod: <i>"the button toolkit inside of the extracted components/work bench."</i> So the parent is <code>extracted/components/button-kit/</code>, and within it <code>.kit-button</code> - the base rectangle, not <code>.kit-button--pill</code> which is <code>border-radius:999px</code>. Its geometry is <code>padding:0.7rem 1.5rem</code>. <b class="pick">THREE THINGS THIS DRAGS IN, all worth knowing before it ships:</b> (1) <code>.kit-button</code> is <code>border-radius:8px</code>, and the square-by-default shape pass plus the squared tag half both say 0 - <b>so it needs squaring, which is a deliberate change from its parent</b>. (2) <code>button-kit</code> carries a <b>CIRCULAR CITATION warning in its own header</b> - its provenance line points at a <code>rework-*.html</code> page in this repo, so it has NO external source and the ledger files it <b>Slop</b>. Inheriting from it inherits that. (3) the kit's own <code>.kit-tag</code> uses <code>--color-muted</code>, which is <code>#9aa3bd</code> - <b>the blue token</b>. Do not let it come across.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============================================================ TABLES -->
+<div class="panel" id="p-tables" hidden>
+
+<section class="comp">
+  <h2>Tables</h2>
+  <div class="status"><b class="pick">DECIDED &mdash; B squared, header row in H2 yellow</b> (Rod 2026-08-23). <b>One post, 7 rows.</b> The rarest thing in this whole page, so the honest advice is
+    to pick the cheaper one and move on. Two sources, and they sit at opposite extremes.</div>
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; acegikmo &mdash; a real table component</div>
+      <div class="v__src">sources/acegikmo-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>.feature-table{border-spacing:1px;border:solid 1px #ccc;border-radius:8px;
+        text-align:center;padding:8px;margin-left:auto;margin-right:auto}</code>, cells get
+        <code>border-radius:4px</code>, headers are <code>font-weight:100</code>. Carries <b>four semantic
+        cell states</b> &mdash; <code>td.on</code>, <code>.off</code>, <code>.na</code>, <code>.depends</code>
+        &mdash; each a fill plus a text colour.</div>
+      <div class="v__demo"><table class="tb tb-box">
+        <tr><th>Feature</th><th>SRP</th><th>URP</th></tr>
+        <tr><td>Compute</td><td>yes</td><td>yes</td></tr>
+        <tr><td>Indirect draw</td><td>yes</td><td>n/a</td></tr></table></div>
+      <div class="v__note">The four states are genuinely useful for shader feature matrices, which is what your
+        one table is. But they are four colours, and the palette law allows no red and no cool accent &mdash;
+        <b>so the states would need re-deriving before this can ship.</b></div>
+    </div>
+    <div class="v v--settled">
+      <div class="v__name">PICKED &middot; B, squared, with an H2-yellow header</div>
+      <div class="v__src">sources/iquilezles-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>td{padding-right:1rem}</code> plus two colour classes, declared in a
+        per-article inline <code>&lt;style&gt;</code> block rather than the site stylesheet. No border, no fill,
+        no radius. The table sits inside a horizontal scroll wrapper so it never breaks the measure.</div>
+      <div class="v__demo"><table class="tb tb-bare tb-picked">
+        <tr><th>Feature</th><th>SRP</th><th>URP</th></tr>
+        <tr><td>Compute</td><td>yes</td><td>yes</td></tr>
+        <tr><td>Indirect draw</td><td>yes</td><td>n/a</td></tr></table></div>
+      <div class="v__note"><b>Worth knowing:</b> their stylesheet also defines a full
+        <code>.table/.tableRow/.tableCell</code> system that is used on <b>zero</b> fetched pages. The
+        two-line inline version is what actually renders &mdash; a decent argument for not over-building this.
+        The scroll wrapper is the part your 767px measure genuinely needs. <b class="pick">PICKED 2026-08-23:</b> Rod: <i>"lets do a square table like B but have the top bar be the h2 yellow."</i> <b>This is a REMIX of the two options and is filed as one</b>, because each half has a different parent: iquilezles supplies the minimal body and the scroll wrapper, <b>acegikmo supplies the idea of a coloured header row</b> (<code>th{color:#ff1155;font-weight:100}</code>) recoloured to our <code>--color-gold</code> <code>#fbbf24</code>. <b>"Square" resolves a real conflict rather than being a preference:</b> acegikmo's table is <code>border-radius:8px</code> with <code>4px</code> cells, and the shape pass squares by default - so taking their header without their radius is the consistent call. <b>Their four semantic cell states are NOT taken</b> - they are four colours, and the palette law bans red and cool accents. <b>The scroll wrapper is the load-bearing part</b>: your measure is 767px and a feature matrix will exceed it.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============================================================ NO SOURCE -->
+<div class="panel" id="p-nosource" hidden>
+<section class="comp">
+  <h2>Still unsourced &mdash; nothing invented here</h2>
+  <div class="status"><b>Three of four still have no source and stay EMPTY rather than guessed</b> &mdash; Rod 2026-08-23: <i>"not sure about the no source ones except for the post cards."</i> <b class="pick">Related posts cards is now DECIDED</b> and no longer needs an external reference: it inherits the project card you already own, minus glass, motion and glow.</div>
+  <div class="variants">
+    <div class="v"><div class="v__name">Post header</div>
+      <div class="v__demo"><div class="no-source">Bench file exists but is UNUSABLE for the stripe layout:
+        it bundles title + meta, and stripe splits them (title full-width above the grid, meta down in the
+        rail). Needs its own source, or a variant of the existing one.</div></div></div>
+    <div class="v"><div class="v__name">Reading progress bar</div>
+      <div class="v__demo"><div class="no-source">Exists on the LIVE site (post-enhance.js), but the live
+        site is itself being reworked, so it is not a source. Needs an external reference.</div></div></div>
+    <div class="v"><div class="v__name">Image lightbox</div>
+      <div class="v__demo"><div class="no-source">No reference. Not yet searched.</div></div></div>
+    <div class="v v--settled"><div class="v__name">DECIDED &middot; Related posts cards &mdash; the project card, stripped</div>
+      <div class="v__src">OURS &mdash; derived from <code>extracted/components/project-cards-expensive/</code>,
+        which you and I built together (you withdrew the citation objection on it 2026-08-22, origin ROD)</div>
+      <div class="v__geo">Rod 2026-08-23: <i>"they should resemble the project cards without the glass and
+        motion and glow basically keep them pretty motionless we dont want stuff interrupting their ability to
+        focus on the text."</i> <b>Measured off the component, that is exactly three deletions</b> &mdash; the
+        rest of the card is untouched:
+        <div class="tally" style="grid-template-columns:auto 1fr;margin-top:8px">
+          <b>glass</b><span><code>filter: blur(2.5px)</code>, two rules (lines 150, 180)</span>
+          <b>motion</b><span>the band reveal, <code>transform: translateY(58px)</code> &rarr;
+            <code>translateY(36px)</code> &rarr; <code>none</code> (lines 97, 112, 115)</span>
+          <b>glow</b><span><code>:hover</code> and its
+            <code>box-shadow: 0 14px 30px -10px rgba(0,0,0,.6)</code> (lines 210-212)</span>
+        </div></div>
+      <div class="v__demo"><div class="relcard">
+        <div class="relcard__t">Decompiling the Shaders of a 2004 Racing Game</div>
+        <div class="relcard__m">tech-art &middot; 12 min</div>
+      </div><div class="relcard">
+        <div class="relcard__t">2D Physics on the GPU</div>
+        <div class="relcard__m">tech-art &middot; 8 min</div>
+      </div></div>
+      <div class="v__note"><b>This closes the slot without needing an external source</b>, because it inherits
+        one you already own rather than borrowing a new one. <b>Worth noting what it also settles:</b> the slot
+        used to say it was waiting on "whatever the project-cards direction settles on" &mdash; it no longer
+        is, because stripping is subtractive and survives any later change to the parent.<br><br>
+        <b>One consequence to be deliberate about:</b> with hover gone there is no visual affordance that the
+        card is clickable. The card should still be a link, so it needs SOME focus/hover state for keyboard
+        and pointer users (WCAG 2.4.7). <b>A border-colour change costs no motion and no glow</b> &mdash; that
+        is the cheapest thing that keeps it accessible without breaking "motionless".</div></div>
+  </div>
+</section>
+</div>
+
+</div>
+
+<script>
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tabs button'));
+  var panels = {};
+  tabs.forEach(function (b) { panels[b.dataset.p] = document.getElementById('p-' + b.dataset.p); });
+
+  function show(name, push) {
+    tabs.forEach(function (b) {
+      var on = b.dataset.p === name;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      panels[b.dataset.p].hidden = !on;
+    });
+    if (push) history.replaceState(null, '', '#' + name);
+    window.scrollTo(0, 0);
+  }
+
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () { show(b.dataset.p, true); });
+  });
+
+  // deep-link so a tab can be sent in chat: text-decisions.html#body
+  function fromHash(push) {
+    var name = location.hash.replace('#', '');
+    show(panels[name] ? name : 'headings', push);
+  }
+  // hashchange matters as much as load: pasting #tables into an ALREADY OPEN tab is a
+  // same-document navigation, so the page never reloads and load-time reading alone misses it.
+  window.addEventListener('hashchange', function () { fromHash(false); });
+  fromHash(false);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-store" />   <!-- dev: always serve fresh so reloads pick up edits -->
+<title>Anime glow — flat emissive vs gradient, same bloom</title>
+<!--
+  ANIME GLOW TEST SCENE (2026-08-13). A duplicate of the dock scene, wired so the ONE variable is
+  whether the bloom-feeding emissive is FLAT or a GRADIENT. Everything else - geometry, water,
+  camera, bloom pass - is identical to water-scene.html.
+
+  The question it answers: Shinsekai yori uses a bloom much like ours, so why does ours not feel
+  like it? Working answer: SSY blooms flat, hard-edged painted art; we bloom a soft vertical ramp
+  (lanternShader.js:84-88), and soft-on-soft has no edge for the halo to sit against.
+
+  ROD'S RULE (2026-08-13): gradients are fine, SSY uses them. They are only banned on things that
+  FEED THE BLOOM. So this page flattens the emissives and nothing else.
+
+  Nothing here touches the live site. The flat fragment shader is scene/shader/lanternShader-flat.js;
+  scene/shader/lanternShaderManager.js stays a faithful copy of Rod's live module (the wrong-copy
+  hazard in docs/TRAPS.md), so the swap is done by a subclass in this file instead.
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #080f1b; overflow: hidden; }
+  #c { display: block; width: 100vw; height: 100vh; position: relative; z-index: 0; }
+  /* the live scene's vignette, copied verbatim from createBaseScene (three-shared.js). It darkens
+     the frame edges hard, so glow has to be judged with it ON or the test is not your scene. */
+  #vig { position: fixed; inset: 0; pointer-events: none; z-index: 1;
+         background: radial-gradient(ellipse at center, transparent 0%, transparent 30%, rgba(0,0,0,0.8) 100%); }
+  #hud { position: fixed; left: 0; bottom: 0; padding: 8px 12px; font: 11px ui-monospace, monospace; color: #aeb6c8; pointer-events: none; }
+  #hud b { color: #ffb020; }
+  .tp-dfwv { max-height: calc(100vh - 16px); overflow-y: auto; overflow-x: hidden; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="vig"></div>
+<div id="hud">anime glow — orbit to the lanterns. Toggle <b>Emissive: FLAT</b> in the panel to A/B against the live gradient shader.</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+    "tweakpane": "https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { Pane } from 'tweakpane';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+// Rod's REAL dock-scene modules (faithful copies in ./scene/).
+import { CONFIG, loadLanternsFBX, loadDockFBX } from './scene/three-shared.js';
+import { LanternController } from './scene/lantern-controller.js';
+import { LanternMaterialManager } from './scene/shader/lanternShaderManager.js';
+import { LanternShader } from './scene/shader/lanternShader.js';
+import { LanternShaderFlat } from './scene/shader/lanternShader-flat.js';
+import { MirroredSurface } from './scene/shader/mirroredSurface-bob.js';
+import { patchHighPassToStreak } from './scene/shader/anamorphicPass.js';
+
+// ---------- scene (same framing as water-scene.html) ----------
+const cnvs = document.getElementById('c');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x080f1b);
+const cam = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 10000);
+cam.position.set(0, CONFIG.camera.endPositionY, CONFIG.camera.positionZ);   // the live settled framing
+const re = new THREE.WebGLRenderer({ canvas: cnvs, antialias: true });
+re.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+re.setSize(innerWidth, innerHeight, false);
+const orbCtrls = new OrbitControls(cam, cnvs);
+orbCtrls.target.set(0, 60, 0); orbCtrls.enableDamping = true;
+
+/* Pipeline copied from createBaseScene (three-shared.js) EXACTLY, so the emissive stays the only
+   variable: RenderPass -> UnrealBloomPass at the CONFIG numbers, and nothing after it.
+   NOTE: no OutputPass and no explicit outputColorSpace, because the live scene has neither.
+   water-scene.html adds an OutputPass; keeping that here would have made this page brighter than
+   the real scene and quietly invalidated the comparison. */
+const composer = new EffectComposer(re);
+composer.addPass(new RenderPass(scene, cam));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight),
+  CONFIG.lanterns.bloom.strength, CONFIG.lanterns.bloom.radius, CONFIG.lanterns.bloom.threshold);
+composer.addPass(bloom);
+
+/* REVERTED 2026-08-13 (Rod: "not impressed"). The bloom is stock three.js again - no resolution
+   scale, no per-mip reach taper. Both were tested and rejected: supersampling tightens each mip but
+   mip 5 stays a shapeless blob at any buffer size, so a pyramid bloom cannot trace a silhouette.
+   That finding is what sent us to the shape-following methods instead. */
+
+/* ANAMORPHIC = a SECOND UnrealBloomPass whose HIGH PASS is swapped for the streaking one. That is
+   what the three.js example does (`bloomPass.highPassFn = Fn(...)`), and it is the bit a first
+   attempt got wrong: the streak feeds the bloom's mip chain, it does not replace the bloom. So the
+   smeared bright buffer still gets blurred and composited, giving a hard core AND a soft halo.
+   Source defaults, verbatim: intensity 5.0, radius 0.0, threshold 0.3, samples 80, and a 0.25
+   resolution scale (which is most of why theirs reads soft). Starts DISABLED so the page still
+   opens as Rod's real scene. */
+/* Matching setResolutionScale(0.25) exactly needs care, because the two classes size differently:
+   BloomNode      renderTargetBright = screen * resolutionScale          -> screen * 0.25
+   UnrealBloomPass renderTargetBright = resolution / 2
+   so the classic pass has to be built at screen * 0.5 to land on the same 0.25 bright buffer.
+   Passing screen * 0.25 (the obvious-looking thing) would make it half the size the example uses. */
+const ANA_SCALE = 0.25;                       // the example's effective scale
+/* strength 5.0 and radius 0.0 are the example's. Threshold follows the REAL scene bloom rather
+   than the example's 0.3, per Rod 2026-08-13, so both modes gate on the same brightness. */
+const anamorphic = new UnrealBloomPass(
+  new THREE.Vector2(innerWidth * ANA_SCALE * 2, innerHeight * ANA_SCALE * 2),
+  5.0, 0.0, CONFIG.lanterns.bloom.threshold);
+anamorphic.enabled = false;
+/* EffectComposer.setSize() resizes EVERY pass to the full screen, which silently undoes the scale
+   above on the first resize. Wrap setSize so the pass always re-applies its own scale. */
+const _anaSetSize = anamorphic.setSize.bind(anamorphic);
+anamorphic.setSize = (w, h) => _anaSetSize(w * ANA_SCALE * 2, h * ANA_SCALE * 2);
+const anaU = patchHighPassToStreak(anamorphic);
+anaU.uInvSize.value = new THREE.Vector2();
+function syncAnamorphicSize() {
+  /* the example's `invSize` is 1/viewportSize while the high pass renders, i.e. 1 / bright buffer */
+  anaU.uInvSize.value.set(1 / (innerWidth * ANA_SCALE), 1 / (innerHeight * ANA_SCALE));
+  anaU.uAspect.value = innerWidth / innerHeight;
+}
+syncAnamorphicSize();
+composer.addPass(anamorphic);
+
+/* Flat manager: Rod's real manager, with the fragment shader swapped after construction and the
+   two extra uniforms merged in. Subclassed here so the ./scene/ copy stays faithful to live. */
+class FlatLanternMaterialManager extends LanternMaterialManager {
+  createMaterial(options = {}) {
+    const material = super.createMaterial(options);
+    material.fragmentShader = LanternShaderFlat.fragmentShader;   // FLAT is the default state
+    return material;
+  }
+  /* live A/B: recompile every managed material between Rod's gradient shader and the flat one */
+  setFlat(flat) {
+    this.materials.forEach(m => {
+      m.fragmentShader = flat ? LanternShaderFlat.fragmentShader : LanternShader.fragmentShader;
+      m.needsUpdate = true;
+    });
+  }
+}
+
+// ---------- Rod's real dock scene (copied modules) ----------
+const lanternController = new LanternController(CONFIG, cam, { displacementScale: 3, intersectionZ: -150 });
+const lanternMaterialManager = new FlatLanternMaterialManager(CONFIG);
+const fbxLoader = new FBXLoader();
+loadLanternsFBX(fbxLoader, scene, lanternController, lanternMaterialManager);
+loadDockFBX(fbxLoader, scene);
+
+// Water stays a PERFECT MIRROR (Rod 2026-08-13): no posterise on the surface, so it simply
+// reflects whatever the scene does. Bloom is screen-space, so reflected highlights glare too.
+let mirroredSurface = null, waterFbx = null;
+fbxLoader.load('/assets/mesh/lantern-night/Water.fbx', (fbx) => {
+  let waterMesh = null; fbx.traverse(c => { if (c.isMesh) waterMesh = c; });
+  if (!waterMesh) { document.getElementById('hud').textContent = 'Water.fbx had no mesh'; return; }
+  scene.add(fbx);
+  waterFbx = fbx;
+  mirroredSurface = new MirroredSurface(scene, cam, re, waterMesh, {
+    reflectionIntensity: CONFIG.water.reflection.reflectionIntensity,
+    reflectionTint: new THREE.Color(CONFIG.water.reflection.reflectionTint),
+    waveStrength: CONFIG.water.waves.waveStrength, waveSpeed: 1.5,
+    waveScale: CONFIG.water.waves.waveScale, waveType: CONFIG.water.waves.waveType,
+    noiseMode: 1,
+  });
+  waterMesh.material = mirroredSurface.material;
+}, undefined, () => { document.getElementById('hud').textContent = 'Water.fbx load failed'; });
+
+// Embers — faithful copy of Rod's About-scene fireflies. They feed the bloom too, so they flatten
+// with everything else (same manager).
+const EMBER_COUNT = 25;
+const emberGeometry = new THREE.SphereGeometry(5, 8, 6);
+emberGeometry.computeBoundingBox();
+for (let i = 0; i < EMBER_COUNT; i++) {
+  const mesh = new THREE.Mesh(emberGeometry);
+  mesh.material = lanternMaterialManager.createMaterialForMesh(mesh, {
+    baseColor: new THREE.Color(0xfff4cc), gradientStart: 1.0, gradientEnd: 0.35,
+    flickerSpeed: (2.0 + Math.random() * 4.0), flickerAmount: (0.5 + Math.random() * 0.4),
+    flickerColorShift: 0.2 + Math.random() * 0.15,
+  });
+  const side = Math.random() > 0.5 ? 1 : -1;
+  mesh.position.set(side * (300 + Math.random() * 500), -50 + Math.random() * 450, -50 - Math.random() * 350);
+  mesh.userData.floatScale = 1.0 + Math.random() * 0.5;
+  mesh.userData.isEmber = true;
+  lanternController.addLantern(mesh);
+  scene.add(mesh);
+}
+
+const state = { flat: true, intensity: CONFIG.lanterns.glow.intensity, tint: '#ffffff' };
+
+/* UnrealBloomPass tints each mip of its blur chain. Writing all five gives the halo a colour
+   without touching the source, which is the anime "white core, warm halo" split. */
+function setBloomTint(hex) {
+  if (!bloom.bloomTintColors) return false;
+  const c = new THREE.Color(hex);
+  bloom.bloomTintColors.forEach(v => v.set(c.r, c.g, c.b));
+  return true;
+}
+
+const pane = new Pane();
+const g = pane.addFolder({ title: 'Emissive (the bloom source)', expanded: true });
+g.addBinding(state, 'flat', { label: 'Emissive: FLAT (off = live gradient)' })
+  .on('change', e => lanternMaterialManager.setFlat(e.value));
+g.addBinding(state, 'intensity', { min: 0, max: 6, step: 0.05, label: 'Emissive intensity' })
+  .on('change', e => lanternMaterialManager.setEmissiveIntensity(e.value));
+
+const b = pane.addFolder({ title: 'Bloom (live scene numbers: 1.4 / 0.3 / 0.45)', expanded: true });
+b.addButton({ title: 'Reset to scene defaults' }).on('click', () => {
+  bloom.strength = CONFIG.lanterns.bloom.strength;
+  bloom.radius = CONFIG.lanterns.bloom.radius;
+  bloom.threshold = CONFIG.lanterns.bloom.threshold;
+  state.tint = '#ffffff'; setBloomTint('#ffffff');
+  pane.refresh();
+});
+b.addBinding(bloom, 'strength', { min: 0, max: 3, step: 0.05, label: 'Strength' });
+b.addBinding(bloom, 'radius', { min: 0, max: 2, step: 0.01, label: 'Radius' });
+b.addBinding(bloom, 'threshold', { min: 0, max: 1, step: 0.01, label: 'Threshold' });
+b.addBinding(state, 'tint', { view: 'color', label: 'Halo tint' })
+  .on('change', e => setBloomTint(e.value));
+
+/* Cut to what Rod actually moves. Baked as constants after his 2026-08-13 pass: pixel step 0.5,
+   tint white (so bloomTintColors just stay at their default), radius 0, threshold = the real scene
+   bloom's. What is left is the shape of the star and how hard it burns. */
+const a = pane.addFolder({ title: 'Star glare (three.js anamorphic, ported)', expanded: true });
+const anaState = { on: false };
+a.addBinding(anaState, 'on', { label: 'Star glare ON (turns normal bloom off)' }).on('change', e => {
+  anamorphic.enabled = e.value;
+  bloom.enabled = !e.value;              // never judge both at once: two extractions composite to mud
+});
+a.addBinding(anaU.uArms, 'value', { min: 1, max: 3, step: 1, label: 'Points: 1=2pt streak 2=4pt 3=6pt' });
+a.addBinding(anaU.uSamples, 'value', { min: 2, max: 32, step: 1, label: 'Samples (= streak length)' });
+a.addBinding(anamorphic, 'strength', { min: 0, max: 10, step: 0.1, label: 'Intensity (source: 5.0)' });
+
+const s = pane.addFolder({ title: 'Scene', expanded: false });
+const vig = { on: true };
+s.addBinding(vig, 'on', { label: 'Vignette (live scene has it ON)' })
+  .on('change', e => { document.getElementById('vig').style.display = e.value ? 'block' : 'none'; });
+const solo = { water: false };
+s.addBinding(solo, 'water', { label: 'Solo water (hide scene)' }).on('change', e => {
+  scene.children.forEach(c => { if (c !== waterFbx) c.visible = !e.value; });
+});
+
+function resize() {
+  if (cnvs.width !== innerWidth || cnvs.height !== innerHeight) {
+    re.setSize(innerWidth, innerHeight, false); composer.setSize(innerWidth, innerHeight);
+    cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
+    syncAnamorphicSize();   // composer.setSize already resized the pass, through the wrapper above
+    if (mirroredSurface) mirroredSurface.handleResize();
+  }
+}
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const nd = dt * 60;
+  orbCtrls.update();
+  lanternMaterialManager.update(nd);
+  lanternController.update(nd);
+  if (mirroredSurface) mirroredSurface.update(nd);
+  resize();
+  composer.render();
+}
+animate();
+
+/* mechanical verification handle (rAF is paused in headless preview tabs) */
+window.__glow = { manager: lanternMaterialManager, bloom, anamorphic, scene, cam, composer, renderer: re, state,
+                  hasBloomTint: () => !!bloom.bloomTintColors };
+</script>
+</body>
+</html>

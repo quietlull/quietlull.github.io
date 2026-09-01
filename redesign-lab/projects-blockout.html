@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PROJECTS BLOCKOUT — 4 variants, greybox</title>
+<!--
+  PROJECTS index / work grid (_layouts/section-projects.html, ~12 items).
+  GREYBOX LAW: geometry only, one grey language, no colour. Dashed = placeholder, solid = structure.
+
+  Transcribed from four currently-live sites, each read from its own CSS:
+    MINIONSART  minionsart.github.io/tutorials/   /tutorials/style.css
+    109ICHIKI   109ichiki.com/works/              /_astro/style.COBHKi4A.css
+    KAITONOTE   kaitonote.com/works/              /assets/css/style.css + inline Tailwind
+    TUYU        tuyu.moe/works/                   /css/common202c.css + /css/page202c.css
+
+  Frozen slots in ALL four: title+description · search · filter chips · PINNED set distinguished ·
+  item grid (thumb/video face, title, desc, role/engine, date+read-time, tags, WIP, hover
+  takeaway) · empty state · "View all".
+-->
+<style>
+  *{box-sizing:border-box}
+  body{background:#141414;color:#d9d9d9;font-family:ui-monospace,"SF Mono",Consolas,monospace;
+    margin:0;padding-top:72px}
+  .box{border:1.5px dashed #555;background:#1b1b1b}
+  .fill{display:grid;place-items:center;height:100%;color:#666;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;text-align:center;padding:4px}
+  .yy{font-size:9px;color:#777}
+  .nav{position:fixed;top:0;left:0;right:0;height:72px;z-index:10;background:#1f1f1f;
+    border-bottom:1.5px solid #666;display:flex;align-items:center;gap:16px;padding:0 20px}
+  .nav .ico{width:44px;height:44px;border:1.5px dashed #777;display:grid;place-items:center;font-size:9px;color:#888}
+  .nav .name{border:1.5px dashed #666;padding:8px 18px;font-size:13px;color:#ccc}
+  .nav .sp{flex:1}
+  .nav .btns span{border:1.5px dashed #666;padding:7px 16px;font-size:10px;color:#999;margin-left:6px}
+  .ground{min-height:calc(100vh - 72px)}
+  .chip{border:2px solid #666;border-radius:10px;font-size:11px;color:#888;display:inline-grid;
+    place-items:center;background:#1b1b1b}
+
+  /* ================= V1 · MINIONSART — sticker panel, SQUARED ================
+     SHAPE PASS APPLIED (Rod 2026-08-16, on his locked 2026-08-11 rule "square by default, round
+     only by exception"). MinionsArt's own radii were panel 10 / card 15 / thumb 15-15-0-0 /
+     chips 10; all are now 0 to match `.merged-cards--square`, which zeroes card-cover, card-back,
+     glass-plane and card-pin. The card footprint needed NO change - MinionsArt is already 300x300,
+     the same 1/1 aspect `.epx-cards.is-regular` uses.
+     THE ONE EXCEPTION IS KEPT: the STAR pin holds its 5px radius, exactly as
+     `.merged-cards--square .card-pin--star` does, at the component's 1.7rem square.
+     Everything else here (the 1000px panel, the 3x300 grid at 20px gaps, and above all the
+     zero-blur 5px 10px offset shadow) is still MinionsArt, untouched. */
+  body.sticker .panel{width:1000px;max-width:94vw;margin:40px auto 0;padding:35px;border-radius:0;
+    background:#1d1d1d}
+  body.sticker .grid{display:grid;grid-template-columns:repeat(3,300px);gap:20px;padding:15px;
+    justify-content:center}
+  body.sticker .card{width:300px;height:300px;border-radius:0;background:#1b1b1b;
+    border:1.5px dashed #555;position:relative;
+    box-shadow:5px 10px 0 0 rgba(255,255,255,.07)}   /* ZERO blur, ZERO spread — the sticker */
+  body.sticker .card .thumb{height:160px;border-radius:0;background:#232323;
+    border-bottom:1.5px dashed #555;position:relative}
+  body.sticker .card .band{position:absolute;left:0;right:0;bottom:0;background:#2a2a2a;
+    padding:5px;margin:0;height:44px}
+  body.sticker .card .chips{position:absolute;top:6px;right:6px;display:flex;gap:5px;align-items:flex-start}
+  body.sticker .card .chips .chip{height:20px;padding:0 6px;border-radius:0}
+  /* the deliberate exception — 1.7rem square at 5px, star glyph only, no "Pinned" text */
+  body.sticker .card .pin-star{min-width:1.7rem;height:1.7rem;padding:0;display:flex;
+    align-items:center;justify-content:center;border:2px solid #666;border-radius:5px;
+    background:#1b1b1b;color:#999;font-size:11px}
+  body.sticker .filters{display:grid;grid-template-columns:repeat(5,auto);width:500px;margin:0 auto;
+    gap:10px;padding:15px}
+  body.sticker .filters .chip{height:28px}
+  body.sticker .search{width:400px;margin:0 auto 24px}
+  /* every chip in this variant squares off — .pin-star is a separate class, so its 5px survives */
+  body.sticker .chip{border-radius:0}
+
+  /* ================= V5 · HYBRID — MinionsArt page, Kaito Note card ====
+     ROD 2026-08-18: "lets do minionsart, i want to note that i really like the layout of the
+     project cards from kaitonote so please make a variant where the majority of the page is using
+     the minionsart layout but with the kaitonote project cards."
+
+     SPLIT OF PARENTAGE, so nobody has to guess later:
+       MinionsArt owns the PAGE  - 1000px panel at 35px padding, the 3-up 300px grid with 20px
+                                   gaps, the centred 500px filter row, the 400px search, the
+                                   top-right chip cluster, and the zero-blur offset shadow.
+       Kaito Note owns the CARD  - square tile, a full-tile rest veil, and the caption INSIDE the
+                                   tile at left/right 24 bottom 16 rather than in a band beneath it.
+
+     WHAT WAS DROPPED AND WHY: MinionsArt splits its card into a 160px thumb, a 44px title band and
+     a text block underneath. Taking Kaito Note's card means the caption moves inside the image and
+     that whole lower block goes, so the tile is image-first. The 20px gap and the sticker shadow
+     are KEPT - those are page, not card, and the zero-blur shadow is the pillar-backed bit
+     (sticker on paper, not a glass panel). Kaito Note's own zero gutter would kill both. */
+  body.hybrid .panel{width:1000px;max-width:94vw;margin:40px auto 0;padding:35px;border-radius:0;
+    background:#1d1d1d}
+  body.hybrid .grid{display:grid;grid-template-columns:repeat(3,300px);gap:20px;padding:15px;
+    justify-content:center}
+  body.hybrid .search{width:400px;margin:0 auto 24px}
+  body.hybrid .filters{display:grid;grid-template-columns:repeat(5,auto);width:500px;margin:0 auto;
+    gap:10px;padding:15px}
+  body.hybrid .filters .chip{height:28px}
+  body.hybrid .chip{border-radius:0}
+  /* the card: Kaito Note's tile, on MinionsArt's shadow */
+  body.hybrid .tile{aspect-ratio:1;width:300px;background:#1b1b1b;border:1.5px dashed #555;
+    position:relative;box-shadow:5px 10px 0 0 rgba(255,255,255,.07)}
+  body.hybrid .tile .veil{position:absolute;inset:0;background:rgba(20,20,20,.55)}
+  body.hybrid .tile .cap{position:absolute;left:24px;right:24px;bottom:16px}
+  body.hybrid .tile .chips{position:absolute;top:6px;right:6px;display:flex;gap:5px;
+    align-items:flex-start;z-index:2}
+  body.hybrid .tile .chips .chip{height:20px;padding:0 6px;border-radius:0}
+  body.hybrid .tile .pin-star{min-width:1.7rem;height:1.7rem;padding:0;display:flex;
+    align-items:center;justify-content:center;border:2px solid #666;border-radius:5px;
+    background:#1b1b1b;color:#999;font-size:11px}
+
+  /* ================= V2 · 109ICHIKI — frameless square field ========= */
+  body.field .page{padding:20px 20px 157.5px}
+  body.field .head{display:flex;justify-content:space-between;align-items:flex-end;
+    padding:157.5px 56px 60px;border-bottom:1px solid #3a3a3a}
+  body.field .filterblock{display:grid;grid-template-columns:repeat(12,1fr);padding:37.5px 56px;
+    gap:0;align-items:center}
+  body.field .pillsearch{height:30px;border:1px solid #666;border-radius:100vh;padding:0 14px;
+    display:grid;place-items:center;font-size:10px;color:#888}
+  body.field .typerow{display:flex;gap:7.5px;align-items:center;font-size:11px;color:#888}
+  body.field .typerow .on{border-bottom:1px solid #ddd;color:#ddd;padding-bottom:3px}
+  body.field .catrow{display:flex;gap:7.5px;margin-top:22.5px}
+  body.field .catrow .chip{height:30px;border-radius:100vh;border-width:1px;padding:0 14px}
+  body.field .catrow .chip.on{background:#ddd;color:#141414;border-color:#ddd}
+  body.field .count{padding:0 56px;margin-top:37.5px;display:flex;justify-content:space-between;
+    align-items:center;font-size:11px;color:#888;letter-spacing:.14em}
+  body.field .grid{display:grid;grid-template-columns:repeat(6,1fr);padding:37.5px 56px 0;gap:0}
+  body.field .cell{padding:20px}                    /* NO gap property — padding IS the gutter */
+  body.field .cell .sq{aspect-ratio:1;background:#1b1b1b;border:1.5px dashed #555}
+  body.field .cell.pin .sq{margin:-20px}            /* pinned FILLS its square; others stay inset */
+  body.field .cap{margin-top:15px;display:flex;justify-content:center}
+  body.field .cap .chip{border-radius:4px;border-width:1px;padding:2px 8px;font-size:10px}
+  body.field .tags{display:flex;gap:6px;justify-content:center;margin-top:6px}
+  body.field .tags .chip{border-radius:4px;border-width:1px;padding:2px 8px;font-size:9px}
+
+  /* ================= V3 · KAITONOTE — zero-gutter mosaic + right rail = */
+  body.mosaic .page{display:grid;grid-template-columns:135fr 412fr 412fr 412fr 412fr 135fr;
+    padding-bottom:256px}
+  body.mosaic .title{grid-column:2/5;margin-top:160px}
+  body.mosaic .rail{grid-column:5/6;margin-top:160px;margin-left:auto;width:240px}
+  body.mosaic .rail .grp{margin-bottom:40px}
+  body.mosaic .rail .grp .lbl{font-size:10px;letter-spacing:.14em;color:#777;text-transform:uppercase}
+  body.mosaic .rail .grp div.it{margin-top:16px;font-size:11px;color:#8a8a8a}
+  body.mosaic .rail .grp div.it.on{color:#ddd}
+  /* BENTO REMOVED (Rod 2026-08-16): "make it so the bento no longer exists, just do a similar
+     design of the section but with project cards in the size and uniform shape."
+     Kaito Note's SECTION survives — the 135/412x4/135 spine, the vertical right filter rail, and
+     the zero-gutter grid where tiles butt edge to edge. What is gone is their varied-size mosaic:
+     tiles are now UNIFORM SQUARES matching `.epx-cards.is-regular` (aspect-ratio 1/1) instead of
+     549x312, and a pinned item no longer spans 2x2. The pin is a STAR MARKER now, which is how
+     109ichiki and MinionsArt both express it without breaking the grid.
+     No JS row-sizing needed any more: aspect-ratio gives every row its height. */
+  body.mosaic .works{grid-column:2/6;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:0;margin-top:104px}
+  body.mosaic .tile{aspect-ratio:1;background:#1b1b1b;border:1.5px dashed #555;position:relative}
+  body.mosaic .tile .cap{position:absolute;left:24px;right:24px;bottom:16px}
+  body.mosaic .tile .veil{position:absolute;inset:0;background:rgba(20,20,20,.55)}
+
+  /* ================= V4 · TUYU — narrow column, motion-first 2-up ==== */
+  body.reel .wrap{width:90%;max-width:1000px;margin:0 auto;padding-top:150px}
+  body.reel .search{width:300px;height:32px;margin:0 auto;border-bottom:1px solid #666;
+    display:grid;place-items:center;font-size:11px;color:#888;letter-spacing:.24em}
+  body.reel .filters{display:flex;justify-content:center;align-items:center;margin-top:40px}
+  body.reel .filters span{padding:0 18px;font-size:11px;letter-spacing:.24em;color:#6d6d6d;height:20px}
+  body.reel .filters span.on{color:#ddd}
+  body.reel .list{width:86%;margin:120px auto 0;display:flex;flex-wrap:wrap;
+    margin-bottom:-5%;padding-left:0}
+  body.reel .item{width:45%;margin:0 0 5% 5%}
+  body.reel .item.pin{width:95%}
+  body.reel .item .face{padding-top:56.25%;background:#1b1b1b;border:1.5px dashed #555;position:relative}
+  body.reel .item .cap{margin-top:5px}
+
+  /* shared bits */
+  h1,h2,p{margin:0}
+  .lines span{display:block;height:1px;background:#3a3a3a;margin:0 0 8px}
+
+  #prov{position:fixed;left:14px;top:88px;z-index:70;width:292px;max-height:calc(100vh - 176px);
+    overflow:auto;background:rgba(10,12,20,.96);border:1px solid rgba(255,255,255,.18);padding:12px 13px;
+    font:11px/1.55 ui-monospace,Consolas,monospace;color:#dcdcdc}
+  #prov .pv-t{font-size:12.5px;color:#fff;margin-bottom:2px}
+  #prov .pv-k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin-bottom:7px}
+  #prov a{color:#9fd0ff;word-break:break-all}
+  #prov h4{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+  #prov ul{margin:0;padding-left:14px}#prov li{margin-bottom:3px;color:#c8c8c8}
+  #prov .warn li{color:#ffb020}
+  .vbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:80;display:flex;gap:6px;
+    flex-wrap:wrap;justify-content:center;background:rgba(8,10,18,.96);border:1px solid rgba(255,255,255,.2);padding:7px 9px}
+  .vbar button{background:none;border:1px solid #555;color:#bbb;font:10px ui-monospace,monospace;
+    letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;cursor:pointer}
+  .vbar button.on{background:#ddd;border-color:#ddd;color:#141414}
+  .labtag{position:fixed;left:14px;bottom:12px;z-index:50;font:10px ui-monospace,monospace;color:rgba(245,243,239,.45)}
+  @media(max-width:1300px){#prov{position:static;width:auto;max-height:none;margin:10px 14px}}
+</style>
+</head>
+<body class="sticker">
+
+<div class="nav">
+  <span class="ico">MARK</span><span class="name">WORDMARK</span><span class="sp"></span>
+  <span class="btns"><span>HOME</span><span>PROJECTS</span><span>ABOUT</span><span>RAMBLINGS</span></span>
+</div>
+
+<div class="ground" id="ground"></div>
+
+<aside id="prov"></aside>
+<div class="vbar">
+  <span style="color:#8e8e8e;font:9px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;align-self:center;margin-right:2px">projects</span>
+  <button data-v="sticker" class="on">1 &middot; minionsart</button>
+  <button data-v="field">2 &middot; 109ichiki</button>
+  <button data-v="mosaic">3 &middot; kaitonote</button>
+  <button data-v="reel">4 &middot; tuyu</button>
+  <button data-v="hybrid">5 &middot; hybrid &mdash; SCRATCHED</button>
+</div>
+<div class="labtag">projects-blockout &middot; greybox &middot; 12 items, 2 pinned</div>
+
+<script>
+var N=12, PINS=[0,1];
+function box(h,label,cls){return '<div class="'+(cls||'box')+'" style="height:'+h+'px"><div class="fill">'+label+'</div></div>';}
+function lines(n){var s='<div class="lines">';for(var i=0;i<n;i++)s+='<span style="width:'+(i===n-1?'60%':'100%')+'"></span>';return s+'</div>';}
+
+var BUILD={
+ sticker:function(){
+   var cards='';
+   for(var i=0;i<N;i++){
+     var pin=PINS.indexOf(i)>-1;
+     cards+='<div class="card"><div class="thumb"><div class="chips">'
+       +(pin?'<span class="pin-star">&#9733;</span>':'')+(i===2?'<span class="chip">WIP</span>':'')
+       +'<span class="chip">TAG</span></div>'
+       +'<div class="band"><div class="fill">TITLE 22px</div></div></div>'
+       +'<div style="padding:14px"><div class="yy">DATE &middot; READ</div>'+lines(3)
+       +'<div class="yy">ROLE / ENGINE</div></div></div>';
+   }
+   return '<div class="panel"><div style="text-align:center">'
+     +box(44,'PAGE TITLE')+'<div style="height:18px"></div>'+box(50,'DESCRIPTION &mdash; 2 lines')
+     +'</div><div style="height:24px"></div>'
+     +'<div class="search">'+box(34,'SEARCH &mdash; 200x34 inner')+'</div>'
+     +'<div class="filters"><span class="chip">ALL</span><span class="chip">SHADER</span>'
+     +'<span class="chip">TOOL</span><span class="chip">GAME</span><span class="chip">WEB</span></div>'
+     +'<div class="grid">'+cards+'</div>'
+     +'<div style="display:grid;place-items:center;margin-top:20px">'
+     +'<span class="chip" style="width:200px;height:28px">VIEW ALL</span></div>'
+     +'<div style="margin-top:20px">'+box(60,'EMPTY STATE &mdash; one 300x300 cell')+'</div></div>';
+ },
+ hybrid:function(){
+   var cards='';
+   for(var i=0;i<N;i++){
+     var pin=PINS.indexOf(i)>-1;
+     cards+='<div class="tile"><div class="veil"></div>'
+       +'<div class="chips">'
+       +(pin?'<span class="pin-star">&#9733;</span>':'')+(i===2?'<span class="chip">WIP</span>':'')
+       +'<span class="chip">TAG</span></div>'
+       +'<div class="cap"><div class="fill">TITLE</div>'
+       +'<div class="yy" style="margin-top:6px">DATE &middot; ROLE / ENGINE</div></div></div>';
+   }
+   return '<div class="panel"><div style="text-align:center">'
+     +box(44,'PAGE TITLE')+'<div style="height:18px"></div>'+box(50,'DESCRIPTION &mdash; 2 lines')
+     +'</div><div style="height:24px"></div>'
+     +'<div class="search">'+box(34,'SEARCH &mdash; 200x34 inner')+'</div>'
+     +'<div class="filters"><span class="chip">ALL</span><span class="chip">SHADER</span>'
+     +'<span class="chip">TOOL</span><span class="chip">GAME</span><span class="chip">WEB</span></div>'
+     +'<div class="grid">'+cards+'</div>'
+     +'<div style="display:grid;place-items:center;margin-top:20px">'
+     +'<span class="chip" style="width:200px;height:28px">VIEW ALL</span></div>'
+     +'<div style="margin-top:20px">'+box(60,'EMPTY STATE &mdash; one 300x300 tile')+'</div></div>';
+ },
+ field:function(){
+   var cells='';
+   for(var i=0;i<N;i++){
+     var pin=PINS.indexOf(i)>-1;
+     cells+='<div class="cell'+(pin?' pin':'')+'"><div class="sq"><div class="fill">'
+       +(pin?'PINNED &mdash; padding 0, FILLS the square':'THUMB')+'</div></div>'
+       +'<div class="cap"><span class="chip">TITLE</span></div>'
+       +'<div class="tags"><span class="chip">TAG</span>'+(i===3?'<span class="chip">WIP</span>':'')
+       +'<span class="chip">ROLE</span></div></div>';
+   }
+   return '<div class="page"><div class="head">'
+     +'<div style="width:420px">'+box(57,'PAGE TITLE')+'</div>'
+     +'<div style="max-width:360px;width:360px">'+box(52,'DESCRIPTION &mdash; max 360px, 2 lines')+'</div></div>'
+     +'<div class="filterblock">'
+     +'<div style="grid-column:1/2" class="yy">(FILTER)</div>'
+     +'<div style="grid-column:2/4"><div class="pillsearch">SEARCH &mdash; radius 100vh</div></div>'
+     +'<div style="grid-column:4/13"><div class="typerow"><span class="on">ALL</span><span>/</span>'
+     +'<span>SHADER</span><span>/</span><span>TOOL</span><span>/</span><span>GAME</span></div>'
+     +'<div class="catrow"><span class="chip on">CATEGORY</span><span class="chip">CATEGORY</span>'
+     +'<span class="chip">CATEGORY</span></div></div></div>'
+     +'<div class="count"><span>12 WORKS</span><span class="chip" style="height:30px;border-radius:100vh;padding:0 14px">VIEW ALL</span></div>'
+     +'<div class="grid">'+cells+'</div>'
+     +'<div style="padding:37.5px 56px">'+box(60,'EMPTY STATE')+'</div></div>';
+ },
+ mosaic:function(){
+   var tiles='';
+   for(var i=0;i<N;i++){
+     var pin=PINS.indexOf(i)>-1;
+     tiles+='<div class="tile'+(pin?' pin':'')+'"><div class="veil"></div>'
+       +'<div class="fill">UNIFORM SQUARE CARD</div>'
+       +(pin?'<span class="pin-star" style="position:absolute;top:14px;right:14px">&#9733;</span>':'')
+       +(i===4?'<div style="position:absolute;top:16px;left:24px" class="yy">WIP</div>':'')
+       +'<div class="cap"><div class="fill" style="height:auto;color:#999;font-size:11px">TITLE 32px</div>'
+       +'<div class="yy">CATEGORY &middot; ROLE / ENGINE &middot; DATE</div></div></div>';
+   }
+   return '<div class="page"><div class="title">'+box(120,'PAGE TITLE &mdash; 160px, tracking -2')
+     +'<div style="height:24px"></div>'+box(45,'DESCRIPTION &mdash; 2 lines')+'</div>'
+     +'<div class="rail"><div class="grp"><div class="lbl">Search</div>'
+     +'<div style="margin-top:24px">'+box(40,'240x40')+'</div></div>'
+     +'<div class="grp"><div class="lbl">Category</div><div class="it on">ALL &mdash; is the View-all at rest</div>'
+     +'<div class="it">Shader</div><div class="it">Tool</div><div class="it">Game</div></div>'
+     +'<div class="grp"><div class="lbl">Engine</div><div class="it">Unity</div><div class="it">Three.js</div></div>'
+     +'<div class="grp"><div class="lbl">Year</div><div class="it">2026</div><div class="it">2025</div></div></div>'
+     +'<div class="works">'+tiles+'</div>'
+     +'<div style="grid-column:2/6;margin-top:56px">'+box(30,'VIEW ALL')
+     +'<div style="height:20px"></div>'+box(60,'EMPTY STATE')+'</div></div>';
+ },
+ reel:function(){
+   var items='';
+   for(var i=0;i<N;i++){
+     var pin=PINS.indexOf(i)>-1;
+     items+='<div class="item'+(pin?' pin':'')+'"><div class="face"><div class="fill" style="position:absolute;inset:0">'
+       +(pin?'PINNED &mdash; 95% full row':'MOTION FACE 16:9')+'</div></div>'
+       +'<div class="cap"><div class="fill" style="height:22px;color:#999">TITLE 16px</div>'
+       +'<div class="yy" style="letter-spacing:.24em">'+(i===5?'WIP &middot; ':'')+'TAG &middot; ROLE / ENGINE</div>'
+       +'<div class="yy" style="text-align:right">DATE &middot; READ</div></div></div>';
+   }
+   return '<div class="wrap"><div style="text-align:center">'+box(44,'PAGE TITLE')
+     +'<div style="height:8px"></div>'+box(44,'DESCRIPTION')+'</div>'
+     +'<div style="height:48px"></div>'
+     +'<div class="search">SEARCH &mdash; bottom rule only</div>'
+     +'<div class="filters"><span class="on">ALL</span><span>SHADER</span><span>TOOL</span><span>GAME</span></div>'
+     +'<div class="list">'+items+'</div>'
+     +'<div style="display:grid;place-items:center;margin-top:120px"><span style="font-size:11px;letter-spacing:.24em;color:#999">VIEW ALL</span></div>'
+     +'<div style="margin-top:40px;padding-bottom:120px">'+box(60,'EMPTY STATE')+'</div></div>';
+ }
+};
+
+var PROV={
+ sticker:{t:'1 — MinionsArt Tutorials',k:'read from source · /tutorials/style.css + in-page template',
+  url:'https://minionsart.github.io/tutorials/',
+  moves:['Cards sit on a LIGHTER PANEL floating on the darker ground — the only variant where the card has its own fill and edge',
+         'Panel 1000px content + 35px padding, radius 10, centred',
+         'Grid 3-up, 300px cards, 20px gaps; card ~300x300',
+         'THE LOAD-BEARING LINE: box-shadow 5px 10px with ZERO blur and ZERO spread',
+         'Chip cluster top-right carries tags AND pinned AND WIP — which is how pinned survives with no second grid',
+         'Title band is an absolute veil at the thumbnail bottom, ~44px'],
+  warn:['Uniform 3-up card grid with a shadow is a flagged AI tell. Pillar-backed ONLY on the condition that the shadow keeps zero blur — that reads as a STICKER ON PAPER, consistent with the locked paper-morphism-over-glass call. Add blur and it becomes the generic panel look and should be cut.',
+         'Closest of the four to what the site already ships, so it is the least informative comparison — but also the cheapest to reach.']},
+ hybrid:{t:'5 — HYBRID: MinionsArt page + Kaito Note card',k:'SCRATCHED by Rod 2026-08-18 · kept as the record of the attempt',
+  url:'https://minionsart.github.io/tutorials/',
+  moves:['SCRATCHED. Rod: "it pretty much looks like the project cards we have now, just build the page with our current project cards." The swap was not distinct enough from the bench cards to earn a second card system. Built as projects-aggregate.html instead, MinionsArt page + our existing cards.',
+         'PAGE is MinionsArt, unchanged: 1000px panel at 35px padding, 3-up 300px grid with 20px gaps, 500px centred filter row, 400px search',
+         'CARD is Kaito Note: square tile, full-tile rest veil at rgba(20,20,20,.55), caption INSIDE at left/right 24 and bottom 16',
+         'THE ZERO-BLUR SHADOW SURVIVES — 5px 10px, no blur, no spread. It is the pillar-backed move (sticker on paper, not glass) and it belongs to the page, not the card',
+         'MinionsArt\u2019s chip cluster stays top-right, above the veil, so pinned + WIP + tag still read without a second grid',
+         'DROPPED: MinionsArt\u2019s 160px thumb, 44px title band and the text block under the card. Taking Kaito Note\u2019s card moves the caption inside the image, so the lower block has nothing left to do'],
+  warn:['Kaito Note\u2019s caption-inside works at 549x312 with tiles butting EDGE TO EDGE — here it sits at 300x300 with a 20px gap, so their 24px inset is proportionally larger than on the source. Judge whether the caption still breathes.',
+         'Second reading available if this one is wrong: keep Kaito Note\u2019s ZERO gutter instead of MinionsArt\u2019s 20px gap. That is more faithful to their card but kills the sticker shadow, since a shadow between touching tiles has nowhere to fall.',
+         'Kaito Note\u2019s real rest state is backdrop-filter blur(12px) + mix-blend-mode:color-burn. The veil here is FLAT and opaque on purpose — glass contradicts the locked paper-over-glass call. If the real effect is wanted it needs re-arguing, not copying.']},
+ field:{t:'2 — 109ichiki Works',k:'read from source · /_astro/style.COBHKi4A.css',
+  url:'https://109ichiki.com/works/',
+  moves:['NO CARD AT ALL — no border, no fill, no shadow, and no gap property anywhere',
+         'The gutter is made of 20px padding INSIDE each cell, so hit targets touch and the visual gutter doubles to 40px',
+         '12-column spine, 6-up square grid stepping 6/5/4/3/2 by width; cell 214.7px at 1440',
+         'PINNED items set their inner padding to 0 so they FILL their square while everything else stays inset — the pin uses their own per-item lever, no extra markup',
+         'Search is their category pill borrowed verbatim: 30px tall, radius 100vh, 1px border',
+         'Type row uses a literal "/" glyph separator and a 1px UNDERLINE for active, not a pill'],
+  warn:['Rod&rsquo;s gallery note calls this "the closest reference to a projects page" — images and gaps do all the work.',
+         'A uniform square grid is the flagged tell; it survives ONLY as an exact transcription and only if the contain-fit inset genuinely varies per item. If every thumbnail crops the same, it collapses into a stock gallery and should be cut.']},
+ mosaic:{t:'3 — Kaito Note Works',k:'read from source · /assets/css/style.css + inline Tailwind',
+  url:'https://kaitonote.com/works/',
+  moves:['Page spine 135 / 412 x4 / 135 — every number is a design pixel that scales fluidly (1rem = 1px at 1920)',
+         'FILTERS LIVE IN A VERTICAL RIGHT RAIL as three labelled lists — no horizontal control row at all',
+         'The "ALL" item at the head of the first group IS the View-all in its resting form',
+         'Works grid spans all four content columns with NO gap — tiles butt edge to edge, 549x312',
+         'THEIR pinned mechanism was col-span-2 row-span-2 — the only real one in the four references. <b>Rod CUT it 2026-08-16</b>: "make it so the bento no longer exists". Tiles are now uniform squares and the pin is a star marker, borrowed from how 109ichiki and MinionsArt mark pins without breaking their grid.',
+         'Caption sits inside the tile, bottom-left, over a rest-state veil'],
+  warn:['GLASSMORPHISM, and not pillar-backed. Their real rest state is backdrop-filter blur(12px) plus mix-blend-mode:color-burn — a flagged tell that directly contradicts the locked paper-over-glass call. The blockout renders it as a FLAT OPAQUE veil deliberately; if Rod wants the real effect it needs re-arguing, not copying.',
+         'Strongest pinned mechanism in the set. If pinning matters, this is the variant to beat.']},
+ reel:{t:'4 — TUYU Works',k:'read from source · /css/common202c.css + /css/page202c.css',
+  url:'https://tuyu.moe/works/',
+  moves:['Narrow centred measure — wrapper 90% capped at 1000px, list 86% of that = 860px',
+         'Their #works has NO h1 at all; the filter row&rsquo;s own 150px top margin IS the first thing on the page',
+         'Search is a 300x32 field with a 1px BOTTOM RULE only — no box, no radius',
+         '120px of air between the controls and the list (their exact number)',
+         '2-up at 45% width with a 43px gutter; the card face is a 16:9 aspect box with NO frame, radius, shadow or play badge',
+         'PINNED = width 95% instead of 45%, a full-row embed — reusing the only sizing lever the family has'],
+  warn:['PERFORMANCE: their distinctiveness is that every face is a LIVE 16:9 embed. Twelve of those hits the no-GPU/old-machine hard constraint head-on. It only works with self-hosted muted loops (which post-media.html already emits), never 12 iframes.',
+         'Their active filter state is colour-only, which a greybox cannot carry — rendered here as a VALUE swap (100% vs 45% grey). That is a translation, not a transcription.']}
+};
+
+(function(){
+  var btns=document.querySelectorAll('.vbar button'),panel=document.getElementById('prov'),g=document.getElementById('ground');
+  function show(v){
+    document.body.className=v;
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
+    g.innerHTML=BUILD[v]();
+    var p=PROV[v];
+    var h='<div class="pv-t">'+p.t+'</div><div class="pv-k">'+p.k+'</div>';
+    h+='<div style="margin-bottom:6px"><a href="'+p.url+'" target="_blank">'+p.url+'</a></div>';
+    h+='<h4>transcribed geometry</h4><ul><li>'+p.moves.join('</li><li>')+'</li></ul>';
+    h+='<h4>honest caveats</h4><ul class="warn"><li>'+p.warn.join('</li><li>')+'</li></ul>';
+    panel.innerHTML=h;
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.v);});});
+  var m=/[?&]v=(sticker|field|mosaic|reel|hybrid)/.exec(location.search);
+  show(m?m[1]:'sticker');
+})();
+</script>
+</body>
+</html>

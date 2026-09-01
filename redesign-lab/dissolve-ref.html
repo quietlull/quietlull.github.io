@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dissolve — 1-for-1 Codrops port</title>
+<!--
+  FAITHFUL 1-for-1 port of Jatin Chopra's Codrops "Emissive Dissolve Effect"
+  (article: tympanus.net/codrops/2025/02/17/...; repo: github.com/JatinChopra/emissive-dissolve-effect).
+  Ported verbatim from src/main.ts + src/lib/noise/snoise.glsl into a standalone module so it runs in the lab.
+  Assets (particle.png + cubeMap2/*) pulled from the repo via jsdelivr (CORS-safe).
+  >>> REMIX-LATER NOTE (Rod): the FINAL scene needs this on a SKINNED mesh. To do that we will:
+      (a) feed the SkinnedMesh geometry as `meshGeo`, (b) compute the dissolve noise in BIND space (vPos =
+      position) so the pattern rides her surface as bones move (already how it works), and (c) for particles,
+      snapshot CURRENT skinned vertex positions (SkinnedMesh.applyBoneTransform) into aCurrentPos each
+      dissolve and freeze her pose during it. Nothing here is hostile to that swap.
+  Provenance: TRUE source, faithful copy. Tunables via Tweakpane (incl. velocityFactor = the x/y "flow").
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  #c { display: block; width: 100vw; height: 100vh; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+    "tweakpane": "https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { Pane } from 'tweakpane';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { TeapotGeometry } from 'three/addons/geometries/TeapotGeometry.js';
+
+// --- snoise.glsl (verbatim from the repo) ---
+const snoise = `
+vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x, 289.0); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+float snoise(vec3 v){
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i  = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + 1.0 * C.xxx;
+  vec3 x2 = x0 - i2 + 2.0 * C.xxx;
+  vec3 x3 = x0 - 1. + 3.0 * C.xxx;
+  i = mod(i, 289.0);
+  vec4 p = permute(permute(permute(
+            i.z + vec4(0.0, i1.z, i2.z, 1.0))
+          + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+          + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 1.0/7.0;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy;
+  vec4 y = y_ * ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0)*2.0 + 1.0;
+  vec4 s1 = floor(b1)*2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m*m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+}`;
+
+const REPO = 'https://cdn.jsdelivr.net/gh/JatinChopra/emissive-dissolve-effect@main/public';
+let scale = 1.0;
+
+const cnvs = document.getElementById('c');
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(75, cnvs.clientWidth / cnvs.clientHeight, 0.001, 100);
+cam.position.set(0, 1, 14);
+const blackColor = new THREE.Color(0x000000);
+scene.background = blackColor;
+
+const re = new THREE.WebGLRenderer({ canvas: cnvs, antialias: true });
+re.setPixelRatio(window.devicePixelRatio);
+re.setSize(cnvs.clientWidth * scale, cnvs.clientHeight * scale, false);
+re.toneMapping = THREE.CineonToneMapping;
+re.outputColorSpace = THREE.SRGBColorSpace;
+
+// --- selective bloom via two composers (verbatim approach) ---
+const effectComposer1 = new EffectComposer(re);
+const renderPass = new RenderPass(scene, cam);
+const unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerHeight * scale, window.innerWidth * scale), 0.5, 0.25, 0.2);
+const outPass = new OutputPass();
+
+const effectComposer2 = new EffectComposer(re);
+const shaderPass = new ShaderPass(new THREE.ShaderMaterial({
+  uniforms: {
+    tDiffuse: { value: null },
+    uBloomTexture: { value: effectComposer1.renderTarget2.texture },
+    uStrength: { value: 8.0 },
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform sampler2D uBloomTexture; uniform float uStrength;
+    varying vec2 vUv;
+    void main(){
+      vec4 baseEffect = texture2D(tDiffuse, vUv);
+      vec4 bloomEffect = texture2D(uBloomTexture, vUv);
+      gl_FragColor = baseEffect + bloomEffect * uStrength;
+    }`,
+}));
+
+effectComposer1.addPass(renderPass);
+effectComposer1.addPass(unrealBloomPass);
+effectComposer1.renderToScreen = false;
+effectComposer2.addPass(renderPass);
+effectComposer2.addPass(shaderPass);
+effectComposer2.addPass(outPass);
+
+const orbCtrls = new OrbitControls(cam, cnvs);
+
+// --- cubemap (reflective environment) ---
+let cubeTexture = null;
+function cubeUrls(prefix, postfix) {
+  return [prefix+'posx'+postfix, prefix+'negx'+postfix, prefix+'posy'+postfix,
+          prefix+'negy'+postfix, prefix+'posz'+postfix, prefix+'negz'+postfix];
+}
+new THREE.CubeTextureLoader().loadAsync(cubeUrls(REPO + '/cubeMap2/', '.png')).then((tex) => {
+  cubeTexture = tex;
+  scene.background = cubeTexture;
+  scene.environment = cubeTexture;
+});
+
+// --- geometries (verbatim sizes/segments) ---
+const segments1 = 140, segments2 = 32;
+const sphere = new THREE.SphereGeometry(4.5, segments1, segments1);
+const teaPot = new TeapotGeometry(3, segments2);
+const torus = new THREE.TorusGeometry(3, 1.5, segments1, segments1);
+const torusKnot = new THREE.TorusKnotGeometry(2.5, 0.8, segments1, segments1);
+const geoNames = ['TorusKnot', 'Tea Pot', 'Sphere', 'Torus'];
+const geometries = [torusKnot, teaPot, sphere, torus];
+
+const particleTexture = new THREE.TextureLoader().load(REPO + '/particle.png');
+
+let meshGeo = geometries[0];
+const phyMat = new THREE.MeshPhysicalMaterial();
+phyMat.color = new THREE.Color(0x636363);
+phyMat.metalness = 2.0;
+phyMat.roughness = 0.0;
+phyMat.side = THREE.DoubleSide;
+
+const dissolveUniformData = {
+  uEdgeColor: { value: new THREE.Color(0x4d9bff) },
+  uFreq: { value: 0.25 },
+  uAmp: { value: 16.0 },
+  uProgress: { value: -7.0 },
+  uEdge: { value: 0.8 },
+};
+
+function setupUniforms(shader, uniforms) {
+  for (const key of Object.keys(uniforms)) shader.uniforms[key] = uniforms[key];
+}
+function setupDissolveShader(shader) {
+  shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>
+    varying vec3 vPos;`);
+  shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+    vPos = position;`);
+  shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
+    varying vec3 vPos;
+    uniform float uFreq; uniform float uAmp; uniform float uProgress; uniform float uEdge;
+    uniform vec3 uEdgeColor;
+    ${snoise}`);
+  shader.fragmentShader = shader.fragmentShader.replace('#include <dithering_fragment>', `#include <dithering_fragment>
+    float noise = snoise(vPos * uFreq) * uAmp;
+    if(noise < uProgress) discard;
+    float edgeWidth = uProgress + uEdge;
+    if(noise > uProgress && noise < edgeWidth){
+      gl_FragColor = vec4(vec3(uEdgeColor), noise);
+    } else {
+      gl_FragColor = vec4(gl_FragColor.xyz, 1.0);
+    }`);
+}
+phyMat.onBeforeCompile = (shader) => { setupUniforms(shader, dissolveUniformData); setupDissolveShader(shader); };
+
+let mesh = new THREE.Mesh(meshGeo, phyMat);
+scene.add(mesh);
+
+// --- particles (verbatim) ---
+const particleMat = new THREE.ShaderMaterial();
+particleMat.transparent = true;
+particleMat.blending = THREE.AdditiveBlending;
+let particleCount = meshGeo.attributes.position.count;
+let particleMaxOffsetArr, particleInitPosArr, particleCurrPosArr, particleVelocityArr, particleDistArr, particleRotationArr;
+const particleData = { particleSpeedFactor: 0.02, velocityFactor: { x: 2.5, y: 2 }, waveAmplitude: 0 };
+
+function initParticleAttributes(geo) {
+  particleCount = geo.attributes.position.count;
+  particleMaxOffsetArr = new Float32Array(particleCount);
+  particleInitPosArr = new Float32Array(geo.getAttribute('position').array);
+  particleCurrPosArr = new Float32Array(geo.getAttribute('position').array);
+  particleVelocityArr = new Float32Array(particleCount * 3);
+  particleDistArr = new Float32Array(particleCount);
+  particleRotationArr = new Float32Array(particleCount);
+  for (let i = 0; i < particleCount; i++) {
+    const x = i*3, y = x+1, z = x+2;
+    particleMaxOffsetArr[i] = Math.random() * 5.5 + 1.5;
+    particleVelocityArr[x] = Math.random() * 0.5 + 0.5;
+    particleVelocityArr[y] = Math.random() * 0.5 + 0.5;
+    particleVelocityArr[z] = Math.random() * 0.1;
+    particleDistArr[i] = 0.001;
+    particleRotationArr[i] = Math.random() * Math.PI * 2;
+  }
+  geo.setAttribute('aOffset', new THREE.BufferAttribute(particleMaxOffsetArr, 1));
+  geo.setAttribute('aCurrentPos', new THREE.BufferAttribute(particleCurrPosArr, 3));
+  geo.setAttribute('aVelocity', new THREE.BufferAttribute(particleVelocityArr, 3));
+  geo.setAttribute('aDist', new THREE.BufferAttribute(particleDistArr, 1));
+  geo.setAttribute('aAngle', new THREE.BufferAttribute(particleRotationArr, 1));
+}
+function calculateWaveOffset(idx) {
+  const posx = particleCurrPosArr[idx*3], posy = particleCurrPosArr[idx*3+1];
+  const wa = particleData.waveAmplitude;
+  const xwave = Math.sin(posy*2)*(0.8+wa) + Math.sin(posy*5)*(0.2+wa) + Math.sin(posy*8)*(0.8+wa) + Math.sin(posy*3)*(0.8+wa);
+  const ywave = Math.sin(posx*2)*(0.6+wa) + Math.sin(posx*1)*(0.9+wa) + Math.sin(posx*5)*(0.6+wa) + Math.sin(posx*7)*(0.6+wa);
+  return { xwave, ywave };
+}
+function updateVelocity(idx) {
+  let vx = particleVelocityArr[idx*3], vy = particleVelocityArr[idx*3+1], vz = particleVelocityArr[idx*3+2];
+  vx *= particleData.velocityFactor.x;
+  vy *= particleData.velocityFactor.y;
+  const { xwave, ywave } = calculateWaveOffset(idx);
+  vx += xwave; vy += ywave;
+  const sf = Math.abs(particleData.particleSpeedFactor);
+  vx *= sf; vy *= sf; vz *= sf;
+  return { vx, vy, vz };
+}
+function updateParticleAttributes() {
+  for (let i = 0; i < particleCount; i++) {
+    const x = i*3, y = x+1, z = x+2;
+    const { vx, vy, vz } = updateVelocity(i);
+    particleCurrPosArr[x] += vx; particleCurrPosArr[y] += vy; particleCurrPosArr[z] += vz;
+    const dx = particleCurrPosArr[x]-particleInitPosArr[x];
+    const dy = particleCurrPosArr[y]-particleInitPosArr[y];
+    const dz = particleCurrPosArr[z]-particleInitPosArr[z];
+    const dist = Math.hypot(dx, dy, dz);
+    particleDistArr[i] = dist;
+    particleRotationArr[i] += 0.01;
+    if (dist > particleMaxOffsetArr[i]) {
+      particleCurrPosArr[x] = particleInitPosArr[x];
+      particleCurrPosArr[y] = particleInitPosArr[y];
+      particleCurrPosArr[z] = particleInitPosArr[z];
+    }
+  }
+  meshGeo.attributes.aCurrentPos.needsUpdate = true;
+  meshGeo.attributes.aDist.needsUpdate = true;
+  meshGeo.attributes.aAngle.needsUpdate = true;
+}
+initParticleAttributes(meshGeo);
+
+const particlesUniformData = {
+  uTexture: { value: particleTexture },
+  uPixelDensity: { value: re.getPixelRatio() },
+  uProgress: dissolveUniformData.uProgress,
+  uEdge: dissolveUniformData.uEdge,
+  uAmp: dissolveUniformData.uAmp,
+  uFreq: dissolveUniformData.uFreq,
+  uBaseSize: { value: 80 },
+  uColor: { value: new THREE.Color(0x4d9bff) },
+};
+particleMat.uniforms = particlesUniformData;
+particleMat.vertexShader = `
+  ${snoise}
+  uniform float uPixelDensity; uniform float uBaseSize; uniform float uFreq; uniform float uAmp;
+  uniform float uEdge; uniform float uProgress;
+  varying float vNoise; varying float vAngle;
+  attribute vec3 aCurrentPos; attribute float aDist; attribute float aAngle;
+  void main() {
+    vec3 pos = position;
+    float noise = snoise(pos * uFreq) * uAmp;
+    vNoise = noise;
+    vAngle = aAngle;
+    if (vNoise > uProgress - 2.0 && vNoise < uProgress + uEdge + 2.0) { pos = aCurrentPos; }
+    vec4 modelPosition = modelMatrix * vec4(pos, 1.0);
+    vec4 viewPosition = viewMatrix * modelPosition;
+    vec4 projectedPosition = projectionMatrix * viewPosition;
+    gl_Position = projectedPosition;
+    float size = uBaseSize * uPixelDensity;
+    size = size / (aDist + 1.0);
+    gl_PointSize = size / -viewPosition.z;
+  }`;
+particleMat.fragmentShader = `
+  uniform vec3 uColor; uniform float uEdge; uniform float uProgress; uniform sampler2D uTexture;
+  varying float vNoise; varying float vAngle;
+  void main(){
+    if (vNoise < uProgress) discard;
+    if (vNoise > uProgress + uEdge) discard;
+    vec2 coord = gl_PointCoord;
+    coord = coord - 0.5;
+    coord = coord * mat2(cos(vAngle), sin(vAngle), -sin(vAngle), cos(vAngle));
+    coord = coord + 0.5;
+    vec4 texture = texture2D(uTexture, coord);
+    gl_FragColor = vec4(vec3(uColor.xyz * texture.xyz), 1.0);
+  }`;
+
+let particleMesh = new THREE.Points(meshGeo, particleMat);
+scene.add(particleMesh);
+
+function handleMeshChange(geo) {
+  scene.remove(mesh); scene.remove(particleMesh);
+  meshGeo = geo;
+  mesh = new THREE.Mesh(geo, phyMat);
+  initParticleAttributes(geo);
+  particleMesh = new THREE.Points(geo, particleMat);
+  scene.add(mesh); scene.add(particleMesh);
+}
+
+// --- Tweakpane GUI (all the controls; velocityFactor = the x/y flow) ---
+const tweaks = {
+  dissolveProgress: dissolveUniformData.uProgress.value,
+  edgeWidth: dissolveUniformData.uEdge.value,
+  amplitude: dissolveUniformData.uAmp.value,
+  frequency: dissolveUniformData.uFreq.value,
+  meshVisible: true,
+  meshColor: '#' + phyMat.color.getHexString(),
+  edgeColor: '#' + dissolveUniformData.uEdgeColor.value.getHexString(),
+  autoDissolve: true,
+  particleVisible: true,
+  particleBaseSize: particlesUniformData.uBaseSize.value,
+  particleColor: '#' + particlesUniformData.uColor.value.getHexString(),
+  particleSpeedFactor: particleData.particleSpeedFactor,
+  velocityFactor: { x: particleData.velocityFactor.x, y: particleData.velocityFactor.y },
+  waveAmplitude: particleData.waveAmplitude,
+  bloomStrength: shaderPass.uniforms.uStrength.value,
+  rotationY: mesh.rotation.y,
+};
+const pane = new Pane();
+const controller = pane.addFolder({ title: 'Controls', expanded: true });
+
+const meshFolder = controller.addFolder({ title: 'Mesh', expanded: true });
+const meshBlade = meshFolder.addBlade({
+  view: 'list', label: 'Mesh',
+  options: geoNames.map((n, i) => ({ text: n, value: i })),
+  value: 0,
+});
+meshBlade.on('change', (e) => handleMeshChange(geometries[e.value]));
+meshFolder.addBinding(tweaks, 'bloomStrength', { min: 1, max: 20, step: 0.01, label: 'Bloom Strength' }).on('change', (e) => shaderPass.uniforms.uStrength.value = e.value);
+meshFolder.addBinding(tweaks, 'rotationY', { min: -Math.PI*2, max: Math.PI*2, step: 0.01, label: 'Rotation Y' }).on('change', (e) => { particleMesh.rotation.y = mesh.rotation.y = e.value; });
+
+const dissolveFolder = controller.addFolder({ title: 'Dissolve Effect', expanded: true });
+dissolveFolder.addBinding(tweaks, 'meshVisible', { label: 'Visible' }).on('change', (e) => mesh.visible = e.value);
+const progressBinding = dissolveFolder.addBinding(tweaks, 'dissolveProgress', { min: -20, max: 20, step: 0.0001, label: 'Progress' }).on('change', (e) => dissolveUniformData.uProgress.value = e.value);
+dissolveFolder.addBinding(tweaks, 'autoDissolve', { label: 'Auto Animate' });
+dissolveFolder.addBinding(tweaks, 'edgeWidth', { min: 0.1, max: 8, step: 0.001, label: 'Edge Width' }).on('change', (e) => dissolveUniformData.uEdge.value = e.value);
+dissolveFolder.addBinding(tweaks, 'frequency', { min: 0.001, max: 2, step: 0.001, label: 'Frequency' }).on('change', (e) => dissolveUniformData.uFreq.value = e.value);
+dissolveFolder.addBinding(tweaks, 'amplitude', { min: 0.1, max: 20, step: 0.001, label: 'Amplitude' }).on('change', (e) => dissolveUniformData.uAmp.value = e.value);
+dissolveFolder.addBinding(tweaks, 'meshColor', { label: 'Mesh Color' }).on('change', (e) => phyMat.color.set(e.value));
+dissolveFolder.addBinding(tweaks, 'edgeColor', { label: 'Edge Color' }).on('change', (e) => dissolveUniformData.uEdgeColor.value.set(e.value));
+
+const particleFolder = controller.addFolder({ title: 'Particle', expanded: true });
+particleFolder.addBinding(tweaks, 'particleVisible', { label: 'Visible' }).on('change', (e) => particleMesh.visible = e.value);
+particleFolder.addBinding(tweaks, 'particleBaseSize', { min: 10, max: 100, step: 0.01, label: 'Base size' }).on('change', (e) => particlesUniformData.uBaseSize.value = e.value);
+particleFolder.addBinding(tweaks, 'particleColor', { label: 'Color' }).on('change', (e) => particlesUniformData.uColor.value.set(e.value));
+particleFolder.addBinding(tweaks, 'particleSpeedFactor', { min: 0.001, max: 0.1, step: 0.001, label: 'Speed' }).on('change', (e) => particleData.particleSpeedFactor = e.value);
+particleFolder.addBinding(tweaks, 'waveAmplitude', { min: 0, max: 5, step: 0.01, label: 'Wave Amp' }).on('change', (e) => particleData.waveAmplitude = e.value);
+particleFolder.addBinding(tweaks, 'velocityFactor', { picker: 'inline', expanded: true, label: 'Velocity / Flow' }).on('change', (e) => particleData.velocityFactor = e.value);
+
+// --- auto-dissolve (slow, verbatim cadence) + float + loop ---
+let dissolving = true, geoIdx = 0;
+function animateDissolve() {
+  if (!tweaks.autoDissolve) return;
+  const progress = dissolveUniformData.uProgress;
+  progress.value += dissolving ? 0.08 : -0.08;
+  if (progress.value > 14 && dissolving) {
+    dissolving = false;
+    geoIdx++;
+    handleMeshChange(geometries[geoIdx % geometries.length]);
+    meshBlade.value = geoIdx % geometries.length;
+  }
+  if (progress.value < -17 && !dissolving) dissolving = true;
+  tweaks.dissolveProgress = progress.value;
+  progressBinding.refresh();
+}
+function floatMeshes(t) {
+  mesh.position.set(0, Math.sin(t*2.0)*0.5, 0);
+  particleMesh.position.set(0, Math.sin(t*2.0)*0.5, 0);
+}
+function resizeRendererToDisplaySize() {
+  const width = cnvs.clientWidth * scale, height = cnvs.clientHeight * scale;
+  if (cnvs.width !== width || cnvs.height !== height) {
+    re.setSize(width, height, false);
+    renderPass.setSize(width, height); outPass.setSize(width, height); unrealBloomPass.setSize(width, height);
+    effectComposer1.setSize(width, height); effectComposer2.setSize(width, height);
+    return true;
+  }
+  return false;
+}
+
+const clock = new THREE.Clock();
+function animate() {
+  orbCtrls.update();
+  const t = clock.getElapsedTime();
+  updateParticleAttributes();
+  floatMeshes(t);
+  animateDissolve();
+  if (resizeRendererToDisplaySize()) { cam.aspect = cnvs.clientWidth / cnvs.clientHeight; cam.updateProjectionMatrix(); }
+  scene.background = blackColor;
+  effectComposer1.render();
+  scene.background = cubeTexture || blackColor;
+  effectComposer2.render();
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+window.__dissolve = { dissolveUniformData, particleData, scene, cam, effectComposer2 };
+</script>
+</body>
+</html>

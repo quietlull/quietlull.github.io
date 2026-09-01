@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Element gallery - real crops, for take/leave</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--night:#070C23;--gold:#F3B53C;--glow:#FFE8B0;--text:#F5F3EF;--muted:#9aa3bd;--line:rgba(255,255,255,.1);--panel:#0d1533}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+body{background:linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);color:var(--text);
+  font-family:"IBM Plex Mono",monospace;line-height:1.6;padding:2.5rem clamp(1rem,4vw,3rem) 5rem}
+.wrap{max-width:84rem;margin:0 auto}
+a.home{color:var(--muted);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
+a.home:hover{color:var(--gold)}
+h1{font-family:"Playfair Display",serif;font-weight:600;font-size:clamp(1.9rem,4vw,2.6rem);margin:.7rem 0 .5rem}
+.lead{color:var(--muted);font-size:.84rem;max-width:74ch}
+.lead b{color:var(--glow);font-weight:500}
+h2{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin:2.6rem 0 1rem}
+h2::before{content:"/ "}
+h2 .n{color:var(--muted);letter-spacing:.05em;text-transform:none;font-size:.62rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(30rem,1fr));gap:1.6rem}
+.card{background:linear-gradient(180deg,var(--panel),#0a1130);border:1px solid var(--line);
+  border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.shot{background:#05091a;border-bottom:1px solid var(--line);padding:10px;display:grid;place-items:center}
+.shot img{max-width:100%;height:auto;display:block;border:1px solid rgba(255,255,255,.06)}
+.missing{color:#ff8a8a;font-size:.7rem;padding:2rem}
+.body{padding:.9rem 1.1rem 1.2rem;display:flex;flex-direction:column;gap:.5rem}
+.kind{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--night);
+  background:var(--gold);align-self:flex-start;padding:.1rem .45rem}
+.body h3{font-size:.95rem;font-weight:500}
+.url{font-size:.66rem;color:var(--gold);word-break:break-all;opacity:.85}
+.sel code{font-size:.66rem;color:#9fd0ff}
+.dev,.why,.cav{font-size:.74rem;color:#d7dcec}
+.dev b,.why b{color:var(--glow);font-weight:500}
+.cav{color:#ffb020}.cav b{color:#ffb020;font-weight:500}
+.verdict{font-size:.66rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:.55rem;margin-top:.2rem}
+.v{color:var(--gold)}
+.gap{border:1px solid rgba(255,176,32,.3);background:rgba(255,176,32,.05);padding:1rem 1.2rem;
+  font-size:.76rem;color:var(--muted);line-height:1.75}
+.gap li{margin:.35rem 0 .35rem 1.1rem}
+footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line);color:var(--muted);font-size:.7rem;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="/redesign-lab/">&larr; lab index</a>
+  <h1>Element gallery</h1>
+  <p class="lead">Real cropped screenshots of <b>actual elements on live sites</b>, captured at their own
+    CSS selector so you are judging the thing itself rather than my description of it. Every one was
+    verified twice: the selector exists in that page's markup, and a second agent tried to refute the
+    claim. Where the refutation stuck, it is printed in the caveat instead of the card being dropped.
+    <b>Tell me TAKE or LEAVE per card</b> - only the takes get sourced into a component, and nothing
+    enters a page without a slot in its blockout.</p>
+
+  <h2>Callout family <span class="n">6 candidates, replacing the set you rejected</span></h2>
+  <div class="grid">
+    <figure class="card">
+      <div class="shot"><a href="references/elements/callout-planity-taped.png" target="_blank"><img src="references/elements/callout-planity-taped.png" alt="callout on planity.neocities.org" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">callout</div>
+        <h3>planity.neocities.org</h3>
+        <a class="url" href="https://planity.neocities.org/pages/index/geology/fieldnotes/carbonitevolcanos.html" target="_blank">https://planity.neocities.org/pages/index/geology/fieldnotes/carbonite</a>
+        <div class="sel"><code>.taped</code></div>
+        <p class="dev"><b>Device:</b> A card on graph-paper ground, rotated 2deg, with a REAL photographic washi-tape PNG draped over its top edge at left:40% so it overhangs and sits off-centre. The shadow is warm brown rgba(88,70,48,.5), not neutral black. <code>.taped</code> is factored out as a mixin so tape can be stuck onto anything.</p>
+        <p class="why"><b>Why it might be worth taking:</b> The only find in either hunt that uses real paper ASSETS rather than a CSS approximation of paper. A geology field-notes site, which is the style-not-niche case exactly.</p>
+        <p class="cav"><b>Honest caveat:</b> warm CONFIRMED. Selector corrected during verification: the claimed <code>.tip-box</code> is not on this page, <code>.taped</code> is.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure>
+    <figure class="card">
+      <div class="shot"><a href="references/elements/callout-kickscondor.png" target="_blank"><img src="references/elements/callout-kickscondor.png" alt="callout on kickscondor.com" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">callout</div>
+        <h3>kickscondor.com</h3>
+        <a class="url" href="https://www.kickscondor.com/hrefhunt" target="_blank">https://www.kickscondor.com/hrefhunt</a>
+        <div class="sel"><code>.page #all .note</code></div>
+        <p class="dev"><b>Device:</b> A flat solid-colour sticker block dropped into running prose, offset by a HARD zero-blur shadow in a deliberately clashing second colour. No border at all. Set in the Chicago bitmap face.</p>
+        <p class="why"><b>Why it might be worth taking:</b> The same zero-blur principle as the MinionsArt card shadow your pillars already endorse, pushed up to a whole block. It reads as the author interrupting in his own voice.</p>
+        <p class="cav"><b>Honest caveat:</b> warm CONFIRMED. The hot pink and acid green will NOT transfer (palette law: no cool accent, no red). Take the device, not the colours.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure>
+    <figure class="card">
+      <div class="shot"><a href="references/elements/callout-miroirs.png" target="_blank"><img src="references/elements/callout-miroirs.png" alt="callout on miroirs.stars.ne.jp" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">callout</div>
+        <h3>miroirs.stars.ne.jp</h3>
+        <a class="url" href="https://miroirs.stars.ne.jp/info/introduction.php" target="_blank">https://miroirs.stars.ne.jp/info/introduction.php</a>
+        <div class="sel"><code>.box-01</code></div>
+        <p class="dev"><b>Device:</b> A tinted paper panel with two offset L-shaped hairline BRACKETS sitting behind it at opposite corners, each a pseudo-element sized calc(100% - 16px). The panel floats inside the brackets rather than being framed by them.</p>
+        <p class="why"><b>Why it might be worth taking:</b> The quietest option in the set, and the only one that would sit under prose without shouting. Hand-coded JP personal site, own reset, no framework.</p>
+        <p class="cav"><b>Honest caveat:</b> warm CONFIRMED.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure>
+    <figure class="card">
+      <div class="shot"><a href="references/elements/callout-famicom-marginnote.png" target="_blank"><img src="references/elements/callout-famicom-marginnote.png" alt="callout on famicom.party" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">callout</div>
+        <h3>famicom.party</h3>
+        <a class="url" href="https://famicom.party/book/05-6502assembly" target="_blank">https://famicom.party/book/05-6502assembly</a>
+        <div class="sel"><code>.marginnote</code></div>
+        <p class="dev"><b>Device:</b> NOT A BOX. A margin note: an inline label glyph in the prose, a hidden checkbox, then a span floated into the right margin at margin-right:-60%; width:50%. On mobile the checkbox turns it into an inline toggle.</p>
+        <p class="why"><b>Why it might be worth taking:</b> It answers the callout question by refusing it - the aside leaves the column instead of interrupting it. Directly relevant, because the stripe post layout you picked already leaves empty gutter to the right of the prose.</p>
+        <p class="cav"><b>Honest caveat:</b> warm CONFIRMED. Hand-built site for an NES programming book.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure>
+    <figure class="card">
+      <div class="shot"><a href="references/elements/callout-alevirita.png" target="_blank"><img src="references/elements/callout-alevirita.png" alt="callout on a-c.2-d.jp" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">callout</div>
+        <h3>a-c.2-d.jp</h3>
+        <a class="url" href="https://a-c.2-d.jp/index/dream/?page=help" target="_blank">https://a-c.2-d.jp/index/dream/?page=help</a>
+        <div class="sel"><code>ul.note</code></div>
+        <p class="dev"><b>Device:</b> An aside list whose ONLY marker is a faded all-caps word set by ::before content, swapped per class. No border, no icon, no bar - a near-white wash and a word.</p>
+        <p class="why"><b>Why it might be worth taking:</b> The cheapest possible thing that still reads as a callout. Directly relevant to the three-roles question: here the ROLE is the word, so one object covers all three.</p>
+        <p class="cav"><b>Honest caveat:</b> warm CONFIRMED. Hand-written nested CSS, JP personal site.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure>
+    <figure class="card">
+      <div class="shot"><a href="references/elements/callout-flamedfury.png" target="_blank"><img src="references/elements/callout-flamedfury.png" alt="callout on flamedfury.com" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">callout</div>
+        <h3>flamedfury.com</h3>
+        <a class="url" href="https://flamedfury.com/posts/contain-the-web-with-firefox-containers/" target="_blank">https://flamedfury.com/posts/contain-the-web-with-firefox-containers/</a>
+        <div class="sel"><code>.post aside</code></div>
+        <p class="dev"><b>Device:</b> A fully-outlined box whose left border is INTERRUPTED by a circular medallion. The circle is painted with the page background and pushed half outside the box, so it punches a hole clean through the frame rather than sitting inside the panel.</p>
+        <p class="why"><b>Why it might be worth taking:</b> The punched-badge geometry is genuinely good - the same escape trick Maxime Heckel uses, done with a hole instead of a ring.</p>
+        <p class="cav"><b>Honest caveat:</b> warmth REJECTED by the verifier: the border is a hardcoded #999 grey, the four icons are stock Tabler Icons rather than drawn, and <code>border-radius: var(--border-radius)</code> is a DEAD token so the box is square by accident. Shown for the geometry only.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure></div>
+
+  <h2>Site chrome <span class="n">from your own gallery sites</span></h2>
+  <div class="grid">
+    <figure class="card">
+      <div class="shot"><a href="references/elements/chrome-scrollbar.png" target="_blank"><img src="references/elements/chrome-scrollbar.png" alt="chrome on cinni.net" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">chrome</div>
+        <h3>cinni.net</h3>
+        <a class="url" href="https://cinni.net/" target="_blank">https://cinni.net/</a>
+        <div class="sel"><code>::-webkit-scrollbar</code></div>
+        <p class="dev"><b>Device:</b> The TRACK is a 6-stop pastel gradient behind a 1px DOTTED border; the THUMB is flat page-colour with the same dotted border. The thumb reads as a hole punched in a coloured strip - the inverse of the usual arrangement.</p>
+        <p class="why"><b>Why it might be worth taking:</b> Everyone colours the thumb and leaves the track grey. This inverts it, and the 1px dotted border is a drawn line rather than a fill. The inversion is the idea; the rainbow is not.</p>
+        <p class="cav"><b>Honest caveat:</b> confirmed. Chromium only - Firefox falls back to scrollbar-color / scrollbar-width.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure>
+    <figure class="card">
+      <div class="shot"><a href="references/elements/chrome-site-title-subtitle.png" target="_blank"><img src="references/elements/chrome-site-title-subtitle.png" alt="chrome on dimden.dev" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">chrome</div>
+        <h3>dimden.dev</h3>
+        <a class="url" href="https://dimden.dev/" target="_blank">https://dimden.dev/</a>
+        <div class="sel"><code>#logo</code></div>
+        <p class="dev"><b>Device:</b> A wordmark built from FIVE separate letter PNGs, hand-kerned with negative margins (-12, -5, -5) and the final N pulled out of flow so it sits low and off-baseline. The block flickers on a 0.07s animation whose keyframe opacity table is REGENERATED randomly on every page load.</p>
+        <p class="why"><b>Why it might be worth taking:</b> Directly relevant to the wordmark replacement (backlog R2) and to your line-boil idea: the sign never repeats because the keyframes are randomised per load, not because a file animates.</p>
+        <p class="cav"><b>Honest caveat:</b> confirmed. NOTE: there is no subtitle - the slot name was wrong. #logo holds only the five letters.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure>
+    <figure class="card">
+      <div class="shot"><a href="references/elements/chrome-active-nav-indicator.png" target="_blank"><img src="references/elements/chrome-active-nav-indicator.png" alt="chrome on 109ichiki.com" loading="lazy"></a></div>
+      <div class="body">
+        <div class="kind">chrome</div>
+        <h3>109ichiki.com</h3>
+        <a class="url" href="https://109ichiki.com/" target="_blank">https://109ichiki.com/</a>
+        <div class="sel"><code>nav._menu</code></div>
+        <p class="dev"><b>Device:</b> A fixed centred pill holding four links, plus a separate absolutely-positioned rounded rect that animates width, height AND transform to the active item - painted with <code>mix-blend-mode: difference</code> so it INVERTS the label underneath instead of sitting behind it.</p>
+        <p class="why"><b>Why it might be worth taking:</b> The usual moving-pill needs a duplicated label in a contrast colour or a z-index dance. Difference blending does it with one element and gives a printed-negative look. Mobile degrades to z-index:-1 / blend:normal, which is a real fallback worth copying.</p>
+        <p class="cav"><b>Honest caveat:</b> confirmed. Our top bar nav has no active indicator at all beyond a colour swap.</p>
+        <p class="verdict">Your call: &nbsp;<span class="v">TAKE</span> &nbsp;/&nbsp; <span class="v">LEAVE</span></p>
+      </div>
+    </figure></div>
+
+  <h2>Nothing in the gallery has these</h2>
+  <div class="gap">
+    <p>Searched across roughly 45 fetched documents and genuinely absent, so these must be sourced
+      from outside the gallery or designed from scratch:</p>
+    <ul><li>chrome: tooltips</li><li>chrome: cursor trail</li><li>landing: key-learning hover quote on a card, in the strict sense of a quote or takeaway line that is hidden until the card is hovered. Nothing in the gallery does this. The stripe.dev find above is a hover highlight of always-visible copy, and it is the closest thing that exists inside the list.</li><li>portal: time-of-day greeting (worded - "good evening", "おはよう"). I grepped every page I pulled (about 45 documents plus their JS/CSS) for good morning/afternoon/evening/night, おはよう / こんばんは / こんにちは, getHours, timeOfDay and greeting. Zero hits anywhere in the gallery. The 109ichiki clock reported above</li><li>lists: search bar</li><li>lists: empty state ("no results")</li><li>post: reading progress bar</li><li>about: stats numbers</li></ul>
+    <p style="margin-top:.7rem">Also confirmed but not yet captured: <b>hana back-to-top</b>,
+      <b>harumaki footer</b>, <b>potg page transition</b>. All three are real finds; they are
+      WebGL-heavy pages that hung the capture run and need a longer timeout, not more research.</p>
+  </div>
+
+  <footer>captured 2026-08-18 &middot; two hunts, 24 agents &middot; every selector re-verified against live markup<br>
+    take / leave decisions get recorded in docs/REQUESTS.md and the element tracker</footer>
+</div>
+</body>
+</html>

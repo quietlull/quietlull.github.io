@@ -1,0 +1,190 @@
+@layer reset, tokens, prose, components, overrides;
+
+/* ================================================================================================
+   SEARCH FIELD - six candidates, each built from CSS read off the live site 2026-08-24.
+   Verbatim sources: redesign-lab/sources/search-fields-2026-08-24.md
+
+   WHY THIS EXISTS. `list-controls` declares itself circular-citation Slop in its own header and is
+   the search on ramblings. Its box - radius, border, fill, padding, max-width - traces to
+   `rework-stephan.html`, a file in this repo. Slop cannot ship, so this slot is blocked on
+   provenance rather than on taste. These six are the replacement candidates.
+
+   WHAT EACH ONE IS, AND WHAT IS OURS. Every variant below is Remixed, not True, and the remix is
+   the same in each case: the source's MECHANISM kept, its COLOURS mapped onto our tokens, and its
+   radius squared where the house rule demands it. Each block says what could not be carried over.
+   Nothing here is drawn from scratch.
+
+   THE HOUSE RULES THEY ARE BUILT AGAINST:
+     - square by default, round only by exception
+     - no red, no cool accent outside the sky; --color-muted (#9aa3bd) is the last blue in any text
+     - the scene sits behind everything, so a solid fill competes with it and blur is the glass tell
+     - fewer lines wins
+   ============================================================================================== */
+
+@layer components {
+
+  /* Shared skeleton ONLY. Every visible decision lives in a variant below, so that a variant can
+     be lifted out on its own without dragging a house style with it. */
+  .sf {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .sf__input {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: none;
+    border: 0;
+    outline: none;
+  }
+
+  .sf__input::placeholder { color: var(--color-muted); }
+
+  /* The magnifier. Paris Review and A24 both put an icon in the field; neither glyph could be
+     carried (theirs is Font Awesome, ours would be a data-URI SVG), so the MARK is ours and is
+     labelled as such. The placement wells are theirs. */
+  .sf__mark {
+    position: absolute;
+    display: block;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    fill: none;
+    stroke: var(--color-muted);
+    stroke-width: 2;
+  }
+
+  /* ---- A · ronja ------------------------------------------------------------------------------
+     https://www.ronja-tutorials.com/ - always open inline, filters as you type.
+     THE SOURCE SUPPLIES NO CSS AT ALL. Both stylesheets were read: zero rules match `#SearchField`
+     or any bare `input`. So this variant is the BROWSER DEFAULT BOX, deliberately, drawn only far
+     enough to be legible on a dark ground. It is here to show honestly what adopting ronja
+     actually gets you: a mechanism, and a box we would have to design ourselves.
+     Idea: theirs (the filter mechanism). Look: OURS, unavoidably. */
+  .sf--ronja {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+  }
+  .sf--ronja .sf__input { padding: 0 12px; }
+
+  /* ---- B · paris-review, desktop --------------------------------------------------------------
+     input.search-input { padding: 0 2.25em; background-color: #f7f7f7; height: 3rem }
+     THE FILL IS THE BOX - no border anywhere, square, and the icons sit in asymmetric padding
+     wells rather than as flex siblings. That asymmetry is the whole idea and is kept exactly.
+     Remixed: their #f7f7f7 is a solid light fill, which fails the scene rule outright. Mapped to
+     our panel token at the same role (the fill that defines the box). */
+  .sf--pr-desk {
+    background: var(--color-panel);
+    border: 0;
+    border-radius: 0;
+  }
+  .sf--pr-desk .sf__input { padding: 0 2.25em 0 2.625em; }
+  .sf--pr-desk .sf__mark  { left: 1em; }
+
+  /* ---- C · paris-review, mobile ---------------------------------------------------------------
+     #int-nav-search-input_mobile { background: transparent; border-bottom: 1px solid #333 }
+     ...:focus { background-color: #f7f7f7 }
+     THE SAME SITE'S OTHER TREATMENT, and the one that survives our scene rule: transparent at rest
+     so the scene shows through, a single rule underneath, and the fill arrives only on focus.
+     Equally sourced. Remixed only in colour mapping. */
+  .sf--pr-mob {
+    background: transparent;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .sf--pr-mob .sf__input { padding: 0 .5rem; }
+  .sf--pr-mob:focus-within { background: var(--color-panel); }
+
+  /* ---- D · cinra ------------------------------------------------------------------------------
+     border: 1px solid #FFFFFF on a #FFFFFF fill, going to #000000 on :focus.
+     THE BORDER EXISTS AT REST BUT MATCHES THE FILL, so focus costs zero layout: nothing grows,
+     nothing reflows, the edge simply becomes visible.
+     REMIXED, AND THE REMIX IS FORCED: their trick depends on an OPAQUE fill, and ours is over the
+     scene. Re-derived by setting the resting border to the fill's own colour so the effect is the
+     same - an edge that appears rather than an edge that grows. Their 4px radius is squared. */
+  .sf--cinra {
+    background: var(--color-panel);
+    border: 1px solid var(--color-panel);
+    border-radius: 0;
+    transition: border-color .3s cubic-bezier(.4, .4, 0, 1);
+  }
+  .sf--cinra .sf__input { padding: 10px 16px; }
+  .sf--cinra:focus-within { border-color: var(--color-gold); }
+
+  /* ---- E · craigmod ---------------------------------------------------------------------------
+     #fastSearch input { background:#000; border-radius: 8px 8px 0 0; border:none; font-size:1.8em }
+     INPUT AND RESULTS ARE ONE CONTINUOUS SLAB. That is the idea, and the reason its top corners are
+     round and its bottom ones square. Squared entirely here per the house rule, which does cost the
+     slab reading - flagged rather than hidden.
+     Its `backdrop-filter: blur(3px)` is NOT carried: blur is the glass tell being stripped
+     site-wide. Its <mark> blue is NOT carried: a cool accent outside the sky. */
+  .sf--craigmod {
+    background: var(--color-night);
+    border: 0;
+    border-radius: 0;
+  }
+  .sf--craigmod .sf__input {
+    padding: 14px 18px;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  /* ---- F · a24 --------------------------------------------------------------------------------
+     .search-form { font-size: 48px; line-height: .92; letter-spacing: -.04em }
+     input { border-bottom: none; font-weight: 300 }
+     NO FIELD CHROME AT ALL. The input IS the display type; the affordance is the wrapping label.
+     Remixed on ONE number and it matters: their 74px does not fit a 50px box, so the type is
+     stepped down to fit while their ratio (line-height .92, tracking -.04em) is kept exactly.
+     The size is therefore ours; the proportions are theirs. */
+  .sf--a24 {
+    background: transparent;
+    border: 0;
+  }
+  .sf--a24 .sf__input {
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    line-height: .92;
+    letter-spacing: -.04em;
+    font-weight: 300;
+    color: var(--color-text);
+  }
+
+}
+
+/* THE YELLOW RING - REMOVED. Rod 2026-08-24: "When i click on the search bar a yellow thing
+   highlights the search i dont want that remove it".
+
+   WHAT IT WAS: `focus-ring.css:47-53` paints `box-shadow: 0 0 0 2px var(--color-gold)` plus a 12px
+   orange glow. Measured on a real click, the input's own box is only **19px tall inside the 50px
+   field**, so the ring drew a tight yellow bar around the TEXT LINE, floating inside the box rather
+   than around the field. That is why it read as a highlight and not as a focus ring.
+
+   WHY `.sf__input{outline:none}` ABOVE DID NOT STOP IT: that rule is in `components` and the ring
+   is in `overrides`, and **layer order beats specificity**. The computed outline on the focused
+   input measured `rgba(0,0,0,0) solid 2px` - the component's `none` was already losing. So this
+   block has to live in `overrides` too, and inside it `.sf--ronja` wins on specificity regardless
+   of load order.
+
+   THE TRANSPARENT OUTLINE STAYS. It is the Windows High Contrast survivor from
+   `focus-ring.css:41-44`; only the box-shadow goes.
+
+   WHAT REPLACES IT IS SOURCED, NOT INVENTED. cinra's own field makes exactly this trade -
+   `:focus { outline:none; border:1px solid #000 }` over a resting border matching the fill
+   (`sources/search-fields-2026-08-24.md`, and it is already built here as variant D). Same
+   mechanism, our token, and zero layout cost because the border is already 1px.
+
+   MEASURED, composited through the real stack: gold against its own resting hairline **5.27:1**,
+   against the field fill 9.80:1, against the panel 11.04:1. WCAG 2.4.7 wants an indicator to exist
+   and 2.4.13 wants 3:1 for the state change, so this clears both with room. Removing it entirely
+   with nothing in its place would fail 2.4.7 outright, which is why it is a swap and not a delete -
+   say the word if you want the delete anyway.
+   Tier: Remixed. Idea origin: theirs (cinra). */
+@layer overrides {
+  .sf--ronja .sf__input:focus-visible { box-shadow: none; }
+  .sf--ronja:focus-within { border-color: var(--color-gold); }
+}

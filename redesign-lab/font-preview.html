@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harumaki — playful UI font preview</title>
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600&family=Baloo+2:wght@400;500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Comfortaa:wght@400;700&family=Zen+Maru+Gothic:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--fh:"Caveat",cursive}
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--night);color:var(--text);font-family:var(--fm);background-image:radial-gradient(120% 70% at 50% -10%,rgba(255,106,0,.14),transparent 55%);padding:3rem 1rem 6rem}
+.intro{max-width:760px;margin:0 auto 2.5rem;text-align:center}
+.intro h1{font-family:var(--fh);color:var(--gold-deep);font-size:2.6rem}
+.intro p{color:var(--muted);font-size:.9rem;margin-top:.4rem}
+.grid{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:1.4rem}
+.sample{font-family:var(--fm);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:1.6rem 1.8rem;background:rgba(8,12,30,.5);backdrop-filter:blur(3px)}
+.fontname{font-family:ui-monospace,monospace;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--glow);margin-bottom:1rem}
+.logo{font-family:var(--fh);font-weight:700;font-size:2.4rem;color:var(--gold-deep);line-height:.9}
+.num{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-deep);margin:1rem 0 .2rem}
+.nm{font-family:var(--fh);font-size:1.8rem;color:var(--gold-deep)}.nm::before{content:"~ ";color:var(--gold)}.nm::after{content:" ~";color:var(--gold)}
+.body{font-size:.95rem;color:rgba(245,243,239,.9);margin:.6rem 0 1rem;max-width:52ch}
+.row{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+.btn{font-size:.8rem;padding:.55rem 1.3rem;background:var(--gold-deep);color:var(--night);border:0;border-radius:0;cursor:pointer}
+.tag{font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);border:1.5px solid rgba(255,106,0,.3);padding:.25rem .6rem;border-radius:10px 14px 11px 13px}
+.stat{margin-left:auto;text-align:right}.stat .n{font-family:var(--fh);font-size:2.2rem;color:var(--gold);line-height:1}.stat .l{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.specimen{font-size:1.5rem;color:var(--text);margin:.2rem 0 .9rem}
+.labtag{position:fixed;left:14px;bottom:10px;font-family:ui-monospace,monospace;font-size:10px;color:rgba(245,243,239,.5)}.labtag a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="intro"><h1>playful UI fonts</h1><p>Caveat stays the hand-lettered display (logo + ~headers~). These swap the <b>body/label/number</b> font (currently Zen Maru Gothic). Same layout, different feel.</p></div>
+<div class="grid" id="grid"></div>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; font preview</div>
+<script>
+var fonts=[
+  ['Fredoka','"Fredoka", sans-serif'],
+  ['Baloo 2','"Baloo 2", sans-serif'],
+  ['M PLUS Rounded 1c','"M PLUS Rounded 1c", sans-serif'],
+  ['Comfortaa','"Comfortaa", cursive'],
+  ['Zen Maru Gothic (current)','"Zen Maru Gothic", sans-serif']
+];
+var tmpl='<div class="sample">'+
+  '<div class="fontname"></div>'+
+  '<div class="specimen">Born to Bloom — 0123456789</div>'+
+  '<div class="logo">rodney fan</div>'+
+  '<div class="num">01 / featured</div><div class="nm">the work</div>'+
+  '<div class="body">// shaders, tools &amp; little worlds — a night market of tech-art experiments, lit one lantern at a time. Read about half a million blades of grass.</div>'+
+  '<div class="row"><button class="btn">View project</button><span class="tag">HLSL</span><span class="tag">Compute</span><span class="tag">Unity</span>'+
+  '<span class="stat"><span class="n">10+</span><span class="l">years</span></span></div>'+
+  '</div>';
+var g=document.getElementById('grid');
+fonts.forEach(function(f){
+  var div=document.createElement('div');div.innerHTML=tmpl;
+  var node=div.firstChild;
+  node.style.setProperty('--fm', f[1]);
+  node.querySelector('.fontname').textContent=f[0];
+  g.appendChild(node);
+});
+</script>
+</body>
+</html>

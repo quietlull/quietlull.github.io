@@ -1,0 +1,102 @@
+/* ============================================================================================
+   figure-real - catlikecoding geometry, no mat, LEFT-aligned caption (Rod's change).
+   Built 2026-08-23 from analysis/reference-briefs/figure--caption.md.
+
+   PREMISE: CONFIRMED, ZERO DISCREPANCY. tutorials.css re-fetched live; the saved note matches
+   character for character.
+
+   TIER: Remixed. Six declarations transcribed verbatim, ONE inverted (text-align). Idea-origin:
+   theirs for the geometry and the italic-caption device, ROD for the left-align. Not True, because
+   the flipped declaration is load-bearing rather than cosmetic - see THE TRAP below.
+
+   PALETTE LAW IS NOT ENGAGED. Their figure / figure img / figcaption rules contain ZERO colour
+   declarations between them. Nothing to strip, no red or cool accent in play. No mat, no border,
+   no fill also means no surface competing with the scene and no blur - clean against the glass
+   tell by construction. Square is satisfied trivially: there is no border or radius in the source.
+
+   ┌─ THE TRAP, and it is the most important thing here ────────────────────────────────────┐
+   │ In their rule, `figure { text-align: center }` does TWO jobs: it centres the CAPTION and  │
+   │ it centres the IMAGE (an <img> is inline-level, so the block's text-align moves it).      │
+   │ Their whole "a 320px screenshot renders at 320px, centred in a 768px column" behaviour    │
+   │ comes from that one declaration.                                                          │
+   │                                                                                           │
+   │ Rod asked for the caption left-aligned. Flipping text-align on `figure` would SILENTLY    │
+   │ DRAG THE IMAGE FLUSH LEFT TOO - a layout change he did not ask for.                       │
+   │ So the two jobs are split: media is centred explicitly, and text-align:left goes on the   │
+   │ figcaption ONLY. Same rendered result as theirs for the image, Rod's result for the text. │
+   └───────────────────────────────────────────────────────────────────────────────────────────┘
+   ============================================================================================ */
+
+/* ── SHARED: their geometry, verbatim ─────────────────────────────────────────────────────
+   display:block, margin 2em auto (the 2em IS the rhythm idea - double their 1em paragraph gap),
+   padding 0, max-width 100%, height auto. Their caption ratio is 14px against 16px prose, so it
+   is held as 0.875em rather than a pixel value - use the ratio, not the px. */
+.fig {
+  display: block;
+  margin: 2em auto;
+  padding: 0;
+}
+.fig > img,
+.fig > video {
+  max-width: 100%;
+  height: auto;
+  /* THE SPLIT: centring stated explicitly so figcaption can go left without moving the media. */
+  display: block;
+  margin-inline: auto;
+}
+.fig figcaption {
+  font-size: 0.875em;
+  font-style: italic;
+  text-align: left;          /* <- OURS. Theirs is inherited center. */
+  margin-top: 0.5rem;
+}
+@media print {
+  /* theirs, verbatim - worth keeping, it is free */
+  .fig { page-break-inside: avoid; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   VIDEO: THIS PART HAS NO SOURCE AND IS MARKED SLOP.
+
+   Checked directly: NO `video`, `iframe`, `picture` or `source` selector exists anywhere in
+   tutorials.css. catlikecoding is images-only. Every line of video handling below is OURS with
+   zero provenance from that site.
+
+   AND IT IS NOT OPTIONAL. Their entire anti-layout-shift premise rests on explicit intrinsic
+   width/height on every <img>. Checked the corpus: every in-post video is
+   `<video src="..." autoplay muted loop playsinline aria-label="...">` with NO width or height.
+   So that premise does not hold for our video, and without an aspect-ratio the page shifts on
+   load. 16/9 is a default, not a measurement - a real fix reads each clip's true ratio at build
+   time from the front matter.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.fig > video {
+  aspect-ratio: 16 / 9;      /* SLOP - ours, and a guess until the real ratios are read */
+  width: 100%;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE THREE VERSIONS differ on ONE thing: HOW FAR THE CAPTION RECEDES.
+
+   That is the genuinely open question, and the brief turned up a finding that contradicts what
+   decisions.css currently does:
+
+     catlikecoding has NO `.dark figcaption` and NO `.dark figure` rule. Their file has 20 `.dark`
+     rules and not one touches figure. In dark mode the caption simply inherits body colour,
+     identical to body text. So THE CAPTION IS DIFFERENTIATED BY TYPOGRAPHY ALONE, IN BOTH THEMES.
+
+   Under our palette that argues for --color-text on the caption, NOT --color-silver.
+   `decisions.css` currently uses silver, so V1 below is the faithful reading and V2 is what is
+   shipping. Drawn side by side rather than silently picking one.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* V1 - FAITHFUL. Caption is body colour; only italic and size separate it. This is what the
+   source actually does, in both of its themes. */
+.fig--v1 figcaption { color: var(--color-text, #f5f3ef); }
+
+/* V2 - WHAT SHIPS TODAY. Caption in silver, so it recedes on colour as well as typography.
+   Departs from the source; the departure is the point of showing it. */
+.fig--v2 figcaption { color: var(--color-silver, #a3a19d); }
+
+/* V3 - RECEDES MOST. Silver plus one more size step down. OURS - the source has no third
+   degree, so this is an extrapolation and is labelled as one. */
+.fig--v3 figcaption { color: var(--color-silver, #a3a19d); font-size: 0.8em; }

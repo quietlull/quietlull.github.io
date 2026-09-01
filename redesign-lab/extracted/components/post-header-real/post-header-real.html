@@ -1,0 +1,108 @@
+<!-- post-header-real - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=post-header-real can mount it. Page chrome is scoped to .cb-post-header-real; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: post-header-real - title + metadata rail -->
+<div class="cb cb-post-header-real">
+<style>
+.cb-post-header-real {
+  background:#070C23;color:#F5F3EF;font-family:"IBM Plex Mono",monospace;
+  padding:clamp(2rem,5vw,4rem);line-height:1.6
+  /* .ph greybox, from foundations.css:58-59. Same reason as .wrap. */
+  & .ph { position: relative; background-color: #0d1430;
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 10px, rgba(255,255,255,0) 10px 20px);
+    border: 1px solid rgba(255,255,255,.10); }
+  & .ph::after { content: attr(data-label); position: absolute; inset: 0; display: grid;
+    place-items: center; color: rgba(245,243,239,.32); font-size: .7rem; letter-spacing: .18em;
+    text-transform: uppercase; }
+  /* Bench chrome only. Nothing here belongs to the component. */
+  & .wrap {max-width:64rem;margin:0 auto
+  }
+  & h1 {font-family:"M PLUS Rounded 1c",sans-serif;font-size:1.7rem;margin-bottom:.4rem
+  }
+  & .sub {color:#9aa3bd;font-size:.78rem;margin-bottom:2rem
+  }
+  & .lede {border:1px solid rgba(243,181,60,.35);background:rgba(243,181,60,.06);
+  padding:.9rem 1.1rem;font-size:.76rem;color:#9aa3bd;line-height:1.8;margin-bottom:2.4rem
+  }
+  & .lede b {color:#F3B53C;font-weight:500
+  }
+  & h2.bh {color:#F3B53C;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  margin:2.6rem 0 .3rem
+  }
+  & .bnote {color:#9aa3bd;font-size:.74rem;margin-bottom:1rem;max-width:70ch
+  }
+  & .stage {border:1px dashed rgba(255,255,255,.14);padding:26px;background:rgba(255,255,255,.015)
+  }
+  & .readout {color:#7ee0b8;font-size:.66rem;margin-top:.5rem
+  }
+}
+</style>
+<div class="wrap">
+
+<h1>post-header-real</h1>
+<div class="sub">the post title and its metadata rail &middot; three variants, one difference</div>
+
+<div class="lede">
+  <b>THIS DEMO EXISTS BECAUSE THE COMPONENT HAD NONE.</b> The stylesheet was written in the
+  multi-agent session and shipped without any markup, anywhere in the repo, which meant the
+  component could not be merged into a page and could not be judged. Rod 2026-08-24:
+  <i>"build out all the remaining components except the trophy case."</i><br><br>
+
+  <b>Nothing here is invented.</b> Every class and every value comes from
+  <code>post-header-real.css</code>; the markup is the structure that stylesheet already requires.
+  <b>SOURCE:</b> <code>sources/stripe-dev-prose.md</code> (CONFIRMED), sections
+  <code>aside-sidenote</code> and <code>heading</code>. <b>TIER:</b> Remixed, idea-origin theirs.
+  Ours is the squaring, the colours, and the separator call the three versions below exist to
+  settle.<br><br>
+
+  <b>THIS COMPONENT IS ALSO THE METADATA RAIL.</b> It was recorded on the todo list as two
+  separate things, one of them "never built" - that was wrong. The rail is the
+  <code>.ph-item</code> rows below, and it ships with the title.<br><br>
+
+  <b>NO PICK IS RECORDED FOR THIS COMPONENT.</b> There is nothing in component-review, the ledger,
+  or the docs. So it stays three versions until Rod picks one, rather than one version chosen by me.
+</div>
+
+<h2 class="bh">V1 &mdash; dotted separators</h2>
+<p class="bnote">The lightest rule. The dots read as a guide rather than a divider, which suits a
+  rail whose job is to be skimmed and then ignored.</p>
+<div class="stage">
+  <div class="ph-rail ph-rail--v1">
+    <div class="ph-title-slot"><h1 class="d-h1">Compute Grass</h1></div>
+    <div class="ph-item"><span class="ph-label">Published</span><span class="ph-value">14 March 2026</span></div>
+    <div class="ph-item"><span class="ph-label">Reading time</span><span class="ph-value">12 min</span></div>
+    <div class="ph-item"><span class="ph-label">Stack</span><span class="ph-value">Unity &middot; HLSL &middot; Compute</span></div>
+    <div class="ph-item"><span class="ph-label">Role</span><span class="ph-value">Technical artist</span></div>
+  </div>
+</div>
+
+<h2 class="bh">V2 &mdash; solid separators</h2>
+<p class="bnote">The same rail with a continuous 1px line. Firmer, and it makes the rail read as a
+  table of facts rather than a list of hints.</p>
+<div class="stage">
+  <div class="ph-rail ph-rail--v2">
+    <div class="ph-title-slot"><h1 class="d-h1">Compute Grass</h1></div>
+    <div class="ph-item"><span class="ph-label">Published</span><span class="ph-value">14 March 2026</span></div>
+    <div class="ph-item"><span class="ph-label">Reading time</span><span class="ph-value">12 min</span></div>
+    <div class="ph-item"><span class="ph-label">Stack</span><span class="ph-value">Unity &middot; HLSL &middot; Compute</span></div>
+    <div class="ph-item"><span class="ph-label">Role</span><span class="ph-value">Technical artist</span></div>
+  </div>
+</div>
+
+<h2 class="bh">V3 &mdash; no separators, wider gaps</h2>
+<p class="bnote">No rules at all; the rail is held together by a 20px row gap instead. Quietest of
+  the three, and the only one that adds vertical height to carry the same content.</p>
+<div class="stage">
+  <div class="ph-rail ph-rail--v3">
+    <div class="ph-title-slot"><h1 class="d-h1">Compute Grass</h1></div>
+    <div class="ph-item"><span class="ph-label">Published</span><span class="ph-value">14 March 2026</span></div>
+    <div class="ph-item"><span class="ph-label">Reading time</span><span class="ph-value">12 min</span></div>
+    <div class="ph-item"><span class="ph-label">Stack</span><span class="ph-value">Unity &middot; HLSL &middot; Compute</span></div>
+    <div class="ph-item"><span class="ph-label">Role</span><span class="ph-value">Technical artist</span></div>
+  </div>
+  <div class="readout" id="readout"></div>
+</div>
+
+
+</div>
+</div>

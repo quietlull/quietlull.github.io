@@ -1,0 +1,213 @@
+<!-- achievement-wall - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=achievement-wall can mount it. Page chrome is scoped to .cb-achievement-wall; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: Achievement wall - bench -->
+<div class="cb cb-achievement-wall">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap">
+<style>
+.cb-achievement-wall {
+  background: var(--color-night, #070c23); color: var(--color-text, #f5f3ef);
+  font-family: var(--font-body, system-ui); margin: 0; padding: 32px 34px 90px;
+
+  /* CONVERSION NOTE 2026-08-25. Two page-level habits had to change to live in the bench, and
+     neither touches `.aw`:
+       - the page reserved `padding-right: 336px` for a tuner FIXED to the viewport's right edge.
+         In the bench that edge belongs to the bench's own tuner column, so the panel floats inside
+         the component instead and the reservation is gone.
+       - the `.labtag` back-to-lab link is gone with the rest of the page chrome. */
+  position: relative;
+
+  /* BENCH CHROME ONLY. Everything in this block styles the page around the component, never the
+   component itself - the one rule this workbench cannot break (D25). Nothing here is scoped to
+   `.aw` or any of its parts. */
+  & .bh { max-width: 928px; margin: 0 0 26px;
+  }
+  & .bh h1 { font-size: 2.4rem; font-weight: 300; color: var(--color-gold, #fbbf24); margin: 0 0 10px;
+  }
+  & .bh p { font-size: 15px; line-height: 1.65; color: var(--color-muted-warm, #9c8f7d); margin: 0 0 8px; max-width: 74ch;
+  }
+  & .bh b { color: var(--color-text, #f5f3ef); font-weight: 400;
+  }
+  & .bh a { color: var(--color-gold, #fbbf24);
+  }
+  & .stage { width: 928px; max-width: 100%; box-sizing: border-box; padding: 34px 38px;
+         background: rgba(8,15,27,.92); border: 1px solid rgba(245,158,11,.15);
+  }
+  & .knobs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px;
+  }
+  & .knobs button { font: inherit; font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+  padding: 8px 13px; min-height: 24px; cursor: pointer;
+  background: none; color: var(--color-muted-warm, #9c8f7d);
+  border: 1px solid var(--color-line, #3a3a3a);
+  }
+  & .knobs button[aria-pressed="true"] { color: var(--color-gold, #fbbf24); border-color: var(--color-gold, #fbbf24);
+  }
+  & .knobs .k { align-self: center; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: #6f6f6f; margin-right: 2px; font-family: var(--font-mono, monospace);
+  }
+  & .notes { max-width: 928px; margin: 34px 0 0;
+  }
+  & .notes h2 { font-size: 1.5rem; font-weight: 300; color: var(--color-gold, #fbbf24); margin: 26px 0 10px;
+  }
+  & .notes p,
+  & .notes li { font-size: 15px; line-height: 1.7; color: var(--color-text, #f5f3ef); max-width: 74ch;
+  }
+  & .notes li { margin-bottom: 7px;
+  }
+  & .notes .warn { border-left: 2px solid var(--color-glow, #ff6a00); padding-left: 14px;
+  }
+  & .notes code { font-family: var(--font-mono, monospace); font-size: .88em; color: var(--color-muted-warm, #9c8f7d);
+  }
+  /* THE TUNER. Bench chrome: fixed panel, never touches the component's own box. It writes CUSTOM
+   PROPERTIES onto `.aw` rather than injecting a stylesheet, which is why it cannot fight the
+   cascade - the component already reads every one of these, so the tuner drives the same inputs the
+   CSS does rather than overriding its output.
+   DEFAULTS ARE READ OUT OF THE COMPONENT ON LOAD, never typed here. That is the one rule the
+   ramblings tuner broke: its presets were hand-transcribed, drifted from the page, and then
+   overwrote the real page with the stale numbers the moment it opened. Derived defaults cannot
+   drift, and nothing is written until a slider actually moves. */
+  & .tuner { position: sticky; top: 0; float: right; margin: 0 0 20px 26px;
+  width: 300px; max-height: 100vh; overflow-y: auto;
+  background: rgba(6,10,22,.96); border-left: 1px solid var(--color-line, #3a3a3a);
+  padding: 16px 18px 26px; z-index: 100; font-size: 12px;
+  }
+  & .tuner h2 { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-gold, #fbbf24);
+  margin: 0 0 12px; font-family: var(--font-mono, monospace); font-weight: 400;
+  }
+  & .tuner .grp { font-family: var(--font-mono, monospace); font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: #6f6f6f; margin: 16px 0 8px;
+  }
+  & .tuner label { display: block; margin-bottom: 11px; color: var(--color-muted-warm, #9c8f7d);
+  }
+  & .tuner label span { display: flex; justify-content: space-between; margin-bottom: 3px;
+  }
+  & .tuner label b { color: var(--color-text, #f5f3ef); font-weight: 400; font-family: var(--font-mono, monospace);
+  }
+  & .tuner input[type=range] { width: 100%; accent-color: var(--color-gold, #fbbf24);
+  }
+  & .tuner .out { display: flex; gap: 6px; margin-top: 14px;
+  }
+  & .tuner .out button { flex: 1; font: inherit; font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  padding: 9px 6px; min-height: 24px; cursor: pointer; background: none;
+  color: var(--color-gold, #fbbf24); border: 1px solid var(--color-gold, #fbbf24);
+  }
+  & .tuner .out button.sec { color: var(--color-muted-warm, #9c8f7d); border-color: var(--color-line, #3a3a3a);
+  }
+  & .tuner .read { margin-top: 14px; font-family: var(--font-mono, monospace); font-size: 10.5px;
+  line-height: 1.75; color: #6f6f6f; border-top: 1px solid var(--color-line-faint, #2c2c2c); padding-top: 10px;
+  }
+  & .tuner .read b { color: var(--color-text, #f5f3ef); font-weight: 400;
+  }
+  & .tuner .read .bad { color: var(--color-glow, #ff6a00);
+  }
+  & .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+}
+</style>
+<div class="bh">
+  <h1>Achievement wall</h1>
+  <p>Built to your spec of 2026-08-24. <b>Hover a tile</b> to read it on the right; the panel keeps
+    the last one you hovered rather than blanking. <b>Click a tile</b> to force its border to shine
+    and switch it on. Tabbing reads exactly like hovering.</p>
+  <p>The 29 achievements are <b>your real ones</b>, transcribed from the live site. Unlock state and
+    progress numbers are demo values so there is something to look at.</p>
+</div>
+
+<div class="knobs">
+  <span class="k">try</span>
+  <button type="button" data-cls="aw--trigger" aria-pressed="false">rim only on hover</button>
+  <button type="button" data-cls="aw--scale" aria-pressed="false">blockout's 1.3 scale</button>
+  <button type="button" data-cls="aw--short" aria-pressed="false">old 250px panel</button>
+</div>
+
+<div class="stage">
+  <div class="aw">
+    <div class="aw__cat"></div>
+    <div class="aw__detail"></div>
+  </div>
+</div>
+
+<div class="tuner">
+  <h2>Tune</h2>
+
+  <p class="grp">the glow</p>
+  <label data-k="glow-r" data-unit="px" data-min="20" data-max="320" data-step="2"><span>how far the glow reaches <b></b></span><input type="range"></label>
+  <label data-k="glow-r-soft" data-unit="px" data-min="12" data-max="240" data-step="2"><span>the soft outer glow <b></b></span><input type="range"></label>
+  <label data-k="orbit" data-unit="s" data-min="0.6" data-max="8" data-step="0.1"><span>how long one lap takes <b></b></span><input type="range"></label>
+
+  <p class="grp">the tiles</p>
+  <label data-k="tile" data-unit="px" data-min="32" data-max="128" data-step="2"><span>tile size <b></b></span><input type="range"></label>
+  <label data-k="tilegap" data-unit="px" data-min="0" data-max="20" data-step="1"><span>space around a tile <b></b></span><input type="range"></label>
+  <label data-k="icon" data-unit="px" data-min="10" data-max="56" data-step="1"><span>emoji size <b></b></span><input type="range"></label>
+  <label data-k="star" data-unit="rem" data-min="0.8" data-max="3" data-step="0.05"><span>star badge size <b></b></span><input type="range"></label>
+
+  <p class="grp">the details panel</p>
+  <label data-k="dw" data-unit="px" data-min="200" data-max="620" data-step="1"><span>panel width <b></b></span><input type="range"></label>
+  <label data-k="dh" data-unit="px" data-min="140" data-max="620" data-step="5"><span>panel height <b></b></span><input type="range"></label>
+  <label data-k="dpad" data-unit="px" data-min="0" data-max="48" data-step="1"><span>space inside the panel <b></b></span><input type="range"></label>
+  <label data-k="gap" data-unit="px" data-min="0" data-max="80" data-step="1"><span>gap between wall and panel <b></b></span><input type="range"></label>
+
+  <div class="out">
+    <button type="button" id="copy">copy</button>
+    <button type="button" class="sec" id="reset">reset</button>
+  </div>
+  <div class="read" id="read"></div>
+</div>
+
+<div class="notes">
+  <h2>What is real and what is not</h2>
+  <ul>
+    <li><b>The 29 achievements are real</b>, transcribed from
+      <code>_javascript/modules/components/achievements.js</code>. Category counts match the blockout
+      exactly: explorer 7, reader 6, interactor 8, secret 3, meta 5.</li>
+    <li><b>Unlock state and progress are demo values.</b> The real ones are per visitor and live in
+      the browser's own storage.</li>
+    <li><b>"Active" is a genuinely new thing.</b> Your data knows whether an achievement is
+      <i>earned</i>; it has nothing for whether it is <i>switched on</i>. Those are different.</li>
+    <li><b>There is no scene hook and nothing pretends there is one.</b> No stub, no comment
+      promising one. Writing one now would be inventing a contract that has not been decided.</li>
+  </ul>
+
+  <h2>Three things you should see rather than be told</h2>
+  <ul>
+    <li class="warn"><b>The beetle is an empty box.</b> Look at Interactor, the fifth tile. That is
+      "Hey, You Touched My Fly!" and your Windows font has no glyph for it, so it renders as tofu.
+      It is locked here so it is dimmed, but the missing box is visible.</li>
+    <li class="warn"><b>Two tiles are identical.</b> "First Light" (Explorer, first) and "Lantern
+      Tapper" (Interactor) both use the same lantern emoji. On an icon-only wall there is nothing
+      to tell them apart but the tooltip.</li>
+    <li><b>Progress does not exist for most of them.</b> Only 11 of 29 carry a real number; the rest
+      are yes/no. Those say Earned or Not yet earned instead of inventing a scale.</li>
+  </ul>
+
+  <h2>Choices already made, and how to see the alternative</h2>
+  <ul>
+    <li><b>Panel is 360 tall, not the blockout's 250</b> - your call. Flip <i>old 250px panel</i> to
+      see why: it was reserved for an unlabelled box, and five labelled fields overflow it the
+      moment Flavor and Effect have real words in them.</li>
+    <li><b>The rim keeps the project cards' own 220px reach</b> - your call, no retune. Because that
+      is more than three times a tile's width, it reads as a soft all-over glow rather than the
+      band travelling along an edge that you see on the big cards.</li>
+    <li><b>The rim lights from cursor proximity</b>, which is how the project cards behave: tiles
+      glow when the pointer is merely near them. Flip <i>rim only on hover</i> for the alternative,
+      which is closer to the original source and is what a keyboard can actually see.</li>
+    <li><b>Locked tiles are genuinely disabled</b>, not just dimmed - a pressable locked achievement
+      would be a fake. The cost is that they leave the tab order: 15 of 29 today.</li>
+  </ul>
+
+  <h2>Still open</h2>
+  <ul>
+    <li><b>The emojis.</b> You said images for now, but no images exist and all 29 would have to be
+      made or licensed. This uses text characters, which is what the live site does, and that is
+      what produces the two problems above.</li>
+    <li><b>Do the secret ones reveal their name once earned?</b> The live site shows
+      <code>?</code> until then; that is what is copied here.</li>
+    <li><b>The blockout fits 7 tiles per row, the built page fits 6</b>, because About's column is
+      narrower than the blockout's. Worth settling before this lands on the page.</li>
+  </ul>
+</div>
+</div>

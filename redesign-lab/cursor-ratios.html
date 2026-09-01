@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cursor ratios - tuner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&family=Caveat:wght@500;700&display=swap">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<!-- THE REAL COMPONENT STYLESHEET, linked unmodified. This is what makes the glow dials DERIVED:
+     every glow default below is read back out of this file and off the rendered .cursorglow, never
+     typed into this page. -->
+<link rel="stylesheet" href="/redesign-lab/extracted/components/cursor-glow/cursor-glow.css">
+<style>
+/* ================================================================================================
+   CURSOR TUNER. Rod, P380 (2026-08-24): "i agree needs to move to top layer add a page with sparkle
+   and the glow let me tune them both."
+
+   IT RUNS THE REAL EFFECTS, NOT COPIES.
+     - the glow is the real `.cursorglow` div with the real `cursor-glow.css` <link>ed above;
+     - the sparkler is `effects/mouse-trail.js`, FETCHED at run time and imported as a blob module.
+   Nothing is transcribed. If either file changes, this page's defaults change with it.
+
+   WHY NO IFRAME, and this is the one real departure from rail-ratios.html / rambling-ratios.html.
+   Those tune LAYOUT, so an iframe of the real page is strictly better - the tuner's own markup can
+   never contribute a pixel. These two effects follow the POINTER. Put them in a frame and the
+   cursor is over the frame's chrome for half of every gesture, the glow is clipped to the frame's
+   box instead of the viewport, and the panel-vs-effect stacking question - which IS the ask - stops
+   being answerable, because a frame is a single element in the parent's stacking order. So the
+   stage is a real region of this document, built to be judged against: opaque cards, a value ramp,
+   a mock top bar at z 60, mock chrome at z 90 and z 200.
+
+   WHAT THE PANEL COSTS. It contributes no layout to either effect - both are `position:fixed`
+   overlays that never see this markup. There is exactly ONE coupling and it is worth knowing:
+   `mouse-trail.js:328` calls `elementFromPoint` and samples the colour under the cursor, so while
+   the cursor is over THIS PANEL the sparkler is tinting off the panel's gold, not the stage's.
+   Judge colour over the stage. Everything else is honest anywhere on the page.
+
+   THE THREE RULES, because rambling-ratios.html breaks all three and 11 of its 19 dials are stale:
+     1. DERIVED, NEVER TRANSCRIBED. Every base comes from `fetch()` of the real file plus a
+        `getComputedStyle` cross-check on the rendered element. There is no preset table in here.
+     2. EMITS ONLY WHAT MOVED. A dial sitting on its derived base contributes nothing, to the live
+        override AND to the clipboard text.
+     3. WRITES NOTHING UNTIL A DIAL MOVES. No <style> is created, no localStorage key is written,
+        no canvas property is set, until something actually differs from the file.
+   `reset` re-runs the derivation against the files. It is not a literal.
+
+   IF A PARSE MISSES, THE PAGE SAYS SO. Every regex below is asserted. A dial whose base could not
+   be read is disabled and named in red rather than silently defaulting to a guess - a silent miss
+   is exactly how a tuner starts lying.
+   ============================================================================================== */
+:root{
+  --ink:#f5f3ef; --muted:#9aa3bd; --gold:#fbbf24; --night:#070c23;
+  --line:rgba(251,191,36,.26);
+  --font-ui:"M PLUS Rounded 1c",sans-serif; --font-code:"IBM Plex Mono",monospace;
+}
+html{background:var(--night)}
+body{margin:0;background:var(--night);color:var(--ink);font-family:var(--font-ui);
+  min-height:100%}
+
+/* ---------- the stage: a real region of this page, not a frame ---------- */
+.stage{position:relative;z-index:1;padding:0 0 160px}
+.stage__bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:18px;
+  padding:14px 28px;background:rgba(7,12,35,.86);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.stage__bar b{font-weight:400;font-family:"Caveat",cursive;font-size:1.5rem;color:var(--gold)}
+.stage__bar span{font-family:var(--font-code);font-size:.62rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted)}
+.stage__wrap{width:max(320px,min(880px,calc(100% - 420px)));margin:0 0 0 56px;padding:64px 0 0}
+.stage h1{font-family:"Caveat",cursive;font-weight:700;font-size:clamp(3rem,7vw,5.5rem);
+  margin:0 0 6px;color:var(--ink);line-height:.95}
+.stage__sub{font-family:var(--font-code);font-size:.72rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 44px}
+
+/* opaque on purpose. At z-index -1 the glow is BEHIND these, which is the exact thing Rod is
+   pointing at - the difference between -1 and 499 is only visible if there is something solid in
+   the way. */
+.card{background:var(--color-panel-solid,#1c1a18);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:26px 30px;margin:0 0 26px}
+.card h2{margin:0 0 12px;font-weight:300;font-size:1.35rem;color:var(--gold)}
+.card p{margin:0 0 12px;line-height:1.72;font-weight:300;font-size:.98rem;color:#dcd8d2;
+  max-width:62ch}
+.card p:last-child{margin-bottom:0}
+.card a{color:var(--gold)}
+.stage__btns{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 26px}
+.stage__btns button{font-family:var(--font-code);font-size:.68rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink);background:rgba(255,255,255,.05);
+  border:1px solid var(--line);border-radius:999px;padding:11px 20px;cursor:default}
+
+/* a value ramp, so the wash can be judged against dark AND light ground */
+.ramp{display:grid;grid-template-columns:repeat(6,1fr);border-radius:12px;overflow:hidden;
+  margin:0 0 26px;border:1px solid rgba(255,255,255,.07)}
+.ramp div{height:96px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;
+  font-family:var(--font-code);font-size:.56rem;letter-spacing:.08em;color:rgba(0,0,0,.45)}
+.ramp div:nth-child(-n+3){color:rgba(255,255,255,.4)}
+
+/* gaps in the solid content, so a glow at z-index -1 has somewhere to show through */
+.gap{height:150px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-code);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(154,163,189,.42)}
+
+/* mock chrome at the two heights the final pages actually use, so the z dial has landmarks */
+.mock{position:fixed;font-family:var(--font-code);font-size:.58rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);background:rgba(8,12,30,.93);
+  border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:11px 13px}
+.mock--90{left:14px;bottom:76px;z-index:90}
+.mock--200{left:14px;bottom:14px;z-index:200}
+
+/* ---------- the panel ---------- */
+.panel{position:fixed;top:12px;right:12px;z-index:100000;width:352px;
+  max-height:calc(100vh - 24px);overflow:auto;background:rgba(7,12,35,.96);
+  border:1px solid var(--line);padding:16px 18px 20px;color:var(--ink);
+  transition:transform .25s ease}
+.panel.hid{transform:translateX(calc(100% + 20px))}
+.panel h2{margin:0 0 2px;font-size:1.05rem;font-weight:300;color:var(--gold)}
+.panel .note{margin:0 0 12px;font-size:.72rem;color:var(--muted);line-height:1.55}
+.panel h3{margin:16px 0 8px;font-family:var(--font-code);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.08);
+  padding-bottom:5px}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:0 0 11px}
+.row label{font-size:.76rem;line-height:1.3}
+.row .val{font-family:var(--font-code);font-size:.68rem;color:var(--gold);white-space:nowrap}
+.row .val.moved{color:#7fd18b}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--gold);margin:2px 0 0}
+.row select{grid-column:1/-1;width:100%;margin:3px 0 0;background:#04070f;color:var(--ink);
+  border:1px solid var(--line);font-family:var(--font-code);font-size:.66rem;padding:5px}
+.row .src{grid-column:1/-1;font-family:var(--font-code);font-size:.57rem;color:rgba(154,163,189,.6);
+  margin:2px 0 0}
+.row.dead{opacity:.4}
+.read{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:.7rem;margin:0 0 4px}
+.read span{color:var(--muted)}
+.read b{font-family:var(--font-code);font-weight:400}
+.read b.ok{color:#7fd18b}
+.read b.bad{color:#e0713f}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.btns button,.quick button{font-family:var(--font-code);font-size:.62rem;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink);background:rgba(255,255,255,.05);
+  border:1px solid var(--line);padding:7px 10px;cursor:pointer}
+.btns button.pri{color:var(--gold)}
+.btns button:hover,.quick button:hover{border-color:var(--gold)}
+.quick{display:flex;gap:5px;flex-wrap:wrap;margin:-4px 0 12px}
+.quick button{font-size:.56rem;padding:5px 8px}
+#toggle{position:fixed;top:12px;right:12px;z-index:100001;font-family:var(--font-code);
+  font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);
+  background:rgba(7,12,35,.96);border:1px solid var(--line);padding:7px 11px;cursor:pointer}
+#out{width:100%;height:190px;margin-top:10px;background:#04070f;color:var(--ink);
+  border:1px solid var(--line);font-family:var(--font-code);font-size:.6rem;padding:8px;
+  resize:vertical;white-space:pre}
+.warn{margin:0 0 12px;padding:8px 10px;border:1px solid #e0713f;color:#f0a184;font-size:.68rem;
+  line-height:1.5}
+.warn button{margin-top:7px}
+.panel details{margin-top:16px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px}
+.panel summary{font-family:var(--font-code);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);cursor:pointer}
+.panel details p{font-size:.68rem;line-height:1.6;color:var(--muted)}
+.panel details b{color:var(--ink);font-weight:400}
+#stack{font-family:var(--font-code);font-size:.58rem;line-height:1.6;color:var(--muted);
+  margin:4px 0 0}
+#stack i{color:var(--gold);font-style:normal}
+</style>
+</head>
+<body>
+
+<!-- The real component markup, copied from cursor-glow.html:5. Nothing else from that file: the
+     `.cursor-glow-demo` panel grid there is labelled LAB DEMO ONLY and this page has its own
+     stage. -->
+<div class="cursorglow"></div>
+
+<main class="stage">
+  <div class="stage__bar"><b>Rod</b><span>mock top bar &mdash; z-index 60</span></div>
+  <div class="stage__wrap">
+    <h1>move the cursor</h1>
+    <p class="stage__sub">both effects are live on this page &mdash; tune them against each other</p>
+
+    <div class="card">
+      <h2>Something solid to be in the way</h2>
+      <p>This card is opaque. That matters: the glow ships at <code>z-index: -1</code>, which puts it
+      behind every solid thing on the page, so over a card like this one it is simply not there. Move
+      the layer dial and watch it arrive on top.</p>
+      <p>The sparkler has the opposite problem and always has &mdash; its canvas is already at 500,
+      above everything on every final page. That is the number the glow is being measured against.
+      There is a <a href="#stage-links">link</a> and some buttons below because the sparkler samples
+      the warm colour under the cursor and those are the elements it looks for.</p>
+    </div>
+
+    <div class="stage__btns" id="stage-links">
+      <button type="button" tabindex="-1">a button</button>
+      <button type="button" tabindex="-1">another one</button>
+      <button type="button" tabindex="-1">colour pickup</button>
+    </div>
+
+    <div class="ramp">
+      <div style="background:#05070f">#05070f</div>
+      <div style="background:#12172c">#12172c</div>
+      <div style="background:#2c3050">#2c3050</div>
+      <div style="background:#7d8199">#7d8199</div>
+      <div style="background:#c9c6bf">#c9c6bf</div>
+      <div style="background:#f5f3ef">#f5f3ef</div>
+    </div>
+
+    <div class="gap">open ground &mdash; the only place a z-index of -1 shows</div>
+
+    <div class="card">
+      <h2>Reading weight</h2>
+      <p>Body copy at the weight the site actually uses, so the wash can be judged for whether it
+      fights the text. A glow that is beautiful over empty ground and unreadable over a paragraph is
+      not tuned, it is just pretty in one place.</p>
+      <p>Scroll this page while the cursor sits still: <code>mouse-trail.js:378</code> emits sparks on
+      scroll as well as on movement, which is a behaviour worth seeing before any number is locked.</p>
+    </div>
+
+    <div class="gap">scroll down &mdash; scroll sparks fire from the cursor</div>
+
+    <div class="card">
+      <h2>Provenance, stated not settled</h2>
+      <p><b>cursor-glow is Remixed / theirs, and it is not one of the circular-citation
+      components.</b> <code>element-tracker.md:45</code> credits brittanychiang.com (#about cursor
+      glow) and merodev for the fixed radial at <code>--cx/--cy</code>, recoloured purple to gold,
+      and records Rod authorising it as not-slop on 2026-06-09.</p>
+      <p>The P380 row says it is "one of the 20 components whose files mention circular". That is
+      wrong. Fourteen component stylesheets carry a <code>CIRCULAR CITATION</code> banner and
+      cursor-glow is not among them &mdash; the word in its file is the CSS keyword
+      <code>circle</code>, in <code>radial-gradient(520px circle at ...)</code>.</p>
+      <p>The debt that <em>is</em> real is narrower: the ledger says the verbatim source-diff against
+      brittanychiang was never pinned ("well-known pattern"). So putting the glow on more pages does
+      not spread an unsourced element; it spreads a Rod-authorised Remixed one whose diff is still
+      owed. <b>This page is a tuning bench and does not decide that either way.</b></p>
+    </div>
+
+    <div class="gap">&nbsp;</div>
+  </div>
+</main>
+
+<div class="mock mock--90">mock chrome &mdash; z 90</div>
+<div class="mock mock--200">mock lab chrome &mdash; z 200</div>
+
+<button id="toggle" type="button" hidden>panel</button>
+
+<aside class="panel" id="panel">
+  <h2>Cursor ratios</h2>
+  <p class="note">Both effects are live on this page. Every default below is read out of its own
+  file at load, so opening this page changes nothing. Green means that dial has moved.</p>
+
+  <div id="warnings"></div>
+
+  <div id="dials"></div>
+
+  <h3>What is actually rendered</h3>
+  <div class="read"><span>glow reach (measured)</span><b id="r-reach"></b></div>
+  <div class="read"><span>glow layer (measured)</span><b id="r-gz"></b></div>
+  <div class="read"><span>sparkler canvas</span><b id="r-canvas"></b></div>
+  <div class="read"><span>sparkler layer (measured)</span><b id="r-sz"></b></div>
+  <div class="read"><span>longest tip spike (dial)</span><b id="r-spike"></b></div>
+  <div class="read"><span>glow vs spike</span><b id="r-ratio"></b></div>
+
+  <h3>Stacking order on this page</h3>
+  <p id="stack"></p>
+
+  <div class="btns">
+    <button type="button" id="b-copy" class="pri">copy tune</button>
+    <button type="button" id="b-css">show it</button>
+    <button type="button" id="b-reset">reset</button>
+    <button type="button" id="b-hide">hide panel</button>
+  </div>
+  <textarea id="out" hidden readonly></textarea>
+
+  <details>
+    <summary>notes</summary>
+    <p><b>Provenance (report only).</b> cursor-glow is <b>Remixed / theirs</b> &mdash;
+    brittanychiang + merodev, Rod-authorised not-slop 2026-06-09, <code>element-tracker.md:45</code>.
+    It does <b>not</b> carry a CIRCULAR CITATION banner; the 14 that do are listed in
+    <code>docs/MERGE-WORKLIST.md</code> item 16 and this is not one of them. The open debt is that
+    the verbatim source-diff was never pinned. A tuning page is not a shipping decision.</p>
+    <p><b>Readouts.</b> "measured" means read back off the rendered element with
+    <code>getComputedStyle</code>. "dial" means it is the number in the code, not a measurement of
+    the drawn pixels &mdash; the tip spikes are canvas strokes and are not measurable without
+    sampling the canvas.</p>
+    <p><b>Colour pickup.</b> While the cursor is over this panel, <code>mouse-trail.js:328</code>
+    samples the panel's gold, not the stage's. Judge colour over the stage.</p>
+    <p><b>Two known limits of the live patch.</b> The pool is allocated once at a fixed ceiling so
+    the "sparks alive at once" dial can move without going out of bounds; and lowering that dial can
+    strand a few already-live sparks, which reappear if it is raised again. Neither affects the
+    numbers you copy out.</p>
+  </details>
+</aside>
+
+<script type="module">
+/* ================================================================================================
+   ONE derivation, ONE state, ONE builder. `emit()` produces the live change and the clipboard text
+   from the same walk of the same table, so what he pastes is provably what he saw.
+   ============================================================================================== */
+
+/* The glow's REAL driver. It writes --cx/--cy off the shared cursor-coords broadcaster (ONE
+   pointermove + ONE rAF for every effect that opts in). The sparkler does NOT use it - it binds its
+   own mousemove at mouse-trail.js:333 and runs its own loop - so this page carries two listeners,
+   exactly as the two files are written today. */
+import { init as initCursorGlow } from '/redesign-lab/extracted/components/cursor-glow/cursor-glow.js';
+
+const CSS_FILE = '/redesign-lab/extracted/components/cursor-glow/cursor-glow.css';
+const JS_FILE  = '/redesign-lab/effects/mouse-trail.js';
+const CSS_NAME = 'redesign-lab/extracted/components/cursor-glow/cursor-glow.css';
+const JS_NAME  = 'redesign-lab/effects/mouse-trail.js';
+const STORE    = 'cursor-ratios-v1';
+
+/* The tune object the patched sparkler reads EVERY FRAME. It starts as the file's own values, so
+   until a dial moves the effect runs exactly as the file wrote it. */
+const T = {};
+window.__cursorTune = T;
+
+let BASE = null;      /* derived, never typed */
+let SRC  = null;      /* {file, line} per base, derived alongside */
+let state = null;
+let dirty = false;    /* rule 3: nothing is written until this is true */
+let misses = [];
+
+/* ---------- derivation ---------------------------------------------------------------------- */
+
+/* Finds the first line matching `re` and returns its value AND its 1-based line number, so every
+   file:line in the clipboard text comes from the file rather than from a comment that can rot. */
+function grab(text, re, cast) {
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(re);
+    if (m) return { v: cast ? cast(m) : parseFloat(m[1]), line: i + 1 };
+  }
+  return null;
+}
+
+async function derive() {
+  const [cssText, jsText] = await Promise.all([
+    fetch(CSS_FILE).then((r) => r.text()),
+    fetch(JS_FILE).then((r) => r.text()),
+  ]);
+
+  misses = [];
+  const B = {}, S = {};
+  const take = (key, file, text, re, cast, tweak) => {
+    const g = grab(text, re, cast);
+    if (!g) { misses.push(key); B[key] = null; S[key] = { file, line: '?' }; return; }
+    B[key] = tweak ? tweak(g.v) : g.v;
+    S[key] = { file, line: g.line };
+  };
+
+  /* --- glow, out of the stylesheet --- */
+  take('g_radius', CSS_NAME, cssText, /--cursor-glow-radius:\s*([\d.]+)px/);
+  take('g_tint',   CSS_NAME, cssText, /--cursor-glow-tint:\s*color-mix\(\s*in srgb,\s*var\((--[\w-]+)\)/,
+       (m) => m[1]);
+  take('g_strength', CSS_NAME, cssText, /--cursor-glow-tint:[^;]*?([\d.]+)%/);
+  take('g_z',      CSS_NAME, cssText, /^\s*z-index:\s*(-?\d+)/m);
+  take('g_fade',   CSS_NAME, cssText, /transparent\s+([\d.]+)%/);
+
+  /* --- sparkler, out of the module --- */
+  const konst = (key, name) => take(key, JS_NAME, jsText,
+    new RegExp('^const ' + name + ' = ([\\d.]+);', 'm'));
+  konst('s_max',   'MAX_PARTICLES');
+  konst('s_emit',  'MAX_EMIT_PER_FRAME');
+  konst('s_life',  'PARTICLE_LIFE');
+  konst('s_size',  'PARTICLE_SIZE');
+  konst('s_drag',  'DRAG');
+  konst('s_grav',  'GRAVITY');
+  konst('s_burst', 'BURST_SPEED');
+
+  take('s_z',        JS_NAME, jsText, /canvas\.style\.cssText = '[^']*z-index:(-?\d+)/);
+  take('s_minspeed', JS_NAME, jsText, /if \(speed > ([\d.]+)\)/);
+  take('s_rate',     JS_NAME, jsText, /Math\.floor\(speed \* ([\d.]+)\)/);
+  take('s_trail',    JS_NAME, jsText, /ctx\.lineTo\(p\.x - p\.vx \* ([\d.]+),/);
+
+  /* The tip literals are min + random span in the source. The dials are shortest/longest, which is
+     what the thing actually does; the span is reconstructed on the way out. */
+  take('s_nmin', JS_NAME, jsText, /const count = ([\d.]+) \+ Math\.floor\(Math\.random\(\) \* [\d.]+\)/);
+  take('s_nmax', JS_NAME, jsText, /const count = ([\d.]+) \+ Math\.floor\(Math\.random\(\) \* ([\d.]+)\)/,
+       (m) => parseFloat(m[1]) + parseFloat(m[2]) - 1);
+  take('s_lmin', JS_NAME, jsText, /len: ([\d.]+) \+ Math\.random\(\) \* [\d.]+/);
+  take('s_lmax', JS_NAME, jsText, /len: ([\d.]+) \+ Math\.random\(\) \* ([\d.]+)/,
+       (m) => parseFloat(m[1]) + parseFloat(m[2]));
+  take('s_amin', JS_NAME, jsText, /alpha: ([\d.]+) \+ Math\.random\(\) \* [\d.]+/);
+  take('s_amax', JS_NAME, jsText, /alpha: ([\d.]+) \+ Math\.random\(\) \* ([\d.]+)/,
+       (m) => parseFloat(m[1]) + parseFloat(m[2]));
+  take('s_wmin', JS_NAME, jsText, /width: ([\d.]+) \+ Math\.random\(\) \* [\d.]+/);
+  take('s_wmax', JS_NAME, jsText, /width: ([\d.]+) \+ Math\.random\(\) \* ([\d.]+)/,
+       (m) => parseFloat(m[1]) + parseFloat(m[2]));
+
+  /* Cross-check the glow against what the browser actually rendered. The stylesheet is the source
+     of the numbers, but a page override would make the stylesheet a liar - so both are read. */
+  const el = document.querySelector('.cursorglow');
+  const cs = getComputedStyle(el);
+  const rendered = parseFloat(cs.getPropertyValue('--cursor-glow-radius'));
+  if (B.g_radius !== null && Math.abs(rendered - B.g_radius) > 0.5) {
+    misses.push('g_radius (file says ' + B.g_radius + ', page renders ' + rendered + ')');
+  }
+  const renderedZ = parseInt(cs.zIndex, 10);
+  if (B.g_z !== null && renderedZ !== B.g_z) {
+    misses.push('g_z (file says ' + B.g_z + ', page renders ' + cs.zIndex + ')');
+  }
+
+  BASE = B; SRC = S;
+  return jsText;
+}
+
+/* ---------- dial table: one row of truth per dial --------------------------------------------- */
+
+const DIALS = [
+  { g: 'The glow', k: 'g_radius',   l: 'how far the glow reaches',            min: 8,  max: 900, step: 1,    u: 'px',
+    h: 'the circle size in the radial gradient' },
+  { g: 'The glow', k: 'g_fade',     l: 'how far out it fades to nothing',     min: 10, max: 100, step: 1,    u: '%',
+    h: 'of the reach above. 100% means it fades right at the edge.' },
+  { g: 'The glow', k: 'g_strength', l: 'how strong its colour is',            min: 0,  max: 60,  step: 0.5,  u: '%' },
+  { g: 'The glow', k: 'g_tint',     l: 'its colour',                          sel: ['--color-gold', '--color-accent-cool'],
+    h: 'the stylesheet names the cool token as the documented alternative' },
+  { g: 'The glow', k: 'g_z',        l: 'which layer it paints on',            min: -1, max: 600, step: 1,    u: '',
+    h: 'nothing on any final page goes above 200. The sparkler canvas is 500.' },
+
+  { g: 'The sparkler',        k: 's_z',        l: 'which layer it paints on',        min: -1,  max: 600, step: 1,   u: '' },
+  { g: 'The sparkler',        k: 's_max',      l: 'how many sparks live at once',    min: 20,  max: 600, step: 10,  u: '' },
+  { g: 'The sparkler',        k: 's_emit',     l: 'most sparks from one flick',      min: 1,   max: 40,  step: 1,   u: '' },
+  { g: 'The sparkler',        k: 's_life',     l: 'how long a spark lives',          min: 5,   max: 120, step: 1,   u: ' frames' },
+  { g: 'The sparkler',        k: 's_size',     l: 'how fat a spark is',              min: 0.5, max: 10,  step: 0.1, u: 'px' },
+  { g: 'The sparkler',        k: 's_trail',    l: "how long a spark's streak is",    min: 0,   max: 8,   step: 0.1, u: 'x',
+    h: 'multiplied by the spark speed, so fast sparks streak further' },
+  { g: 'The sparkler',        k: 's_drag',     l: 'how fast sparks slow down',       min: 0.7, max: 0.995, step: 0.005, u: '',
+    h: 'lower slows them faster' },
+  { g: 'The sparkler',        k: 's_grav',     l: 'how hard sparks fall',            min: 0,   max: 0.8, step: 0.01, u: '' },
+  { g: 'The sparkler',        k: 's_burst',    l: 'how fast sparks fly out',         min: 0.5, max: 20,  step: 0.1, u: '' },
+  { g: 'The sparkler',        k: 's_minspeed', l: 'cursor movement before it sparks', min: 0,  max: 30,  step: 0.5, u: 'px' },
+  { g: 'The sparkler',        k: 's_rate',     l: 'sparks per pixel of movement',    min: 0.02, max: 2,  step: 0.02, u: '' },
+
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_lmin', l: 'spike length, shortest', min: 0, max: 80,  step: 0.5, u: 'px' },
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_lmax', l: 'spike length, longest',  min: 0, max: 140, step: 0.5, u: 'px',
+    h: 'this is how far the sparkler reaches from the cursor' },
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_nmin', l: 'spikes at the tip, fewest', min: 0, max: 30, step: 1, u: '' },
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_nmax', l: 'spikes at the tip, most',   min: 0, max: 30, step: 1, u: '' },
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_wmin', l: 'spike thickness, thinnest', min: 0, max: 8,  step: 0.1, u: 'px' },
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_wmax', l: 'spike thickness, thickest', min: 0, max: 12, step: 0.1, u: 'px' },
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_amin', l: 'spike brightness, dimmest', min: 0, max: 1,  step: 0.02, u: '' },
+  { g: 'The tip (this is the size the glow is being matched to)', k: 's_amax', l: 'spike brightness, brightest', min: 0, max: 1, step: 0.02, u: '' },
+];
+
+const byKey = Object.fromEntries(DIALS.map((d) => [d.k, d]));
+const num = (v) => +parseFloat(v).toFixed(4);
+const moved = (k) => state[k] !== BASE[k];
+
+/* ---------- the live sparkler: the real module, patched to read T instead of its own consts ----- */
+
+const CONSTS = {
+  s_max: 'MAX_PARTICLES', s_emit: 'MAX_EMIT_PER_FRAME', s_life: 'PARTICLE_LIFE',
+  s_size: 'PARTICLE_SIZE', s_drag: 'DRAG', s_grav: 'GRAVITY', s_burst: 'BURST_SPEED',
+};
+
+/* Every replacement is asserted. A regex that silently misses would leave a dial connected to
+   nothing, which is worse than a page that refuses to boot. */
+function patch(src) {
+  const failed = [];
+  const sub = (label, re, to) => {
+    if (!re.test(src)) { failed.push(label); return; }
+    src = src.replace(re, to);
+  };
+
+  /* A blob: URL is not a hierarchical base, so a module loaded from one can resolve neither './x.js'
+     nor '/x.js'. Both of its imports have to become fully absolute. */
+  sub('imports', /from '\.\//g, "from '" + location.origin + "/redesign-lab/effects/");
+
+  /* the pool is allocated ONCE at a ceiling, so "sparks alive at once" can move without the
+     loops indexing past the end of the array */
+  sub('pool', /Array\.from\(\{ length: MAX_PARTICLES \}/, 'Array.from({ length: POOL_CAP }');
+
+  /* the inline literals, before the identifiers - these lines still read as written */
+  sub('canvas', /(canvas\.style\.cssText = '[^']*';)/,
+      "$1 canvas.setAttribute('data-sparkler','1'); T.__canvas = canvas;");
+  sub('trail',  /ctx\.lineTo\(p\.x - p\.vx \* [\d.]+, p\.y - p\.vy \* [\d.]+\);/,
+      'ctx.lineTo(p.x - p.vx * T.s_trail, p.y - p.vy * T.s_trail);');
+  sub('tipN',   /const count = [\d.]+ \+ Math\.floor\(Math\.random\(\) \* [\d.]+\);/,
+      'const count = T.s_nmin + Math.floor(Math.random() * (T.s_nmax - T.s_nmin + 1));');
+  sub('tipLen', /len: [\d.]+ \+ Math\.random\(\) \* [\d.]+,/,
+      'len: T.s_lmin + Math.random() * (T.s_lmax - T.s_lmin),');
+  sub('tipA',   /alpha: [\d.]+ \+ Math\.random\(\) \* [\d.]+,/,
+      'alpha: T.s_amin + Math.random() * (T.s_amax - T.s_amin),');
+  sub('tipW',   /width: [\d.]+ \+ Math\.random\(\) \* [\d.]+,/,
+      'width: T.s_wmin + Math.random() * (T.s_wmax - T.s_wmin),');
+  sub('gate',   /if \(speed > [\d.]+\)/, 'if (speed > T.s_minspeed)');
+  sub('rate',   /Math\.floor\(speed \* [\d.]+\)/, 'Math.floor(speed * T.s_rate)');
+
+  /* now the named constants: drop the declaration, point every use at the live tune object */
+  Object.entries(CONSTS).forEach(([key, name]) => {
+    /* the lab files are CRLF, so the line terminator has to be optional or every one of these
+       misses and all seven dials go dead */
+    const decl = new RegExp('^const ' + name + ' = [^;]+;\\r?\\n', 'm');
+    if (!decl.test(src)) { failed.push(name); return; }
+    src = src.replace(decl, '').replace(new RegExp('\\b' + name + '\\b', 'g'), 'T.' + key);
+  });
+
+  const head = 'const T = window.__cursorTune;\nconst POOL_CAP = 600;\n';
+  return { code: head + src, failed };
+}
+
+/* ---------- ONE builder: live override and clipboard text come from the same walk -------------- */
+
+/* Reconstructs the source line for a pair whose dials are min/max but whose file form is
+   base + random span. */
+const span = (k1, k2, floorish) => {
+  const n = num(state[k2] - state[k1] + (floorish ? 1 : 0));
+  return num(state[k1]) + ' + '
+    + (floorish ? 'Math.floor(Math.random() * ' + n + ')' : 'Math.random() * ' + n);
+};
+
+/* rule 2: a dial on its base contributes nothing. Returns [] when nothing moved. */
+function glowRules() {
+  const out = [];
+  if (moved('g_radius'))
+    out.push(['--cursor-glow-radius: ' + num(state.g_radius) + 'px;', SRC.g_radius, BASE.g_radius + 'px']);
+  if (moved('g_strength') || moved('g_tint'))
+    out.push(['--cursor-glow-tint: color-mix(in srgb, var(' + state.g_tint + ') '
+      + num(state.g_strength) + '%, transparent);', SRC.g_strength,
+      'var(' + BASE.g_tint + ') ' + BASE.g_strength + '%']);
+  if (moved('g_z'))
+    out.push(['z-index: ' + num(state.g_z) + ';', SRC.g_z, String(BASE.g_z)]);
+  if (moved('g_fade'))
+    out.push(['background: radial-gradient(\n    var(--cursor-glow-radius) circle at var(--cx, -700px) var(--cy, -700px),\n'
+      + '    var(--cursor-glow-tint),\n    transparent ' + num(state.g_fade) + '%\n  );',
+      SRC.g_fade, 'transparent ' + BASE.g_fade + '%']);
+  return out;
+}
+
+function sparkRules() {
+  const out = [];
+  const one = (k, line) => { if (moved(k)) out.push([line, SRC[k], String(BASE[k])]); };
+  const pair = (a, b, line, wasA, wasB) => {
+    if (moved(a) || moved(b)) out.push([line, SRC[a], wasA + ' .. ' + wasB]);
+  };
+
+  Object.entries(CONSTS).forEach(([k, name]) =>
+    one(k, 'const ' + name + ' = ' + num(state[k]) + ';'));
+  one('s_z', "canvas.style.cssText = 'position:fixed;inset:0;z-index:" + num(state.s_z)
+    + ";pointer-events:none;';");
+  one('s_minspeed', 'if (speed > ' + num(state.s_minspeed) + ') {');
+  one('s_rate', 'const count = Math.min(Math.floor(speed * ' + num(state.s_rate)
+    + '), MAX_EMIT_PER_FRAME);');
+  one('s_trail', 'ctx.lineTo(p.x - p.vx * ' + num(state.s_trail) + ', p.y - p.vy * '
+    + num(state.s_trail) + ');');
+  pair('s_nmin', 's_nmax', 'const count = ' + span('s_nmin', 's_nmax', true) + ';',
+    BASE.s_nmin, BASE.s_nmax);
+  pair('s_lmin', 's_lmax', 'len: ' + span('s_lmin', 's_lmax') + ',', BASE.s_lmin, BASE.s_lmax);
+  pair('s_amin', 's_amax', 'alpha: ' + span('s_amin', 's_amax') + ',', BASE.s_amin, BASE.s_amax);
+  pair('s_wmin', 's_wmax', 'width: ' + span('s_wmin', 's_wmax') + ',', BASE.s_wmin, BASE.s_wmax);
+  return out;
+}
+
+function tuneText() {
+  const g = glowRules(), s = sparkRules();
+  if (!g.length && !s.length) {
+    return 'Nothing has moved. Every dial is still on the value its own file already has, so there\n'
+      + 'is nothing to paste.';
+  }
+  const w = window.innerWidth + ' x ' + window.innerHeight;
+  const lines = [
+    '/* cursor tune from redesign-lab/cursor-ratios.html, window ' + w,
+    '   ONLY the values that moved are below. Anything absent is unchanged in the file.',
+    '   Each block cites the line it came out of, read from the file at tune time. */',
+  ];
+  const block = (title, rows) => {
+    if (!rows.length) return;
+    lines.push('', '/* ===== ' + title + ' ===== */');
+    rows.forEach(([code, src, was]) => {
+      lines.push('', '/* line ' + src.line + '  -  was: ' + was + ' */', code);
+    });
+  };
+  block(CSS_NAME + ', .cursorglow', g);
+  block(JS_NAME, s);
+  lines.push('');
+  return lines.join('\n');
+}
+
+/* ---------- apply: the live half of the same walk ---------------------------------------------- */
+
+function apply() {
+  /* the sparkler reads T every frame, so this IS the live update */
+  DIALS.forEach((d) => { if (d.k[0] === 's') T[d.k] = state[d.k]; });
+
+  const g = glowRules();
+  let sheet = document.getElementById('cursor-tuner');
+  if (g.length) {
+    /* rule 3: the <style> is not created until there is something to put in it. Unlayered, so it
+       beats the component's @layer outright - the documented footgun, used deliberately. */
+    if (!sheet) {
+      sheet = document.createElement('style');
+      sheet.id = 'cursor-tuner';
+      document.body.appendChild(sheet);
+    }
+    sheet.textContent = '.cursorglow{\n  ' + g.map((r) => r[0]).join('\n  ') + '\n}';
+  } else if (sheet) {
+    sheet.remove();
+  }
+
+  /* Rule 3 again: the canvas keeps the inline z-index its own file wrote until something moves.
+     Once it HAS been written, it keeps being written - otherwise reset would clear the glow's
+     override and leave the sparkler on the last tuned layer. */
+  if (T.__canvas && (dirty || T.__zTouched)) {
+    T.__canvas.style.zIndex = String(num(state.s_z));
+    T.__zTouched = true;
+  }
+
+  DIALS.forEach((d) => {
+    const input = document.getElementById('i-' + d.k);
+    const out = document.getElementById('v-' + d.k);
+    if (!input) return;
+    input.value = state[d.k];
+    out.textContent = d.sel ? state[d.k] : num(state[d.k]) + (d.u || '');
+    out.className = 'val' + (moved(d.k) ? ' moved' : '');
+  });
+
+  if (dirty) { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* private mode */ } }
+  requestAnimationFrame(read);
+}
+
+/* Every number here is read back off the page, not computed from `state`. A readout that disagrees
+   with a dial is telling the truth and the dial is not. */
+function read() {
+  const el = document.querySelector('.cursorglow');
+  const cs = getComputedStyle(el);
+  const reach = parseFloat(cs.getPropertyValue('--cursor-glow-radius'));
+  const set = (id, txt, good) => {
+    const n = document.getElementById(id);
+    n.textContent = txt;
+    n.className = good === undefined ? '' : (good ? 'ok' : 'bad');
+  };
+  set('r-reach', reach + 'px');
+  set('r-gz', cs.zIndex, parseInt(cs.zIndex, 10) > 200);
+  const c = T.__canvas;
+  set('r-canvas', c ? c.width + ' x ' + c.height : 'NOT ON THE PAGE', !!c);
+  set('r-sz', c ? getComputedStyle(c).zIndex : '-');
+  set('r-spike', num(state.s_lmax) + 'px');
+  set('r-ratio', state.s_lmax ? (reach / state.s_lmax).toFixed(1) + 'x the spike' : '-');
+
+  const rows = [];
+  document.querySelectorAll('body *').forEach((n) => {
+    const s = getComputedStyle(n);
+    if (s.position !== 'fixed' && s.position !== 'sticky') return;
+    if (n.closest('#panel') || n.id === 'toggle') return;
+    const z = parseInt(s.zIndex, 10);
+    rows.push([isNaN(z) ? 0 : z, (n === c ? 'sparkler canvas'
+      : n.classList.contains('cursorglow') ? 'the glow'
+      : n.className ? '.' + String(n.className).split(' ')[0] : n.tagName.toLowerCase())]);
+  });
+  rows.sort((a, b) => b[0] - a[0]);
+  document.getElementById('stack').innerHTML = rows
+    .map(([z, name]) => '<i>' + z + '</i> &nbsp;' + name).join('<br>');
+}
+
+/* ---------- panel, built from the table so a label can never drift from its dial --------------- */
+
+function buildPanel() {
+  const host = document.getElementById('dials');
+  let group = null, html = '';
+  DIALS.forEach((d) => {
+    if (d.g !== group) { group = d.g; html += '<h3>' + group + '</h3>'; }
+    const dead = BASE[d.k] === null || BASE[d.k] === undefined;
+    const src = SRC[d.k];
+    const control = d.sel
+      ? '<select id="i-' + d.k + '"' + (dead ? ' disabled' : '') + '>'
+        + d.sel.map((o) => '<option value="' + o + '">' + o + '</option>').join('') + '</select>'
+      : '<input type="range" id="i-' + d.k + '" min="' + d.min + '" max="' + d.max
+        + '" step="' + d.step + '"' + (dead ? ' disabled' : '') + '>';
+    html += '<div class="row' + (dead ? ' dead' : '') + '">'
+      + '<label for="i-' + d.k + '">' + d.l + '</label>'
+      + '<span class="val" id="v-' + d.k + '"></span>'
+      + control
+      + (d.h ? '<span class="src">' + d.h + '</span>' : '')
+      + '<span class="src">' + (dead ? 'COULD NOT BE READ' : src.file.split('/').pop() + ':' + src.line
+        + ' &middot; file says ' + BASE[d.k] + (d.u || '')) + '</span>'
+      + '</div>';
+    if (d.k === 'g_z') {
+      html += '<div class="quick">'
+        + '<button type="button" data-set="g_z" data-v="-1">behind content (-1)</button>'
+        + '<button type="button" data-set="g_z" data-v="499">under the sparkler (499)</button>'
+        + '<button type="button" data-set="g_z" data-v="501">over the sparkler (501)</button>'
+        + '</div>';
+    }
+    if (d.k === 'g_radius') {
+      html += '<div class="quick">'
+        + '<button type="button" id="q-match">make the glow the size of the tip</button>'
+        + '</div>';
+    }
+  });
+  host.innerHTML = html;
+
+  DIALS.forEach((d) => {
+    const input = document.getElementById('i-' + d.k);
+    if (!input) return;
+    input.addEventListener('input', function () {
+      state[d.k] = d.sel ? this.value : parseFloat(this.value);
+      dirty = true;
+      apply();
+    });
+  });
+
+  host.querySelectorAll('[data-set]').forEach((b) => b.addEventListener('click', function () {
+    state[this.dataset.set] = parseFloat(this.dataset.v);
+    dirty = true;
+    apply();
+  }));
+
+  const match = document.getElementById('q-match');
+  if (match) match.addEventListener('click', () => {
+    state.g_radius = Math.max(byKey.g_radius.min, num(state.s_lmax));
+    dirty = true;
+    apply();
+  });
+}
+
+function showWarnings(extra) {
+  const host = document.getElementById('warnings');
+  const bits = [];
+  if (misses.length) {
+    bits.push('<div class="warn"><b>Could not read from the files:</b> ' + misses.join(', ')
+      + '. Those dials are disabled - the file has changed shape and the parser above needs '
+      + 'updating. Nothing here is guessing a value in their place.</div>');
+  }
+  extra.forEach((e) => bits.push('<div class="warn">' + e + '</div>'));
+  host.innerHTML = bits.join('');
+  const on = document.getElementById('b-sparkon');
+  if (on) on.addEventListener('click', () => {
+    localStorage.setItem('sparkler-disabled', 'false');
+    location.reload();
+  });
+}
+
+/* ---------- boot ------------------------------------------------------------------------------ */
+
+async function boot(fresh) {
+  const jsText = await derive();
+  state = Object.assign({}, BASE);
+  dirty = false;
+
+  if (fresh) {
+    try { localStorage.removeItem(STORE); } catch (e) { /* private mode */ }
+  } else {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+      if (saved) { state = Object.assign(state, saved); dirty = true; }
+    } catch (e) { /* private mode */ }
+  }
+  return jsText;
+}
+
+(async function () {
+  const jsText = await boot(false);
+  const warnings = [];
+
+  initCursorGlow();
+
+  /* start the real sparkler, once. Boot value of T is the file's own, so nothing has moved yet. */
+  DIALS.forEach((d) => { if (d.k[0] === 's') T[d.k] = state[d.k]; });
+  const patched = patch(jsText);
+  if (patched.failed.length) {
+    warnings.push('<b>The sparkler patch missed:</b> ' + patched.failed.join(', ')
+      + '. Those dials will not move anything. mouse-trail.js has changed shape.');
+  }
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    warnings.push('<b>Reduced motion is on.</b> mouse-trail.js:105 returns before it draws anything, '
+      + 'so the sparkler will not run here at all. The glow still will.');
+  }
+  if (localStorage.getItem('sparkler-disabled') === 'true') {
+    warnings.push('<b>The sparkler is switched off</b> by the saved key <code>sparkler-disabled</code> '
+      + '(mouse-trail.js:110). Its canvas is on the page but hidden.'
+      + '<br><button type="button" id="b-sparkon">turn it on and reload</button>');
+  }
+  try {
+    const url = URL.createObjectURL(new Blob([patched.code], { type: 'text/javascript' }));
+    const mod = await import(url);
+    mod.initMouseTrail();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    warnings.push('<b>The sparkler failed to load:</b> ' + e.message);
+  }
+
+  buildPanel();
+  showWarnings(warnings);
+  apply();
+
+  document.getElementById('b-css').addEventListener('click', function () {
+    const t = document.getElementById('out');
+    t.hidden = !t.hidden;
+    t.value = tuneText();
+  });
+
+  document.getElementById('b-copy').addEventListener('click', function () {
+    const btn = this, text = tuneText();
+    const ok = () => {
+      btn.textContent = 'copied';
+      setTimeout(() => { btn.textContent = 'copy tune'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, () => window.prompt('Copy:', text));
+    } else { window.prompt('Copy:', text); }
+  });
+
+  /* reset RE-DERIVES from the files rather than restoring a literal, so it is still correct after
+     someone edits cursor-glow.css or mouse-trail.js with this page open. */
+  document.getElementById('b-reset').addEventListener('click', async function () {
+    await boot(true);
+    showWarnings(warnings);
+    apply();
+  });
+
+  document.getElementById('b-hide').addEventListener('click', function () {
+    document.getElementById('panel').classList.add('hid');
+    document.getElementById('toggle').hidden = false;
+  });
+  document.getElementById('toggle').addEventListener('click', function () {
+    document.getElementById('panel').classList.remove('hid');
+    this.hidden = true;
+  });
+
+  window.addEventListener('resize', () => requestAnimationFrame(read));
+
+  /* lab-only probe, so the page can be checked without eyeballing it */
+  window.__cursorRatios = {
+    get base() { return BASE; },
+    get src() { return SRC; },
+    get state() { return state; },
+    get dirty() { return dirty; },
+    get moved() { return Object.keys(BASE).filter(moved); },
+    get misses() { return misses.concat(patched.failed); },
+    text: tuneText,
+  };
+})();
+</script>
+</body>
+</html>

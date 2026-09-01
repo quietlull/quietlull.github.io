@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ref: hana.b-rave — lava-lamp breathing bg + nav/hero/text/merch</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<style>
+/* ===== hana.b-rave.tokyo/tour/borntobloom recreation in its OWN palette =====
+   Background = the REAL technique: two STATIC baked crimson glow images cross-fading
+   (bg-1 opacity 1, bg-2 0->1->0 over 12s ease-in-out), each blur(20px) brightness(.9) saturate(1.04).
+   No floating particles. Design-unit system (1u=100vw/3840), fixed nav, breathing hero,
+   text-box card, merch grid with ignite-on-hover + 2s bloom-reveal. */
+:root{--base:3840;--uw:calc((1vw * 100)/3840);--uv:calc((min(1vw,19.2px) * 100)/3840);
+  --red:#FF1A00;--crim:#C40018;--ink:#000;--text:#f3e9e6;--muted:#b89a93}
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+html{scroll-behavior:smooth}
+body{background:#000;color:var(--text);font-family:"Shippori Mincho",serif;overflow-x:hidden}
+body::before{display:none}
+
+/* lava-lamp cross-fade background */
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:#000;pointer-events:none}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:opacity;filter:blur(20px) brightness(.9) saturate(1.04)}
+.bg-1{opacity:1}
+.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+@keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+
+.page-nav{position:fixed;left:0;top:0;width:100%;z-index:30;display:flex;align-items:center;justify-content:space-between;
+  padding:calc(46*var(--uv)) calc(64*var(--uv));mix-blend-mode:screen}
+.nav-logo{font-size:calc(64*var(--uv));letter-spacing:.04em;color:#ffd9cf;font-weight:600}
+.nav-links{display:flex;gap:calc(64*var(--uv));font-family:"IBM Plex Mono",monospace;font-size:calc(30*var(--uv));letter-spacing:.22em;text-transform:uppercase}
+.nav-links a{color:#ffb9ab;text-decoration:none;transition:filter .125s}
+.nav-links a:hover{filter:drop-shadow(0 0 12px rgba(255,26,0,.4)) drop-shadow(0 0 12px rgba(255,26,0,.8));color:#fff}  /* real hana ignite: double drop-shadow */
+@media(max-width:1024px){.nav-links{display:none}}
+
+.container-header{position:relative;height:calc(2500*var(--uw));min-height:560px;display:grid;place-items:center;z-index:2}
+.header-logo{position:relative;text-align:center;animation:bloomlogo 9s ease-in-out infinite}
+@keyframes bloomlogo{0%,100%{filter:drop-shadow(0 0 calc(18*var(--uw)) rgba(255,26,0,.45))}
+  50%{filter:drop-shadow(0 0 calc(34*var(--uw)) rgba(255,26,0,.8))}}
+.header-logo .sub{font-family:"IBM Plex Mono",monospace;font-size:calc(34*var(--uv));letter-spacing:.5em;color:#ff9b86;text-transform:uppercase}
+.header-logo h1{font-size:calc(300*var(--uv));line-height:1.02;color:#ff4a30;font-weight:700;margin:calc(30*var(--uv)) 0}
+.header-logo .jp{font-size:calc(70*var(--uv));letter-spacing:.3em;color:#ffd9cf}
+/* header text spawn-in: each part opacity:0 scale:.5 .75 -> staggered 2s cubic-bezier(0,.5,0,1); a crimson glow blooms then fades on the title (real hana technique) */
+.header-logo .sub,.header-logo h1,.header-logo .jp{opacity:0;scale:.5 .75}
+.header-logo h1{filter:drop-shadow(0 0 calc(20*var(--uw)) #c40018) drop-shadow(0 0 calc(20*var(--uw)) #c40018)}
+.container-header.is-intersection .header-logo .sub{opacity:1;scale:1;transition:opacity 2s cubic-bezier(0,.5,0,1) .05s,scale 2s cubic-bezier(0,.5,0,1) .05s}
+.container-header.is-intersection .header-logo h1{opacity:1;scale:1;filter:drop-shadow(0 0 calc(20*var(--uw)) rgba(196,0,24,0)) drop-shadow(0 0 calc(20*var(--uw)) rgba(196,0,24,0));transition:opacity 2s cubic-bezier(0,.5,0,1) .2s,scale 2s cubic-bezier(0,.5,0,1) .2s,filter 1s linear .15s}
+.container-header.is-intersection .header-logo .jp{opacity:1;scale:1;transition:opacity 2s cubic-bezier(0,.5,0,1) .5s,scale 2s cubic-bezier(0,.5,0,1) .5s}
+@media(prefers-reduced-motion:reduce){.header-logo .sub,.header-logo h1,.header-logo .jp{opacity:1;scale:1}.header-logo h1{filter:none}}
+.replay{position:fixed;top:12px;right:12px;z-index:40;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#ff9b86;background:rgba(0,0,0,.4);border:1px solid rgba(255,26,0,.5);padding:6px 12px;cursor:pointer}
+
+.main-section{position:relative;z-index:2;padding:calc(220*var(--uv)) 0}
+.section-container{position:relative;width:calc(2000*var(--uv));max-width:1180px;margin:0 auto;padding:0 calc(60*var(--uv))}
+.content-header{text-align:center;margin-bottom:calc(120*var(--uv))}
+.content-header .header-sub{font-family:"IBM Plex Mono",monospace;font-size:calc(28*var(--uv));letter-spacing:.4em;color:#ff9b86;text-transform:uppercase;margin-bottom:calc(28*var(--uv))}
+.content-header .header-main h2{font-size:calc(132*var(--uv));color:#ff4a30;letter-spacing:.04em;font-weight:600}
+/* section H2 spawn: letters scale+fade in LEFT-TO-RIGHT; the crimson glow sits on the WHOLE title and
+   LINGERS (hold) then SLOWLY dissipates as the element settles -- not a per-letter flicker (Rod's note) */
+.content-header.reveal{opacity:1;transform:none}  /* neutralize block reveal so the LETTERS animate, not the whole box */
+.content-header .header-sub{opacity:0}
+.content-header.in .header-sub{opacity:1;transition:opacity 1.4s ease .1s}
+.content-header .header-main h2{filter:drop-shadow(0 0 calc(20*var(--uv)) #c40018) drop-shadow(0 0 calc(10*var(--uv)) #c40018)}
+.content-header.in .header-main h2{filter:drop-shadow(0 0 calc(20*var(--uv)) rgba(196,0,24,0)) drop-shadow(0 0 calc(10*var(--uv)) rgba(196,0,24,0));transition:filter 2.4s ease-out 1s}  /* ~1s linger, then a long slow ease-out dissipation */
+.content-header .header-main h2 span{display:inline-block;opacity:0;scale:.5 .75}
+.content-header.in .header-main h2 span{opacity:1;scale:1;transition:opacity 2s cubic-bezier(0,.5,0,1) calc(var(--i)*.08s),scale 2s cubic-bezier(0,.5,0,1) calc(var(--i)*.08s)}
+@media(prefers-reduced-motion:reduce){.content-header .header-sub{opacity:1}.content-header .header-main h2{filter:none}.content-header .header-main h2 span{opacity:1;scale:1}}
+
+.reveal{opacity:0;transform:scale(.5,.75);transition:opacity 2s cubic-bezier(0,.5,0,1),transform 2s cubic-bezier(0,.5,0,1)}
+.reveal.in{opacity:1;transform:none}
+/* frame-draw: 6-span border draws itself around the box on reveal (real hana technique; spans injected by frame-draw.js) */
+.frame{position:absolute;inset:0;pointer-events:none;z-index:4}
+.frame span{position:absolute;display:block}
+.frame span:nth-of-type(1){left:0;top:0;width:50%;border-top:1.5px solid rgba(255,26,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(2){right:0;top:0;width:50%;border-top:1.5px solid rgba(255,26,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(3){right:0;top:0;height:100%;border-right:1.5px solid rgba(255,26,0,.7);transform-origin:top;scale:1 0}
+.frame span:nth-of-type(4){right:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,26,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(5){left:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,26,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(6){left:0;top:0;height:100%;border-left:1.5px solid rgba(255,26,0,.7);transform-origin:bottom;scale:1 0}
+.card.in .frame span,.text-card.in .frame span{scale:1;transition:scale 1.2s cubic-bezier(.215,.61,.355,1)}
+@media(prefers-reduced-motion:reduce){.frame span{scale:1;transition:none}}
+
+.text-card{background:rgba(25,20,16,.66);padding:calc(90*var(--uv)) calc(100*var(--uv));
+  box-shadow:0 0 calc(100*var(--uv)) rgba(255,26,0,.45),0 0 calc(200*var(--uv)) rgba(255,26,0,.22);backdrop-filter:blur(2px)}
+.text-card p{font-size:calc(34*var(--uv));line-height:2.2;color:#f0ddd7}
+.text-card p+p{margin-top:calc(40*var(--uv))}
+
+.goods{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(100*var(--uv));margin-top:calc(40*var(--uv))}
+@media(max-width:760px){.goods{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.goods{grid-template-columns:1fr}}
+.card{position:relative;aspect-ratio:5/6;background:rgba(25,20,16,.66);
+  box-shadow:0 0 calc(100*var(--uv)) rgba(255,26,0,.5),0 0 calc(200*var(--uv)) rgba(255,26,0,.25);backdrop-filter:blur(2px)}
+.card a{display:grid;grid-template-rows:1fr auto;gap:calc(28*var(--uv));height:100%;padding:calc(50*var(--uv));text-decoration:none;color:var(--text);
+  filter:drop-shadow(0 0 12px rgba(255,26,0,0)) drop-shadow(0 0 12px rgba(255,26,0,0));transition:filter .125s cubic-bezier(.215,.61,.355,1)}
+.card a:hover{filter:drop-shadow(0 0 12px rgba(255,26,0,.4)) drop-shadow(0 0 12px rgba(255,26,0,.4))}
+.card-img{position:relative;overflow:hidden;box-shadow:0 0 calc(50*var(--uv)) rgba(255,26,0,.25),0 0 calc(100*var(--uv)) rgba(255,26,0,.125)}
+.card-img .base,.card-img .alt{position:absolute;inset:0}
+.card-img .base{background:#000}  /* solid black = image-with-black-background placeholder (no stripes; matches real hana) */
+.card-img .alt{opacity:0;transition:opacity .35s ease;background:#000}
+.card a:hover .card-img .alt{opacity:1}
+.card-img .n{position:absolute;left:0;right:0;bottom:0;text-align:center;z-index:2;padding:.5rem;font-family:"IBM Plex Mono",monospace;font-size:calc(24*var(--uv));letter-spacing:.18em;text-transform:uppercase;color:rgba(243,233,230,.4)}
+.card-title{text-align:center;font-size:calc(40*var(--uv));color:var(--crim)}
+
+footer{position:relative;z-index:2;text-align:center;padding:calc(160*var(--uv)) 0;color:#ff9b86;font-family:"IBM Plex Mono",monospace;letter-spacing:.4em;font-size:calc(28*var(--uv));text-transform:uppercase}
+.labtag{position:fixed;left:14px;bottom:14px;z-index:40;font-family:"IBM Plex Mono",monospace;font-size:10px;color:rgba(243,233,230,.5)}
+.labtag a{color:#ff9b86}
+@media(prefers-reduced-motion:reduce){.bg-2,.header-logo{animation:none}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="hana-bg"></div>
+<button class="replay" onclick="hanaReplay()">replay spawn</button>
+
+<nav class="page-nav">
+  <div class="nav-logo">hana</div>
+  <div class="nav-links"><a href="#news">News</a><a href="#goods">Goods</a><a href="#tour">Tour</a></div>
+</nav>
+
+<header class="container-header">
+  <div class="header-logo"><div class="sub">b-rave tour 2026</div><h1>Born<br>to Bloom</h1><div class="jp">hana</div></div>
+</header>
+
+<section class="main-section" id="news"><div class="section-container">
+  <div class="content-header reveal"><div class="header-sub">information</div><div class="header-main"><h2>News</h2></div></div>
+  <div class="text-card reveal">
+    <p>The "Born to Bloom" tour blooms across the country this spring. Doors open as the lights dim &mdash; and the whole hall begins to breathe.</p>
+    <p>Tickets, merch, and the full schedule are below. Hover anything that glows; it answers back.</p>
+  </div>
+</div></section>
+
+<section class="main-section" id="goods"><div class="section-container">
+  <div class="content-header reveal"><div class="header-sub">official goods</div><div class="header-main"><h2>Merchandise</h2></div></div>
+  <div class="goods">
+    <article class="card reveal"><a href="#"><span class="card-img"><span class="base"></span><span class="alt"></span><span class="n">item / 01</span></span><span class="card-title">Acrylic Stand</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><span class="base"></span><span class="alt"></span><span class="n">item / 02</span></span><span class="card-title">Tour T-Shirt</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><span class="base"></span><span class="alt"></span><span class="n">item / 03</span></span><span class="card-title">Tote Bag</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><span class="base"></span><span class="alt"></span><span class="n">item / 04</span></span><span class="card-title">Can Badge Set</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><span class="base"></span><span class="alt"></span><span class="n">item / 05</span></span><span class="card-title">Sticker Sheet</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><span class="base"></span><span class="alt"></span><span class="n">item / 06</span></span><span class="card-title">Vinyl Record</span></a></article>
+  </div>
+</div></section>
+
+<footer>hana &middot; b-rave</footer>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab index</a> &middot; ref: hana.b-rave</div>
+
+<script src="/redesign-lab/frame-draw.js"></script>
+<script src="/redesign-lab/sliders.js"></script>
+<script>
+/* Lava-lamp cross-fade background: two static baked crimson glow images cross-fade
+   on one shared ease-in-out curve. Textures baked from 32x18 luminance grids. */
+(function(){
+  var COLS=32,ROWS=18;
+  var GRID1=[63,48,31,14,7,3,2,2,2,2,3,3,3,3,3,3,2,1,1,1,2,3,7,11,18,26,34,40,40,40,40,42,54,41,25,12,6,3,2,2,2,3,3,4,5,6,5,4,3,2,2,2,2,4,8,13,23,30,33,38,42,45,49,51,44,34,19,9,7,3,2,3,3,4,7,7,9,11,9,8,5,3,2,2,3,5,11,14,21,28,34,44,43,49,55,65,30,19,16,8,4,5,3,4,5,7,9,11,14,15,17,15,9,4,4,2,2,5,9,15,21,32,42,49,52,58,66,70,21,15,10,7,5,4,5,6,10,12,14,18,25,22,25,23,16,7,3,3,4,4,9,18,28,39,48,56,61,68,73,78,14,11,9,7,11,9,9,11,13,16,22,25,28,31,32,27,22,10,4,4,2,4,10,22,36,45,61,68,72,76,78,81,9,10,10,9,11,13,16,16,19,22,27,33,36,40,40,35,27,15,6,3,3,6,15,27,44,56,67,75,78,82,81,83,8,11,10,13,15,20,22,23,24,28,36,46,49,49,45,41,31,19,9,3,5,8,22,35,52,64,74,81,83,84,84,84,7,10,14,14,17,19,24,26,30,35,46,54,60,59,51,43,30,19,10,3,4,11,23,43,64,75,79,82,84,84,84,82,7,11,11,15,17,22,24,29,32,42,54,63,71,67,55,45,30,18,9,3,5,11,30,49,71,79,83,85,86,84,82,78,7,11,11,16,17,20,25,30,35,48,62,73,73,70,59,42,24,16,6,5,5,11,31,54,72,82,86,86,84,81,76,68,6,9,11,12,15,18,24,32,43,55,65,74,78,73,62,43,25,13,5,2,3,8,25,50,71,82,86,84,82,76,70,59,5,6,8,9,13,17,24,34,46,59,68,77,77,74,64,42,25,11,4,2,3,5,14,39,63,78,81,81,75,70,60,50,6,5,6,8,13,19,27,39,50,65,73,76,79,71,57,38,20,9,3,1,1,4,11,25,47,65,72,73,73,60,49,44,2,4,4,10,14,23,34,47,60,70,78,79,77,61,51,31,15,6,4,2,2,2,4,12,28,43,57,62,60,56,44,35,2,2,6,9,17,31,42,59,71,78,80,81,73,62,43,24,11,5,2,2,2,1,2,7,14,26,36,43,46,44,40,36,1,2,4,10,21,37,54,68,78,81,81,79,70,54,36,19,9,3,3,2,2,2,1,3,6,12,18,28,33,34,36,35,2,2,4,10,20,43,60,76,82,84,83,77,66,47,29,15,7,3,1,2,2,2,2,2,3,5,8,14,19,25,29,35];
+  var GRID2=[32,34,34,35,29,24,19,12,8,4,3,1,0,2,2,2,2,3,9,19,32,51,68,78,83,84,81,73,58,39,20,8,26,29,32,33,37,35,32,25,17,11,5,3,3,2,0,2,2,5,11,22,40,57,72,79,83,81,76,64,53,35,19,9,20,24,29,38,38,41,45,43,35,23,10,5,2,2,0,1,2,6,13,28,47,65,75,79,81,77,68,56,40,25,17,9,17,22,30,38,43,54,60,59,54,41,24,10,4,3,2,2,3,7,18,33,53,73,79,81,78,71,59,44,32,19,13,7,16,24,33,43,54,66,70,74,72,62,41,18,8,4,1,2,3,10,20,42,64,74,79,78,72,63,53,35,27,16,11,8,19,26,37,53,62,72,77,81,81,76,62,35,12,4,2,2,5,11,25,41,65,74,77,76,69,59,45,35,23,15,13,9,25,37,47,63,73,78,82,86,84,81,69,45,20,6,3,3,7,13,28,47,62,74,78,73,64,51,39,29,23,18,13,11,35,48,62,71,77,82,84,86,86,81,69,50,25,9,3,3,8,18,30,43,64,70,75,68,60,45,36,33,22,19,17,13,49,61,72,79,81,84,86,86,84,78,66,44,25,10,4,4,10,19,31,43,58,67,69,62,49,40,33,27,25,24,19,16,62,71,79,82,84,84,84,83,81,72,58,37,21,9,4,6,11,21,32,43,53,62,63,54,44,36,28,25,22,18,16,15,74,78,82,84,84,84,82,80,75,64,48,35,16,7,3,3,10,22,33,43,48,48,48,42,34,28,24,21,19,19,15,14,79,82,84,83,83,81,78,73,63,53,40,26,12,5,2,4,8,18,30,36,41,38,37,31,27,21,21,17,14,12,11,10,81,83,83,81,80,75,68,65,54,47,30,19,10,3,3,2,6,13,23,28,30,30,25,25,20,17,14,11,11,8,8,9,83,83,81,77,75,67,63,58,46,35,25,15,8,4,2,2,3,9,17,20,26,23,22,18,14,11,9,6,5,6,5,7,81,79,77,66,63,59,51,44,40,28,22,13,8,6,2,2,3,5,11,16,18,17,13,11,9,7,5,3,3,3,5,10,76,71,67,62,52,51,45,42,35,26,19,14,8,4,3,2,2,3,6,8,10,11,8,7,5,6,4,2,3,3,7,11,64,61,55,52,48,44,43,38,31,24,16,12,10,4,2,1,2,2,3,4,7,6,5,3,3,4,2,2,2,3,8,15,51,46,44,38,41,39,43,38,33,25,17,10,6,5,2,1,1,2,2,4,3,3,3,2,2,2,2,2,2,3,8,19];
+  function lumToRGB(l){var t=Math.min(1,l/86),tr=Math.pow(t,1.18);
+    return[Math.round(232*Math.pow(tr,0.90)),Math.round(40*Math.pow(tr,0.95)),Math.round(2*tr)];}
+  function bake(flat,cls){
+    var src=document.createElement('canvas');src.width=COLS;src.height=ROWS;
+    var sctx=src.getContext('2d'),id=sctx.createImageData(COLS,ROWS);
+    for(var i=0;i<flat.length;i++){var c=lumToRGB(flat[i]),j=i*4;id.data[j]=c[0];id.data[j+1]=c[1];id.data[j+2]=c[2];id.data[j+3]=255;}
+    sctx.putImageData(id,0,0);
+    var cur=src,w=COLS;
+    while(w<1024){var nw=Math.min(w*2,1024),nh=Math.round(nw*ROWS/COLS),nc=document.createElement('canvas');
+      nc.width=nw;nc.height=nh;var nctx=nc.getContext('2d');nctx.imageSmoothingEnabled=true;nctx.imageSmoothingQuality='high';
+      nctx.drawImage(cur,0,0,nw,nh);cur=nc;w=nw;}
+    cur.className='bgcanvas '+cls;return cur;
+  }
+  var bg=document.getElementById('hana-bg');
+  bg.appendChild(bake(GRID1,'bg-1'));
+  bg.appendChild(bake(GRID2,'bg-2'));
+})();
+</script>
+<script>
+/* spawn controllers: hero logo + per-letter section H2 (left->right, glow->no-glow) + box reveals.
+   Replay re-fires ALL. Normal load keeps scroll-reveal for boxes; ?spawnall=1 reveals everything on load (headless capture). */
+(function(){
+  document.querySelectorAll('.content-header .header-main h2').forEach(function(h2){
+    if(h2.dataset.split) return; h2.dataset.split='1';
+    var t=h2.textContent; h2.textContent='';
+    for(var i=0;i<t.length;i++){var s=document.createElement('span');s.textContent=(t[i]===' '?' ':t[i]);s.style.setProperty('--i',i);h2.appendChild(s);}
+  });
+  function reTrigger(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
+  window.hanaReplay=function(){
+    var hero=document.querySelector('.container-header'); if(hero) reTrigger(hero,'is-intersection');
+    document.querySelectorAll('.reveal').forEach(function(el){reTrigger(el,'in');});
+  };
+  window.addEventListener('load',function(){setTimeout(function(){
+    if(/[?&]spawnall=1/.test(location.search)){ window.hanaReplay(); return; }
+    var hero=document.querySelector('.container-header'); if(hero) reTrigger(hero,'is-intersection');
+  },300);});
+})();
+</script>
+</body>
+</html>

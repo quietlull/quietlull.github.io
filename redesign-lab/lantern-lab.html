@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-store" />
+<title>SARAH — lantern/firefly avoidance lab</title>
+<!--
+  Sarah's ISOLATED test scene for the lantern + firefly (ember) AVOIDANCE rework.
+  Lab tooling (claude-coded scaffold, never ships) — exempt from provenance but flagged.
+  The thing under test = Rod's real `lantern-controller.js` (copied verbatim to lantern-lab/, iterated there).
+  Minimal procedural stand-ins (box lanterns + sphere embers) — enough to feel float / parting / knock / click.
+  Open in a FOREGROUND browser tab (rAF runs); tune live in the panel; window.lanternController is exposed.
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #0a0e1a; overflow: hidden; }
+  #c { display: block; width: 100vw; height: 100vh; }
+  #hud { position: fixed; left: 10px; bottom: 10px; max-width: 46ch; font: 11px/1.6 ui-monospace, monospace; color: #9fb0c8; pointer-events: none; }
+  #hud b { color: #ffb35c; }
+  .tp-dfwv { max-height: calc(100vh - 16px); overflow-y: auto; overflow-x: hidden; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <b>SARAH lantern lab</b> — baseline = the live committed controller.<br>
+  Move the cursor: lanterns should PART around it (whole-screen push).<br>
+  Hover close: KNOCK (impulse). Click a lantern: wobble; click an ember: flash.<br>
+  Press <b>D</b> for debug rings. Tune avoidance in the panel (top-right).
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+    "tweakpane": "https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { Pane } from 'tweakpane';
+import { LanternController } from './lantern-lab/lantern-controller.js';
+
+// --- minimal config mirroring the live three-config.js lanterns block ---
+const CONFIG = {
+  lanterns: {
+    float: { speed: 1, amount: 50 },
+    avoidance: {
+      proximityRadius: 1000,    // Rod-tuned 2026-06-15 (was 10000 -> now a real gradient)
+      avoidanceStrength: 2,     // Rod-tuned (was 0.2)
+      knockRadius: 45,          // NOT tuned here (lab props != real lanterns/fireflies)
+      knockStrength: 40,
+      returnSpeed: 0.05,        // Rod-tuned (was 0.08)
+      boundaryForce: 0.5,
+      rotationStrength: 0.06,   // Rod-tuned (was 0.005)
+      knockCooldown: 0.1,
+      localRadius: 90,          // Rod-tuned (was 250) — Layer B reach
+      localStrength: 50,        // Rod-tuned (was 6) — Layer B strength
+    },
+  },
+};
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x0a0e1a, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 4000);
+camera.position.set(0, 0, 500);
+
+const controller = new LanternController(CONFIG, camera, { displacementScale: 1, intersectionZ: 0 });
+window.lanternController = controller;
+
+// --- spawn procedural lanterns (boxes) + fireflies/embers (spheres) ---
+const lanternGeo = new THREE.BoxGeometry(25, 35, 25);
+const emberGeo = new THREE.SphereGeometry(7, 16, 16);
+const rand = (a, b) => a + Math.random() * (b - a);
+
+function spawn(geo, color, count, scaleRange) {
+  for (let i = 0; i < count; i++) {
+    const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color }));
+    mesh.position.set(rand(-320, 320), rand(-160, 160), rand(0, -200));
+    mesh.scale.setScalar(rand(scaleRange[0], scaleRange[1]));
+    mesh.userData.baseScale = mesh.scale.clone();
+    controller.addLantern(mesh);
+    scene.add(mesh);
+  }
+}
+spawn(lanternGeo, 0xffaa66, 26, [0.8, 1.4]); // lanterns
+spawn(emberGeo, 0xffffff, 16, [0.8, 1.6]);   // fireflies / embers
+
+// --- tuning panel ---
+const pane = new Pane({ title: 'avoidance (live)' });
+const av = CONFIG.lanterns.avoidance;
+pane.addBinding(av, 'knockRadius', { min: 0, max: 300, step: 1 });
+pane.addBinding(av, 'knockStrength', { min: 0, max: 120, step: 1 });
+pane.addBinding(av, 'proximityRadius', { min: 0, max: 12000, step: 50 });
+pane.addBinding(av, 'avoidanceStrength', { min: 0, max: 4, step: 0.01 });
+pane.addBinding(av, 'returnSpeed', { min: 0.005, max: 0.5, step: 0.005 });
+pane.addBinding(av, 'rotationStrength', { min: 0, max: 0.1, step: 0.001 });
+pane.addBinding(av, 'localRadius', { min: 0, max: 600, step: 5 });
+pane.addBinding(av, 'localStrength', { min: 0, max: 80, step: 0.5 });
+// "calm the bob" — the ±50 float drowns the small avoidance offsets; drop this to SEE the parting/local push
+pane.addBinding(CONFIG.lanterns.float, 'amount', { min: 0, max: 60, step: 1, label: 'float (calm to see avoidance)' });
+
+// --- loop (foreground; matches the live normalizedDelta convention) ---
+const TARGET_FRAME_TIME = 1000 / 60;
+let last = performance.now();
+function animate(now) {
+  const nd = (now - last) / TARGET_FRAME_TIME;
+  last = now;
+  controller.update(nd);
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

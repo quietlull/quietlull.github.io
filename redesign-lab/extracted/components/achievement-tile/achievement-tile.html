@@ -1,0 +1,473 @@
+<!-- achievement-tile - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=achievement-tile can mount it. Page chrome is scoped to .cb-achievement-tile; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: ACHIEVEMENT TILE + LOCKED STATE - 6 versions at the measured blockout size -->
+<!--
+  THE TILE AND THE LOCKED STATE ONLY. Not the wall.
+  Rod 2026-08-23: the trophy wall has no source and needs a design conversation first, so nothing
+  on this page proposes an arrangement. The 7 tiles shown are the blockout's own EXPLORER group
+  reproduced at its measured pitch, because a tile cannot be judged at any other size.
+
+  MEASURED off about-blockout.html?v=panels at viewport 1440, this session, with
+  getBoundingClientRect. Every dashed outline on this page is one of those measurements:
+     locked / empty state   641 x 40
+     tile                    88 x 31
+     wall                    flex-wrap, gap 10px, 6 tiles per row inside 641
+
+  The fit is not asserted anywhere. Each version prints its own rendered size, measured live in
+  the browser you are looking at, under the stage.
+-->
+<div class="cb cb-achievement-tile">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-achievement-tile {
+  background:#070c23;color:#f5f3ef;font-family:"M PLUS Rounded 1c",sans-serif;
+  line-height:1.7;padding:0 0 140px
+
+  & * {box-sizing:border-box;margin:0;padding:0
+  }
+  & header.top {position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid rgba(255,255,255,.06);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono,"IBM Plex Mono",monospace)
+  }
+  & header.top h1 {font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase
+  }
+  & header.top .sub {font-size:10px;color:#8d8a86
+  }
+  & header.top a {color:#a3a19d
+  }
+  & .wrap {width:min(1100px,92vw);margin:0 auto;padding:40px 0 0
+  }
+  & .lede {font-family:var(--font-mono,monospace);font-size:11.5px;line-height:1.9;color:#9a9895;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:12px;max-width:96ch;
+    background:rgba(8,10,18,.72)
+  }
+  & .lede b {color:#e4e2df;font-weight:500
+  }
+  & .lede code {color:#fbbf24;font-family:inherit
+  }
+  & h2.v {font-family:var(--font-mono,monospace);font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:#fbbf24;font-weight:400;margin:56px 0 6px;
+    border-top:1px solid #2c2c2c;padding-top:22px
+  }
+  & .vsrc {font-family:var(--font-mono,monospace);font-size:10px;line-height:1.85;color:#807d79;
+    margin-bottom:20px;max-width:96ch
+  }
+  & .vsrc b {color:#ccc9c5;font-weight:400
+  }
+  & .vsrc .tier {color:#fbbf24
+  }
+  & .vsrc .ours {color:#f59e0b
+  }
+  /* THE STAGE is exactly the blockout's 641 content width. Nothing on it is wider. */
+  & .stage {width:641px;max-width:100%
+  }
+  & .stage h3 {font-family:var(--font-mono,monospace);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:#6f6c68;font-weight:400;margin:0 0 8px
+  }
+  & .stage .gap {height:26px
+  }
+  /* RESERVATION OUTLINES. Demo chrome, drawn BEHIND the component so any overflow is visible. */
+  & .slot {position:relative;display:block
+  }
+  & .slot::before {content:"";position:absolute;inset:0;border:1px dashed rgba(255,255,255,.34);
+    z-index:0;pointer-events:none
+  }
+  & .slot > * {position:relative;z-index:1
+  }
+  & .slot--tile {width:88px;height:31px
+  }
+  & .slot--row {width:641px;height:40px
+  }
+  & .fit {font-family:var(--font-mono,monospace);font-size:10px;line-height:1.8;color:#807d79;
+    margin-top:14px;white-space:pre-wrap
+  }
+  & .fit .ok {color:#6fbf73
+  }
+  & .fit .no {color:#f078f0
+  }
+  & .legend {font-family:var(--font-mono,monospace);font-size:10px;color:#6f6c68;margin:10px 0 26px
+  }
+  /* added with versions 4-6 */
+  & .vsrc .warn {color:#f59e0b
+  }
+  & .lede--new {margin:64px 0 12px;border-color:#4a3a12
+  }
+}
+</style>
+<header class="top">
+  <h1>Achievement tile + locked state</h1>
+  <span class="sub">6 versions &middot; tile 88 x 31 &middot; locked / empty state 641 x 40 &middot;
+    measured off about-blockout.html?v=panels at 1440 &middot; V1-V3 unchanged, V2 is the one to beat</span>
+  <span class="sub"><a href="/redesign-lab/">back to lab index</a></span>
+</header>
+
+<div class="wrap">
+
+  <div class="lede">
+    <b>This builds the TILE and the LOCKED state. It does not build the wall.</b> You said the
+    trophy wall has no source and needs a design conversation first, so nothing here proposes an
+    arrangement. The 7 tiles in each stage are the blockout's own EXPLORER group at its measured
+    pitch, because a tile cannot be judged at any other size.<br><br>
+
+    <b>The boxes are measurements, not labels.</b> Read off <code>about-blockout.html?v=panels</code>
+    rendered at viewport 1440 with <code>getBoundingClientRect</code> this session:
+    locked / empty state <b>641 x 40</b>, tile <b>88 x 31</b>, wall <code>flex-wrap</code> with
+    <code>gap:10px</code>, <b>6 tiles per row</b>. The 641 is <code>.main</code> 675 minus the
+    panel's 4px of border and 30px of padding. The blockout's own prose says 645; it renders 641,
+    and the rendered value wins.<br><br>
+
+    <b>One finding constrains V1-V5.</b> At 88 x 31 no title fits: after the icon
+    slot and the padding there are about 50px left, which is five characters, against real titles
+    like "Behind the Curtain" and "Hey, You Touched My Fly!". So the tile is <b>icon only</b>
+    everywhere and the name is the accessible name, not visible text. That is consistent with
+    where 88 x 31 comes from: dimden's own button is an image, with no text layout inside it.
+    <b>V6 breaks this on purpose</b> and says so: the finding is about TITLES, and a four-to-six
+    character count is not a title. Its readout measures the difference.<br><br>
+
+    <b>Nothing invents a mystery glyph.</b> An unearned achievement has no icon by definition,
+    because you have not seen it. What V1-V3 actually differ on is whether the empty slot is
+    drawn at all, and how the earned one is marked. V4-V6 move three different dials and have
+    their own lede further down.<br><br>
+
+    <b>A citation already in this repo needed correcting.</b> <code>about-blockout.html:236</code>
+    says the badge wall is dimden's <code>#webtiles-container</code> "at true size: 88x31 tiles,
+    gap 10". Fetched live this session, their <code>gap:10px</code> is verbatim, but their
+    container has <b>no flex-wrap</b> (it holds a 250x270 iframe beside a paragraph) and there is
+    <b>no 88x31 rule anywhere in their CSS</b>. 88 x 31 is the intrinsic size of the button image
+    they serve at <code>/services/images/88x31.gif</code>. So the size is sourced to an asset, the
+    gap to a rule, and the wrapping wall is ours. Written down rather than repeated.<br><br>
+
+    <b>Not rebuilt here:</b> the unlock toast is already picked (dimden .box at 200 x 76,
+    <code>achievement-tests.html .t-pick</code>), and the tag / meta chips are
+    <code>decisions.css .d-tag</code> and <code>.d-meta</code>, which are a different job.
+  </div>
+
+  <div class="legend">The dashed outline behind every element is its measured reservation.
+    Rendered sizes below each stage are measured live in your browser, not asserted.</div>
+
+
+  <h2 class="v">Version 1 &middot; lit edge &nbsp;(V1-V3: how much chrome a locked slot gets)</h2>
+  <div class="vsrc">
+    <span class="tier">Tier: Remixed. Idea origin: theirs.</span><br>
+    <b>Verbatim:</b> dimden's <code>border: 2px solid #383838</code> and <code>gap: 10px</code>
+    (https://dimden.dev/css/main.css, fetched live 2026-08-23, matches
+    sources/section-and-heading-blocks.md section B byte for byte). cyanilux's
+    <code>border-left: 10px solid</code> as the entire earned marker
+    (https://www.cyanilux.com/css/style.css?v=12, fetched live 2026-08-23, matches section A
+    including its commented-out border-bottom).<br>
+    <span class="ours"><b>Ours:</b></span> putting the two together. Neither site marks an earned
+    versus unearned anything.<br>
+    <b>Could not transfer:</b> cyanilux #00aabb is a cool accent, so the bar takes the gold; their
+    7px and dimden's 4px radius are squared; cyanilux's opaque #282828 fill would sit on top of the
+    scene, so the chassis is dimden's translucent one; dimden's 10px 15px padding does not fit an
+    88 x 31 tile (it would leave 54 x 7) so it survives only on the row.<br>
+    <b>The idea:</b> the silhouette tells you the total, the lit edges tell you the score.
+    <b>The honest cost:</b> 10px of an 88px tile is 11% of its width. On cyanilux's full-width
+    heading the same 10px is about 1%. It reads far heavier here than it does there.
+  </div>
+  <div class="stage">
+    <h3>tiles &middot; explorer, 4 of 7</h3>
+    <ul class="at-wall" id="wall1"></ul>
+    <div class="gap"></div>
+    <h3>locked / empty state</h3>
+    <div class="slot slot--row">
+      <div class="at1-row" id="row1">
+        <b>EXPLORER</b> 3 still hidden
+        <span class="at-count">4 / 7</span>
+      </div>
+    </div>
+    <pre class="fit" id="fit1"></pre>
+  </div>
+
+
+  <h2 class="v">Version 2 &middot; value only</h2>
+  <div class="vsrc">
+    <span class="tier">Tier: Remixed. Idea origin: ROD (his own live rule) + theirs (iquilezles).</span><br>
+    <b>Verbatim</b> from the live site's own achievement row,
+    <code>_sass/abstracts/_animations.scss:392-404</code>, read and never edited (D22): the flex
+    row, <code>align-items:center</code>, <code>gap:0.4rem</code>,
+    <code>padding:0.25rem 0.35rem</code>, the icon slot at <code>font-size:1rem; width:1.25rem;
+    text-align:center; flex-shrink:0</code>, the name at <code>flex:1</code> in
+    <code>--text-muted-color</code> (rgba(232,224,212,.78), _dark.scss:55), the progress figure at
+    <code>--gold-50</code> / <code>0.65rem</code>, and the
+    <code>rgba(255,255,255,0.03)</code> hover. Kept in rem so it stays their ratio. This is the one
+    real achievement display that already exists, and <b>its locked state is a colour swap and
+    nothing else</b>.<br>
+    <span class="ours"><b>Ours:</b></span> their 6px radius squared; their
+    <code>--link-hover-color</code> #fcd34d becomes #fbbf24 because #fcd34d is not a lab token; and
+    the one real invention, which is labelled rather than dressed up: the source uses
+    <code>rgba(255,255,255,0.03)</code> as a <b>hover</b> value, and here it is the resting ground
+    of a locked slot. Same value, different job.<br>
+    <b>Corroboration:</b> iquilezles' verified recipe says a component differs from its
+    surroundings by colour, family and line-height and never by a box
+    (sources/iquilezles-prose.md). Two independent sources agreeing on "value, not chrome" is the
+    strongest argument any version here has.<br>
+    <b>The idea:</b> over 29 tiles V1 draws 29 bordered fills and V2 draws none, on the page that
+    carries the heaviest scene.
+  </div>
+  <div class="stage">
+    <h3>tiles &middot; explorer, 4 of 7</h3>
+    <ul class="at-wall" id="wall2"></ul>
+    <div class="gap"></div>
+    <h3>locked / empty state &middot; the live row at the reserved size</h3>
+    <div class="slot slot--row">
+      <div class="at2-row" id="row2">
+        <span class="at2-icon">&#x1F5FA;</span>
+        <span class="at2-name">Cartographer &middot; visited 10 unique pages</span>
+        <span class="at2-prog">6 / 10</span>
+      </div>
+    </div>
+    <pre class="fit" id="fit2"></pre>
+  </div>
+
+
+  <h2 class="v">Version 3 &middot; no slot</h2>
+  <div class="vsrc">
+    <span class="tier">Tier: Remixed. Idea origin: theirs (iquilezles) + ROD (D28).</span><br>
+    <b>Verbatim as a RULE rather than as declarations,</b> and that distinction is the honest one:
+    iquilezles has no achievement anything. What is taken is their verified recipe, quoted from
+    sources/iquilezles-prose.md: "no boxes, borders, backgrounds, radii, shadows or padding are
+    ever used to separate a component from prose. Components differ from prose only by (a) colour,
+    (b) font family, (c) line-height." Their own instance is <code>.code</code> against
+    <code>body</code>: #dcdcdc vs #c0c0c0, Courier vs sans-serif, 1.35 vs 1.8. Their
+    <b>1.35 leading is kept as a number</b>; the two colours are ours because their greys are
+    cool-neutral.<br>
+    <span class="ours"><b>Ours:</b></span> the decision that a locked achievement is not drawn at
+    all. D28 scrapped every reward, so there is nothing behind the locked tile to tease.<br>
+    <b>Could not transfer:</b> their hues, and their <code>font-weight:bold</code>, which on 11px
+    mono over a live scene reads as shouting rather than as a switch.<br>
+    The earned tile keeps the dimden chassis, so V3 changes the <b>locked state only</b> and can be
+    judged against V1 with one variable moving instead of two.<br>
+    <b>The honest cost:</b> you lose the sense of how much is left. The wall becomes a shelf, and
+    the count in the line is the only thing carrying it.
+  </div>
+  <div class="stage">
+    <h3>tiles &middot; explorer, 4 of 7 (locked tiles are not drawn)</h3>
+    <ul class="at-wall" id="wall3"></ul>
+    <div class="gap"></div>
+    <h3>locked / empty state</h3>
+    <div class="slot slot--row">
+      <div class="at3-row" id="row3">
+        <b>3</b>&nbsp;of the 7 Explorer achievements are still hidden.
+      </div>
+    </div>
+    <pre class="fit" id="fit3"></pre>
+  </div>
+
+  <div class="lede lede--new">
+    <b>Versions 4-6 were added after reading five real achievement systems end to end</b>
+    (Minecraft, Steam, RetroAchievements, PlayStation, Xbox). <b>V1-V3 are untouched</b> - you
+    prefer V2 and it stays as the thing to beat.<br><br>
+
+    <b>Why three more, in one line.</b> V1, V2 and V3 all move the same dial: how much CHROME a
+    locked slot gets. The systems that actually ship this differ on three dials, and only one of
+    them was being turned here.<br><br>
+
+    <code>axis A</code> how LOCKED reads - dimmed / hue-swapped / partly filled / absent.
+    <code>axis B</code> is RARITY encoded - not at all / by colour / by SILHOUETTE.
+    <code>axis C</code> what METADATA rides along - nothing / a count / a percentage / a date.<br><br>
+
+    <b>V4 moves A. V5 moves B. V6 moves C.</b> Each holds the other two still, so they can be
+    judged one variable at a time and against V2.<br><br>
+
+    <b>A provenance warning that has to be read before the versions.</b> Minecraft has
+    <b>no stylesheet</b>. Its advancement screen is drawn by the game from PNG sprites, so there
+    is no CSS to transcribe and none is invented. What is cited is the decoded sprite files and
+    the vanilla advancement JSON, with their repos named. Every declaration in V4 and V5 is
+    <b>ours expressing their mechanism</b>, and both are tiered Remixed on that basis. Steam and
+    RetroAchievements are the opposite case: both have real stylesheets and both were fetched, so
+    V6 quotes actual declarations.<br><br>
+
+    <b>The 29 are real.</b> Every tile below is one of the achievements in
+    <code>_javascript/modules/components/achievements.js</code>: Explorer 7, Reader 6,
+    Interactor 8, Secret 3, Meta 5. The earned set is the blockout's own 14 of 29, and the
+    progress numbers come from a single consistent state vector rather than being picked one at a
+    time: <code>unlocked 14, tagsRead 3, lanternKnocks 31, fireworkCount 18, avatarHoverTime 6</code>.
+  </div>
+
+
+  <h2 class="v">Version 4 &middot; hue swap &nbsp;(axis A: how locked reads)</h2>
+  <div class="vsrc">
+    <span class="tier">Tier: Remixed. Idea origin: theirs (Minecraft) - MECHANISM ONLY, there is
+    no CSS.</span><br>
+    <b>Source, and what kind of source it is:</b> the advancement UI has no stylesheet, so the
+    sprites were decoded instead - <code>gui/sprites/advancements/box_obtained.png</code> and
+    <code>box_unobtained.png</code> from
+    <code>github.com/InventivetalentDev/minecraft-assets @1.21.4</code>. Both are 200 x 26,
+    nine-slice, border 10. <b>The geometry is byte-identical between the two states.</b> Only four
+    colours change: <code>#036A96 / #0489C1 / #012E40</code> against
+    <code>#B98F2C / #DBA213 / #493606</code>, both over a black outline.<br>
+    <b>The finding:</b> that is a change of HUE, not of brightness. Both plates are saturated and
+    sit at near-equal luminance. Of the five systems read, <b>Minecraft is the only one that does
+    not fade its locked state</b>, and that is exactly why a screen of mostly-unearned
+    advancements does not read as a screen of failures. Steam ships a separate
+    <code>_BW.jpg</code>; PlayStation and Xbox dim client-side; all three make a wall of grey.<br>
+    <span class="ours"><b>Ours:</b></span> every declaration, because there is nothing to copy.
+    The fills are translucent (their plate is opaque and would sit on top of the water), and the
+    bevel is expressed as a 1px border plus two <b>zero-blur</b> inset shadows, which are hard
+    lines and not shadows.<br>
+    <b>Metadata: none.</b> Minecraft carries a title, a description and an icon, and nothing else
+    - no date, no score, no percentage. V4 keeps that. Its row does carry a criteria count,
+    because theirs does.<br>
+    <b class="warn">THE OPEN QUESTION, and it is the whole version:</b> the mechanism needs two
+    hues at equal strength, and the palette has exactly one non-warm hue -
+    <code>--color-accent-cool #3090a8</code>, "the cool sky the warm lanterns hang in", which
+    <code>settings.css</code> says to spend <b>rarely</b>, on the single most important mark per
+    view. V4 spends it on 15 locked tiles. That is the opposite of rarely. Two warm hues at equal
+    luminance would read as two golds rather than as two states, so there is no quiet fix: either
+    the sky stops being rare on this one panel, or V4 loses its premise. Your call.
+  </div>
+  <div class="stage">
+    <h3>tiles &middot; explorer, 4 of 7</h3>
+    <ul class="at-wall" id="wall4"></ul>
+    <div class="gap"></div>
+    <h3>all 29 at the measured pitch &middot; density check, NOT a wall</h3>
+    <ul class="at-wall" id="dense4"></ul>
+    <div class="gap"></div>
+    <h3>locked / empty state &middot; the same four colours at name-bar scale</h3>
+    <div class="slot slot--row">
+      <div class="at4-row at4-row--locked" id="row4">
+        <b>EXPLORER</b> 3 still hidden
+        <span class="at-count">4 / 7</span>
+      </div>
+    </div>
+    <pre class="fit" id="fit4"></pre>
+  </div>
+
+
+  <h2 class="v">Version 5 &middot; silhouette &nbsp;(axis B: rarity)</h2>
+  <div class="vsrc">
+    <span class="tier">Tier: Remixed. Idea origin: theirs (Minecraft frames, mechanism only) +
+    theirs (RetroAchievements, real CSS).</span><br>
+    <b>Source 1, mechanism only:</b> Minecraft's three frame sprites -
+    <code>task_frame</code>, <code>goal_frame</code>, <code>challenge_frame</code> - are
+    <b>all 26 x 26</b>. Rarity is carried entirely by what the outline does inside that box: task
+    is a plain rect, goal chamfers, challenge steps OUT into corner spikes and IN at the waist.
+    The icon well shrinks with each (400 / 368 / 382 px) and <b>the outer box never moves</b>.
+    Rarity costs interior area, never grid space - which is the only reason a rarity system can
+    exist inside a fixed 641 x 40 reservation at all.<br>
+    <b>Source 2, real CSS,</b> <code>github.com/RetroAchievements/RAWeb</code>
+    <code>resources/css/badge.css</code>:
+    <code>.badgeimg { border:2px solid transparent; box-sizing:content-box }</code> against
+    <code>.goldimage { border:2px solid gold; box-sizing:content-box }</code> - the tier is
+    <i>only</i> the border, and <code>content-box</code> keeps the art from shrinking. Their
+    <code>completion-progress.css</code> ring adds the second axis for free: <b>colour says which
+    tier, hollow vs filled says how far.</b> Here shape says which tier and fill says earned.<br>
+    <b>The rarity is NOT invented.</b> There is no rarity field in
+    <code>achievements.js</code>, so rather than assigning one by taste it is read off a field
+    that is already there, <code>scope</code>:
+    <code>section -&gt; task (19 of 29, 66%)</code>,
+    <code>cross|site -&gt; goal (5, 17%)</code>,
+    <code>meta -&gt; challenge (5, 17%)</code>. Minecraft's own vanilla distribution, counted over
+    all 126 advancement files in <code>github.com/misode/mcmeta</code>, is <b>72 / 8 / 20</b>.
+    Same shape, same order, and the fancy silhouette stays a minority, which is what keeps a wall
+    of them calm. The mapping is ours; the field and both counts are not.<br>
+    <span class="ours"><b>Ours:</b></span> the polygons. Their spikes were drawn for a 1:1 box and
+    this tile is 2.84:1, so they are <b>re-cut to sit at the four corners of 88 x 31</b> instead of
+    being stretched sideways, and the waist pinches the left and right edges at mid-height. Also
+    ours: dropping RetroAchievements' <code>content-box</code> border, because a
+    <code>clip-path</code> has no border to size - the frame is a painted parent with an inset
+    well, which is how the sprites are built anyway.<br>
+    <b>Metadata: none on the tile.</b> The shape is the only thing it says.<br>
+    <b>The honest cost:</b> 5 of 29 tiles get a silhouette nobody has been taught to read.
+    Minecraft teaches it over hundreds of hours. A portfolio gets one visit.
+  </div>
+  <div class="stage">
+    <h3>tiles &middot; explorer, 4 of 7 &middot; the-nether and behind-curtain are scope 'site',
+      so they are goal frames</h3>
+    <ul class="at-wall" id="wall5"></ul>
+    <div class="gap"></div>
+    <h3>all 29 at the measured pitch &middot; density check, NOT a wall &middot;
+      19 task, 5 goal, 5 challenge</h3>
+    <ul class="at-wall" id="dense5"></ul>
+    <div class="gap"></div>
+    <h3>the three silhouettes side by side, earned and locked</h3>
+    <ul class="at-wall" id="key5"></ul>
+    <div class="gap"></div>
+    <h3>locked / empty state &middot; the plain frame at row scale</h3>
+    <div class="slot slot--row">
+      <div class="at5-row" id="row5">
+        <div class="at5-rowin">
+          <b>EXPLORER</b> 3 still hidden &middot; 1 of them a goal frame
+          <span class="at-count">4 / 7</span>
+        </div>
+      </div>
+    </div>
+    <pre class="fit" id="fit5"></pre>
+  </div>
+
+
+  <h2 class="v">Version 6 &middot; the tile is the bar &nbsp;(axis C: metadata)</h2>
+  <div class="vsrc">
+    <span class="tier">Tier: Remixed. Idea origin: theirs (Steam) + ROD (the count is his content
+    idea, 2026-08-23).</span><br>
+    <b>Verbatim,</b> from
+    <code>community.akamai.steamstatic.com/public/css/skin_1/game_achievements.css</code>:
+    <code>.achieveFill { position:absolute; top:2px; left:2px; bottom:2px; z-index:10;
+    background:#17435c }</code> inside
+    <code>.achieveTxtHolder { border:1px solid #17435c; overflow:hidden;
+    background:rgba(0,0,0,0.5) }</code>, with the markup setting the width inline:
+    <code>&lt;div class="achieveFill" style="width: 62%"&gt;</code>.<br>
+    <b>The finding:</b> the row IS the bar. The fill colour and the border colour are <b>the same
+    value</b>, so a fully-earned thing reads as a solid plate and a barely-started one as a thin
+    stub, with no second element, no track and no extra row. Minecraft does the same trick a
+    different way - <code>BetterAdvancementWidget.java</code> computes
+    <code>floor(pct * width)</code> and blits that many pixels from the obtained texture and the
+    rest from the unobtained one, so the bar and its own background are one object.<br>
+    <b>Also from Steam, and it answers the scene:</b> their achievement page sits over a
+    full-bleed game hero and their entire answer is <code>background: rgba(0,0,0,0.5)</code>. One
+    flat scrim, no blur, one declaration. That is the precedent for using
+    <code>--color-panel</code> here instead of reaching for a backdrop-filter.<br>
+    <b>Why this version exists.</b> Your words, today: "maybe we can track posts written vs posts
+    read and the achievements and then we can track this across design, tech art, and ramblings."
+    That needs a tile that can hold a COUNT, and this is the one that can - <b>the number goes in
+    the space the icon does not use, and the progress is the tile's own background.</b> Nothing is
+    added to carry it.<br>
+    <b>The count is real data.</b> <code>achievements.js</code> already ships a
+    <code>progress</code> function on <b>ten of the 29</b>: well-rounded [n,5], connoisseur
+    [n,10], completionist [n,15], pyrotechnician [n,50], fan-club [n,10], lantern-tapper [n,25],
+    lantern-painter [n,50], lantern-master [n,100], getting-started [n,5], collector [n,15]. The
+    other 19 are booleans and correctly show no number, so the version degrades on its own with no
+    rule needed to switch between them.<br>
+    <b>This one breaks the icon-only finding on purpose,</b> and the distinction matters: that
+    finding was that no <b>title</b> fits, measured at about 50px of free width against names like
+    "Behind the Curtain". A count is not a title. "31/100" is six characters, about 32px at 9px
+    mono. The readout below measures it rather than asserting it.<br>
+    <span class="ours"><b>Ours:</b></span> translucent fills, because <code>#17435c</code> is
+    opaque and this sits on a live scene; the hues; and <code>z-index: 0</code> instead of their
+    10, so the numeral sits above its own bar.<br>
+    <b>The honest cost:</b> a half-filled tile says "not yet, and here is exactly how far off you
+    are". That is the closest any of the six comes to pointing at something you have not got, and
+    D28 scrapped the rewards precisely so nothing would. A count is not a reward, but it does
+    point forward, and that is worth deciding on purpose rather than inheriting.
+  </div>
+  <div class="stage">
+    <h3>tiles &middot; explorer, 4 of 7 &middot; none of the Explorer seven has a progress
+      function, so this group is plates only</h3>
+    <ul class="at-wall" id="wall6"></ul>
+    <div class="gap"></div>
+    <h3>the ten that already carry a count &middot; real targets from achievements.js</h3>
+    <ul class="at-wall" id="count6"></ul>
+    <div class="gap"></div>
+    <h3>all 29 at the measured pitch &middot; density check, NOT a wall</h3>
+    <ul class="at-wall" id="dense6"></ul>
+    <div class="gap"></div>
+    <h3>locked / empty state &middot; the same object at category scale</h3>
+    <div class="slot slot--row">
+      <div class="at6-row" id="row6" style="--at6-pct:48.28%">
+        <i class="at6-fill"></i>
+        <div class="at6-rowin">
+          <b>ALL</b> 15 still hidden
+          <span class="at-count">14 / 29</span>
+        </div>
+      </div>
+    </div>
+    <pre class="fit" id="fit6"></pre>
+  </div>
+
+</div>
+</div>

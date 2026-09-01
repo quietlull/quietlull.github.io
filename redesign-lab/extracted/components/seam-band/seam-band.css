@@ -1,0 +1,103 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* SEAM BAND — the painted horizontal transition between two sections.
+   TWO real mechanisms, kept apart because the sources really are different:
+
+   --tiled (default)  harumakigohan.com/ndt/  .borderpink / .borderblue / .bordernavy
+     height:160px; background-image:url(img/borderpink.png);
+     background-repeat:repeat-x; background-position:top; background-size:70%;
+     mobile twin .borderpinksp — height:40px; background-size:100%;
+     One strip drawn once and tiled across. The band is TALLER than the art sits, so the
+     leftover height under it is the air that makes a transition read as a breath.
+
+   --sheet  harumakigohan.com  <img class="top_hr_cloud" src="hr_cloud.png" srcset="…2x">
+     a single full-width painted image used as an <hr>. One wide sheet, never tiled.
+
+   The ARTWORK is Rod's to draw — set --seam-art to a url() and the band renders it. With no art
+   the band still holds its exact space and degrades to a rule (--noart). Their pink/blue/navy
+   colourways are NOT copied: colour comes from our palette. */
+
+.seam-band {
+  --seam-art: none;
+  --seam-height: 160px;
+  --seam-scale: 70%;
+  position: relative;
+  width: 100%;
+  height: var(--seam-height);
+  background-image: var(--seam-art);
+  background-repeat: repeat-x;
+  background-position: top;
+  background-size: var(--seam-scale);
+}
+
+/* one painted sheet stretched across, not a tiled strip */
+.seam-band--sheet {
+  --seam-height: 96px;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+
+/* no artwork yet: hold the space, draw the degenerate case, and say so quietly */
+.seam-band--noart::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: var(--color-line-faint);
+}
+
+.seam-band--noart::after {
+  content: attr(data-art);
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .seam-band {
+    --seam-height: 40px;
+    --seam-scale: 100%;
+  }
+
+  .seam-band--sheet {
+    --seam-height: 48px;
+  }
+}
+
+/* bench-only label rows, so the three mechanisms can be told apart on the test bench */
+.seam-band-demo__note {
+  margin: 1.6rem 0 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+}

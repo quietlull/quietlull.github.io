@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAPER TUNER - option E over the live scene</title>
+<!--
+  ===== PAPER TUNER (2026-08-22, ROD) =====
+  Rod: "Lets go with E but expose a gradient map for me to play around with, i want to see if i can
+  see it with the three.js scene in the background" + "im also thinking we want to scale down the
+  noise a bit maybe give me a paper test scene for me to tune it."
+
+  OPTION E is the shipped starting point: washi at tile 1 carrying the large fibre, cold press at
+  tile 4 sitting inside it as tooth, which is the combination CONFIG.lanterns.paper already runs in
+  the scene. Sheets are the SAME baked files - assets/tex/paper-*.png, normal+height maps from the
+  paper filter (D24). The blue channel is the height and the height alone is the structure, split
+  out to references/paper/*-height.png with nothing redrawn.
+
+  THE REAL SCENE RUNS BEHIND THIS PAGE, not the bloom stand-in. That is the whole point: paper that
+  reads on a flat panel can disappear over a live gradient, and Rod asked to check exactly that.
+
+  STRUCTURE, so the controls stay independent of each other:
+    .card            base colour + the GRADIENT MAP
+    .card::after     the two paper sheets, blended together, faded by --paper-amount
+  Keeping the sheets on their own layer is what makes "scale down the noise" a single opacity
+  rather than a re-derivation of every blend.
+
+  Values are copyable at the bottom of the panel. Nothing here writes to any component - this is a
+  bench, and what it produces is numbers for Rod to approve.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+:root{
+  /* THE GRADIENT MAP, rebuilt 2026-08-22. Rod: "the gradient map is just wrong... the colors
+     should pretty much be the A and B inputs of a lerp and the texture should be T."
+     He is right and the first version was not a gradient map at all - it laid a spatial
+     linear-gradient over the texture and blended it, which colours by POSITION on the card. A
+     gradient map colours by VALUE: for every pixel, out = lerp(A, B, t) where t is the texture.
+     Done properly here with feComponentTransfer: a two-entry tableValues per channel IS a linear
+     interpolation from the first entry to the last, indexed by that channel's input. The sheets are
+     greyscale so R=G=B=t, and each channel lands on lerp(A_c, B_c, t) exactly.
+     color-interpolation-filters="sRGB" matters - the default is linearRGB and the picked colours
+     would come out wrong. */
+  --grad-a:#2a2118;   /* t=0, the troughs */
+  --grad-b:#c9a578;   /* t=1, the peaks  */
+  /* the sheets */
+  /* THE SHEETS ARE SWAPPABLE. Only three exist and no more can be made right now: D24 records that
+     the generator that baked them IS NOT IN THE REPO. So this is the whole palette of paper.
+       washi      long vertical fibre        -> closest to LANTERN paper
+       wove       fine uniform grain         -> closest to ORIGAMI paper (smooth, no direction)
+       coldpress  heavy watercolour tooth    -> a painting paper, wrong for both
+     Rod 2026-08-22 wants origami or lantern, so the pair that ships in the SCENE is probably not
+     the pair that belongs on a card. Swap and see. */
+  --sheet-1:url(/redesign-lab/references/paper/paper-washi-height.png);
+  --sheet-2:url(/redesign-lab/references/paper/paper-coldpress-height.png);
+  --tile-washi:256px;
+  --tile-cold:64px;
+  --sheet-blend:exclusion;   /* the shader SUBTRACTS; exclusion is the nearest CSS blend */
+  --paper-amount:.5;
+  --paper-blend:soft-light;
+  --card-base:rgba(255,255,255,.045);
+}
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:transparent;color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.92);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+
+.wrap{width:min(980px,92vw);margin:0 auto;padding:48px 0 160px;position:relative;z-index:1}
+.note{font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:0 0 34px;max-width:76ch}
+.note b{color:var(--color-text);font-weight:500}
+.note code{color:var(--color-gold)}
+
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:34px}
+@media(max-width:760px){.row{grid-template-columns:1fr}}
+
+/* ---- THE CARD. base + gradient map here; the sheets ride on ::after ---- */
+.card{position:relative;padding:22px 24px 26px;min-height:210px;display:flex;
+  flex-direction:column;justify-content:flex-end;overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);
+  background-color:var(--card-base);
+}
+.card::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:var(--sheet-2),var(--sheet-1);
+  background-size:var(--tile-cold),var(--tile-washi);
+  background-blend-mode:var(--sheet-blend);
+  filter:url(#gradmap);
+  opacity:var(--paper-amount);
+  mix-blend-mode:var(--paper-blend)}
+.card h3{font-size:1.2rem;font-weight:500;color:var(--color-text);margin-bottom:2px;
+  position:relative;z-index:1}
+.card p{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--color-muted);position:relative;z-index:1}
+.card .thumb{position:absolute;inset:0;bottom:70px;background:rgba(0,0,0,.3)}
+
+/* a bare panel, to judge the paper with nothing else competing */
+.slab{min-height:150px;border:1px solid rgba(255,255,255,.14);margin-bottom:34px;position:relative;
+  background-color:var(--card-base);
+  overflow:hidden}
+.slab::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:var(--sheet-2),var(--sheet-1);
+  background-size:var(--tile-cold),var(--tile-washi);
+  background-blend-mode:var(--sheet-blend);
+  filter:url(#gradmap);opacity:var(--paper-amount);mix-blend-mode:var(--paper-blend)}
+
+/* ---- the tuner ---- */
+#panel{position:fixed;right:14px;top:64px;z-index:90;width:300px;max-height:calc(100vh - 90px);
+  overflow:auto;background:rgba(8,10,18,.96);border:1px solid rgba(255,255,255,.2);
+  padding:12px 13px 14px;font:11px/1.6 var(--font-mono),ui-monospace,monospace;color:#dcdcdc}
+#panel h4{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;
+  margin:12px 0 5px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:3px}
+#panel h4:first-child{margin-top:0}
+.ctl{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;margin-bottom:5px}
+.ctl label{font-size:10px;color:#b9b9b9}
+.ctl output{font-size:10px;color:var(--color-gold);min-width:52px;text-align:right}
+.ctl input[type=range]{grid-column:1/-1;width:100%;accent-color:#f59e0b}
+.ctl input[type=color]{width:44px;height:20px;padding:0;border:1px solid #555;background:none}
+.ctl select{background:#11141f;color:#ddd;border:1px solid #555;font:10px var(--font-mono);
+  padding:2px 4px}
+#panel button{background:none;border:1px solid #555;color:#bbb;font:9px var(--font-mono);
+  letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;cursor:pointer;margin-top:10px}
+#panel button:hover{border-color:var(--color-gold);color:var(--color-gold)}
+#out{margin-top:8px;font-size:9px;color:#8e8e8e;word-break:break-all;line-height:1.5}
+
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--font-mono);
+  font-size:10px;color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold)}
+</style>
+</head>
+<body>
+
+
+<!-- THE GRADIENT MAP. out = lerp(A, B, t), t being the paper's own value.
+     A two-entry tableValues IS a linear ramp from the first entry to the last, indexed by the
+     input channel - so this is the lerp, not an approximation of one. sRGB because the default
+     linearRGB would shift the picked colours. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="gradmap" color-interpolation-filters="sRGB">
+    <feComponentTransfer>
+      <feFuncR id="gm-r" type="table" tableValues="0.16 0.79"/>
+      <feFuncG id="gm-g" type="table" tableValues="0.13 0.65"/>
+      <feFuncB id="gm-b" type="table" tableValues="0.09 0.47"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<header class="top">
+  <h1>Paper tuner</h1>
+  <span class="sub">option E over the LIVE three.js scene &middot;
+    <a href="/redesign-lab/">lab</a> &middot;
+    <a href="/redesign-lab/paper-tests.html">all options</a></span>
+</header>
+
+<div class="wrap">
+  <div class="note">
+    <b>The real scene is running behind this page</b>, not the bloom stand-in - that is the point.
+    Paper that reads on a flat panel can vanish over a live gradient.<br><br>
+    Starting values are <b>option E as the scene ships it</b>: washi at tile 1 (256px) carrying the
+    large fibre, cold press at tile 4 (64px) inside it as tooth, combined with a subtract-like
+    blend. Sheets are the same baked files the shader loads.<br><br>
+    <b>The gradient map is a real lerp now.</b> <code>out = lerp(A, B, t)</code>, where t is the
+    paper's own value - A lands on the troughs, B on the peaks. The first version laid a spatial
+    gradient over the texture and blended it, which colours by POSITION rather than by VALUE; that
+    was not a gradient map and it read as a glow.<br><br>
+    <b>Scale the noise down with AMOUNT</b>, which fades the sheet layer only, or with the two TILE
+    sliders, which change its frequency. They are separate on purpose.
+  </div>
+
+  <div class="slab"></div>
+
+  <div class="row">
+    <div class="card"><div class="thumb"></div><h3>Compute Grass</h3><p>Unity &middot; HLSL</p></div>
+    <div class="card"><div class="thumb"></div><h3>Decompiling ZZZ</h3><p>Rendering study</p></div>
+  </div>
+  <div class="row">
+    <div class="card"><div class="thumb"></div><h3>Procedural 3D Mask</h3><p>Shader</p></div>
+    <div class="card"><div class="thumb"></div><h3>Sprite Baker 9000</h3><p>Tooling</p></div>
+  </div>
+</div>
+
+<div id="panel"></div>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; paper tuner &middot;
+  sheets are the scene's own baked files</div>
+
+<script>
+(function(){
+  /* One declarative list drives the whole panel: label, css var, kind, range, unit.
+     Adding a knob means adding a row here, not wiring another listener. */
+  var KNOBS = [
+    ['Gradient map', null, null],
+    ['A  (t=0, troughs)', '--grad-a', 'color'],
+    ['B  (t=1, peaks)',   '--grad-b', 'color'],
+    ['Paper sheets', null, null],
+    ['Sheet 1',      '--sheet-1',     'sheet'],
+    ['Sheet 2',      '--sheet-2',     'sheet'],
+    ['Amount',       '--paper-amount','range', 0, 1, 0.01, ''],
+    ['Washi tile',   '--tile-washi',  'range', 32, 512, 4, 'px'],
+    ['Cold press tile','--tile-cold', 'range', 8, 256, 2, 'px'],
+    ['Sheet blend',  '--sheet-blend', 'blend'],
+    ['Over card',    '--paper-blend', 'blend']
+  ];
+  var SHEETS = {
+    washi:     'url(/redesign-lab/references/paper/paper-washi-height.png)',
+    wove:      'url(/redesign-lab/references/paper/paper-wove-height.png)',
+    coldpress: 'url(/redesign-lab/references/paper/paper-coldpress-height.png)',
+    none:      'none'
+  };
+  var BLENDS = ['normal','multiply','screen','overlay','darken','lighten','color-dodge',
+                'color-burn','hard-light','soft-light','difference','exclusion','hue',
+                'saturation','color','luminosity'];
+  var root = document.documentElement;
+
+  /* push the two picked colours into the filter's tables. This is the whole gradient map: each
+     channel gets [A_channel, B_channel] and the filter interpolates between them by t. */
+  function hexToUnit(hex){
+    hex = hex.replace('#','');
+    if (hex.length === 3) { hex = hex.split('').map(function(c){ return c + c; }).join(''); }
+    return [0,2,4].map(function(i){ return parseInt(hex.substr(i,2),16) / 255; });
+  }
+  function applyGradientMap(){
+    var a = hexToUnit(read('--grad-a'));
+    var b = hexToUnit(read('--grad-b'));
+    ['r','g','b'].forEach(function(ch, i){
+      document.getElementById('gm-' + ch)
+              .setAttribute('tableValues', a[i].toFixed(3) + ' ' + b[i].toFixed(3));
+    });
+  }
+  var panel = document.getElementById('panel');
+  var read = function(v){ return getComputedStyle(root).getPropertyValue(v).trim(); };
+
+  KNOBS.forEach(function(k){
+    var label = k[0], prop = k[1], kind = k[2];
+    if (!prop) { var h = document.createElement('h4'); h.textContent = label; panel.appendChild(h); return; }
+    var wrap = document.createElement('div'); wrap.className = 'ctl';
+    var lab = document.createElement('label'); lab.textContent = label; wrap.appendChild(lab);
+
+    if (kind === 'color') {
+      var ci = document.createElement('input'); ci.type = 'color'; ci.value = read(prop);
+      ci.addEventListener('input', function(){
+        root.style.setProperty(prop, ci.value); applyGradientMap(); dump();
+      });
+      wrap.appendChild(ci);
+    } else if (kind === 'sheet') {
+      var ss = document.createElement('select');
+      Object.keys(SHEETS).forEach(function(k){
+        var o = document.createElement('option'); o.value = k; o.textContent = k; ss.appendChild(o);
+      });
+      var cur = read(prop);
+      ss.value = Object.keys(SHEETS).filter(function(k){ return cur.indexOf(k) > -1; })[0] || 'none';
+      ss.addEventListener('change', function(){ root.style.setProperty(prop, SHEETS[ss.value]); dump(); });
+      wrap.appendChild(ss);
+    } else if (kind === 'blend') {
+      var sel = document.createElement('select');
+      BLENDS.forEach(function(b){ var o = document.createElement('option'); o.value = o.textContent = b; sel.appendChild(o); });
+      sel.value = read(prop);
+      sel.addEventListener('change', function(){ root.style.setProperty(prop, sel.value); dump(); });
+      wrap.appendChild(sel);
+    } else {
+      var unit = k[6] || '';
+      var out = document.createElement('output'); out.textContent = read(prop);
+      wrap.appendChild(out);
+      var r = document.createElement('input');
+      r.type = 'range'; r.min = k[3]; r.max = k[4]; r.step = k[5];
+      r.value = parseFloat(read(prop));
+      r.addEventListener('input', function(){
+        var v = r.value + unit;
+        root.style.setProperty(prop, v); out.textContent = v; dump();
+      });
+      wrap.appendChild(r);
+    }
+    panel.appendChild(wrap);
+  });
+
+  var out = document.createElement('div'); out.id = 'out';
+  var copy = document.createElement('button'); copy.type = 'button'; copy.textContent = 'Copy values';
+  var reset = document.createElement('button'); reset.type = 'button'; reset.textContent = 'Reset';
+  reset.style.marginLeft = '6px';
+  panel.appendChild(copy); panel.appendChild(reset); panel.appendChild(out);
+
+  function values(){
+    return KNOBS.filter(function(k){ return k[1]; })
+                .map(function(k){ return '  ' + k[1] + ': ' + read(k[1]) + ';'; }).join('\n');
+  }
+  function dump(){ out.textContent = values().replace(/\n/g, ' '); }
+  applyGradientMap();
+  dump();
+
+  copy.addEventListener('click', function(){
+    var text = ':root {\n' + values() + '\n}';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        copy.textContent = 'copied';
+        setTimeout(function(){ copy.textContent = 'Copy values'; }, 1600);
+      });
+    } else {
+      window.prompt('Copy:', text);
+    }
+  });
+  reset.addEventListener('click', function(){
+    KNOBS.forEach(function(k){ if (k[1]) root.style.removeProperty(k[1]); });
+    panel.remove();
+    location.reload();
+  });
+})();
+</script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+</body>
+</html>

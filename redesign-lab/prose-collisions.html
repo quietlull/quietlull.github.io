@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The .prose collisions - split out</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@600&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<!-- REAL sheets, in final-post.html's own order: components first, decisions.css after them.
+     That order is the whole reason a tie goes to .prose, so the demo has to reproduce it. -->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/callout-family/callout-family.css">
+<link rel="stylesheet" href="/redesign-lab/decisions.css">
+<style>
+:root{
+  --night:#070C23;--gold:#F3B53C;--glow:#FFE8B0;--text:#F5F3EF;--muted:#9aa3bd;
+  --line:rgba(255,255,255,.08);--bad:#e08b8b;--ok:#b7d29a;
+}
+/* Reset removed: foundations.css provides it in the `reset` layer and this page loads it.
+   Unlayered here, it beat every layer and wiped component padding. */
+body{
+  background:radial-gradient(120% 80% at 80% -10%,#101a3e 0%,transparent 55%),
+             linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+  color:var(--text);font-family:"IBM Plex Mono",monospace;min-height:100vh;
+  padding:clamp(2.5rem,6vw,5rem) clamp(1.2rem,5vw,3rem);line-height:1.6;
+}
+.pc-wrap{max-width:78rem;margin:0 auto}
+header{margin-bottom:2rem;padding-bottom:1.4rem;border-bottom:1px solid var(--line)}
+h1{font-family:"Playfair Display",serif;font-weight:600;font-size:clamp(1.8rem,4.5vw,2.5rem)}
+.pc-sub{color:var(--muted);font-size:.8rem;margin-top:.5rem;max-width:54rem}
+.pc-meta{display:flex;flex-wrap:wrap;gap:.5rem .4rem;margin-top:1rem}
+.pc-chip{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:.22rem .6rem}
+.pc-chip b{color:var(--gold);font-weight:500}
+a{color:var(--gold);text-decoration:none}
+a:hover{filter:drop-shadow(0 0 8px rgba(255,232,176,.55))}
+a:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+code{color:var(--glow);font-size:.92em}
+
+.pc-h{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);
+  margin:2.4rem 0 .2rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.pc-h::before{content:"/"}
+.pc-hnote{color:var(--muted);letter-spacing:.06em;font-size:.62rem;text-transform:none}
+.pc-demos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.pc-demo{border:1px solid var(--line);padding:.9rem;background:rgba(20,20,20,.3);min-width:0}
+.pc-demo--bad{border-color:rgba(224,139,139,.5)}
+.pc-demo--a,.pc-demo--b{border-color:rgba(183,210,154,.45)}
+.pc-dh{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--glow);
+  margin-bottom:.4rem}
+.pc-demo--bad .pc-dh{color:var(--bad)}
+.pc-demo--a .pc-dh,.pc-demo--b .pc-dh{color:var(--ok)}
+.pc-dn{font-size:.63rem;line-height:1.7;color:var(--muted);margin-bottom:.7rem}
+.pc-dstage{background:var(--color-night,#070C23);padding:.9rem;border:1px solid var(--line);
+  font-family:"M PLUS Rounded 1c",sans-serif}
+.pc-dm{font-size:.58rem;line-height:1.8;color:var(--muted);margin-top:.5rem;letter-spacing:.03em}
+.pc-dm b{font-weight:500}
+.pc-dm .pc-good{color:var(--ok)}
+.pc-dm .pc-bad{color:var(--bad)}
+/* OPTION A, applied only inside this demo box */
+#d3 .prose .co-ref a{border-bottom:0;color:var(--color-text,#f5f3ef)}
+#d3 .prose .co-ref a:hover{background:none;color:var(--color-gold,#fbbf24)}
+/* OPTION B, applied only inside this demo box */
+#d4 .co-ref.co-ref a{border-bottom:0;color:var(--color-text,#f5f3ef)}
+#d4 .co-ref.co-ref a:hover{background:none;color:var(--color-gold,#fbbf24)}
+
+
+.pc-note{border:1px solid rgba(243,181,60,.35);background:rgba(243,181,60,.06);
+  padding:.8rem 1rem;font-size:.74rem;color:var(--muted);line-height:1.75;margin:1.2rem 0}
+.pc-note b{color:var(--gold);font-weight:500}
+
+.pc-comp{margin-top:2rem;border:1px solid var(--line);padding:1rem 1.1rem;
+  background:rgba(20,20,20,.35)}
+.pc-comp h2{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+  display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.pc-count{font-size:.58rem;letter-spacing:.1em;padding:.05rem .4rem;border-radius:2px;
+  background:var(--bad);color:#1a0d0d}
+.pc-comp--clean .pc-count{background:var(--ok);color:#12160e}
+.pc-file{color:var(--muted);font-size:.62rem;letter-spacing:.04em;text-transform:none}
+
+table{width:100%;border-collapse:collapse;font-size:.7rem;margin-top:.7rem}
+th{text-align:left;color:var(--muted);font-weight:400;font-size:.55rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:.35rem .5rem .35rem 0;border-bottom:1px solid var(--line)}
+td{padding:.45rem .5rem .45rem 0;border-bottom:1px solid var(--line);vertical-align:top;
+  line-height:1.6;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.pc-prop{color:var(--glow);white-space:nowrap}
+td.pc-loser{color:var(--bad)}
+td.pc-winner{color:var(--text)}
+.pc-spec{color:var(--muted);font-size:.9em}
+
+@media(max-width:760px){
+  table,thead,tbody,tr,td,th{display:block}
+  thead{display:none}
+  tr{border-bottom:1px solid var(--line);padding:.5rem 0}
+  td{border-bottom:0;padding:.1rem 0}
+}
+</style>
+</head>
+<body>
+<div class="pc-wrap">
+
+  <header>
+    <h1>The <code>.prose</code> collisions</h1>
+    <div class="pc-sub">Every component rule that <b>loses to a <code>.prose</code> rule</b> in
+      <code>decisions.css</code>, split out one component at a time. This page does not read from a
+      note: it fetches the real stylesheets on load, parses every selector, computes both
+      specificities and reports only genuine losses on a shared property.
+      <a href="/redesign-lab/todo.html">back to the todo</a> &middot;
+      <a href="/redesign-lab/component-review.html">component review</a></div>
+    <div class="pc-meta" id="pc-summary"></div>
+  </header>
+
+  <!-- ============================================================ THE DECISION, SEEN -->
+  <section id="pc-demo">
+    <h2 class="pc-h">The decision, seen <span class="pc-hnote">one real component, the real
+      stylesheets, four ways</span></h2>
+
+    <div class="pc-note"><b>This is the same callout in all four boxes.</b> Identical markup,
+      identical component CSS. The only thing that changes is whether it sits inside
+      <code>.prose</code>, and which fix is applied. <b>Contrast under each is measured live from
+      the rendered pixels</b>, not asserted. Hover a link in each box to see the state that actually
+      breaks.</div>
+
+    <div class="pc-demos">
+      <div class="pc-demo">
+        <div class="pc-dh">1 &middot; outside <code>.prose</code></div>
+        <div class="pc-dn">What the component was designed to look like. The row rule is the device
+          and the link carries no underline.</div>
+        <div class="pc-dstage" id="d1"></div>
+        <div class="pc-dm" data-for="d1"></div>
+      </div>
+
+      <div class="pc-demo pc-demo--bad">
+        <div class="pc-dh">2 &middot; inside <code>.prose</code> &mdash; today</div>
+        <div class="pc-dn"><code>.prose a</code> (0,1,1) ties <code>.co-ref a</code> (0,1,1), and
+          <code>decisions.css</code> loads AFTER the component sheets on all six pages, so the tie
+          goes to prose. The cancelled hairline comes back.
+          <b>And the hover splits between the two rules</b>, which is the part worth seeing: the
+          component still wins <code>background</code> (it declares the shorthand, so the fill stays
+          transparent) while prose wins <code>color</code> and sets it to the near-black panel token.
+          Dark text on a dark panel. <b>Measured at 1.06:1.</b></div>
+        <div class="pc-dstage" id="d2"></div>
+        <div class="pc-dm" data-for="d2"></div>
+      </div>
+
+      <div class="pc-demo pc-demo--a">
+        <div class="pc-dh">3 &middot; OPTION A &mdash; scope it under <code>.prose</code></div>
+        <div class="pc-dn">Every component rule gains a <code>.prose</code> prefix:
+          <code>.prose .co-ref a</code> (0,2,1) beats <code>.prose a</code> (0,1,1).
+          <b>Cost: the component now only works inside a post.</b> The same callout on the projects
+          or ramblings page loses its styling entirely, because there is no <code>.prose</code>
+          wrapper there.</div>
+        <div class="pc-dstage" id="d3"></div>
+        <div class="pc-dm" data-for="d3"></div>
+      </div>
+
+      <div class="pc-demo pc-demo--b">
+        <div class="pc-dh">4 &middot; OPTION B &mdash; the component raises itself</div>
+        <div class="pc-dn">The component doubles its own class:
+          <code>.co-ref.co-ref a</code> (0,2,1) also beats <code>.prose a</code>, and mentions
+          prose nowhere. <b>Cost: it reads as a trick</b> and every future component has to remember
+          to do it. <b>Gain: the component stays portable</b> and works identically in a post, on
+          projects, and on the bench.</div>
+        <div class="pc-dstage" id="d4"></div>
+        <div class="pc-dm" data-for="d4"></div>
+      </div>
+    </div>
+
+    <div class="pc-note"><b>A correction the demo produced.</b> This failure has been written up as
+      "gold text on gold fill". It is not: measured, the fill stays transparent and the TEXT goes
+      near-black, <b>1.06:1 against the panel</b>. The cause is a per-property split, which only
+      shows up when you render it. Fixed in the notes.
+      <br><br>
+      <b>They render identically in boxes 3 and 4</b> &mdash; that is the point.
+      Both fixes work. <b>The decision is not which looks better, it is which rule the other 52
+      losing declarations get rewritten to follow</b>, and whether a component is allowed to be
+      prose-only. Pick one and it applies to all eight components; picking neither leaves box 2.</div>
+  </section>
+
+  <div class="pc-note"><b>Why any of this happens.</b> On all six final pages the component
+    stylesheets load AFTER <code>decisions.css</code>, but load order only breaks ties. A
+    <code>.prose a</code> is <b>(0,1,1)</b> and a component's <code>.rc</code> is <b>(0,1,0)</b>, so
+    the prose rule wins outright no matter what order they arrive in. <b>Every fix is the same
+    shape</b> and that is why it is one decision rather than nine: the component either raises its
+    own specificity, or it gets scoped under <code>.prose</code> too. Picking one and applying it
+    everywhere is the call. <b>An equal-specificity tie is listed too</b>, because there the load
+    order decides and that is fragile for a different reason.</div>
+
+  <div id="pc-out"></div>
+
+</div>
+
+<script>
+// Components that can appear inside a post's prose column. The rest never meet .prose.
+var COMPONENTS = [
+  'callout-family','code-block-real','figure-real','heading-anchor-real','prevnext-real',
+  'related-card-real','table-real','toc-real','quote-block','tldr-callout','stamp-callout',
+  'image-zoom-real','entry-row','status-chip','bio-block'
+];
+var BASE = '/redesign-lab/extracted/components/';
+
+function specificity(sel) {
+  var s = sel.trim();
+  s = s.replace(/::[a-z-]+/g, '');          // pseudo-elements -> element weight
+  var ids = (s.match(/#[\w-]+/g) || []).length;
+  var classes = (s.match(/\.[\w-]+/g) || []).length
+              + (s.match(/\[[^\]]*\]/g) || []).length
+              + (s.match(/:(?!:)[a-z-]+(\([^)]*\))?/gi) || []).length;
+  var stripped = s.replace(/#[\w-]+|\.[\w-]+|\[[^\]]*\]|:(?!:)[a-z-]+(\([^)]*\))?/g, ' ');
+  var els = (stripped.match(/(^|[\s>+~])([a-z][\w-]*|)/gi) || []).length;
+  return [ids, classes, els];
+}
+function specStr(a) { return '(' + a.join(',') + ')'; }
+function beats(a, b) {                              // does a win over b
+  for (var i = 0; i < 3; i++) { if (a[i] !== b[i]) return a[i] > b[i]; }
+  return null;                                      // exact tie -> load order decides
+}
+// the trailing simple selector, which is what decides whether two rules can hit the same node
+function subject(sel) {
+  var last = sel.trim().split(/[\s>+~]+/).pop();
+  var el = (last.match(/^[a-z][\w-]*/i) || [''])[0];
+  var cls = (last.match(/\.[\w-]+/g) || []).map(function (c) { return c.slice(1); });
+  return { el: el.toLowerCase(), cls: cls, raw: last };
+}
+// A selector list splits on commas, but NOT on commas inside :is() / :not() / :where().
+// Splitting naively turned `.ha-scope :is(h2, h3)` into two broken fragments and reported
+// heading-anchor-real as colliding when it is the one component that got this right.
+function splitSelectorList(list) {
+  var out = [], depth = 0, buf = '';
+  for (var i = 0; i < list.length; i++) {
+    var ch = list.charAt(i);
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    if (ch === ',' && depth === 0) { out.push(buf); buf = ''; continue; }
+    buf += ch;
+  }
+  out.push(buf);
+  return out;
+}
+function parseRules(css) {
+  css = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  var out = [], re = /([^{}]+)\{([^{}]*)\}/g, m;
+  while ((m = re.exec(css))) {
+    var body = m[2];
+    var props = (body.match(/(^|;)\s*([-a-z]+)\s*:/gi) || [])
+      .map(function (p) { return p.replace(/[;:\s]/g, '').toLowerCase(); });
+    splitSelectorList(m[1]).forEach(function (sel) {
+      sel = sel.trim();
+      if (!sel || sel.charAt(0) === '@') return;
+      out.push({ sel: sel, props: props, important: /!important/.test(body) });
+    });
+  }
+  return out;
+}
+async function get(url) {
+  try { var r = await fetch(url); return r.ok ? await r.text() : null; } catch (e) { return null; }
+}
+
+
+// ---- the four demo boxes -------------------------------------------------------------------
+var CALLOUT =
+  '<div class="co co--v1 co--ref">' +
+    '<span class="co__label">Reference</span>' +
+    '<div class="co-ref"><ul>' +
+      '<li><a href="#">Cyanilux &mdash; GPU instanced grass breakdown</a></li>' +
+      '<li><a href="#">GPU Gems 7 &mdash; Rendering Countless Blades of Waving Grass</a></li>' +
+    '</ul></div>' +
+  '</div>';
+
+document.getElementById('d1').innerHTML = CALLOUT;
+document.getElementById('d2').innerHTML = '<div class="prose">' + CALLOUT + '</div>';
+document.getElementById('d3').innerHTML = '<div class="prose">' + CALLOUT + '</div>';
+document.getElementById('d4').innerHTML = '<div class="prose">' + CALLOUT + '</div>';
+
+function rgb(str){var n=(str.match(/[\d.]+/g)||[0,0,0]).map(Number);return [n[0],n[1],n[2],n.length>3?n[3]:1];}
+function comp(fg,bg){var a=fg[3];return [0,1,2].map(function(i){return Math.round(fg[i]*a+bg[i]*(1-a));});}
+function lm(c){var v=c.map(function(x){x/=255;return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4);});
+  return 0.2126*v[0]+0.7152*v[1]+0.0722*v[2];}
+function cr(a,b){var l1=lm(a),l2=lm(b);return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);}
+function groundOf(el){
+  var node=el,bg=[0,0,0,0];
+  while(node&&node!==document.documentElement){
+    var b=rgb(getComputedStyle(node).backgroundColor);
+    if(b[3]>0){ bg=b; break; }
+    node=node.parentElement;
+  }
+  return bg[3]>0?comp(bg,[7,12,35]):[7,12,35];
+}
+function measure(id){
+  var stage=document.getElementById(id);
+  var a=stage.querySelector('.co-ref a');
+  var out=document.querySelector('.pc-dm[data-for="'+id+'"]');
+  var cs=getComputedStyle(a);
+  var restGround=groundOf(a);
+  var restRatio=cr(comp(rgb(cs.color),restGround),restGround);
+  var underline=cs.borderBottomWidth!=='0px'&&cs.borderBottomStyle!=='none';
+
+  // FORCE the hover state without faking it. Every :hover rule already in the sheets is
+  // re-emitted with `.pc-force` standing in for `:hover` - a class and a pseudo-class carry
+  // the same specificity weight, so the cascade resolves exactly as it does on a real hover.
+  // Nothing here is hand-copied from a rule; it is the rules themselves, re-selected.
+  a.classList.add('pc-force');
+  var hs=getComputedStyle(a);
+  var hoverBg=rgb(hs.backgroundColor);
+  var hoverGround=hoverBg[3]>0?comp(hoverBg,restGround):restGround;
+  var hoverRatio=cr(comp(rgb(hs.color),hoverGround),hoverGround);
+  var filled=hoverBg[3]>0;
+  a.classList.remove('pc-force');
+
+  function tag(r){return '<b class="'+(r>=4.5?'pc-good':'pc-bad')+'">'+r.toFixed(2)+':1</b>';}
+  out.innerHTML =
+    'rest ' + tag(restRatio) +
+    ' &middot; underline <b class="' + (underline?'pc-bad':'pc-good') + '">' +
+      (underline?'YES, prose put it back':'none, as designed') + '</b><br>' +
+    'hover ' + tag(hoverRatio) + ' &middot; ' +
+      (hoverRatio < 2
+        ? '<b class="pc-bad">text all but invisible</b>'
+        : filled ? '<b class="pc-good">gold fill, dark text</b>'
+                 : '<b class="pc-good">gold text, no fill</b>');
+}
+
+// Build the .pc-force mirror of every :hover rule the real sheets declare.
+(function forceHoverSheet(){
+  var css='';
+  for(var i=0;i<document.styleSheets.length;i++){
+    var rules;try{rules=document.styleSheets[i].cssRules;}catch(e){continue;}
+    if(!rules)continue;
+    for(var j=0;j<rules.length;j++){
+      var r=rules[j];
+      if(!r.selectorText||r.selectorText.indexOf(':hover')===-1)continue;
+      css+=r.selectorText.replace(/:hover/g,'.pc-force')+'{'+r.style.cssText+'}\n';
+    }
+  }
+  var el=document.createElement('style');
+  el.textContent=css;
+  document.head.appendChild(el);
+})();
+
+['d1','d2','d3','d4'].forEach(measure);
+
+(async function () {
+  var decisions = await get('/redesign-lab/decisions.css');
+  var out = document.getElementById('pc-out');
+  if (!decisions) { out.textContent = 'decisions.css did not load.'; return; }
+
+  var proseRules = parseRules(decisions).filter(function (r) { return /^\.prose\b/.test(r.sel); });
+
+  var totalHits = 0, dirty = 0, checked = 0, missing = [];
+
+  for (var i = 0; i < COMPONENTS.length; i++) {
+    var name = COMPONENTS[i];
+    var css = await get(BASE + name + '/' + name + '.css');
+    if (!css) { missing.push(name); continue; }
+    checked++;
+
+    var hits = [];
+    parseRules(css).forEach(function (cr) {
+      if (cr.important) return;                       // !important already wins; not a collision
+      var cs = specificity(cr.sel), csub = subject(cr.sel);
+      proseRules.forEach(function (pr) {
+        var psub = subject(pr.sel);
+        // can both rules land on the same node?
+        var sameEl = psub.el && csub.el ? psub.el === csub.el : true;
+        var proseNeedsClass = psub.cls.every(function (c) { return csub.cls.indexOf(c) !== -1; });
+        if (!psub.el && psub.cls.length === 0) return;
+        if (!sameEl || !proseNeedsClass) return;
+        if (!psub.el && !proseNeedsClass) return;
+        if (psub.el && !csub.el && csub.cls.length) return;   // component targets a class, prose an element
+
+        var shared = cr.props.filter(function (p) { return pr.props.indexOf(p) !== -1; });
+        if (!shared.length) return;
+        var win = beats(cs, specificity(pr.sel));
+        if (win === true) return;                     // component already wins, fine
+        hits.push({
+          prop: shared.join(', '),
+          loser: cr.sel, loserSpec: specStr(cs),
+          winner: pr.sel, winnerSpec: specStr(specificity(pr.sel)),
+          tie: win === null
+        });
+      });
+    });
+
+    // one row per (property, winner) pair
+    var seen = {}, rows = [];
+    hits.forEach(function (h) {
+      var k = h.prop + '|' + h.loser + '|' + h.winner;
+      if (seen[k]) return; seen[k] = 1; rows.push(h);
+    });
+
+    totalHits += rows.length;
+    if (rows.length) dirty++;
+
+    var box = document.createElement('div');
+    box.className = 'pc-comp' + (rows.length ? '' : ' pc-comp--clean');
+    var head = '<h2>' + name +
+      '<span class="pc-count">' + (rows.length ? rows.length + ' collision' + (rows.length > 1 ? 's' : '') : 'clean') + '</span>' +
+      '<span class="pc-file">' + name + '.css</span></h2>';
+    if (!rows.length) {
+      box.innerHTML = head + '<div class="pc-file" style="margin-top:.5rem">Nothing in this file is ' +
+        'reachable by a <code>.prose</code> rule on a shared property.</div>';
+    } else {
+      var body = '<table><thead><tr><th>property</th><th>the component rule that loses</th>' +
+        '<th>what beats it</th></tr></thead><tbody>';
+      rows.forEach(function (r) {
+        body += '<tr><td class="pc-prop">' + r.prop + '</td>' +
+          '<td class="pc-loser"><code>' + r.loser + '</code> <span class="pc-spec">' + r.loserSpec + '</span></td>' +
+          '<td class="pc-winner"><code>' + r.winner + '</code> <span class="pc-spec">' + r.winnerSpec +
+          (r.tie ? ' &mdash; exact TIE, load order decides' : '') + '</span></td></tr>';
+      });
+      box.innerHTML = head + body + '</tbody></table>';
+    }
+    out.appendChild(box);
+  }
+
+  var sum = document.getElementById('pc-summary');
+  sum.innerHTML =
+    '<span class="pc-chip"><b>' + dirty + '</b> components affected</span>' +
+    '<span class="pc-chip"><b>' + totalHits + '</b> losing rules</span>' +
+    '<span class="pc-chip"><b>' + checked + '</b> stylesheets read</span>' +
+    '<span class="pc-chip"><b>' + proseRules.length + '</b> .prose rules in decisions.css</span>' +
+    (missing.length ? '<span class="pc-chip">no css: ' + missing.join(' ') + '</span>' : '');
+})();
+</script>
+</body>
+</html>

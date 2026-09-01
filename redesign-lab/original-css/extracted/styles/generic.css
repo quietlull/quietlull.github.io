@@ -1,0 +1,37 @@
+/* generic — reset + page ground (ITCSS generic layer) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-night);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* T4-A (report B2): global lantern-glow focus indicator. Option B, sourced in
+   sources/focus-ring.md. outline:transparent keeps it visible in Windows High Contrast Mode;
+   the box-shadow ring + ember bloom follow border-radius and cause no layout shift. */
+:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--color-gold),
+    0 0 12px 2px color-mix(in srgb, var(--color-glow) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

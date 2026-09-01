@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" data-hover>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section Landing - A2 (hana-styled, your layout)</title>
+<!--
+  PROVENANCE:
+  - layout STRUCTURE (top bar avatar+name+nav+toggles+social, title, tools, reel, featured grid) ... ROD'S ORIGINAL site
+  - SQUARE cards (0 radius), polaroid-grid feel ......... hana.b-rave MERCHANDISE grid [video + teardown]
+  - SATURATED-ORANGE glow halos (hotter than amber fill)  hana.b-rave saturated-red glow [video], recolored to Rod's orange
+  - breathing/shifting glow across the page ............ hana.b-rave drifting bg [video] -> foundations body::before
+  - cards ANIMATE IN on scroll ........................ hana.b-rave card reveal [video] -> .reveal + IO in sliders.js
+  - mono UI type ...................................... 109ichiki [CSS]
+  - display serif (Bodoni Moda) ...................... NEW (Caveat dropped per Rod); high-contrast like hana scotch-display. Swappable: --fd.
+  - amber #F59E0B fills, orange #FF6A00 glow [locked palette]
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* fonts: norikura-hanabi group -- Shippori Mincho (serif display) + IBM Plex Mono (labels) */
+:root{--fd:"Shippori Mincho",serif;--fm:"IBM Plex Mono",monospace;}
+body{font-family:var(--fm);background:var(--night)}
+/* lava-lamp BLOOM bg (from the reskinned hana) -- night #070C23 -> orange #FF6A00 cross-fade */
+body::before{display:none}
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--night);pointer-events:none}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:opacity;filter:blur(20px) brightness(.92) saturate(1.02)}
+.bg-1{opacity:1}.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+@keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.bg-2{animation:none}}
+/* TOP BAR - Rod's structure, square avatar, orange hover-glow, de-glowed */
+.bar{display:flex;align-items:center;gap:1.4rem;padding:1rem 2.2rem;border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:0;z-index:60;backdrop-filter:blur(4px);background:rgba(7,12,35,.55)}
+.brand{display:flex;align-items:center;gap:.8rem}
+.avatar{width:42px;height:42px;border-radius:0;display:grid;place-items:center;color:var(--gold);font-family:var(--fm);font-size:.58rem;background:radial-gradient(circle,#152045,#0d1430);filter:drop-shadow(0 0 10px rgba(255,106,0,.4))}
+.brand .nm{font-family:var(--fd);font-weight:700;font-size:1.5rem;color:var(--gold-deep);line-height:.95;filter:drop-shadow(0 0 7px rgba(255,106,0,.5))}
+.brand .sb{font-family:var(--fm);font-size:.58rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.nav{display:flex;gap:1.6rem;margin-left:auto;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase}
+.nav a{color:var(--muted);text-decoration:none;transition:color .16s,filter .16s;filter:drop-shadow(0 0 8px rgba(255,106,0,0))}
+.nav a:hover,.nav a.on{color:var(--gold);filter:drop-shadow(0 0 9px rgba(255,106,0,.7))}
+.tools-mini,.social{display:flex;gap:.5rem;align-items:center}
+.tools-mini{padding-left:1.2rem;border-left:1px solid rgba(255,255,255,.08)}
+.tools-mini .sw{width:30px;height:16px;border-radius:9px;background:rgba(255,106,0,.28);position:relative}
+.tools-mini .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--gold);filter:drop-shadow(0 0 5px rgba(255,106,0,.8))}
+.social{padding-left:1.2rem;border-left:1px solid rgba(255,255,255,.08)}
+.social a{width:13px;height:13px;border-radius:50%;background:rgba(245,243,239,.5);transition:.16s}
+.social a:hover{background:var(--gold);filter:drop-shadow(0 0 7px rgba(255,106,0,.8))}
+/* title - Bodoni serif, amber fill, orange glow halo */
+.title{text-align:center;padding:calc(3.4rem * var(--space-scale)) 0 calc(1.6rem * var(--space-scale))}
+.title h1{font-family:var(--fd);font-weight:700;font-size:calc(4rem * var(--head-scale));color:var(--gold-deep);line-height:1;filter:drop-shadow(0 0 8px rgba(255,106,0,.55)) drop-shadow(0 0 22px rgba(255,106,0,.3))}
+.title p{font-family:var(--fm);margin-top:1rem;font-size:calc(.92rem * var(--type-scale));letter-spacing:.04em;color:var(--muted)}
+/* tools - original position, square mono tiles */
+.tools{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;max-width:46rem;margin:0 auto calc(2.6rem * var(--space-scale))}
+.tools .t{width:46px;height:46px;border-radius:0;background:rgba(255,255,255,.04);display:grid;place-items:center;font-family:var(--fm);font-size:.62rem;color:var(--muted);transition:.18s}
+.tools .t:hover{color:var(--gold);background:rgba(255,106,0,.08);filter:drop-shadow(0 0 10px rgba(255,106,0,.55))}
+/* demo reel - square frame */
+.reel{max-width:var(--measure);margin:0 auto calc(3rem * var(--space-scale));padding:0 2.5rem}
+.reel .frame{aspect-ratio:16/9;border-radius:0;overflow:hidden;position:relative;background:#0c1228;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 12px,rgba(255,255,255,0) 12px 24px)}
+.reel .frame::after{content:"demo reel";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fm);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,243,239,.4)}
+/* featured - SQUARE cards (hana merch grid), saturated-orange glow, card-in reveal */
+.fhead{text-align:center;margin:0 0 calc(1.8rem * var(--space-scale))}
+.fhead .num{font-family:var(--fm);font-size:.68rem;letter-spacing:.3em;color:var(--gold-deep);display:block;margin-bottom:.3rem}
+.fhead .name{font-family:var(--fd);font-weight:700;font-size:calc(2.2rem * var(--head-scale));color:var(--gold-deep)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;max-width:var(--measure);margin:0 auto;padding:0 2.5rem}
+.card{position:relative;border-radius:0;background:#0b1024;cursor:pointer;
+  box-shadow:0 0 22px rgba(255,106,0,.12), 0 0 55px rgba(255,106,0,.06);
+  transition:box-shadow .25s, transform .25s}
+.card:hover{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(255,106,0,.5), 0 0 22px rgba(255,106,0,.45), 0 0 60px rgba(255,106,0,.25)}
+/* frame-draw on reveal: 6-span border draws itself around the box segment-by-segment (real hana technique; spans injected by frame-draw.js) */
+.frame{position:absolute;inset:0;pointer-events:none;z-index:4}
+.frame span{position:absolute;display:block}
+.frame span:nth-of-type(1){left:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(2){right:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(3){right:0;top:0;height:100%;border-right:1.5px solid rgba(255,106,0,.7);transform-origin:top;scale:1 0}
+.frame span:nth-of-type(4){right:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(5){left:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(6){left:0;top:0;height:100%;border-left:1.5px solid rgba(255,106,0,.7);transform-origin:bottom;scale:1 0}
+.card.in .frame span{scale:1;transition:scale 1.2s cubic-bezier(.215,.61,.355,1)}
+@media(prefers-reduced-motion:reduce){.card .frame span{scale:1;transition:none}}
+.card .thumb{aspect-ratio:1/1;position:relative;background:#0d1430;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 10px,rgba(255,255,255,0) 10px 20px)}
+.card .thumb::after{content:"project still";position:absolute;inset:0;display:grid;place-items:center;color:rgba(245,243,239,.3);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase}
+.card .pin{position:absolute;top:0;right:0;font-family:var(--fm);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--night);background:var(--gold);padding:3px 7px}
+.card .body{padding:.7rem .85rem .9rem;border-top:1px solid rgba(255,255,255,.06)}
+.card h3{font-family:var(--fm);font-weight:500;font-size:.9rem;color:var(--text);margin-bottom:.3rem}
+.card .tags{font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;color:var(--gold-deep)}
+.card .learn{position:absolute;left:0;right:0;top:0;height:100%;display:grid;place-items:center;padding:1.4rem;text-align:center;opacity:0;transition:opacity .2s;background:radial-gradient(circle,rgba(8,12,30,.92),rgba(8,12,30,.82));font-family:var(--fm);font-size:.74rem;line-height:1.5;color:var(--glow-soft)}
+.card:hover .learn{opacity:1}
+.viewall{display:block;width:max-content;margin:calc(2.4rem * var(--space-scale)) auto calc(4rem * var(--space-scale));font-family:var(--fm);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;filter:drop-shadow(0 0 8px rgba(255,106,0,0));transition:filter .16s}
+.viewall:hover{filter:drop-shadow(0 0 10px rgba(255,106,0,.7))}
+</style>
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
+<header class="bar">
+  <div class="brand"><div class="avatar">LANT</div><div><div class="nm">rodney fan</div><div class="sb">CG Art Portfolio &amp; Studies</div></div></div>
+  <nav class="nav"><a class="on" href="#">Home</a><a href="#">Projects</a><a href="#">About</a></nav>
+  <div class="tools-mini"><span class="sw"></span><span class="sw"></span><span class="sw"></span></div>
+  <div class="social"><a></a><a></a><a></a></div>
+</header>
+
+<section class="title">
+  <h1 class="reveal">Technical Art</h1>
+  <p class="reveal">// shaders, tools, rendering pipelines &amp; visual problem solving</p>
+</section>
+
+<div class="tools">
+  <span class="t reveal">U</span><span class="t reveal">UE</span><span class="t reveal">Bl</span><span class="t reveal">Sub</span><span class="t reveal">Py</span><span class="t reveal">C#</span><span class="t reveal">HLSL</span><span class="t reveal">GPU</span><span class="t reveal">Hou</span><span class="t reveal">FX</span>
+</div>
+
+<div class="reel"><div class="frame reveal"></div></div>
+
+<div class="fhead"><span class="num">01 / FEATURED</span><span class="name">the work</span></div>
+<div class="grid">
+  <div class="card reveal"><span class="pin">Pinned</span><div class="thumb"></div><div class="body"><h3>Compute Grass</h3><div class="tags">Unity &middot; HLSL</div></div><div class="learn">"Taught me to think in compute &mdash; half a million blades, all on the GPU."</div></div>
+  <div class="card reveal"><span class="pin">Pinned</span><div class="thumb"></div><div class="body"><h3>Decompiling ZZZ</h3><div class="tags">RenderDoc &middot; HLSL</div></div><div class="learn">"Read a shipped game's shaders, then rebuilt the magic from scratch."</div></div>
+  <div class="card reveal"><div class="thumb"></div><div class="body"><h3>Toy Renderer</h3><div class="tags">C++ &middot; Vulkan</div></div><div class="learn">"A tiny renderer, to understand the big ones."</div></div>
+  <div class="card reveal"><div class="thumb"></div><div class="body"><h3>Lantern Scene</h3><div class="tags">Three.js &middot; GLSL</div></div><div class="learn">"Procedural lanterns that dodge your cursor."</div></div>
+</div>
+<a class="viewall" href="#">View all &rarr;</a>
+
+<div class="lab">
+  <h4>tune</h4>
+  <label>type <span id="s-type-out"></span></label><input type="range" id="s-type" data-var="--type-scale" data-default="1" min="0.85" max="1.3" step="0.01" value="1">
+  <label>headings <span id="s-head-out"></span></label><input type="range" id="s-head" data-var="--head-scale" data-default="1" min="0.7" max="1.7" step="0.01" value="1">
+  <label>spacing <span id="s-space-out"></span></label><input type="range" id="s-space" data-var="--space-scale" data-default="1" min="0.6" max="1.7" step="0.01" value="1">
+  <label>width <span id="s-measure-out"></span></label><input type="range" id="s-measure" data-var="--measure" data-unit="rem" data-default="64" min="44" max="84" step="1" value="64">
+  <button class="reset">reset</button>
+</div>
+<div class="labtag">A2 &middot; hana-styled (square cards, orange breathing glow, card-in) &middot; <a href="/redesign-lab/">lab</a></div>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script src="/redesign-lab/frame-draw.js"></script>
+<script src="/redesign-lab/sliders.js"></script>
+</body>
+</html>

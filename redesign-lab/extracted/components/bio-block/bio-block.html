@@ -1,0 +1,291 @@
+<!-- bio-block - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=bio-block can mount it. Page chrome is scoped to .cb-bio-block; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: BIO BLOCK - 3 versions of the About page's two prose blocks -->
+<!--
+  Three versions of bio_intro + bio_more, each drawn INSIDE its measured blockout reservation so
+  the fit is visible rather than asserted.
+
+  RESERVATION, measured off about-blockout.html?v=panels at viewport 1440 with
+  getBoundingClientRect on 2026-08-23 (not read off a label - the labels on that page say 140 and
+  180 and the page renders 112 and 138):
+      bio_intro   675 x 112     bio_more   675 x 138     gap 10px
+
+  Copy is Rod's own, verbatim from tech-art/about.md front matter, with his two em dashes turned
+  into commas per the house rule. Nothing else changed.
+
+  The dashed gold rectangle behind each block IS the reservation, at true size. Where the prose
+  runs past it, that is the real overflow, drawn rather than described.
+-->
+<div class="cb cb-bio-block">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-bio-block {
+  background:var(--color-night,#070C23);color:var(--color-text,#f5f3ef);
+  font-family:var(--font-body,"M PLUS Rounded 1c",sans-serif);line-height:1.7;
+  margin:0;padding:0 0 140px
+
+  & header.top {position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)
+  }
+  & header.top h1 {font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0
+  }
+  & header.top .sub {font-size:10px;color:#8e8e8e
+  }
+  & .wrap {width:min(1180px,94vw);margin:0 auto;padding:40px 0 0
+  }
+  & .lede {font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:14px;max-width:96ch;
+    background:rgba(8,10,18,.72)
+  }
+  & .lede b {color:#e4e4e4;font-weight:500
+  }
+  & .lede .hot {color:var(--color-gold)
+  }
+  & h2.v {font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold);font-weight:400;margin:56px 0 6px;border-top:1px solid #2c2c2c;
+    padding-top:22px
+  }
+  & .vsrc {font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;
+    margin:0 0 26px;max-width:100ch
+  }
+  & .vsrc b {color:#ccc;font-weight:400
+  }
+  & .vsrc .tier {color:var(--color-gold)
+  }
+  /* THE STAGE. 675px is the reservation's own outer width, so the blocks sit at true size. */
+  & .stage {position:relative;width:675px;max-width:100%
+  }
+  & .res {position:relative;width:675px;max-width:100%
+  }
+  & /* stands in for the component's own `.bio + .bio { margin-top:10px
+  }
+  & ` - the two blocks live in
+     separate reservation wrappers here so each can carry its own dashed box. Same 10px. */
+  .res + .res {margin-top:10px
+  }
+  /* the reservation itself, at the measured height. Painted first so the block sits on top. */
+  & .res::before {content:"";position:absolute;left:0;top:0;width:100%;height:var(--res);
+    border:1px dashed rgba(251,191,36,.55);pointer-events:none
+  }
+  & .res > * {position:relative
+  }
+  /* the readout is pulled OUT of the flow so the 10px gap between the two blocks stays exact */
+  & .fit {position:absolute;left:695px;top:0;width:250px;margin:0;
+    font-family:var(--font-mono);font-size:10px;line-height:1.7;color:#7d7d7d
+  }
+  & .fit b {display:block;color:#ccc;font-weight:400
+  }
+  & .fit .over {color:var(--color-glow)
+  }
+  @media(max-width:1000px) {
+    & .fit {position:static;width:auto;margin:6px 0 18px
+    }
+  }
+  /* the ground, because every one of these sits on the live scene and two of the three are
+     translucent. Static - nothing on this page animates. */
+  & #ground {position:fixed;inset:0;z-index:-2;pointer-events:none;background:
+    radial-gradient(38% 30% at 24% 24%,rgba(255,106,0,.16),transparent 62%),
+    radial-gradient(34% 26% at 78% 58%,rgba(255,140,0,.12),transparent 64%),
+    radial-gradient(100% 70% at 72% -10%,#16224a 0%,rgba(22,34,74,0) 55%),
+    linear-gradient(180deg,#070c23,#0a1030 60%,#070c23)
+  }
+  & #scrim {position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)
+  }
+  & body.flat #ground,
+  & body.flat #scrim {display:none
+  }
+  & #groundtoggle {position:fixed;right:14px;bottom:14px;z-index:80;background:rgba(8,10,18,.95);
+    border:1px solid #555;color:#ddd;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;cursor:pointer
+  }
+}
+</style>
+<div id="ground"></div><div id="scrim"></div>
+
+<header class="top">
+  <h1>Bio block</h1>
+  <span class="sub">3 versions &middot; bio_intro + bio_more &middot; drawn inside the measured
+    675x112 / 675x138 reservation</span>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <b>The dashed gold rectangle is the reservation at true size.</b> Measured off
+    <code>about-blockout.html?v=panels</code> at viewport 1440 with <code>getBoundingClientRect</code>:
+    <b>bio_intro 675 x 112</b>, <b>bio_more 675 x 138</b>, 10px apart. The blockout's own labels
+    say 140 and 180; it renders 112 and 138, so the rendered value is used.<br><br>
+    <span class="hot">THE COPY DOES NOT FIT, AND THAT IS THE FIRST THING TO LOOK AT.</span>
+    The blockout drew bio_intro as <b>six 1px schematic rules</b>. The real bio_intro is a heading
+    plus <b>three paragraphs</b>, which set ten lines at the decided 18px/130%. The exact overrun
+    is printed beside each block below and is measured live on load, not typed in.<br><br>
+    <b>Nothing here shrinks the type or cuts his words to make the number work.</b> Rod already
+    rejected small type on this page once ("Text is too small... should try to be consistent with
+    posts"), so the honest options are: grow the reservation, cut the copy, or split the block.
+    His call, not mine.<br><br>
+    <b>Copy is verbatim</b> from <code>tech-art/about.md</code> front matter. One mechanical change:
+    his two em dashes are commas, per the no-em-dash house rule.
+  </div>
+
+  <!-- ==================================================================================== -->
+  <h2 class="v">V1 &middot; Panel - the block is a translucent box, the heading is plain inside</h2>
+  <p class="vsrc">
+    <b>SOURCE</b> dimden.dev <code>.box</code>, main.css?9 lines 168-180, read from source and
+    transcribed in <b>sources/section-and-heading-blocks.md</b> section B. 17 of them on their
+    homepage. <span class="tier">TIER: Remixed</span> &middot; <b>IDEA-ORIGIN</b> theirs.<br>
+    <b>Verbatim:</b> 2px border, its #383838, padding 10px 15px. <b>Ours:</b> radius 4-&gt;0 (shape
+    rule), fill #000000a8-&gt;--color-panel (their translucency is the precedent, the warm grey is
+    Rod's), 5px margin-&gt;the blockout's 10px gap.<br>
+    <b>The only translucent fill in that whole source note</b>, which is the deciding property on a
+    page whose ground is a live scene. Rod's own gallery note on this exact page: "stacked bordered
+    panels ... personality through framing rather than typography."
+  </p>
+  <div class="stage">
+    <div class="res" style="--res:112px">
+      <article class="bio bio--panel">
+        <h2 class="bio__h">Hey There, I'm Rod</h2>
+        <div class="prose">
+          <p>I'm a technical artist focused on bridging the gap between art and engineering. I build
+            shaders, tools, and rendering pipelines that help artists work faster and create more
+            expressive visuals.</p>
+          <p>I started game dev in 2023 at Vancouver Film School and have been deep in the weeds of
+            real-time rendering ever since. From reverse-engineering production shaders to building
+            automated sprite baking pipelines, I love the puzzle of making complex visual systems
+            accessible.</p>
+          <p>My toolkit spans HLSL/GLSL shaders, Blender Python scripting, Unreal materials, and
+            custom tool development. I believe the best technical art is invisible, it just makes
+            everything look better.</p>
+        </div>
+      </article>
+      <p class="fit" data-slot="bio_intro"></p>
+    </div>
+    <div class="res" style="--res:138px">
+      <article class="bio bio--panel">
+        <h3 class="bio__h bio__h--lesser">More About Me</h3>
+        <div class="prose">
+          <p>Before game dev I was chasing a career in competitive esports, I've held top-ranked
+            slots in Starcraft 2, Hearthstone, Puyo Puyo Tetris, and more. That competitive drive
+            for optimization carries directly into my technical work.</p>
+          <p>When I'm not at the computer I'm usually reading, watching anime, journaling, or
+            thinking about something I recently played. Feel free to explore my site,
+            <a href="/game-design/">check out my game design work</a>, or read my
+            <a href="/ramblings/">ramblings</a>.</p>
+        </div>
+      </article>
+      <p class="fit" data-slot="bio_more"></p>
+    </div>
+  </div>
+
+  <!-- ==================================================================================== -->
+  <h2 class="v">V2 &middot; Heading card - the heading is the box, the prose sits bare under it</h2>
+  <p class="vsrc">
+    <b>SOURCE</b> cyanilux <code>h2, h3, h4</code>, style.css?v=12 lines 817-832, read from source
+    and transcribed in <b>sources/section-and-heading-blocks.md</b> section A. 20 h2 on one page of
+    theirs. <span class="tier">TIER: Remixed</span> &middot; <b>IDEA-ORIGIN</b> theirs.<br>
+    <b>Verbatim:</b> padding 7px 20px, the 10px solid left edge, and the idea that h2/h3/h4 all get
+    the SAME box so no size escalation carries hierarchy. <b>Ours:</b> radius 7-&gt;0, accent
+    #00aabb-&gt;the ladder colour of the level (palette law: no cool accent outside the sky),
+    opaque #282828-&gt;--color-panel.<br>
+    <b>Could not transfer:</b> their <code>margin-top:30px</code> above the heading - the head
+    is always its block's first child here, so it never fires. Dropped rather than kept as a dead
+    rule. Their nesting-by-fill (#282828-&gt;#303030) is also not taken: it keys off containment and
+    these two blocks are siblings.
+  </p>
+  <div class="stage">
+    <div class="res" style="--res:112px">
+      <article class="bio bio--headcard">
+        <h2 class="bio__h">Hey There, I'm Rod</h2>
+        <div class="prose">
+          <p>I'm a technical artist focused on bridging the gap between art and engineering. I build
+            shaders, tools, and rendering pipelines that help artists work faster and create more
+            expressive visuals.</p>
+          <p>I started game dev in 2023 at Vancouver Film School and have been deep in the weeds of
+            real-time rendering ever since. From reverse-engineering production shaders to building
+            automated sprite baking pipelines, I love the puzzle of making complex visual systems
+            accessible.</p>
+          <p>My toolkit spans HLSL/GLSL shaders, Blender Python scripting, Unreal materials, and
+            custom tool development. I believe the best technical art is invisible, it just makes
+            everything look better.</p>
+        </div>
+      </article>
+      <p class="fit" data-slot="bio_intro"></p>
+    </div>
+    <div class="res" style="--res:138px">
+      <article class="bio bio--headcard">
+        <h3 class="bio__h bio__h--lesser">More About Me</h3>
+        <div class="prose">
+          <p>Before game dev I was chasing a career in competitive esports, I've held top-ranked
+            slots in Starcraft 2, Hearthstone, Puyo Puyo Tetris, and more. That competitive drive
+            for optimization carries directly into my technical work.</p>
+          <p>When I'm not at the computer I'm usually reading, watching anime, journaling, or
+            thinking about something I recently played. Feel free to explore my site,
+            <a href="/game-design/">check out my game design work</a>, or read my
+            <a href="/ramblings/">ramblings</a>.</p>
+        </div>
+      </article>
+      <p class="fit" data-slot="bio_more"></p>
+    </div>
+  </div>
+
+  <!-- ==================================================================================== -->
+  <h2 class="v">V3 &middot; Bare - no box at all, one rule between the blocks</h2>
+  <p class="vsrc">
+    <b>SOURCE</b> iquilezles.org/style.css?v=2, transcribed in
+    <b>sources/section-and-heading-blocks.md</b> section E and <b>sources/iquilezles-prose.md</b>.
+    <span class="tier">TIER: Remixed</span> &middot; <b>IDEA-ORIGIN</b> theirs.<br>
+    <b>Verbatim:</b> the principle, quoted from the held note - "no boxes, borders,
+    backgrounds, radii, shadows or padding are ever used to separate a component from prose". The
+    section break is a bare <code>&lt;hr&gt;</code>: there is <b>no hr{} rule in their stylesheet</b>
+    (grep returns 0), so there is none here either. That absence is the transcription.<br>
+    <b>Ours, and it is an inversion:</b> their heading is pure white over #c0c0c0 body text; ours
+    recedes because decisions.css makes body copy the brightest thing on the page. Mechanism kept,
+    direction flipped.<br>
+    <b>Why it is in the set:</b> the source note's own words - "the floor of the range.
+    Included so the boxed options have something to be judged against; without it every variant on
+    the page is a box and the comparison is rigged."
+  </p>
+  <div class="stage">
+    <div class="res" style="--res:112px">
+      <article class="bio bio--bare">
+        <h2 class="bio__h">Hey There, I'm Rod</h2>
+        <div class="prose">
+          <p>I'm a technical artist focused on bridging the gap between art and engineering. I build
+            shaders, tools, and rendering pipelines that help artists work faster and create more
+            expressive visuals.</p>
+          <p>I started game dev in 2023 at Vancouver Film School and have been deep in the weeds of
+            real-time rendering ever since. From reverse-engineering production shaders to building
+            automated sprite baking pipelines, I love the puzzle of making complex visual systems
+            accessible.</p>
+          <p>My toolkit spans HLSL/GLSL shaders, Blender Python scripting, Unreal materials, and
+            custom tool development. I believe the best technical art is invisible, it just makes
+            everything look better.</p>
+        </div>
+      </article>
+      <p class="fit" data-slot="bio_intro"></p>
+    </div>
+    <div class="res" style="--res:138px">
+      <article class="bio bio--bare">
+        <hr>
+        <h3 class="bio__h bio__h--lesser">More About Me</h3>
+        <div class="prose">
+          <p>Before game dev I was chasing a career in competitive esports, I've held top-ranked
+            slots in Starcraft 2, Hearthstone, Puyo Puyo Tetris, and more. That competitive drive
+            for optimization carries directly into my technical work.</p>
+          <p>When I'm not at the computer I'm usually reading, watching anime, journaling, or
+            thinking about something I recently played. Feel free to explore my site,
+            <a href="/game-design/">check out my game design work</a>, or read my
+            <a href="/ramblings/">ramblings</a>.</p>
+        </div>
+      </article>
+      <p class="fit" data-slot="bio_more"></p>
+    </div>
+  </div>
+</div>
+
+<button id="groundtoggle">ground off</button>
+</div>

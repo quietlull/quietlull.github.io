@@ -1,0 +1,185 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* goo-toggle — harumaki gooey liquid toggle.
+   PROVENANCE (Remixed): nicolasjesenberger (codepen.io/nicolasjesenberger/pen/xxmbvxL),
+   Gemini-finalized in rework-harumaki, recolored amber-on-night. BEM rename only — geometry,
+   timing curves and the goo filter values are the source's.
+   The SVG filter id `goo-toggle-goo` is DOCUMENT-GLOBAL: exactly one defs block per page. */
+.goo-toggle {
+  position: relative;
+  display: inline-block;
+  height: 38px;
+  aspect-ratio: 232 / 72;
+  cursor: pointer;
+  user-select: none;
+}
+
+.goo-toggle--small {
+  height: 22px;
+}
+
+.goo-toggle__input {
+  appearance: none;
+  margin: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.goo-toggle__frame {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  filter: drop-shadow(0 2px 10px color-mix(in srgb, var(--color-glow) 35%, transparent));
+}
+
+.goo-toggle--small .goo-toggle__frame {
+  filter: drop-shadow(0 1px 5px color-mix(in srgb, var(--color-glow) 30%, transparent));
+}
+
+.goo-toggle__track {
+  fill: color-mix(in srgb, var(--color-text) 6%, transparent);
+  stroke: color-mix(in srgb, var(--color-glow) 30%, transparent);
+  stroke-width: 3;
+  transition: stroke 0.25s ease;
+}
+
+.goo-toggle__input:focus-visible ~ .goo-toggle__frame .goo-toggle__track {
+  stroke: var(--color-gold);
+}
+
+.goo-toggle__capsule,
+.goo-toggle__orb,
+.goo-toggle__tail {
+  fill: var(--color-gold-deep);
+  transform-box: fill-box;
+  backface-visibility: hidden;
+}
+
+.goo-toggle__capsule {
+  transform-origin: 100% 50%;
+  transform: translateX(24px) scale(0);
+  transition: transform 320ms cubic-bezier(0.6, 0, 0.75, 0.7) 340ms;
+}
+
+.goo-toggle__input:checked ~ .goo-toggle__frame .goo-toggle__capsule {
+  transform: translateX(0) scale(1);
+  transition: transform 620ms cubic-bezier(0.4, 0, 0.2, 1) 50ms;
+}
+
+.goo-toggle__orb-shift {
+  transform: translateX(0);
+  transition: transform 600ms cubic-bezier(0.3, 0, 0.25, 1) 60ms;
+}
+
+.goo-toggle__input:checked ~ .goo-toggle__frame .goo-toggle__orb-shift {
+  transform: translateX(-30px);
+}
+
+.goo-toggle__orb {
+  transform-origin: 0% 50%;
+  transform: scale(1);
+  transition: transform 600ms cubic-bezier(0.25, 0, 0.2, 1) 50ms;
+}
+
+.goo-toggle__input:checked ~ .goo-toggle__frame .goo-toggle__orb {
+  transform: scale(0);
+  transition: transform 320ms cubic-bezier(0.6, 0, 0.75, 0.7) 420ms;
+}
+
+.goo-toggle__tail {
+  transform: translateX(114px);
+  transition: transform 750ms cubic-bezier(0.45, 0, 0.25, 1);
+}
+
+.goo-toggle__input:checked ~ .goo-toggle__frame .goo-toggle__tail {
+  transform: translateX(0);
+}
+
+.goo-toggle__word,
+.goo-toggle__state {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  color: var(--color-muted);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.goo-toggle--small .goo-toggle__word,
+.goo-toggle--small .goo-toggle__state {
+  font-size: 0.46rem;
+  letter-spacing: 0.02em;
+}
+
+.goo-toggle__word {
+  left: 2.5%;
+  width: 63%;
+  transition: color 0.25s 0.45s, font-weight 0.25s 0.45s;
+}
+
+.goo-toggle__state {
+  left: 71.5%;
+  width: 26%;
+  transition: color 0.25s 0.5s, font-weight 0.25s 0.5s;
+}
+
+.goo-toggle__input:checked ~ .goo-toggle__word,
+.goo-toggle__input:not(:checked) ~ .goo-toggle__state {
+  color: var(--color-night);
+  font-weight: 700;
+}
+
+.goo-toggle__input:checked ~ .goo-toggle__word {
+  transition: color 0.25s 0.35s, font-weight 0.25s 0.35s;
+}
+
+.goo-toggle__input:not(:checked) ~ .goo-toggle__state {
+  transition: color 0.25s 0.4s, font-weight 0.25s 0.4s;
+}
+
+.goo-toggle-demo {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .goo-toggle__capsule,
+  .goo-toggle__orb,
+  .goo-toggle__orb-shift,
+  .goo-toggle__tail,
+  .goo-toggle__word,
+  .goo-toggle__state {
+    transition: none !important;
+  }
+}
+}

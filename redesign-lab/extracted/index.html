@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Extracted components — test bench</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Shippori+Mincho:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/settings.css" />
+    <link rel="stylesheet" href="styles/generic.css" />
+    <link rel="stylesheet" href="bench/bench.css" />
+  </head>
+  <body>
+    <div class="bench">
+      <nav class="bench__nav">
+        <p class="bench__brand">extracted / bench</p>
+        <div class="bench__menu" data-bench-menu></div>
+      </nav>
+      <main class="bench__stage">
+        <p class="bench__title" data-bench-title></p>
+        <div class="bench__mount" data-bench-mount></div>
+      </main>
+      <aside class="bench__tuner">
+        <p class="bench__brand">tune</p>
+        <p class="bench__hint">
+          mt/mb = space above/below (px) · zoom = scale · gap (px) · maxw (px). Blank = design default.
+          Hover a row to highlight it. Values persist and flow to aggregate.html.
+        </p>
+        <div data-bench-tune-rows></div>
+        <div class="bench__tune-actions">
+          <button type="button" data-bench-copy>Copy tunes</button>
+          <button type="button" data-bench-reset>Reset all</button>
+        </div>
+      </aside>
+    </div>
+    <script type="module" src="bench/bench.js"></script>
+  </body>
+</html>

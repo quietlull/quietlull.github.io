@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TOOL ICONS - the devicon set</title>
+<!--
+  ===== TOOL ICONS (2026-08-22, ROD) =====
+  Rod: "icons being mutipath is perfectly fine lets go with that" -> "please show me the new dev
+  icons". So: the real brand marks, at the size the skills row would use them.
+
+  SET: devicon (MIT) for C#, Unity, Blender, Git; RenderDoc from its own site. All saved to
+  references/tool-icons/ with SOURCES.md. Three.js dropped on Rod's instruction.
+
+  TWO SLOTS HAVE NO MARK AND ARE DRAWN AS GAPS, not filled with something invented: HLSL and
+  Compute. Neither is a product, so neither has an official logo. OpenGL and Vulkan are held as
+  concrete alternatives if Rod would rather name a real API than keep a generic glyph - both shown
+  in the second row so the choice is visible rather than described.
+
+  ROW 3 IS THE COST. The same tools as single-path Simple Icons marks, recoloured to our gold.
+  That version keeps the pathLength draw-in and obeys the palette law; it also throws away the
+  brand colour that makes row 1 instantly readable. Both are on the page because the trade is real.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:blur(20px) brightness(.6) saturate(1.03)}
+.bg-1{opacity:1}.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+@keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.bg-2{animation:none;opacity:.6}}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+
+.wrap{width:min(1080px,92vw);margin:0 auto;padding:52px 0 140px;position:relative;z-index:1}
+.case{margin-bottom:72px}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;background:#7ee0b8;color:#0d2a12}
+.badge--warn{background:#c9a227;color:#141414}
+.case h2{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400}
+.note{font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:10px 0 22px;max-width:78ch}
+.note b{color:var(--color-text);font-weight:500}
+.note code{color:var(--color-gold)}
+
+/* the row, sized as the skills row would use it */
+.tools{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start;
+  background:rgba(8,15,27,.6);border:1px solid var(--color-line-faint);padding:30px 32px}
+.tool{display:flex;flex-direction:column;align-items:center;gap:9px;width:76px;text-align:center}
+.tool img,.tool svg{width:48px;height:48px;display:block}
+.tool span{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--color-muted)}
+.tool--gap .box{width:48px;height:48px;border:1.5px dashed rgba(255,255,255,.22);
+  display:grid;place-items:center;font-family:var(--font-mono);font-size:16px;color:#6f6f6f}
+.tool--gap span{color:#c9a227}
+
+/* THE DRAW-IN ROW. Rod 2026-08-22: "can you not convert them into the simple icons that can draw
+   in?" - correct, they were static. The tint was working (computed fill:none, stroke gold) but
+   pathLength was never set and there was no dash animation, so nothing drew.
+
+   pathLength="1" renormalises EVERY path to a length of 1 regardless of its real geometry, which is
+   the whole trick: one dasharray and one dashoffset animation drive nine completely different marks
+   identically, with no per-icon measurement. That is the mechanism read off stephanewillems.be and
+   recorded in sources/stephanewillems-skills.md. */
+.gold svg{width:48px;height:48px;overflow:visible}
+.gold path{fill:none;stroke:var(--color-gold-deep);stroke-width:.7;
+  stroke-linejoin:round;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1;
+  animation:drawin 1.5s ease forwards;animation-delay:var(--d,0s)}
+@keyframes drawin{to{stroke-dashoffset:0}}
+/* the OS preference wins: no draw, just the finished outline */
+@media (prefers-reduced-motion:reduce){
+  .gold path{animation:none;stroke-dashoffset:0}
+}
+#replay{background:none;border:1px solid #555;color:#bbb;font:9px var(--font-mono);
+  letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;cursor:pointer;margin-bottom:14px}
+#replay:hover{border-color:var(--color-gold);color:var(--color-gold)}
+
+/* ---- THE SIMPLE ICONS SET IN DEEP GOLD (Rod 2026-08-22: "just show me what the simple icons look
+   like in the... deep gold").
+   Tinted with a CSS MASK, not by editing the files. The mark becomes the mask and the colour is a
+   flat fill behind it, so ANY svg tints regardless of the fills baked into it - no inlining, no
+   rewriting the sourced file, and it works for multipath marks too.
+   This also sidesteps the contrast problem measured earlier: Unreal's own #0E1128 is 1.04:1 on our
+   night ground, which is invisible. Masked, brand colour never enters the page. ---- */
+.si{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start;
+  background:rgba(8,15,27,.6);border:1px solid var(--color-line-faint);padding:30px 32px}
+.si .tool span{color:var(--color-muted)}
+.si i{display:block;width:48px;height:48px;background:var(--color-gold-deep);
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-size:contain;mask-size:contain;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.si--gold i{background:var(--color-gold-deep)}
+.si--bright i{background:var(--color-gold)}
+.si--soft i{background:var(--color-glow-soft)}
+
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--font-mono);
+  font-size:10px;color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold)}
+</style>
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
+<div id="scrim"></div>
+
+<header class="top">
+  <h1>Tool icons</h1>
+  <span class="sub">the devicon set, at skills-row size &middot;
+    <a href="/redesign-lab/">lab</a> &middot;
+    <a href="/redesign-lab/final-landing.html">final-landing</a></span>
+</header>
+
+<div class="wrap">
+
+  <section class="case">
+    <div class="tagrow"><span class="badge">devicon &middot; MIT</span>
+      <h2>Row 1 &middot; the marks you picked, full brand colour</h2></div>
+    <div class="note">C#, Unity, Blender and Git from <b>devicon</b> (MIT); <b>RenderDoc</b> from its
+      own site. Three.js dropped. <b>HLSL and Compute are drawn as GAPS</b> rather than filled with
+      something invented - neither is a product, so neither has an official mark.</div>
+    <div class="tools">
+      <div class="tool"><img src="/redesign-lab/references/tool-icons/dev-csharp.svg" alt="C#"><span>C#</span></div>
+      <div class="tool"><img src="/redesign-lab/references/tool-icons/dev-unity.svg" alt="Unity"><span>Unity</span></div>
+      <div class="tool"><img src="/redesign-lab/references/tool-icons/dev-blender.svg" alt="Blender"><span>Blender</span></div>
+      <div class="tool"><img src="/redesign-lab/references/tool-icons/dev-git.svg" alt="Git"><span>Git</span></div>
+      <div class="tool"><img src="/redesign-lab/references/tool-icons/renderdoc.svg" alt="RenderDoc"><span>RenderDoc</span></div>
+      <div class="tool tool--gap"><div class="box">?</div><span>HLSL</span></div>
+      <div class="tool tool--gap"><div class="box">?</div><span>Compute</span></div>
+    </div>
+  </section>
+
+  <section class="case">
+    <div class="tagrow"><span class="badge--warn badge">the two gaps</span>
+      <h2>Row 2 &middot; concrete APIs, if you would rather name one than keep a glyph</h2></div>
+    <div class="note">Both are real marks with real logos, so either would close the Compute slot
+      honestly. <b>Naming an API is a content decision, not a design one</b> - it changes what the
+      row claims about you, so it is yours.</div>
+    <div class="tools">
+      <div class="tool"><img src="/redesign-lab/references/tool-icons/dev-vulkan.svg" alt="Vulkan"><span>Vulkan</span></div>
+      <div class="tool"><img src="/redesign-lab/references/tool-icons/dev-opengl.svg" alt="OpenGL"><span>OpenGL</span></div>
+    </div>
+  </section>
+
+  <section class="case gold">
+    <div class="tagrow"><span class="badge">simple icons &middot; CC0</span>
+      <h2>Row 3 &middot; what you give up &mdash; single-path, gold, draw-in survives</h2></div>
+    <div class="note">The same three tools as <b>single-path</b> Simple Icons marks, stroked in our
+      gold. This version keeps the <code>pathLength="1"</code> draw-in and obeys the palette law,
+      and it throws away the brand colour that makes row 1 readable at a glance.
+      <b>These actually draw in</b> - <code>pathLength="1"</code> plus an animated dash offset,
+      staggered 0.09s apart. That one attribute renormalises every path to length 1, so ONE
+      animation drives nine different marks with no per-icon measurement. Hit replay to watch it
+      again. <code>prefers-reduced-motion</code> skips the draw and shows the finished outline.<br><br>
+      There is no C# here because Simple Icons carries no C# mark, which is what forced the
+      original choice.</div>
+    <button type="button" id="replay">Replay the draw-in</button>
+    <div class="tools" id="goldrow"></div>
+  </section>
+
+
+  <section class="case">
+    <div class="tagrow"><span class="badge">simple icons &middot; CC0</span>
+      <h2>The set in DEEP GOLD &middot; --color-gold-deep #f59e0b</h2></div>
+    <div class="note">All nine marks, tinted with a <b>CSS mask</b> rather than by editing the
+      sourced files - the mark becomes the mask and the colour sits behind it, so the file on disk
+      stays exactly as downloaded and its citation stays true.<br><br>
+      This also solves the contrast problem outright. Measured against the night ground,
+      <b>Unreal's own <code>#0E1128</code> is 1.04:1, which is invisible</b>, and the devicon Unity,
+      Blender and Vulkan all sit at 2.2-2.6:1. Masked, no brand colour reaches the page at all and
+      every mark reads the same.<br><br>
+      Includes your four picks - <b>Python, Unreal, Godot, Maya</b> - plus Unity, Blender and Git
+      already held, and OpenGL / Vulkan as Compute candidates. <b>No C#</b>: Simple Icons carries
+      none, verified against their 3,453-icon index.</div>
+    <div class="si si--gold">
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/unity.svg);mask-image:url(/redesign-lab/references/tool-icons/unity.svg)"></i><span>Unity</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/unrealengine.svg);mask-image:url(/redesign-lab/references/tool-icons/unrealengine.svg)"></i><span>Unreal</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/godotengine.svg);mask-image:url(/redesign-lab/references/tool-icons/godotengine.svg)"></i><span>Godot</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/blender.svg);mask-image:url(/redesign-lab/references/tool-icons/blender.svg)"></i><span>Blender</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/autodeskmaya.svg);mask-image:url(/redesign-lab/references/tool-icons/autodeskmaya.svg)"></i><span>Maya</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/python.svg);mask-image:url(/redesign-lab/references/tool-icons/python.svg)"></i><span>Python</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/git.svg);mask-image:url(/redesign-lab/references/tool-icons/git.svg)"></i><span>Git</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/opengl.svg);mask-image:url(/redesign-lab/references/tool-icons/opengl.svg)"></i><span>OpenGL</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/vulkan.svg);mask-image:url(/redesign-lab/references/tool-icons/vulkan.svg)"></i><span>Vulkan</span></div>
+    </div>
+  </section>
+
+  <section class="case">
+    <div class="tagrow"><span class="badge">for comparison</span>
+      <h2>The same set, one tier up &middot; --color-gold #fbbf24</h2></div>
+    <div class="note">The brighter gold, in case deep gold sits too close to the ground once the
+      scene is behind it.</div>
+    <div class="si si--bright">
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/unity.svg);mask-image:url(/redesign-lab/references/tool-icons/unity.svg)"></i><span>Unity</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/unrealengine.svg);mask-image:url(/redesign-lab/references/tool-icons/unrealengine.svg)"></i><span>Unreal</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/godotengine.svg);mask-image:url(/redesign-lab/references/tool-icons/godotengine.svg)"></i><span>Godot</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/blender.svg);mask-image:url(/redesign-lab/references/tool-icons/blender.svg)"></i><span>Blender</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/autodeskmaya.svg);mask-image:url(/redesign-lab/references/tool-icons/autodeskmaya.svg)"></i><span>Maya</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/python.svg);mask-image:url(/redesign-lab/references/tool-icons/python.svg)"></i><span>Python</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/git.svg);mask-image:url(/redesign-lab/references/tool-icons/git.svg)"></i><span>Git</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/opengl.svg);mask-image:url(/redesign-lab/references/tool-icons/opengl.svg)"></i><span>OpenGL</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/vulkan.svg);mask-image:url(/redesign-lab/references/tool-icons/vulkan.svg)"></i><span>Vulkan</span></div>
+    </div>
+  </section>
+
+  <section class="case">
+    <div class="tagrow"><span class="badge">for comparison</span>
+      <h2>And the highest value &middot; --color-glow-soft #ffd9a8</h2></div>
+    <div class="note">The warm highlight tier. Quietest of the three against a lit scene.</div>
+    <div class="si si--soft">
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/unity.svg);mask-image:url(/redesign-lab/references/tool-icons/unity.svg)"></i><span>Unity</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/unrealengine.svg);mask-image:url(/redesign-lab/references/tool-icons/unrealengine.svg)"></i><span>Unreal</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/godotengine.svg);mask-image:url(/redesign-lab/references/tool-icons/godotengine.svg)"></i><span>Godot</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/blender.svg);mask-image:url(/redesign-lab/references/tool-icons/blender.svg)"></i><span>Blender</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/autodeskmaya.svg);mask-image:url(/redesign-lab/references/tool-icons/autodeskmaya.svg)"></i><span>Maya</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/python.svg);mask-image:url(/redesign-lab/references/tool-icons/python.svg)"></i><span>Python</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/git.svg);mask-image:url(/redesign-lab/references/tool-icons/git.svg)"></i><span>Git</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/opengl.svg);mask-image:url(/redesign-lab/references/tool-icons/opengl.svg)"></i><span>OpenGL</span></div>
+      <div class="tool"><i style="-webkit-mask-image:url(/redesign-lab/references/tool-icons/vulkan.svg);mask-image:url(/redesign-lab/references/tool-icons/vulkan.svg)"></i><span>Vulkan</span></div>
+    </div>
+  </section>
+</div>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; tool icons &middot;
+  devicon MIT + renderdoc.org &middot; HLSL and Compute have no official mark</div>
+
+<script>
+/* Row 3 inlines the single-path marks so their geometry can be STROKED. An <img> cannot be
+   recoloured or stroked from outside, which is exactly why the draw-in needs inline SVG. */
+(function(){
+  var row = document.getElementById('goldrow');
+  var SET = [['unity','Unity'],['unrealengine','Unreal'],['godotengine','Godot'],
+             ['blender','Blender'],['autodeskmaya','Maya'],['python','Python'],
+             ['git','Git'],['opengl','OpenGL'],['vulkan','Vulkan']];
+
+  /* fetched in order and appended in order, so the stagger reads left to right rather than in
+     whatever order the network happened to resolve. */
+  Promise.all(SET.map(function(pair){
+    return fetch('/redesign-lab/references/tool-icons/' + pair[0] + '.svg')
+      .then(function(r){ return r.text(); })
+      .then(function(svg){ return [pair[1], svg]; });
+  })).then(function(rows){
+    rows.forEach(function(row2, i){
+      var cell = document.createElement('div');
+      cell.className = 'tool';
+      cell.innerHTML = row2[1] + '<span>' + row2[0] + '</span>';
+      var el = cell.querySelector('svg');
+      el.setAttribute('width', '48');
+      el.setAttribute('height', '48');
+      el.removeAttribute('fill');           /* the file's brand fill has no business here */
+      el.querySelectorAll('path').forEach(function(p){
+        p.setAttribute('pathLength', '1');  /* THE trick: every mark normalised to length 1 */
+      });
+      cell.style.setProperty('--d', (i * 0.09) + 's');
+      row.appendChild(cell);
+    });
+  });
+
+  document.getElementById('replay').addEventListener('click', function(){
+    row.querySelectorAll('path').forEach(function(p){
+      p.style.animation = 'none';
+      void p.offsetWidth;                   /* forced reflow: restarts the animation */
+      p.style.animation = '';
+    });
+  });
+})();
+</script>
+<script src="/redesign-lab/hana-bloom.js"></script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACHIEVEMENTS - unlock popup + trophy wall</title>
+<!--
+  ===== ACHIEVEMENT SYSTEM (2026-08-22) =====
+  Rod: "the achievement system also needs a new coat of paint... create some examples for the
+  achievement system and report back to me" (P68), plus the three deprecations in #45:
+    "lets not let them unlock stuff this feature is deprecated, additional deprecated features
+     include the confetti i am also thinking we minimize the achievement popups too"
+
+  WHAT THE SYSTEM ACTUALLY IS, read from _javascript/modules/components/achievements.js rather
+  than from memory: 29 achievements in 5 categories (Explorer 8, Reader 6, Interactor 8 counting
+  the lantern tier, Secret 2, Meta 5), persisted under localStorage key `rod-achievements`.
+  FOUR of the 29 carry a `reward`:
+      pyrotechnician  -> auto-fireworks   <- DEPRECATED by #45
+      lantern-tapper  -> lantern-shape
+      lantern-painter -> lantern-color
+      lantern-master  -> lantern-panel
+  ALL FOUR ARE NOW SCRAPPED. Rod 2026-08-22 (P77): "lets scrap the idea of unlocks they get an
+  achievement and thats fine. we can think of additional ideas later on." #45 killed the fireworks
+  one by name; this finishes the job and fully retires D12 (reward-as-unlockable). An achievement is
+  its own payoff. At port time that means deleting the `reward:` keys, the `achievement:reward`
+  dispatch, and the reward branch of the firework emitter - none of which happens here, because D22
+  keeps `_javascript/` off limits until the port.
+
+  THE CURRENT UNLOCK POPUP ("toast" is the dev word for it - the small box that slides in
+  from the corner and fades). Measured from _sass/abstracts/_animations.scss:292 - it is the control below:
+      max-width 280px, padding 1rem 1.25rem, border-radius 12px, 1px gold border,
+      box-shadow: 0 8px 32px shadow-a40, 0 0 20px gold-10   <- the second one is a GLOW
+      slides in translateX(120%), 4s dwell, stacks at 80px intervals
+  Three AI tells in that one rule: a constant glow (against the de-glow principle - "it ignites on
+  interaction, it does not glow at rest"), a 12px radius (against Rod's locked square-by-default),
+  and on the sibling debug panel a backdrop-filter blur (glassmorphism).
+
+  PROVENANCE. Every treatment below reuses a source verified THIS SESSION, with its note saved:
+    A  zutomayo .ztmy-pcmove-* + .windowmini   sources/zutomayo-pcmove-window.md
+    B  dimden .box                             sources/section-and-heading-blocks.md
+    C  cyanilux heading card                   sources/section-and-heading-blocks.md
+    D  washi tape (Rod's own site convention)  sources/gneiss-washi-tape.md + serrated-edge-css.md
+    E  is OURS - the minimum case, labelled as ours, not dressed in a citation.
+
+  GREYBOX? No, and deliberately. D8's greybox law governs LAYOUT blockouts. This is a component
+  treatment pass where the question is partly "does it still read as a reward", so the tape keeps
+  its section colour and the rest stays neutral. Colour beyond that is D18's, still deferred.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+header.top{position:sticky;top:0;z-index:60;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:44px 0 160px;position:relative;z-index:1}
+.lede{font-family:var(--font-mono);font-size:12px;line-height:1.9;color:var(--color-muted);
+  border:1px solid var(--color-line-faint);padding:18px 20px;margin-bottom:48px;max-width:92ch}
+.lede b{color:var(--color-text);font-weight:500}
+.lede code{color:var(--color-gold)}
+.case{margin-bottom:56px}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;background:#7fa87f;color:#141414}
+.badge--ours{background:#b06a6a}
+.badge--now{background:#8a8a8a}
+.case h2{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400}
+.prov{font-family:var(--font-mono);font-size:11px;line-height:1.85;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:10px 0 20px;max-width:88ch}
+.prov b{color:var(--color-text);font-weight:500}
+.prov code{color:var(--color-gold)}
+.prov a{color:var(--color-gold)}
+.stage{background:#141414;border:1px solid #2c2c2c;padding:34px 30px;display:flex;gap:26px;
+  align-items:flex-start;flex-wrap:wrap}
+.size{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:#6f6f6f;margin-top:10px}
+
+/* ======================= 0 - THE CURRENT TOAST, verbatim from _animations.scss:292 ==========
+   Reproduced exactly so the comparison is honest, tokens substituted for the lab's equivalents. */
+.t-now{position:relative;background:rgba(23,27,38,.95);border:1px solid rgba(251,191,36,.3);
+  border-radius:12px;padding:1rem 1.25rem;width:280px;display:flex;align-items:flex-start;
+  gap:.75rem;box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 20px rgba(251,191,36,.1)}
+.t-now .ic{font-size:1.5rem;flex-shrink:0;line-height:1}
+.t-now .ti{color:var(--color-gold);font-size:.85rem;font-weight:600;margin-bottom:.15rem}
+.t-now .de{color:var(--color-muted);font-size:.75rem;line-height:1.4}
+
+/* ======================= A - zutomayo mini-window ==========================================
+   VERBATIM geometry from https://zutomayo.net/themes/zutomayo/_assets/css/app.css:
+     border: solid 1px | box-shadow: 3px 3px 0 (ZERO blur) | title bar height 46px
+     close button 28x28 at top:11 right:11 | collapse target height == the bar | transition height .3s
+   Radius squared per Rod's locked shape rule; their purple replaced by the gold token.
+   The collapse IS the "minimise" Rod asked for: the popup folds into its own title bar. */
+.t-win{position:relative;width:300px;background:rgba(20,20,20,.92);border:solid 1px #4a4a4a;
+  box-shadow:3px 3px 0 rgba(0,0,0,.55);overflow:hidden;transition:height .3s;height:118px}
+.t-win.mini{height:46px}
+.t-win .bar{position:absolute;top:0;left:0;width:100%;height:46px;padding:10px;line-height:26px;
+  color:#141414;background:var(--color-gold-deep,#F59E0B);font-family:var(--font-mono);
+  font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.t-win .x{position:absolute;top:11px;right:11px;width:28px;height:28px;border:1px solid #141414;
+  display:grid;place-items:center;font-size:13px;color:#141414;line-height:0}
+.t-win .body{padding:46px 16px 14px}
+.t-win .ti{font-size:.9rem;font-weight:500}
+.t-win .de{color:#9a9a9a;font-size:.75rem}
+
+/* ======================= B - dimden box, one line ==========================================
+   VERBATIM: background #000000a8 (TRANSLUCENT, 66% black), border 2px solid #383838,
+   padding 10px 15px. Radius squared. One line only - this is the most minimised sourced option. */
+.t-box{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.66);border:2px solid #383838;
+  padding:10px 15px;width:330px}
+.t-box .ic{font-size:1.05rem;line-height:1}
+.t-box .ti{font-size:.82rem}
+.t-box .de{color:#8a8a8a;font-size:.72rem;margin-left:auto;font-family:var(--font-mono)}
+
+/* ======================= C - cyanilux accent card =========================================
+   VERBATIM: padding 7px 20px, background #282828, border-left 10px solid <accent>.
+   Their radius 7px squared to 0. The 10px bar is the whole marker - no icon needed. */
+.t-bar{background:#282828;border-left:10px solid var(--color-glow,#ff6a00);padding:7px 20px;
+  width:330px}
+.t-bar .ti{font-size:.85rem}
+.t-bar .de{color:#8a8a8a;font-size:.72rem}
+
+/* ======================= D - taped ==========================================================
+   The site's own convention (Rod, 2026-08-21), now with the case-D torn ends he picked
+   2026-08-22. The tape is the marker, so the card carries no border and no icon at all. */
+.t-tape{position:relative;background:rgba(27,27,27,.72);padding:16px 20px;
+  width:calc(300px - 2 * (26px - 7px));margin-left:19px}
+.t-tape .ti{font-size:.85rem}
+.t-tape .de{color:#8a8a8a;font-size:.72rem}
+
+/* ======================= E - the minimum. OURS. ===========================================
+   A single row: icon, title, nothing else. No box, no border, one hairline above.
+   Included because "minimise" has a floor and someone should look at it before we stop short. */
+.t-min{display:flex;align-items:center;gap:9px;border-top:1px solid #3a3a3a;padding:9px 2px 0;
+  width:300px;font-size:.8rem}
+.t-min .ic{font-size:.95rem}
+.t-min .de{color:#6f6f6f;font-size:.7rem;margin-left:auto;font-family:var(--font-mono)}
+
+/* ======================= PICKED - B, AT 200x76 ==========================================
+   ROD 2026-08-22 (P71): "maybe we make the acheivements 200x76 square and the dim den B style".
+
+   B is dimden's `.box`, verbatim: background #000000a8 (TRANSLUCENT, 66% black), border
+   2px solid #383838, padding 10px 15px. Source: sources/section-and-heading-blocks.md.
+
+   TWO THINGS WORTH SAYING ABOUT THE SIZE, rather than quietly reinterpreting it.
+   1. **200x76 is not square** - it is 2.63:1. Read as the SHAPE call (zero radius, which B already
+      is); the 200x76 footprint is used exactly as given.
+   2. At 200x76 the ONE-LINE layout B was drawn as does not fit - 200px is narrower than the title
+      plus a trailing count. So the text wraps to two lines beside the icon, which is what 76px of
+      height is for. That is a real change to B, and it is his number driving it.
+
+   Everything else about B is unchanged: translucent so the live scene reads through, 2px border,
+   no radius, no glow. */
+.t-pick{display:flex;align-items:center;gap:11px;background:rgba(0,0,0,.66);
+  border:2px solid #383838;padding:10px 15px;width:200px;height:76px}
+.t-pick .ic{font-size:1.35rem;line-height:1;flex-shrink:0}
+.t-pick .tx{min-width:0}
+.t-pick .ti{font-size:.78rem;line-height:1.25}
+.t-pick .de{color:#8a8a8a;font-size:.66rem;line-height:1.35;margin-top:3px}
+
+/* ======================= the trophy display (About page needs one) ======================== */
+.trophies{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,64px));gap:8px}
+.tr{width:64px;height:64px;display:grid;place-items:center;font-size:1.35rem;
+  background:rgba(27,27,27,.72);border:1px solid #333;transition:transform .18s}
+.tr:hover{transform:scale(1.3);z-index:2}
+.tr.locked{color:#3a3a3a;background:rgba(20,20,20,.5);border-style:dashed}
+.catrow{margin-bottom:22px}
+.catlabel{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:#7d7d7d;margin-bottom:8px;display:flex;gap:10px;align-items:baseline}
+.catlabel i{font-style:normal;color:#555}
+
+.ctl{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
+button{background:none;border:1px solid #555;color:#ddd;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--color-gold);color:var(--color-gold)}
+.note{font-family:var(--font-mono);font-size:10.5px;line-height:1.9;color:#8a8a8a;
+  border:1px dashed #3a3a3a;padding:16px 18px;margin-top:34px;max-width:92ch}
+.note b{color:#d9d9d9;font-weight:500}
+.note code{color:var(--color-gold)}
+h2.sec{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400;margin:56px 0 16px;padding-bottom:8px;
+  border-bottom:1px solid var(--color-line-faint)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Achievements &mdash; a new coat of paint</h1>
+  <span class="sub">5 popup treatments + the trophy wall &middot; all sourced</span>
+  <span class="sub"><a href="/redesign-lab/">&larr; lab index</a></span>
+</header>
+
+<div class="wrap">
+
+<div class="lede">
+  <b>Your ask:</b> <i>"the achievement system also needs a new coat of paint... create some examples"</i>,
+  plus <i>"i am also thinking we minimize the achievement popups too"</i>.<br><br>
+  <b>The current unlock popup</b> &mdash; the small box that slides in from the bottom-right when you earn an achievement, sits for 4 seconds and slides out &mdash; <b>has three AI tells in one CSS rule</b> (<code>_animations.scss:292</code>):
+  a constant <code>0 0 20px</code> gold <b>glow</b> &mdash; against the de-glow principle, which says
+  it should ignite on interaction rather than glow at rest &mdash; a <code>12px</code> radius against
+  your locked square-by-default, and on its sibling debug panel a <code>backdrop-filter: blur</code>.
+  It's the control below so the others have something to beat.<br><br>
+  <b>What the system actually holds:</b> 29 achievements, 5 categories, stored under
+  <code>rod-achievements</code>. <b>Four carry a reward</b> &mdash; and #45 kills one of them by
+  name: <code>pyrotechnician &rarr; auto-fireworks</code>. The other three are the lantern tiers
+  (shape at 25 knocks, colour at 50, panel at 100). <b>You didn't mention those, so I haven't
+  touched them</b> &mdash; question at the bottom.
+</div>
+
+<h2 class="sec">The unlock popup &mdash; the little box that slides in when you earn one</h2>
+
+<div class="case">
+  <div class="tagrow"><span class="badge badge--now">Now</span>
+    <h2>0 &middot; the popup that ships today</h2></div>
+  <div class="prov"><b>Verbatim</b> from <code>_sass/abstracts/_animations.scss:292</code>:
+    <code>max-width 280px; padding 1rem 1.25rem; border-radius 12px; box-shadow 0 8px 32px ...,
+    0 0 20px gold</code>. Slides in from <code>translateX(120%)</code>, dwells <b>4s</b>, stacks at
+    80px. The second shadow is a glow at rest.</div>
+  <div class="stage">
+    <div>
+      <div class="t-now"><span class="ic">&#127982;</span>
+        <div><div class="ti">Lantern Tapper</div><div class="de">Knocked 25 lanterns</div></div>
+      </div>
+      <div class="size">280 x 76 &middot; 12px radius &middot; glow at rest</div>
+    </div>
+  </div>
+</div>
+
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced</span>
+    <h2>A &middot; zutomayo mini-window &mdash; it folds into its own title bar</h2></div>
+  <div class="prov"><b>Source:</b> <a href="/redesign-lab/sources/zutomayo-pcmove-window.md">zutomayo.net
+    <code>.ztmy-pcmove-*</code> + <code>.windowmini</code></a>, read from their served CSS 2026-08-22.
+    Verbatim: <code>border: solid 1px</code>, <code>box-shadow: 3px 3px 0</code> (<b>zero blur</b>),
+    title bar <b>46px</b>, close button <b>28x28 at top:11 right:11</b>, and the collapse is one
+    property &mdash; <code>height: 46px</code> with <code>transition: height 0.3s</code>.<br>
+    <b>This is "minimise" in the literal sense</b>: the popup folds into its own bar instead of
+    vanishing, so an unlock stays glanceable without holding screen. Click the bar.<br>
+    <b>Changed:</b> radius squared (your locked rule), their purple <code>#6F2ADD</code> replaced by
+    the gold token. Nothing else.<br>
+    <b>Not verified:</b> whether their panels actually DRAG. The class says <code>pcmove</code> but
+    the handle is <code>cursor:pointer</code>, not <code>move</code>, and the JS was not read.</div>
+  <div class="stage">
+    <div>
+      <div class="t-win" id="win">
+        <div class="bar">Achievement<span class="x">&minus;</span></div>
+        <div class="body"><div class="ti">Lantern Tapper</div>
+          <div class="de">Knocked 25 lanterns</div></div>
+      </div>
+      <div class="size">300 x 118, folds to 300 x 46</div>
+      <div class="ctl"><button id="fold">Toggle fold</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced</span>
+    <h2>B &middot; dimden box &mdash; one line, translucent</h2></div>
+  <div class="prov"><b>Source:</b> <a href="/redesign-lab/sources/section-and-heading-blocks.md">dimden.dev
+    <code>.box</code></a>. Verbatim: <code>background:#000000a8</code> (<b>translucent</b>, 66%
+    black), <code>border:2px solid #383838</code>, <code>padding:10px 15px</code>. Radius squared.<br>
+    <b>The most minimised of the sourced options</b> &mdash; one row, and the description is
+    demoted to the right in mono so the title carries alone. Translucency matters here for the same
+    reason it did on the cards: this sits over a live scene.</div>
+  <div class="stage">
+    <div>
+      <div class="t-box"><span class="ic">&#127982;</span>
+        <span class="ti">Lantern Tapper</span><span class="de">25 lanterns</span></div>
+      <div class="size">330 x 46</div>
+    </div>
+  </div>
+</div>
+
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced</span>
+    <h2>C &middot; cyanilux accent bar &mdash; no icon at all</h2></div>
+  <div class="prov"><b>Source:</b> <a href="/redesign-lab/sources/section-and-heading-blocks.md">cyanilux.com
+    heading card</a>, <code>style.css:817</code>. Verbatim: <code>padding:7px 20px;
+    background:#282828; border-left:10px solid &lt;accent&gt;</code>, radius squared from their 7px.<br>
+    <b>The 10px bar is the entire marker</b>, which means no emoji &mdash; worth seeing, because the
+    29 achievements currently lean on emoji for all their personality and emoji render differently
+    on every platform.</div>
+  <div class="stage">
+    <div>
+      <div class="t-bar"><div class="ti">Lantern Tapper</div>
+        <div class="de">Knocked 25 lanterns</div></div>
+      <div class="size">330 x 57</div>
+    </div>
+  </div>
+</div>
+
+<div class="case">
+  <div class="tagrow"><span class="badge">Ours &mdash; site convention</span>
+    <h2>D &middot; taped &mdash; the marker is the tape</h2></div>
+  <div class="prov"><b>Source:</b> the site's own washi-tape convention (yours, 2026-08-21), now
+    carrying the <b>case D torn ends</b> you picked 2026-08-22. Notes:
+    <a href="/redesign-lab/sources/gneiss-washi-tape.md">gneiss-washi-tape.md</a> +
+    <a href="/redesign-lab/sources/serrated-edge-css.md">serrated-edge-css.md</a>.<br>
+    <b>The card carries no border and no icon</b> &mdash; the tape is the whole marker, which is
+    what makes it a convention rather than a decoration. This is also the one option that ties the
+    achievement into the rest of the site's language instead of looking bolted on.</div>
+  <div class="stage">
+    <div>
+      <div class="t-tape taped tape--green"><i class="tape tape--top"></i>
+        <div class="ti">Lantern Tapper</div><div class="de">Knocked 25 lanterns</div></div>
+      <div class="size">card 263 x 77, occupying 282 with the tape overhang</div>
+    </div>
+  </div>
+</div>
+
+<div class="case">
+  <div class="tagrow"><span class="badge badge--ours">Ours &mdash; the floor</span>
+    <h2>E &middot; the minimum &mdash; a hairline and a row</h2></div>
+  <div class="prov"><b>No source, and labelled as ours.</b> One row above a hairline: icon, title,
+    count. No box, no border, no shadow.<br>
+    <b>Here because "minimise" has a floor</b> and it is worth seeing before we stop halfway. If E
+    reads as too little, that tells us how much of the current toast was actually doing work.</div>
+  <div class="stage">
+    <div>
+      <div class="t-min"><span class="ic">&#127982;</span><span>Lantern Tapper</span>
+        <span class="de">25</span></div>
+      <div class="size">300 x 36</div>
+    </div>
+  </div>
+</div>
+
+<div class="case">
+  <div class="tagrow"><span class="badge badge--now">Motion</span>
+    <h2>See them arrive</h2></div>
+  <div class="prov">The current popup slides in from <code>translateX(120%)</code> over 0.4s and
+    dwells 4s. Fire each one to compare how it arrives, since a popup is judged moving, not sitting still. <b>Respects <code>prefers-reduced-motion</code></b> &mdash; with it on, they
+    appear without the slide.</div>
+  <div class="ctl">
+    <button data-fire="now">Fire current</button>
+    <button data-fire="win">Fire A window</button>
+    <button data-fire="box">Fire B box</button>
+    <button data-fire="bar">Fire C bar</button>
+    <button data-fire="tape">Fire D taped</button>
+    <button data-fire="min">Fire E minimum</button>
+  </div>
+</div>
+
+<h2 class="sec">PICKED &mdash; B at 200x76</h2>
+
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced &mdash; picked</span>
+    <h2>The one that ships</h2></div>
+  <div class="prov"><b>Rod 2026-08-22:</b> <i>"maybe we make the acheivements 200x76 square and the
+    dim den B style."</i> dimden's <code>.box</code> verbatim &mdash; translucent
+    <code>#000000a8</code>, <code>2px solid #383838</code>, <code>padding 10px 15px</code>, no
+    radius.<br>
+    <b>Two notes rather than a quiet reinterpretation.</b> <b>200x76 is not square</b> &mdash; it is
+    2.63:1 &mdash; so "square" is read as the shape call (zero radius, which B already is) and the
+    footprint is used exactly as given. And at 200px wide the <b>one-line</b> layout B was drawn as
+    no longer fits, so the text wraps to two lines beside the icon; that is what the 76px of height
+    buys. A real change to B, driven by his number.<br>
+    <b>Still translucent</b>, which is why B was the strongest candidate: it is the only boxed
+    option that does not bury the live scene behind it.</div>
+  <div class="stage">
+    <div>
+      <div class="t-pick"><span class="ic">&#127982;</span>
+        <div class="tx"><div class="ti">Lantern Tapper</div>
+          <div class="de">Knocked 25 lanterns</div></div></div>
+      <div class="size">200 x 76 &middot; zero radius &middot; translucent</div>
+      <div class="ctl"><button data-fire="pick">Fire it</button></div>
+    </div>
+  </div>
+</div>
+
+<h2 class="sec">The trophy grid &mdash; what the About page needs</h2>
+
+<div class="case">
+  <div class="tagrow"><span class="badge">Sourced</span>
+    <h2>Klubnika catalogue &mdash; 64px tiles, hover 1.3</h2></div>
+  <div class="prov"><b>Source:</b> mikeklubnika.com, already transcribed into
+    <code>about-blockout.html</code> as the trophy catalogue: <b>64x64 tiles, 4px margin, hover
+    scale 1.3</b>. That is the geometry you have already seen in the About blockout; this is it with
+    real states rather than grey squares.<br>
+    <b>Real counts</b> from <code>achievements.js</code>: Explorer 7, Reader 6, Interactor 8,
+    Secret 3, Meta 5 = <b>29</b>. Locked tiles are drawn as gaps, not as filled mystery boxes &mdash;
+    a dashed empty cell says "not yet" without inventing an icon for something unearned.</div>
+  <div class="stage" style="display:block">
+    <div id="grid"></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>What I did NOT do, and why.</b><br>
+  &middot; <b>The three lantern rewards are untouched.</b> #45 deprecates
+  <code>pyrotechnician &rarr; auto-fireworks</code> by name. <code>lantern-shape</code>,
+  <code>lantern-color</code> and <code>lantern-panel</code> (25 / 50 / 100 knocks) were not
+  mentioned. Killing them too would be me deciding.<br>
+  &middot; <b>Nothing in <code>_javascript/</code> is edited.</b> D22 keeps it off limits until the
+  port, so these are lab treatments. The real edit &mdash; removing the fireworks reward branch, the
+  confetti, and reskinning the toast &mdash; happens at port time against your pick.<br>
+  &middot; <b>Confetti:</b> deprecated per #45. Not shown here at all, which is the point.<br><br>
+  <b>Answered by P77.</b> With every reward scrapped, <b>the trophy wall IS the payoff</b> and the
+  toast's only job is to say "that went on the wall" and then get out of the way. Which is exactly
+  what B at 200x76 does, and why the trophy wall below deserves more attention than the popup.
+</div>
+
+</div>
+
+<script>
+(function () {
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- A: the fold. One class, one property - exactly zutomayo's own mechanism. ----
+  var win = document.getElementById('win');
+  function toggleFold() { win.classList.toggle('mini'); }
+  win.querySelector('.bar').addEventListener('click', toggleFold);
+  document.getElementById('fold').addEventListener('click', toggleFold);
+
+  // ---- the trophy grid. Real category counts read from achievements.js. ----
+  var CATS = [['Explorer', 7, 5], ['Reader', 6, 3], ['Interactor', 8, 2],
+              ['Secret', 3, 0], ['Meta', 5, 1]];
+  var ICONS = ['\u{1F3EE}', '\u{1F9ED}', '\u{1F3A8}', '\u{1F5FA}', '\u{1F9FF}', '\u{1F30C}',
+               '\u{1F3AD}', '\u{1F4DC}'];
+  document.getElementById('grid').innerHTML = CATS.map(function (c, ci) {
+    var tiles = '';
+    for (var i = 0; i < c[1]; i++) {
+      var unlocked = i < c[2];
+      tiles += '<div class="tr' + (unlocked ? '' : ' locked') + '">' +
+               (unlocked ? ICONS[(ci * 2 + i) % ICONS.length] : '') + '</div>';
+    }
+    return '<div class="catrow"><div class="catlabel">' + c[0] +
+           '<i>' + c[2] + ' / ' + c[1] + '</i></div>' +
+           '<div class="trophies">' + tiles + '</div></div>';
+  }).join('');
+
+  // ---- fire a live toast so the arrival can be judged, not just the still ----
+  var LIVE = {
+    now:  '<div class="t-now"><span class="ic">\u{1F3EE}</span><div><div class="ti">Lantern Tapper</div><div class="de">Knocked 25 lanterns</div></div></div>',
+    win:  '<div class="t-win"><div class="bar">Achievement<span class="x">&minus;</span></div><div class="body"><div class="ti">Lantern Tapper</div><div class="de">Knocked 25 lanterns</div></div></div>',
+    box:  '<div class="t-box"><span class="ic">\u{1F3EE}</span><span class="ti">Lantern Tapper</span><span class="de">25 lanterns</span></div>',
+    bar:  '<div class="t-bar"><div class="ti">Lantern Tapper</div><div class="de">Knocked 25 lanterns</div></div>',
+    tape: '<div class="t-tape taped tape--green"><i class="tape tape--top"></i><div class="ti">Lantern Tapper</div><div class="de">Knocked 25 lanterns</div></div>',
+    pick: '<div class="t-pick"><span class="ic">\u{1F3EE}</span><div class="tx"><div class="ti">Lantern Tapper</div><div class="de">Knocked 25 lanterns</div></div></div>',
+    min:  '<div class="t-min"><span class="ic">\u{1F3EE}</span><span>Lantern Tapper</span><span class="de">25</span></div>'
+  };
+  var live = [];
+
+  function fire(kind) {
+    var host = document.createElement('div');
+    host.innerHTML = LIVE[kind];
+    var el = host.firstElementChild;
+    el.style.position = 'fixed';
+    el.style.right = '24px';
+    el.style.zIndex = '9000';
+    el.style.bottom = (24 + live.length * 90) + 'px';
+    if (!reduced) {
+      el.style.transform = 'translateX(120%)';
+      el.style.transition = 'transform .4s ease-out, opacity .3s';
+      requestAnimationFrame(function () { el.style.transform = 'translateX(0)'; });
+    }
+    document.body.appendChild(el);
+    live.push(el);
+    // 4s on screen, matching the current popup, so the comparison is like for like
+    setTimeout(function () {
+      if (!reduced) { el.style.transform = 'translateX(120%)'; el.style.opacity = '0'; }
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        var i = live.indexOf(el); if (i !== -1) live.splice(i, 1);
+        // restack survivors so a gap does not open where one left
+        live.forEach(function (n, k) { n.style.bottom = (24 + k * 90) + 'px'; });
+      }, reduced ? 0 : 320);
+    }, 4000);
+  }
+
+  [].forEach.call(document.querySelectorAll('[data-fire]'), function (b) {
+    b.addEventListener('click', function () { fire(b.dataset.fire); });
+  });
+})();
+</script>
+</body>
+</html>

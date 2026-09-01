@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LANDING BLOCKOUT — Rod's spacing spec (1920×1080 ref, exact px)</title>
+<!--
+  ===== LANDING BLOCKOUT (2026-08-11) =====
+  Colorless shapes-only blank of Rod's ORIGINAL landing plan, at his EXACT spacing spec
+  (Rod-provided, 2026-08-11). Reference viewport 1920x1080. Screen 1 = nav top -> bottom of
+  first card row = exactly 1080px. Total page = 3324px. No color, no styling - judge the
+  proportions and rhythm only.
+  Absolute Y map (Rod's table):
+    NAV 0-72 | HERO 72-616 (chevron anchored to hero bottom; SOCIAL rail = separate fixed
+    element, right edge, hero-height only) | PROJECTS HEADER 616-680 | CARDS 680-1080
+    == screen 1 ends 1080 == | CARDS CONT 1080-1480 | SKILLS HEADER 1480-1552 |
+    SKILL FLIPPER 1552-1672 | SKILLS 1672-1912 | DEMOREEL HEADER 1912-1984 |
+    DEMO REEL 1984-2524 (16:9 -> 960w contained or 1920x540 letterboxed) |
+    SCENE BOTTOM 2524-3244 | FOOTER 3244-3324.
+-->
+<style>
+  @layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+  body{background:#141414;color:#d9d9d9;font-family:ui-monospace,"SF Mono",Consolas,monospace;padding-top:72px}
+  .sec{position:relative;width:100%;border-bottom:1px solid #333}
+  .sec .tag{position:absolute;left:14px;top:8px;font-size:11px;letter-spacing:.08em;color:#bbb;z-index:2}
+  .sec .tag b{color:#fff;letter-spacing:.12em}
+  .sec .yy{position:absolute;right:14px;top:8px;font-size:10px;color:#777;text-align:right;z-index:2}
+  .box{border:1.5px dashed #555;background:#1b1b1b}
+  .fill{display:grid;place-items:center;height:100%;color:#666;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+
+  /* NAV — 72px, FIXED. 3-zone grid: [ico+name left] [nav CENTERED] [toggles pinned RIGHT] */
+  .nav{position:fixed;top:0;left:0;right:0;height:72px;z-index:10;background:#1f1f1f;border-bottom:1.5px solid #666;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:0 20px}
+  .nav .left{display:flex;align-items:center;gap:16px;justify-self:start}
+  .nav .ico{width:44px;height:44px;border:1.5px dashed #777;display:grid;place-items:center;font-size:9px;color:#888}
+  .nav .name{border:1.5px dashed #666;padding:8px 18px;font-size:13px;color:#ccc}
+  .nav .btns{display:flex;gap:10px;justify-self:center}
+  .nav .tg{display:flex;gap:10px;justify-self:end}
+  .nav .btns span{border:1.5px dashed #666;padding:7px 16px;font-size:10px;color:#999}
+  .nav .tg span{border:1.5px dashed #555;padding:7px 10px;font-size:9px;color:#777}
+
+  /* HERO — 544px; chevron anchored to its bottom edge */
+  .hero{height:544px;background:#181818}
+  .hero .scene{position:absolute;inset:14px;border:1.5px dashed #4a4a4a;display:grid;place-items:center}
+  .hero .scene span{color:#5c5c5c;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+  .hero .chev{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:34px;height:34px;border:1.5px dashed #777;
+    display:grid;place-items:center;font-size:12px;color:#999;z-index:2}
+  /* SOCIAL rail — sits BESIDE the hero scene at the right edge, spans the hero's height, and
+     SCROLLS AWAY with it (Rod: it must not follow you down the page) */
+  .social{position:absolute;top:0;right:0;height:100%;width:44px;z-index:2;border-left:1.5px dashed #555;background:#1c1c1c;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:10px;color:#888}
+  .hero .scene{right:58px} /* scene box stops where the rail begins */
+
+  /* thin header rows */
+  .rowhead{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#1d1d1d}
+  .rowhead .l{border:1.5px dashed #666;padding:8px 22px;font-size:12px;color:#bbb}
+  .rowhead .r{border:1.5px dashed #555;padding:7px 14px;font-size:10px;color:#888}
+  .rowhead.h72{height:72px}
+
+  /* card rows — 400px each, BENTO (merged-cards spans: varied sizes, not uniform columns) */
+  .cards{height:400px;background:#181818;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:repeat(2,1fr);gap:14px;padding:14px 20px}
+  .cards .card{border:1.5px dashed #555;background:#1e1e1e;position:relative}
+  .cards .card::after{content:"CARD " attr(data-span);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;letter-spacing:.2em;color:#555;white-space:nowrap}
+  .cards .c6r2{grid-column:span 6;grid-row:span 2}
+  .cards .c6{grid-column:span 6}
+  .cards .c12{grid-column:span 12}
+
+  /* skill flipper — 120px */
+  .flip{height:120px;background:#191919;display:grid;place-items:center}
+  .flip .inner{border:1.5px dashed #555;padding:18px 60px;font-size:12px;color:#777;letter-spacing:.16em}
+
+  /* skills — 240px */
+  .skills{height:240px;background:#181818;display:grid;grid-template-columns:repeat(8,1fr);gap:14px;align-items:center;padding:30px 60px}
+  .skills .sk{aspect-ratio:1;border:1.5px dashed #4e4e4e;display:grid;place-items:center;font-size:9px;color:#666}
+
+  /* demo reel — 540px, 16:9 960px contained player */
+  .reel{height:540px;background:#161616;display:grid;place-items:center}
+  .reel .player{width:960px;max-width:92%;aspect-ratio:16/9;border:1.5px dashed #666;display:grid;place-items:center;color:#666;font-size:11px;letter-spacing:.18em}
+
+  /* scene bottom — 720px */
+  .sceneb{height:720px;background:#151515}
+  .sceneb .fill{border:1.5px dashed #444;position:absolute;inset:14px;height:auto}
+
+  /* footer — 80px */
+  .foot{height:80px;background:#1d1d1d;display:flex;align-items:center;justify-content:center;gap:28px;font-size:10px;color:#777}
+  .foot span{border-bottom:1px dotted #555;padding-bottom:2px}
+
+  /* screen-1 boundary marker */
+  /* container starts at y=72 (below the fixed nav), so absolute-1080 = 1008 inside it */
+  .fold{position:absolute;left:0;right:0;top:1008px;z-index:5;border-top:2px solid #8a8a8a;pointer-events:none}
+  .fold em{position:absolute;right:10px;top:3px;font-style:normal;font-size:10px;letter-spacing:.12em;color:#aaa;background:#141414;padding:1px 8px}
+
+  /* ===== VARIANTS (baseline = Rod's exact spec; variants trade exactness for FEEL tests) =====
+     V1 "spacious" (Rod 2026-08-11): big air around section headers; project cards squished from
+     the left/right and centered, each card row at HALF height — freed space = negative space. */
+  body.v1 .yy{display:none} /* spec Y labels are baseline-only */
+  body.v1 .rowhead{margin-top:130px;margin-bottom:36px;background:none;border-bottom:none}
+  body.v1 .cards{height:200px;max-width:56%;margin-left:auto;margin-right:auto;gap:10px;padding:10px 0;background:none}
+  body.v1 .flip{margin-top:40px}
+  body.v1 .skills{max-width:62%;margin:0 auto;background:none}
+  body.v1 .foot{margin-top:120px}
+
+  /* spec Y labels + fold marker are baseline-only (any variant class shifts the Y map) */
+  body[class]:not([class='']) .fold{display:none}
+  body[class]:not([class='']):not(.v1) .yy{display:none}
+
+  /* ===== V2 "void anchoring": stop centering; sections ALTERNATE anchor sides, the emptiness
+     is deliberate composition (indie lever #1) ===== */
+  .hero .void{display:none}
+  body.v2 .hero .scene{right:46%} /* hero content lives LEFT; the right half is a void */
+  body.v2 .hero .void{position:absolute;top:14px;bottom:14px;right:58px;left:56%;display:grid;place-items:center;
+    color:#3d3d3d;font-size:10px;letter-spacing:.3em;text-transform:uppercase}
+  body.v2 .cards{max-width:72%;margin-right:auto;margin-left:20px}          /* cards anchor LEFT */
+  body.v2 .cards+.cards{margin-left:auto;margin-right:20px}                 /* cont row anchors RIGHT */
+  body.v2 .flip{place-items:center start;padding-left:60px}
+  body.v2 .skills{max-width:52%;margin-left:auto;margin-right:20px}         /* skills anchor RIGHT */
+  body.v2 .reel{place-items:center start;padding-left:60px}
+  body.v2 .rowhead{margin-top:60px}
+
+  /* (V3-V5 removed 2026-08-11 — free-handed variants failed Rod's review. New variants come ONLY
+     from MEASURED reference-site layouts.) */
+
+  /* ===== MEASURED variants — spacing numbers taken LIVE from the reference sites (1440x900,
+     getComputedStyle, 2026-08-11; profiles in analysis/layout-measurements.md). Rod's sections,
+     their spacing DNA. ===== */
+
+  /* ===== ATTEMPT 1 (ARCHIVED 2026-08-11) ? variants derived from NUMERIC layout profiles.
+     Rod's verdict: "likely useless" (the profiler flattened different sites into the same shape).
+     Kept for reference. Attempt 2 (per-site "structural" variants) was DISCARDED ? it smuggled
+     each site's COLOR/atmosphere into the greybox, which broke comparability. Attempt 3 rebuilds
+     from VERIFIED captures. Greybox rule: geometry only ? one grey language for every variant. */
+  .h-logo,.h-art,.spine{display:none} /* markup slots stay hidden unless a variant uses them */
+
+  /* V·HARUMAKI (A1): hero 100vh + 96px partition band; content column 42% (measured 604px @1440);
+     ~160px air before each section. */
+  body.vharumaki .hero{height:calc(100vh - 72px + 96px);border-bottom:96px solid #202020}
+  body.vharumaki .rowhead,body.vharumaki .cards,body.vharumaki .flip,body.vharumaki .skills,body.vharumaki .reel{
+    max-width:42%;margin-left:auto;margin-right:auto;background:none}
+  body.vharumaki .rowhead{margin-top:160px;border-bottom:none}
+  body.vharumaki .cards{height:340px;gap:10px;padding:10px 0}
+  body.vharumaki .cards+.cards{margin-top:24px}
+  body.vharumaki .skills{padding:30px 0}
+  body.vharumaki .reel{height:auto;padding:0}
+  body.vharumaki .reel .player{width:100%}
+  body.vharumaki .foot{margin-top:160px}
+
+  /* V·HANA (A1): 100vh open; full-bleed bands w/ 74px padding rhythm; content held at 41%. */
+  body.vhana .hero{height:calc(100vh - 72px)}
+  body.vhana .rowhead{height:auto;padding:74px 29.5% 12px;background:#191919;border-bottom:none}
+  body.vhana .cards{height:auto;grid-template-rows:repeat(2,170px);padding:24px 29.5% 74px;background:#191919}
+  body.vhana .flip{height:auto;padding:74px 29.5%;background:#161616}
+  body.vhana .skills{height:auto;padding:74px 29.5%;background:#161616}
+  body.vhana .reel{height:auto;padding:74px 0;background:#191919}
+  body.vhana .reel .player{width:41%}
+  body.vhana .sceneb{height:100vh}
+
+  /* A1 audit iterations for the two above */
+  body.vharumakii .reel{max-width:none}
+  body.vharumakii .reel .player{width:960px;max-width:92%}
+  body.vharumakii .cards{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,190px);height:auto}
+  body.vharumakii .cards .c6r2{grid-column:span 1;grid-row:span 2}
+  body.vharumakii .cards .c6{grid-column:span 1;grid-row:span 1}
+  body.vharumakii .cards .c12{grid-column:span 2;grid-row:span 1}
+  body.vhanai .cards + .sec.rowhead{background:#161616}
+  body.vhanai .reel .player{width:960px;max-width:92%}
+  body.vhanai .skills{padding-top:110px;padding-bottom:110px}
+
+  /* V·109ICHIKI (A): ~100vh hero with the next section OVERLAPPING up 20px (measured -20 margin);
+     the WORKS region dominates the page (measured 76% of total height) -> card rows 70vh each;
+     section breath = 97.5px padding (their exact number); container 97%. */
+  body.v109 .hero{height:calc(100vh - 72px)} /* nav-offset fix */
+  body.v109 .rowhead{margin-top:-20px;position:relative;z-index:2;background:#141414}
+  body.v109 .cards{height:70vh;max-width:97%;margin:0 auto;padding:20px 0}
+  body.v109 .rowhead,body.v109 .flip{padding-top:0}
+  body.v109 .flip,body.v109 .skills,body.v109 .reel{margin-top:97.5px}
+  body.v109 .skills{height:200px;padding:20px 60px}
+  body.v109 .sceneb{margin-top:97.5px}
+
+  /* (V·POMODOROSA removed — Rod: pomodorosa's layout is a DISLIKE.) */
+
+  /* V·SKY (thatskygame, A− — Rod's zones north-star): hero = 114vh (measured 1026@900); each zone
+     exhales 200-400px of air AFTER it (measured padBottoms 300/400/360/250, guide padTop 230);
+     container 89%. The partitions ARE the layout. */
+  body.vsky .hero{height:calc(114vh - 72px)} /* nav-offset fix; keeps the over-viewport DNA */
+  body.vsky .rowhead{height:auto;padding:230px 20px 12px;background:none;border-bottom:none}
+  body.vsky .cards{height:auto;grid-template-rows:repeat(2,190px);max-width:89%;margin:0 auto;padding:32px 0 150px}
+  body.vsky .cards+.cards{padding:0 0 300px}
+  body.vsky .flip{height:120px}
+  body.vsky .skills{height:auto;padding:32px 60px 360px}
+  body.vsky .reel{height:auto;padding:32px 0 250px}
+  body.vsky .sceneb{height:720px}
+
+  /* V·INDIE (the indie-web/Neocities family: dimden FIXED 900 · midnightsolarium FIXED 700 ·
+     whey-isolate 515-737 · cinni 1125x740 stage): a FIXED-width column — not fluid — holds
+     EVERYTHING; gaps are irregular/hand-placed (measured 19-144px); boxes keep visible borders. */
+  body.vindie .hero,body.vindie .rowhead,body.vindie .cards,body.vindie .flip,body.vindie .skills,body.vindie .reel,body.vindie .sceneb{
+    width:760px;max-width:calc(100vw - 40px);margin-left:auto;margin-right:auto}
+  body.vindie .sec{border:1.5px solid #4a4a4a;margin-bottom:0}
+  body.vindie .hero{height:440px} /* stage, not 100vh — the column IS the site */
+  body.vindie .hero .scene{right:58px}
+  body.vindie .rowhead{height:44px;margin-top:88px}
+  body.vindie .cards{height:auto;grid-template-rows:repeat(2,150px);padding:10px;gap:10px}
+  body.vindie .cards+.cards{margin-top:22px}
+  body.vindie .flip{height:90px;margin-top:134px}
+  body.vindie .skills{height:auto;padding:24px 30px;margin-top:18px;gap:10px}
+  body.vindie .reel{height:auto;padding:16px;margin-top:96px}
+  body.vindie .reel .player{width:100%}
+  body.vindie .sceneb{height:520px;margin-top:26px}
+  body.vindie .foot{width:760px;max-width:calc(100vw - 40px);margin:40px auto 0}
+
+  /* ===== STEP-3 IMPECCABLE ITERATIONS ("+i" variants — audit findings applied as NEW variants,
+     stacked on the base class; base variants stay untouched for comparison) ===== */
+
+  /* v2i: bind header labels to their section's anchor side (header sits over content, not void);
+     vary the flat 60px air -> 60/100/140 */
+  body.v2i .sec.hero + .sec.rowhead .l{margin-left:0}          /* PROJECTS header -> left, over cards1 */
+  body.v2i .skills + .sec.rowhead .l{margin-left:0}            /* DEMOREEL header -> left, over reel */
+  body.v2i .cards + .sec.rowhead{margin-top:100px}             /* skills header */
+  body.v2i .skills + .sec.rowhead{margin-top:140px}            /* reel header */
+
+  /* (vharumakii / vhanai removed with their bases — superseded by the STRUCTURAL rebuild.) */
+
+  /* v109i: THE audit fix — breath (97.5px) goes ABOVE headers, not after them; the measured -20
+     overlap survives ONLY where it was measured (hero -> projects header) */
+  body.v109i .rowhead{margin-top:97.5px}
+  body.v109i .sec.hero + .sec.rowhead{margin-top:-20px}
+  body.v109i .flip,body.v109i .skills,body.v109i .reel{margin-top:0}
+
+  /* vskyi: chevron back above the fold; reclaim exhale into the cards (300->240, 360->300,
+     rows 190->240); de-clone the zone headers (230/180/280) */
+  body.vskyi .hero .chev{bottom:140px}
+  body.vskyi .cards{grid-template-rows:repeat(2,240px)}
+  body.vskyi .cards+.cards{padding-bottom:240px}
+  body.vskyi .skills{padding-bottom:300px}
+  body.vskyi .cards + .sec.rowhead{padding-top:180px}
+  body.vskyi .skills + .sec.rowhead{padding-top:280px}
+
+  /* vindiei: elevate the box-nesting tell into FRAMING (border hierarchy: outer 2px, inner 1px
+     dashed) + fix the one inverted gap + nudge the three 88s to 72/88/104 (more hand-placed) */
+  body.vindiei .sec{border-width:2px;border-style:solid}
+  body.vindiei .cards .card{border-width:1px}
+  body.vindiei .flip{margin-top:18px}
+  body.vindiei .sec.hero + .sec.rowhead{margin-top:72px}
+  body.vindiei .rowhead.h72{margin-top:134px}
+  body.vindiei .skills + .rowhead.h72{margin-top:104px}
+
+  /* ===== STEP-4 MUTANTS: the ORIGINAL spec (exact section heights + fixed order) crossed with an
+     experiment's SPACING SYSTEM. Info flow untouched; only the shape of space mutates. ===== */
+
+  /* M1 = spec × indie-web: spec heights inside the FIXED 760px column, irregular hand gaps,
+     border-hierarchy framing (2px outer / 1px inner) */
+  body.m1 .hero,body.m1 .rowhead,body.m1 .cards,body.m1 .flip,body.m1 .skills,body.m1 .reel,body.m1 .sceneb,body.m1 .foot{
+    width:760px;max-width:calc(100vw - 40px);margin-left:auto;margin-right:auto}
+  body.m1 .sec{border:2px solid #4a4a4a;margin-bottom:0}
+  body.m1 .cards .card{border-width:1px}
+  body.m1 .hero .scene{right:58px}
+  body.m1 .sec.hero + .sec.rowhead{margin-top:72px}
+  body.m1 .cards{padding:10px;gap:10px}
+  body.m1 .cards+.cards{margin-top:22px}
+  body.m1 .rowhead.h72{margin-top:134px}
+  body.m1 .flip{margin-top:18px}
+  body.m1 .skills{margin-top:26px;padding:24px 30px;gap:10px}
+  body.m1 .skills + .rowhead.h72{margin-top:104px}
+  body.m1 .reel .player{width:96%}
+  body.m1 .sceneb{margin-top:26px}
+  body.m1 .foot{margin-top:40px}
+
+  /* M2 = spec × 109ichiki rhythm: spec heights full-width; 97.5px breath ABOVE every header;
+     the -20px overlap only at hero -> projects */
+  body.m2 .rowhead{margin-top:97.5px}
+  body.m2 .sec.hero + .sec.rowhead{margin-top:-20px;position:relative;z-index:2;background:#141414}
+  body.m2 .sceneb{margin-top:97.5px}
+
+  /* M3 = spec × (V1 air + V2 anchors, the audit's natural merge): spec heights; varied air
+     130/90/160 before headers; alternating anchors; header labels bound to their anchor side */
+  body.m3 .rowhead{background:none;border-bottom:none}
+  body.m3 .sec.hero + .sec.rowhead{margin-top:130px}
+  body.m3 .cards + .sec.rowhead{margin-top:90px}
+  body.m3 .skills + .sec.rowhead{margin-top:160px}
+  body.m3 .hero .scene{right:46%}
+  body.m3 .hero .void{display:grid;position:absolute;top:14px;bottom:14px;right:58px;left:56%;place-items:center;
+    color:#3d3d3d;font-size:10px;letter-spacing:.3em;text-transform:uppercase}
+  body.m3 .cards{max-width:72%;margin-right:auto;margin-left:20px}
+  body.m3 .cards+.cards{margin-left:auto;margin-right:20px}
+  body.m3 .skills{max-width:52%;margin-left:auto;margin-right:20px}
+  body.m3 .reel{place-items:center start;padding-left:60px}
+  body.m3 .flip{place-items:center start;padding-left:60px} /* completes the L-R-L-R-L cadence (re-scan bug) */
+  /* !important beats the inline margin-left:auto; flex-start beats the rowhead's space-between
+     (both were silently re-centering the label — re-scan finding + follow-up) */
+  body.m3 .sec.hero + .sec.rowhead,body.m3 .skills + .sec.rowhead{justify-content:flex-start;gap:14px}
+  body.m3 .sec.hero + .sec.rowhead .l{margin-left:0 !important}
+  body.m3 .skills + .sec.rowhead .l{margin-left:0 !important}
+  body.m3 .sec.hero + .sec.rowhead .r{margin-left:auto}
+  body.m3 .foot{margin-top:120px}
+
+  /* m1i (re-scan suggestions as a variant): landscape bento restored + screen-1 back within 2px;
+     reel frame fits its player instead of rattling (dead-band fix) */
+  body.m1i .cards{height:auto;grid-template-rows:repeat(2,150px)}
+  body.m1i .reel{height:auto;padding:26px 0}
+
+  /* m2i (re-scan suggestions as a variant): one broken interval (the closing scene earns a bigger
+     exhale) + ONE section off-axis — the cheapest break of the single symmetry axis */
+  body.m2i .sceneb{margin-top:160px}
+  body.m2i .skills{max-width:52%;margin-left:auto;margin-right:20px}
+
+  /* ===== capture helpers (headless shots): .caph freezes vh-based heights at their 1440x900
+     values so a full-page-height window doesn't inflate them; .shot hides the switcher ===== */
+  body.caph.v109 .hero{height:828px}
+  body.caph.v109 .cards{height:630px}
+  body.caph.vsky .hero{height:954px}
+  body.caph.vharumaki .hero{height:924px}
+  body.caph.vhana .hero{height:828px}
+  body.caph.vhana .sceneb{height:900px}
+  body.shot .vbar{display:none}
+
+  /* ===== ATTEMPT 3 (2026-08-12) — structures read from VERIFIED full-page captures
+     (web-preview skill; gallery cards carry the same captures). GREYBOX LAW: geometry only.
+     No colour, no atmosphere — one grey language for every variant, so they stay comparable.
+     Section ORDER is never touched; only the shape of space changes. ===== */
+
+  /* A3·HMAIN — harumakigohan.com. Identity lives IN the scene (no nav bar, no hero box): mark +
+     art centred on the ground, social rail right. The card strip is deliberately CROPPED by the
+     fold. Headers are small centred labels, not bars. Few sections, big air, long empty close. */
+  body.a3main .hero{height:calc(100vh - 72px - 300px)} /* short: the cards must peek */
+  body.a3main .hero .scene{display:none}
+  body.a3main .h-logo{display:grid;place-items:center;position:absolute;top:40px;left:50%;transform:translateX(-50%);
+    width:330px;height:58px;border:1.5px dashed #666;font-size:10px;letter-spacing:.2em;color:#888;text-transform:uppercase}
+  body.a3main .h-art{display:grid;place-items:center;position:absolute;top:120px;bottom:56px;left:50%;transform:translateX(-50%);
+    width:280px;border:1.5px dashed #555;font-size:10px;letter-spacing:.16em;color:#777;text-transform:uppercase}
+  body.a3main .chev{display:none}                       /* the cropped strip IS the scroll cue */
+  body.a3main .rowhead{height:52px;background:none;border-bottom:none;justify-content:center;gap:10px}
+  body.a3main .rowhead .l{border:none;font-size:12px;letter-spacing:.22em;color:#aaa}
+  body.a3main .rowhead .l::before{content:"~ "}body.a3main .rowhead .l::after{content:" ~"}
+  body.a3main .rowhead .r{position:absolute;right:20px}
+  body.a3main .cards{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr;height:400px;gap:8px;padding:0}
+  body.a3main .cards .card{grid-column:auto !important;grid-row:auto !important}
+  body.a3main .cards .c12{display:none}
+  body.a3main .cards+.cards{margin-top:8px;border-bottom:96px solid #202020}  /* partition band */
+  body.a3main .skills{height:270px;gap:20px;padding:20px 120px}
+  body.a3main .skills .sk{border-radius:50%;border-style:solid}   /* organic disc row */
+  body.a3main .flip{background:none}
+  body.a3main .reel{height:400px;background:#181818;border-top:1.5px solid #333;border-bottom:1.5px solid #333}
+  body.a3main .reel .player{width:100%;height:100%;border:none}   /* full-bleed band */
+  body.a3main .sceneb{height:110vh;border-bottom:110px solid #232323}
+  body.a3main .foot{height:58px;margin-top:0;background:#232323;border-top:none;font-size:9px}
+
+  /* A3·BTB — hana Born to Bloom. Fixed backdrop behind everything; content = narrow centred
+     panels; the merch block is a 3-col product grid; closes on a FULL-SCREEN footer. */
+  body.a3btb .hero{height:calc(100vh - 72px)}
+  body.a3btb .hero .scene{inset:0;border:none;background:#1b1b1b}
+  body.a3btb .rowhead,body.a3btb .cards,body.a3btb .flip,body.a3btb .skills,body.a3btb .reel{
+    width:560px;max-width:calc(100vw - 40px);margin-left:auto;margin-right:auto}
+  body.a3btb .rowhead{height:52px;background:none;border:none;justify-content:center;margin-top:90px}
+  body.a3btb .cards,body.a3btb .flip,body.a3btb .skills,body.a3btb .reel{background:#191919;border:1.5px solid #3a3a3a}
+  body.a3btb .cards{height:auto;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,150px);gap:12px;padding:16px}
+  body.a3btb .cards .card{grid-column:auto !important;grid-row:auto !important}
+  body.a3btb .cards+.cards{margin-top:14px}
+  body.a3btb .flip{height:90px;margin-top:14px}
+  body.a3btb .skills{height:auto;padding:24px;gap:12px;margin-top:14px}
+  body.a3btb .reel{height:auto;padding:16px;margin-top:14px}
+  body.a3btb .reel .player{width:100%}
+  body.a3btb .sceneb{height:70vh}
+  body.a3btb .foot{height:100vh;display:grid;place-items:center;background:#191919}  /* full-screen close */
+
+  /* A3·SEAM — harumaki /ndt/. A descent: flat value steps joined by ~160px SEAM BANDS that carry
+     the transition; content in a narrow column; art crosses the seams. */
+  body.a3seam .hero{height:calc(100vh - 72px);background:#242424}
+  body.a3seam .sec{border-bottom:none}
+  body.a3seam .rowhead{justify-content:center;height:48px;background:none;border:none;margin:0}
+  body.a3seam .cards{max-width:none;background:#1e1e1e;border-top:160px solid #2a2a2a;height:auto;
+    grid-template-rows:repeat(2,180px);padding:30px 18.5% 60px;gap:12px}
+  body.a3seam .cards+.cards{border-top:none;padding-top:0;margin:0}
+  body.a3seam .flip{height:auto;background:#1a1a1a;border-top:160px solid #1e1e1e;padding:30px 0}
+  body.a3seam .skills{max-width:none;background:#1a1a1a;height:auto;padding:20px 18.5% 70px;gap:14px}
+  body.a3seam .reel{height:auto;background:#171717;border-top:160px solid #1a1a1a;padding:40px 0 90px}
+  body.a3seam .sceneb{height:110vh;background:#141414;border-top:160px solid #171717}
+
+  /* A3·RAILS — harumaki /10/. FIXED illustrated rails frame both edges the whole way down; a
+     ~900px column between them with occasional wider breakouts; content is a dated timeline. */
+  body.a3rails .spine{display:block;position:fixed;left:0;top:0;bottom:0;width:106px;transform:none;z-index:5;
+    border-right:1.5px dashed #555;background:repeating-linear-gradient(180deg,#1e1e1e 0 26px,#161616 26px 52px)}
+  body.a3rails .spine::after{content:'';position:fixed;right:0;top:0;bottom:0;width:106px;border-left:1.5px dashed #555;
+    background:repeating-linear-gradient(180deg,#1e1e1e 0 26px,#161616 26px 52px)}
+  body.a3rails .spine span{display:none}
+  body.a3rails .hero,body.a3rails .rowhead,body.a3rails .cards,body.a3rails .flip,body.a3rails .skills,body.a3rails .reel,body.a3rails .sceneb,body.a3rails .foot{
+    padding-left:126px;padding-right:126px}
+  body.a3rails .hero{height:calc(100vh - 72px)}
+  body.a3rails .rowhead{height:46px;background:none;border:none;justify-content:center;margin-top:100px}
+  body.a3rails .cards{width:auto;max-width:none;height:auto;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,170px);gap:14px;background:none}
+  body.a3rails .cards .card{grid-column:auto !important;grid-row:auto !important}
+  body.a3rails .cards+.cards{margin-top:56px}
+  body.a3rails .flip{height:80px;margin-top:90px}
+  body.a3rails .skills{height:auto;padding-top:20px;padding-bottom:20px;margin-top:60px;gap:12px}
+  body.a3rails .reel{height:auto;padding-top:24px;padding-bottom:24px;margin-top:100px}
+  body.a3rails .reel .player{width:100%}
+  body.a3rails .sceneb{height:70vh}
+
+  /* A3·FRAME — 109ichiki. The whole page scrolls INSIDE a frame drawn 20px from the edge. Mono
+     labels, a filter-chip row, and a PLAIN thumbnail grid: no cards, no borders, just gaps. */
+  body.a3frame::after{content:'';position:fixed;inset:20px;border:1.5px solid #666;pointer-events:none;z-index:45}
+  body.a3frame .hero{height:calc(100vh - 72px)}
+  body.a3frame .rowhead{height:auto;padding:0 60px;background:none;border:none;display:block;margin-top:90px}
+  body.a3frame .rowhead .l{border:none;font-size:40px;letter-spacing:.06em;color:#9a9a9a;padding:0}
+  body.a3frame .rowhead .r{display:none}
+  body.a3frame .rowhead::after{content:"all / illustration / original / fan work";display:block;margin-top:14px;
+    font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#777}  /* filter chip row */
+  body.a3frame .cards{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,150px);height:auto;gap:18px;padding:30px 60px 0}
+  body.a3frame .cards .card{grid-column:auto !important;grid-row:auto !important;border-style:solid;border-color:#3a3a3a}
+  body.a3frame .cards+.cards{padding-top:18px}
+  body.a3frame .flip{height:90px;margin-top:80px}
+  body.a3frame .skills{padding:20px 60px;margin-top:60px}
+  body.a3frame .reel{height:420px;margin-top:80px}
+  body.a3frame .sceneb{height:80vh}
+  body.a3frame .foot{height:100vh;display:grid;place-items:center}
+
+  /* A3·ZONES — thatskygame. Over-viewport hero, then every zone EXHALES 150-400px after itself.
+     The partitions are the layout; content stays modest. */
+  body.a3zones .hero{height:calc(114vh - 72px)}
+  body.a3zones .hero .chev{bottom:130px}
+  body.a3zones .rowhead{height:auto;padding:230px 20px 12px;background:none;border-bottom:none}
+  body.a3zones .cards{height:auto;grid-template-rows:repeat(2,220px);max-width:89%;margin:0 auto;padding:32px 0 150px}
+  body.a3zones .cards+.cards{padding:0 0 300px}
+  body.a3zones .flip{height:120px}
+  body.a3zones .skills{height:auto;padding:32px 60px 360px}
+  body.a3zones .reel{height:auto;padding:32px 0 250px}
+  body.a3zones .sceneb{height:720px}
+
+  /* ===== PROVENANCE (lab tooling, not design) — every variant states WHERE it came from, and
+     each borrowed move is labelled on the section it changed, so nothing is unexplained. ===== */
+  #prov{position:fixed;left:14px;top:14px;z-index:40;width:290px;max-height:calc(100vh - 28px);overflow:auto;
+    background:rgba(12,12,14,.94);border:1px solid rgba(255,255,255,.18);padding:12px 13px;
+    font:11px/1.55 ui-monospace,Consolas,monospace;color:#dcdcdc}
+  #prov .pv-title{font-size:12.5px;color:#fff;letter-spacing:.04em;margin-bottom:2px}
+  #prov .pv-kind{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin-bottom:8px}
+  #prov .pv-src{font-size:10px;color:#b6b6b6;margin-bottom:7px}
+  #prov .pv-src a{color:#fff}
+  #prov ul{margin:0;padding-left:14px}
+  #prov li{margin-bottom:4px;color:#c8c8c8}
+  #prov .pv-cap{display:flex;gap:8px;margin-top:9px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+  #prov .pv-cap a{color:#fff;border:1px solid rgba(255,255,255,.28);padding:3px 8px;text-decoration:none}
+  #prov .pv-cap a:hover{border-color:#fff}
+  @media(max-width:1100px){#prov{position:static;width:auto;max-height:none;margin:10px 0}}
+  body.shot #prov{display:none}
+  /* per-section label: names the borrowed move on the section it applies to */
+  .sec[data-note]{position:relative}
+  .sec[data-note]::after{content:attr(data-note);position:absolute;right:10px;bottom:8px;z-index:6;
+    font:9.5px ui-monospace,Consolas,monospace;color:#e6e6e6;background:rgba(10,10,12,.86);
+    border:1px solid rgba(255,255,255,.3);padding:3px 8px;max-width:52ch;text-align:right;pointer-events:none}
+  body.shot .sec[data-note]::after{display:none}
+
+  /* variant switcher */
+  .vbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:30;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+    background:#101010;border:1px solid #444;padding:6px 8px;max-width:calc(100vw - 20px)}
+  .vbar button{background:none;border:1px solid #555;color:#aaa;font:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;cursor:pointer}
+  .vbar button.on{background:#ddd;border-color:#ddd;color:#111}
+</style>
+</head>
+<body>
+
+<!-- NAV 0-72 (fixed) -->
+<header class="nav">
+  <span class="left"><span class="ico">ICO</span><span class="name">RODNEY FAN</span></span>
+  <span class="btns"><span>HOME</span><span>PROJECTS</span><span>ABOUT</span><span>RAMBLINGS</span></span>
+  <span class="tg"><span>TGL</span><span>TGL</span><span>TGL</span></span>
+</header>
+
+<aside id="prov" aria-label="Where this variant comes from"></aside>
+
+<div style="position:relative">
+  <div class="fold"><em>SCREEN 1 ENDS — 1080px</em></div>
+  <div class="spine" aria-hidden="true"><span>artwork spine</span></div><!-- structural variants only -->
+
+
+  <!-- HERO 72-616 -->
+  <section class="sec hero">
+    <span class="tag"><b>HERO</b> · 544px</span><span class="yy">72 → 616</span>
+    <div class="scene"><span>scene · character · typography</span></div>
+    <div class="void" aria-hidden="true">deliberate void</div><!-- visible in V2/M3 only -->
+    <!-- structural slots (hidden by default; used by the structural variants) -->
+    <div class="h-logo" aria-hidden="true">hand-drawn logo</div>
+    <div class="h-art" aria-hidden="true">character art</div>
+    <!-- SOCIAL rail: beside the scene, hero height, scrolls away with it -->
+    <aside class="social"><span>S</span><span>·</span><span>O</span><span>·</span><span>C</span><span>·</span><span>I</span><span>·</span><span>A</span><span>·</span><span>L</span></aside>
+    <div class="chev">▾</div>
+  </section>
+
+  <!-- PROJECTS HEADER 616-680 -->
+  <section class="sec rowhead">
+    <span class="tag" style="position:static"><b>PROJECTS HEADER</b> · 64px</span>
+    <span class="l" style="margin-left:auto">PROJECTS</span><span class="r">VIEW ALL → /span>
+    <span class="yy">616 → 680</span>
+  </section>
+
+  <!-- PROJECT CARDS 680-1080 — bento: [6x2 feature][6][6] -->
+  <section class="sec cards">
+    <span class="tag"><b>PROJECT CARDS</b> · 400px · bento · fully on screen 1</span><span class="yy">680 → 1080</span>
+    <div class="card c6r2" data-span="6×2"></div>
+    <div class="card c6" data-span="6"></div>
+    <div class="card c6" data-span="6"></div>
+  </section>
+
+  <!-- PROJECT CARDS CONT. 1080-1480 — bento: [6][6][12 wide] -->
+  <section class="sec cards">
+    <span class="tag"><b>PROJECT CARDS CONT.</b> · 400px · bento · below the fold</span><span class="yy">1080 → 1480</span>
+    <div class="card c6" data-span="6"></div>
+    <div class="card c6" data-span="6"></div>
+    <div class="card c12" data-span="12 wide"></div>
+  </section>
+
+  <!-- SKILLS HEADER 1480-1552 -->
+  <section class="sec rowhead h72">
+    <span class="tag" style="position:static"><b>SKILLS HEADER</b> · 72px</span>
+    <span class="l" style="margin-left:auto">SKILLS</span>
+    <span class="yy">1480 → 1552</span>
+  </section>
+
+  <!-- SKILL FLIPPER 1552-1672 -->
+  <section class="sec flip">
+    <span class="tag"><b>SKILL FLIPPER</b> · 120px</span><span class="yy">1552 → 1672</span>
+    <div class="inner">TECHNOLOGY ⇄PERSONAL (flip element)</div>
+  </section>
+
+  <!-- SKILLS 1672-1912 -->
+  <section class="sec skills">
+    <span class="tag"><b>SKILLS</b> · 240px</span><span class="yy">1672 → 1912</span>
+    <div class="sk">SK</div><div class="sk">SK</div><div class="sk">SK</div><div class="sk">SK</div>
+    <div class="sk">SK</div><div class="sk">SK</div><div class="sk">SK</div><div class="sk">SK</div>
+  </section>
+
+  <!-- DEMOREEL HEADER 1912-1984 -->
+  <section class="sec rowhead h72">
+    <span class="tag" style="position:static"><b>DEMOREEL HEADER</b> · 72px</span>
+    <span class="l" style="margin-left:auto">DEMO REEL</span>
+    <span class="yy">1912 → 1984</span>
+  </section>
+
+  <!-- DEMO REEL 1984-2524 -->
+  <section class="sec reel">
+    <span class="tag"><b>DEMO REEL</b> · 540px</span><span class="yy">1984 → 2524</span>
+    <div class="player">16:9 PLAYER · 960×540 contained (or 1920×540 letterboxed)</div>
+  </section>
+
+  <!-- SCENE BOTTOM 2524-3244 -->
+  <section class="sec sceneb">
+    <span class="tag"><b>SCENE BOTTOM</b> · 720px</span><span class="yy">2524 → 3244</span>
+    <div class="fill">closing scene — 3D · cinematic · interactive</div>
+  </section>
+
+  <!-- FOOTER 3244-3324 -->
+  <footer class="sec foot">
+    <span class="tag"><b>FOOTER</b> · 80px</span><span class="yy">3244 → 3324</span>
+    <span>links</span><span>credits</span><span>contact</span>
+  </footer>
+</div>
+
+<div class="vbar">
+  <button data-v="" class="on">Spec baseline</button>
+  <button data-v="v1">V1 · spacious</button>
+  <button data-v="v2">V2 · void anchoring</button>
+  <button data-v="a3main">A3 harumaki ·in-scene + peek·</button>
+  <button data-v="a3btb">A3 hana ·panels + fullscreen close·</button>
+  <button data-v="a3seam">A3 ndt ·seam bands·</button>
+  <button data-v="a3rails">A3 /10/ ·edge rails·</button>
+  <button data-v="a3frame">A3 109 ·frame + plain grid·</button>
+  <button data-v="a3zones">A3 sky ·zone exhales·</button>
+  <button data-v="vharumaki">A1 harumaki ·42% col·</button>
+  <button data-v="vhana">hana btb ·41% bands·</button>
+  <button data-v="v109">109ichiki ·rhythm·</button>
+  <button data-v="vsky">thatskygame ·zones·</button>
+  <button data-v="vindie">indie-web ·fixed column·</button>
+  <button data-v="v2 v2i">v2+i</button>
+  <button data-v="vharumaki vharumakii">harumaki+i</button>
+  <button data-v="vhana vhanai">hana+i</button>
+  <button data-v="v109 v109i">109+i</button>
+  <button data-v="vsky vskyi">sky+i</button>
+  <button data-v="vindie vindiei">indie+i</button>
+  <button data-v="m1">M1 spec×indie</button>
+  <button data-v="m1 m1i">M1+i</button>
+  <button data-v="m2">M2 spec×109</button>
+  <button data-v="m2 m2i">M2+i</button>
+  <button data-v="m3">M3 spec×air+anchors</button>
+</div>
+<script>
+/* Provenance: what each variant is, where it came from, and which move landed on which section. */
+var PROV = {
+  '': { title:'Spec baseline', kind:'your spec',
+    src:'Your written spacing spec (1920&times;1080 reference)',
+    moves:['Exact Y map: nav 0-72, hero 72-616, projects header 616-680, cards 680-1080',
+           'Screen 1 ends exactly at the bottom of the first card row','Total page 3324px'],
+    notes:{'.hero':'544px, per your spec','.sec.cards':'400px - screen 1 ends here'} },
+  'v1': { title:'V1 - spacious', kind:'your instruction',
+    src:'You: increase the spacing between headers, squish the cards to about half, centred',
+    moves:['130px of air before every section header','Card rows halved to 200px','Cards squeezed to 56% width and centred'],
+    notes:{'.sec.cards':'squished + centred (your ask)'} },
+  'v2': { title:'V2 - void anchoring', kind:'my idea, NOT from a site',
+    src:'My proposal after your &ldquo;not spacious / free enough&rdquo; note',
+    moves:['Hero content left, deliberate void right','Card rows alternate left / right anchors','Nothing centred'],
+    notes:{'.hero':'void right = composition, not emptiness','.sec.cards':'anchored left, next row right'} },
+  'a3main': { title:'A3 - harumaki main', kind:'verified capture', site:'harumakigohan.com',
+    url:'https://harumakigohan.com/', cap:'harumaki-main',
+    moves:['No nav bar - hamburger only; identity lives IN the scene (mark + art on the ground)',
+           'NEWS carousel is CROPPED by the fold - that slice of card is the scroll cue, not a chevron',
+           'Headers are small centred ~tilde~ labels, never full-width bars',
+           '96px cloud partition closes the card zone',
+           'Discography is an organic disc row, not a card grid',
+           'Series is a full-bleed cinema band, edge to edge',
+           'Long empty close into a horizon strip; only ~3 screens total'],
+    notes:{'.hero':'identity in-scene, no nav bar','.sec.cards':'3-up strip, cropped by the fold = the scroll cue',
+           '.skills':'organic disc row (their discography)','.reel':'full-bleed cinema band (their SERIES)',
+           '.sceneb':'long empty close + horizon band'} },
+  'a3btb': { title:'A3 - hana Born to Bloom', kind:'verified capture', site:'hana.b-rave.tokyo/tour/borntobloom',
+    url:'https://hana.b-rave.tokyo/tour/borntobloom/', cap:'hana-borntobloom',
+    moves:['Fixed backdrop behind everything; content scrolls over it',
+           'Content in narrow centred panels rather than full-bleed sections',
+           'Merch block is a 3-column product grid inside the column',
+           'Closes on a FULL-SCREEN (100vh) footer'],
+    notes:{'.hero':'fixed backdrop behind the page','.sec.cards':'3-col product grid inside a 560px panel',
+           '.foot':'full-screen footer (100vh)'} },
+  'a3seam': { title:'A3 - harumaki /ndt/', kind:'verified capture', site:'harumakigohan.com/ndt',
+    url:'https://harumakigohan.com/ndt/', cap:'harumaki-ndt',
+    moves:['The page is a descent: flat sections in stepped values',
+           'Sections joined by ~160px SEAM BANDS that carry the transition (their painted cloud edges)',
+           'Content sits in a narrow column inside each band'],
+    notes:{'.sec.cards':'160px seam band above (their painted transition)','.reel':'160px seam band above',
+           '.sceneb':'final seam, then the payoff scene'} },
+  'a3rails': { title:'A3 - harumaki /10/', kind:'verified capture', site:'harumakigohan.com/10',
+    url:'https://harumakigohan.com/10/', cap:'harumaki-10',
+    moves:['Two FIXED 106px illustrated rails frame both page edges the whole way down',
+           'A ~900px column runs between the rails, with occasional wider breakouts',
+           'Content is a dated timeline of entries'],
+    notes:{'.hero':'fixed 106px rails frame both edges','.sec.cards':'column inset 126px between the rails'} },
+  'a3frame': { title:'A3 - 109ichiki', kind:'verified capture', site:'109ichiki.com',
+    url:'https://109ichiki.com/', cap:'109ichiki',
+    moves:['The whole page scrolls INSIDE a frame drawn 20px from the viewport edge',
+           'Giant mono section label (40px) with a filter-chip row beneath it',
+           'Works are a PLAIN thumbnail grid - no cards, no borders, no shadows; the gaps do the work',
+           'Ends on a full-screen footer'],
+    notes:{'.hero':'everything scrolls inside a fixed 20px frame','.sec.cards':'plain thumbnail grid - no cards, no borders',
+           '.foot':'full-screen footer'} },
+  'a3zones': { title:'A3 - thatskygame', kind:'verified capture', site:'thatskygame.com',
+    url:'https://www.thatskygame.com/', cap:'thatskygame',
+    moves:['Hero runs OVER the viewport (about 114vh)',
+           'Every zone exhales 150-400px of air after itself - the partitions are the layout',
+           'Content stays modest; the space does the talking'],
+    notes:{'.hero':'over-viewport hero (~114vh)','.sec.cards':'150px exhale after','.skills':'360px exhale after',
+           '.reel':'250px exhale after'} }
+};
+['vharumaki','vhana','v109','vsky','vindie','v2i','vharumakii','vhanai','v109i','vskyi','vindiei'].forEach(function(k){
+  PROV[k]={title:'A1 - '+k,kind:'archived: numeric profile',
+    src:'Attempt 1 - built from measured NUMBERS (column %, hero vh, padding rhythm), not from reading the page. You judged these likely useless; kept for comparison.',
+    moves:['Derived from getComputedStyle measurements only','Superseded by the A3 variants, which are read from verified captures']};
+});
+['m1','m2','m3','m1i','m2i'].forEach(function(k){
+  PROV[k]={title:'Mutant '+k.toUpperCase(),kind:'your spec x an experiment',
+    src:'Your exact section heights and order, wearing one experiment&#8217;s spacing system',
+    moves:['Section heights and order are yours, untouched','Only the shape of space is borrowed']};
+});
+
+(function(){
+  var btns=document.querySelectorAll('.vbar button');
+  var panel=document.getElementById('prov');
+  var noted=[];
+  function render(v){
+    noted.forEach(function(el){el.removeAttribute('data-note');}); noted=[];
+    var p=PROV[v]||{title:v||'(variant)',kind:'',moves:[]};
+    var h='<div class="pv-title">'+p.title+'</div><div class="pv-kind">'+(p.kind||'')+'</div>';
+    if(p.site) h+='<div class="pv-src">from <a href="'+p.url+'" target="_blank" rel="noopener">'+p.site+'</a></div>';
+    else if(p.src) h+='<div class="pv-src">'+p.src+'</div>';
+    if(p.moves&&p.moves.length) h+='<ul><li>'+p.moves.join('</li><li>')+'</li></ul>';
+    if(p.cap) h+='<div class="pv-cap"><a href="references/captures/'+p.cap+'-screen1.jpg" target="_blank">first screen</a>'+
+                 '<a href="references/captures/'+p.cap+'-full.jpg" target="_blank">full page</a></div>';
+    panel.innerHTML=h;
+    if(p.notes) Object.keys(p.notes).forEach(function(sel){
+      var els=document.querySelectorAll(sel);
+      for(var i=0;i<els.length;i++){
+        if(i>0) break;                     /* label the first matching block only */
+        els[i].setAttribute('data-note',p.notes[sel]); noted.push(els[i]);
+      }
+    });
+  }
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      document.body.className=b.dataset.v;
+      btns.forEach(function(x){x.classList.toggle('on',x===b);});
+      render(b.dataset.v);
+    });
+  });
+  /* ?v=<classes> preselects a variant at load (headless capture + deep links); '+' = space */
+  var m=/[?&]v=([^&]*)/.exec(location.search);
+  if(m){
+    var v=decodeURIComponent(m[1]).replace(/\+/g,' ');
+    document.body.className=v;
+    btns.forEach(function(x){x.classList.toggle('on',x.dataset.v===v);});
+    render(v.split(' ')[0]);
+  } else { render(''); }
+})();
+</script>
+</body>
+</html>

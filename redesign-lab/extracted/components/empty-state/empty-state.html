@@ -1,0 +1,247 @@
+<!-- empty-state - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=empty-state can mount it. Page chrome is scoped to .cb-empty-state; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: EMPTY STATE - 3 versions at the measured 930x60 and 1351x60 -->
+<!--
+  Reservation read off the rendered blockouts at viewport 1440:
+    projects-blockout.html   930 x 60
+    ramblings-blockout.html  1351 x 60
+  Height 60 on both. The dashed outline behind every version below IS that reservation, drawn as
+  an `outline` so it takes no layout space of its own.
+  The readout under each stage is measured live with getBoundingClientRect(), not typed in.
+-->
+<div class="cb cb-empty-state">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 300;400;500. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+.cb-empty-state {
+  background:var(--color-night,#070c23);color:var(--color-text,#f5f3ef);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;padding:0 0 140px
+
+  & * {box-sizing:border-box;margin:0;padding:0
+  }
+  & header.top {position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)
+  }
+  & header.top h1 {font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase
+  }
+  & header.top .sub {font-size:10px;color:#8e8e8e
+  }
+  & .wrap {width:1400px;max-width:96vw;margin:0 auto;padding:36px 0 0
+  }
+  & .lede {font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:40px;max-width:104ch;
+    background:rgba(8,10,18,.72)
+  }
+  & .lede b {color:#e4e4e4;font-weight:500
+  }
+  & .lede code {color:var(--color-gold)
+  }
+  & h2.v {font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold);font-weight:400;margin:48px 0 6px;border-top:1px solid #2c2c2c;
+    padding-top:20px
+  }
+  & .vsrc {font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;
+    margin-bottom:20px;max-width:104ch
+  }
+  & .vsrc b {color:#ccc;font-weight:400
+  }
+  & .vsrc .tier {color:var(--color-gold)
+  }
+  & .slot {font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:#6f6f6f;margin:22px 0 7px
+  }
+  /* LAB CHROME ONLY. `outline` is used on purpose: it draws the reservation without occupying a
+     single pixel of layout, so the dashed box can never move the component it is measuring. */
+  & .stage {outline:1px dashed rgba(255,255,255,.34);outline-offset:0;height:60px
+  }
+  & .stage--projects {width:930px
+  }
+  & .stage--ramblings {width:1351px;max-width:100%
+  }
+  & .read {font-family:var(--font-mono);font-size:9.5px;color:#6f6f6f;margin-top:6px;letter-spacing:.06em
+  }
+  & .read .ok {color:#6fbf73
+  }
+  & .read .bad {color:#f078f0
+  }
+  & .scroller {overflow-x:auto;padding-bottom:4px
+  }
+  & .copyset {font-family:var(--font-mono);font-size:10.5px;line-height:2;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:14px 18px;margin-top:12px;max-width:104ch
+  }
+  & .copyset b {color:var(--color-gold);font-weight:400
+  }
+}
+</style>
+<header class="top">
+  <h1>Empty state</h1>
+  <span class="sub">3 versions &middot; reserved 930x60 (projects) and 1351x60 (ramblings) &middot;
+    source: PatternFly v6.6.1 EmptyState, fetched from source 2026-08-23</span>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <b>The ledger said "PatternFly (source pulled)". There is no such file in the lab</b>, so the
+    claim pointed at nothing and was checked rather than trusted. PatternFly is public, so the check
+    was possible: <code>unpkg.com/@patternfly/patternfly/components/EmptyState/empty-state.css</code>
+    (7,960 bytes) plus their token file, both read this session. Every number in the CSS was resolved
+    through their token chain to a literal.<br><br>
+    <b>The claim held, and one detail of it was false.</b> The canonical note says PatternFly has no
+    dashed border. Confirmed as real absence: <code>border|background|radius</code> returns
+    <b>zero hits</b> across the whole file. So the dashed box in
+    <code>list-controls/list-controls.css</code> is not PatternFly's, it is ours, and that file's own
+    header already admits it has no external provenance.<br><br>
+    <b>The copy is not invented.</b> Your live site already branches empty-state copy four ways at
+    <code>_javascript/modules/components/post-filter.js:123-146</code>. The title line in every
+    version below is your own sentence. <b>The second line is new and it is mine</b>, sitting in
+    PatternFly's body slot, and it is the one thing here that wants your voice over it.<br><br>
+    <b>What could not transfer:</b> PatternFly's stack is 2rem-padded and about 90px tall before an
+    icon or a footer. The reservation is 60. Every version below is that stack compressed, which is
+    why none of them is tiered True.
+  </div>
+
+  <!-- -------------------------------------------------------------------------------------- -->
+  <h2 class="v">Version 1 &middot; centred stack</h2>
+  <div class="vsrc"><b>Tier: Remixed. Idea origin: theirs (PatternFly) + Rod (the copy).</b>
+    <span class="tier">The closest thing to the source that fits.</span>
+    Their exact shape: a 350px centred column, title over body, text-align centre. Verbatim from
+    them: the four container declarations, the 21.875rem content width, the 1rem title, the 1.3
+    heading line-height, and the 0.25rem body margin (their own smallest spacer, stepped down from
+    their 1rem so two lines fit 60px).<br>
+    <b>Ours:</b> the vertical padding drops from their 1rem to 0 with min-height doing the centring,
+    the title weight drops from their 600 to 300 (decisions.css: hierarchy is size, never weight),
+    and the action link moves <b>inside</b> the second sentence because their separate footer slot
+    costs a third line the box does not have.</div>
+
+  <div class="slot">projects &middot; reserved 930 x 60</div>
+  <div class="scroller"><div class="stage stage--projects">
+    <div class="es es--stack" role="status">
+      <div class="es__content">
+        <p class="es__title">No <b>shader</b> projects matching <b>"raymarching"</b></p>
+        <p class="es__body">Try a shorter word, or
+          <a class="es__action" href="#">show all 12 projects</a>.</p>
+      </div>
+    </div>
+  </div></div>
+  <div class="read" data-measure="930x60"></div>
+
+  <div class="slot">ramblings &middot; reserved 1351 x 60</div>
+  <div class="scroller"><div class="stage stage--ramblings">
+    <div class="es es--stack" role="status">
+      <div class="es__content">
+        <p class="es__title">Nothing in the ramblings matches <b>"recipes"</b></p>
+        <p class="es__body">Try a shorter word, or
+          <a class="es__action" href="#">show all ramblings</a>.</p>
+      </div>
+    </div>
+  </div></div>
+  <div class="read" data-measure="1351x60"></div>
+
+  <!-- -------------------------------------------------------------------------------------- -->
+  <h2 class="v">Version 2 &middot; centred row</h2>
+  <div class="vsrc"><b>Tier: Remixed. Idea origin: theirs (PatternFly) + Rod (the copy).</b>
+    <span class="tier">All three parts on one centred line.</span>
+    The layout rule is PatternFly's own actions block applied to the whole content instead of just
+    the buttons, verbatim: <code>display:flex; flex-wrap:wrap; gap:0.5rem 1rem;
+    justify-content:center</code>, with both gap values resolved from their spacer tokens.
+    <code>max-width:none</code> is their own default content width.<br>
+    <b>Not theirs:</b> <code>align-items:baseline</code>, which is TheRealMJP's list row, read live
+    from <code>therealmjp.github.io/css/style.min.4bc5...css</code> this session. Borrowed because
+    it is the same problem: a row of text at two sizes that has to share a baseline.<br>
+    <b>This is the version that keeps the action as its own element</b> rather than burying it in a
+    sentence, which is closer to how PatternFly actually structures the footer.</div>
+
+  <div class="slot">projects &middot; reserved 930 x 60</div>
+  <div class="scroller"><div class="stage stage--projects">
+    <div class="es es--row" role="status">
+      <div class="es__content">
+        <p class="es__title">No <b>shader</b> projects matching <b>"raymarching"</b></p>
+        <p class="es__body">Try a shorter word, or drop the shader filter.</p>
+        <a class="es__action" href="#">Show all 12 projects</a>
+      </div>
+    </div>
+  </div></div>
+  <div class="read" data-measure="930x60"></div>
+
+  <div class="slot">ramblings &middot; reserved 1351 x 60</div>
+  <div class="scroller"><div class="stage stage--ramblings">
+    <div class="es es--row" role="status">
+      <div class="es__content">
+        <p class="es__title">Nothing in the ramblings matches <b>"recipes"</b></p>
+        <p class="es__body">Try a shorter word, or check back later.</p>
+        <a class="es__action" href="#">Show all ramblings</a>
+      </div>
+    </div>
+  </div></div>
+  <div class="read" data-measure="1351x60"></div>
+
+  <!-- -------------------------------------------------------------------------------------- -->
+  <h2 class="v">Version 3 &middot; split row</h2>
+  <div class="vsrc"><b>Tier: Remixed. Idea origin: theirs (PatternFly content + TheRealMJP
+    geometry) + Rod (the copy).</b>
+    <span class="tier">The only version that uses the width.</span>
+    Geometry quoted verbatim from TheRealMJP's <b>list row</b>, read live this session:
+    <code>.posts-group .post-item a{display:flex;justify-content:space-between;
+    align-items:baseline;padding:12px 0}</code> and
+    <code>.posts-group .post-day{flex-shrink:0;margin-left:1em}</code>.
+    Taken from their list rather than their prev/next on purpose: the empty state sits in a list, so
+    it inherits the list's own rhythm.<br>
+    <b>Not taken:</b> their <code>opacity:.6</code> on the right-hand item, because opacity over a
+    live scene is a window rather than a colour; and their
+    <code>border-bottom:1px #7d828a dashed</code> row rule, which is the closest real external
+    precedent in the set to the dashed box you kept in rework-hana, but it is a row separator on
+    their site and not a box.<br>
+    <b>Ours:</b> <code>text-align:left</code>. A split row cannot be centred.</div>
+
+  <div class="slot">projects &middot; reserved 930 x 60</div>
+  <div class="scroller"><div class="stage stage--projects">
+    <div class="es es--split" role="status">
+      <div class="es__content">
+        <p class="es__title">No <b>shader</b> projects matching <b>"raymarching"</b>.
+          <span class="es__body">Try a shorter word, or drop the shader filter.</span></p>
+        <a class="es__action" href="#">Show all 12 projects</a>
+      </div>
+    </div>
+  </div></div>
+  <div class="read" data-measure="930x60"></div>
+
+  <div class="slot">ramblings &middot; reserved 1351 x 60</div>
+  <div class="scroller"><div class="stage stage--ramblings">
+    <div class="es es--split" role="status">
+      <div class="es__content">
+        <p class="es__title">Nothing in the ramblings matches <b>"recipes"</b>.
+          <span class="es__body">Try a shorter word, or check back later.</span></p>
+        <a class="es__action" href="#">Show all ramblings</a>
+      </div>
+    </div>
+  </div></div>
+  <div class="read" data-measure="1351x60"></div>
+
+  <!-- -------------------------------------------------------------------------------------- -->
+  <h2 class="v">The copy, and where each sentence came from</h2>
+  <div class="vsrc">Whichever version wins, these are the four sentences the component has to be
+    able to hold. The first line of each pair is <b>yours, already shipped</b>. The second line is
+    <b>mine</b> and is the thing to rewrite.</div>
+  <div class="copyset">
+    <b>tags + query</b> &nbsp; post-filter.js:130<br>
+    No shader projects matching "raymarching"<br>
+    <i>Try a shorter word, or drop the shader filter.</i><br><br>
+    <b>tags only</b> &nbsp; post-filter.js:133 &nbsp; (live text carries an em dash, replaced with a comma)<br>
+    No shader projects yet, more coming soon!<br>
+    <i>Compute Grass and 2D Physics on the GPU are filed under gpu.</i><br><br>
+    <b>query only</b> &nbsp; post-filter.js:136<br>
+    No projects matching "raymarching"<br>
+    <i>Try a shorter word, or clear the filters.</i><br><br>
+    <b>neither</b> &nbsp; post-filter.js:139<br>
+    No projects match your filters.<br>
+    <i>Clear one and the grid comes back.</i><br><br>
+    <b>ramblings, nothing published</b> &nbsp; _layouts/ramblings.html:93<br>
+    Nothing here yet. Check back later!<br>
+    <i>(no second line needed, this one is already complete)</i>
+  </div>
+</div>
+</div>

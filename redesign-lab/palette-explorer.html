@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Palette explorer — warm + blue, by color theory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Shippori+Mincho:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== token skeleton: JS sets the ~9 CORE tokens per palette; the rest DERIVE here via
+       color-mix so every palette stays internally coherent by construction. ===== */
+    :root{
+      /* core (overwritten by JS per palette) */
+      --color-night:#070c23; --color-night-2:#0a1030; --color-text:#f5f3ef; --color-muted:#9aa3bd;
+      --color-glow-soft:#ffd9a8; --color-gold:#fbbf24; --color-gold-deep:#f59e0b; --color-glow:#ff6a00;
+      --color-accent-cool:#3090a8;
+      /* derived */
+      --color-panel:color-mix(in srgb,var(--color-night-2) 62%,transparent);
+      --color-glass:color-mix(in srgb,var(--color-night) 55%,transparent);
+      --color-line:color-mix(in srgb,var(--color-gold) 26%,transparent);
+      /* text-based so lines/surfaces adapt whether the sky is dark (night) or light (day) */
+      --color-line-soft:color-mix(in srgb,var(--color-text) 12%,transparent);
+      --color-line-faint:color-mix(in srgb,var(--color-text) 7%,transparent);
+      --color-surface:color-mix(in srgb,var(--color-text) 6%,transparent);
+      --color-ink:var(--color-night);
+      --color-cover-hi:color-mix(in srgb,var(--color-night-2) 78%,var(--color-glow) 22%);
+      --color-cover-lo:color-mix(in srgb,var(--color-night) 88%,#000 12%);
+      --color-warm-muted:color-mix(in srgb,var(--color-glow-soft) 78%,var(--color-text));
+      /* deep well (code blocks / insets) + the rare PLAYFUL SPOT (pink); palettes may override both */
+      --color-code-bg:color-mix(in srgb,var(--color-night) 68%,#000 32%);
+      --color-spot:#ff8bd0;
+      --font-hand:"Caveat",cursive; --font-mono:"IBM Plex Mono",monospace; --font-body:"M PLUS Rounded 1c",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{min-height:100vh;background:var(--color-night);color:var(--color-text);font-family:var(--font-body);line-height:1.7;
+      transition:background .4s;-webkit-font-smoothing:antialiased}
+
+    /* cheap bloom bg (tinted to the palette's warm peak) */
+    #hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);pointer-events:none;transition:background .4s;
+      -webkit-mask-image:radial-gradient(120% 85% at 50% 34%,#000 24%,transparent 82%);mask-image:radial-gradient(120% 85% at 50% 34%,#000 24%,transparent 82%)}
+    .bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(22px) brightness(.6) saturate(1.05)}
+    .bg-1{opacity:1}.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+    @keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+    #scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,transparent 0 12%,color-mix(in srgb,var(--color-night) 55%,transparent) 45%,color-mix(in srgb,var(--color-night) 80%,transparent) 100%)}
+
+    .wrap{max-width:900px;margin:0 auto;padding:0 24px 120px}
+
+    /* top bar */
+    .bar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px;padding:16px 4px;margin-bottom:60px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .dot{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--color-glow-soft),var(--color-gold) 45%,var(--color-glow) 100%);box-shadow:0 0 14px color-mix(in srgb,var(--color-glow) 55%,transparent)}
+    .name{font-family:var(--font-hand);font-weight:700;font-size:2rem;color:var(--color-gold-deep);white-space:nowrap;line-height:1}
+    .nav{display:flex;justify-self:center;gap:6px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase}
+    .nav a{position:relative;color:var(--color-muted);text-decoration:none;padding:.42rem .9rem;border-radius:999px;transition:color .3s,background .3s}
+    .nav a:hover{color:var(--color-night);background:var(--color-gold)}
+    /* active = the ONE cool-accent mark (spend blue on the most important thing) */
+    .nav a.active{color:var(--color-glow)}
+    .nav a.active::after{content:"";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;
+      background:var(--color-glow);box-shadow:0 0 10px color-mix(in srgb,var(--color-glow) 80%,transparent)}
+    .status{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted)}
+    .status .live{width:7px;height:7px;border-radius:50%;background:var(--color-glow);box-shadow:0 0 8px var(--color-glow)}
+
+    /* hero */
+    .hero{text-align:center;padding:30px 0 54px}
+    .hero h1{font-family:var(--font-hand);font-weight:700;font-size:clamp(3.4rem,10vw,7rem);line-height:.9;margin:0 0 6px;color:var(--color-gold-deep)}
+    .hero .tag{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.24em;text-transform:uppercase;color:var(--color-muted);margin:0 0 26px}
+    .btns{display:flex;gap:12px;justify-content:center}
+    .btn{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:.7rem 1.3rem;border-radius:999px;cursor:pointer;text-decoration:none;transition:.25s}
+    .btn.primary{background:var(--color-gold);color:var(--color-ink);border:1px solid var(--color-gold);box-shadow:0 0 22px color-mix(in srgb,var(--color-glow) 30%,transparent)}
+    .btn.primary:hover{background:var(--color-gold-deep)}
+    .btn.ghost{background:transparent;color:var(--color-text);border:1px solid var(--color-line)}
+    .btn.ghost:hover{border-color:var(--color-glow);color:var(--color-glow)}
+
+    /* content row: card + prose */
+    .row{display:grid;grid-template-columns:300px 1fr;gap:34px;align-items:start;margin-top:20px}
+    @media(max-width:720px){.row{grid-template-columns:1fr}}
+    /* cards = the deep-well dark (same as the code block); cover = flat placeholder (real thumbnail replaces it) */
+    .card{border-radius:14px;overflow:hidden;border:1px solid var(--color-line-faint);background:var(--color-code-bg)}
+    .cover{height:150px;background:var(--color-code-bg);position:relative}
+    /* the pinned badge = the rare PLAYFUL SPOT (pink), the one non-orange mark per view */
+    .pin{position:absolute;top:10px;right:10px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--color-spot);border:1px solid color-mix(in srgb,var(--color-spot) 55%,transparent);border-radius:999px;padding:3px 8px;
+      background:color-mix(in srgb,var(--color-spot) 14%,transparent)}
+    .card .body{padding:14px 16px 18px}
+    .card h3{margin:0 0 8px;font-family:var(--font-body);font-weight:700;font-size:1.05rem;color:var(--color-text)}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+    .chip{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.06em;color:var(--color-warm-muted);background:var(--color-surface);border:1px solid var(--color-line-faint);border-radius:6px;padding:3px 7px}
+    .card p{margin:0;font-size:.82rem;color:var(--color-muted)}
+
+    .prose h2{font-family:var(--font-display,var(--font-body));font-size:1.5rem;color:var(--color-gold-deep);margin:0 0 12px}
+    .prose p{margin:0 0 14px;font-size:.98rem;color:color-mix(in srgb,var(--color-text) 90%,transparent)}
+    .prose a{color:var(--color-glow);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+    .prose .muted{color:var(--color-muted);font-size:.86rem}
+
+    /* deep well: a code block = the deepest surface in the stack */
+    .code-cap{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted);margin:30px 0 6px}
+    .code{background:var(--color-code-bg);border:1px solid var(--color-line-faint);border-radius:10px;padding:14px 16px;font-family:var(--font-mono);font-size:.8rem;line-height:1.7;color:var(--color-text);overflow:auto;margin:0}
+    .code .k{color:var(--color-gold)}.code .fn{color:var(--color-glow)}.code .c{color:var(--color-muted)}.code .s{color:var(--color-warm-muted)}
+
+    /* palette control + theory panel */
+    .ctl{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:20;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;
+      background:rgba(6,9,22,.92);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:9px 12px;font-family:var(--font-mono);max-width:calc(100vw - 24px)}
+    .ctl .lbl{color:#9aa3bd;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-right:4px}
+    .ctl button{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(232,230,225,.8);font:inherit;font-size:10.5px;padding:5px 10px;cursor:pointer;border-radius:6px}
+    .ctl button:hover{border-color:#fbbf24}
+    .ctl button.on{background:#fbbf24;border-color:#fbbf24;color:#070c23}
+    .ctl .sep{width:1px;height:16px;background:rgba(255,255,255,.18);margin:0 3px}
+    /* desaturate: grayscale the visible layers directly (not an ancestor) so fixed positioning is unaffected */
+    html.desat #hana-bg, html.desat .wrap, html.desat .theory, html.desat .ctl{filter:grayscale(1)}
+
+    .theory{position:fixed;left:16px;top:14px;z-index:20;width:250px;background:rgba(6,9,22,.9);border:1px solid rgba(255,255,255,.12);border-radius:10px;
+      padding:13px 14px;font-family:var(--font-mono);backdrop-filter:blur(5px)}
+    .theory .scheme{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#9aa3bd;margin-bottom:3px}
+    .theory .pname{font-size:15px;color:#fbbf24;margin-bottom:8px;font-family:var(--font-hand);font-weight:700}
+    .theory .note{font-size:10.5px;line-height:1.55;color:rgba(232,230,225,.78);margin-bottom:11px}
+    .theory .swatches{display:flex;gap:0;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.12)}
+    .theory .sw{flex:1;height:26px}
+    .theory .hexes{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:8px;font-size:9px;color:rgba(232,230,225,.6)}
+    .theory .hexes span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:-1px;background:var(--c)}
+    @media(max-width:720px){.theory{position:static;width:auto;margin:14px 0 0}}
+  </style>
+</head>
+<body>
+  <div id="hana-bg"></div>
+  <div id="scrim"></div>
+
+  <aside class="theory">
+    <div class="scheme" id="t-scheme">complementary</div>
+    <div class="pname" id="t-name">Lantern</div>
+    <div class="note" id="t-note"></div>
+    <div class="swatches" id="t-sw"></div>
+    <div class="hexes" id="t-hex"></div>
+  </aside>
+
+  <div class="wrap">
+    <header class="bar">
+      <div class="brand"><span class="dot"></span><span class="name">Rodney&nbsp;Fan</span></div>
+      <nav class="nav">
+        <a href="#">Home</a><a href="#" class="active">Projects</a><a href="#">About</a><a href="#">Ramblings</a>
+      </nav>
+      <span class="status"><span class="live"></span>open for work</span>
+    </header>
+
+    <section class="hero">
+      <h1>Rodney&nbsp;Fan</h1>
+      <p class="tag">technical artist &middot; game designer</p>
+      <div class="btns"><a class="btn primary" href="#">View projects</a><a class="btn ghost" href="#">Resume</a></div>
+    </section>
+
+    <div class="row">
+      <article class="card">
+        <div class="cover"><span class="pin">&#9733; pinned</span></div>
+        <div class="body">
+          <h3>Lantern Drift</h3>
+          <div class="chips"><span class="chip">Unity</span><span class="chip">Shader</span><span class="chip">VFX</span></div>
+          <p>A festival scene of drifting lanterns with reactive water and click-to-ignite embers.</p>
+        </div>
+      </article>
+      <div class="prose">
+        <h2>How the warm meets the blue</h2>
+        <p>Body text sits on the deep ground while the warm ramp carries the accents and glow. The cool
+        accent is spent rarely, on the single most important mark, so it never competes with the lanterns.
+        Read a bit and see how the <a href="#">link color</a> feels against everything else.</p>
+        <p class="muted">Muted meta text · read-time 6 min · updated recently · tags below the fold</p>
+      </div>
+    </div>
+
+    <p class="code-cap">deep well · code block</p>
+    <pre class="code"><span class="c">// ignite a lantern where the user taps</span>
+<span class="k">const</span> lantern = sky.<span class="fn">ignite</span>(<span class="s">'#ff6a00'</span>);
+lantern.<span class="fn">drift</span>({ warmth: <span class="s">0.8</span>, lonely: <span class="k">true</span> });</pre>
+  </div>
+
+  <div class="ctl">
+    <span class="lbl">palette</span><span id="palRow"></span>
+    <span class="sep"></span>
+    <button id="desat" type="button">desaturate</button>
+  </div>
+
+  <script src="references/site-palettes.js"></script>
+  <script>
+  (function(){
+    var COLS=32,ROWS=18;
+    /* ORIGINAL hana glow (the hand-tuned GRID1/GRID2 from hana-bloom.js) — kept as-is.
+       Only the palette TINT changes per option; the glow SHAPE never does. */
+    var HANA1=[63,48,31,14,7,3,2,2,2,2,3,3,3,3,3,3,2,1,1,1,2,3,7,11,18,26,34,40,40,40,40,42,54,41,25,12,6,3,2,2,2,3,3,4,5,6,5,4,3,2,2,2,2,4,8,13,23,30,33,38,42,45,49,51,44,34,19,9,7,3,2,3,3,4,7,7,9,11,9,8,5,3,2,2,3,5,11,14,21,28,34,44,43,49,55,65,30,19,16,8,4,5,3,4,5,7,9,11,14,15,17,15,9,4,4,2,2,5,9,15,21,32,42,49,52,58,66,70,21,15,10,7,5,4,5,6,10,12,14,18,25,22,25,23,16,7,3,3,4,4,9,18,28,39,48,56,61,68,73,78,14,11,9,7,11,9,9,11,13,16,22,25,28,31,32,27,22,10,4,4,2,4,10,22,36,45,61,68,72,76,78,81,9,10,10,9,11,13,16,16,19,22,27,33,36,40,40,35,27,15,6,3,3,6,15,27,44,56,67,75,78,82,81,83,8,11,10,13,15,20,22,23,24,28,36,46,49,49,45,41,31,19,9,3,5,8,22,35,52,64,74,81,83,84,84,84,7,10,14,14,17,19,24,26,30,35,46,54,60,59,51,43,30,19,10,3,4,11,23,43,64,75,79,82,84,84,84,82,7,11,11,15,17,22,24,29,32,42,54,63,71,67,55,45,30,18,9,3,5,11,30,49,71,79,83,85,86,84,82,78,7,11,11,16,17,20,25,30,35,48,62,73,73,70,59,42,24,16,6,5,5,11,31,54,72,82,86,86,84,81,76,68,6,9,11,12,15,18,24,32,43,55,65,74,78,73,62,43,25,13,5,2,3,8,25,50,71,82,86,84,82,76,70,59,5,6,8,9,13,17,24,34,46,59,68,77,77,74,64,42,25,11,4,2,3,5,14,39,63,78,81,81,75,70,60,50,6,5,6,8,13,19,27,39,50,65,73,76,79,71,57,38,20,9,3,1,1,4,11,25,47,65,72,73,73,60,49,44,2,4,4,10,14,23,34,47,60,70,78,79,77,61,51,31,15,6,4,2,2,2,4,12,28,43,57,62,60,56,44,35,2,2,6,9,17,31,42,59,71,78,80,81,73,62,43,24,11,5,2,2,2,1,2,7,14,26,36,43,46,44,40,36,1,2,4,10,21,37,54,68,78,81,81,79,70,54,36,19,9,3,3,2,2,2,1,3,6,12,18,28,33,34,36,35,2,2,4,10,20,43,60,76,82,84,83,77,66,47,29,15,7,3,1,2,2,2,2,2,3,5,8,14,19,25,29,35];
+    var HANA2=[32,34,34,35,29,24,19,12,8,4,3,1,0,2,2,2,2,3,9,19,32,51,68,78,83,84,81,73,58,39,20,8,26,29,32,33,37,35,32,25,17,11,5,3,3,2,0,2,2,5,11,22,40,57,72,79,83,81,76,64,53,35,19,9,20,24,29,38,38,41,45,43,35,23,10,5,2,2,0,1,2,6,13,28,47,65,75,79,81,77,68,56,40,25,17,9,17,22,30,38,43,54,60,59,54,41,24,10,4,3,2,2,3,7,18,33,53,73,79,81,78,71,59,44,32,19,13,7,16,24,33,43,54,66,70,74,72,62,41,18,8,4,1,2,3,10,20,42,64,74,79,78,72,63,53,35,27,16,11,8,19,26,37,53,62,72,77,81,81,76,62,35,12,4,2,2,5,11,25,41,65,74,77,76,69,59,45,35,23,15,13,9,25,37,47,63,73,78,82,86,84,81,69,45,20,6,3,3,7,13,28,47,62,74,78,73,64,51,39,29,23,18,13,11,35,48,62,71,77,82,84,86,86,81,69,50,25,9,3,3,8,18,30,43,64,70,75,68,60,45,36,33,22,19,17,13,49,61,72,79,81,84,86,86,84,78,66,44,25,10,4,4,10,19,31,43,58,67,69,62,49,40,33,27,25,24,19,16,62,71,79,82,84,84,84,83,81,72,58,37,21,9,4,6,11,21,32,43,53,62,63,54,44,36,28,25,22,18,16,15,74,78,82,84,84,84,82,80,75,64,48,35,16,7,3,3,10,22,33,43,48,48,48,42,34,28,24,21,19,19,15,14,79,82,84,83,83,81,78,73,63,53,40,26,12,5,2,4,8,18,30,36,41,38,37,31,27,21,21,17,14,12,11,10,81,83,83,81,80,75,68,65,54,47,30,19,10,3,3,2,6,13,23,28,30,30,25,25,20,17,14,11,11,8,8,9,83,83,81,77,75,67,63,58,46,35,25,15,8,4,2,2,3,9,17,20,26,23,22,18,14,11,9,6,5,6,5,7,81,79,77,66,63,59,51,44,40,28,22,13,8,6,2,2,3,5,11,16,18,17,13,11,9,7,5,3,3,3,5,10,76,71,67,62,52,51,45,42,35,26,19,14,8,4,3,2,2,3,6,8,10,11,8,7,5,6,4,2,3,3,7,11,64,61,55,52,48,44,43,38,31,24,16,12,10,4,2,1,2,2,3,4,7,6,5,3,3,4,2,2,2,3,8,15,51,46,44,38,41,39,43,38,33,25,17,10,6,5,2,1,1,2,2,4,3,3,3,2,2,2,2,2,2,3,8,19];
+
+    // Each palette = a color-theory SCHEME. Core tokens only; page CSS derives the rest.
+    // All keep warm-glow + blue; they vary the HUE of the blue, the HUE of the warm, and the HARMONY.
+    var PALETTES=[
+      // --- the current lab / aggregate baseline (EXACT settings.css values) ---
+      {key:'current',name:'Current',scheme:'current lab theme (settings.css baseline)',
+        note:"The exact palette the lab/aggregate uses right now: warm gold/amber-ember on near-black navy, with a teal cool-accent (#3090a8). The baseline everything else is compared against. (This explorer maps accent spots to the warm secondary, so the live theme's teal accent isn't shown here.)",
+        t:{'--color-night':'#070c23','--color-night-2':'#0a1030','--color-text':'#f5f3ef','--color-muted':'#9aa3bd',
+          '--color-glow-soft':'#ffd9a8','--color-gold':'#fbbf24','--color-gold-deep':'#f59e0b','--color-glow':'#ff6a00','--color-accent-cool':'#3090a8'}},
+      // --- a bolder take (higher-saturation cousin of Current) ---
+      {key:'sodium',name:'Sodium & Sky',scheme:'Complementary, high-chroma (bold)',
+        note:'A punchy sodium-lamp orange signature against a clean cobalt sky. Higher saturation, more graphic. The "one bold color" direction - leans hard into the blue.',
+        t:{'--color-night':'#071033','--color-night-2':'#0c1740','--color-code-bg':'#04091f','--color-text':'#f7f3ec','--color-muted':'#93a0c8',
+          '--color-glow-soft':'#ffd28a','--color-gold':'#ffb020','--color-gold-deep':'#ff7a00','--color-glow':'#ff6a00','--color-spot':'#ff7ec8',
+          '--color-cover-hi':'color-mix(in srgb, #0c1740 84%, #ff6a00 16%)'}},
+      // --- mix experiment: FTR's blues + Sodium's orange ramp (Sodium-style neutral text) ---
+      {key:'ftrSodium',name:'FTR × Sodium',scheme:'FTR blues + Sodium oranges (mix)',
+        note:"FTR's blue structure (deep #113579 ground, brighter #2852cf in the surfaces) with Sodium & Sky's orange ramp as the light. Calm cream text, orange lanterns, cold blue sky.",
+        t:{'--color-night':'#113579','--color-night-2':'color-mix(in srgb, #113579 68%, #2852cf 32%)','--color-text':'#f5f1e8','--color-muted':'#97a6cc',
+          '--color-glow-soft':'#ffd28a','--color-gold':'#ffb020','--color-gold-deep':'#ff7a00','--color-glow':'#ff5400',
+          '--color-warm-muted':'color-mix(in srgb, #ffb020 70%, #ffffff)','--color-cover-hi':'color-mix(in srgb, #2852cf 58%, #ff7a00 42%)'}},
+      {key:'rainSodium',name:'Rain × Sodium',scheme:"It's Raining After All blue + Sodium oranges (mix)",
+        note:"It's Raining After All's deep indigo (#222657) ground with Sodium's orange ramp as the light. The darkest, moodiest blue of the mixes; cream text, orange lanterns.",
+        t:{'--color-night':'#222657','--color-night-2':'#2e3470','--color-text':'#f5f1e8','--color-muted':'#9096b8',
+          '--color-glow-soft':'#ffd28a','--color-gold':'#ffb020','--color-gold-deep':'#ff7a00','--color-glow':'#ff5400',
+          '--color-warm-muted':'color-mix(in srgb, #ffb020 70%, #ffffff)','--color-cover-hi':'color-mix(in srgb, #2e3470 56%, #ff7a00 44%)'}},
+      // --- experiment: harumaki's SAME cornflower sky, pink secondary swapped for a comparable orange / yellow ---
+      {key:'harumakiOrange',name:'Harumaki Orange',scheme:'harumaki blue + orange secondary (experiment)',
+        note:"Harumaki main's blue (#2351bb), pink secondary swapped for a comparable vivid ORANGE. Same lonely blue, warmer playful pop.",
+        t:{'--color-night':'#2351bb','--color-night-2':'color-mix(in srgb, #2351bb 86%, #ff9d47 14%)','--color-text':'#ff9d47','--color-muted':'color-mix(in srgb, #ff9d47 52%, #2351bb)',
+          '--color-glow-soft':'color-mix(in srgb, #ff9d47 45%, #ffffff)','--color-gold':'#ff9d47','--color-gold-deep':'#ff9d47','--color-glow':'#ff9d47',
+          '--color-warm-muted':'color-mix(in srgb, #ff9d47 70%, #ffffff)','--color-cover-hi':'color-mix(in srgb, #2351bb 62%, #ff9d47 38%)'}},
+      {key:'harumakiYellow',name:'Harumaki Yellow',scheme:'harumaki blue + yellow secondary (experiment)',
+        note:'Same harumaki blue (#2351bb), pink secondary swapped for a comparable golden YELLOW. Sunnier pop against the blue.',
+        t:{'--color-night':'#2351bb','--color-night-2':'color-mix(in srgb, #2351bb 86%, #ffc93d 14%)','--color-text':'#ffc93d','--color-muted':'color-mix(in srgb, #ffc93d 52%, #2351bb)',
+          '--color-glow-soft':'color-mix(in srgb, #ffc93d 45%, #ffffff)','--color-gold':'#ffc93d','--color-gold-deep':'#ffc93d','--color-glow':'#ffc93d',
+          '--color-warm-muted':'color-mix(in srgb, #ffc93d 70%, #ffffff)','--color-cover-hi':'color-mix(in srgb, #2351bb 62%, #ffc93d 38%)'}},
+      // site-sourced palettes are loaded from references/site-palettes.js (exact samples)
+    ];
+
+    function lumFn(base,peak){return function(l){var t=Math.min(1,l/86),tr=Math.pow(t,1.18);
+      return[Math.round(base[0]+(peak[0]-base[0])*Math.pow(tr,0.85)),
+             Math.round(base[1]+(peak[1]-base[1])*Math.pow(tr,0.9)),
+             Math.round(base[2]+(peak[2]-base[2])*tr)];};}
+    function hex2rgb(h){h=h.replace('#','');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
+    function rgbToHex(s){
+      // color(srgb 0.2 0.14 0.21) — modern format returned for color-mix() values (floats 0..1)
+      var m=s.match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
+      if(m){return '#'+[1,2,3].map(function(i){return ('0'+Math.round(parseFloat(m[i])*255).toString(16)).slice(-2);}).join('');}
+      // rgb(51, 36, 54) — integers 0..255
+      var n=s.match(/[\d.]+/g);if(!n)return s;
+      return '#'+n.slice(0,3).map(function(x){return ('0'+Math.round(parseFloat(x)).toString(16)).slice(-2);}).join('');
+    }
+    function bake(flat,cls,lum){var s=document.createElement('canvas');s.width=COLS;s.height=ROWS;var c=s.getContext('2d'),id=c.createImageData(COLS,ROWS);
+      for(var i=0;i<flat.length;i++){var col=lum(flat[i]),j=i*4;id.data[j]=col[0];id.data[j+1]=col[1];id.data[j+2]=col[2];id.data[j+3]=255;}c.putImageData(id,0,0);
+      var cur=s,w=COLS;while(w<1024){var nw=Math.min(w*2,1024),nh=Math.round(nw*ROWS/COLS),n=document.createElement('canvas');n.width=nw;n.height=nh;var nc=n.getContext('2d');nc.imageSmoothingEnabled=true;nc.imageSmoothingQuality='high';nc.drawImage(cur,0,0,nw,nh);cur=n;w=nw;}
+      cur.className='bgcanvas '+cls;return cur;}
+
+    function apply(p){
+      var r=document.documentElement;
+      for(var k in p.t) r.style.setProperty(k,p.t[k]);
+      // bloom = the ORIGINAL hana glow (HANA1<->HANA2 crossfade), tinted to this palette
+      // (base = night, peak = ember glow). Glow shape is fixed; only the tint changes.
+      var base=hex2rgb(p.t['--color-night']),peak=hex2rgb(p.t['--color-glow']),lum=lumFn(base,peak);
+      var bg=document.getElementById('hana-bg');bg.innerHTML='';
+      bg.appendChild(bake(HANA1,'bg-1',lum));bg.appendChild(bake(HANA2,'bg-2',lum));
+      // theory panel
+      document.getElementById('t-scheme').textContent=p.scheme;
+      document.getElementById('t-name').textContent=p.name;
+      document.getElementById('t-note').textContent=p.note;
+      // show EVERY role color, RESOLVED from the DOM (so derived colors — card cover, text, muted — appear too)
+      var ROLES=[['sky','--color-night'],['surface','--color-night-2'],['well','--color-code-bg'],['text','--color-text'],['muted','--color-muted'],['soft','--color-glow-soft'],['gold','--color-gold'],['deep','--color-gold-deep'],['glow/link','--color-glow'],['spot','--color-spot'],['ink','--color-ink'],['card','--color-cover-hi']];
+      var sw='',hx='';
+      ROLES.forEach(function(r){
+        var probe=document.createElement('span');probe.style.cssText='background:var('+r[1]+');position:absolute;width:1px;height:1px;opacity:0;pointer-events:none';
+        document.body.appendChild(probe);var hex=rgbToHex(getComputedStyle(probe).backgroundColor);document.body.removeChild(probe);
+        sw+='<span class="sw" style="background:var('+r[1]+')" title="'+r[0]+' '+hex+'"></span>';
+        hx+='<span style="--c:var('+r[1]+')">'+r[0]+' '+hex+'</span>';
+      });
+      document.getElementById('t-sw').innerHTML=sw;
+      document.getElementById('t-hex').innerHTML=hx;
+      [].forEach.call(document.querySelectorAll('#palRow button'),function(b){b.classList.toggle('on',b.dataset.k===p.key);});
+    }
+    var ALL = PALETTES.concat(window.SITE_PALETTES||[]);
+    var row=document.getElementById('palRow');
+    ALL.forEach(function(p){var b=document.createElement('button');b.textContent=p.name;b.dataset.k=p.key;b.onclick=function(){apply(p);};row.appendChild(b);});
+    apply(ALL[0]);
+    var dz=document.getElementById('desat');
+    dz.onclick=function(){var on=document.documentElement.classList.toggle('desat');dz.classList.toggle('on',on);dz.textContent=on?'desaturated':'desaturate';};
+  })();
+  </script>
+</body>
+</html>

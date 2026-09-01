@@ -1,0 +1,76 @@
+/* favicon — magnetic-but-clamped icon that spins on hover; navigates home.
+   overflow:hidden on the box visually enforces the clamp ("the icon can't escape its box"). */
+.favicon-demo {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.favicon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 9px;
+  border: 1px solid color-mix(in srgb, var(--color-glow) 45%, transparent);
+  background: #fff; /* white backing so the black lantern-cluster icon reads on the dark bar */
+  overflow: hidden;
+}
+
+/* SQUARE variant (Rod 2026-08-11 shape pass: square by default, round only by exception) */
+.favicon--square {
+  border-radius: 0;
+}
+
+.favicon__magnet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favicon__img {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+}
+
+/* spin ONLY on hover by default (counter-clockwise, continuous while hovered). The ALWAYS-ON continuous
+   spin is the ACHIEVEMENT state — the achievement system flips .is-earned on the .favicon.
+
+   ROTATION IS REMEMBERED (Rod 2026-08-18). The spin is not applied on hover and removed on
+   hover-off — it is always attached and PAUSED, and hover only sets it running. A paused animation
+   holds its current computed transform, so the mark keeps the angle it reached and the next hover
+   carries on from there instead of snapping upright. The magnet POSITION still springs back to
+   centre like every other magnetic element; only the rotation persists. */
+.favicon__img {
+  animation: favicon-spin 1.4s linear infinite;
+  animation-play-state: paused;
+}
+
+.favicon:hover .favicon__img {
+  animation-play-state: running;
+}
+
+/* the shorthand resets play-state to running, so the earned state spins unconditionally */
+.favicon.is-earned .favicon__img {
+  animation: favicon-spin 5s linear infinite;
+}
+
+@keyframes favicon-spin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favicon__img,
+  .favicon:hover .favicon__img,
+  .favicon.is-earned .favicon__img {
+    animation: none;
+  }
+}

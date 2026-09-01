@@ -1,0 +1,131 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* !! CIRCULAR CITATION - CORRECTED 2026-08-16 !!
+   The "PROVENANCE" line below points at a `rework-*.html` / `ref-*.html` page in THIS repo.
+   Those are OUR OWN BUILDS, named after the sites that inspired them. They are source
+   CANDIDATES, not sources. This component therefore has NO EXTERNAL PROVENANCE and is Slop
+   until a real live site is found and its CSS read from source.
+   Rod caught this on the callouts: "you are confidently lying because these are not anywhere
+   to be found on hana, unless you mean our AI generated hana copy."
+   A provenance comment is a CLAIM, not evidence. Check what it points AT. */
+/* hero — HERO pick: harumaki ("hands down the best hero").
+   PROVENANCE: rework-harumaki.html .logo/.tagline. Per Rod's spec the THREE feature toggles
+   are replaced by ONE goo switch (Lanterns <-> bloom); the actual scene/bloom wiring is
+   page-level (aggregate/bg pair) — here the switch is presentational (dep: goo-toggle). */
+.hero {
+  position: relative; /* anchors the scroll cue to the hero's bottom */
+  display: grid;
+  justify-items: center;
+  align-content: center; /* center the logo/tagline/switch in the tall hero */
+  text-align: center;
+  /* fold-fill: nav + hero + projects-header + cards == one screen (Figma spec); 544px @1080p */
+  min-height: clamp(440px, calc(100vh - var(--h-nav, 72px) - var(--h-projhead, 64px) - var(--h-cards, 400px)), 640px);
+  padding: var(--space-6) var(--space-3) calc(var(--space-6) + 3rem);
+  width: 100%;
+}
+
+.hero__logo {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: clamp(3rem, 8vw, 5rem);
+  line-height: 0.9;
+  color: var(--color-gold-deep);
+  filter:
+    drop-shadow(0 0 20px color-mix(in srgb, var(--color-glow) 40%, transparent))
+    drop-shadow(0 0 7px color-mix(in srgb, var(--color-glow) 55%, transparent));
+}
+
+.hero__subtitle {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.5em;
+  color: var(--color-text);
+  opacity: 0.8;
+  margin-top: 0.4rem;
+  text-transform: uppercase;
+}
+
+.hero__tagline {
+  font-family: var(--font-body);
+  margin-top: 1.8rem;
+  font-size: 0.96rem;
+  color: color-mix(in srgb, var(--color-text) 90%, transparent);
+  max-width: 46ch;
+}
+
+.hero__switch {
+  margin-top: 1.6rem;
+}
+
+/* scroll cue — chriskalafatis chevron, magnetic via drift-magnet. The wrapper does the
+   centering (transform) so the magnet is free to drive the anchor's own transform. */
+.hero__scrollcue-wrap {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.hero__scrollcue {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  color: var(--color-gold);
+  text-decoration: none;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-glow) 45%, transparent));
+}
+.hero__chev {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* social rail — harumaki .social, anchored to the hero's RIGHT (Rod). Scrolls with the hero,
+   NOT viewport-fixed like the harumaki original. */
+.hero__social {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 2;
+}
+.hero__social a {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-decoration: none;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+.hero__social a:hover {
+  color: var(--color-gold);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-glow) 60%, transparent);
+}
+@media (max-width: 820px) { .hero__social { display: none; } } /* drop before it crowds content */
+}

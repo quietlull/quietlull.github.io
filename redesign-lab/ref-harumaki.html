@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ref: harumakigohan.com — twilight hero + organic works</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Zen+Maru+Gothic:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== harumakigohan.com recreation in its OWN palette =====
+   Twilight blue->pink sky, hand-lettered logo + ~tilde~ headers, organic circular "orb" works,
+   full-bleed cinematic bands, news carousel, vertical social rail + floating nav card. */
+:root{--blue:#27408f;--blue2:#1a2a6b;--pink:#f0a3c4;--pink2:#ff8fb0;--ink:#0f1840;--text:#fdf6fb}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+html{scroll-behavior:smooth}
+body{font-family:"Zen Maru Gothic",system-ui,sans-serif;color:var(--text);overflow-x:hidden;
+  background:linear-gradient(180deg,#1a2a6b 0%,#27408f 34%,#5566b0 52%,#c98bb8 64%,#27408f 72%,#1a2a6b 100%)}
+.hand{font-family:"Caveat",cursive}
+
+/* hero */
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative;text-align:center;
+  padding:2.6rem 1rem .5rem}
+.logo{font-family:"Caveat",cursive;font-weight:700;font-size:clamp(1.9rem,4.2vw,3.3rem);letter-spacing:.04em;line-height:1;
+  text-shadow:0 2px 24px rgba(255,255,255,.22)}
+.logo small{display:block;font-size:.2em;letter-spacing:.62em;opacity:.8;margin-top:.55em}
+.faller{position:relative;width:86px;height:150px;margin:1.1rem 0 .4rem}
+.faller .body{position:absolute;left:50%;top:30%;width:42px;height:96px;transform:translateX(-50%) rotate(180deg);border-radius:46% 46% 50% 50%;
+  background:linear-gradient(180deg,#2b3f86,#33529e);box-shadow:0 0 22px rgba(120,150,255,.5)}
+.faller i{position:absolute;left:50%;top:0;width:3px;height:100%;transform-origin:top center;border-radius:3px;
+  background:linear-gradient(180deg,rgba(255,143,176,0),var(--pink2));opacity:.85;animation:sway 4s ease-in-out infinite}
+.faller i:nth-child(2){transform:translateX(-50%) rotate(14deg)}
+.faller i:nth-child(3){transform:translateX(-50%) rotate(-12deg)}
+.faller i:nth-child(4){transform:translateX(-50%) rotate(26deg);animation-delay:.6s}
+.faller i:nth-child(5){transform:translateX(-50%) rotate(-24deg);animation-delay:.9s}
+@keyframes sway{0%,100%{transform:translateX(-50%) rotate(var(--r,0deg)) scaleY(1)}50%{transform:translateX(-50%) rotate(var(--r,0deg)) scaleY(1.06)}}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.6;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+
+.sec-h{font-family:"Caveat",cursive;font-weight:700;font-size:clamp(1.8rem,4vw,2.8rem);text-align:center;margin:0 0 1.6rem}
+.sec-h::before{content:"~ "}.sec-h::after{content:" ~"}
+section{padding:2.6rem 1.5rem;position:relative}
+
+/* NEWS carousel */
+.car{max-width:1100px;margin:0 auto;overflow:hidden}
+.track{display:flex;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.slide{flex:0 0 33.3333%;padding:.6rem}
+@media(max-width:760px){.slide{flex:0 0 100%}}
+.ncard{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:10px;overflow:hidden;backdrop-filter:blur(3px)}
+.ncard .thumb{aspect-ratio:16/10;background:linear-gradient(135deg,#3a52a8,#c98bb8)}
+.ncard .b{padding:.7rem .9rem}.ncard .d{font-size:.65rem;opacity:.7}.ncard .t{font-size:.85rem;margin-top:.2rem}
+.dots{display:flex;gap:.5rem;justify-content:center;margin-top:1.2rem}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:rgba(255,255,255,.35);cursor:pointer}
+.dots button.on{background:#fff;width:26px;border-radius:5px}
+
+/* DISCOGRAPHY organic orbs */
+.orbs{position:relative;max-width:1100px;height:560px;margin:0 auto}
+@media(max-width:760px){.orbs{height:auto;display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem}}
+.orb{position:absolute;border-radius:50%;display:grid;place-items:center;text-align:center;
+  box-shadow:0 10px 40px rgba(10,16,50,.5);transition:transform .4s}
+.orb:hover{transform:translateY(-8px) scale(1.04)}
+.orb span{font-family:"Caveat",cursive;font-size:1.1rem}
+@media(max-width:760px){.orb{position:static!important;width:150px!important;height:150px!important}}
+.o1{width:190px;height:190px;left:4%;top:38%;background:radial-gradient(circle at 38% 32%,#7aa0ff,#26408d)}
+.o2{width:230px;height:230px;left:30%;top:6%;background:radial-gradient(circle at 40% 34%,#ffb3d2,#b8497f)}
+.o3{width:170px;height:170px;left:56%;top:46%;background:radial-gradient(circle at 38% 30%,#a0e0ff,#2a6da0)}
+.o4{width:210px;height:210px;left:72%;top:8%;background:radial-gradient(circle at 40% 32%,#ffd28a,#b87f2a)}
+
+/* SERIES full-bleed bands */
+.band{height:300px;margin:0;display:flex;align-items:center;justify-content:center;font-family:"Caveat",cursive;font-size:2rem;
+  text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.band.b1{background:linear-gradient(120deg,#26408d,#5e74c6 60%,#ff8fb0)}
+.band.b2{background:linear-gradient(120deg,#7a1f3d,#d23b63 55%,#ffb27a)}
+
+/* fixed rails */
+.social{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1rem;z-index:30}
+.social a{width:24px;height:24px;display:grid;place-items:center;color:#fff;opacity:.85;font-size:.8rem;text-decoration:none}
+.navcard{position:fixed;right:14px;bottom:14px;z-index:30;width:170px;display:flex;flex-direction:column;gap:.5rem}
+.navcard a{background:rgba(15,24,64,.85);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.5rem .7rem;color:#fff;
+  text-decoration:none;font-family:"Caveat",cursive;font-size:1rem;text-align:center}
+.menu{position:fixed;left:18px;top:16px;z-index:30;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;opacity:.85}
+footer{text-align:center;padding:2rem;font-family:"Caveat",cursive;opacity:.8}
+.labtag{position:fixed;left:14px;bottom:14px;z-index:40;font-size:10px;color:rgba(255,255,255,.5)}
+.labtag a{color:#ffd28a}
+</style>
+</head>
+<body>
+<div class="menu">&#9776; Menu</div>
+<div class="social"><a href="#">YT</a><a href="#">X</a><a href="#">IG</a><a href="#">&#9834;</a></div>
+<div class="navcard"><a href="#">Studio Gohan &rsaquo;</a><a href="#">Official Store &rsaquo;</a></div>
+
+<div class="hero">
+  <div class="stars" id="stars"></div>
+  <div class="logo hand">Harumaki Gohan<small>OFFICIAL SITE</small></div>
+  <div class="faller"><span class="body"></span><i style="--r:0deg"></i><i style="--r:14deg"></i><i style="--r:-12deg"></i><i style="--r:26deg"></i><i style="--r:-24deg"></i></div>
+  <div class="sec-h hand" style="margin:0">News</div>
+</div>
+
+<section>
+  <div class="car"><div class="track" id="track">
+    <div class="slide"><div class="ncard"><div class="thumb"></div><div class="b"><div class="d">2025.12.08</div><div class="t">Blu-ray "Handmade Ginga Finale"</div></div></div></div>
+    <div class="slide"><div class="ncard"><div class="thumb"></div><div class="b"><div class="d">2026.05.28</div><div class="t">12th Anniversary POPUP Store</div></div></div></div>
+    <div class="slide"><div class="ncard"><div class="thumb"></div><div class="b"><div class="d">2026.06</div><div class="t">Newtype June issue feature</div></div></div></div>
+    <div class="slide"><div class="ncard"><div class="thumb"></div><div class="b"><div class="d">2026.04</div><div class="t">New single announced</div></div></div></div>
+  </div></div>
+  <div class="dots" id="dots"></div>
+</section>
+
+<section>
+  <div class="sec-h hand">Discography</div>
+  <div class="orbs">
+    <a class="orb o1" href="#"><span>The Two of Us</span></a>
+    <a class="orb o2" href="#"><span>Neo Dream Traveler</span></a>
+    <a class="orb o3" href="#"><span>Sleep Sheep Sunroom</span></a>
+    <a class="orb o4" href="#"><span>Blue Ending Nova</span></a>
+  </div>
+</section>
+
+<section style="padding-bottom:0">
+  <div class="sec-h hand">Series</div>
+</section>
+<div class="band b1 hand">Futarino</div>
+<div class="band b2 hand">Gen'ei wo Kakeru</div>
+
+<footer class="hand">Harumaki Gohan</footer>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab index</a> &middot; ref: harumakigohan</div>
+
+<script>
+/* twinkle stars */
+(function(){var s=document.getElementById('stars');for(var i=0;i<60;i++){var d=document.createElement('i');d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';d.style.animationDelay=(Math.random()*3)+'s';s.appendChild(d);}})();
+/* news carousel: auto-advance + dots */
+(function(){
+  var track=document.getElementById('track'),dots=document.getElementById('dots');
+  var per=window.matchMedia('(max-width:760px)').matches?1:3;
+  var slides=track.children.length, pages=Math.max(1,slides-per+1), idx=0, t;
+  for(var p=0;p<pages;p++){(function(p){var b=document.createElement('button');if(p===0)b.className='on';b.onclick=function(){go(p);reset();};dots.appendChild(b);})(p);}
+  function go(i){idx=(i+pages)%pages;track.style.transform='translateX(-'+(idx*(100/per))+'%)';
+    [].forEach.call(dots.children,function(d,j){d.className=j===idx?'on':'';});}
+  function reset(){clearInterval(t);t=setInterval(function(){go(idx+1);},3500);}
+  reset();
+})();
+</script>
+</body>
+</html>

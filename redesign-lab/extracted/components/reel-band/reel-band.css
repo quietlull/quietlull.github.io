@@ -1,0 +1,51 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* !! CIRCULAR CITATION - CORRECTED 2026-08-16 !!
+   The "PROVENANCE" line below points at a `rework-*.html` / `ref-*.html` page in THIS repo.
+   Those are OUR OWN BUILDS, named after the sites that inspired them. They are source
+   CANDIDATES, not sources. This component therefore has NO EXTERNAL PROVENANCE and is Slop
+   until a real live site is found and its CSS read from source.
+   Rod caught this on the callouts: "you are confidently lying because these are not anywhere
+   to be found on hana, unless you mean our AI generated hana copy."
+   A provenance comment is a CLAIM, not evidence. Check what it points AT. */
+/* reel-band — REEL pick: harumaki full-bleed cinematic band, positioned ABOVE the cards.
+   PROVENANCE: rework-harumaki.html .band. In the bench it spans the stage width (the
+   100vw breakout applies at page level). The hatch is the placeholder for the real reel. */
+.reel-band {
+  width: 100%;
+  height: clamp(320px, 50vh, 540px); /* Rod's spec: ~540px @1080p (full-bleed cinematic band) */
+  display: grid;
+  place-items: center;
+  border-top: 1px solid var(--color-line-faint);
+  border-bottom: 1px solid var(--color-line-faint);
+  background: var(--color-cover-lo);
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.025) 0 12px, transparent 12px 24px);
+}
+
+.reel-band__label {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 40%, transparent);
+}
+}

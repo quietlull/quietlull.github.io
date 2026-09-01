@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Element REWORK - Merodev + Yannesidibe (fully distinct)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== REWORK - MERODEV + YANNESIDIBE ===== EVERY element group pushed into this design's signature:
+   bracketed-mono UI, terminal controls, cursor edge-glow everywhere, mono-brutalist post, kinetic hero. */
+:root{--bg:#050507;--purple:#6d4bff;--purple2:#9b7bff;--lime:#e8ff59;--text:#f0f1fa;--muted:#8a8a9c;--line:#1b1b26}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;overflow-x:hidden;line-height:1.65}
+.mono{font-family:"Space Mono",monospace}
+.glow-top{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(40% 24% at 50% 3%,rgba(109,75,255,.4),transparent 60%)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 2rem}
+.lbl{font-family:"Space Mono",monospace;font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin:4.5rem 0 1.4rem}
+.lbl::before{content:"// "}
+
+/* corner-bracket reticle */
+.brk{position:relative}.brk>.c{position:absolute;width:9px;height:9px;border:1.5px solid currentColor;pointer-events:none}
+.brk>.c.tl{top:-2px;left:-2px;border-right:0;border-bottom:0}.brk>.c.tr{top:-2px;right:-2px;border-left:0;border-bottom:0}
+.brk>.c.bl{bottom:-2px;left:-2px;border-right:0;border-top:0}.brk>.c.br{bottom:-2px;right:-2px;border-left:0;border-top:0}
+/* cursor edge-glow (yanne dual-layer) - used on cards AND bio AND the section frames */
+.glow{position:relative;background:#0a0a12;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.glow::before,.glow::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.glow::before{background:radial-gradient(240px 240px at var(--mx,-9999px) var(--my,-9999px),var(--purple),rgba(0,0,0,0) 100%)}
+.glow::after{background:radial-gradient(160px 160px at var(--mx,-9999px) var(--my,-9999px),#fff,rgba(0,0,0,0) 100%)}
+
+/* 1 TOP BAR */
+.bar{display:flex;align-items:flex-start;justify-content:space-between;padding:1.3rem 2rem;position:sticky;top:0;z-index:60;background:rgba(5,5,7,.6);backdrop-filter:blur(5px)}
+.bar .nm{font-family:"Space Mono",monospace;font-weight:700;letter-spacing:.06em}
+.bar .ro{font-family:"Space Mono",monospace;font-size:.58rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:.2rem}
+.bar .mid{font-family:"Space Mono",monospace;border:1px solid var(--text);padding:.4rem 1.3rem;letter-spacing:.3em;font-size:.74rem;align-self:center}
+.exit{font-family:"Space Mono",monospace;font-size:.72rem;letter-spacing:.2em;padding:.5rem 1.1rem;color:var(--text);background:none;border:0;cursor:pointer}
+
+/* 2 KINETIC HERO */
+.hero{height:78vh;min-height:500px;display:grid;place-items:center;position:relative}
+.ring{width:min(62vmin,390px);height:min(62vmin,390px);animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring text{fill:var(--text);font-family:"Space Mono",monospace;font-size:14px;letter-spacing:2px}
+.hcen{position:absolute;text-align:center}.hcen .k{font-family:"Space Mono",monospace;font-size:.66rem;letter-spacing:.4em;color:var(--purple2);text-transform:uppercase}
+.hcen h1{font-size:clamp(1.6rem,4vw,2.6rem);font-weight:700;margin-top:.5rem;letter-spacing:-.02em}
+
+/* 3 BUTTONS - bracketed mono + lime CTA (distinct) */
+.kit{display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center}
+/* buttons = Ashlook sci-fi button (codepen.io/Ashlook/pen/YzQQwdo), Remixed: mono not Verdana, box-shadow dropped, recolored. Full border at rest -> contracts to corner brackets on hover. */
+.btn{--color:68 100% 67%;display:inline-block;background:transparent;color:hsl(var(--color));font-family:"Space Mono",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;padding:.7rem 1.3rem;cursor:pointer;border:0;text-decoration:none;position:relative}
+.btn-pri{--color:68 100% 67%}/* lime */
+.btn-line{--color:255 100% 74%}/* purple2 */
+.btn>div{position:absolute;width:50%;height:50%;box-sizing:border-box;transition:width 200ms ease-in,height 200ms ease-in}
+.btn>div.top{border-top:1px solid;top:0}.btn>div.left{border-left:1px solid;left:0}
+.btn>div.bottom{border-bottom:1px solid;bottom:0}.btn>div.right{border-right:1px solid;right:0}
+.btn:hover>div{width:.75em;height:.5em}
+.btn::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,hsl(var(--color)/.2) 0%,hsl(var(--color)/.4) 50%,hsl(var(--color)/.6) 100%);opacity:0;transition:opacity 150ms ease-out}
+.btn:active::before{opacity:.3}
+.txtlink{font-family:"Space Mono",monospace;font-size:.76rem;color:var(--lime);text-decoration:none}.txtlink:hover{text-decoration:underline}
+.tags{display:flex;gap:.6rem;flex-wrap:wrap}
+.tag{font-family:"Space Mono",monospace;font-size:.62rem;letter-spacing:.06em;color:var(--muted)}
+.tag::before{content:"[ "}.tag::after{content:" ]"}
+
+/* global cursor vignette/glow (brittanychiang-style) - follows the pointer, lights the dark page */
+.cursorglow{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(520px circle at var(--cx,-700px) var(--cy,-700px),rgba(109,75,255,.13),transparent 70%)}
+/* 4 PROJECT CARDS - merodev clean rect; the corner BRACKETS are the glow, revealed near the cursor */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.9rem 1.6rem}@media(max-width:760px){.cards{grid-template-columns:1fr}}
+.pcard{position:relative;display:block;text-decoration:none;color:var(--text);background:#0a0a12;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.pcard .shot{aspect-ratio:16/10;overflow:hidden}
+.pcard .img{width:100%;height:100%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}.pcard:hover .img{transform:scale(1.05)}
+.pcard:nth-child(1) .img{background:linear-gradient(135deg,#1a1430,#2a1f5a)}.pcard:nth-child(2) .img{background:linear-gradient(135deg,#10203a,#1f3a6a)}.pcard:nth-child(3) .img{background:linear-gradient(135deg,#301430,#5a1f4a)}
+.pcard .b{padding:1rem 1.1rem 1.1rem}.pcard .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem}
+.pcard .ti{font-family:"Space Mono",monospace;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.03em}
+.pcard .view{font-family:"Space Mono",monospace;font-size:.58rem;letter-spacing:.16em;color:var(--lime)}
+.pcard .sub{font-size:.76rem;color:var(--muted)}
+/* brackets HIDDEN by default, REVEALED near cursor via radial mask (Rod's intended look); shares --mx/--my cursor tracking */
+.pcard .bg{position:absolute;inset:-7px;pointer-events:none;z-index:6;color:var(--lime);
+  -webkit-mask:radial-gradient(circle 190px at var(--mx,-800px) var(--my,-800px),#000 0%,#000 16%,transparent 64%);
+  mask:radial-gradient(circle 190px at var(--mx,-800px) var(--my,-800px),#000 0%,#000 16%,transparent 64%)}
+.pcard .bg b{position:absolute;width:30px;height:30px;border:2px solid currentColor;filter:drop-shadow(0 0 6px currentColor)}
+.pcard .bg b.tl{top:0;left:0;border-right:0;border-bottom:0}.pcard .bg b.tr{top:0;right:0;border-left:0;border-bottom:0}
+.pcard .bg b.bl{bottom:0;left:0;border-right:0;border-top:0}.pcard .bg b.br{bottom:0;right:0;border-left:0;border-top:0}
+
+/* 5 LIST CONTROLS - terminal (distinct) */
+.term{font-family:"Space Mono",monospace;font-size:.84rem;color:var(--text);border:1px solid var(--line);padding:.7rem 1rem;max-width:360px;display:flex;align-items:center;gap:.4rem}
+.term .p{color:var(--lime)}.term .ph{color:var(--muted)}
+/* caret = 109ichiki terminal caret (109ichiki.com); True mechanic: content "_" + 1s step-start blink. Renamed scoped classes; recolored lime. */
+.term .caret::after{content:"_";color:var(--lime);animation:1s step-start 0s infinite normal none caretblink}
+@keyframes caretblink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}
+.filters{display:flex;gap:1rem;flex-wrap:wrap;margin:1.1rem 0;font-family:"Space Mono",monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase}
+.filters .f{color:var(--muted);cursor:pointer}.filters .f::before{content:"[ "}.filters .f::after{content:" ]"}
+.filters .f.on{color:var(--lime)}
+.empty{font-family:"Space Mono",monospace;font-size:.8rem;color:var(--muted);border:1px dashed var(--line);padding:1.4rem;text-align:center}.empty b{color:var(--lime);font-weight:400}
+.empty::before{content:"// "}
+
+/* 6 POST - mono-brutalist (distinct) */
+.post{max-width:72ch;margin:0 auto;font-family:"Space Mono",monospace}
+.post .ph h1{font-family:"Space Mono",monospace;font-size:clamp(1.5rem,3.6vw,2.2rem);font-weight:700;text-transform:uppercase;letter-spacing:.01em;margin-bottom:.6rem;line-height:1.15}
+.post .ph .m{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:1.2rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:.7rem 0;margin-bottom:1.6rem;flex-wrap:wrap}
+.tldr{position:relative;padding:1.1rem 1.3rem;margin:1.4rem 0;color:var(--text);font-size:.84rem}
+.tldr b{color:var(--lime);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:.4rem}
+.prose{font-family:"Inter",sans-serif}
+.prose h2{font-family:"Space Mono",monospace;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:2rem 0 .8rem;color:var(--purple2)}.prose h2::before{content:"// "}
+.prose p{margin:0 0 1rem}.prose a{color:var(--lime);text-decoration:underline;text-underline-offset:3px}
+.prose ul{margin:0 0 1rem 1.4rem}.prose li::marker{content:"> ";color:var(--lime)}
+.prose blockquote{border-left:2px solid var(--purple);padding-left:1rem;color:var(--muted);margin:1.2rem 0;font-family:"Space Mono",monospace;font-size:.86rem}
+.prose code{font-family:"Space Mono",monospace;font-size:.85em;background:rgba(109,75,255,.18);color:var(--purple2);padding:.1em .35em}
+.codeblock{position:relative;background:#0a0a12;border:1px solid var(--line);padding:1rem 1.2rem;font-family:"Space Mono",monospace;font-size:.8rem;color:#cdd3e8;overflow-x:auto;margin:1.2rem 0}
+.codeblock .cp{position:absolute;top:.5rem;right:.6rem;font-size:.58rem;text-transform:uppercase;color:var(--lime);cursor:pointer}.codeblock .k{color:var(--purple2)}.codeblock .s{color:var(--lime)}
+.takeaway{position:relative;padding:1.2rem 1.4rem;margin:1.6rem 0;font-size:.86rem;font-family:"Space Mono",monospace;color:var(--text)}
+.takeaway b{color:var(--purple2);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:.4rem}
+
+/* 7 ABOUT - spotlight bio + stat + bracket trophies (distinct) */
+.bios{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}@media(max-width:680px){.bios{grid-template-columns:1fr}}
+.bio{padding:1.8rem}.bio h3{margin-bottom:.5rem;font-weight:600}.bio p{color:var(--muted);font-size:.92rem}
+.stats{display:flex;gap:2.4rem;margin:1.6rem 0;flex-wrap:wrap;font-family:"Space Mono",monospace}
+.stat .n{font-size:2.6rem;font-weight:700;color:transparent;-webkit-text-stroke:1.5px var(--purple2)}
+.stat .l{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.trophies{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;font-family:"Space Mono",monospace;font-size:.7rem}
+.trophy{color:var(--purple2)}.trophy::before{content:"[ "}.trophy::after{content:" ]"}.trophy.lock{color:rgba(240,241,250,.2)}
+.status{display:inline-flex;gap:.5rem;align-items:center;font-family:"Space Mono",monospace;font-size:.7rem;color:var(--muted);margin-top:1rem}.status .d{width:7px;height:7px;border-radius:50%;background:var(--lime)}.status b{color:var(--lime);font-weight:400}
+
+/* 8 BOTTOM BAR + toggles + footer */
+.toggles{display:flex;gap:1.6rem;justify-content:center;margin:3rem 0 1rem;font-family:"Space Mono",monospace;font-size:.62rem;letter-spacing:.12em;color:var(--muted)}
+.toggles label{display:flex;gap:.4rem;align-items:center}.toggles input{accent-color:var(--lime)}
+.foot{border-top:1px solid var(--line);padding:1.4rem;display:flex;justify-content:center;gap:2.2rem;font-family:"Space Mono",monospace;font-size:.66rem;letter-spacing:.14em;color:var(--muted)}
+.foot a{color:var(--muted);text-decoration:none}.foot a:hover{color:var(--lime)}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:"Space Mono",monospace;font-size:10px;color:rgba(240,241,250,.4)}.labtag a{color:var(--lime)}
+/* Three.js scene bg toggle (Rod's real lantern scene; self-injected canvas hidden until on; !important beats the bundle re-asserting its style) */
+canvas{transition:opacity .5s}
+body.scene-off canvas{opacity:0!important}
+.bgtoggle{position:fixed;right:18px;bottom:14px;z-index:61;font-family:"Space Mono",monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);background:rgba(5,5,7,.6);border:1px solid var(--line);padding:.45rem .9rem;cursor:pointer;backdrop-filter:blur(4px);transition:.15s}
+.bgtoggle::before{content:"[ "}.bgtoggle::after{content:" ]"}
+.bgtoggle:hover{border-color:var(--lime)}
+.bgtoggle.scene{color:#0a0a0a;background:var(--lime);border-color:var(--lime)}
+</style>
+<script src="/redesign-lab/lab-solo.js"></script>
+</head>
+<body class="scene-off">
+<div class="glow-top"></div>
+<div class="cursorglow"></div>
+
+<header class="bar">
+  <div><div class="nm">RODNEY FAN</div><div class="ro">Technical Artist &amp; Game Designer</div></div>
+  <div class="mid">WORKS</div>
+  <button class="exit brk">EXIT<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></button>
+</header>
+
+<section class="hero">
+  <svg class="ring" viewBox="0 0 400 400"><defs><path id="c" d="M200,200 m-160,0 a160,160 0 1,1 320,0 a160,160 0 1,1 -320,0"/></defs>
+    <text><textPath href="#c" startOffset="0%">Здравейте &#183; hey &#183; γεια σας &#183; bonjour &#183; hola &#183; ciao &#183; hallo &#183; ola &#183; </textPath></text></svg>
+  <div class="hcen"><div class="k">Technical Artist</div><h1>Rodney Fan</h1></div>
+</section>
+
+<div class="wrap">
+  <div class="lbl">01 . buttons &amp; tags</div>
+  <div class="kit">
+    <button class="btn btn-pri"><div class="top right"></div><div class="top left"></div><div class="bottom right"></div><div class="bottom left"></div>View live</button>
+    <button class="btn btn-line"><div class="top right"></div><div class="top left"></div><div class="bottom right"></div><div class="bottom left"></div>Read more</button>
+    <button class="btn btn-line"><div class="top right"></div><div class="top left"></div><div class="bottom right"></div><div class="bottom left"></div>All projects</button>
+    <a class="txtlink" href="#">an inline link &rarr;</a>
+    <span class="tags"><span class="tag">HLSL</span><span class="tag">Compute</span><span class="tag">Unity</span></span>
+  </div>
+
+  <div class="lbl">02 . project cards (merodev rect + bracket-shaped cursor glow)</div>
+  <div class="cards">
+    <a class="pcard" href="#"><div class="bg"><b class="tl"></b><b class="tr"></b><b class="bl"></b><b class="br"></b></div><div class="shot"><div class="img"></div></div><div class="b"><div class="row"><span class="ti">Compute Grass</span><span class="view">VIEW LIVE &rarr;</span></div><div class="sub">Half a million blades on the GPU.</div></div></a>
+    <a class="pcard" href="#"><div class="bg"><b class="tl"></b><b class="tr"></b><b class="bl"></b><b class="br"></b></div><div class="shot"><div class="img"></div></div><div class="b"><div class="row"><span class="ti">Decompiling ZZZ</span><span class="view">VIEW LIVE &rarr;</span></div><div class="sub">Rebuilt a shipped game's shaders.</div></div></a>
+    <a class="pcard" href="#"><div class="bg"><b class="tl"></b><b class="tr"></b><b class="bl"></b><b class="br"></b></div><div class="shot"><div class="img"></div></div><div class="b"><div class="row"><span class="ti">Lantern Scene</span><span class="view">VIEW LIVE &rarr;</span></div><div class="sub">Lanterns that dodge your cursor.</div></div></a>
+  </div>
+
+  <div class="lbl">03 . list controls (terminal)</div>
+  <div class="term"><span class="p">&gt;</span><span class="ph">search projects &amp; tags</span><span class="caret"></span></div>
+  <div class="filters"><span class="f on">All</span><span class="f">Shaders</span><span class="f">Tools</span><span class="f">Real-time</span><span class="f">Write-ups</span></div>
+  <div class="empty">no results for "raymarching" &mdash; try a broader tag, or <a class="txtlink" href="#">browse all</a></div>
+
+  <div class="lbl">04 . post (mono-brutalist)</div>
+  <article class="post">
+    <div class="ph"><h1>Half a Million Blades of Grass</h1><div class="m"><span>Mar 2026</span><span>9 min</span><span>Shaders</span></div></div>
+    <div class="tldr glow"><b>TL;DR</b>A GPU-instanced grass system: per-blade compute, wind via flow noise, and LOD that holds framerate across vast fields.</div>
+    <div class="prose">
+      <p>The naive approach is a mesh per blade. That dies at a few thousand. Move the whole simulation onto the GPU and never touch the CPU per-blade again.</p>
+      <h2>The compute pass</h2>
+      <p>Each blade is a point in a buffer. A compute shader displaces it by a wind field and writes it back. Draw with <code>DrawProceduralIndirect</code>.</p>
+      <ul><li>Spatial hash for the wind lookup</li><li>One indirect draw for the whole field</li><li>LOD by distance, not by count</li></ul>
+      <blockquote>The GPU doesn't care how many blades there are, only how many it can't see.</blockquote>
+      <div class="codeblock"><span class="cp">copy</span><span class="k">[numthreads(64,1,1)]</span><br>void <span class="s">CSMain</span>(uint3 id) { blades[id.x].pos += windField(...) * dt; }</div>
+    </div>
+    <div class="takeaway glow"><b>Takeaway</b>Stop counting blades. Count what the GPU can see, and let the rest be free.</div>
+  </article>
+
+  <div class="lbl">05 . about (spotlight)</div>
+  <div class="bios">
+    <div class="bio glow"><h3>Hello there</h3><p>Game developer first, artist after that. Move your cursor across the cards &mdash; the border lights where you point.</p></div>
+    <div class="bio glow"><h3>Toolbox</h3><p>Three.js, GLSL/HLSL, Unity, compute. Always a void, a glow, and one thing in motion.</p></div>
+  </div>
+  <div class="stats"><div class="stat"><div class="n">10+</div><div class="l">years making things</div></div><div class="stat"><div class="n">40</div><div class="l">write-ups</div></div><div class="stat"><div class="n">29</div><div class="l">achievements</div></div></div>
+  <div class="trophies"><span class="trophy">&#9733;</span><span class="trophy">&#9670;</span><span class="trophy">&#9650;</span><span class="trophy">&#10022;</span><span class="trophy lock">locked</span><span class="trophy lock">locked</span></div>
+  <div class="status"><span class="d"></span> currently &mdash; <b>studying compute-driven hair &amp; fur</b></div>
+</div>
+
+<div class="toggles">
+  <label><input type="checkbox" checked> HIGH QUALITY</label>
+  <label><input type="checkbox"> SOUND EFFECTS</label>
+  <label><input type="checkbox" disabled> LIGHT MODE [SOON]</label>
+</div>
+<footer class="foot"><span>&copy; 2026</span><a href="#">LINKEDIN</a><a href="#">GITHUB</a><a href="#">EMAIL</a></footer>
+<button class="bgtoggle" id="bgToggle">BG &middot; Off</button>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; REWORK: merodev + yannesidibe</div>
+
+<script>
+(function(){
+  var cg=document.querySelector('.cursorglow');
+  var glows=document.querySelectorAll('.glow'), pcards=document.querySelectorAll('.pcard');
+  window.addEventListener('mousemove',function(e){
+    if(cg){cg.style.setProperty('--cx',e.clientX+'px');cg.style.setProperty('--cy',e.clientY+'px');}
+    for(var i=0;i<glows.length;i++){var r=glows[i].getBoundingClientRect();glows[i].style.setProperty('--mx',(e.clientX-r.left)+'px');glows[i].style.setProperty('--my',(e.clientY-r.top)+'px');}
+    for(var j=0;j<pcards.length;j++){var p=pcards[j].getBoundingClientRect();pcards[j].style.setProperty('--mx',(e.clientX-p.left)+'px');pcards[j].style.setProperty('--my',(e.clientY-p.top)+'px');}
+  },{passive:true});
+  if(/demo/.test(location.search)){var h=document.querySelector('.hero');if(h)h.style.height='26vh';
+    setTimeout(function(){var f=pcards[0];if(f){var r=f.getBoundingClientRect();f.style.setProperty('--mx','24px');f.style.setProperty('--my','24px');
+      if(cg){cg.style.setProperty('--cx',(r.left+34)+'px');cg.style.setProperty('--cy',(r.top+34)+'px');}}},300);}
+})();
+</script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+<script>
+/* BG toggle: Rod's real Three.js lantern scene behind the page. ?scene=1 starts on (headless capture). */
+(function(){
+  var btn=document.getElementById('bgToggle'),b=document.body,on=false;
+  function set(v){on=v;b.classList.toggle('scene-off',!on);btn.classList.toggle('scene',on);btn.textContent=on?'BG · Scene':'BG · Off';}
+  btn.addEventListener('click',function(){set(!on);});
+  set(/[?&]scene=1/.test(location.search));
+})();
+</script>
+</body>
+</html>

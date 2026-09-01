@@ -1,0 +1,78 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: reset
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer reset {
+/* Shared foundations for redesign-lab variations (NOT baseline).
+   PALETTE (locked 2026-06-04): night #070C23/#0a1030; warm FILL = amber var(--gold-deep) #F59E0B;
+   bright accent = var(--gold) #FBBF24; GLOW (drop-shadow halos) = SATURATED ORANGE var(--glow) #FF6A00
+   - hotter/more saturated than the fill, like hana's saturated red. NOT pale cream. No pink. */
+:root{
+  --night:#070C23; --night2:#0a1030; --panel:#1c1a18;  /* warm grey, Rod 2026-08-23. Same colour as --color-panel-solid; this is the second name for it. */
+  --gold:#FBBF24; --gold-deep:#F59E0B; --glow:#FF6A00; --glow-soft:#FFD9A8; --pink:#FF3DA1;
+  --text:#F5F3EF; --muted:#9aa3bd;
+  --type-scale:1; --head-scale:1; --space-scale:1; --measure:64rem;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(70% 50% at 50% 108%, rgba(245,158,11,.10), rgba(245,158,11,0) 60%),
+    radial-gradient(100% 70% at 72% -10%,#16224a 0%,rgba(22,34,74,0) 55%),
+    linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+  color:var(--text);min-height:100vh;overflow-x:hidden;
+  font-size:calc(1.02rem * var(--type-scale));line-height:1.65;
+}
+/* breathing, shifting saturated-orange glow across the whole page (like hana's drifting red) */
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(34% 26% at 22% 26%, rgba(255,106,0,.13), transparent 62%),
+    radial-gradient(30% 24% at 80% 56%, rgba(255,140,0,.10), transparent 64%),
+    radial-gradient(42% 32% at 52% 98%, rgba(255,106,0,.12), transparent 60%);
+  animation:breathe-bg 16s ease-in-out infinite}
+@keyframes breathe-bg{
+  0%{opacity:.5;transform:translate3d(0,0,0) scale(1)}
+  50%{opacity:1;transform:translate3d(1.6%,-1.1%,0) scale(1.07)}
+  100%{opacity:.5;transform:translate3d(0,0,0) scale(1)}}
+/* card-in reveal (IntersectionObserver adds .in, in sliders.js) */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){body::before{animation:none;opacity:.8}.reveal{opacity:1;transform:none;transition:none}}
+.wrap{max-width:var(--measure);margin:0 auto;padding:0 2.5rem}
+.ph{position:relative;background-color:#0d1430;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 10px,rgba(255,255,255,0) 10px 20px);border:1px solid rgba(255,255,255,.10)}
+.ph::after{content:attr(data-label);position:absolute;inset:0;display:grid;place-items:center;color:rgba(245,243,239,.32);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase}
+/* lantern: stacked drop-shadow, saturated-orange halo */
+.lantern{width:108px;text-align:center}
+.lantern .cap{width:32px;height:8px;background:var(--gold-deep);border-radius:3px;margin:0 auto 3px}
+.lantern .body{width:92px;height:118px;margin:0 auto;border-radius:50% 50% 46% 46%/42% 42% 58% 58%;
+  background:radial-gradient(58% 52% at 50% 42%,#ffd9a8,var(--gold) 46%,var(--gold-deep));
+  filter:drop-shadow(0 0 10px rgba(255,106,0,.3)) drop-shadow(0 0 24px rgba(255,106,0,.22)) drop-shadow(0 0 44px rgba(255,106,0,.14));
+  animation:lantern 6s ease-in-out infinite}
+.lantern .tassel{width:2px;height:24px;background:linear-gradient(var(--gold-deep),transparent);margin:2px auto 0}
+@keyframes lantern{0%,100%{filter:drop-shadow(0 0 10px rgba(255,106,0,.3)) drop-shadow(0 0 24px rgba(255,106,0,.22)) drop-shadow(0 0 44px rgba(255,106,0,.14))}
+  50%{filter:drop-shadow(0 0 14px rgba(255,106,0,.7)) drop-shadow(0 0 30px rgba(255,106,0,.5)) drop-shadow(0 0 58px rgba(255,106,0,.34))}}
+/* lab control panel */
+.lab{position:fixed;right:14px;bottom:14px;z-index:200;background:rgba(8,12,30,.93);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:12px 14px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--text);backdrop-filter:blur(6px);width:212px}
+.lab h4{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.lab label{margin:9px 0 2px;color:var(--muted);display:flex;justify-content:space-between}
+.lab input[type=range]{width:100%;accent-color:var(--gold)}
+.lab .reset{margin-top:11px;width:100%;background:none;border:1px solid rgba(255,255,255,.18);color:var(--text);font-family:inherit;font-size:10px;padding:5px;border-radius:5px;cursor:pointer;letter-spacing:.12em}
+.labtag{position:fixed;left:14px;bottom:14px;z-index:200;font-family:"IBM Plex Mono",monospace;font-size:10px;color:rgba(245,243,239,.4)}
+.labtag a{color:var(--gold);text-decoration:none}
+}

@@ -1,0 +1,170 @@
+<!--SPLIT:colour-->
+<section class="comp">
+  <h2>Heading colour &mdash; is there a hierarchy, or isn't there</h2>
+  <div class="status"><b>Rod 2026-08-23: "show the headers with color as well so there is a default color
+    hierarchy as well."</b> Measured first, and the answer is that <b class="pick">colour currently tracks
+    nothing</b>. Three more contradictions on top of the five above, all measured:</div>
+
+  <div class="lede" style="margin-top:0">
+    <div class="tally" style="grid-template-columns:auto 1fr">
+      <b>6.</b><span><b>The landing has it backwards.</b> Its most important heading (H1, your name) is plain
+        white <code>--color-text</code>. Its least important (the card title) is the loudest,
+        <code>--color-gold-deep</code>. Importance and colour run in opposite directions.</span>
+      <b>7.</b><span><b>The post uses ONE colour for two levels.</b> H1 and H3 are both
+        <code>#f59e0b</code>, so colour carries no hierarchy there at all &mdash; which is arguably correct,
+        but it is correct by accident rather than by rule.</span>
+      <b>8.</b><span><b>About contradicts itself inside one page.</b> Two headings at the same level, two
+        different colours: <code>.bio-h</code> is <code>#f59e0b</code> and <code>.bio-h--lesser</code> is
+        <code>#fbbf24</code>.</span>
+    </div>
+    <br><b>A hazard worth knowing before you pick:</b> <code>--color-muted</code> is
+    <code>#9aa3bd</code>, which is a <b>blue</b> grey. It is the last blue left in any text token, and the
+    palette law puts blue only in the sky. <b>Do not reach for it as the bottom of a colour ramp</b> &mdash;
+    if a ramp needs a quiet step, it needs a warm one that does not exist yet.
+  </div>
+
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; one accent for every heading &mdash; acegikmo</div>
+      <div class="v__src">sources/acegikmo-prose.md (CONFIRMED)</div>
+      <div class="v__geo">Every heading level takes the <b>same</b> accent: <code>h1</code>,
+        <code>h3</code>, <code>h4</code>, <code>h5</code> are all <code>color:#ff1155;font-weight:100</code>.
+        <b>Colour says "this is a heading". Size says which one.</b> Colour is not a ladder at all.</div>
+      <div class="v__demo"><div class="ch">
+        <span class="ch__r" style="font-size:22px;color:#f59e0b">Compute Grass</span>
+        <span class="ch__r" style="font-size:16px;color:#f59e0b">The Compute Pipeline</span>
+        <span class="ch__r" style="font-size:13px;color:#f59e0b">Culling and creation</span>
+        <span class="ch__r" style="font-size:13px;color:#b4b4b4">Body copy for comparison.</span></div></div>
+      <div class="v__note"><b>Closest to what the post already does</b> (H1 and H3 both <code>#f59e0b</code>),
+        so picking this makes the post correct-by-rule instead of correct-by-accident, and only the landing
+        and about have to move.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">B &middot; colour descends with level</div>
+      <div class="v__src">NO SOURCE &mdash; none of the seven prose references does this</div>
+      <div class="v__geo">The intuitive answer: brightest at the top, fading toward body copy.
+        <code>--color-gold</code> &rarr; <code>--color-gold-deep</code> &rarr; <code>--color-text</code>
+        &rarr; body. <b>Not one reference site does it</b>, which is itself the finding &mdash; and the ramp
+        runs out of warm steps after three, which is why <code>--color-muted</code> is tempting and why that
+        would put blue back in the text.</div>
+      <div class="v__demo"><div class="ch">
+        <span class="ch__r" style="font-size:22px;color:#fbbf24">Compute Grass</span>
+        <span class="ch__r" style="font-size:16px;color:#f59e0b">The Compute Pipeline</span>
+        <span class="ch__r" style="font-size:13px;color:#f5f3ef">Culling and creation</span>
+        <span class="ch__r" style="font-size:13px;color:#b4b4b4">Body copy for comparison.</span></div></div>
+      <div class="v__note"><b>Listed because you asked for a colour hierarchy and this is what one looks
+        like</b> &mdash; but it is UNSOURCED, so taking it is originating a device, not transcribing one.
+        Flagged rather than dressed up.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">C &middot; headings stay body colour, only the STRUCTURE is coloured</div>
+      <div class="v__src">sources/catlikecoding-prose.md (CONFIRMED)</div>
+      <div class="v__geo"><code>h2:before,h3:before{color:#888;font-size:14px}</code> &mdash; the heading text
+        itself gets no colour rule at all and inherits body ink. <b>Only the counter is tinted, and it is
+        tinted DOWN, not up.</b> Colour marks the scaffolding; the words stay words.</div>
+      <div class="v__demo"><div class="ch">
+        <span class="ch__r" style="font-size:22px;color:#f5f3ef"><span style="color:#8a8a8a;font-size:.68em">1 </span>Compute Grass</span>
+        <span class="ch__r" style="font-size:16px;color:#f5f3ef"><span style="color:#8a8a8a;font-size:.68em">2 </span>The Compute Pipeline</span>
+        <span class="ch__r" style="font-size:13px;color:#f5f3ef"><span style="color:#8a8a8a;font-size:.68em">2.1 </span>Culling and creation</span>
+        <span class="ch__r" style="font-size:13px;color:#b4b4b4">Body copy for comparison.</span></div></div>
+      <div class="v__note"><b>This is half of the section break you already approved</b> &mdash; case G is
+        catlikecoding's counter on acegikmo's rule. Taking C here would make the whole system one source's
+        logic. <b>But it contradicts the post as built</b>, where the heading text IS gold. That is the real
+        trade: consistency with your approved counter, or with your approved post.</div>
+    </div>
+  </div>
+</section>
+
+<!--SPLIT:tape-->
+<section class="comp">
+  <h2>Washi tape on a callout &mdash; the four placements</h2>
+  <div class="status"><b class="pick">RESTORED 2026-08-23 &mdash; these went missing and that was my error.</b>
+    They lived on <code>prose-blockout.html</code>, which I folded into this page and deleted without carrying
+    the tape variants across. The component itself was never touched:
+    <code>extracted/components/washi-tape/</code>, tips locked to <b>case D</b> (winterwind irregular tear),
+    border deleted, opaque fill, axis-aligned &mdash; all your calls. <b>Its real CSS is imported by this
+    page rather than retyped</b>, so there is one definition, not a copy.</div>
+
+  <div class="lede" style="margin-top:0">
+    <b>Your answer already exists and this page should have been showing it.</b> 2026-08-22:
+    <i>"For the washi tape ones i think it would be nice to have them overlay on top of the posts content box
+    like a section is being stuck on the page."</i> That is <b>placement</b>, not style &mdash; and the tape
+    is a settled site CONVENTION (D27), so the only question below is <b>which placement</b>. All four come
+    from the one shared definition.<br><br>
+    Colour is per SECTION, not per callout: orange, pink, blue, green. <b>Green is the one colour with no
+    source</b> and you parked it as "ok for now". The neutral hatch shows here because these are drawn
+    without a section class.
+  </div>
+
+  <div class="variants">
+    <div class="v">
+      <div class="v__name">A &middot; over the top edge &mdash; gneiss's own placement</div>
+      <div class="v__src">sources/gneiss-washi-tape.md (CONFIRMED) &mdash; their <code>.taped</code>, verbatim</div>
+      <div class="v__geo"><code>.tape--top{left:38%;width:110px;height:30px;--tape-bite:16px}</code>. Sits
+        <b>off-centre on purpose</b> so it never reads as a centred label, and takes a 16px bite with the rest
+        overhanging. <b>The only placement gneiss actually has</b> &mdash; the other three are extensions.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--top"></i>
+        <p>If the grass never moves you are almost certainly writing to the buffer and never binding it back.</p>
+      </div></div></div>
+      <div class="v__note">The most literal reading of "stuck on the page", and the only one whose PLACEMENT
+        has provenance rather than just the tape.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">B &middot; down the left edge &mdash; replaces our own 3px bar</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). Placement: <b>OURS</b> &mdash; your call 2026-08-21,
+        "these cards with the left side bar lets make that washi tape too"</div>
+      <div class="v__geo">Pinned <code>top:0;bottom:0</code>, so it always matches the card's full height at
+        any content length &mdash; the one placement the length clamp deliberately does not govern, because you
+        asked for it to match the card exactly. Swaps the 3px orange bar our live
+        <code>.post-takeaway</code> uses.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--left"></i>
+        <p>What I would tell myself starting this: profile before optimising. The slow part was never the part
+          that looked slow.</p>
+      </div></div></div>
+      <div class="v__note"><b>The closest fit to the takeaway you already keep</b>, since it replaces a bar
+        that block already has. Marked REMIX not SOURCED &mdash; half of it is our own CSS and the idea is
+        yours, so citing it as transcribed would be false.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">C &middot; L-shaped corners &mdash; two strips crossing</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). L geometry: miroirs, corner positions kept.
+        Composition: <b>OURS</b></div>
+      <div class="v__geo">Each L is <b>two</b> strips overlapping the way real tape does, arms clamped
+        <code>clamp(44px, 60%/22%, 84px)</code> off the card so they track any size. The two arms take
+        <b>different</b> percentages on purpose &mdash; a callout is far wider than tall (625&times;76), so one
+        shared percentage cannot serve both. <b>The vertical arm sits on top</b>, your call 2026-08-23,
+        set as an explicit <code>z-index</code> rather than by reordering the markup.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--v tape--tl"></i><i class="tape tape--h tape--tl"></i>
+        <i class="tape tape--v tape--br"></i><i class="tape tape--h tape--br"></i>
+        <p>The instance count is set once, at bake time. Changing it at runtime needs the buffer reallocated.</p>
+      </div></div></div>
+      <div class="v__note">Loudest of the four &mdash; four strips per callout. Fine on a rare block, heavy if
+        the callout repeats through a post.</div>
+    </div>
+
+    <div class="v">
+      <div class="v__name">D &middot; four diagonal corner tabs &mdash; your green-card ask</div>
+      <div class="v__src">Tape: gneiss (CONFIRMED). Diagonal placement: <b>OURS</b> &mdash; your call
+        2026-08-23, "for the green one the tape should have 4 diagonal strips on each corner"</div>
+      <div class="v__geo">One strip laid <b>across</b> each corner at 45&deg;, the way tape holds a photo
+        down. <b>The angle is not a preference</b>: a strip across the top-left joins the top edge to the left
+        edge, which is a "/" &mdash; so (tl, br) run at -45&deg; and (tr, bl) at +45&deg;. Length is
+        <b>2.6&times; the roll width</b>, because a 45&deg; rotation needs ~1.41&times; the diagonal reach and
+        anything under ~2&times; leaves the corner poking out past the tape.</div>
+      <div class="v__demo"><div class="tape-demo"><div class="tape-card taped">
+        <i class="tape tape--corner tape--c-tl"></i><i class="tape tape--corner tape--c-tr"></i>
+        <i class="tape tape--corner tape--c-bl"></i><i class="tape tape--corner tape--c-br"></i>
+        <p>Do not read from a RWStructuredBuffer you are also writing to in the same pass. It compiles.</p>
+      </div></div></div>
+      <div class="v__note">Reads most like a physical thing stuck down and least like a UI border. Also the
+        only one needing no edge to attach to, so it survives on a card with no visible box.</div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,299 @@
+<!-- skill-tile - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=skill-tile can mount it. Page chrome is scoped to .cb-skill-tile; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: SKILL TILE - 3 boxes for one mark, plus the flipper band -->
+<!--
+  WHAT IS NEW HERE AND WHAT IS NOT.
+
+  NOT NEW: the marks, the stroke, the deep gold, pathLength="1", the 6s draw-in, the 0.09s stagger
+  and the reduced-motion path. All of that is extracted/components/skills-row/, which you approved
+  2026-08-22. This page LINKS that file and uses its classes untouched. The seven marks below are
+  byte-identical to the ones in skills-row.html.
+
+  NEW: the 150 x 150 BOX around a mark (three versions), and the 1421 x 120 FLIPPER BAND above it
+  (two arrangements, one of which is a straight reuse of slap-toggle).
+
+  THE SVGs ARE WRITTEN OUT ONCE. Rows 2 and 3 are cloned from row 1 by the script at the bottom, so
+  the file stays readable and there is only one copy of each path to go stale. If the script does
+  not run you still get row 1 in full.
+-->
+<div class="cb cb-skill-tile">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-skill-tile {
+  background:var(--color-night,#070C23);color:var(--color-text,#f5f3ef);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;padding:0 0 160px
+
+  & * {box-sizing:border-box;margin:0;padding:0
+  }
+  & header.top {position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)
+  }
+  & header.top h1 {font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase
+  }
+  & header.top .sub {font-size:10px;color:#8d8d8d
+  }
+  & .wrap {width:min(1180px,92vw);margin:0 auto;padding:40px 0 0
+  }
+  & .lede {font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:20px;background:rgba(8,10,18,.72)
+  }
+  & .lede b {color:#e4e4e4;font-weight:500
+  }
+  & .lede code {color:var(--color-gold)
+  }
+  & .lede.warn {border-color:#5a4413
+  }
+  & h2.v {font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold);font-weight:400;margin:56px 0 6px;border-top:1px solid #2c2c2c;
+    padding-top:22px
+  }
+  & .vsrc {font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;margin-bottom:16px
+  }
+  & .vsrc b {color:#ccc;font-weight:400
+  }
+  & .vsrc .tier {color:var(--color-gold)
+  }
+  /* THE STAGE. 1421 is the measured band width at viewport 1440, so the stage is pinned to it and
+     the page scrolls sideways rather than the band being squeezed. Judge fit inside the stage. */
+  & .stagewrap {overflow-x:auto;padding-bottom:10px
+  }
+  & .stage {width:1421px;position:relative
+  }
+  /* the SKILLS band, reproduced from landing-blockout.html:73 exactly */
+  & .band-skills {height:240px;display:grid;grid-template-columns:repeat(8,1fr);gap:14px;
+    align-items:center;padding:30px 60px
+  }
+  /* the reserved 150 x 150, drawn BEHIND. 1.5px dashed #4e4e4e is landing-blockout.html:74 verbatim */
+  & .slot {position:relative;aspect-ratio:1;list-style:none
+  }
+  & .slot::before {content:"";position:absolute;left:50%;top:50%;width:150px;height:150px;
+    transform:translate(-50%,-50%);border:1.5px dashed #4e4e4e;pointer-events:none
+  }
+  & .slot > .skill-tile {position:relative;z-index:1
+  }
+  & .slot.is-empty::after {content:"NO MARK";position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;
+    color:#5c5c5c
+  }
+  /* the FLIPPER band, reproduced from landing-blockout.html:69 exactly */
+  & .band-flip {height:120px;display:grid;place-items:center;position:relative
+  }
+  & .band-flip::before {content:"";position:absolute;inset:0;border:1.5px dashed #4e4e4e;
+    pointer-events:none
+  }
+  & .bandtag {position:absolute;left:4px;top:4px;font-family:var(--font-mono);font-size:9px;
+    letter-spacing:.16em;color:#5c5c5c;z-index:2
+  }
+  & .personal-gap {grid-column:1 / -1;font-family:var(--font-mono);font-size:11px;line-height:1.9;
+    color:#9a9a9a;text-align:center
+  }
+  & .personal-gap b {color:var(--color-gold);font-weight:400
+  }
+  & [hidden] {display:none !important
+  }
+}
+</style>
+<header class="top">
+  <h1>Skill tile</h1>
+  <span class="sub">3 boxes for one mark &middot; 150 x 150 &middot; plus the 1421 x 120 flipper band
+    &middot; row, marks and draw-in REUSED from skills-row</span>
+</header>
+
+<div class="wrap">
+
+  <div class="lede">
+    <b>The row is not rebuilt.</b> This page links
+    <code>extracted/components/skills-row/skills-row.css</code> and uses its classes unchanged, so
+    the seven marks, the deep-gold stroke, <code>pathLength="1"</code>, the 6s draw-in, the 0.09s
+    stagger and the reduced-motion path are the ones you approved on 2026-08-22. Reload to watch
+    them draw.<br><br>
+    <b>What is actually being judged</b> is the BOX: how much frame a tile has, from none to a full
+    one. Everything else in the three rows is identical on purpose.<br><br>
+    <b>The dashed square behind every mark is the reservation</b>, drawn at exactly 150 x 150 in the
+    blockout's own <code>1.5px dashed #4e4e4e</code>. The grid cell it sits in is 150.375 (1421 - 120
+    padding - 98 of gaps, over 8), so the sliver you can see around the dashes is the 0.375 of
+    rounding in the measurement, not overflow.
+  </div>
+
+  <div class="lede warn">
+    <b>THE BLOCKOUT RESERVES 8 TILES. THE APPROVED SET HAS 7 MARKS.</b> Unity, Unreal, Godot,
+    Blender, Maya, Python, Git. The eighth slot is drawn empty in every row below rather than filled
+    with something invented. C#, HLSL and Compute are the three that are missing and each is missing
+    for a stated reason: Simple Icons carries no C# mark (checked against their 3,453-icon index),
+    and HLSL and Compute are not products so no official mark exists. Either the band becomes 7
+    wide, or the eighth is a drawn mark, which would be ours rather than sourced.
+  </div>
+
+
+  <!-- ============================================================================================
+       THE FLIPPER BAND
+       ============================================================================================ -->
+
+  <h2 class="v">F1 - flipper band, REUSING slap-toggle (no new component)</h2>
+  <div class="vsrc">
+    <b>REUSE.</b> <code>extracted/components/slap-toggle/</code>, square variant, exactly as it
+    ships. <span class="tier">Tier: Remixed</span> &middot; idea origin: theirs (YarivFrd,
+    codepen.io/YarivFrd/pen/PEOJLj). It is already named "the Technology/Personal switch", its radios
+    are real and focusable, and its JS dispatches a genuine <code>change</code> event, which is the
+    half that was missing when this shipped dead and you had it removed (request #28). Wired here:
+    it drives the V1 row below.<br>
+    The BAND is the only new thing, and it is <code>landing-blockout.html:69</code> verbatim -
+    <code>height:120px; display:grid; place-items:center</code>.
+  </div>
+  <div class="stagewrap"><div class="stage">
+    <div class="band-flip skill-flipper">
+      <span class="bandtag">RESERVED 1421 x 120</span>
+      <span class="slap-toggle slap-toggle--square js-magnetic" data-strength="40">
+        <span class="slap-toggle__control">
+          <input class="slap-toggle__radio" type="radio" name="flip-f1" id="flip-f1-a" value="tech" checked>
+          <label class="slap-toggle__label" for="flip-f1-a">Technology</label>
+          <input class="slap-toggle__radio" type="radio" name="flip-f1" id="flip-f1-b" value="personal">
+          <label class="slap-toggle__label" for="flip-f1-b">Personal</label>
+          <span class="slap-toggle__flap" aria-hidden="true"><span class="slap-toggle__flap-text">Technology</span></span>
+        </span>
+      </span>
+    </div>
+  </div></div>
+
+  <h2 class="v">F2 - flipper band, the source's own arrangement (names outside the track)</h2>
+  <div class="vsrc">
+    <b>SOURCE:</b> stephanewillems.be/skills, <code>sources/stephanewillems-skills.md</code>.
+    <span class="tier">Tier: Remixed</span> &middot; idea origin: theirs.<br>
+    Verbatim from the measured source: track 32 x 20, 4px padding, handle 12 x 12, track white at
+    40%, handle solid white, 20px gap, weight 300, and the two names sitting OUTSIDE the track so it
+    reads as a choice between two named things rather than an on/off. Ours: squared per the shape
+    pass, the 12px travel (arithmetic off their 32 - 4 - 4 - 12), the transition duration (theirs is
+    JS-driven and none was captured), real radios and <code>&lt;label for&gt;</code> instead of their
+    dead <code>&lt;p&gt;</code> elements, and the focus ring.
+  </div>
+  <div class="stagewrap"><div class="stage">
+    <div class="band-flip skill-flipper">
+      <span class="bandtag">RESERVED 1421 x 120</span>
+      <div class="sw-flip" role="group" aria-label="Skill set">
+        <input class="sw-flip__radio" type="radio" name="flip-f2" id="flip-f2-a" value="tech" checked>
+        <input class="sw-flip__radio is--second" type="radio" name="flip-f2" id="flip-f2-b" value="personal">
+        <label class="sw-flip__side" for="flip-f2-a">Technology</label>
+        <span class="sw-flip__track" data-flip-track><span class="sw-flip__handle"></span></span>
+        <label class="sw-flip__side" for="flip-f2-b">Personal</label>
+      </div>
+    </div>
+  </div></div>
+
+
+  <!-- ============================================================================================
+       V1 - the row that BOTH flippers above drive. Written out in full; rows 2 and 3 clone it.
+       ============================================================================================ -->
+
+  <h2 class="v">V1 - bare. No box at all.</h2>
+  <div class="vsrc">
+    <b>SOURCE:</b> stephanewillems.be/skills, <code>sources/stephanewillems-skills.md</code>.
+    <span class="tier">Tier: Remixed</span> &middot; idea origin: theirs.<br>
+    Their icon is a bare span with no frame. Their active state was captured live off the DOM as an
+    inline style and is taken verbatim: <code>transform: scale(1.2) translateZ(0px)</code> and
+    <code>drop-shadow(&lt;colour&gt; 2px 2px 10px)</code>. Could not transfer: the colour. The whole
+    point of theirs is the icon's OWN brand colour, and those are the cool accents and reds the
+    palette law bans, so the glow follows skills-row's deep gold instead. Ours: the 0.2s duration -
+    theirs is applied by JS and no transition was captured.<br>
+    <b>Hover is also focus</b> (their <code>tabindex="0"</code>). Tab into the row and the same state
+    fires. See the open question about that in skill-tile.md.
+  </div>
+  <div class="stagewrap"><div class="stage">
+    <ul class="band-skills" id="row-v1" data-face="tech">
+      <li class="slot"><span class="skill-tile skill-tile--bare" tabindex="0" style="--draw-delay:0.00s">
+        <svg class="skills-row__icon" viewBox="0 0 24 24" role="img" aria-label="Unity" focusable="false">
+          <path pathLength="1" d="m12.9288 4.2939 3.7997 2.1929c.1366.077.1415.2905 0 .3675l-4.515 2.6076a.4192.4192 0 0 1-.4246 0L7.274 6.8543c-.139-.0745-.1415-.293 0-.3675l3.7972-2.193V0L1.3758 5.5977V16.793l3.7177-2.1456v-4.3858c-.0025-.1565.1813-.2682.318-.1838l4.5148 2.6076a.4252.4252 0 0 1 .2136.3676v5.2127c.0025.1565-.1813.2682-.3179.1838l-3.7996-2.1929-3.7178 2.1457L12 24l9.6954-5.5977-3.7178-2.1457-3.7996 2.1929c-.1341.082-.3229-.0248-.3179-.1838V13.053c0-.1565.087-.2956.2136-.3676l4.5149-2.6076c.134-.082.3228.0224.3179.1838v4.3858l3.7177 2.1456V5.5977L12.9288 0Z"/>
+        </svg><span class="skills-row__label">Unity</span>
+      </span></li>
+      <li class="slot"><span class="skill-tile skill-tile--bare" tabindex="0" style="--draw-delay:0.09s">
+        <svg class="skills-row__icon" viewBox="0 0 24 24" role="img" aria-label="Unreal" focusable="false">
+          <path pathLength="1" d="M12 0a12 12 0 1012 12A12 12 0 0012 0zm0 23.52A11.52 11.52 0 1123.52 12 11.52 11.52 0 0112 23.52zm7.13-9.791c-.206.997-1.126 3.557-4.06 4.942l-1.179-1.325-1.988 2a7.338 7.338 0 01-5.804-2.978 2.859 2.859 0 00.65.123c.326.006.678-.114.678-.66v-5.394a.89.89 0 00-1.116-.89c-.92.212-1.656 2.509-1.656 2.509a7.304 7.304 0 012.528-5.597 7.408 7.408 0 013.73-1.721c-1.006.573-1.57 1.507-1.57 2.29 0 1.262.76 1.109.984.923v7.28a1.157 1.157 0 00.148.256 1.075 1.075 0 00.88.445c.76 0 1.747-.868 1.747-.868V9.172c0-.6-.452-1.324-.905-1.572 0 0 .838-.149 1.484.346a5.537 5.537 0 01.387-.425c1.508-1.48 2.929-1.902 4.112-2.112 0 0-2.151 1.69-2.151 3.96 0 1.687.043 5.801.043 5.801.799.771 1.986-.342 3.059-1.441Z"/>
+        </svg><span class="skills-row__label">Unreal</span>
+      </span></li>
+      <li class="slot"><span class="skill-tile skill-tile--bare" tabindex="0" style="--draw-delay:0.18s">
+        <svg class="skills-row__icon" viewBox="0 0 24 24" role="img" aria-label="Godot" focusable="false">
+          <path pathLength="1" d="M9.5598.683c-1.096.244-2.1812.5831-3.1983 1.0951.023.8981.081 1.7582.199 2.6323-.395.253-.81.47-1.178.766-.375.288-.7581.564-1.0971.9011-.6781-.448-1.3962-.869-2.1352-1.2411C1.3532 5.6934.608 6.6186 0 7.6546c.458.7411.936 1.4352 1.4521 2.0942h.014v6.3565c.012 0 .023 0 .035.003l3.8963.376c.204.02.364.184.378.3891l.12 1.7201 3.3994.242.234-1.587c.03-.206.207-.358.415-.358h4.1114c.208 0 .385.152.415.358l.234 1.587 3.3993-.242.12-1.72a.4196.4196 0 01.378-.3891l3.8954-.376c.012 0 .023-.003.035-.003v-.5071h.002V9.7498h.014c.516-.659.994-1.3531 1.4521-2.0942-.608-1.036-1.3541-1.9611-2.1512-2.8192-.739.372-1.4571.793-2.1352 1.2411-.339-.337-.721-.613-1.096-.901-.369-.296-.7841-.5131-1.1781-.7661.117-.8741.175-1.7342.199-2.6323-1.0171-.512-2.1012-.851-3.1983-1.095-.438.736-.838 1.533-1.1871 2.3121-.414-.069-.829-.094-1.2461-.099h-.016c-.417.005-.832.03-1.2461.099-.349-.779-.749-1.576-1.1881-2.3121l.001-.001zM6.4765 9.9889c1.2971 0 2.3492 1.0511 2.3492 2.3482s-1.052 2.3482-2.3492 2.3482c-1.296 0-2.3482-1.051-2.3482-2.3482 0-1.297 1.0511-2.3482 2.3482-2.3482zm11.049 0c1.296 0 2.3482 1.0511 2.3482 2.3482s-1.0511 2.3482-2.3482 2.3482-2.3492-1.051-2.3492-2.3482c0-1.297 1.051-2.3482 2.3492-2.3482zm-10.824.9301c-.861 0-1.559.698-1.559 1.5591s.698 1.5582 1.559 1.5582c.8611 0 1.5592-.698 1.5592-1.5582 0-.86-.697-1.559-1.5591-1.559zm10.598 0c-.8611 0-1.5582.698-1.5582 1.5591s.697 1.5582 1.5581 1.5582c.8611 0 1.5592-.698 1.5592-1.5582 0-.86-.697-1.559-1.5592-1.559zm-5.2985.453c.417 0 .757.308.757.6871v2.1622c0 .379-.339.687-.757.687s-.756-.308-.756-.687V12.059c0-.379.339-.687.756-.687zM1.4601 16.9464c.002.377.006.789.006.871 0 3.7014 4.6944 5.4795 10.5269 5.5005h.014c5.8325-.02 10.5259-1.7991 10.5259-5.5004 0-.084.005-.495.007-.871l-3.5023.338-.121 1.729a.421.421 0 01-.389.3901l-4.1814.296a.4203.4203 0 01-.415-.358l-.238-1.6141h-3.3863l-.238 1.6141a.4192.4192 0 01-.4451.357l-4.1513-.296c-.208-.015-.375-.181-.389-.389l-.12-1.7292-3.5044-.337z"/>
+        </svg><span class="skills-row__label">Godot</span>
+      </span></li>
+      <li class="slot"><span class="skill-tile skill-tile--bare" tabindex="0" style="--draw-delay:0.27s">
+        <svg class="skills-row__icon" viewBox="0 0 24 24" role="img" aria-label="Blender" focusable="false">
+          <path pathLength="1" d="M12.51 13.214c.046-.8.438-1.506 1.03-2.006a3.424 3.424 0 0 1 2.212-.79c.85 0 1.631.3 2.211.79.592.5.983 1.206 1.028 2.005.045.823-.285 1.586-.865 2.153a3.389 3.389 0 0 1-2.374.938 3.393 3.393 0 0 1-2.376-.938c-.58-.567-.91-1.33-.865-2.152M7.35 14.831c.006.314.106.922.256 1.398a7.372 7.372 0 0 0 1.593 2.757 8.227 8.227 0 0 0 2.787 2.001 8.947 8.947 0 0 0 3.66.76 8.964 8.964 0 0 0 3.657-.772 8.285 8.285 0 0 0 2.785-2.01 7.428 7.428 0 0 0 1.592-2.762 6.964 6.964 0 0 0 .25-3.074 7.123 7.123 0 0 0-1.016-2.779 7.764 7.764 0 0 0-1.852-2.043h.002L13.566 2.55l-.02-.015c-.492-.378-1.319-.376-1.86.002-.547.382-.609 1.015-.123 1.415l-.001.001 3.126 2.543-9.53.01h-.013c-.788.001-1.545.518-1.695 1.172-.154.665.38 1.217 1.2 1.22V8.9l4.83-.01-8.62 6.617-.034.025c-.813.622-1.075 1.658-.563 2.313.52.667 1.625.668 2.447.004L7.414 14s-.069.52-.063.831zm12.09 1.741c-.97.988-2.326 1.548-3.795 1.55-1.47.004-2.827-.552-3.797-1.538a4.51 4.51 0 0 1-1.036-1.622 4.282 4.282 0 0 1 .282-3.519 4.702 4.702 0 0 1 1.153-1.371c.942-.768 2.141-1.183 3.396-1.185 1.256-.002 2.455.41 3.398 1.175.48.391.87.854 1.152 1.367a4.28 4.28 0 0 1 .522 1.706 4.236 4.236 0 0 1-.239 1.811 4.54 4.54 0 0 1-1.035 1.626"/>
+        </svg><span class="skills-row__label">Blender</span>
+      </span></li>
+      <li class="slot"><span class="skill-tile skill-tile--bare" tabindex="0" style="--draw-delay:0.36s">
+        <svg class="skills-row__icon" viewBox="0 0 24 24" role="img" aria-label="Maya" focusable="false">
+          <path pathLength="1" d="M4.348 0 .69 2.203v16.875l3.657-2.203h17.297V1.219c0-.67-.551-1.219-1.22-1.219H4.349zm18.297 3.75v14.125H4.627l-1.943 1.17v3.736c0 .67.55 1.219 1.218 1.219H23.31V3.75h-.664zm-14.471.025h2.937l1.885 7.508 1.977-7.48-.012-.028h2.857v9.354h-2.216v-6.04l-1.565 6.026v.014h-2.203l-1.656-6.28v6.28H8.174V3.775zm1.33 14.762h1.18l1.068 3.543h-.902l-.217-.773H9.568l-.197.773h-.88l1.013-3.543zm1.918 0h.932l.648 1.494.643-1.494h.894l-1.113 2.133v1.41h-.887v-1.406l-1.117-2.137zm3.826 0h1.18l1.068 3.543h-.9l-.217-.773h-1.065l-.197.773h-.88l1.011-3.543zm-5.156.582-.362 1.53h.73l-.368-1.53zm5.744 0-.36 1.53h.73l-.37-1.53z"/>
+        </svg><span class="skills-row__label">Maya</span>
+      </span></li>
+      <li class="slot"><span class="skill-tile skill-tile--bare" tabindex="0" style="--draw-delay:0.45s">
+        <svg class="skills-row__icon" viewBox="0 0 24 24" role="img" aria-label="Python" focusable="false">
+          <path pathLength="1" d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/>
+        </svg><span class="skills-row__label">Python</span>
+      </span></li>
+      <li class="slot"><span class="skill-tile skill-tile--bare" tabindex="0" style="--draw-delay:0.54s">
+        <svg class="skills-row__icon" viewBox="0 0 24 24" role="img" aria-label="Git" focusable="false">
+          <path pathLength="1" d="M13.09 23.549a1.54 1.54 0 0 1-2.18 0L.451 13.089a1.54 1.54 0 0 1 0-2.179l7.191-7.19 2.733 2.733a1.85 1.85 0 0 0 .964 2.326v6.66a1.849 1.849 0 1 0 1.54 0V8.957l2.508 2.508a1.85 1.85 0 1 0 1.09-1.09l-2.634-2.634a1.85 1.85 0 0 0-2.378-2.377L8.73 2.63 10.91.451a1.54 1.54 0 0 1 2.179 0l10.459 10.46a1.54 1.54 0 0 1 0 2.179z"/>
+        </svg><span class="skills-row__label">Git</span>
+      </span></li>
+      <li class="slot is-empty"></li>
+    </ul>
+    <div class="band-skills personal-face" id="row-v1-personal" hidden>
+      <p class="personal-gap"><b>PERSONAL face: no content exists yet.</b><br>
+        The flipper is wired and it does switch. What it switches TO has never been written down:
+        there is no personal-skills list anywhere in the lab, and no mark set for one. Nothing is
+        invented here. Say the eight words and this face fills in.</p>
+    </div>
+  </div></div>
+
+
+  <h2 class="v">V2 - corner brackets. Ticks at rest, the frame CLOSES on hover.</h2>
+  <div class="vsrc">
+    <b>SOURCE:</b> filipporuffini.com, <code>sources/filipporuffini-corner-brackets.md</code> (Tier
+    True there - read from the site's own inline head style and its Webflow sheet).
+    <span class="tier">Tier: Remixed</span> &middot; idea origin: theirs.<br>
+    Verbatim: the four one-sided-border boxes and the <code>is--tl/tr/br/bl</code> naming, the arm
+    tiers <code>--corners-small: 3.125rem</code> (rest) and <code>--corners-large: 6.25rem</code>
+    (hover), and the easing <code>.4s cubic-bezier(.77,0,.175,1)</code> off their cursor frame.
+    Ours: their <code>#333</code> hairline becomes the house gold hairline, and the GROW itself -
+    Filippo only grows their cursor, never a content frame. The doubling ratio is still theirs
+    (0.5rem to 1rem is also exactly x2). At 6.25rem on a 150 cell the four arms overlap, so the
+    bracket closes into a complete border.<br>
+    Their <code>.corners{padding:.9375rem}</code> is dropped: our boxes sit on the border box, so a
+    padding would shrink the mark in V2 and V3 only and stop the three rows being comparable.
+  </div>
+  <div class="stagewrap"><div class="stage">
+    <ul class="band-skills" id="row-v2"></ul>
+  </div></div>
+
+
+  <h2 class="v">V3 - full frame at rest, retracting to brackets on hover. The inverse of V2.</h2>
+  <div class="vsrc">
+    <b>SOURCE:</b> codepen.io/Ashlook/pen/YzQQwdo,
+    <code>sources/ashlook-scifi-button.md</code> (Tier True - you pasted the pen verbatim).
+    <span class="tier">Tier: Remixed</span> &middot; idea origin: theirs.<br>
+    Verbatim: four boxes at <code>width:50%; height:50%</code> tiling a complete border,
+    <code>box-sizing:border-box</code>, shrinking on hover to <code>$padding-x: 0.75em</code> by
+    <code>$padding-y: 0.5em</code>, with <code>transition: width 200ms ease-in, height 200ms
+    ease-in</code>. Not taken: their <code>::before</code> radial-gradient flash on
+    <code>:active</code> and their material box-shadow. Both are fills over a live three.js scene,
+    which is the tell being stripped everywhere else.
+  </div>
+  <div class="stagewrap"><div class="stage">
+    <ul class="band-skills" id="row-v3"></ul>
+  </div></div>
+
+
+  <div class="lede" style="margin-top:56px">
+    <b>Fit.</b> All three tiles are <code>width:100%; aspect-ratio:1</code> of the blockout's own
+    grid cell, so the tile IS the reservation and cannot overflow it. Inside the tile the tallest
+    stack is 94.97 (mark) + 8.8 (skills-row's own 0.55rem gap) + 9.28 (label at 0.58rem, line-height
+    1) = 113.05 of the 150 available. The flipper band: both arrangements are centred in a 120 grid
+    and neither is close to filling it.
+  </div>
+
+</div>
+</div>

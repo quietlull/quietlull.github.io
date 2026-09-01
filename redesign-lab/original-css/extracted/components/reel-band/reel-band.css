@@ -1,0 +1,29 @@
+/* !! CIRCULAR CITATION - CORRECTED 2026-08-16 !!
+   The "PROVENANCE" line below points at a `rework-*.html` / `ref-*.html` page in THIS repo.
+   Those are OUR OWN BUILDS, named after the sites that inspired them. They are source
+   CANDIDATES, not sources. This component therefore has NO EXTERNAL PROVENANCE and is Slop
+   until a real live site is found and its CSS read from source.
+   Rod caught this on the callouts: "you are confidently lying because these are not anywhere
+   to be found on hana, unless you mean our AI generated hana copy."
+   A provenance comment is a CLAIM, not evidence. Check what it points AT. */
+/* reel-band — REEL pick: harumaki full-bleed cinematic band, positioned ABOVE the cards.
+   PROVENANCE: rework-harumaki.html .band. In the bench it spans the stage width (the
+   100vw breakout applies at page level). The hatch is the placeholder for the real reel. */
+.reel-band {
+  width: 100%;
+  height: clamp(320px, 50vh, 540px); /* Rod's spec: ~540px @1080p (full-bleed cinematic band) */
+  display: grid;
+  place-items: center;
+  border-top: 1px solid var(--color-line-faint);
+  border-bottom: 1px solid var(--color-line-faint);
+  background: var(--color-cover-lo);
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.025) 0 12px, transparent 12px 24px);
+}
+
+.reel-band__label {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 40%, transparent);
+}

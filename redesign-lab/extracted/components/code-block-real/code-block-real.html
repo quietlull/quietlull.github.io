@@ -1,0 +1,115 @@
+<!-- code-block-real - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=code-block-real can mount it. Page chrome is scoped to .cb-code-block-real; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: CODE BLOCK - the chrome is decided, 3 colour schemes to pick from -->
+<!--
+  The CHROME is settled (D20: Maxime Heckel header strip, squared). Rod re-confirmed it 2026-08-23.
+  THE OPEN PART IS COLOUR, so all three blocks below are the SAME chrome and differ only in scheme.
+
+  The sample is real HLSL from Rod's own ComputeGrass post, chosen because it exercises every token
+  class a shader needs: preprocessor, type, keyword, intrinsic, number, comment, SEMANTICS
+  (SV_DispatchThreadID) and swizzles (.r/.a/.b). A generic JS sample would not have tested those.
+-->
+<div class="cb cb-code-block-real">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 100;300;400;500;700. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<style>
+.cb-code-block-real {
+  background:var(--color-night,#070C23);color:var(--color-text,#f5f3ef);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;padding:0 0 140px
+
+  & * {box-sizing:border-box;margin:0;padding:0
+  }
+  & header.top {position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+    border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+    align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)
+  }
+  & header.top h1 {font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase
+  }
+  & header.top .sub {font-size:10px;color:var(--color-muted)
+  }
+  & .wrap {width:min(1180px,92vw);margin:0 auto;padding:40px 0 0
+  }
+  & .lede {font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:44px;max-width:96ch;
+    background:rgba(8,10,18,.72)
+  }
+  & .lede b {color:#e4e4e4;font-weight:500
+  }
+  & .lede code {color:var(--color-gold)
+  }
+  & h2.v {font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-gold);font-weight:400;margin:52px 0 6px;border-top:1px solid #2c2c2c;
+    padding-top:22px
+  }
+  & .vsrc {font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;
+    margin-bottom:18px;max-width:92ch
+  }
+  & .vsrc b {color:#ccc;font-weight:400
+  }
+  & .vsrc .tier {color:var(--color-gold)
+  }
+  & .stage {width:767px;max-width:100%
+  }
+  & .swatches {display:flex;gap:0;margin:10px 0 16px;font-family:var(--font-mono);font-size:9px
+  }
+  & .swatches i {flex:1;height:22px;display:grid;place-items:end center;color:#0008;
+    font-style:normal;letter-spacing:.06em;padding-bottom:2px
+  }
+}
+</style>
+<header class="top">
+  <h1>Code block</h1>
+  <span class="sub">chrome DECIDED (D20) &middot; 3 colour schemes to pick from &middot;
+    brief: analysis/reference-briefs/code-block--copy.md</span>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <b>The chrome is settled and is identical in all three.</b> Maxime Heckel's header strip, squared
+    per D20 &mdash; you re-confirmed it 2026-08-23. Every quoted declaration was re-diffed against the
+    live article this session: <b>all 10 probes matched byte-for-byte</b>, Stitches class hashes
+    included.<br><br>
+    <b>What was still open is COLOUR</b>, because the saved source note captured the chrome and never
+    recorded a single syntax colour. These three were pulled live from each site's own stylesheet.<br><br>
+    <b>The honest problem, and it is why this is a carve-out:</b> no sourced dark scheme is
+    palette-law clean. Every real one spends a cool hue on keywords, because that is what syntax
+    highlighting has done for thirty years. <b>Nothing here was hue-rotated toward warm</b> &mdash;
+    that would be inventing a scheme and then citing a site that does not use it.<br><br>
+    Sample is real HLSL from your ComputeGrass post, chosen because it exercises preprocessor, type,
+    keyword, intrinsic, number, comment, <b>semantics</b> and <b>swizzles</b>.
+  </div>
+
+  <h2 class="v">Version 1 &middot; your own scheme</h2>
+  <div class="vsrc"><b>Origin: ROD</b>, not a transcription. <span class="tier">"same as VS Code" is
+    explicitly NOT the citation</span> &mdash; your editor is on some other theme, and you said you
+    like it anyway. Orange types, blue variables, green classes, pink functions.<br>
+    <b>One thing flagged rather than resolved:</b> you assigned green to CLASSES, and in most editors
+    green is the COMMENT slot. Using it for both would collide on the two most common tokens in a
+    shader, so comments take the warm grey until you say otherwise.</div>
+  <div class="stage"><div class="swatches" id="sw-rod"></div><div id="rod"></div></div>
+
+  <h2 class="v">Version 2 &middot; Inigo Quilez</h2>
+  <div class="vsrc"><b>iquilezles.org/style.css?v=2</b> &mdash; verified live, byte-exact.
+    <span class="tier">Tier: Remixed</span>, idea-origin theirs.<br>
+    Four tokens, hand-rolled, dark, on a warm-neutral ground, <b>by a shader author writing about
+    shaders</b>. The closest fit of anything sourced, and only one of its four hues is cool.<br>
+    <b>Carried faithfully rather than quietly dropped:</b> their <code>.code</code> is
+    <code>font-weight:bold</code> throughout. That is their specific choice, not a neutral default
+    &mdash; if it reads heavy, that is the source, not a bug.</div>
+  <div class="stage"><div class="swatches" id="sw-iq"></div><div id="iq"></div></div>
+
+  <h2 class="v">Version 3 &middot; Catlike Coding dark</h2>
+  <div class="vsrc"><b>catlikecoding.com/unity/tutorials/tutorials.css</b> &mdash; fetched live.
+    <span class="tier">Tier: Remixed</span>, idea-origin theirs.<br>
+    <b>The strongest semantic match to what you actually write.</b> These class names exist because
+    Jasper writes Cg/HLSL shader tutorials, so <code>.cg-function</code>, <code>.cg-macro</code> and
+    <code>.directive</code> map onto real HLSL constructs instead of generic web-highlighter buckets.
+    It is the only sourced scheme with a native class for shader macros.<br>
+    Two of seven are cool. Its <code>constant #edd400</code> sits very close to our
+    <code>--color-gold #fbbf24</code>, which is a real point of contact.</div>
+  <div class="stage"><div class="swatches" id="sw-cc"></div><div id="cc"></div></div>
+</div>
+</div>

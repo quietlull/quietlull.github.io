@@ -1,0 +1,150 @@
+/* ============================================================================================
+   prevnext-real - TheRealMJP split halves, no box.
+   Built 2026-08-23 from analysis/reference-briefs/brief.md (prev/next).
+
+   PREMISE: the stated source is `analysis/component-sources/source-prev-next.md`, which is INSIDE
+   this repo and is therefore a CLAIM, not provenance. The live site was fetched to verify it:
+   therealmjp.github.io/css/style.min.4bc5...css (17,512 chars) matches the note CHARACTER FOR
+   CHARACTER. So the claim holds - but it was checked rather than trusted.
+
+   "NO BOX" IS REAL ABSENCE EVIDENCE, not a summary. Every rule whose selector mentions post-nav,
+   next-post or prev-post was regexed: there are exactly FIVE, and none sets border, background,
+   box-shadow or border-radius. That is why it works over a live scene.
+
+   TIER: Remixed. Geometry, kicker recipe, boxlessness and Newer/Older labelling are THEIRS and
+   verified live (that half is True). ONE change makes the whole thing Remixed and it is logged as
+   ours: replacing their `<br>` stack with a flex column + gap. Same geometry, but it survives long
+   titles, which theirs does not.
+
+   ╔══════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ THE NOTE'S BLIND SPOT: THE COLOUR AND HOVER ARE INHERITED, NOT LOCAL.                     ║
+   ║ The note says "the rules contain zero colour, so it drops onto a night ground unchanged".  ║
+   ║ True of the five .post-nav rules and MISLEADING about the component. `.post-nav` is a      ║
+   ║ sibling of </article>, so it sits OUTSIDE `.content` and picks up the GLOBAL anchor rules: ║
+   ║     a{color:#e8eef2;transition-property:color;transition-duration:.4s;ease-out}            ║
+   ║     a:hover{color:#fff;text-shadow:0 0 1px #fff}                                           ║
+   ║ Building from the note alone ships this component WITH NO HOVER STATE AT ALL.              ║
+   ║                                                                                            ║
+   ║ Also inherited and easy to miss: html{letter-spacing:.06em}. The uppercase kicker gets its ║
+   ║ tracking FREE from that and has no letter-spacing of its own. Our stack has no global      ║
+   ║ tracking, so it is declared explicitly below or the kicker looks wrong.                    ║
+   ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+
+   THEIR CLASS NAMES ARE INVERTED AND IT IS A TRAP: `.next-post` is the LEFT, NEWER one -
+   confirmed by its `text-align:left`. Our class names below say what they mean instead.
+   ============================================================================================ */
+
+.pn {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5em;              /* their asymmetric margins, verbatim */
+  margin-bottom: 2.5em;
+  font-size: 1.2em;               /* the block is bumped up, theirs */
+}
+.pn a {
+  flex-basis: 50%;
+  flex-grow: 1;                   /* the whole 50% column is the hit target - theirs */
+  text-decoration: none;
+  color: var(--color-text, #f5f3ef);   /* theirs is #e8eef2, a COOL-tinted near-white. Swapped. */
+  /* OURS: a flex column replaces their <br> stack. Same geometry, survives a long title. */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-bottom: 0;               /* cancels the global prose-link hairline */
+}
+.pn__newer { text-align: left;  padding-right: 5px; }   /* their 5px inner gutter, verbatim */
+.pn__older { text-align: right; padding-left: 5px; }
+
+.pn__kicker {
+  font-size: 0.8em;               /* title:kicker is 1 : 0.8, theirs */
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;         /* OURS to declare - they inherit it from html */
+}
+/* their icon sizing, verbatim. &nbsp; binds arrow to word so they never wrap apart. */
+.pn__icon { display: inline-block; vertical-align: -0.125em; width: 1em; height: 1em; }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE THREE VERSIONS - the hover, which is the one place the source and the de-glow principle
+   disagree. Their `a:hover{color:#fff;text-shadow:0 0 1px #fff}` is a white glow.
+   The geometry transfers; the glow is a taste call, so it is drawn three ways rather than picked.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* V1 - THEIRS, WARMED. Keeps the colour lift and the 1px shadow, in gold instead of white.
+   Closest to the source; the one that argues with the de-glow principle. */
+.pn--v1 a { transition: color 0.4s ease-out, text-shadow 0.4s ease-out; }
+.pn--v1 a:hover { color: var(--color-gold, #fbbf24); text-shadow: 0 0 1px var(--color-gold, #fbbf24); }
+
+/* V2 - COLOUR LIFT ONLY. Their transition and their colour change, shadow dropped.
+   The de-glow principle applied while keeping the source's behaviour. */
+.pn--v2 a { transition: color 0.4s ease-out; }
+.pn--v2 a:hover { color: var(--color-gold, #fbbf24); }
+
+/* V3 - NO HOVER TRANSITION AT ALL. An instant colour change, no motion.
+   Consistent with the motionless direction taken on the related cards. */
+.pn--v3 a:hover { color: var(--color-gold, #fbbf24); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* OURS. Their @media(prefers-reduced-motion) block targets only `.animated`, so their 0.4s link
+     transition runs regardless - a gap in the source, not something liftable. */
+  .pn--v1 a, .pn--v2 a { transition: none; }
+}
+
+/* FOCUS: deliberately NOT declared here.
+   The source has no :focus-visible for these links at all - grepped, the only focus rules are
+   .screen-reader-text:focus and .content a.anchor:focus svg. Under WCAG 2.2 AA that is a defect
+   in the source.
+   But a global focus ring already exists at extracted/styles/generic.css:25, sourced in
+   sources/focus-ring.md. The component INHERITS it and declares nothing - re-declaring would be
+   duplicate code for no gain (anti-bloat, D5). */
+
+/* ARROWS: their feather SVGs are not carried. Whatever replaces them needs its OWN source.
+   Typed ASCII chevrons have a real precedent in Book of Shaders (`< <` / `> >`, verified in the
+   same note) and are a cheap hand-made tell. Anything hand-drawn would be UNSOURCED and Slop
+   until cited. The demo uses the Book of Shaders form. */
+
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   *** PICKED 2026-08-23: V4, THE TWO-LANE CARD. ***
+   Rod: "actually try to reuse the v2 card from above section with the 2 lane merged layout."
+
+   So prev/next stops being two bare text links and becomes TWO RELATED-CARD V2s side by side.
+   That is REUSE, not a rebuild - `.rc` and `.rc--v2` are linked from related-card-real.css and
+   nothing is redefined here. This file only supplies the LANE layout around them.
+
+   WHY THIS IS BETTER THAN WHAT TheRealMJP GIVES US, stated so the source swap is honest:
+   their prev/next is boxless text, and we keep that CSS above as the V1-V3 provenance copy. But
+   a card carries a thumbnail and a meta line, which two text links cannot, and Rod has already
+   approved that card for exactly this job one section up. Reusing an approved component beats
+   maintaining a second, thinner one.
+
+   WHAT CARRIES OVER FROM THE SOURCE, so it is not lost: the outward text-align, the kicker
+   recipe at 0.8em/opacity .8/uppercase, the Newer-Older labelling rather than Prev-Next, and the
+   asymmetric 1.5em/2.5em block margins. Those are still theirs and still verbatim.
+
+   THE BLOCKOUT RESERVES 345 x 44 EACH, which was drawn for the TEXT version. A card is taller by
+   construction, so this version does NOT fit that reservation and cannot - the reservation
+   describes a different device. Flagged rather than silently overflowing; same class as the
+   callout 76 -> 130 correction.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.pn--cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;      /* the two lanes */
+  gap: 1rem;
+  margin-top: 1.5em;                   /* theirs, verbatim */
+  margin-bottom: 2.5em;
+}
+@media (max-width: 760px) { .pn--cards { grid-template-columns: 1fr; } }
+
+/* the kicker sits ABOVE its card rather than inside it, so the card stays exactly the approved
+   component with nothing added to it. */
+.pn--cards .pn__kicker {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.8em;                    /* theirs */
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.pn--cards .pn__lane--newer .pn__kicker { text-align: left; }
+.pn--cards .pn__lane--older .pn__kicker { text-align: right; }

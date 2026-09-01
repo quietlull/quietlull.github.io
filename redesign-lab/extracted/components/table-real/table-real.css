@@ -1,0 +1,142 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   table-real - iquilezles body + acegikmo header row, squared, header in the H2 yellow.
+   Built 2026-08-23 from analysis/reference-briefs/table.md. All four live files re-verified.
+
+   TIER: Remixed. Idea-origin: THEIRS for both halves and for the pairing. The only Claude-side
+   content is the palette substitution and the squaring, and both are law-mandated rather than
+   invented.
+
+   ===== THREE CORRECTIONS THE BRIEF MADE TO THE STATED TREATMENT =====
+
+   1. THE IQ TABLE IS NOT IN THE GLOBAL STYLESHEET. `iq-style.css` has ZERO bare table/th/td/tr
+      rules (grep 0/0/0). What styles their table is a page-local <style> at line 60 of
+      article-smin.html. So the "minimal body" is literally ONE declaration plus the absence of
+      everything else. There is no more to find.
+
+   2. THERE IS NO BARE `th` RULE ON ACEGIKMO. The real selector is `.feature-table th`. Citing a
+      bare `th` would be a wrong citation.
+
+   3. IQUILEZLES HAS NO `<th>` ANYWHERE (grep = 0). Their "header row" is the first <tr> of plain
+      <td> with an empty corner cell, and it carries NO styling at all. So the header row here is
+      not a blend of the two - it is ENTIRELY the acegikmo half.
+
+   ===== CANNOT TRANSFER =====
+   iq `.no{color:#ff6060}` is RED and banned, and it is the pair-mate of `.ye{color:#40e040}`, so
+   the whole two-colour yes/no device dies with it. The iq half arrives as BODY GEOMETRY ONLY,
+   with no semantic colour.
+   acegikmo's td.on/.off/.na/.depends: four colours, two illegal (red, and #ccc from the banned
+   cool-neutral family), and all four are SOLID background fills - exactly what competes with the
+   scene. Correctly dropped.
+   `.feature-table`'s border + padding + radius draws a box; the iq half deliberately has none, and
+   the two parents contradict here. The treatment picked iq for the body, so the border goes.
+   Every acegikmo colour is tuned for a WHITE page. Only structure transfers from that half.
+   ============================================================================================ */
+
+/* ── the scroll wrapper. iq's, verbatim: an inline style on a bare div. ────────────────────── */
+.tbl-scroll { overflow-x: auto; max-width: 100%; }
+
+/* their scrollbar chrome, verbatim: 8px, track = page ground, mid-grey thumb.
+   Their thumb has -webkit-border-radius:4px; squared per our law. */
+.tbl-scroll::-webkit-scrollbar { height: 8px; width: 8px; background: var(--color-panel-solid, #1c1a18); }
+.tbl-scroll::-webkit-scrollbar-thumb { background: #505050; border-radius: 0; }
+
+/* ── SHARED BODY - iquilezles, and it is one declaration plus absence ────────────────────── */
+.tbl {
+  /* NO border-collapse is declared on EITHER source site; both inherit the UA default
+     (separate + UA border-spacing). Writing `collapse` here would be a departure from both
+     parents rather than a copy, so it is deliberately NOT written. */
+  color: var(--color-text, #f5f3ef);
+  text-align: left;
+}
+.tbl td {
+  padding-right: 1rem;      /* theirs, verbatim - the ONLY column separation */
+  /* Row height comes from line-height alone. They author no vertical padding and neither do we. */
+}
+.tbl th {
+  /* acegikmo, verbatim except the two law-mandated swaps */
+  font-weight: 100;
+  border-radius: 0;         /* theirs is 4px; squared */
+  color: var(--color-gold, #fbbf24);   /* theirs is #ff1155; token swap */
+  padding-left: 4px;
+  padding-right: 4px;
+  /* TRAP 2: `th` alignment splits from `td` by default. acegikmo gets centred headers from
+     `text-align:center` on `.feature-table`, NOT from the th rule; iq's page is left-aligned.
+     Take the th rule without a table-level alignment and you get centred headers over left cells,
+     which reads as a bug. Declared explicitly. */
+  text-align: left;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V1 - THE DECIDED TREATMENT, exactly as specified. Header row + minimal body + wrapper.
+
+   TRAP 1, AND IT IS WORTH READING BEFORE PICKING: `font-weight:100` IS VISUALLY INERT ON THE
+   SOURCE SITE. acegikmo loads exactly one @font-face - Renogare-Regular.otf, single weight, no
+   weight descriptor. No browser synthesises thin. So on their live page `font-weight:100` renders
+   at REGULAR, and its only real effect is CANCELLING the UA default `th{font-weight:bold}`.
+   That de-bolding is the transferable effect.
+   OUR stack (M PLUS Rounded 1c) DOES have real light weights, so copying the literal `100` gives
+   a THINNER header than acegikmo actually shows. V1 keeps the literal; V2 keeps the EFFECT.
+   Do not assume the number is the look.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.tbl--v1 th { font-weight: 100; }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V2 - THE SAME, BUT THE SCROLL ACTUALLY WORKS AND THE HEADER MATCHES WHAT THEY SHOW.
+
+   TRAP 4: THE `overflow-x:auto` WRAPPER ALONE WILL NOT SCROLL. Default table layout is `auto`,
+   so a too-wide table WRAPS its text to fit rather than overflowing. iq gets away with the bare
+   wrapper because their cells are single words (Quadratic, Yes) that barely wrap. At our 767px
+   measure with real content the wrapper would simply never fire.
+
+   The honest sourcing for the fix, and it is a CROSS-COMPONENT REMIX WITHIN ONE PARENT rather
+   than iq's table: iq's own CODE BLOCK pairs `overflow:auto` with `white-space:pre`, which is
+   precisely why that one scrolls (`.code{overflow:auto;...white-space:pre;...}`). Same site, same
+   escape hatch, different component. Labelled as such.
+
+   Header takes weight 400 - the EFFECT acegikmo's `100` actually produces on their own site
+   (de-bolded, not thinned), rather than the literal number.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.tbl--v2 th { font-weight: 400; }
+.tbl--v2 td, .tbl--v2 th { white-space: nowrap; }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   V3 - THE HAIRLINE ROW. acegikmo's OTHER table, which the source note missed entirely.
+
+   The note recorded `.feature-table` as the site's table, with 1 use. The live page has 19
+   tables, and the DOMINANT pattern is `<table class="shape-prop-line">` at 126 USES. Its entire
+   rule is one declaration (ace-styles.css:213):
+
+       .shape-prop-line { border-bottom: solid 1px #efefef; }
+
+   A two-column name/description row with a single hairline under it.
+
+   Offered because it is real, heavily exercised, and sits INSIDE the already-approved source site,
+   so it is not a substitution. And a single hairline row survives the dark ground and the live
+   scene far better than tinted pill cells would. Their #efefef is a white-page value and becomes
+   our warm line token.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.tbl--v3 tr { border-bottom: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1)); }
+.tbl--v3 th { font-weight: 400; }
+.tbl--v3 td { padding-block: 0.35rem; }
+}

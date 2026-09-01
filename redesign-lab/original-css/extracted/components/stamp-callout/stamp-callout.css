@@ -1,0 +1,36 @@
+/* stamp-callout — the TAKEAWAY block (final-picks: deliberately unique vs TL;DR).
+   PROVENANCE (Remixed): Rod-provided stamp CSS — the perforated edge is a radial-gradient
+   dot cutout repeated along an inset ring. Recolored amber-on-night in rework-harumaki.
+   --stamp-paper is the block's own paper color; the ::before dots MUST match it exactly,
+   which is why it is one local custom property and not two literals. */
+.stamp-callout {
+  --stamp-paper: var(--color-stamp-paper);
+
+  position: relative;
+  background: var(--stamp-paper);
+  padding: 1.4rem 1.6rem;
+  margin: 1.9rem 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  color: color-mix(in srgb, var(--color-text) 92%, transparent);
+  max-width: 60ch;
+}
+
+.stamp-callout::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  z-index: -1;
+  background: radial-gradient(transparent 0 3.5px, var(--stamp-paper) 4px);
+  background-size: 15px 15px;
+  background-position: -7px -7px;
+}
+
+.stamp-callout__title {
+  font-family: var(--font-display); /* T0-B: serif display */
+  color: var(--color-gold-deep);
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.3rem;
+}

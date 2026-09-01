@@ -1,0 +1,48 @@
+/* ============================================================
+   TRUE-CODE SOURCE — hana glow / bloom / ignite family
+   SOURCE: hana.b-rave.tokyo/tour/borntobloom/assets/css/style.min.css (+ module.min.css)
+   Extracted VERBATIM (fresh) 2026-06-09. Site is LIVE with real linked CSS (not a rebuilt SPA),
+   so this is current, not a stale captured recipe. Re-verify against the live URL before shipping.
+
+   This is the well for: nav text-ignite, card ignite-on-hover, card box-shadow, ambient bloom breath.
+   Remix to Rod's palette = swap rgba(255,26,0,...) (hana hot orange-red) -> --glow #FF6A00 / amber.
+
+   UNIT SYSTEM (keeps blur proportional at any viewport width):
+     --base: 3840;
+     --pv: min(1vw, 19.2px);
+     blur = calc(N * ((var(--pv) * 100) / var(--base)))
+   ============================================================ */
+
+/* 1) IGNITE on hover — stacked drop-shadows, ALPHA-ONLY animation (blur/offset never change). */
+.ignite{
+  filter:
+    drop-shadow(0 0 calc(24 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0))
+    drop-shadow(0 0 calc(24 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0));
+  transition: filter 0.125s cubic-bezier(0.215, 0.61, 0.355, 1) 0s;
+}
+.ignite:hover{
+  filter:
+    drop-shadow(0 0 calc(24 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0.8))
+    drop-shadow(0 0 calc(24 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0.8));
+}
+
+/* 2) PANEL ignite on scroll-in — same alpha-only idea, delayed "power-on" ramp.
+      Driven by an IntersectionObserver adding a class; transition is 0-duration after a .5s delay. */
+.panel{ filter: drop-shadow(0 0 var(--b) rgba(255,26,0,0)) drop-shadow(0 0 var(--b) rgba(255,26,0,0)); }
+.panel.is-intersection{
+  filter: drop-shadow(0 0 var(--b) rgba(255,26,0,0.4)) drop-shadow(0 0 var(--b) rgba(255,26,0,0.4));
+  transition: filter 0.0s linear 0.5s;   /* verbatim timing from the live site */
+}
+
+/* 3) CARD box-shadow (System C — the one box-shadow exception, for 0-radius rectangles).
+      Dual-layer: tight bright inner (100u) + wide faint outer (200u). Resting + ignited. */
+.card{ box-shadow:
+    0 0 calc(100 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0.25),
+    0 0 calc(200 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0.125); }
+.card.ignite{ box-shadow:
+    0 0 calc(100 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0.5),
+    0 0 calc(200 * ((var(--pv) * 100) / var(--base))) rgba(255,26,0,0.25); }
+
+/* 4) The ONE ambient background breath (only constant motion on the whole site). */
+@keyframes background { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
+/* applied: animation: background 8s ease-in-out infinite;  on a stacked bg gradient/image layer */

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ABOUT BLOCKOUT — 4 variants, greybox</title>
+<!--
+  ABOUT (_layouts/section-about.html). This page carries the HEAVIEST scene (water + dock +
+  scroll camera), so how much ground each variant covers is the real question.
+  GREYBOX LAW: geometry only, one grey language, no colour.
+
+  Transcribed from four currently-live sites, each read from its own CSS:
+    DIMDEN     dimden.dev + /about.html
+    109ICHIKI  109ichiki.com/profile/
+    KLUBNIKA   mikeklubnika.com/about
+    POTG       potg.art/about/          (CSS archived at redesign-lab/sources/potg-typography.md)
+
+  Frozen slots in ALL four: h1 · portrait · bio_intro · bio_more · status block ·
+  trophy-case header + 5 achievement categories (29 items, some locked) · empty/locked state.
+-->
+<style>
+  *{box-sizing:border-box}
+  body{background:#141414;color:#d9d9d9;font-family:ui-monospace,"SF Mono",Consolas,monospace;
+    margin:0;padding-top:72px}
+  .box{border:1.5px dashed #555;background:#1b1b1b}
+  .fill{display:grid;place-items:center;height:100%;color:#666;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;text-align:center;padding:4px}
+  .yy{font-size:9px;color:#777;letter-spacing:.06em}
+  .nav{position:fixed;top:0;left:0;right:0;height:72px;z-index:10;background:#1f1f1f;
+    border-bottom:1.5px solid #666;display:flex;align-items:center;gap:16px;padding:0 20px}
+  .nav .ico{width:44px;height:44px;border:1.5px dashed #777;display:grid;place-items:center;font-size:9px;color:#888}
+  .nav .name{border:1.5px dashed #666;padding:8px 18px;font-size:13px;color:#ccc}
+  .nav .sp{flex:1}
+  .nav .btns span{border:1.5px dashed #666;padding:7px 16px;font-size:10px;color:#999;margin-left:6px}
+  .lines span{display:block;height:1px;background:#3a3a3a;margin:0 0 12px}
+
+  /* ============ V1 · DIMDEN — panel stack, fixed 900, 675+225 ============ */
+  body.panels .col{width:900px;margin:0 auto;padding-top:40px;display:flex;align-items:flex-start}
+  body.panels .main{width:675px;flex-shrink:0}
+  body.panels .rail{width:225px;flex-shrink:0}   /* 675+225 = 900 EXACTLY, zero gap */
+  body.panels .p{border:2px solid #666;border-radius:4px;padding:10px 15px;margin-top:10px;
+    background:#1b1b1b}
+  body.panels .term{background:#111;font-size:10px;color:#8a8a8a}
+  body.panels .term .row{display:flex;justify-content:space-between;height:22px;align-items:center}
+  body.panels .term .row b{font-weight:400;width:250px;color:#777}
+  body.panels .tile{width:88px;height:31px;border:1.5px dashed #555;background:#1e1e1e}
+  body.panels .wall{display:flex;flex-wrap:wrap;gap:10px}
+  body.panels .bar{height:4px;width:480px;background:#333}
+
+  /* ============ V2 · 109ICHIKI — scatter desk ============ */
+  body.scatter .page{padding:20px 20px 157.5px}
+  body.scatter .hero{display:grid;grid-template-columns:repeat(12,1fr);padding:157.5px 56px 97.5px;
+    border-bottom:1px solid #3a3a3a;position:relative;min-height:560px}
+  body.scatter .well{grid-column:5/-1;grid-row:1/3;position:relative}
+  body.scatter .scat{position:absolute;width:60%;height:100%;inset:0;margin:0 auto;z-index:2}
+  body.scatter .pnl{position:absolute;border:1px solid #666;border-radius:3px;background:#1b1b1b}
+  body.scatter .pnl .inner{border:1px solid #555;border-radius:2px;height:100%;display:grid;
+    grid-template-rows:32px 1fr;padding:0 8px 1px 10px}
+  body.scatter .pnl .tb{border-bottom:1px solid #555;display:flex;align-items:center;font-size:9px;
+    color:#888;letter-spacing:.12em}
+  body.scatter .tgrid{display:grid;grid-template-columns:repeat(3,64px);gap:8px;padding:8px 0}
+  body.scatter .tgrid div{height:64px;border:1.5px dashed #555;background:#1e1e1e}
+
+  /* ============ V3 · KLUBNIKA — lit strip catalogue ============ */
+  body.strip .wrapper{display:flex;justify-content:center;min-height:100vh}
+  body.strip .col{max-width:58em;width:100%;padding:10px 15px;
+    border-left:1px solid #5c5c5c;border-right:1px solid #5c5c5c;
+    background:linear-gradient(0deg,#141414 0%,#1e1e1e 91%,#141414 100%)}
+  body.strip .cat{min-height:372px;display:flex;flex-wrap:wrap}
+  body.strip .cat div{width:64px;height:64px;margin:4px;border:1.5px dashed #555;background:#1e1e1e}
+  body.strip .detail{width:333px;height:250px}
+  body.strip .term{background:#111;font-size:10px;color:#8a8a8a;padding:8px}
+  body.strip .term .row{display:flex;justify-content:space-between;height:22px;align-items:center}
+  body.strip .term .row b{font-weight:400;width:250px;color:#777}
+
+  /* ============ V4 · POTG — band drift ============ */
+  body.bands .band{margin-inline:auto;max-width:1580px;width:calc(100vw - 200px)}
+  body.bands .b1{margin-top:239px}
+  body.bands .b2{max-width:640px;margin-left:auto;display:flex;flex-direction:column;gap:23px;
+    margin-top:160px}
+  body.bands .b3{margin-top:160px}
+  body.bands .b3 .hd{display:flex;align-items:baseline;gap:12px}
+  body.bands .b4{max-width:560px;height:148px;border:1px solid #666;
+    border-radius:calc(infinity * 1px);margin-top:160px;display:grid;place-items:center}
+  body.bands .b5{margin-top:160px;padding-bottom:200px}
+
+  /* SCENE BOTTOM — the same constant block the landing blockout carries (.sceneb, 720px, #151515).
+     Rod 2026-08-16: the about page needs the full scene at the bottom like the regular page.
+     It sits OUTSIDE the variant switch on purpose: DECISIONS D9 makes the scene bottom a CONSTANT
+     full-height block, so it must not change between variants or it stops being comparable. */
+  .sceneb{height:720px;background:#151515;position:relative;margin-top:120px}
+  .sceneb .sfill{border:1.5px dashed #444;position:absolute;inset:14px;display:grid;place-items:center;
+    color:#5c5c5c;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+  .footer{height:80px;background:#1d1d1d;display:grid;place-items:center;
+    color:#666;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+
+  #prov{position:fixed;left:14px;top:88px;z-index:70;width:292px;max-height:calc(100vh - 176px);
+    overflow:auto;background:rgba(10,12,20,.96);border:1px solid rgba(255,255,255,.18);padding:12px 13px;
+    font:11px/1.55 ui-monospace,Consolas,monospace;color:#dcdcdc}
+  #prov .pv-t{font-size:12.5px;color:#fff;margin-bottom:2px}
+  #prov .pv-k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin-bottom:7px}
+  #prov a{color:#9fd0ff;word-break:break-all}
+  #prov h4{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+  #prov ul{margin:0;padding-left:14px}#prov li{margin-bottom:3px;color:#c8c8c8}
+  #prov .warn li{color:#ffb020}
+  .vbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:80;display:flex;gap:6px;
+    flex-wrap:wrap;justify-content:center;background:rgba(8,10,18,.96);border:1px solid rgba(255,255,255,.2);padding:7px 9px}
+  .vbar button{background:none;border:1px solid #555;color:#bbb;font:10px ui-monospace,monospace;
+    letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;cursor:pointer}
+  .vbar button.on{background:#ddd;border-color:#ddd;color:#141414}
+  .labtag{position:fixed;left:14px;bottom:12px;z-index:50;font:10px ui-monospace,monospace;color:rgba(245,243,239,.45)}
+  @media(max-width:1300px){#prov{position:static;width:auto;max-height:none;margin:10px 14px}}
+</style>
+</head>
+<body class="panels">
+
+<div class="nav">
+  <span class="ico">MARK</span><span class="name">WORDMARK</span><span class="sp"></span>
+  <span class="btns"><span>HOME</span><span>PROJECTS</span><span>ABOUT</span><span>RAMBLINGS</span></span>
+</div>
+
+<div id="ground"></div>
+
+<!-- CONSTANT across all four variants (D9). The about page carries the FULL scene — water, dock,
+     scroll camera — so this block is the largest single thing on the page, not a footer strip. -->
+<section class="sceneb"><div class="sfill">Scene bottom &mdash; full water + dock scene, 720px constant</div></section>
+<div class="footer">Site footer</div>
+
+<aside id="prov"></aside>
+<div class="vbar">
+  <span style="color:#8e8e8e;font:9px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;align-self:center;margin-right:2px">about</span>
+  <button data-v="panels" class="on">1 &middot; dimden</button>
+  <button data-v="scatter">2 &middot; 109ichiki</button>
+  <button data-v="strip">3 &middot; klubnika</button>
+  <button data-v="bands">4 &middot; potg.art</button>
+</div>
+<div class="labtag">about-blockout &middot; greybox &middot; 29 achievements, 5 categories</div>
+
+<script>
+var CATS=[['EXPLORER',7],['READER',6],['INTERACTOR',8],['SECRET',3],['META',5]];
+function box(h,label,extra){return '<div class="box" style="height:'+h+'px;'+(extra||'')+'"><div class="fill">'+label+'</div></div>';}
+function lines(n){var s='<div class="lines">';for(var i=0;i<n;i++)s+='<span style="width:'+(i===n-1?'58%':'100%')+'"></span>';return s+'</div>';}
+function term(){
+  var r='';
+  for(var i=0;i<6;i++) r+='<div class="row"><b>STATUS LABEL '+(i+1)+' ..........</b><span class="box" style="width:40px;height:14px"></span></div>';
+  return r;
+}
+function wall(n,cls){var s='<div class="'+(cls||'wall')+'">';for(var i=0;i<n;i++)s+='<div class="tile"></div>';return s+'</div>';}
+
+var BUILD={
+ panels:function(){
+   var cats='';
+   for(var i=0;i<CATS.length;i++){
+     cats+='<div class="p"><div class="yy">'+CATS[i][0]+' &mdash; '+CATS[i][1]+' ACHIEVEMENTS</div>'
+       +'<div style="height:8px"></div>'+wall(CATS[i][1])+'</div>';
+   }
+   return '<div class="col"><div class="main">'
+     +'<div class="p" style="height:64px"><div style="display:flex;align-items:center;gap:5px">'
+     +'<span class="box" style="width:100px;height:20px"><span class="fill">STATUS</span></span>'
+     +'<span class="fill" style="height:34px">H1 SECTION TITLE</span></div></div>'
+     +'<div class="p">'+lines(6)+'<div class="yy">BIO_INTRO &mdash; 140px</div></div>'
+     +'<div class="p">'+lines(8)+'<div class="yy">BIO_MORE &mdash; 180px</div></div>'
+     +'<div class="p term"><div class="yy" style="margin-bottom:6px">STATUS TERMINAL &mdash; 2-col table, 250px first cells</div>'+term()+'</div>'
+     +'<div class="p"><div class="fill" style="height:24px">TROPHY CASE</div>'
+     +'<div class="yy">SUBTITLE</div><div style="display:flex;align-items:center;gap:10px;margin-top:8px">'
+     +'<span class="yy">14 / 29</span><span class="bar"></span></div></div>'
+     +cats
+     +'<div class="p">'+box(40,'LOCKED / EMPTY STATE')+'</div>'
+     +'</div><div class="rail">'
+     +'<div class="p">'+box(200,'PORTRAIT &mdash; 225px rail')+'</div>'
+     +'<div class="p">'+box(120,'SOCIALS')+'</div></div></div>';
+ },
+ scatter:function(){
+   return '<div class="page"><div class="hero">'
+     +'<div style="grid-column:1/5;grid-row:1">'+box(57,'H1 SECTION TITLE')+'</div>'
+     +'<div style="grid-column:1/5;grid-row:2;margin-top:60px">'+lines(6)
+     +'<div class="yy">BIO_INTRO</div></div>'
+     +'<div class="well"><div class="scat">'
+     +'<div class="pnl" style="width:280px;height:340px;top:-70px;right:-140px;z-index:1"><div class="inner">'
+     +'<div class="tb">PORTRAIT</div>'+box(240,'PORTRAIT 280x340')+'</div></div>'
+     +'<div class="pnl" style="width:290px;height:340px;top:210px;right:10px;z-index:2"><div class="inner">'
+     +'<div class="tb">TROPHY MASTER</div><div><div style="display:flex;align-items:center;gap:8px;margin:6px 0">'
+     +'<span class="yy">14/29</span><span style="height:4px;flex:1;background:#333"></span></div>'
+     +'<div class="tgrid"><div></div><div></div><div></div><div></div><div></div><div></div></div>'
+     +'<div class="yy">clipped &mdash; rest reached by drag-scroll</div></div></div></div>'
+     +'<div class="pnl" style="width:320px;height:300px;top:-20px;right:220px;z-index:3"><div class="inner">'
+     +'<div class="tb">STATUS</div>'+box(240,'STATUS 320x300')+'</div></div>'
+     +'<div class="pnl" style="width:340px;height:370px;top:120px;right:360px;z-index:4"><div class="inner">'
+     +'<div class="tb">BIO_MORE</div>'+box(300,'BIO_MORE 340x370')+'</div></div>'
+     +'</div></div></div>'
+     +'<div style="padding:97.5px 56px">'+box(60,'LOCKED / EMPTY STATE')+'</div></div>';
+ },
+ strip:function(){
+   var cat='';for(var i=0;i<29;i++)cat+='<div></div>';
+   return '<div class="wrapper"><div class="col">'
+     +box(34,'H1 &mdash; 27px')
+     +'<div style="margin:25px 0 55px">'+box(250,'PORTRAIT &mdash; 333x250 (.cataloguepreview reused)','width:333px')+'</div>'
+     +lines(14)+'<div class="yy">BIO_INTRO</div>'
+     +'<div style="height:20px"></div>'+box(26,'H2')
+     +'<div style="height:12px"></div>'+lines(10)+'<div class="yy">BIO_MORE</div>'
+     +'<div class="term" style="margin-top:20px"><div class="yy" style="margin-bottom:6px">STATUS &mdash; named borrow from dimden</div>'+term()+'</div>'
+     +'<div style="height:24px"></div><div class="yy">TROPHY CATALOGUE &mdash; 64x64 tiles, 4px margin, hover scale 1.3</div>'
+     +'<div style="display:flex;gap:20px;align-items:flex-start;margin-top:8px">'
+     +'<div class="cat" style="flex:1">'+cat+'</div>'
+     +'<div class="detail">'+box(250,'DETAIL PANEL 333x250 &mdash; swaps from tile data')+'</div></div>'
+     +'<div style="height:24px"></div>'+box(40,'LOCKED / EMPTY STATE')
+     +'<div style="height:80px"></div></div></div>';
+ },
+ bands:function(){
+   var cats='';
+   for(var i=0;i<CATS.length;i++){
+     cats+='<div style="margin-top:40px"><div class="yy">'+CATS[i][0]+' &mdash; '+CATS[i][1]+'</div>'
+       +'<div style="height:8px"></div>'+wall(CATS[i][1])+'</div>';
+   }
+   return '<div class="band b1">'+box(200,'H1 &mdash; 200px, line-height 1, LEFT anchored')
+     +'<div style="height:11px"></div>'+box(16,'SUB-LABEL &mdash; 16px')+'</div>'
+     +'<div class="band"><div class="b2">'
+     +box(400,'PORTRAIT &mdash; 640x400 (height DERIVED, flagged)')
+     +'<div>'+lines(5)+'<div class="yy">BIO_INTRO &mdash; 22px / 1.8</div></div>'
+     +'<div style="opacity:.7">'+lines(3)+'<div class="yy">SECONDARY &mdash; 16px / 1.7, ~70% ink</div></div>'
+     +'</div></div>'
+     +'<div class="band b3"><div class="hd">'+box(40,'BIO_MORE','width:280px')+'<span class="yy">SUB 12px</span></div>'
+     +'<div style="display:flex;flex-direction:column;gap:20px;margin-top:20px">'+lines(4)+lines(4)+'</div></div>'
+     +'<div class="band" style="display:flex"><div class="b4"><div class="fill">STATUS &mdash; 560x148, radius infinity</div></div></div>'
+     +'<div class="band b5"><div class="yy">TROPHY CASE &mdash; 14 / 29</div>'+cats
+     +'<div style="height:24px"></div>'+box(40,'LOCKED / EMPTY STATE')+'</div>';
+ }
+};
+
+var PROV={
+ panels:{t:'1 — dimden',k:'read from source · dimden.dev + /about.html',url:'https://dimden.dev/about.html',
+  moves:['FIXED 900px centred column — hard width, not max-width. 675px main + 225px rail, zero gap, 675+225=900 exactly',
+         'Every block is the SAME panel: 2px solid border, 4px radius, padding 10px 15px, 10px apart',
+         'STATUS TERMINAL is their live device: monospace 2-column table, 250px first cells, 6 rows at 22px, "label .......... TOKEN"',
+         'Achievement categories become FIVE separate framed panels rather than one grid',
+         'Badge wall is their #webtiles-container at true size: 88x31 tiles, gap 10 — exactly 6 per row in the 645px content width',
+         'Rod&rsquo;s gallery note for this page: "personality through FRAMING rather than typography"'],
+  warn:['Densest and most information-forward of the four, and the only one whose trophy case is legible as five distinct categories at a glance.',
+         'It also COVERS THE MOST SCENE. On the page carrying the full water + dock build, a 900px stack of opaque panels is the most expensive choice here.',
+         'A fixed 900px column does not reflow; below ~960px it needs a real breakpoint their site solves by being desktop-first.']},
+ scatter:{t:'2 — 109ichiki',k:'read from source · 109ichiki.com/profile/',url:'https://109ichiki.com/profile/',
+  moves:['12-column hero band, padding 157.5 / 56 / 97.5, closed with a 1px rule',
+         'Title and bio_intro occupy columns 1-4; columns 5-12 are left EMPTY as the scene well',
+         'FOUR DRAGGABLE PANELS scattered over that well at their verbatim sizes and offsets: portrait 280x340, trophy 290x340, status 320x300, bio_more 340x370',
+         'Panel chrome is their genuine DOUBLE border — outer 1px at 3px radius, inner 1px at 2px radius, 32px title bar with cursor:grab',
+         'The trophy case becomes a MOVABLE OBJECT rather than a region of the page, clipped to its panel with the rest reached by drag-scroll',
+         'Rod&rsquo;s gallery note: "vast empty space below the fold rather than filler sections"'],
+  warn:['The only variant where the trophy case is an object you push around. That is the strongest ALIVE &amp; PLAYFUL reading in the set — and the highest-risk, since draggable windows are a real interaction to build and maintain, not a layout.',
+         'Overlapping panels over a live 3D scene is a legibility problem the source never had (their ground is flat). Needs a real contrast check.',
+         'Tension with the locked "open, NOT explorable" call: a desk you rummage through is arguably exploration. Rod&rsquo;s call.']},
+ strip:{t:'3 — Mike Klubnika',k:'read from source · mikeklubnika.com/about',url:'https://mikeklubnika.com/about',
+  moves:['ONE 58em (928px) column with borders on LEFT AND RIGHT ONLY, painted with a vertical luminance ramp so it glows mid-page and dies at both ends',
+         'The only single-column variant with NO panels at all — the two vertical rules are the only drawn boundaries on the page',
+         'Portrait reuses their .cataloguepreview box at 333x250',
+         'TROPHY CASE is their working game catalogue: 64x64 tiles at 72px pitch, hover scale 1.3, selected gets a ring, and a 333x250 DETAIL PANEL that swaps contents from the tile',
+         'Status block is a NAMED BORROW from dimden — Klubnika has no status device, but the whole site is already monospace so it sits flush'],
+  warn:['The catalogue-plus-detail-panel is the best fit for 29 achievements of any reference here: it shows everything at once AND gives a locked item somewhere to explain itself.',
+         'The luminance ramp is doing atmospheric work the live scene already does. Over the water they may cancel out — judge it over the scene, never on flat grey.',
+         'Honest borrow: the status block is not Klubnika&rsquo;s. It is dimden&rsquo;s device dropped into Klubnika&rsquo;s column, and it is labelled as such rather than passed off.']},
+ bands:{t:'4 — potg.art',k:'read from source · CSS archived at redesign-lab/sources/potg-typography.md',
+  url:'https://potg.art/about/',
+  moves:['NO container box anywhere — full-bleed bands over the scene, field max-width 1580 with three inset tokens (40 / 100 / 320)',
+         'Fluid root: 1rem = 1px at 1440, so every number scales with the window and pins at >=1581px',
+         'THE PAGE WIDTH CHANGES BETWEEN SECTIONS: 1580 header -> 640 right-aligned intro -> 800 inset trophy band',
+         'The intro column is pushed hard against the RIGHT edge, leaving ~800px of open scene on the left at 1440',
+         'Status uses their contact device verbatim: max-width 560, height 148, border-radius infinity',
+         'Section headers are a baseline-aligned pair — main 40px, sub 12px, gap 12'],
+  warn:['By far the most scene-generous variant: the left half of the screen is deliberately empty for most of the page. On the page with the heaviest scene, that is the strongest argument in the set.',
+         'Also the least conventional. A page whose width changes per section can read as unresolved rather than composed — this one lives or dies on Rod&rsquo;s eye.',
+         'The 640x400 portrait height is DERIVED, not measured. Flagged rather than presented as transcribed.']}
+};
+
+(function(){
+  var btns=document.querySelectorAll('.vbar button'),panel=document.getElementById('prov'),g=document.getElementById('ground');
+  function show(v){
+    document.body.className=v;
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
+    g.innerHTML=BUILD[v]();
+    var p=PROV[v];
+    var h='<div class="pv-t">'+p.t+'</div><div class="pv-k">'+p.k+'</div>';
+    h+='<div style="margin-bottom:6px"><a href="'+p.url+'" target="_blank">'+p.url+'</a></div>';
+    h+='<h4>transcribed geometry</h4><ul><li>'+p.moves.join('</li><li>')+'</li></ul>';
+    h+='<h4>honest caveats</h4><ul class="warn"><li>'+p.warn.join('</li><li>')+'</li></ul>';
+    panel.innerHTML=h;
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.v);});});
+  var m=/[?&]v=(panels|scatter|strip|bands)/.exec(location.search);
+  show(m?m[1]:'panels');
+})();
+</script>
+</body>
+</html>

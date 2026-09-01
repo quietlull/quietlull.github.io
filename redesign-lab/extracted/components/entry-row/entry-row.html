@@ -1,0 +1,226 @@
+<!-- entry-row - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=entry-row can mount it. Page chrome is scoped to .cb-entry-row; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: entry-row - ramblings entry row, 3 versions -->
+<!--
+  BENCH ONLY. Nothing here is approved. See entry-row.md for tier, origin and the open questions.
+
+  THE DASHED BOXES BEHIND EACH SLOT ARE TWO DIFFERENT RESERVATIONS, and that is the point:
+    GOLD  = the reservation handed to this build - title 838x30, blurb 1054x45.
+    GREY  = the Eve hairline blockout's own reservation - title 752x28, blurb 820x48.
+  They disagree because they were measured off two different variants of the same file. The
+  readout under each version is measured live with getBoundingClientRect, not typed in.
+-->
+<div class="cb cb-entry-row">
+<!-- kept from the page's head: the bench only requests M PLUS Rounded
+     400;500;700, and this page's design uses 300;400;500. Without it those weights
+     silently render 400. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+.cb-entry-row {
+  font-size:16px
+  margin:0;padding:0 0 120px;background:var(--color-night,#070c23);
+  color:var(--color-text,#f5f3ef);font-family:var(--font-body,"M PLUS Rounded 1c",sans-serif)
+
+  & * {box-sizing:border-box
+  }
+  /* lab chrome. It must never move the design - the stage below is the only sized thing. */
+  & .lab {font-family:var(--font-mono,"IBM Plex Mono",monospace);font-size:11px;line-height:1.7;
+    color:var(--color-silver,#a3a19d)
+  }
+  & .bar {position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+    padding:10px 22px;background:var(--color-panel-solid,#1c1a18);
+    border-bottom:1px solid var(--color-line-soft,rgba(255,255,255,.1))
+  }
+  & .bar button {background:none;border:1px solid var(--color-line-soft,rgba(255,255,255,.1));
+    color:var(--color-silver,#a3a19d);font:11px var(--font-mono,monospace);padding:5px 12px;cursor:pointer
+  }
+  & .bar button[aria-pressed="true"] {background:var(--color-gold,#fbbf24);border-color:var(--color-gold,#fbbf24);
+    color:var(--color-panel-solid,#1c1a18)
+  }
+  & .key i {display:inline-block;width:22px;height:0;vertical-align:middle;margin:0 5px 0 12px
+  }
+  & .key .g {border-top:1px dashed rgba(251,191,36,.65)
+  }
+  & .key .w {border-top:1px dashed rgba(255,255,255,.28)
+  }
+  & .head {padding:46px 22px 4px
+  }
+  & .head h2 {margin:0;font-family:var(--font-mono,monospace);font-size:12px;font-weight:500;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--color-gold,#fbbf24)
+  }
+  & .head p {margin:6px 0 0;max-width:96ch
+  }
+  & .read {padding:10px 22px 0;white-space:pre
+  }
+  & .over {color:var(--color-gold-deep,#f59e0b)
+  }
+  & /* THE STAGE. Eve's own container: .wf { margin:0 auto; width:1140px
+  }
+  & - extract-5.md:42.
+     The 1351 setting is the field the handed reservation was measured in,
+  & kept as a toggle so
+     the overrun is visible rather than described. */
+  .stage {width:var(--er-col,1140px);margin:18px auto 0;max-width:96vw
+  }
+  /* the two reservations, drawn BEHIND the slot they reserve */
+  & .rsv {position:relative;z-index:0
+  }
+  & .rsv--ttl {font-size:0;line-height:0
+  }
+  & .rsv::before,
+  & .rsv::after {content:"";position:absolute;left:0;top:0;z-index:-1;pointer-events:none
+  }
+  & .rsv--ttl::before {width:838px;height:30px;border:1px dashed rgba(251,191,36,.65)
+  }
+  & .rsv--ttl::after {width:752px;height:28px;border:1px dashed rgba(255,255,255,.28)
+  }
+  & .rsv--blurb::before {width:1054px;height:45px;border:1px dashed rgba(251,191,36,.65)
+  }
+  & .rsv--blurb::after {width:820px;height:48px;border:1px dashed rgba(255,255,255,.28)
+  }
+  & body.no-rsv .rsv::before,
+  & body.no-rsv .rsv::after {display:none
+  }
+  /* the thumbnail placeholder. There is no artwork in this folder, so it is deliberately a flat
+     labelled box: a stand-in, never a design claim. Eve's own is a 240x180 photograph. */
+  & .er-thumb {background:var(--color-panel-solid,#1c1a18);
+    border:1px solid var(--color-line-soft,rgba(255,255,255,.1));
+    display:grid;place-items:center;font:10px var(--font-mono,monospace);letter-spacing:.12em;
+    color:var(--color-silver,#a3a19d)
+  }
+}
+</style>
+<div class="bar lab">
+  <span>column</span>
+  <button type="button" data-col="1140px" aria-pressed="true">1140 &middot; Eve</button>
+  <button type="button" data-col="1351px" aria-pressed="false">1351 &middot; the handed field</button>
+  <button type="button" id="tog" aria-pressed="true">reservations</button>
+  <span class="key"><i class="g"></i>handed: 838x30 / 1054x45<i class="w"></i>Eve blockout: 752x28 / 820x48</span>
+</div>
+
+<!-- ============================ VERSION A ============================ -->
+<div class="head lab">
+  <h2>A &middot; Eve verbatim - the whole row is one link, the tag is a WORD</h2>
+  <p>Eve's own arrangement: the category sits inline before the date, 8px apart, inside the same
+     .date block. No chips, no boxes. Hover grows a 1px underline from 0% to 100% under the title.
+     The blurb is a graft and is marked as one.</p>
+</div>
+<div class="read lab" data-read="a"></div>
+<div class="stage" data-stage>
+  <ul class="er-list">
+
+    <li class="er-row er-row--media">
+      <a href="#">
+        <span class="er-date"><span class="er-cat">SHADERS</span>2026.03.14</span>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl" data-ttl>Compute Grass</h2></div>
+        <div class="rsv rsv--blurb"><p class="er-blurb" data-blurb>A compute shader that fills a
+          field with grass blades and culls every one of them on the GPU, so the CPU never finds
+          out how many blades there were.</p></div>
+        <span class="er-thumb">thumb 240x180</span>
+      </a>
+    </li>
+
+    <li class="er-row">
+      <a href="#">
+        <span class="er-date"><span class="er-cat">REVERSING</span>2026.02.02</span>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl">Decompiling the Shaders of a 2004 Racing Game</h2></div>
+        <div class="rsv rsv--blurb"><p class="er-blurb">Pulling the shader bytecode out of a twenty
+          year old racing game and reading what the artists actually shipped, rather than what the
+          marketing screenshots promised.</p></div>
+      </a>
+    </li>
+
+    <li class="er-row">
+      <a href="#">
+        <span class="er-date"><span class="er-cat">GPU</span>2025.11.19</span>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl">2D Physics on the GPU</h2></div>
+        <div class="rsv rsv--blurb"><p class="er-blurb">Verlet integration in a fragment shader,
+          with the whole particle state living in two ping ponged render textures and not one byte
+          of it crossing back to the CPU.</p></div>
+      </a>
+    </li>
+
+  </ul>
+</div>
+
+<!-- ============================ VERSION B ============================ -->
+<div class="head lab">
+  <h2>B &middot; the same row with FILTERABLE tags</h2>
+  <p>Not a skin change. Eve's row is one link, and a chip that filters has to be a link too, so B
+     gives up the whole-row hit target to buy filterable tags. The chip is the existing
+     <b>tag-badge</b> component, reused, not rebuilt. The 8px gap is still Eve's.</p>
+</div>
+<div class="read lab" data-read="b"></div>
+<div class="stage" data-stage>
+  <ul class="er-list">
+
+    <li class="er-row er-row--media">
+      <div class="er-body">
+        <div class="er-strip">
+          <a class="tag-badge" href="#">Unity</a>
+          <a class="tag-badge" href="#">HLSL</a>
+          <a class="tag-badge" href="#">Compute</a>
+          <span class="er-date">2026.01.27</span>
+        </div>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl" data-ttl><a class="er-link" href="#">Procedural 3D Mask</a></h2></div>
+        <div class="rsv rsv--blurb"><p class="er-blurb" data-blurb>Building a mask out of signed
+          distance fields so the silhouette can be tuned with a handful of sliders instead of being
+          remodelled every time the design moves.</p></div>
+        <span class="er-thumb">thumb 240x180</span>
+      </div>
+    </li>
+
+    <li class="er-row">
+      <div class="er-body">
+        <div class="er-strip">
+          <a class="tag-badge" href="#">Unity</a>
+          <a class="tag-badge" href="#">Editor</a>
+          <span class="er-date">2025.09.05</span>
+        </div>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl"><a class="er-link" href="#">Sprite Baker 9000</a></h2></div>
+        <div class="rsv rsv--blurb"><p class="er-blurb">An editor tool that renders a rig from any
+          angle and bakes the frames into a sprite sheet, so nobody has to leave Unity to get a
+          sheet out of a model.</p></div>
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+<!-- ============================ VERSION C ============================ -->
+<div class="head lab">
+  <h2>C &middot; Eve's REAL row - date line, title, nothing else</h2>
+  <p>The only version with nothing grafted onto it. Eve, dimden and Klubnika all carry date +
+     title and no blurb; every blurb in this page type is an addition. Costs zero new CSS: it is
+     A with the paragraph deleted.</p>
+</div>
+<div class="read lab" data-read="c"></div>
+<div class="stage" data-stage>
+  <ul class="er-list">
+
+    <li class="er-row er-row--media">
+      <a href="#">
+        <span class="er-date"><span class="er-cat">SHADERS</span>2026.03.14</span>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl" data-ttl>Compute Grass</h2></div>
+        <span class="er-thumb">thumb 240x180</span>
+      </a>
+    </li>
+
+    <li class="er-row">
+      <a href="#">
+        <span class="er-date"><span class="er-cat">REVERSING</span>2026.02.02</span>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl">Decompiling the Shaders of a 2004 Racing Game</h2></div>
+      </a>
+    </li>
+
+    <li class="er-row">
+      <a href="#">
+        <span class="er-date"><span class="er-cat">GPU</span>2025.11.19</span>
+        <div class="rsv rsv--ttl"><h2 class="er-ttl">2D Physics on the GPU</h2></div>
+      </a>
+    </li>
+
+  </ul>
+</div>
+</div>

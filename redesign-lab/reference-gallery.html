@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-store">
+<title>Reference Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#070C23;--night2:#0a1030;--panel:#0d1533;
+  --gold:#F3B53C;--glow:#FFE8B0;--text:#F5F3EF;--muted:#9aa3bd;--line:rgba(255,255,255,.09);
+  --S:#F3B53C;--A:#7ee0b8;--B:#7fb2ff;--C:#c8a3ff;--F:#ff8a8a;--ref:#9aa3bd;
+}
+@layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+body{
+  background:radial-gradient(120% 70% at 82% -8%,#111c42 0%,transparent 55%),
+             linear-gradient(180deg,#070C23,#0a1030 60%,#070C23);
+  color:var(--text);font-family:"IBM Plex Mono",monospace;min-height:100vh;
+  padding:clamp(2rem,5vw,4rem) clamp(1rem,4vw,3rem) 4rem;line-height:1.6;
+}
+.wrap{max-width:82rem;margin:0 auto}
+a.home{color:var(--muted);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
+a.home:hover{color:var(--gold)}
+h1{font-family:"Playfair Display",serif;font-weight:600;font-size:clamp(2rem,5vw,2.7rem);margin:.8rem 0 .5rem}
+.lead{color:var(--muted);font-size:.84rem;max-width:52rem}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.2rem 0 .3rem}
+.lg{font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);
+  border-radius:999px;padding:.2rem .6rem;display:flex;align-items:center;gap:.4rem;color:var(--muted)}
+.dot{width:.55rem;height:.55rem;border-radius:50%}
+
+/* filter bar */
+.filterwrap{position:sticky;top:0;z-index:20;margin:1.4rem 0 .4rem;padding:.9rem 0 .8rem;
+  background:linear-gradient(180deg,#070C23 70%,rgba(7,12,35,.85));backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line)}
+.filterhead{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.6rem}
+.filterhead .t{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.filterhead .t::before{content:"/ "}
+.filterhead .count{font-size:.68rem;color:var(--muted)}
+.filterhead .clear{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  background:none;border:1px solid var(--line);border-radius:999px;padding:.15rem .55rem;cursor:pointer;
+  display:none}
+.filterhead .clear.show{display:inline-block}
+.filterhead .clear:hover{color:var(--gold);border-color:var(--gold)}
+#filterbar{display:flex;flex-wrap:wrap;gap:.4rem;max-height:6.2rem;overflow-y:auto}
+.filt{font-size:.66rem;letter-spacing:.02em;color:var(--muted);background:rgba(255,255,255,.04);
+  border:1px solid var(--line);border-radius:999px;padding:.22rem .6rem;cursor:pointer;
+  transition:.15s;white-space:nowrap}
+.filt .c{opacity:.5;margin-left:.3rem}
+.filt:hover{color:var(--text);border-color:var(--muted)}
+.filt.on{background:var(--gold);color:var(--night);border-color:var(--gold);font-weight:500}
+.filt.on .c{opacity:.7}
+
+h2{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);
+  margin:2.4rem 0 1rem;display:flex;align-items:center;gap:.7rem}
+h2::before{content:"/"}
+h2 .n{color:var(--muted);letter-spacing:.05em;font-size:.62rem;text-transform:none}
+h2.empty,section.empty{display:none}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(20rem,1fr));gap:1.4rem}
+.card{background:linear-gradient(180deg,var(--panel),#0a1130);border:1px solid var(--line);
+  border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.card.hide{display:none}
+.card.cut{display:none}
+.wrap.show-cut .card.cut:not(.hide){display:flex}
+.card.cut .tier{opacity:.5}
+#tier-cut{display:none}
+.wrap.show-cut #tier-cut{display:block}
+.shot{position:relative;aspect-ratio:16/12;overflow:hidden;background:#05091a;border-bottom:1px solid var(--line)}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform .5s ease}
+.wrap.desat .shot img{filter:grayscale(1)}
+.card:hover .shot img{transform:scale(1.03)}
+.tier{position:absolute;top:.55rem;left:.55rem;z-index:2;font-weight:600;font-size:.72rem;
+  min-width:1.7rem;height:1.7rem;padding:0 .35rem;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--night)}
+.tier.S{background:var(--S)}.tier.A{background:var(--A)}.tier.B{background:var(--B)}
+.tier.C{background:var(--C)}.tier.F{background:var(--F)}.tier.ref{background:var(--ref)}
+.tier.u{background:#46507a;color:#e7ebff;font-weight:500}
+.flag{position:absolute;top:.55rem;right:.55rem;z-index:2;font-size:.55rem;letter-spacing:.08em;
+  text-transform:uppercase;background:rgba(0,0,0,.6);border:1px solid var(--line);color:var(--muted);
+  padding:.15rem .4rem;border-radius:3px}
+.body{padding:.9rem 1rem 1.1rem;display:flex;flex-direction:column;gap:.55rem;flex:1}
+.body h3{font-size:.95rem;font-weight:500}
+.url{font-size:.68rem;color:var(--gold);text-decoration:none;word-break:break-all;opacity:.85}
+.url:hover{text-decoration:underline}
+.tags{display:flex;flex-wrap:wrap;gap:.3rem}
+.tg{font-size:.6rem;letter-spacing:.01em;color:#bcd0ff;background:rgba(127,178,255,.1);
+  border:1px solid rgba(127,178,255,.22);border-radius:4px;padding:.1rem .4rem;cursor:pointer;transition:.15s}
+.tg:hover{background:rgba(127,178,255,.2)}
+.tg.on{background:var(--gold);color:var(--night);border-color:var(--gold)}
+.obs{font-size:.74rem;color:#d7dcec}
+.obs b{color:var(--glow);font-weight:500}
+.rod{font-size:.74rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:.5rem;margin-top:.1rem}
+.rod b{color:var(--gold);font-weight:500}
+.noresult{display:none;color:var(--muted);font-size:.8rem;padding:2rem 0}
+.noresult.show{display:block}
+footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--line);color:var(--muted);font-size:.7rem;line-height:1.9}
+.fp{margin-top:.55rem}
+.fp summary{cursor:pointer;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);list-style:none}
+.fp summary::-webkit-details-marker{display:none}
+.fp summary:hover{text-decoration:underline}
+.fp img{width:100%;height:auto;margin-top:.4rem;border:1px solid var(--line);display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="/redesign-lab/">&larr; lab index</a>
+  <h1>Reference Gallery</h1>
+  <p class="lead"><b style="color:var(--glow)">Mine</b> = what I notice (style / spacing / color / motion).
+    <b style="color:var(--gold)">You</b> = your tier + read. The <span style="color:#bcd0ff">keyword tags</span> are the vocabulary
+    you'd hand me to <i>build</i> something like each site &mdash; tap any to filter, tap again to clear.</p>
+
+  <div class="legend">
+    <span class="lg"><span class="dot" style="background:var(--S)"></span>S keep/lead</span>
+    <span class="lg"><span class="dot" style="background:var(--A)"></span>A strong</span>
+    <span class="lg"><span class="dot" style="background:var(--B)"></span>B partial</span>
+    <span class="lg"><span class="dot" style="background:var(--C)"></span>C weak</span>
+    <span class="lg"><span class="dot" style="background:var(--F)"></span>F drop</span>
+    <span class="lg"><span class="dot" style="background:var(--ref)"></span>ref type/loader</span>
+    <span class="lg"><span class="dot" style="background:#46507a"></span>? untiered (revisit)</span>
+  </div>
+
+  <div class="filterwrap">
+    <div class="filterhead">
+      <span class="t">Filter by keyword <span style="color:var(--muted);letter-spacing:0;text-transform:none">(any match)</span></span>
+      <span><span class="count" id="count"></span> &nbsp;<button class="clear" id="clear">clear</button> &nbsp;<button class="clear" style="display:inline-block" onclick="var w=document.querySelector('.wrap');var on=w.classList.toggle('show-cut');this.textContent=on?'hide cut':'show cut (30)'">show cut (30)</button> &nbsp;<button class="clear" style="display:inline-block" onclick="var w=document.querySelector('.wrap');var on=w.classList.toggle('desat');this.textContent=on?'recolor':'desaturate'">desaturate</button></span>
+    </div>
+    <div id="filterbar"></div>
+  </div>
+
+  <div class="noresult" id="noresult">No sites match those keywords. <a class="url" href="#" onclick="event.preventDefault();clearAll()">clear filters</a></div>
+
+  <div id="tierroot">
+  <section id="subpages">
+    <h2>Sub-pages <span class="n">14 &mdash; page types, for wireframing our own surfaces</span></h2>
+    <p style="color:var(--muted);font-size:.78rem;margin:-.4rem 0 .9rem;max-width:70ch">
+      Not landing pages: the <i>other</i> page types these sites use &mdash; a projects index, an about page,
+      a post index, a post template, a gallery. Each maps to a surface we have to build.
+    </p>
+    <div class="grid">
+    <figure class="card" data-sub="1" data-tags="post-template two-column-sticky metadata-rail dotted-rules mono-labels article-column oversized-heading matted-figure italic-pullquote hairline-rules light-ground gradient-wash restraint font-sans">
+      <div class="shot"><span class="flag">post template</span><a href="references/captures/stripe-dev-post-full.jpg" target="_blank"><img src="references/captures/stripe-dev-post-screen1.jpg" alt="stripe.dev post template first screen"></a></div>
+      <div class="body">
+        <h3>stripe.dev &mdash; post template <span style="color:var(--gold);font-size:.62rem;letter-spacing:.1em">YOUR PICK</span></h3><a class="url" href="https://stripe.dev/blog/what-it-feels-like-building-with-stripe-projects" target="_blank">stripe.dev/blog/what-it-feels-like-building-with-stripe-projects</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The <b>post template</b> you picked, measured from its own CSS.
+          Title runs full width; below it the page splits into a <b>sticky metadata rail</b> (grid cols
+          1/7, pinned at a 60px sticky offset) and the article (cols 8/25, but its text clamped to 1/14
+          &mdash; so there is deliberate empty gutter to the RIGHT of the prose, the measure is not the
+          column). Rail rows are label|value grids closed by a <b>1px dotted rule</b>, with
+          <code>:last-child</code> killing the trailing one. Headings are 48px at &minus;2.88px tracking
+          and <i>lighter</i> than the body. Images sit on a padded backing mat. Prose links are marked by
+          a border-bottom that floods with the accent on hover. <b>No callouts, no blockquote CSS, no
+          figcaption, no footnotes</b> &mdash; the emphasised line in this very post is a plain italic
+          paragraph.</p>
+        <p class="rod"><b>You:</b> Post winner, without a doubt. Two columns with the left data
+          following when you scroll.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/stripe-dev-post-full.jpg" alt="stripe.dev post template full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="post-index article-grid framed-figure mono-labels hairline-rules dated-entries light-ground gradient-wash crosshair-marks font-sans font-mono-only">
+      <div class="shot"><span class="flag">post index</span><a href="references/captures/stripe-dev-bloglist-full.jpg" target="_blank"><img src="references/captures/stripe-dev-bloglist-screen1.jpg" alt="stripe.dev blog index first screen"></a></div>
+      <div class="body">
+        <h3>stripe.dev &mdash; post index</h3><a class="url" href="https://stripe.dev/blog" target="_blank">stripe.dev/blog</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The <b>post index</b> that feeds that template. Same hairline
+          language: a mono smallcaps zone label over a rule, then entries whose thumbnail is a line-art
+          diagram in a framed window rather than a photo. Category chips are small bracketed mono
+          tokens. Nothing is a card &mdash; there are no borders around the entries themselves, only the
+          rules between them, so the page reads as a printed contents page.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/stripe-dev-bloglist-full.jpg" alt="stripe.dev blog index full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="projects-index filter-chips thumbnail-grid mono-heading inner-scroller picture-frame works-dominant font-mono-only font-ibm-plex-mono">
+      <div class="shot"><span class="flag">projects index</span><a href="references/captures/sub-109-works-full.jpg" target="_blank"><img src="references/captures/sub-109-works-screen1.jpg" alt="sub-109-works first screen"></a></div>
+      <div class="body">
+        <h3>109ichiki &mdash; projects index</h3><a class="url" href="https://109ichiki.com/works" target="_blank">109ichiki.com/works</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The closest reference to a <b>projects page</b>. A huge mono <code>WORKS_</code> label with a barcode motif, one line of filter chips (all / illustration / original / fan work), then a plain thumbnail grid with a caption under each tile. No cards, no borders, no shadows &mdash; the images and the gaps do all the work, inside the site&#x2019;s fixed frame.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-109-works-full.jpg" alt="sub-109-works full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="about-page split-layout mono-heading portrait-panel inner-scroller font-mono-only font-ibm-plex-mono">
+      <div class="shot"><span class="flag">about</span><a href="references/captures/sub-109-profile-full.jpg" target="_blank"><img src="references/captures/sub-109-profile-screen1.jpg" alt="sub-109-profile first screen"></a></div>
+      <div class="body">
+        <h3>109ichiki &mdash; about</h3><a class="url" href="https://109ichiki.com/profile" target="_blank">109ichiki.com/profile</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> An <b>about page</b> as a split: oversized <code>PROFILE_</code> label and bio text on the left, a single artwork panel floating right on a wireframe grid, socials as small labelled buttons. Vast empty space below the fold rather than filler sections.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-109-profile-full.jpg" alt="sub-109-profile full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="post-index text-only list-layout fixed-column dated-entries retro-web font-bitmap font-pixel-nes font-russian-gothic font-dos-vga">
+      <div class="shot"><span class="flag">post index</span><a href="references/captures/sub-dimden-blog-full.jpg" target="_blank"><img src="references/captures/sub-dimden-blog-screen1.jpg" alt="sub-dimden-blog first screen"></a></div>
+      <div class="body">
+        <h3>dimden &mdash; post index</h3><a class="url" href="https://dimden.dev/blog" target="_blank">dimden.dev/blog</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A <b>post index</b> with no thumbnails at all: a stack of link-coloured titles, each with a small "POSTED ON &lt;date&gt;" line beneath. Pure text list in the fixed column &mdash; proof an index does not need cards.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-dimden-blog-full.jpg" alt="sub-dimden-blog full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="post-template article-column code-block fixed-column dated-entries retro-web font-bitmap font-pixel-nes font-russian-gothic font-dos-vga">
+      <div class="shot"><span class="flag">post template</span><a href="references/captures/sub-dimden-post-full.jpg" target="_blank"><img src="references/captures/sub-dimden-post-screen1.jpg" alt="sub-dimden-post first screen"></a></div>
+      <div class="body">
+        <h3>dimden &mdash; post template</h3><a class="url" href="https://dimden.dev/blog/13-optimizing-rendering-of-100k-html-nodes" target="_blank">dimden.dev/blog/13-optimizing-rendering-of-100k-html</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The <b>post template</b>: title, date line, then prose at a comfortable measure with inline images and a syntax-highlighted code block. Same fixed column as the home page, so the site never changes width between page types.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-dimden-post-full.jpg" alt="sub-dimden-post full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="about-page bordered-panels widget-stack fixed-column retro-web font-bitmap font-pixel-nes font-russian-gothic font-dos-vga">
+      <div class="shot"><span class="flag">about</span><a href="references/captures/sub-dimden-about-full.jpg" target="_blank"><img src="references/captures/sub-dimden-about-screen1.jpg" alt="sub-dimden-about first screen"></a></div>
+      <div class="body">
+        <h3>dimden &mdash; about</h3><a class="url" href="https://dimden.dev/about.html" target="_blank">dimden.dev/about.html</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> An <b>about page</b> built from stacked bordered panels &mdash; a portrait box, then short first-person paragraphs each in its own frame, over a photographic background. Personality through framing rather than typography.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-dimden-about-full.jpg" alt="sub-dimden-about full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="gallery-grid uniform-grid tilde-headers fixed-backdrop twilight-palette one-screen">
+      <div class="shot"><span class="flag">character / gallery grid</span><a href="references/captures/sub-harumaki-chara-full.jpg" target="_blank"><img src="references/captures/sub-harumaki-chara-screen1.jpg" alt="sub-harumaki-chara first screen"></a></div>
+      <div class="body">
+        <h3>harumaki &mdash; character / gallery grid</h3><a class="url" href="https://harumakigohan.com/chara" target="_blank">harumakigohan.com/chara</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A <b>uniform avatar grid</b> under a tilde-wrapped ~CHARACTERS~ header, sitting on the same fixed sky as the home page. One screen, evenly spaced tiles &mdash; the one place this site uses a strict grid, and it works because the ground behind it is atmospheric.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-harumaki-chara-full.jpg" alt="sub-harumaki-chara full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="about-page tilde-headers centered-minimal fixed-backdrop twilight-palette one-screen">
+      <div class="shot"><span class="flag">about</span><a href="references/captures/sub-harumaki-profile-full.jpg" target="_blank"><img src="references/captures/sub-harumaki-profile-screen1.jpg" alt="sub-harumaki-profile first screen"></a></div>
+      <div class="body">
+        <h3>harumaki &mdash; about</h3><a class="url" href="https://harumakigohan.com/profile" target="_blank">harumakigohan.com/profile</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> An <b>about page</b> that is almost nothing: a ~PROFILE~ tilde header, a small centred block of text, a row of social icons, and an enormous amount of sky. The restraint is the statement.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-harumaki-profile-full.jpg" alt="sub-harumaki-profile full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="event-list dated-entries long-scroll tilde-headers fixed-backdrop line-art">
+      <div class="shot"><span class="flag">event list</span><a href="references/captures/sub-harumaki-live-full.jpg" target="_blank"><img src="references/captures/sub-harumaki-live-screen1.jpg" alt="sub-harumaki-live first screen"></a></div>
+      <div class="body">
+        <h3>harumaki &mdash; event list</h3><a class="url" href="https://harumakigohan.com/live" target="_blank">harumakigohan.com/live</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> An <b>event list</b>: ~EVENT~ header then dated entries down a narrow column, each with line-art or a poster, over the fixed sky. Long scroll built from one repeating entry shape.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-harumaki-live-full.jpg" alt="sub-harumaki-live full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="gallery-page three-column left-nav right-sidebar bordered-panels neocities internet-core font-mono-only font-courier">
+      <div class="shot"><span class="flag">gallery page</span><a href="references/captures/sub-whey-gallery-full.jpg" target="_blank"><img src="references/captures/sub-whey-gallery-screen1.jpg" alt="sub-whey-gallery first screen"></a></div>
+      <div class="body">
+        <h3>whey-isolate &mdash; gallery page</h3><a class="url" href="https://whey-isolate.neocities.org/Gallery" target="_blank">whey-isolate.neocities.org/Gallery</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A <b>gallery page</b> in the classic three-column shell: nav list left, framed content centre, sidebar right. Photographs are introduced with a sentence and stacked in the centre column rather than tiled &mdash; a reading gallery, not a grid.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-whey-gallery-full.jpg" alt="sub-whey-gallery full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="post-template three-column article-column left-nav bordered-panels neocities internet-core font-mono-only font-courier">
+      <div class="shot"><span class="flag">post template</span><a href="references/captures/sub-whey-post-full.jpg" target="_blank"><img src="references/captures/sub-whey-post-screen1.jpg" alt="sub-whey-post first screen"></a></div>
+      <div class="body">
+        <h3>whey-isolate &mdash; post template</h3><a class="url" href="https://whey-isolate.neocities.org/posts/2024-04-20-The-Pride-Morse-Manifesto.html" target="_blank">whey-isolate.neocities.org/posts/2024-04-20-The-Prid</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A <b>long post</b> in the same three-column shell: title, date, then a long article with inline images, over a starfield. The chrome never changes between index and article &mdash; only the middle column&#x2019;s content does.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-whey-post-full.jpg" alt="sub-whey-post full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="about-page profile-art widget-stack pixel-art neocities internet-core diorama font-bitmap font-custom-face">
+      <div class="shot"><span class="flag">about</span><a href="references/captures/sub-cinni-about-full.jpg" target="_blank"><img src="references/captures/sub-cinni-about-screen1.jpg" alt="sub-cinni-about first screen"></a></div>
+      <div class="body">
+        <h3>cinni &mdash; about</h3><a class="url" href="https://cinni.net/about.html" target="_blank">cinni.net/about.html</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> An <b>about page</b> as a scrapbook: profile panel with a full-body illustration, a "what&#x2019;s in my bag" object spread, socials as pixel buttons, site awards. Information as collected objects rather than prose.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-cinni-about-full.jpg" alt="sub-cinni-about full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-sub="1" data-tags="gallery-page sparse-grid one-screen pixel-art neocities internet-core font-bitmap font-custom-face">
+      <div class="shot"><span class="flag">art index</span><a href="references/captures/sub-cinni-art-full.jpg" target="_blank"><img src="references/captures/sub-cinni-art-screen1.jpg" alt="sub-cinni-art first screen"></a></div>
+      <div class="body">
+        <h3>cinni &mdash; art index</h3><a class="url" href="https://cinni.net/art/" target="_blank">cinni.net/art/</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A deliberately <b>sparse art index</b>: a few framed pieces hung on a patterned wall with hand-drawn garlands, one screen, no pagination. The room metaphor continues from the home page.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/sub-cinni-art-full.jpg" alt="sub-cinni-art full page"></details>
+      </div>
+    </figure>
+</div>
+  </section>
+</div>
+
+  <!-- ===================== S ===================== -->
+  <section><h2>S tier <span class="n">keep, lead the direction</span></h2>
+  <div class="grid">
+    <figure class="card" data-tags="light-ground gradient-wash construction-lines crosshair-marks mono-labels bracketed-tags hairline-rules big-typography framed-figure line-art-diagram ticker-band engineered-ui technical editorial restraint clean-sans font-sans font-mono-only">
+      <div class="shot"><span class="tier S">S</span><span class="flag">verified capture</span><a href="references/captures/stripe-dev-home-full.jpg" target="_blank"><img src="references/captures/stripe-dev-home-screen1.jpg" alt="stripe.dev first screen"></a></div>
+      <div class="body">
+        <h3>stripe.dev</h3><a class="url" href="https://stripe.dev/" target="_blank">stripe.dev</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A corporate dev-relations site built like a <b>plotter drawing</b>.
+          Everything is drawn with hairlines: nav items are bracketed mono tokens (<code>[B] BLOG</code>),
+          sections are announced by a slash-prefixed mono smallcaps label over a rule
+          (<code>/ FEATURED POST</code>), and small <b>+ crosshair registration marks</b> sit at the grid
+          intersections so the construction lines are part of the artwork. Figures are line-art diagrams
+          inside framed windows captioned <code>[ FIG. 1 ]</code>. Type is one narrow weight band &mdash;
+          headings and body are both light, headings just enormous with tight negative tracking. The
+          ground is a pale multi-hue gradient wash, not white. A statistics ticker runs across the
+          bottom. Sourced 2026-08-18: <b>the entire prose system is hairlines plus one loud accent used
+          only as a link-hover flood</b> &mdash; there is not a single callout box on the site.</p>
+        <p class="rod"><b>You:</b> S. Despite being made by a corporation its design feels human-crafted.
+          The posts pages are the core inspiration for our post section &mdash; the two columns with the
+          left data following as you scroll.</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/stripe-dev-home-full.jpg" alt="stripe.dev full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="twilight-palette collage-hero layered-art decor-overflow scroll-reveal long-scroll dreamy-illustration pink-black-alternating font-serif font-noto-serif-jp">
+      <div class="shot"><span class="tier u">?</span><span class="flag">verified capture</span><a href="references/captures/harumaki-gnep-full.jpg" target="_blank"><img src="references/captures/harumaki-gnep-screen1.jpg" alt="harumaki-gnep first screen"></a></div>
+      <div class="body">
+        <h3>harumaki &mdash; Gen&#x2019;ei EP</h3><a class="url" href="https://harumakigohan.com/gnep/" target="_blank">harumakigohan.com/gnep</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Hero is a <b>collage stage</b>: ~10 separately positioned art pieces (corner curtains, backdrop, a full-height girl, a circle motif, title, date) composing one screen rather than a single image. Below it a three-up intro row, then a ~1024px column alternating hot-pink and near-black grounds. Decorative flower layers overflow <i>across</i> section boundaries instead of sitting inside them. Ends in event maps and venue panels.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/harumaki-gnep-full.jpg" alt="harumaki-gnep full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="light-ground edge-rails dated-timeline carousel breakout-width long-scroll hand-drawn line-art font-serif font-zen-old-mincho font-noto-sans-jp">
+      <div class="shot"><span class="tier u">?</span><span class="flag">verified capture</span><a href="references/captures/harumaki-10-full.jpg" target="_blank"><img src="references/captures/harumaki-10-screen1.jpg" alt="harumaki-10 first screen"></a></div>
+      <div class="body">
+        <h3>harumaki &mdash; Otogi no Gingadan (10th)</h3><a class="url" href="https://harumakigohan.com/10/" target="_blank">harumakigohan.com/10</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The only <b>light-ground</b> harumaki site. Two fixed 106px illustrated <b>rails frame both page edges</b> the whole way down, with a ~900px column between them that occasionally breaks out wider. Content is a dated <b>timeline</b> (3.28, 4.26, 10.29 &hellip;) of releases, each entry a heading plus poster or photo, with a looping carousel and a star-field section near the end. 20,000px tall.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/harumaki-10-full.jpg" alt="harumaki-10 full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="neocities fixed-column widget-stack three-column irregular-gaps internet-core homemade retro-web font-mono-only font-courier">
+      <div class="shot"><span class="tier u">?</span><span class="flag">verified capture</span><a href="references/captures/whey-isolate-full.jpg" target="_blank"><img src="references/captures/whey-isolate-screen1.jpg" alt="whey-isolate first screen"></a></div>
+      <div class="body">
+        <h3>Whey&#x2019;s Lounge</h3><a class="url" href="https://whey-isolate.neocities.org/" target="_blank">whey-isolate.neocities.org</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Indie-web <b>widget stack</b>: a narrow fixed column of stacked boxes (updates, recent posts, contact, blinkies) in a three-column arrangement, with deliberately uneven gaps between blocks rather than a uniform rhythm. Bordered panels everywhere; the frame is the decoration.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/whey-isolate-full.jpg" alt="whey-isolate full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="neocities one-screen diorama fixed-stage internet-core pixel-art homemade retro-web font-bitmap font-custom-face">
+      <div class="shot"><span class="tier u">?</span><span class="flag">verified capture</span><a href="references/captures/cinni-full.jpg" target="_blank"><img src="references/captures/cinni-screen1.jpg" alt="cinni first screen"></a></div>
+      <div class="body">
+        <h3>cinni&#x2019;s dream home</h3><a class="url" href="https://cinni.net/" target="_blank">cinni.net</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A <b>diorama</b>: one fixed ~1125&times;740 stage centred in the viewport with no page scroll at all. Sidebar menu, a character portrait, little panelled widgets and a patterned wallpaper ground &mdash; the site is a room you look into rather than a page you travel down.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/cinni-full.jpg" alt="cinni full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="neocities one-screen maximalist internet-core homemade retro-web tiled-background font-serif font-times">
+      <div class="shot"><span class="tier u">?</span><span class="flag">verified capture</span><a href="references/captures/melonking-full.jpg" target="_blank"><img src="references/captures/melonking-screen1.jpg" alt="melonking first screen"></a></div>
+      <div class="body">
+        <h3>Melonking</h3><a class="url" href="https://melonking.net/" target="_blank">melonking.net</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Maximalist one-screen splash: tiled background, oversized layered wordmark and 3D-ish objects packed into a single view. Pure old-web personality, no scroll.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+        <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/melonking-full.jpg" alt="melonking full page"></details>
+      </div>
+    </figure>
+
+
+    <figure class="card" data-tags="twilight-palette hand-drawn watercolor organic-layout tilde-headers hand-lettered-logo carousel non-uniform-spacing fixed-backdrop parallax-sky cloud-partition cinema-band in-scene-identity font-serif font-trirong">
+      <div class="shot"><span class="tier S">S</span><a href="references/captures/harumaki-main-full.jpg" target="_blank"><img src="references/captures/harumaki-main-screen1.jpg" alt="harumaki-main first screen"></a></div>
+      <div class="body">
+        <h3>harumakigohan</h3><a class="url" href="https://harumakigohan.com/" target="_blank">harumakigohan.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The sky is a <b>fixed backdrop</b> (gradient + drifting cloud layers + a wide star sheet) that the content scrolls over &mdash; the same trick as a fixed canvas behind a page. No nav bar: just a hamburger, the hand-lettered wordmark and a falling figure, with a small social rail on the right edge. The NEWS carousel is deliberately <b>cropped by the fold</b> so a slice of card invites the scroll. Then a pink brushstroke cloud partition, DISCOGRAPHY floating album art on organic watercolor orb masks (not a grid), SERIES as two full-bleed cinema bands, and a long empty sky closing on a horizon strip. Short page (about 3 screens) with big air between few sections.</p>
+        <p class="rod"><b>You:</b> All palette + hand-drawn, very atmospheric. Mainly colors and spacing.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/harumaki-main-full.jpg" alt="harumaki-main full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="twilight-palette watercolor vertical-type fireworks dreamy-illustration poster-layout crescent-moon immersive-scene seam-bands wash-sections scroll-reveal tracklist-block long-scroll font-rounded-sans font-mplus-rounded">
+      <div class="shot"><span class="tier S">S</span><span class="flag">palette bible</span><a href="references/captures/harumaki-ndt-full.jpg" target="_blank"><img src="references/captures/harumaki-ndt-screen1.jpg" alt="harumaki-ndt first screen"></a></div>
+      <div class="body">
+        <h3>harumaki &mdash; Neo Dream Traveler</h3><a class="url" href="https://harumakigohan.com/ndt/" target="_blank">harumakigohan.com/ndt</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A <b>descent</b>: stacked flat colour washes (cyan &rarr; navy &rarr; pink) joined by ~160px <b>scalloped cloud seam bands</b> that act as the transitions, with character art placed across the seams. Content sits in a ~900px column: poster hero with release date, tracklist, a navy first-press-bonus section with DVD discs and art-book spreads, a six-card store-bonus grid, a live-announcement banner, a collab-cafe block, and a trailer grid of six video thumbnails. About 13 screens.</p>
+        <p class="rod"><b>You:</b> (microsite of your #1) &mdash; the palette anchor.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/harumaki-ndt-full.jpg" alt="harumaki-ndt full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="twilight-palette watercolor dreamy-illustration floating-panel warm-glow album-panel gradient-sky hand-drawn infinite-loop square-art-panel product-grid tracklist-block font-serif font-yu-mincho">
+      <div class="shot"><span class="tier S">S</span><span class="flag">palette bible</span><a href="references/captures/harumaki-ftr-full.jpg" target="_blank"><img src="references/captures/harumaki-ftr-screen1.jpg" alt="harumaki-ftr first screen"></a></div>
+      <div class="body">
+        <h3>harumaki &mdash; Futarino</h3><a class="url" href="https://harumakigohan.com/ftr/" target="_blank">harumakigohan.com/ftr</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Twilight ground with a big <b>square art panel</b> as the hero whose light streaks break out past the frame edge. Below: a two-character track list (NANA / LILI) on deep blue, an art-book teaser, and a six-card store-bonus grid of retailer variants. The whole page is wrapped in an infinite-scroll container, so it <b>loops</b> back to the top rather than ending.</p>
+        <p class="rod"><b>You:</b> (microsite) &mdash; palette anchor.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/harumaki-ftr-full.jpg" alt="harumaki-ftr full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-cinematic video-hero ignite-glow calligraphic-monogram minimal-chrome full-bleed moody-grade transport-ui fixed-backdrop photo-hero dark-panels product-grid full-screen-footer ambient-particles font-serif font-times font-custom-face">
+      <div class="shot"><span class="tier S">S</span><a href="references/captures/hana-borntobloom-full.jpg" target="_blank"><img src="references/captures/hana-borntobloom-screen1.jpg" alt="hana-borntobloom first screen"></a></div>
+      <div class="body">
+        <h3>hana.b-rave</h3><a class="url" href="https://hana.b-rave.tokyo/" target="_blank">hana.b-rave.tokyo</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Tour page (the Born to Bloom reference, not the current homepage). A <b>fixed two-layer photographic backdrop</b> with drifting petals sits behind everything; content scrolls over it as dark centred panels in a narrow column &mdash; news, schedule, ticket, then a 15-item merch <b>product grid</b>, a fanclub block with member photos and an "87 QUESTIONS" card set, and an attention section. Closes on a <b>full-screen</b> logo footer. About 13 screens.</p>
+        <p class="rod"><b>You:</b> Love the bloom + glow, and the transition-in-on-scroll animations.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/hana-borntobloom-full.jpg" alt="hana-borntobloom full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="neocities pixel-art widget-sidebar feature-slop cursor-companion moon-phase now-playing retro-web fixed-column widget-stack dense-layout font-bitmap font-pixel-nes font-russian-gothic font-dos-vga">
+      <div class="shot"><span class="tier S">S</span><span class="flag">most alive</span><a href="references/captures/dimden-full.jpg" target="_blank"><img src="references/captures/dimden-screen1.jpg" alt="dimden first screen"></a></div>
+      <div class="body">
+        <h3>dimden.dev</h3><a class="url" href="https://dimden.dev/" target="_blank">dimden.dev</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A <b>fixed 900px column</b> (never fluid) packed with widgets: profile panels, image boxes, now-playing, counters, buttons. Density inside a small frame is the whole effect &mdash; the opposite of a wide airy canvas. Two screens total.</p>
+        <p class="rod"><b>You:</b> So much feature-slop, playful, tons to interact with. You can tell they're a dev who likes indie/pixel art. Says a lot without explicit showcases.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/dimden-full.jpg" alt="dimden full page"></details>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== A ===================== -->
+  <section><h2>A tier <span class="n">strong</span></h2>
+  <div class="grid">
+
+    <figure class="card" data-tags="dark-cinematic emerge-from-shadow 3d-hero script-logo draw-in-icons pill-nav elegant-minimal cool-rim-light">
+      <div class="shot"><span class="tier A">A</span><a href="references/shots/stephanewillems.webp" target="_blank"><img src="references/shots/stephanewillems.webp" alt="stephanewillems"></a></div>
+      <div class="body">
+        <h3>stephanewillems</h3><a class="url" href="https://stephanewillems.be/" target="_blank">stephanewillems.be</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Near-black cinematic hero, a low-poly 3D head emerging from shadow with cool blue rim light, cursive logo, frosted-gray pill nav, cursive "Hello there!" + a small muted intro. Elegant, restrained, controlled negative space. The draw-in skill icons (your steal) are one page deeper.</p>
+        <p class="rod"><b>You:</b> Professional, elegant, stylish. The draw-in was the big feature you liked.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="enter-gate terminal-ui reticle-cards mono-type playful corner-brackets black-gate internet-core">
+      <div class="shot"><span class="tier A">A</span><span class="flag">gate + see clone</span><a href="references/shots/merodev.webp" target="_blank"><img src="references/shots/merodev.webp" alt="merodev"></a></div>
+      <div class="body">
+        <h3>merodev</h3><a class="url" href="https://merodev.net/" target="_blank">merodev.net</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Homepage is a stark black "Enter" gate (one hairline-boxed mono button). Honest but bare; the reticle-framed WORKS cards you like sit behind it &mdash; see our <a class="url" href="/redesign-lab/ref-merodev.html" target="_blank">ref-merodev.html</a> clone. The gate ritual is a big part of why it "screams internet."</p>
+        <p class="rod"><b>You:</b> Like a lot about it &mdash; colors + playful bits. Layout isn't amazing. It screams "internet," which you like.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="decoupled-drift entrance-reveals editorial-layout floating-motion apparel-grid intersection-reveal calm-motion japanese-apparel">
+      <div class="shot"><span class="tier A">A</span><span class="flag">unreachable</span><img src="references/shots/lowrysfarm.webp" alt="lowrysfarm unreachable"></div>
+      <div class="body">
+        <h3>LOWRYS FARM / dot-st</h3><a class="url" href="https://www.lowrysfarm.jp/" target="_blank">lowrysfarm.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Geo-blocked from here (HTTP2 error on both URLs). Can't screenshot yet &mdash; I'll try a proxy next pass. From the teardown: decorative elements <i>drift</i> while text holds still (decoupled drift), IntersectionObserver entrance reveals, editorial apparel layout. Source of your "one thing floats, the rest is calm" motion.</p>
+        <p class="rod"><b>You:</b> Good &mdash; like the layout and the movement.</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== B ===================== -->
+  <section><h2>B tier <span class="n">partial steal</span></h2>
+  <div class="grid">
+
+    <figure class="card" data-tags="neocities homemade terminal-panels halftone-texture content-warnings pixel-lights intentionally-rough terminal-ui fixed-column one-screen gateway">
+      <div class="shot"><span class="tier B">B</span><a href="references/captures/midnightsolarium-full.jpg" target="_blank"><img src="references/captures/midnightsolarium-screen1.jpg" alt="midnightsolarium first screen"></a></div>
+      <div class="body">
+        <h3>midnightsolarium</h3><a class="url" href="https://midnightsolarium.neocities.org/" target="_blank">midnightsolarium.neocities.org</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A one-screen <b>gateway</b>: a fixed ~700px column of stacked bordered panels (title, warning, enter link) with decorative lights floating outside the column. No scroll &mdash; the page is a door, not a document.</p>
+        <p class="rod"><b>You:</b> Old-school "homemade" vibe; leans almost intentionally bad / early-2000s. Like it, but B.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/midnightsolarium-full.jpg" alt="midnightsolarium full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-minimal kinetic-ring spotlight-reveal purple-halo multilingual-greeting rotating-text near-black minimal-hero">
+      <div class="shot"><span class="tier B">B</span><span class="flag">halo (tone down)</span><a href="references/shots/yannesidibe.webp" target="_blank"><img src="references/shots/yannesidibe.webp" alt="yannesidibe"></a></div>
+      <div class="body">
+        <h3>yannesidibe</h3><a class="url" href="https://yannesidibe.com/" target="_blank">yannesidibe.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Near-black with a faint purple radial glow top-center and one big rotating multilingual greeting ring. Otherwise empty. Confirms your read: the spotlight-reveal border (the part you took) is on the About page; the homepage is minimal. That purple halo is exactly the kind we're now toning down.</p>
+        <p class="rod"><b>You:</b> Took the cool element (the hover). Nothing else about the site is cool, tbh.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="nocturnal-serif fireworks single-accent serif-display arch-masks gold-accent water-reflection right-rail">
+      <div class="shot"><span class="tier B">B</span><span class="flag">404 / use clone</span><a href="references/shots/norikura.webp" target="_blank"><img src="references/shots/norikura.webp" alt="norikura 404"></a></div>
+      <div class="body">
+        <h3>norikura-hanabi <span style="color:#ff6b6b;font:11px ui-monospace,monospace">&middot; DEAD (404)</span></h3><a class="url" href="https://norikura-hanabi.com/" target="_blank">norikura-hanabi.com</a>
+        <p class="obs" style="color:#ff9b9b"><b>2026-08-14:</b> the site now returns HTTP 404. The capture is all that survives; it can never be re-sourced or verified again.</p>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Now returns a 404 &mdash; event site, looks taken down after the event. Use our <a class="url" href="/redesign-lab/ref-norikura.html" target="_blank">ref-norikura.html</a> clone as the stand-in: navy night + fireworks + single gold accent + serif display. That single-warm-accent restraint is the keeper.</p>
+        <p class="rod"><b>You:</b> Mainly the fireworks theme. Demote; move toward more artist-driven sites.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="ultra-minimal dark-hero magnetic-buttons rising-fill restraint near-black wave-fill quiet">
+      <div class="shot"><span class="tier B">B&minus;</span><a href="references/shots/dennissnellenberg.webp" target="_blank"><img src="references/shots/dennissnellenberg.webp" alt="dennissnellenberg"></a></div>
+      <div class="body">
+        <h3>dennissnellenberg</h3><a class="url" href="https://dennissnellenberg.com/" target="_blank">dennissnellenberg.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A single "&middot; Hello" in white on near-black &mdash; that's the whole hero. Beautiful restraint, but (as you said) almost too minimal to carry personality without the motion. Source of the rising-circle / wave-fill buttons + magnetic lerp, which live deeper in.</p>
+        <p class="rod"><b>You:</b> Alright. Too minimalist. B&minus;.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="brutalist grotesque-type preloader black-on-white motion-reveal stark-minimal percent-loader condensed-caps">
+      <div class="shot"><span class="tier B">B&minus;</span><a href="references/shots/chriskalafatis.webp" target="_blank"><img src="references/shots/chriskalafatis.webp" alt="chriskalafatis"></a></div>
+      <div class="body">
+        <h3>chriskalafatis</h3><a class="url" href="https://chriskalafatis.com/" target="_blank">chriskalafatis.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Captured mid-preload: bold uppercase grotesque "CHRIS KALAFATIS." + a "100%" counter, stark black-on-white. Brutalist-clean; the motion you liked is the reveal after this frame. Folded into your lerp/magnet mechanics.</p>
+        <p class="rod"><b>You:</b> Same as Dennis &mdash; like the motion. B&minus;.</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== C ===================== -->
+  <section><h2>C tier <span class="n">weak</span></h2>
+  <div class="grid">
+    <figure class="card" data-tags="two-column-sticky sliding-nav teal-on-navy timeline dev-portfolio fixed-left skill-pills readable">
+      <div class="shot"><span class="tier C">C</span><span class="flag">widely cloned</span><a href="references/shots/brittanychiang.webp" target="_blank"><img src="references/shots/brittanychiang.webp" alt="brittanychiang"></a></div>
+      <div class="body">
+        <h3>brittanychiang</h3><a class="url" href="https://brittanychiang.com/" target="_blank">brittanychiang.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark-navy two-column sticky portfolio: fixed left intro + vertical nav with a sliding underline, scrolling right column of about + experience timeline with teal keyword highlights and teal skill-tag pills. Very readable, very competent &mdash; and <i>very</i> widely cloned; this exact layout is nearly its own tell now. Source of the cursor vignette (the useful steal).</p>
+        <p class="rod"><b>You:</b> Kinda looks bad but it's ok. C.</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== F ===================== -->
+  <section><h2>F tier <span class="n">drop (art may still ref)</span></h2>
+  <div class="grid">
+    <figure class="card" data-tags="storybook-illustration cozy-nightmarket bright-palette game-landing lantern-fireflies magenta-logo firefly-forest game-art">
+      <div class="shot"><span class="tier F">F</span><a href="references/shots/minekosmarket.webp" target="_blank"><img src="references/shots/minekosmarket.webp" alt="minekosmarket"></a></div>
+      <div class="body">
+        <h3>Mineko's Night Market</h3><a class="url" href="https://minekosmarket.com/" target="_blank">minekosmarket.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Bright purple/white game landing: bubbly magenta logo, a cozy storybook hero (girl in a daruma hood + cat in a firefly forest), store badges, trailer embeds. The <i>site</i> is a generic bright launch page &mdash; but the <i>game's</i> art direction (cozy night-market, warm lanterns, fireflies) is the actual on-theme reference, not the chrome.</p>
+        <p class="rod"><b>You:</b> Nothing here matches &mdash; my idea, not yours. Game itself is an OK reference. F.</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== TYPE / BEHIND-LOADER ===================== -->
+  <section><h2>Rated from your screenshots <span class="n">real site sits behind a headless loader</span></h2>
+  <div class="grid">
+    <figure class="card" data-tags="blush-pink floating-artwork serif-display minimal-text anime-illustration generous-spacing works-index elegant-fonts">
+      <div class="shot"><span class="tier A">A&minus;</span><span class="flag">thumb=loader</span><a href="references/shots/potg.webp" target="_blank"><img src="references/shots/potg.webp" alt="potg"></a></div>
+      <div class="body">
+        <h3>potg.art</h3><a class="url" href="https://potg.art/" target="_blank">potg.art</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> (from your screenshot &mdash; headless only gets the loader) A pale blush-pink ground, a huge elegant serif "pickup works" watermark, and a row of anime illustration cards that <i>float</i> across the Works section (twilight water, mermaid, rain-street). Minimal nav (Instagram/Pixiv/X &middot; About/Works/Contact), almost no body text, a "Works 216" page with a gorgeous serif numeral. Soft, spacious, type-and-art-forward.</p>
+        <p class="rod"><b>You:</b> A&minus;. Main art floats around in the Works section (lots of illustrations); love the background + spacing, very little text, very nice fonts. Very good, but not very relevant to you.</p>
+      </div>
+    </figure>
+    <figure class="card" data-tags="pure-black 3d-objects draggable-windows retro-window-ui very-internet anime-illustration barcode-motif playful-space inner-scroller picture-frame floating-windows full-screen-footer works-dominant font-mono-only font-ibm-plex-mono">
+      <div class="shot"><span class="tier A">A</span><span class="flag">thumb=loader</span><a href="references/captures/109ichiki-full.jpg" target="_blank"><img src="references/captures/109ichiki-screen1.jpg" alt="109ichiki first screen"></a></div>
+      <div class="body">
+        <h3>109ichiki</h3><a class="url" href="https://109ichiki.com/" target="_blank">109ichiki.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The whole site scrolls <b>inside a picture frame</b> &mdash; a fixed border drawn 20px in from the viewport edge &mdash; and it drives an inner scroll container rather than the window. Black ground, mono category list, smoke/cloud artwork, little draggable-looking <b>"meme.webp" windows</b> floating over the art, and character illustrations on a wireframe grid. The works region dominates the page; it ends on a full-screen footer.</p>
+        <p class="rod"><b>You:</b> A. Contains 3D interactable objects and a very "internet" style; love the font, the use of space, and the 3D elements.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/109ichiki-full.jpg" alt="109ichiki full page"></details>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== REVISIT: DREAMY / TWILIGHT ===================== -->
+  <section><h2>Revisit &mdash; dreamy / twilight <span class="n">untiered, awaiting your read</span></h2>
+  <div class="grid">
+
+    <figure class="card" data-tags="watercolor purple-palette full-bleed-illustration rain-atmosphere gothic-cute immersive-scene melancholy social-rail">
+      <div class="shot"><span class="tier B">B</span><a href="references/shots/tuyu.webp" target="_blank"><img src="references/shots/tuyu.webp" alt="tuyu"></a></div>
+      <div class="body">
+        <h3>TUYU</h3><a class="url" href="https://tuyu.moe/" target="_blank">tuyu.moe</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The whole page is one full-bleed painterly watercolor: a gothic-cute twintail girl with a pink umbrella in a rain-soaked ruined city, violet/pink palette, dripping rain lines, rubble + flowers. Social-icon rail + JP/EN top-right. Immersive melancholy scene, zero conventional UI chrome &mdash; but denser/busier than harumaki's airy sky.</p>
+        <p class="rod"><b>You:</b> B. Similar to harumaki &mdash; love the hand-drawn watercolor aesthetic + colors, good spacing, opens to a nice scene. But the scene is a little too cluttered; doesn't feel "open"/"free" enough vs harumaki.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="minimal-editorial negative-space object-photography kraft-paper muted-palette vertical-sidebar restraint tactile">
+      <div class="shot"><span class="tier C">C</span><span class="flag">paper-morphism ref</span><a href="references/shots/yorushika.webp" target="_blank"><img src="references/shots/yorushika.webp" alt="yorushika"></a></div>
+      <div class="body">
+        <h3>Yorushika</h3><a class="url" href="https://yorushika.com/" target="_blank">yorushika.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Extreme restraint: pale gray-white ground, a single centered photograph of a kraft-paper string-tie envelope (button-and-string closure), teal vertical MENU sidebar, "SCROLL" tab. Tactile-object-forward, huge negative space, muted. A real-world paper-texture reference for your paper-morphism idea.</p>
+        <p class="rod"><b>You:</b> C. My favorite band, but not a good site match &mdash; they aim minimalist/plain here. My real inspiration is their stylized-3D music-video art + the music (e.g. the 盗作 "Plagiarism" album collage), not the website.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="maximalist anime-collage green-palette retro-web-popups win95-ui playful dense-illustration nostalgic-web">
+      <div class="shot"><span class="tier B">B</span><a href="references/shots/zutomayo.webp" target="_blank"><img src="references/shots/zutomayo.webp" alt="zutomayo"></a></div>
+      <div class="body">
+        <h3>ZUTOMAYO</h3><a class="url" href="https://zutomayo.net/" target="_blank">zutomayo.net</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dense maximalist anime-collage in a green-dominant palette: disco ball, a room packed with characters, retro Win95-style "News" popup windows with はい/いいえ buttons, a pixel Z motif floor, CRT TV. Chaotic, playful, nostalgic-web. The opposite pole from Yorushika's restraint.</p>
+        <p class="rod"><b>You:</b> B. Cool but a little too cluttered. Like the style + spacing, and the little fake popup windows &mdash; very internet-core.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-serif hand-drawn-scribble serif-nav vivid-albumart two-column masonry-grid monochrome-gallery illustrative-hero">
+      <div class="shot"><span class="tier B">B</span><a href="references/shots/eve.webp" target="_blank"><img src="references/shots/eve.webp" alt="eve"></a></div>
+      <div class="body">
+        <h3>Eve</h3><a class="url" href="https://eveofficial.com/" target="_blank">eveofficial.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Near-black with a hand-drawn scribble cart-logo + little scribble legs, centered serif nav, a vivid album-art hero (an eye bursting with ribbons/flowers), INFORMATION + DISCOGRAPHY two-column, and a grayscale masonry art grid at the foot. Dark + serif + scribble accents against saturated art.</p>
+        <p class="rod"><b>You:</b> B. Good spacing. Standout is their personal logo (from one of their MVs) &mdash; basically a really good favicon. (An identity move you could do with your own Zoe/festival art.)</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="elegant-editorial black-and-white serif-display carousel-hero pastoral-watercolor warm-sunset restraint dot-pagination">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/aimer.webp" target="_blank"><img src="references/shots/aimer.webp" alt="aimer"></a></div>
+      <div class="body">
+        <h3>Aimer</h3><a class="url" href="https://www.aimer-web.jp/" target="_blank">aimer-web.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Elegant black + white, cursive "Aimer" logo, centered high-contrast serif nav, a carousel hero (soft pastoral watercolor: a black cat in a golden sunset field), TOPICS list, MOVIE section. Editorial, restrained, warm-pastoral art carried by dot-pagination carousels.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-desaturated editorial decorative-logotype carousel serif-headings vertical-type moody modal-popup">
+      <div class="shot"><span class="tier C">C</span><a href="references/shots/reol.webp" target="_blank"><img src="references/shots/reol.webp" alt="reol"></a></div>
+      <div class="body">
+        <h3>Reol</h3><a class="url" href="https://reol.jp/" target="_blank">reol.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Cool-desaturated gray, a modal album-art popup (red/cyan neon locker art), big outlined vertical "Reol" display type on the left edge, a carousel of decorative-kanji logotype goods slides, huge serif "NEWS". Edgy, editorial, moody; the stylized 実辞学 logotype is the signature.</p>
+        <p class="rod"><b>You:</b> C. Not much to say.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="archive-grid dense-thumbnails muted-paper gallery-index minimal-nav year-filter monochrome-art illustration-archive">
+      <div class="shot"><span class="tier C">C</span><a href="references/shots/avogado6.webp" target="_blank"><img src="references/shots/avogado6.webp" alt="avogado6"></a></div>
+      <div class="body">
+        <h3>Avogado6</h3><a class="url" href="https://www.avogado6.com/" target="_blank">avogado6.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Textured off-white paper ground, minimal nav + year filters (2017&ndash;2026), then a massive dense grid of tiny artwork thumbnails organized by month. An archive-index approach: the work IS the layout, no chrome. Mostly monochrome manga panels with occasional color pops.</p>
+        <p class="rod"><b>You:</b> C. Not much here either.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="masonry-feed illustration-blog typewriter-branding stamp-logo mixed-media-cards character-sheets warm-illustration social-actions">
+      <div class="shot"><span class="tier B">B+</span><a href="references/shots/pomodorosa.webp" target="_blank"><img src="references/shots/pomodorosa.webp" alt="pomodorosa"></a></div>
+      <div class="body">
+        <h3>pomodorosa</h3><a class="url" href="https://pomodorosa.com/" target="_blank">pomodorosa.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Hand-drawn typewriter hero + a stamp-style circular logo, dark nav bar, then a Tumblr-like masonry feed mixing a bio card, album posts, character-design sheets, and YouTube embeds with heart/share actions. Warm illustration, cross-media maker identity, blog-as-showcase.</p>
+        <p class="rod"><b>You:</b> B+. Great bento-box layout for the projects &mdash; the B+ is just for the layout; nothing else I'd emulate.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="watercolor sidebar-nav editorial-blog soft-grading illustration-hero airy-light serif-headings nostalgic-scenery">
+      <div class="shot"><span class="tier u">?</span><span class="flag">shinkai grade</span><a href="references/shots/mateuszurbanowicz.webp" target="_blank"><img src="references/shots/mateuszurbanowicz.webp" alt="mateuszurbanowicz"></a></div>
+      <div class="body">
+        <h3>Mateusz Urbanowicz</h3><a class="url" href="https://mateuszurbanowicz.com/" target="_blank">mateuszurbanowicz.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Airy, light, watercolor-forward. Left vertical sidebar nav + recent posts, a gorgeous soft-graded watercolor hero (a Japanese house on a grassy hill, Shinkai-esque), classic editorial blog body. The truest hand-painted-scenery reference for warm nostalgic grading.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="pastel-paper hand-scribble tabbed-cards layered-paper floating-player minimal muted-lavender paper-texture">
+      <div class="shot"><span class="tier B">B+</span><span class="flag">paper-morphism ref</span><a href="references/shots/fumino.webp" target="_blank"><img src="references/shots/fumino.webp" alt="fumino"></a></div>
+      <div class="body">
+        <h3>Fumino</h3><a class="url" href="https://fumino.b-rave.tokyo/" target="_blank">fumino.b-rave.tokyo</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Pale lavender textured-paper ground, a small floating player-transport blob, hand-drawn purple scribble kana, and a news card built as a stack of <i>layered paper index cards</i> with tabs (all/media/live/music/goods). Same host as hana, totally different register. A direct paper-morphism precedent.</p>
+        <p class="rod"><b>You:</b> B+ or A-. Cute hand-drawn animations + choppy low-frame movement; love the line-boil and the colors, it's appealing.</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== REVISIT: DARK-CINEMATIC ===================== -->
+  <section><h2>Revisit &mdash; dark-cinematic <span class="n">untiered; several WebGL sites need a real-browser pass</span></h2>
+  <div class="grid">
+
+    <figure class="card cut" data-tags="dark-cinematic video-hero script-logo engraved-monogram hospitality moody-photography arch-motif minimal-chrome">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/deathandco.webp" target="_blank"><img src="references/shots/deathandco.webp" alt="deathandco"></a></div>
+      <div class="body">
+        <h3>Death &amp; Co</h3><a class="url" href="https://www.deathandcompany.com/" target="_blank">deathandcompany.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Full-bleed moody photo hero of the bar (arched windows, green-black, bottle wall, leather stools), centered white script "Death &amp; Co" + an engraved cocktail-coupe monogram, video pause control. Elegant hospitality-dark; the arch motif + engraved monogram are the signatures. Warm-on-dark restraint.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="pure-black line-art-diagram sacred-geometry thin-caps-type esoteric-cosmic minimal-nav monochrome starfield">
+      <div class="shot"><span class="tier u">?</span><span class="flag">motif idea</span><a href="references/shots/alchemist.webp" target="_blank"><img src="references/shots/alchemist.webp" alt="alchemist"></a></div>
+      <div class="body">
+        <h3>Alchemist</h3><a class="url" href="https://alchemist.dk/" target="_blank">alchemist.dk</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Pure-black starfield, thin all-caps "ALCHEMIST" + minimal nav, and a large intricate white line-art alchemical/astrological circle (sacred geometry, zodiac glyphs, orbiting rings). A strong "dark + intricate line-diagram" reference &mdash; could seed a lantern/constellation line-motif for us.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-editorial construction-lines grainy-gradient serif-italic-display blue-accent tracked-caps geometric-hero restraint">
+      <div class="shot"><span class="tier B">B</span><a href="references/shots/kaitonote.webp" target="_blank"><img src="references/shots/kaitonote.webp" alt="kaitonote"></a></div>
+      <div class="body">
+        <h3>Kaito Note</h3><a class="url" href="https://kaitonote.com/" target="_blank">kaitonote.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Black, with a golden-ratio construction-line grid, a grainy blue gradient orb half-revealed, tracked-caps micro-copy, and a big serif+italic bottom headline ("Synthesize Approaches, Refined <i>Digital</i> Experiences"). Dark-editorial; the construction geometry + grainy gradient are the moves.</p>
+        <p class="rod"><b>You:</b> B. Great shader effects &mdash; feels interactive.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="pure-black ultra-minimal mixed-type-name italic-serif big-typography footer-nav restraint quiet">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/lukebaffait.webp" target="_blank"><img src="references/shots/lukebaffait.webp" alt="lukebaffait"></a></div>
+      <div class="body">
+        <h3>Luke Baffait</h3><a class="url" href="https://lukebaffait.fr/" target="_blank">lukebaffait.fr</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Pure black, a huge "Luke <i>Baffait.</i>" name mixing sans + italic serif, a tiny italic tagline ("Quiet creator, bringing ideas to life, through motion, detail and softness"), footer nav + "V3.0". Ultra-minimal, quiet, type-as-hero &mdash; the mixed sans/serif name is the whole identity.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-brutalist corner-brackets reticle mono-type numbered-indices orange-accent technical-ui preloader">
+      <div class="shot"><span class="tier u">?</span><span class="flag">loader only</span><a href="references/shots/filipporuffini.webp" target="_blank"><img src="references/shots/filipporuffini.webp" alt="filipporuffini"></a></div>
+      <div class="body">
+        <h3>Filippo Ruffini</h3><a class="url" href="https://filipporuffini.com/" target="_blank">filipporuffini.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Caught mid-preload (5%), but the design language is clear: corner-bracket frames, a center target-reticle, "(07)/(03)" numbered indices, orange accent, mono type. Brutalist-technical HUD aesthetic &mdash; same family as merodev's reticle cards.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="pure-black condensed-grotesque lime-accent bold-type pill-button high-contrast playful didnt-render">
+      <div class="shot"><span class="tier u">?</span><span class="flag">refresh screen</span><a href="references/shots/fradesign.webp" target="_blank"><img src="references/shots/fradesign.webp" alt="fradesign"></a></div>
+      <div class="body">
+        <h3>FRA!</h3><a class="url" href="https://fradesign.it/" target="_blank">fradesign.it</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Headless landed on their custom "please refresh" screen &mdash; but even that is on-brand: bold condensed grotesque + a lime pill button on pure black. High-contrast, playful, loud type. Worth a real-browser pass to see the actual work.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== REVISIT: NOCTURNAL SERIF ===================== -->
+  <section><h2>Revisit &mdash; nocturnal serif <span class="n">untiered; dark + warm-accent + serif/mincho</span></h2>
+  <div class="grid">
+
+    <figure class="card cut" data-tags="dark-cinematic warm-glow architectural-photography night-photo hairline-buttons arch-motif atmospheric elegant">
+      <div class="shot"><span class="tier u">?</span><span class="flag">on-theme</span><a href="references/shots/nelu.webp" target="_blank"><img src="references/shots/nelu.webp" alt="nelu"></a></div>
+      <div class="body">
+        <h3>NELU (Osaka)</h3><a class="url" href="https://restaurant.nelu.osaka/" target="_blank">restaurant.nelu.osaka</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A night photo of an ornate historic brick entrance with a stained-glass transom and a <i>warm-glowing doorway</i> pooled in surrounding darkness, "NELU" sign, three hairline-bordered pill CTAs. This is almost literally your lantern principle &mdash; one warm pool of light in the dark. Source of the norikura kit's roll-hover buttons.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-nature aerial-photography mincho-type tategaki muted-teal full-bleed-photo elegant-minimal bottom-nav">
+      <div class="shot"><span class="tier C">C</span><a href="references/shots/toki.webp" target="_blank"><img src="references/shots/toki.webp" alt="toki"></a></div>
+      <div class="body">
+        <h3>TOKI (Mt. Fuji water)</h3><a class="url" href="https://toki-fuji.com/" target="_blank">toki-fuji.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Full-bleed dark aerial forest photo (deep teal canopy), thin vertical mincho tategaki copy top-right, an elegant "砥希 TOKI" mincho mark bottom-left, minimal bottom nav. Dark, quiet, nature-forward with vertical serif &mdash; a masterclass in "darkness as the canvas, one line of type."</p>
+        <p class="rod"><b>You:</b> C. A similar progression to yours &mdash; a calm water scene at the page bottom &mdash; but not interactive.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="refined-minimal muted-taupe thin-serif video-hero moody-lighting offset-gallery justified-serif luxury-editorial">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/amankyoto.webp" target="_blank"><img src="references/shots/amankyoto.webp" alt="amankyoto"></a></div>
+      <div class="body">
+        <h3>Aman Kyoto</h3><a class="url" href="https://www.aman.com/resorts/aman-kyoto" target="_blank">aman.com/resorts/aman-kyoto</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Muted taupe ground, thin elegant "AMAN" wordmark, a dark moody video hero (a monk meditating in a shadowed tatami room, a shaft of window light), justified serif intro, an offset/staggered photo gallery. The definition of quiet premium: restraint + one dark cinematic moment.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-warm brush-calligraphy ornamental-frame tategaki photo-hero gold-accent ticket-cta festival">
+      <div class="shot"><span class="tier B">B</span><a href="references/shots/sengoku.webp" target="_blank"><img src="references/shots/sengoku.webp" alt="sengoku"></a></div>
+      <div class="body">
+        <h3>Sengoku Hanabi</h3><a class="url" href="https://sengokuhanabi.com/" target="_blank">sengokuhanabi.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Warm-dark, full-bleed dusk-stadium photo, white brush-calligraphy title + samurai-helmet/fireworks emblem, a dark info panel inside a gold ornamental frame, vertical tategaki copy, a gold circular ticket button. Warm nocturnal festival with ornamental gold framing &mdash; feeds the norikura kit.</p>
+        <p class="rod"><b>You:</b> B. Great font and style, with good colors and accents throughout the page.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="night-fireworks photo-hero mincho-nav brush-logo translucent-panel magenta-accent gold-sparks festival">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/jinguhanabi.webp" target="_blank"><img src="references/shots/jinguhanabi.webp" alt="jinguhanabi"></a></div>
+      <div class="body">
+        <h3>Jingu Gaien Hanabi</h3><a class="url" href="https://www.jinguhanabi.com/" target="_blank">jinguhanabi.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Full-bleed night fireworks photo (red/gold bursts), thin mincho horizontal nav, brush logo, a dark translucent info panel with a magenta "1万発" accent circle + magenta CTA. Photographic bloom baked into the media &mdash; the "breathing = a looping video, not CSS" lesson.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="dark-portal three-column event-tiles night-fireworks brown-gold dated-updates brush-logo banner-ads">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/suwako.webp" target="_blank"><img src="references/shots/suwako.webp" alt="suwako"></a></div>
+      <div class="body">
+        <h3>Suwako Hanabi</h3><a class="url" href="https://www.suwako-hanabi.com/" target="_blank">suwako-hanabi.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> More utilitarian portal: black + red brush logo, a three-up row of fireworks event tiles, a brown/gold dated-update panel, retro sponsor blinkie banners, a full sitemap footer. Less art-directed than the others, but the three-column event grid + dated news is a real content pattern. Source of the norikura top-nav.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="literary-editorial warm-wood classic-serif pull-quotes award-laurels book-hero text-nav restraint">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/craigmod.webp" target="_blank"><img src="references/shots/craigmod.webp" alt="craigmod"></a></div>
+      <div class="body">
+        <h3>Craig Mod</h3><a class="url" href="https://craigmod.com/" target="_blank">craigmod.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Light and literary: a warm wood-floor photo of his book, award laurels, classic-serif pull-quotes (David Mitchell, William Gibson), a "CM" circle mark + a plain text-link nav. Editorial book-launch calm &mdash; proof that a text-forward serif page can feel crafted, not corporate.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="gradient-wash coral-to-blue serif-reading floating-cards texture-overlay immersive-reader bold-logo editorial">
+      <div class="shot"><span class="tier u">?</span><span class="flag">unusual</span><a href="references/shots/readsomethingwonderful.webp" target="_blank"><img src="references/shots/readsomethingwonderful.webp" alt="readsomethingwonderful"></a></div>
+      <div class="body">
+        <h3>Read Something Wonderful</h3><a class="url" href="https://readsomethingwonderful.com/" target="_blank">readsomethingwonderful.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A full-page coral&rarr;blue gradient wash over a faint handwritten-numeral texture, a bold logo, and serif article cards floating with body text bleeding through the gradient. Unusual and memorable &mdash; a reading experience as a colored atmosphere rather than a document.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="editorial-film blurred-hero serif-logo bold-sans offset-layout superscript-dates email-modal high-contrast">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/a24.webp" target="_blank"><img src="references/shots/a24.webp" alt="a24"></a></div>
+      <div class="body">
+        <h3>A24</h3><a class="url" href="https://a24films.com/" target="_blank">a24films.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Blurred film-still hero, centered "A24" serif logo, a vertical title list with "2026" superscripts, then offset product + podcast blocks in bold sans. High-contrast editorial film-brand: serif logo over bold grotesque body, lots of asymmetry. A restrained-but-loud model.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="pure-black seal-logo hand-drawn-mark ultra-minimal ryokan splash-screen restraint monochrome">
+      <div class="shot"><span class="tier u">?</span><span class="flag">splash only</span><a href="references/shots/tawaraya.webp" target="_blank"><img src="references/shots/tawaraya.webp" alt="tawaraya"></a></div>
+      <div class="body">
+        <h3>The Tawaraya</h3><a class="url" href="https://the-tawaraya.jp/" target="_blank">the-tawaraya.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Headless caught the splash: a tiny hand-drawn seal-style mark (京都 俵屋旅館) alone on pure black. Even the intro is pure restraint &mdash; a 300-year ryokan announcing itself with a single carved seal. Worth a real-browser pass for the full experience.</p>
+        <p class="rod"><b>You:</b> Cut. Kinda interesting page transitions and light/dark play &mdash; but not for me.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="pure-black elegant-serif negative-space serif-nav wave-logo luxury-minimal vertical-tab restraint">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/mahora.webp" target="_blank"><img src="references/shots/mahora.webp" alt="mahora"></a></div>
+      <div class="body">
+        <h3>MAHORA Nishinoya</h3><a class="url" href="https://mahora-stay.com/" target="_blank">mahora-stay.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Pure black with a thin serif nav + wave logo, a big elegant serif line ("Experience Serene Escape at MAHORA Nishinoya") bottom-left, a justified serif blurb, and a vertical reservation tab. The hero image didn't load headless, but the type + generous black negative space read as luxury-minimal.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== REVISIT: EDITORIAL / CRAFT / WONDER ===================== -->
+  <section><h2>Revisit &mdash; editorial, craft &amp; wonder <span class="n">untiered</span></h2>
+  <div class="grid">
+
+    <figure class="card cut" data-tags="dark-navy brush-logo mincho-nav water-reflection fireworks dated-news festival atmospheric">
+      <div class="shot"><span class="tier u">?</span><span class="flag">on-theme</span><a href="references/shots/nagaoka.webp" target="_blank"><img src="references/shots/nagaoka.webp" alt="nagaoka"></a></div>
+      <div class="body">
+        <h3>Nagaoka Hanabi</h3><a class="url" href="https://nagaokamatsuri.com/" target="_blank">nagaokamatsuri.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark navy, brush "長岡花火" logo + flower emblem, thin mincho nav, a very dark full-bleed hero of fireworks reflected on water, dated update list. The water-reflection-in-darkness is basically your Three.js about-scene as a website.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-elegant mincho-logo product-showcase gold-accent moody-photography stepper-nav luxury-craft warm-dark">
+      <div class="shot"><span class="tier C">C</span><span class="flag">nice interactions</span><a href="references/shots/helloteajp.webp" target="_blank"><img src="references/shots/helloteajp.webp" alt="helloteajp"></a></div>
+      <div class="body">
+        <h3>Hello Tea Japan</h3><a class="url" href="https://helloteajp.com/" target="_blank">helloteajp.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark near-black, elegant mincho "もしもし お茶" mark, a moody product photo (white cup on dark wood), a gold tea-tin card + gold Purchase button, a numbered stepper (sencha/gyokuro/tencha/matcha). Dark + gold + craft-product = your palette on a commerce page.</p>
+        <p class="rod"><b>You:</b> C. Would be F, but the button <i>interactions</i> earn it: the hamburger glows + splits on hover with the text switching to "open", and hovering the tea links makes the text float/come-together in a natural, satisfying way.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="near-black moody-atmospheric brush-logo red-accent mincho dark-photography pooled-light craft">
+      <div class="shot"><span class="tier u">?</span><span class="flag">pooled light</span><a href="references/shots/newsushism.webp" target="_blank"><img src="references/shots/newsushism.webp" alt="newsushism"></a></div>
+      <div class="body">
+        <h3>NEW SUSHISM</h3><a class="url" href="https://new-sushism.jp/" target="_blank">new-sushism.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Almost entirely black, a dimly-lit warm photo of a sushi artisan barely emerging from shadow, a thin mincho line + tiny tracked-caps English, a red/black brush logo. The most extreme "darkness is the default, one pool of warm light" example in the set.</p>
+        <p class="rod"><b>You:</b> Nice interactive movement + good glowing text near the beginning. (Untiered &mdash; drop a letter when you like.)</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="dark-portal brush-title gold-accent sponsor-grid circular-thumbnails fireworks sidebar-nav festival">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/itabashi.webp" target="_blank"><img src="references/shots/itabashi.webp" alt="itabashi"></a></div>
+      <div class="body">
+        <h3>Itabashi Hanabi</h3><a class="url" href="https://itabashihanabi.jp/" target="_blank">itabashihanabi.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark event portal: a phone-framed fireworks hero, brush title, a dark left sidebar nav with gold bullet dots, a sponsor-logo grid, gold ticket table, and circular photo thumbnails down the right edge. Utilitarian but the gold-on-dark + circular-thumb rail are liftable.</p>
+        <p class="rod"><b>You:</b> Cut. Kinda cute (like the phone-screen at the center), but a remove.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-blue cinematic-anime full-bleed-portrait crown-emblem twilight-blue comet-motif immersive-hero idol-site">
+      <div class="shot"><span class="tier A">A&minus;</span><span class="flag">twilight blue</span><a href="references/shots/hoshimachisuisei.webp" target="_blank"><img src="references/shots/hoshimachisuisei.webp" alt="hoshimachisuisei"></a></div>
+      <div class="body">
+        <h3>Hoshimachi Suisei</h3><a class="url" href="https://hoshimachi-suisei.jp/" target="_blank">hoshimachi-suisei.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A full-bleed deep-blue cinematic anime portrait (comet motifs, night grade), a crown emblem + logo centered, a lone yellow MENU button. Pure twilight-blue immersion &mdash; the celestial/comet palette right next to your festival-night.</p>
+        <p class="rod"><b>You:</b> A-. Open space, good fonts, great animations. Not a fan of the music, but a great site overall.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="dark-cozy game-landing sunset-art hand-lettered-logo purple-accent boat-motif warm-illustration atmospheric">
+      <div class="shot"><span class="tier u">?</span><span class="flag">north star</span><a href="references/shots/spiritfarer.webp" target="_blank"><img src="references/shots/spiritfarer.webp" alt="spiritfarer"></a></div>
+      <div class="body">
+        <h3>Spiritfarer</h3><a class="url" href="https://thunderlotusgames.com/games/spiritfarer/" target="_blank">thunderlotusgames.com/games/spiritfarer</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark navy/purple game page, but the hero art is the keeper: a cozy lantern-boat sailing a golden-sunset sea under soft clouds, hand-lettered "Spiritfarer" logo. This is one of your memory's art-direction north stars (cozy warm-lantern boat on dark water).</p>
+        <p class="rod"><b>You:</b> Cut. The game itself is fine; the site is a remove.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dreamy soft-gradient sky-clouds hand-lettered-logo warm-glow wonder serif-headings celestial zone-partitions big-exhale feed-grid font-sans font-lato">
+      <div class="shot"><span class="tier A">A&minus;</span><span class="flag">north star</span><a href="references/captures/thatskygame-full.jpg" target="_blank"><img src="references/captures/thatskygame-screen1.jpg" alt="thatskygame first screen"></a></div>
+      <div class="body">
+        <h3>Sky: Children of the Light</h3><a class="url" href="https://www.thatskygame.com/" target="_blank">thatskygame.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Built from <b>zones</b> rather than sections: an over-viewport video hero, then guide, awards, social and store zones separated by <b>200&ndash;400px of vertical air</b> &mdash; the largest breathing room of anything measured here. Contains a social feed grid and a sign-up close.</p>
+        <p class="rod"><b>You:</b> A-. Great vibe match. Love the clouds/noise/ink partitions that split the site into "zones" + the environment-forward landing. Ruined a bit by bad image quality, a weirdly-moving animated background, and big popups near screen center.</p>
+      <details class="fp"><summary>full page &#9662;</summary><img data-src="references/captures/thatskygame-full.jpg" alt="thatskygame full page"></details>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="literary-editorial slab-serif-masthead article-grid magenta-accent pull-quotes roundel-logo editorial-illustration dense-content">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/parisreview.webp" target="_blank"><img src="references/shots/parisreview.webp" alt="parisreview"></a></div>
+      <div class="body">
+        <h3>The Paris Review</h3><a class="url" href="https://www.theparisreview.org/" target="_blank">theparisreview.org</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Light literary masthead (bold slab-serif + eagle roundel), a photo hero with a black serif headline-list beside it, then an article-card grid mixing illustration + serif titles + pull-quotes, magenta subscribe accents. The gold standard for a dense-but-elegant editorial index.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="dark-editorial condensed-grotesque art-gallery video-grid bold-caps-headlines serif-body charcoal-ground high-contrast">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/gagosian.webp" target="_blank"><img src="references/shots/gagosian.webp" alt="gagosian"></a></div>
+      <div class="body">
+        <h3>Gagosian Quarterly</h3><a class="url" href="https://gagosian.com/quarterly/" target="_blank">gagosian.com/quarterly</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark charcoal art-editorial: bold condensed grotesque display over thin serif body, a large art-cover hero, "NOW AVAILABLE" ghost text, a grid of play-button video cards. High-contrast, gallery-serious &mdash; a dark version of the editorial grid.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="muted-mauve editorial-serif magazine-photography calm restraint minimal-logo soft-palette literary">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/thepoint.webp" target="_blank"><img src="references/shots/thepoint.webp" alt="thepoint"></a></div>
+      <div class="body">
+        <h3>The Point</h3><a class="url" href="https://thepointmag.com/" target="_blank">thepointmag.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A calm dusty-mauve ground, a circular "THE POINT" mark, a soft photo of an open magazine spread, and an elegant serif "The house of being" issue headline. Quiet, muted, magazine-as-object &mdash; a lovely restrained palette.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="gradient-ground dark-to-blue serif-display grotesque-logo editorial-studio minimal negative-space elegant">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/newgenre.webp" target="_blank"><img src="references/shots/newgenre.webp" alt="newgenre"></a></div>
+      <div class="body">
+        <h3>New Genre</h3><a class="url" href="https://newgenre.studio/" target="_blank">newgenre.studio</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A dark-brown&rarr;periwinkle-blue vertical gradient ground, bold grotesque logo, a big elegant serif studio statement, an Awwwards "Site of the Day" tab. The dark&rarr;twilight-blue gradient is right in your palette lane.</p>
+        <p class="rod"><b>You:</b> Cut &mdash; but it links to overmindlab.ai, which gets a <b>B-</b> from me: cool pixel-art game look, custom cursor, full commitment to the bit. (WebGL &mdash; needs a real-browser capture for its own card.)</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="white-minimal clean-sans portrait-hero watercolor-frame airy geometric-logo negative-space editorial">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/cinra.webp" target="_blank"><img src="references/shots/cinra.webp" alt="cinra"></a></div>
+      <div class="body">
+        <h3>CINRA</h3><a class="url" href="https://cinra.co.jp/" target="_blank">cinra.co.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Airy white, a minimal geometric "CINRA" logo, a B&amp;W portrait framed in a soft watercolor-cloud border, big clean sans "Inspire people." A light, calm editorial studio look &mdash; the watercolor photo-frame is a nice softening device.</p>
+        <p class="rod"><b>You:</b> Features other sites that could be added here &mdash; keeping it unrated for now.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="white-minimal seal-logo vertical-nav bold-mincho high-contrast dotted-connectors studio story-driven">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/kamitsubaki.webp" target="_blank"><img src="references/shots/kamitsubaki.webp" alt="kamitsubaki"></a></div>
+      <div class="body">
+        <h3>KAMITSUBAKI STUDIO</h3><a class="url" href="https://kamitsubaki.jp/" target="_blank">kamitsubaki.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Stark white, a bold black "神椿" octagonal seal-logo centered, a left vertical nav with dotted connectors, "MUSIC, ART, STORY, EXPERIENCE." The seal-as-hero + vertical-nav is a clean high-contrast studio identity (and "story" is in the DNA, like yours).</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="white-minimal tracked-caps splash-screen portfolio clean-sans negative-space illustrator minimal">
+      <div class="shot"><span class="tier u">?</span><span class="flag">splash only</span><a href="references/shots/akaneyabushita.webp" target="_blank"><img src="references/shots/akaneyabushita.webp" alt="akaneyabushita"></a></div>
+      <div class="body">
+        <h3>Akane Yabushita</h3><a class="url" href="https://akaneyabushita.com/" target="_blank">akaneyabushita.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Headless caught only the splash: "AKANE YABUSHITA PORTFOLIO WEBSITE" in tracked caps on white. Minimal illustrator identity; worth a real-browser pass for the actual work.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="light-minimal construction-lines ghost-type portfolio faint-reveal illustrator negative-space editorial">
+      <div class="shot"><span class="tier u">?</span><span class="flag">partial load</span><a href="references/shots/solani.webp" target="_blank"><img src="references/shots/solani.webp" alt="solani"></a></div>
+      <div class="body">
+        <h3>SOLANI</h3><a class="url" href="https://solani-illustration.xyz/" target="_blank">solani-illustration.xyz</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Caught mid-reveal: faint vertical construction lines + ghosted "SOLANI ILLUSTRATION PORTFOLIO" type over a barely-there image. The construction-line grid + ghost type is a nice reveal device; needs a real-browser pass for the finished state.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== TECH-ART / SHADER & ENGINEERED-UI ===================== -->
+  <section><h2>Tech-art / shader &amp; engineered-UI <span class="n">your craft-resource lane</span></h2>
+  <div class="grid">
+
+    <figure class="card" data-tags="white-personal project-grid pink-accent avatar-hero timeline tech-art friendly sectioned">
+      <div class="shot"><span class="tier C">C</span><span class="flag">structural model</span><a href="references/shots/acegikmo.webp" target="_blank"><img src="references/shots/acegikmo.webp" alt="acegikmo"></a></div>
+      <div class="body">
+        <h3>Freya Holm&eacute;r (acegikmo)</h3><a class="url" href="https://acegikmo.com/" target="_blank">acegikmo.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A technical artist's personal site done right: circular avatar, a grid of project cards (Shapes vector lib, math animations, Shader Basics videos, a D&amp;D show) with pink links, then "Smaller / Past Projects" year-timelines. This is almost exactly the structure you want &mdash; work-forward, personal, project-cards + timeline. Study this one.</p>
+        <p class="rod"><b>You:</b> C. Oddly enough I dig it &mdash; minimalist, not much to say. Not what I want, but I like it nonetheless.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-blue particle-hero shader-dissolve year-list mono-dates grid-bg editorial-tech pill-nav">
+      <div class="shot"><span class="tier C">C</span><span class="flag">your dissolve</span><a href="references/shots/maximeheckel.webp" target="_blank"><img src="references/shots/maximeheckel.webp" alt="maximeheckel"></a></div>
+      <div class="body">
+        <h3>Maxime Heckel</h3><a class="url" href="https://blog.maximeheckel.com/" target="_blank">blog.maximeheckel.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A dark blue-grid blog with a hero of white particles forming an &infin; that <i>dissolves into pixels</i> on one edge &mdash; literally your character-dissolve aesthetic as a site hero. Year-grouped article list with mono dates, pill nav. Shader-forward tech writing with real interactive playgrounds.</p>
+        <p class="rod"><b>You:</b> C. Feels like AI. I like their timeline, nothing else.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="purple-dark playful tutorial-grid tag-filters thumbnail-cards mascot-banner tech-art shader-content">
+      <div class="shot"><span class="tier B">C+</span><span class="flag">like this gallery</span><a href="references/shots/minionsart.webp" target="_blank"><img src="references/shots/minionsart.webp" alt="minionsart"></a></div>
+      <div class="body">
+        <h3>MinionsArt</h3><a class="url" href="https://minionsart.github.io/tutorials/" target="_blank">minionsart.github.io/tutorials</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Purple, playful, a mascot banner, then a tag-filtered card grid of shader tutorials (each with a preview thumbnail + tech tags URP/Shader Graph/Built-In + date). It's the exact tag-filtered card-grid pattern as this gallery &mdash; and warm/playful, not sterile. Great "tech content, still fun" reference.</p>
+        <p class="rod"><b>You:</b> C+. One of the reasons I'm starting my own. Love the card look (rounded edges), the layout, and the tags.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-teal cyan-accent rounded-panels blog avatar-logo pill-nav left-border-callout tech-art">
+      <div class="shot"><span class="tier C">C</span><a href="references/shots/cyanilux.webp" target="_blank"><img src="references/shots/cyanilux.webp" alt="cyanilux"></a></div>
+      <div class="body">
+        <h3>Cyanilux</h3><a class="url" href="https://www.cyanilux.com/" target="_blank">cyanilux.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark teal checkered ground, a circular angel-avatar logo, rounded pill nav, dark rounded content panels, a cyan left-border callout. Friendly shader-tutorial blog &mdash; dark + single accent + rounded content cards, close to your palette instincts.</p>
+        <p class="rod"><b>You:</b> C. Not a looker, but an inspiration. Nothing to take except maybe the self-portrait favicon idea.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="dark-charcoal flat-card-grid content-index minimal pink-links tech-art sectioned restraint">
+      <div class="shot"><span class="tier C">C</span><a href="references/shots/iquilezles.png" target="_blank"><img src="references/shots/iquilezles.png" alt="iquilezles"></a></div>
+      <div class="body">
+        <h3>Inigo Quilez</h3><a class="url" href="https://iquilezles.org/" target="_blank">iquilezles.org</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark charcoal, a centered name + socials, then flat card grids under Learning / Tools&amp;Projects / Personal (articles, shaders, shadertoy, graphtoy, demoscene...). Utterly no-frills but the sectioned flat-card index is a clean, fast way to present a big body of work.</p>
+        <p class="rod"><b>You:</b> C. Minimalist &mdash; they're the GOAT of SDF stuff, but not a site goal.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="light-editorial serif-book nested-toc moon-motif minimal lights-toggle tech-art restraint">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/thebookofshaders.webp" target="_blank"><img src="references/shots/thebookofshaders.webp" alt="thebookofshaders"></a></div>
+      <div class="body">
+        <h3>The Book of Shaders</h3><a class="url" href="https://thebookofshaders.com/" target="_blank">thebookofshaders.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Light and book-like: a grayscale moon hero, elegant italic serif title, a nested serif table-of-contents, and a "Turn off the lights" toggle top-right. Proof a tech resource can feel like a beautiful book. The lights-toggle is a lovely small interaction.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="light-technical tutorial-grid numbered-sections thumbnail-cards paw-logo clean tech-art content-index">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/catlikecoding.webp" target="_blank"><img src="references/shots/catlikecoding.webp" alt="catlikecoding"></a></div>
+      <div class="body">
+        <h3>Catlike Coding</h3><a class="url" href="https://catlikecoding.com/unity/tutorials/" target="_blank">catlikecoding.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Light, clean, a paw logo, numbered sections, and a grid of tutorial thumbnail cards (Hex Map, Custom SRP). Very legible technical index &mdash; the numbered-section + thumbnail-grid combo is a solid model for a tutorials/writeups area.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="light-minimal post-list thumbnail-rows search-sort black-header tech-art shader-content functional">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/ronjatutorials.webp" target="_blank"><img src="references/shots/ronjatutorials.webp" alt="ronjatutorials"></a></div>
+      <div class="body">
+        <h3>Ronja's Tutorials</h3><a class="url" href="https://www.ronja-tutorials.com/" target="_blank">ronja-tutorials.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A bold black title band, then a post <i>list</i> (title left, small preview thumbnail right) with search + newest/oldest toggle. The list-with-thumbnail-and-filter is the leaner cousin of the card grid &mdash; good when there are a lot of entries.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="light-minimal bold-grotesque yellow-accent overlapping-shapes interaction-design editorial playful-geometry restraint">
+      <div class="shot"><span class="tier u">?</span><span class="flag">WIG author</span><a href="references/shots/rauno.webp" target="_blank"><img src="references/shots/rauno.webp" alt="rauno"></a></div>
+      <div class="body">
+        <h3>Rauno Freiberg</h3><a class="url" href="https://rauno.me/" target="_blank">rauno.me</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Light gray, a white card with big clean grotesque copy overlapping a bright yellow circle. Minimal, confident, one playful shape. This is the author of the Vercel Web Interface Guidelines we adopted &mdash; the site itself is a masterclass in restraint + one bold move.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="pure-black terminal-ui code-editor mono line-numbers orange-accent ssh-commerce engineered-ui">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/terminalshop.webp" target="_blank"><img src="references/shots/terminalshop.webp" alt="terminalshop"></a></div>
+      <div class="body">
+        <h3>terminal.shop</h3><a class="url" href="https://www.terminal.shop/" target="_blank">terminal.shop</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> The whole storefront is a line-numbered code editor on pure black: `ssh terminal.shop` to buy coffee, tabs terminal/cron/api/readme/faq, orange cursor. Peak "engineered UI" &mdash; the merodev/dimden "screams internet" vein taken to its logical end.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="pure-black retro-terminal blinkies crt-motif dense-changelog dystopian industrial screams-internet">
+      <div class="shot"><span class="tier B">C+</span><a href="references/shots/mikeklubnika.webp" target="_blank"><img src="references/shots/mikeklubnika.webp" alt="mikeklubnika"></a></div>
+      <div class="body">
+        <h3>Mike Klubnika</h3><a class="url" href="https://mikeklubnika.com/" target="_blank">mikeklubnika.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Pure black with film-strip edges, mono retro-terminal type, an 88&times;31 blinkie row, a CRT-TV "featured" card + a grid of grungy 3D object thumbnails, and a dense dated "Registry" changelog. Dystopian-industrial indie-web &mdash; same soul as dimden/merodev but darker and grimier.</p>
+        <p class="rod"><b>You:</b> C+. Looks awful, and I LOVE it &mdash; very custom, very old-internet; the old-poly spinning items are fun. Nothing special otherwise.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="pure-black wireframe-3d gothic-logo webgl-hero music-consent dark-minimal edgy experimental">
+      <div class="shot"><span class="tier C">C</span><a href="references/shots/cortiz.webp" target="_blank"><img src="references/shots/cortiz.webp" alt="cortiz"></a></div>
+      <div class="body">
+        <h3>cortiz.dev</h3><a class="url" href="https://cortiz.dev/" target="_blank">cortiz.dev</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Pure black, a green/magenta WebGL wireframe torus-knot, a distressed gothic "CORTIZ" logo, a music-consent modal. Edgy experimental dev portfolio; caught mostly on the intro/consent screen &mdash; worth a real-browser pass.</p>
+        <p class="rod"><b>You:</b> C. They're OK &mdash; like the 3D cards with the stencil-buffer-ish effect (might just be a mesh, honestly). Cool.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="cloudflare-blocked shader-gallery tech-art community webgl dark-ui resource needs-real-browser">
+      <div class="shot"><span class="tier u">?</span><span class="flag">blocked</span><a href="references/shots/shadertoy.png" target="_blank"><img src="references/shots/shadertoy.png" alt="shadertoy"></a></div>
+      <div class="body">
+        <h3>Shadertoy</h3><a class="url" href="https://www.shadertoy.com/" target="_blank">shadertoy.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Headless hit a Cloudflare bot-check, so no capture. Known quantity though: the community shader gallery (dark UI, live-rendered thumbnail grid). Cataloged as a resource; grab a real screenshot from your browser if you want it in.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== REVISIT TAIL: EDITORIAL / CRAFT ===================== -->
+  <section><h2>Revisit tail &mdash; editorial / craft <span class="n">untiered</span></h2>
+  <div class="grid">
+
+    <figure class="card cut" data-tags="muted-olive editorial-serif object-photography roman-numeral-nav seasonal-index tracked-caps botanical restraint">
+      <div class="shot"><span class="tier u">?</span><span class="flag">gorgeous</span><a href="references/shots/fieldstudiesflora.webp" target="_blank"><img src="references/shots/fieldstudiesflora.webp" alt="fieldstudiesflora"></a></div>
+      <div class="body">
+        <h3>Field Studies Flora</h3><a class="url" href="https://fieldstudiesflora.com/" target="_blank">fieldstudiesflora.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A muted-olive full-bleed editorial photo (wildflowers in a three-footed concrete vase + shears), with an elegant left-side roman-numeral serif nav (I. Services / II. Store / ... V. Journal Spring-Summer-Fall-Winter / VI. Index). Deeply calm, seasonal, tactile. A beautiful restrained index model.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="blush-pink minimal-mark splash-screen studio centered-text motion-studio negative-space restraint">
+      <div class="shot"><span class="tier S">S+</span><span class="flag">STEAL</span><a href="references/shots/unseen.webp" target="_blank"><img src="references/shots/unseen.webp" alt="unseen"></a></div>
+      <div class="body">
+        <h3>Unseen Studio</h3><a class="url" href="https://unseen.co/" target="_blank">unseen.co</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Caught the splash: a blush-pink ground with a dark top band and a small centered "N / UNSEEN STUDIO&reg;" motion-studio blurb. Minimal and warm; needs a real-browser pass for the motion work that's the whole point.</p>
+        <p class="rod"><b>You:</b> <b style="color:var(--S)">S+. STEAL CANDIDATE.</b> A 3D scene that reacts to your mouse &mdash; wavy water that glows + ripples where you touch it; clicking a project dives you underwater with distortion; butterflies trail the cursor underwater; great button movement. Ties straight to your water-scene. More S-tier interaction work it links to: <a class="url" href="https://hubtown.co.in/projects" target="_blank">hubtown.co.in/projects</a>, <a class="url" href="https://www.experiencethebestyou.com/en-GB/" target="_blank">experiencethebestyou.com</a>, <a class="url" href="https://unseen.co/labs/blossom/" target="_blank">unseen.co/labs/blossom</a>.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="grayscale grainy-gradient abstract blurred studio loading monochrome minimal">
+      <div class="shot"><span class="tier u">?</span><span class="flag">partial load</span><a href="references/shots/studiodetails.webp" target="_blank"><img src="references/shots/studiodetails.webp" alt="studiodetails"></a></div>
+      <div class="body">
+        <h3>STUDIO DETAILS</h3><a class="url" href="https://details.co.jp/" target="_blank">details.co.jp</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Only a grainy grayscale abstract fold rendered (mid-load). Can't judge it yet &mdash; flagged for a real-browser pass.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="unreachable cert-error ryokan japanese-craft needs-real-browser hospitality placeholder revisit">
+      <div class="shot"><span class="tier u">?</span><span class="flag">cert error</span><a href="references/shots/suzumon.webp" target="_blank"><img src="references/shots/suzumon.webp" alt="suzumon"></a></div>
+      <div class="body">
+        <h3>Suzumon</h3><a class="url" href="https://suzumon.co.jp/en/" target="_blank">suzumon.co.jp/en</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Headless refused it (NET::ERR_CERT_INVALID). Cataloged as a known JP craft/hospitality reference; needs a real-browser pass (or it may just have an expired cert).</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <!-- ===================== REVISIT TAIL 2: KEEPERS ===================== -->
+  <section><h2>Revisit tail 2 &mdash; keepers <span class="n">the warm/interactive ones worth your look</span></h2>
+  <div class="grid">
+
+    <figure class="card" data-tags="storybook-illustration warm-cozy twilight-scenes painterly grid-gallery hand-drawn-logo glowing-nights wonder">
+      <div class="shot"><span class="tier B">B&minus;</span><span class="flag">very on-theme</span><a href="references/shots/jaimekim.webp" target="_blank"><img src="references/shots/jaimekim.webp" alt="jaimekim"></a></div>
+      <div class="body">
+        <h3>Jaime Kim</h3><a class="url" href="https://www.jaimekim.com/" target="_blank">jaimekim.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Possibly the most on-theme find in the whole set. A hand-drawn logo (painted dog) over a warm grid of cozy children's-book illustrations: twilight fishing, a night-market food stall glowing with string-lights, rooftop fairy-lights, fireflies at dusk, a snowy village. This is <i>your</i> aesthetic &mdash; warm glowing night scenes, festival lights, wonder &mdash; rendered as painting.</p>
+        <p class="rod"><b>You:</b> B-. Cute line boil, good layout, great name text.</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="watercolor organic-layout hand-lettered-logo bright-illustration scattered-grid doodle-accents editorial warm">
+      <div class="shot"><span class="tier B">B&minus;</span><a href="references/shots/mirandasofroniou.webp" target="_blank"><img src="references/shots/mirandasofroniou.webp" alt="mirandasofroniou"></a></div>
+      <div class="body">
+        <h3>Miranda Sofroniou</h3><a class="url" href="https://www.mirandasofroniou.com/" target="_blank">mirandasofroniou.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Hand-lettered script logo, a warm gouache/watercolor illustration portfolio laid out in an <i>organic scatter</i> (not a rigid grid) with little hand-drawn flower/parrot doodles floating between pieces. The scattered-organic layout is harumaki's orb-placement idea in a brighter register.</p>
+        <p class="rod"><b>You:</b> B-. Same as Jaime Kim.</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="dark-atmospheric brush-calligraphy mincho-nav gold-accent moody-photography seal-logo pooled-light craft">
+      <div class="shot"><span class="tier u">?</span><span class="flag">on-theme</span><a href="references/shots/manchinken.webp" target="_blank"><img src="references/shots/manchinken.webp" alt="manchinken"></a></div>
+      <div class="body">
+        <h3>Manchinken</h3><a class="url" href="https://manchinken.com/" target="_blank">manchinken.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A very dark, moody ramen-bowl photo with a white brush-calligraphy "萬珍軒" logo and a warm yellow steam-swirl accent, vertical mincho nav, a seal mark. Dark + gold + pooled warm light + craft &mdash; the <i>warm</i>-dark end of the spectrum (unlike the cold-premium ones you cut).</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="dark-mono bracketed-tags dense-list terminal-zine hacker-maker engineered-ui minimal techy">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/node.png" target="_blank"><img src="references/shots/node.png" alt="node"></a></div>
+      <div class="body">
+        <h3>N-O-D-E</h3><a class="url" href="https://n-o-d-e.net/" target="_blank">n-o-d-e.net</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Dark charcoal terminal-zine: mono type, a grid logo, and a dense list of bracketed-tag posts ([HW]/[CD]/[NO]) &mdash; hardware mods, Pi servers, "cyber dumps". The hacker/maker "internet" vein (dimden/merodev family) in a leaner, list-driven form.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card cut" data-tags="dark-hud neon-green mono-type corner-brackets numbered-indices engineered-ui orderbook technical">
+      <div class="shot"><span class="tier u">?</span><a href="references/shots/insilicoterminal.webp" target="_blank"><img src="references/shots/insilicoterminal.webp" alt="insilicoterminal"></a></div>
+      <div class="body">
+        <h3>Insilico Terminal</h3><a class="url" href="https://insilicoterminal.com/" target="_blank">insilicoterminal.com</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> Black + neon-green HUD: mono display type, a live orderbook widget, corner-bracketed stat tiles with numbered indices (001/002), a bracketed logo grid. Peak "engineered UI" &mdash; the reticle/HUD language (merodev's cousin) done with real data density.</p>
+        <p class="rod"><b>You:</b> &mdash;</p>
+      </div>
+    </figure>
+
+    <figure class="card" data-tags="white-mono node-graph feature-grid visual-programming thumbnail-cards technical minimal engineered">
+      <div class="shot"><span class="tier B">C+</span><span class="flag">node graphs</span><a href="references/shots/unitsoftware.webp" target="_blank"><img src="references/shots/unitsoftware.webp" alt="unitsoftware"></a></div>
+      <div class="body">
+        <h3>Unit</h3><a class="url" href="https://unit.software/" target="_blank">unit.software</a>
+        <div class="tags"></div>
+        <p class="obs"><b>Mine:</b> A white, mono visual-programming system; the landing is a 2-column grid of feature cards, each with a little <i>node-graph</i> thumbnail. Node-graph aesthetic front and center &mdash; directly in your shader-graph wheelhouse; a nice model for a technical feature index.</p>
+        <p class="rod"><b>You:</b> C+. Decent &mdash; I like the layout and the images.</p>
+      </div>
+    </figure>
+  </div></section>
+
+  <footer>
+    Captured headless (web-snapshot); viewport-top at 1440&times;2000. &nbsp;|&nbsp;
+    <b style="color:var(--glow)">82 cataloged</b> &mdash; 30 cut (hidden; tap "show cut" to review). &nbsp;|&nbsp;
+    <b>Still capturing</b> the references.md tail (JP craft, maker-vein portfolios, dark-technical cluster). &nbsp;|&nbsp;
+    <b>Need your real browser</b> (WebGL / gated / blocked): theirisk, igma, stabondar, quentinhocde, sundown, anzo, shadertoy, cortiz, the WebGL "twins" (igloo, obys, maxime.gl, GRIS, Garden Eight).
+  </footer>
+</div>
+
+<script>
+/* Reorganize all cards into tier sections (runs before the filter script). */
+(function(){
+  var order=[['S+','S+ &mdash; steal / lead'],['S','S &mdash; keep, lead'],['A','A &mdash; strong'],['A-','A- &mdash; strong'],['B+','B+'],['B','B'],['B-','B-'],['C+','C+'],['C','C'],['F','F &mdash; drop'],['?','Untiered &mdash; your call'],['CUT','Cut &mdash; not for me']];
+  var root=document.getElementById('tierroot'); if(!root) return;
+  var map={};
+  order.forEach(function(o){
+    var sec=document.createElement('section'); if(o[0]==='CUT') sec.id='tier-cut';
+    var h=document.createElement('h2'); h.innerHTML=o[1]+' <span class="n"></span>';
+    var g=document.createElement('div'); g.className='grid';
+    sec.appendChild(h); sec.appendChild(g); root.appendChild(sec);
+    map[o[0]]={sec:sec,grid:g,h:h,n:0};
+  });
+  function tierOf(c){
+    if(c.classList.contains('cut')) return 'CUT';
+    var t=c.querySelector('.tier'); if(!t) return '?';
+    var s=t.textContent.replace(/[−–—-]/g,'-').trim();
+    if(s===''||s==='T'||s==='?') return '?';
+    return s;
+  }
+  Array.prototype.slice.call(document.querySelectorAll('.card')).forEach(function(c){
+    if(c.getAttribute('data-sub')) return; /* sub-pages keep their own section */
+    var k=tierOf(c); var b=map[k]||map['?']; b.grid.appendChild(c); b.n++;
+  });
+  Array.prototype.slice.call(document.querySelectorAll('section')).forEach(function(s){ if(!root.contains(s)) s.remove(); });
+  order.forEach(function(o){ var b=map[o[0]]; if(b.n===0){ b.sec.remove(); return; } b.h.querySelector('.n').textContent=b.n+(o[0]==='CUT'?' hidden':''); });
+})();
+</script>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var active = new Set();
+  var counts = {};
+
+  // build per-card tag chips + tally counts
+  cards.forEach(function(card){
+    var tags = (card.getAttribute('data-tags')||'').split(/\s+/).filter(Boolean);
+    var box = card.querySelector('.tags');
+    tags.forEach(function(t){
+      counts[t] = (counts[t]||0)+1;
+      var b = document.createElement('button');
+      b.className = 'tg'; b.textContent = t; b.dataset.tag = t;
+      b.addEventListener('click', function(){ toggle(t); });
+      box.appendChild(b);
+    });
+  });
+
+  // build filter bar (sorted by count desc, then name)
+  var bar = document.getElementById('filterbar');
+  Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a] || a.localeCompare(b); }).forEach(function(t){
+    var b = document.createElement('button');
+    b.className='filt'; b.dataset.tag=t;
+    b.innerHTML = t + '<span class="c">'+counts[t]+'</span>';
+    b.addEventListener('click', function(){ toggle(t); });
+    bar.appendChild(b);
+  });
+
+  var countEl = document.getElementById('count');
+  var clearEl = document.getElementById('clear');
+  var noEl = document.getElementById('noresult');
+  clearEl.addEventListener('click', clearAll);
+  window.clearAll = clearAll;
+
+  function toggle(t){ if(active.has(t)) active.delete(t); else active.add(t); render(); }
+  function clearAll(){ active.clear(); render(); }
+
+  function render(){
+    var visible = 0;
+    cards.forEach(function(card){
+      var tags = (card.getAttribute('data-tags')||'').split(/\s+/);
+      var match = active.size===0 || tags.some(function(t){ return active.has(t); });
+      card.classList.toggle('hide', !match);
+      if(match) visible++;
+      // sync card chip highlight
+      card.querySelectorAll('.tg').forEach(function(c){ c.classList.toggle('on', active.has(c.dataset.tag)); });
+    });
+    // sync filter-bar chips
+    document.querySelectorAll('.filt').forEach(function(c){ c.classList.toggle('on', active.has(c.dataset.tag)); });
+    // hide empty sections
+    document.querySelectorAll('section').forEach(function(sec){
+      var any = sec.querySelector('.card:not(.hide)');
+      sec.classList.toggle('empty', !any);
+    });
+    // header state
+    if(active.size===0){ countEl.textContent=''; clearEl.classList.remove('show'); }
+    else { countEl.textContent = visible + ' / ' + cards.length + ' sites'; clearEl.classList.add('show'); }
+    noEl.classList.toggle('show', active.size>0 && visible===0);
+  }
+})();
+</script>
+<script>
+/* fp-lazy: full-page images load on first open. loading=lazy never fires for images inside a
+   <details> that starts closed, so the src is swapped in from data-src instead. */
+document.querySelectorAll('details.fp').forEach(function(d){
+  d.addEventListener('toggle',function(){
+    if(!d.open) return;
+    var i=d.querySelector('img[data-src]');
+    if(i){ i.src=i.getAttribute('data-src'); i.removeAttribute('data-src'); }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* tag-badge - the post tag / meta chip.
+   FINALIZED by Rod 2026-08-21: "Tags in general shouldnt be with doted lines like in the reference
+   we can use the tag badges we already have on the main site", then SQUARE over the live radius
+   when the conflict was put to him.
+
+   PROVENANCE: OURS. This is the live site's own `.post-tag`, _sass/base/_base.scss:247, carried
+   forward on Rod's instruction. It is NOT externally sourced and must never be filed as though it
+   were - the bench makes a thing ours, not sourced (see feedback-bench-is-ours-not-provenance).
+   Idea origin: ROD.
+
+   ONE DELIBERATE CHANGE from live: border-radius 0.5rem -> 0, per the 2026-08-11 shape pass
+   (square by default, round only by exception). Rod chose the shape pass over the live radius.
+
+   The dashed border this replaces in the blockouts was the GREYBOX PLACEHOLDER signal, not a
+   design choice. It got read as one, which is worth remembering when picking greybox conventions.
+
+   NOT YET TUNED: absolute font-size (blockout uses 11px so it sits in the greybox scale; live is
+   0.85em), and the hover/active states, which live inherits from _buttons.scss. */
+
+.tag-badge {
+  display: inline-block;
+  min-width: 2rem;
+  text-align: center;
+  /* the two colours resolved from the LIVE dark theme rather than approximated:
+       --btn-border-color = rgba(245,158,11,.2)   _sass/themes/_dark.scss:309   amber at 20%
+       --text-muted-color = rgba(232,224,212,.78) _sass/themes/_dark.scss:55    warm stone */
+  border: 1px solid var(--btn-border-color, rgba(245, 158, 11, 0.2));
+  border-radius: 0;
+  padding: 0 0.4rem;
+  line-height: 1.3rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.85em;
+  color: var(--text-muted-color, rgba(232, 224, 212, 0.78));
+}
+
+/* live has no text-transform - a tag prints the way it is written. Kept. */
+
+.tag-badge-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* HOVER + ACTIVE, added 2026-08-21. Rod: "tags dont behave the way they should with the hover
+   effects" - correct, and the reason is that the base rule in _base.scss:247 has no hover in it.
+   The live site's tag behaviour lives in three OTHER files, and there are two different hovers.
+   Rod picked the clean one.
+
+   TAKEN: %tag-hover, _sass/abstracts/_placeholders.scss:101
+     background + border-color both fill to --tag-hover, rgba(245,158,11,.15)  (_dark.scss:390)
+     colour goes to --link-color = --amber-400                                 (_dark.scss:297)
+     transition: background .35s ease-in-out
+   plus the :active scale from _sass/components/_buttons.scss:60.
+
+   NOT TAKEN: the _panel.scss:42 variant's hover. It is built on the glass mixin (blur 12px,
+   --bg-glass, --glass-shadow) and glass is precisely the tell the redesign replaces with paper.
+   Porting it would have imported the thing we are removing. */
+.tag-badge {
+  transition: background 0.35s ease-in-out;
+}
+
+.tag-badge:hover {
+  background: var(--tag-hover, rgba(245, 158, 11, 0.15));
+  border-color: var(--tag-hover, rgba(245, 158, 11, 0.15));
+  color: var(--link-color, #fbbf24);
+}
+
+.tag-badge:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+}

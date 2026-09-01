@@ -1,0 +1,72 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* stamp-callout — the TAKEAWAY block (final-picks: deliberately unique vs TL;DR).
+   PROVENANCE (Remixed): Rod-provided stamp CSS — the perforated edge is a radial-gradient
+   dot cutout repeated along an inset ring. Recolored amber-on-night in rework-harumaki.
+   --stamp-paper is the block's own paper color; the ::before dots MUST match it exactly,
+   which is why it is one local custom property and not two literals. */
+.stamp-callout {
+  /* BRIGHTER, OPAQUE, AND DERIVED FROM H1. Rod 2026-08-24: "lets brighten the stamp a bit as
+     well make it opaque and a darker version of the H1 color".
+     Was `--color-stamp-paper` #1e160e - rgb(30,22,14), a near-black warm brown that read as a
+     hole in the page. Now a 26% mix of the H1 orange with black: #401b01, which is the same hue
+     the heading ladder uses rather than a neighbouring brown, and light enough to read as paper.
+     DERIVED, not typed: `color-mix` keeps it tied to `--h1-color`, so if Rod retunes the
+     signature orange the stamp follows instead of drifting away from it.
+     Fully opaque on purpose - it sits over a live scene, and any alpha let the background
+     through and muddied both the paper and its perforated edge, which share this one value. */
+  --stamp-paper: color-mix(in srgb, var(--h1-color, #f86a03) 26%, #000);
+
+  position: relative;
+  background: var(--stamp-paper);
+  padding: 1.4rem 1.6rem;
+  margin: 1.9rem 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  color: color-mix(in srgb, var(--color-text) 92%, transparent);
+  max-width: 60ch;
+}
+
+.stamp-callout::before {
+  content: '';
+  position: absolute;
+  /* BOTTOM EDGE FLAT. Rod 2026-08-24: "remove the stamps bottom edge so its flat down there".
+     This layer is the perforation, and it only shows where it OVERHANGS the box - it sits behind
+     (`z-index:-1`) and the stamp's own background covers the middle. So pulling the bottom inset
+     from -7px to 0 removes the overhang there and nothing else: the torn fringe stays on the top
+     and both sides, and the bottom reads as a cut edge. Nothing about the dot pattern changed. */
+  inset: -7px -7px 0;
+  z-index: -1;
+  background: radial-gradient(transparent 0 3.5px, var(--stamp-paper) 4px);
+  background-size: 15px 15px;
+  background-position: -7px -7px;
+}
+
+.stamp-callout__title {
+  font-family: var(--font-display); /* T0-B: serif display */
+  color: var(--color-gold-deep);
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+}

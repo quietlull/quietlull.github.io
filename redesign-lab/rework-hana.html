@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Element REWORK - Hana (distinct shapes)</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<script src="/redesign-lab/lab-solo.js"></script>
+<style>
+/* ===== REWORK - HANA ===== editorial shape vocabulary: frame-draw cards, slap toggles (slide+pop),
+   live-pulse status, `//` search, slash labels, corner ribbon. Ambient: lava-bloom only (no floating particles - matches real hana). */
+:root{--fs:"Shippori Mincho",serif;--fm:"IBM Plex Mono",monospace}
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--text);font-family:var(--fs);overflow-x:hidden;line-height:1.6}
+body::before{display:none}
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--night);pointer-events:none;transition:opacity .5s}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(20px) brightness(.78) saturate(1.03)}
+.bg-1{opacity:1}.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+@keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+/* de-glow contrast: a dark reading scrim pools the bloom away from the text column (hero stays lit) */
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+/* Three.js scene canvas (self-injected) hidden in bloom mode; !important beats the bundle re-asserting its style */
+canvas:not(.bgcanvas){transition:opacity .5s}
+body.bloom-mode canvas:not(.bgcanvas){opacity:0!important}
+.hero .kick,.hero p,.lbl,.status,.stat .l,.foot,.tag{text-shadow:0 1px 6px rgba(0,0,0,.55)}
+.hero h1{text-shadow:0 2px 22px rgba(0,0,0,.5)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+.lbl{font-family:var(--fm);font-size:.66rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-deep);margin:4.5rem 0 1.4rem}
+.lbl::before{content:"/ "}.lbl::after{content:" /"}
+
+.frame{position:absolute;inset:0;pointer-events:none;z-index:4}.frame span{position:absolute;display:block}
+.frame span:nth-of-type(1){left:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(2){right:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(3){right:0;top:0;height:100%;border-right:1.5px solid rgba(255,106,0,.7);transform-origin:top;scale:1 0}
+.frame span:nth-of-type(4){right:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(5){left:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(6){left:0;top:0;height:100%;border-left:1.5px solid rgba(255,106,0,.7);transform-origin:bottom;scale:1 0}
+.card.in .frame span{scale:1;transition:scale 1.1s cubic-bezier(.215,.61,.355,1)}
+
+/* 1 TOP BAR - bg toggle, slap toggles (slide+pop), bordered social chips */
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.4rem;padding:1rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:60;backdrop-filter:blur(5px);background:rgba(7,12,35,.5)}  /* wrap to a 2nd row instead of squishing the toggle */
+.bar .logo{font-family:var(--fs);font-weight:700;font-size:1.4rem;color:var(--gold-deep)}
+.bar .nav{display:flex;gap:1.4rem;margin-left:auto;font-family:var(--fm);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+/* nav-link ignite-glow = HANA recipe (sources/hana-nav.md): stacked drop-shadows transparent->colored on hover/active, transition filter .125s cubic-bezier. Recolored hana red rgba(255,26,0) -> our orange; dropped hana's 3840 --pv scaling. */
+.bar .nav a{color:var(--muted);text-decoration:none;filter:drop-shadow(0 0 10px rgba(255,106,0,0)) drop-shadow(0 0 10px rgba(255,106,0,0)) drop-shadow(0 0 10px rgba(255,106,0,0));transition:filter .125s cubic-bezier(.215,.61,.355,1),color .125s}
+.bar .nav a:hover,.bar .nav a.on{color:var(--gold);filter:drop-shadow(0 0 10px rgba(255,106,0,.8)) drop-shadow(0 0 10px rgba(255,106,0,.8))}
+.tg{display:flex;flex-wrap:wrap;gap:.6rem .9rem;align-items:center;padding-left:1.1rem;border-left:1px solid rgba(255,255,255,.08);flex-shrink:0}  /* never shrink + wrap -> toggles drop to a 2nd row intact instead of distorting */
+/* slap toggle - EXACT copy of YarivFrd's CSS, recolored to hana + scaled down + animation reduced. Full pill (border-radius:40px) so it never breaks on compress. */
+.slap{perspective:800px;display:inline-block}
+.slap .toggle{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;align-items:center;border:solid 2px var(--glow);border-radius:40px;transition:transform cubic-bezier(0,0,.3,2) .3s;transform-style:preserve-3d}  /* 2 EQUAL columns -> labels symmetric -> flap 50% lands on the boundary -> text centered */
+.slap .toggle>input[type=radio]{display:none}
+.slap .toggle.on>.flap{transform:rotateY(-180deg)}  /* JS toggles .on; the :checked~.flap sibling selector proved unreliable on display:none radios. Default (no .on) = flap on right (Off). */
+.slap .toggle.on>.flap>.content{transform:rotateY(-180deg)}
+.slap .toggle>label{padding:6px 14px;font-family:var(--fm);font-size:.66rem;font-weight:700;letter-spacing:.04em;text-align:center;text-transform:uppercase;white-space:nowrap;color:var(--glow);cursor:pointer}  /* equal width via grid 1fr; no min-width needed */
+.slap .toggle>.flap{position:absolute;top:-2px;left:50%;height:calc(100% + 4px);width:50%;display:flex;justify-content:center;align-items:center;font-family:var(--fm);font-size:.66rem;font-weight:700;text-transform:uppercase;background:var(--glow);border-top-right-radius:40px;border-bottom-right-radius:40px;transform-style:preserve-3d;transform-origin:left;transition:transform cubic-bezier(.4,0,.2,1) .35s}
+.slap .toggle>.flap>.content{color:var(--night);transition:transform 0s linear .18s;transform-style:preserve-3d}
+@media(prefers-reduced-motion:reduce){.slap .toggle,.slap .toggle>.flap{transition:none}}
+.soc{display:flex;gap:.45rem;padding-left:1.1rem;border-left:1px solid rgba(255,255,255,.08)}
+.soc a{width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,106,0,.35);outline:1px solid rgba(255,106,0,.4);color:var(--gold-deep);font-family:var(--fm);font-size:.55rem;letter-spacing:.02em;text-transform:uppercase;text-decoration:none;transition:all .35s}  /* bordered chip + icon inside (placeholder glyphs -> real SVGs later) */
+.soc a:hover{color:var(--gold);text-shadow:0 0 8px rgba(255,106,0,.6);box-shadow:inset 0 0 12px rgba(255,106,0,.15),0 0 12px rgba(255,106,0,.3);outline-offset:6px;outline-color:rgba(255,106,0,0)}  /* phojanecki ripple */
+.bgtoggle{font-family:var(--fm);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:transparent;border:1px solid rgba(255,106,0,.45);padding:.4rem .75rem;cursor:pointer;transition:.15s}
+.bgtoggle:hover{background:rgba(255,106,0,.12)}
+.bgtoggle.scene{color:var(--night);background:var(--gold);border-color:var(--gold)}
+
+/* 2 HERO */
+.hero{text-align:center;padding:5rem 1rem 1rem}
+.hero .kick{font-family:var(--fm);font-size:.7rem;letter-spacing:.5em;color:var(--gold-deep);text-transform:uppercase}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);color:var(--gold-deep);line-height:1.04;margin:.6rem 0 .4rem;font-weight:700}
+.hero p{font-family:var(--fm);color:var(--muted);font-size:.9rem}
+
+/* 3 BUTTONS - primary (glow + underline-draw), outline (sharp fill-sweep), pill (rounded fill-sweep); tags (phojanecki ripple) */
+.kit{display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+.btn{font-family:var(--fm);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;padding:.7rem 1.5rem;text-decoration:none;cursor:pointer;border:0;transition:.18s}
+.btn-pri{position:relative;background:var(--gold-deep);color:var(--night);outline:1px solid rgba(255,106,0,.5);transition:all .35s}
+.btn-pri:hover{text-shadow:0 0 8px rgba(255,106,0,.5);box-shadow:inset 0 0 16px rgba(255,106,0,.2),0 0 16px rgba(255,106,0,.45);outline-offset:8px;outline-color:rgba(255,106,0,0)}  /* tag-button ripple (the dark underline became an ugly black bar on the filled button -> removed) */
+/* outline/pill fill-sweep = nfranciosi two-layer translateX (true source: codepen.io/nfranciosi/pen/eGRKON -> sources/nfranciosi-button-fill.md). Remixed: recolored red/black/white -> --gold-deep/--gold/--night, applied to our button + <span>. ::before fills from left, ::after follows from right (delayed). */
+.btn-out,.btn-pill{position:relative;overflow:hidden;z-index:0;background:transparent;color:var(--gold);border:1px solid rgba(255,106,0,.5)}
+.btn-out>span,.btn-pill>span{position:relative;z-index:5;transition:color .35s ease}
+.btn-out:hover>span,.btn-pill:hover>span{color:var(--night)}
+.btn-out::before,.btn-pill::before,.btn-out::after,.btn-pill::after{content:"";position:absolute;inset:0;background:var(--gold-deep)}
+.btn-out::before,.btn-pill::before{z-index:1;transform:translateX(-100%)}
+.btn-out:hover::before,.btn-pill:hover::before{transform:translateX(0);transition:transform .35s ease}
+.btn-out::after,.btn-pill::after{z-index:0;transform:translateX(100%);transition:transform .35s ease}
+.btn-out:hover::after,.btn-pill:hover::after{transform:translateX(0);transition:transform .35s .36s ease}
+.btn-pill{border-radius:40px}  /* rounded pill (differentiates from the sharp outline) */
+.txtlink{font-family:var(--fm);font-size:.78rem;color:var(--gold);text-decoration:none;display:inline-block;position:relative}
+/* underline-draw = MauriciAbad scaleX (true source: codepen.io/MauriciAbad/pen/QJmwOY -> sources/mauriciabad-underline-link.md). Remixed: background:currentcolor=gold, applied to .txtlink. origin bottom-right at rest -> bottom-left on hover (draws in L->R, retracts R->L). */
+.txtlink::after{content:"";position:absolute;left:0;bottom:-3px;width:100%;height:1px;border-radius:5px;background:currentcolor;transform:scaleX(0);transform-origin:bottom right;transition:transform .25s ease-out}
+.txtlink:hover::after{transform:scaleX(1);transform-origin:bottom left}
+.tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);border:1px solid rgba(255,106,0,.3);outline:1px solid rgba(255,106,0,.4);padding:.25rem .6rem;transition:all .35s;cursor:default}
+.tag:hover{color:var(--gold);text-shadow:0 0 8px rgba(255,106,0,.6);box-shadow:inset 0 0 12px rgba(255,106,0,.15),0 0 12px rgba(255,106,0,.3);outline-offset:6px;outline-color:rgba(255,106,0,0)}  /* phojanecki ripple */
+
+/* 4 CARDS - hana MERCH idiom: dark panel + inset square image + title centered BELOW + item meta + frame-draw + ignite-on-hover + alt-reveal */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}@media(max-width:760px){.cards{grid-template-columns:1fr 1fr}}@media(max-width:520px){.cards{grid-template-columns:1fr}}
+.card{position:relative;background:rgba(12,16,38,.66);backdrop-filter:blur(2px);box-shadow:0 0 70px rgba(255,106,0,0),0 0 140px rgba(255,106,0,0);transition:box-shadow 2s cubic-bezier(0,.5,0,1)}  /* ambient glow IGNITES on scroll-in (.in), not constant -- de-glow principle + hana source (sources/hana-glow.css) */
+.card.in{box-shadow:0 0 70px rgba(255,106,0,.2),0 0 140px rgba(255,106,0,.09)}
+/* card hover ignite = john_r_muir mouse-tracked radial glow (true source: codepen.io/john_r_muir/pen/ExzJjqL -> sources/john-r-muir-glow-border.md). Remixed: recolored white->amber, single layer on .card, --mx/--my set per-card by JS (rAF-throttled). */
+.card::before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(255,106,0,.16),transparent 60%);opacity:0;transition:opacity .4s;pointer-events:none}
+.card:hover::before{opacity:1}
+.card a{position:relative;z-index:1;display:grid;grid-template-rows:1fr auto;gap:.9rem;height:100%;padding:1.1rem;text-decoration:none;color:var(--text)}
+.card-img{position:relative;aspect-ratio:1;overflow:visible;box-shadow:0 0 40px rgba(255,106,0,.18),0 0 80px rgba(255,106,0,.09)}  /* visible so the ribbon fold can overhang the IMAGE corner */
+.card-img .base{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;display:block}  /* real project media (video) pulled from the main site; #000 = fallback behind the video */
+.card-img .alt{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;display:grid;place-items:center;padding:1.2rem;text-align:center;background:radial-gradient(120% 90% at 50% 100%,rgba(255,26,0,.28),transparent 62%),rgba(10,7,14,.92)}
+.card a:hover .alt{opacity:1}
+.card-img .alt .learn{font-family:var(--fm);font-size:.72rem;line-height:1.65;color:var(--glow-soft)}
+/* corner ribbon (Rod's exact snippet, ~0.7 scale + recolored). On .card-img (the IMAGE corner), which is overflow:visible so it overhangs + folds like the reference */
+.card-img .ribbon{width:106px;height:106px;overflow:hidden;position:absolute;top:-8px;right:-8px;z-index:6;pointer-events:none}
+.card-img .ribbon::before,.card-img .ribbon::after{position:absolute;z-index:-1;content:'';display:block;border:4px solid #8a3300;border-top-color:transparent;border-right-color:transparent}
+.card-img .ribbon::before{top:0;left:0}
+.card-img .ribbon::after{bottom:0;right:0}
+.card-img .ribbon span{position:absolute;display:block;width:160px;padding:9px 0;background:var(--gold-deep);box-shadow:0 4px 8px rgba(0,0,0,.2);color:var(--night);font:700 11px/1 var(--fm);letter-spacing:.12em;text-transform:uppercase;text-align:center;text-shadow:0 1px 1px rgba(0,0,0,.2);left:-18px;top:21px;transform:rotate(45deg)}
+.card-img .n{position:absolute;left:0;right:0;bottom:0;z-index:2;text-align:center;padding:.45rem;font-family:var(--fm);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,243,239,.45)}
+.card-title{text-align:center;font-size:1.08rem;color:var(--gold-deep);line-height:1.2}
+
+/* 5 LIST CONTROLS - `//` sharp search; sharp filters; sharp empty */
+.search{display:flex;align-items:center;border:1px solid rgba(255,106,0,.3);padding:.7rem 1rem;font-family:var(--fm);font-size:.78rem;max-width:340px}.search::before{content:"//";color:var(--gold-deep);margin-right:.45rem}
+/* search caret = blinking BORDER on the input (true source: codepen.io/atelierbram/pen/abrbyQ -> sources/atelierbram-border-caret.md). A border auto-matches text height + sits flush, fixing the floating-span misalignment. Remixed: border-left not -right, recolored --gold, typing-width anim dropped, applied to a real input. */
+.search input{flex:1;min-width:0;background:transparent;border:0;border-left:1px solid var(--gold);outline:0;color:var(--text);font:inherit;padding:0;caret-color:var(--gold);animation:blink-caret 1s infinite}  /* padding:0 so the border-caret sits at the content-box origin = exactly where the native typing caret appears (no jump on click) */
+.search input::placeholder{color:var(--muted)}
+.search:focus-within input,.search.has-text input{animation:none;border-left-color:transparent}  /* hide decorative caret when active/typing; native gold caret-color takes over */
+@keyframes blink-caret{from,to{border-left-color:transparent}50%{border-left-color:var(--gold)}}
+@media(prefers-reduced-motion:reduce){.search input{animation:none;border-left-color:var(--gold)}}
+.filters{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}
+.filters .filter{font-family:var(--fm);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .8rem;border:1px solid rgba(255,255,255,.12);outline:1px solid rgba(255,106,0,.3);color:var(--muted);cursor:pointer;transition:all .35s}
+.filters .filter:hover{color:var(--gold);text-shadow:0 0 8px rgba(255,106,0,.6);box-shadow:inset 0 0 12px rgba(255,106,0,.15),0 0 12px rgba(255,106,0,.3);outline-offset:6px;outline-color:rgba(255,106,0,0)}  /* phojanecki ripple */
+.filters .filter.on{color:var(--gold);border-color:rgba(255,106,0,.7);background:rgba(255,106,0,.08);filter:drop-shadow(0 0 8px rgba(255,106,0,.5))}  /* selected = glow, not solid fill */
+.empty{font-family:var(--fm);text-align:center;padding:2.4rem 1.6rem;border:1px dashed rgba(255,106,0,.3)}  /* patternfly content + the dashed border Rod liked (warmed) */
+.empty .eh{color:var(--gold-deep);font-size:1rem;letter-spacing:.03em;margin-bottom:.5rem}
+.empty .eb{color:var(--muted);font-size:.82rem;margin-bottom:1rem}
+.empty b{color:var(--gold);font-weight:400}
+
+/* 6 POST - editorial serif */
+.post{max-width:72ch;margin:0 auto;background:rgba(8,12,30,.5);padding:2rem 2.4rem;backdrop-filter:blur(3px)}@media(max-width:560px){.post{padding:1.4rem 1.2rem}}
+.post .phead{border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:1.4rem;margin-bottom:1.6rem}  /* renamed from .ph -> avoid collision with foundations.css placeholder .ph */
+.post .phead h1{font-size:clamp(1.8rem,4vw,2.8rem);color:var(--gold-deep);line-height:1.1;margin-bottom:.6rem}
+.post .phead .m{font-family:var(--fm);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:1rem;flex-wrap:wrap}
+.tldr{background:rgba(12,16,38,.5);border-left:2px solid var(--gold-deep);box-shadow:0 0 22px rgba(245,158,11,.1);padding:1rem 1.2rem;margin:1.4rem 0;font-family:var(--fm);font-size:.84rem}
+.tldr b{color:var(--gold-deep);letter-spacing:.1em;text-transform:uppercase;font-size:.66rem;display:block;margin-bottom:.4rem}
+.prose h2{font-size:1.6rem;color:var(--gold-deep);margin:2rem 0 .8rem}.prose p{margin:0 0 1rem}.prose a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+.prose ul{margin:0 0 1rem 1.2rem}.prose blockquote{border-left:2px solid var(--gold);background:rgba(12,16,38,.4);box-shadow:0 0 20px rgba(251,191,36,.08);padding:1rem 1.2rem;color:var(--muted);font-style:italic;margin:1.2rem 0}
+.prose code{font-family:var(--fm);font-size:.85em;background:rgba(255,106,0,.12);color:var(--gold);padding:.1em .35em}
+/* terminal frame: filename tab + copy in a header bar, NO traffic-light dots (Rod: no bulk) */
+.codeblock{background:#0a0e22;border:1px solid rgba(255,255,255,.08);margin:1.2rem 0;font-family:var(--fm);font-size:.8rem;overflow:hidden}
+.codeblock .cb-head{display:flex;align-items:center;justify-content:space-between;padding:.5rem .9rem;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)}
+.codeblock .cb-name{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.codeblock .cp{font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);cursor:pointer;transition:.15s}
+.codeblock .cp:hover{color:var(--gold);filter:drop-shadow(0 0 6px rgba(255,106,0,.5))}
+.codeblock .cb-body{padding:1rem 1.2rem;color:#cdd3e8;overflow-x:auto}
+.codeblock .k{color:var(--glow)}.codeblock .s{color:#9bdc8a}
+.takeaway{background:rgba(12,16,38,.5);border-left:2px solid var(--glow);padding:1.2rem 1.4rem;margin:1.6rem 0;box-shadow:0 0 24px rgba(255,106,0,.12)}
+.takeaway b{color:var(--gold-deep);letter-spacing:.1em;text-transform:uppercase;font-size:.66rem;font-family:var(--fm);display:block;margin-bottom:.4rem}
+
+/* 7 ABOUT - bio cards, outlined stats (yannesidibe), trophy tiles, live-pulse status */
+.bios{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}@media(max-width:680px){.bios{grid-template-columns:1fr}}
+.bio{background:rgba(12,16,38,.5);border-left:2px solid var(--gold-deep);padding:1.6rem;backdrop-filter:blur(2px);box-shadow:0 0 24px rgba(255,106,0,.08)}.bio h3{color:var(--gold-deep);margin-bottom:.5rem}.bio p{color:var(--muted);font-size:.92rem}
+.stats{display:flex;gap:2rem;margin:1.4rem 0;flex-wrap:wrap}
+.stat .n{font-size:2.6rem;color:var(--gold-deep);font-weight:700;font-family:var(--fs)}.stat .l{font-family:var(--fm);font-size:.64rem;text-transform:uppercase;color:var(--muted)}  /* solid amber serif (was hollow yannesidibe stroke - now clearly ours, matches headings) */
+.trophies{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0}
+.trophy{width:46px;height:46px;display:grid;place-items:center;border:1px solid rgba(255,106,0,.3);background:rgba(12,16,38,.5);color:var(--gold);font-size:1.1rem}.trophy.lock{color:rgba(245,243,239,.2)}
+.status{display:inline-flex;gap:.5rem;align-items:center;font-family:var(--fm);font-size:.7rem;color:var(--muted);margin-top:1rem}
+.status .d{position:relative;width:8px;height:8px;border-radius:50%;background:#ff9a40;box-shadow:0 0 8px #ff7a30}
+.status .d::after{content:"";position:absolute;inset:0;border-radius:50%;background:#ff7a30;animation:livepulse 2s ease-out infinite}  /* adevade-style expanding live pulse */
+@keyframes livepulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(3.2);opacity:0}}
+@media(prefers-reduced-motion:reduce){.status .d::after{animation:none}}
+.status b{color:var(--gold);font-weight:400}
+
+/* achievement unlock toast = robsawyer/robooneus Xbox-style (true source: codepen.io/robooneus/pen/EKrLZV -> sources/robooneus-achievement-toast.md). Remixed: bottom-CENTER -> bottom-RIGHT (Steam-style per Rod), recolored cyan -> dark panel + amber, rounded; kept circle->bar expand + icon pop + text reveal. */
+.ach{position:fixed;right:1.5em;bottom:-5em;z-index:200;display:flex;align-items:center;width:65px;height:65px;background:rgba(8,12,30,.96);border:1px solid rgba(255,106,0,.4);box-shadow:0 0 26px rgba(255,106,0,.28);color:var(--text);font-family:var(--fm);overflow:hidden;border-radius:50%}
+.ach .ic{flex:0 0 65px;height:65px;display:grid;place-items:center;font-size:1.5rem;color:var(--gold-deep)}
+.ach .tw{width:250px;overflow:hidden;white-space:nowrap}
+.ach .at{font-size:.74rem;color:var(--gold);font-weight:700;letter-spacing:.03em;line-height:1.25;margin:0}
+.ach .ad{font-size:.64rem;color:var(--muted);font-style:italic}
+.ach.show{bottom:1.5em;width:340px;border-radius:8px}  /* static show for headless capture (?ach=1) */
+@keyframes ach_in{0%{bottom:-5em;width:65px;border-radius:50%}15%{bottom:2.4em;width:65px}25%{bottom:1.5em;width:65px}75%{bottom:1.5em;width:65px}85%{bottom:1.5em;width:65px;border-radius:50%}92%{bottom:1.5em;width:368px;border-radius:8px}100%{bottom:1.5em;width:340px;border-radius:8px}}
+@keyframes ach_cur{0%,100%{bottom:1.5em;width:340px;border-radius:8px}}
+@keyframes ach_out{0%{bottom:1.5em;width:340px;border-radius:50%}16%{bottom:1.5em;width:65px;border-radius:50%}20%{bottom:1.5em;width:50px}34%{bottom:1.5em;width:65px}70%{bottom:1.5em;width:65px}100%{bottom:-5em;width:65px;border-radius:50%}}
+.ach.achieved{animation:ach_in 1.4s,ach_cur 3s,ach_out .8s;animation-delay:0s,1.4s,4.4s}
+@keyframes ic_in{0%,45%{transform:scale(0)}46%{transform:scale(.4)}50%{transform:scale(1)}55%{transform:scale(1.2)}60%,100%{transform:scale(1)}}
+@keyframes ic_cur{0%,100%{transform:scale(1)}}
+@keyframes ic_out{0%,46%{transform:scale(1)}47%{transform:scale(1.2)}56%{transform:scale(1)}60%{transform:scale(.4)}65%,100%{transform:scale(0)}}
+.ach.achieved .ic{animation:ic_in 1.4s,ic_cur 3s,ic_out .8s;animation-delay:0s,1.4s,4.4s}
+@keyframes tw_in{0%,85%{width:0}100%{width:250px}}
+@keyframes tw_out{0%{width:250px}12%,100%{width:0}}
+.ach.achieved .tw{animation:tw_in 1.4s,tw_out .8s;animation-delay:0s,4.4s}
+@media(prefers-reduced-motion:reduce){.ach.achieved{animation:none}}
+.achbtn{font-family:var(--fm);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:transparent;border:1px solid rgba(255,106,0,.45);padding:.5rem .9rem;cursor:pointer;margin-top:1rem;transition:.15s}.achbtn:hover{background:rgba(255,106,0,.12)}
+
+/* 8 FOOTER */
+.foot{margin-top:5rem;border-top:1px solid rgba(255,255,255,.07);padding:2rem;text-align:center;font-family:var(--fm);font-size:.7rem;letter-spacing:.1em;color:var(--muted)}
+.foot a{color:var(--gold-deep);text-decoration:none;margin:0 .6rem}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--fm);font-size:10px;color:rgba(245,243,239,.45)}.labtag a{color:var(--gold)}
+/* PROVENANCE DEBUG (?slop=1 or the 'prov' link): pink dashed = Slop (needs a real source); green dashed = Remixed (sourced this session) */
+body.slopdbg .bar .nav a,body.slopdbg .bgtoggle,body.slopdbg .hero .kick,body.slopdbg .hero h1,body.slopdbg .hero p,body.slopdbg .btn-out,body.slopdbg .btn-pill,body.slopdbg .txtlink,body.slopdbg .card,body.slopdbg .search,body.slopdbg .filters .filter,body.slopdbg .empty,body.slopdbg .phead,body.slopdbg .tldr,body.slopdbg .prose,body.slopdbg .codeblock,body.slopdbg .takeaway,body.slopdbg .bio,body.slopdbg .stat .n,body.slopdbg .trophy,body.slopdbg .status,body.slopdbg .foot{outline:2px dashed #ff3da1!important;outline-offset:3px}
+body.slopdbg .slap,body.slopdbg .soc a,body.slopdbg .btn-pri,body.slopdbg .tag,body.slopdbg .card-img .ribbon{outline:2px dashed #39d98a!important;outline-offset:3px}
+.provlegend{display:none;position:fixed;right:14px;top:14px;z-index:300;font-family:var(--fm);font-size:11px;background:rgba(8,12,30,.95);border:1px solid rgba(255,255,255,.15);padding:8px 11px;line-height:1.8;color:var(--text)}
+body.slopdbg .provlegend{display:block}
+.provlegend .p{color:#ff3da1}.provlegend .g{color:#39d98a}
+</style>
+</head>
+<body class="bloom-mode">
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
+<div id="scrim"></div>
+
+<header class="bar">
+  <span class="logo">lantern</span>
+  <nav class="nav"><a class="on" href="#">Home</a><a href="#">Projects</a><a href="#">About</a><a href="#">Ramblings</a></nav>
+  <button class="bgtoggle" id="bgToggle">BG &middot; Bloom</button>
+  <span class="tg">
+    <span class="slap"><span class="toggle"><input class="c1" type="radio" name="breathe" id="br1" checked><label for="br1">Breathing</label><input class="c2" type="radio" name="breathe" id="br2"><label for="br2">Off</label><span class="flap"><span class="content">Breathing</span></span></span></span>
+    <span class="slap"><span class="toggle"><input class="c1" type="radio" name="spark" id="sp1" checked><label for="sp1">Sparkler</label><input class="c2" type="radio" name="spark" id="sp2"><label for="sp2">Off</label><span class="flap"><span class="content">Sparkler</span></span></span></span>
+    <span class="slap"><span class="toggle"><input class="c1" type="radio" name="fire" id="fr1" checked><label for="fr1">Fireworks</label><input class="c2" type="radio" name="fire" id="fr2"><label for="fr2">Off</label><span class="flap"><span class="content">Fireworks</span></span></span></span>
+  </span>
+  <span class="soc"><a href="#" aria-label="GitHub">gh</a><a href="#" aria-label="LinkedIn">in</a><a href="#" aria-label="Email">@</a></span>
+</header>
+
+<section class="hero">
+  <div class="kick">technical art . 2026</div>
+  <h1>Born to Bloom</h1>
+  <p>// shaders, tools, rendering pipelines &amp; visual problem solving</p>
+</section>
+
+<div class="wrap">
+  <div class="lbl">01 . buttons &amp; tags</div>
+  <div class="kit"><button class="btn btn-pri">View project</button><button class="btn btn-out"><span>Read more</span></button><button class="btn btn-pill"><span>All projects</span></button><a class="txtlink" href="#">an inline link &rarr;</a><span class="tag">HLSL</span><span class="tag">Compute</span><span class="tag">Unity</span></div>
+
+  <div class="lbl">02 . project cards</div>
+  <div class="cards">
+    <article class="card reveal"><a href="#"><span class="card-img"><video class="base" autoplay loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video><span class="alt"><span class="learn">"Half a million blades, all on the GPU."</span></span><span class="n">Unity &middot; HLSL</span><span class="ribbon"><span>Pinned</span></span></span><span class="card-title">Compute Grass</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><video class="base" autoplay loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video><span class="alt"><span class="learn">"Rebuilt a shipped game's shaders from scratch."</span></span><span class="n">RenderDoc</span><span class="ribbon"><span>Pinned</span></span></span><span class="card-title">Decompiling ZZZ</span></a></article>
+    <article class="card reveal"><a href="#"><span class="card-img"><video class="base" autoplay loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video><span class="alt"><span class="learn">"One flexible tool beats a thousand single-use ones."</span></span><span class="n">Unity &middot; Shader</span><span class="ribbon"><span>Pinned</span></span></span><span class="card-title">Procedural 3D Mask</span></a></article>
+  </div>
+
+  <div class="lbl">03 . list controls</div>
+  <div class="search"><input type="text" placeholder="search projects &amp; tags" aria-label="Search projects and tags"></div>
+  <div class="filters"><span class="filter on">All</span><span class="filter">Shaders</span><span class="filter">Tools</span><span class="filter">Real-time</span><span class="filter">Write-ups</span></div>
+  <div class="empty"><div class="eh">No results for <b>"raymarching"</b></div><div class="eb">Try a broader tag, or clear your filters to see everything.</div><a class="txtlink" href="#">Browse all projects &rarr;</a></div>
+
+  <div class="lbl">04 . post</div>
+  <article class="post">
+    <div class="phead"><h1>Half a Million Blades of Grass</h1><div class="m"><span>Mar 2026</span><span>9 min read</span><span>Shaders</span></div></div>
+    <div class="tldr"><b>TL;DR</b>A GPU-instanced grass system: per-blade compute, wind via flow noise, and LOD that holds framerate across vast fields.</div>
+    <div class="prose">
+      <p>The naive approach is a mesh per blade. That dies at a few thousand. Move the whole simulation onto the GPU and never touch the CPU per-blade again.</p>
+      <h2>The compute pass</h2>
+      <p>Each blade is a point in a buffer. A compute shader displaces it by a wind field and writes it back. Draw with <code>DrawProceduralIndirect</code>.</p>
+      <ul><li>Spatial hash for the wind lookup</li><li>One indirect draw for the whole field</li><li>LOD by distance, not by count</li></ul>
+      <blockquote>The GPU doesn't care how many blades there are, only how many it can't see.</blockquote>
+      <div class="codeblock"><div class="cb-head"><span class="cb-name">grass.compute</span><span class="cp">copy</span></div><div class="cb-body"><span class="k">[numthreads(64,1,1)]</span><br>void <span class="s">CSMain</span>(uint3 id) { blades[id.x].pos += windField(...) * dt; }</div></div>
+    </div>
+    <div class="takeaway"><b>Takeaway</b>Stop counting blades. Count what the GPU can see, and let the rest be free.</div>
+  </article>
+
+  <div class="lbl">05 . about</div>
+  <div class="bios">
+    <div class="bio"><h3>Hello there</h3><p>Game developer first, artist after that. Technical art is poorly understood &mdash; so here it is, lit up.</p></div>
+    <div class="bio"><h3>Toolbox</h3><p>Three.js, GLSL/HLSL, Unity, compute. A dark night and a few things that glow.</p></div>
+  </div>
+  <div class="stats"><div class="stat"><div class="n">10+</div><div class="l">years making things</div></div><div class="stat"><div class="n">40</div><div class="l">write-ups</div></div><div class="stat"><div class="n">29</div><div class="l">achievements</div></div></div>
+  <div class="trophies"><span class="trophy">&#9733;</span><span class="trophy">&#9670;</span><span class="trophy">&#9650;</span><span class="trophy">&#10022;</span><span class="trophy lock">&#128274;</span><span class="trophy lock">&#128274;</span></div>
+  <div class="status"><span class="d"></span> currently &mdash; <b>studying compute-driven hair &amp; fur</b></div>
+  <div><button class="achbtn" id="achBtn">&#9733; Trigger achievement</button></div>
+</div>
+
+<div class="ach" role="status" aria-live="polite"><div class="ic">&#9733;</div><div class="tw"><p class="at">Achievement Unlocked</p><span class="ad">You triggered the demo toast</span></div></div>
+<footer class="foot"><div><a href="#">Home</a><a href="#">Projects</a><a href="#">About</a><a href="#">Ramblings</a><a href="#">Resume</a></div><div style="margin-top:.8rem">&copy; 2026 Rodney Fan &middot; lit one lantern at a time</div></footer>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; REWORK: hana &middot; <a href="#" onclick="document.body.classList.toggle('slopdbg');return false">prov</a></div>
+<div class="provlegend"><b>provenance</b><br><span class="p">&#9633; pink</span> = Slop (no source)<br><span class="g">&#9633; green</span> = Remixed (sourced)</div>
+
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+<script>
+/* BG toggle: flip between the hana lava-bloom and Rod's real Three.js about-scene. ?scene=1 starts on the scene (headless capture). */
+(function(){
+  var btn=document.getElementById('bgToggle'),hb=document.getElementById('hana-bg'),b=document.body,on=false;
+  function set(v){on=v;b.classList.toggle('bloom-mode',!on);btn.classList.toggle('scene',on);btn.textContent=on?'BG · Scene':'BG · Bloom';if(hb)hb.style.opacity=on?'0':'1';}
+  btn.addEventListener('click',function(){set(!on);});
+  set(/[?&]scene=1/.test(location.search));
+})();
+</script>
+<script>
+/* slap toggle: JS drives the flip via .on class (reliable) + syncs the flap label. No wobble = reduced animation. */
+document.querySelectorAll('.slap .toggle').forEach(function(tog){
+  var content=tog.querySelector('.content'),c1=tog.querySelector('.c1'),c2=tog.querySelector('.c2');
+  function label(){return c1.checked?c1.nextElementSibling.textContent:c2.nextElementSibling.textContent;}
+  tog.classList.toggle('on',c1.checked);content.textContent=label();
+  tog.querySelectorAll('input').forEach(function(i){i.addEventListener('change',function(){tog.classList.toggle('on',c1.checked);setTimeout(function(){content.textContent=label();},180);});});
+});
+/* ?off=1 -> select the Off option on all toggles (headless capture, like ?scene=1) */
+if(/[?&]off=1/.test(location.search)){document.querySelectorAll('.slap .c2').forEach(function(i){i.checked=true;i.dispatchEvent(new Event('change'));});}
+if(/[?&]slop=1/.test(location.search)){document.body.classList.add('slopdbg');}
+/* search: hide the decorative caret once the field has text */
+(function(){var inp=document.querySelector('.search input');if(inp){inp.addEventListener('input',function(){inp.closest('.search').classList.toggle('has-text',!!inp.value);});}})();
+/* achievement unlock toast: button restarts the .achieved animation (robooneus). ?ach=1 static-shows for headless capture. */
+(function(){var btn=document.getElementById('achBtn'),ach=document.querySelector('.ach');if(!btn||!ach)return;var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;btn.addEventListener('click',function(){if(reduce){ach.classList.add('show');clearTimeout(ach._t);ach._t=setTimeout(function(){ach.classList.remove('show');},3500);return;}ach.classList.remove('achieved');void ach.offsetWidth;ach.classList.add('achieved');});if(/[?&]ach=1/.test(location.search)){ach.classList.add('show');}})();
+/* card hover ignite: john_r_muir mouse-tracked glow -- set per-card --mx/--my (sources/john-r-muir-glow-border.md). rAF-throttled (improvement over source's raw onmousemove). */
+(function(){var cards=document.querySelectorAll('.card');if(!cards.length)return;var ticking=false,ev=null;document.addEventListener('mousemove',function(e){ev=e;if(ticking)return;ticking=true;requestAnimationFrame(function(){cards.forEach(function(c){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(ev.clientX-r.left)+'px');c.style.setProperty('--my',(ev.clientY-r.top)+'px');});ticking=false;});});})();
+</script>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script src="/redesign-lab/frame-draw.js"></script>
+<script src="/redesign-lab/sliders.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   filter-pills - REBUILT 2026-08-23. The previous version was REJECTED by Rod.
+
+   Rod: "filter pills aren't meant to be tabs they should just behave the way they are on the main
+   site with the button toolkit tag boxes from the workbench. current version rejected."
+
+   WHAT WAS WRONG WITH THE OLD ONE, plainly: it offered a tab, a bracket and an underline. All
+   three re-invented the INTERACTION. The interaction was never open - it already exists and is
+   already approved, and the previous build simply did not go and look.
+
+   ┌─ THIS IS A REUSE, NOT A DESIGN ────────────────────────────────────────────────────────────┐
+   │ BEHAVIOUR: extracted/components/list-controls/ - `.list-controls__filter` and its           │
+   │            `.is-active` state, which is the main site's own filter behaviour.               │
+   │ BOX:       extracted/components/button-kit/ - `.kit-tag`, named by Rod.                     │
+   │ Nothing here is originated. Both parents are on the workbench and both were already built.  │
+   └────────────────────────────────────────────────────────────────────────────────────────────┘
+
+   TIER: OURS. IDEA-ORIGIN: ROD - he named both parents and rejected the alternative.
+   The kit-tag's own external half (phojanecki's ripple, nfranciosi's fill-sweep) stays with
+   button-kit; this file inherits the SHAPE only.
+
+   ===== TWO LAW FIXES THE PARENT NEEDS, applied here and stated rather than smuggled =====
+
+   1. `.kit-tag` is `border-radius: 6px`. Squared, per square-by-default. This also matches the
+      tag-badge decision, where Rod picked square over the live 0.5rem radius on 2026-08-21 - so
+      the two tag shapes on the site now agree instead of one being round and one square.
+
+   2. `.kit-tag` sets `color: var(--color-muted)`, which is #9aa3bd - THE BANNED BLUE, and the last
+      blue left in any text token. Swapped to --color-silver. Not carried across, and the parent
+      still has it, so this is worth fixing at source separately.
+
+   Also dropped: the parent's `transition: all 0.35s`. `all` transitions every property including
+   ones added later, which is exactly how an unintended animation appears months afterwards. The
+   two properties that actually change are named.
+   ============================================================================================ */
+
+.fp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* the box: kit-tag's geometry, verbatim except the two law fixes above */
+.fp__pill {
+  font-family: var(--font-body, inherit);
+  font-size: 0.66rem;                 /* theirs */
+  font-weight: 500;                   /* theirs */
+  /* theirs is 0.3rem 0.65rem, which MEASURED 21.6px tall - 2.4px under the WCAG 2.5.8 minimum
+     target of 24px. Vertical padding raised to 0.375rem so the pill lands at 24; the horizontal
+     value and the font size are untouched, because the font size is the parent's and shrinking
+     type to fix a target size would be the wrong lever. A third deviation from `.kit-tag`, and
+     like the other two it is law-mandated rather than taste. */
+  padding: 0.375rem 0.65rem;
+  border-radius: 0;                   /* theirs is 6px - SQUARED */
+  color: var(--color-silver, #a3a19d);/* theirs is --color-muted, the banned blue */
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  outline: 1px solid color-mix(in srgb, var(--color-glow, #ff6a00) 40%, transparent);  /* theirs */
+  cursor: pointer;
+  border: 0;
+  transition: color 0.35s, outline-color 0.35s;   /* theirs is `all` - named instead */
+}
+
+/* the behaviour: list-controls' own hover and active, which is the main site's */
+.fp__pill:hover {
+  color: var(--color-gold, #fbbf24);
+  outline-color: color-mix(in srgb, var(--color-glow, #ff6a00) 70%, transparent);
+}
+
+/* ACTIVE. The main site marks the selected filter, and this keeps that.
+   TWO CHANNELS, NOT ONE: colour plus a filled ground. Colour alone would be a WCAG 1.4.1 failure
+   (colour must not be the sole means of conveying state), which is the same exposure the TOC's
+   active item had. Costs nothing to avoid here. */
+.fp__pill.is-active {
+  color: var(--color-panel-solid, #1c1a18);
+  background: var(--color-gold, #fbbf24);
+  outline-color: var(--color-gold, #fbbf24);
+}
+
+/* A REAL BUTTON, NOT A DIV. The old version used non-interactive elements, which is how the
+   seven unlabelled tabindex spans in skill-tile happened too. `<button type="button">` gives the
+   keyboard behaviour, the role and the focus ring for free.
+   `aria-pressed` carries the state to a screen reader; `.is-active` only carries it to the eye. */
+.fp__pill[aria-pressed="true"] {
+  color: var(--color-panel-solid, #1c1a18);
+  background: var(--color-gold, #fbbf24);
+  outline-color: var(--color-gold, #fbbf24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp__pill { transition: none; }
+}
+
+/* FOCUS: not declared. The global ring in focus-ring.css covers it, and a <button> gets it
+   natively. Re-declaring would be duplicate code (D5).
+   TARGET SIZE: at 0.66rem type with 0.3rem/0.65rem padding the pill lands near 24px tall. WCAG
+   2.5.8 wants 24x24 minimum - measure it in the demo before shipping; if it falls short the fix
+   is vertical padding, not a font-size change, because the font size is the parent's. */
+}

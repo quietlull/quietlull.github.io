@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en" data-hover>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section Landing - Variation A1 (Japanese, bento)</title>
+<!--
+  PROVENANCE:
+  - hand-drawn logo + ~tilde~ section headers ... harumaki gohan [seen]
+  - top-left MENU + right social rail .......... harumaki gohan [seen]
+  - BENTO grid for "the work" (varied-size cells) ... Japanese bento idiom + 109ichiki grid layout [their CSS], per Rod's request (replaces the rejected orbs)
+  - full-bleed cinematic reel band ............. harumaki gohan SERIES [seen]
+  - persistent bottom-right card ............... harumaki gohan Studio Gohan card [seen]
+  - IBM Plex Mono type ......................... 109ichiki [their CSS]
+  - amber glow IGNITES on hover ............... hana borntobloom [teardown]
+  - PALETTE: amber #F59E0B fill, glow #FFE8B0 halo-only, no pink [locked w/ Rod]
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Zen+Maru+Gothic:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* fonts: harumakigohan group -- Caveat (hand-lettered logo + ~tilde~ headers) + Zen Maru Gothic (rounded body) */
+:root{--fm:"Zen Maru Gothic",sans-serif;--fh:"Caveat",cursive;}
+body{font-family:var(--fm)}
+.menu{position:fixed;top:18px;left:24px;z-index:60;font-family:var(--fm);font-size:.72rem;letter-spacing:.25em;color:var(--text);text-transform:uppercase;display:flex;align-items:center;gap:.6rem}
+.menu .bars{display:inline-flex;flex-direction:column;gap:3px}.menu .bars i{width:20px;height:2px;background:var(--text);display:block}
+.rail{position:fixed;top:50%;right:22px;transform:translateY(-50%);z-index:60;display:flex;flex-direction:column;gap:18px}
+.rail a{width:14px;height:14px;border-radius:50%;background:rgba(245,243,239,.55);display:block;transition:.16s}
+.rail a:hover{background:var(--gold);filter:drop-shadow(0 0 8px rgba(255,106,0,.7))}
+/* hero: hand-drawn logo in AMBER (#F59E0B fill) + glow halo */
+.hero{min-height:88vh;display:grid;justify-items:center;align-content:center;text-align:center;padding:calc(5rem * var(--space-scale)) 0;position:relative}
+.logo{font-family:var(--fh);font-weight:700;font-size:calc(5rem * var(--head-scale));line-height:.9;color:var(--gold-deep);
+  filter:drop-shadow(0 0 20px rgba(255,106,0,.4)) drop-shadow(0 0 7px rgba(255,106,0,.55))}
+.logo small{display:block;font-family:var(--fm);font-size:.7rem;letter-spacing:.5em;color:var(--text);opacity:.8;margin-top:.4rem}
+.hero .tagline{font-family:var(--fm);margin-top:2rem;font-size:calc(.95rem * var(--type-scale));letter-spacing:.04em;color:rgba(245,243,239,.9);max-width:48ch}
+.scrollcue{position:absolute;bottom:30px;font-family:var(--fm);font-size:.62rem;letter-spacing:.3em;color:rgba(245,243,239,.6)}
+/* ~tilde~ hand-drawn header + mono number */
+.shead{text-align:center;margin:calc(3rem * var(--space-scale)) 0 calc(2rem * var(--space-scale))}
+.shead .num{font-family:var(--fm);font-size:.7rem;letter-spacing:.3em;color:var(--gold-deep);display:block;margin-bottom:.4rem}
+.shead .name{font-family:var(--fh);font-size:calc(2.6rem * var(--head-scale));color:var(--gold-deep)}
+.shead .name::before{content:"~ ";color:var(--gold)}.shead .name::after{content:" ~";color:var(--gold)}
+/* BENTO grid for the work (uniform grid, varied cell spans, squarish corners) */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:158px;gap:14px;max-width:var(--measure);margin:0 auto;padding:0 2.5rem}
+.cell{position:relative;border-radius:0;overflow:hidden;background:rgba(255,255,255,.03);cursor:pointer;filter:drop-shadow(0 0 0 rgba(243,181,60,0));transition:filter .2s,transform .25s}
+.cell{filter:drop-shadow(0 0 10px rgba(255,106,0,.10))}
+.cell:hover{transform:translateY(-3px);filter:drop-shadow(0 0 12px rgba(255,106,0,.4)) drop-shadow(0 0 28px rgba(255,106,0,.32))}
+/* frame-draw on reveal: 6-span border draws itself around the box segment-by-segment (real hana technique; spans injected by frame-draw.js) */
+.frame{position:absolute;inset:0;pointer-events:none;z-index:4}
+.frame span{position:absolute;display:block}
+.frame span:nth-of-type(1){left:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(2){right:0;top:0;width:50%;border-top:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(3){right:0;top:0;height:100%;border-right:1.5px solid rgba(255,106,0,.7);transform-origin:top;scale:1 0}
+.frame span:nth-of-type(4){right:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:right;scale:0 1}
+.frame span:nth-of-type(5){left:0;bottom:0;width:50%;border-bottom:1.5px solid rgba(255,106,0,.7);transform-origin:left;scale:0 1}
+.frame span:nth-of-type(6){left:0;top:0;height:100%;border-left:1.5px solid rgba(255,106,0,.7);transform-origin:bottom;scale:1 0}
+.cell.in .frame span{scale:1;transition:scale 1.2s cubic-bezier(.215,.61,.355,1)}
+@media(prefers-reduced-motion:reduce){.cell .frame span{scale:1;transition:none}}
+.cell.big{grid-column:span 2;grid-row:span 2}
+.cell.wide{grid-column:span 2}
+.cell .thumb{position:absolute;inset:0;background:#0d1430;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 10px,rgba(255,255,255,0) 10px 20px)}
+.cell .meta{position:absolute;left:0;right:0;bottom:0;padding:.8rem .9rem;background:linear-gradient(transparent,rgba(7,12,35,.88));font-family:var(--fm)}
+.cell h3{font-size:.92rem;color:var(--text);margin-bottom:.2rem}
+.cell .tags{font-size:.6rem;letter-spacing:.08em;color:var(--gold-deep)}
+.cell .pin{position:absolute;top:8px;right:8px;font-family:var(--fm);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:rgba(8,12,30,.7);border:1px solid rgba(255,106,0,.4);border-radius:4px;padding:2px 6px}
+.cell .learn{position:absolute;inset:0;display:grid;place-items:center;padding:1.4rem;text-align:center;opacity:0;transition:opacity .2s;background:radial-gradient(circle,rgba(8,12,30,.92),rgba(8,12,30,.8));font-family:var(--fm);font-size:.74rem;line-height:1.5;color:var(--glow-soft)}
+.cell:hover .learn{opacity:1}
+/* full-bleed cinematic reel band [harumaki SERIES] */
+.band{width:100vw;margin-left:calc(50% - 50vw);height:44vh;display:grid;place-items:center;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);background:#0b1024;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 12px,rgba(255,255,255,0) 12px 24px)}
+.band span{font-family:var(--fm);font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,243,239,.4)}
+.tools{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;max-width:42rem;margin:0 auto;font-family:var(--fm);font-size:.8rem;letter-spacing:.08em;color:var(--muted)}
+.float{position:fixed;bottom:18px;right:18px;z-index:55;background:rgba(8,12,30,.82);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:.7rem .9rem;font-family:var(--fm);font-size:.66rem;letter-spacing:.06em;color:var(--text);backdrop-filter:blur(6px)}
+.float b{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="menu"><span class="bars"><i></i><i></i><i></i></span> Menu</div>
+<nav class="rail"><a></a><a></a><a></a></nav>
+
+<section class="hero">
+  <div class="logo">rodney fan<small>technical artist &middot; game designer</small></div>
+  <div class="tagline">// shaders, tools &amp; little worlds &mdash; a night market of tech-art experiments, lit one lantern at a time.</div>
+  <div class="scrollcue">scroll &darr;</div>
+</section>
+
+<div class="shead"><span class="num">01 / FEATURED</span><span class="name">the work</span></div>
+<div class="bento">
+  <div class="reveal cell big"><div class="thumb"></div><span class="pin">Pinned</span><div class="meta"><h3>Compute Grass</h3><div class="tags">Unity &middot; HLSL &middot; Compute</div></div><div class="learn">"Taught me to think in compute &mdash; half a million blades, all on the GPU."</div></div>
+  <div class="reveal cell wide"><div class="thumb"></div><span class="pin">Pinned</span><div class="meta"><h3>Decompiling ZZZ</h3><div class="tags">RenderDoc &middot; HLSL</div></div><div class="learn">"Read a shipped game's shaders, then rebuilt the magic from scratch."</div></div>
+  <div class="reveal cell"><div class="thumb"></div><div class="meta"><h3>Toy Renderer</h3><div class="tags">C++ &middot; Vulkan</div></div><div class="learn">"A tiny renderer, to understand the big ones."</div></div>
+  <div class="reveal cell"><div class="thumb"></div><div class="meta"><h3>Lantern Scene</h3><div class="tags">Three.js &middot; GLSL</div></div><div class="learn">"Procedural lanterns that dodge your cursor."</div></div>
+</div>
+
+<div class="shead"><span class="num">02 / IN MOTION</span><span class="name">demo reel</span></div>
+<div class="band"><span>demo reel &mdash; full-bleed cinematic band</span></div>
+
+<div class="shead"><span class="num">03 / THE BENCH</span><span class="name">tools</span></div>
+<div class="tools">unity &middot; unreal &middot; blender &middot; substance &middot; python &middot; c# &middot; hlsl &middot; compute &middot; houdini</div>
+
+<div class="float">&#9678; <b>open</b> for work &middot; pinned card [harumaki]</div>
+
+<div class="lab">
+  <h4>tune</h4>
+  <label>type <span id="s-type-out"></span></label><input type="range" id="s-type" data-var="--type-scale" data-default="1" min="0.85" max="1.3" step="0.01" value="1">
+  <label>headings <span id="s-head-out"></span></label><input type="range" id="s-head" data-var="--head-scale" data-default="1" min="0.7" max="1.7" step="0.01" value="1">
+  <label>spacing <span id="s-space-out"></span></label><input type="range" id="s-space" data-var="--space-scale" data-default="1" min="0.6" max="1.7" step="0.01" value="1">
+  <label>width <span id="s-measure-out"></span></label><input type="range" id="s-measure" data-var="--measure" data-unit="rem" data-default="64" min="44" max="84" step="1" value="64">
+  <button class="reset">reset</button>
+</div>
+<div class="labtag">VAR A1 &middot; Japanese, BENTO works &middot; amber #F59E0B &middot; <a href="/redesign-lab/">lab</a></div>
+<script src="/redesign-lab/frame-draw.js"></script>
+<script src="/redesign-lab/sliders.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: tokens
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer tokens {
+/* settings — design tokens (ITCSS settings layer; Rule 32: defined once, no magic values in
+   components). Palette = the LOCKED twilight-festival palette, values aligned to
+   foundations.css (the live source of truth). Tune live on the bench's "Palette" page —
+   overrides persist and flow to aggregate.html. */
+:root {
+  /* === core palette (foundations.css values) === */
+  --color-night: #070c23;
+  --color-night-2: #0a1030;
+  --color-text: #f5f3ef;
+  --color-muted: #9aa3bd;
+  /* warm lantern ramp (value tiers: highlight -> gold -> deep -> ember glow) */
+  --color-glow-soft: #ffd9a8; /* warm highlight (foundations #FFD9A8) */
+  --color-gold: #fbbf24; /* primary accent */
+  --color-gold-deep: #f59e0b; /* headers, deep accent */
+  --color-glow: #ff6a00; /* ember glow / ignite */
+
+  /* ONE cool accent = the "top note" that replaces pink (T0-A, Rod 2026-06-12: warm + 1 cool).
+     The cool sky the warm lanterns hang in (Shinsekai/Shinkai twilight origin). Spend it RARELY
+     on the single most-important mark per view (active state / one focal point) — decided
+     per-surface in Tiers 1-4, not blanket-applied.
+     SOURCED 2026-06-12 from harumaki Gen'eiten flyers (sources/harumaki-palette.md): the teal-cyan
+     disc/link accent. Alt = cobalt #1830a8 (the glowing-figures blue). Brighten toward #78c0c0 on
+     the Palette page for more pop. */
+  --color-accent-cool: #3090a8;
+
+  /* === surfaces & lines === */
+  /* WARM GREY - Rod picked it 2026-08-23 from card-greys-tests.html ("Warm grey is the
+     winner"). Was rgba(12,16,38,.55), a real blue: 38 blue against 12 red. ORIGIN: ROD - this
+     swatch is ours, not sourced, and was labelled so on the page when he chose it.
+     Alpha held at .55 so only the hue moved and no box changed size. */
+  --color-panel: rgba(28, 26, 24, 0.55);
+  --color-panel-solid: #1c1a18; /* the same warm grey, opaque. Was #161d39. */
+  --color-glass: rgba(7, 12, 35, 0.4); /* top-bar backdrop glass */
+  --color-line: rgba(251, 191, 36, 0.26); /* gold hairline (norikura) */
+  --color-line-soft: rgba(255, 255, 255, 0.1); /* neutral UI hairline */
+  --color-line-faint: rgba(255, 255, 255, 0.06); /* whisper hairline (bands, bar edge) */
+  --color-surface: rgba(255, 255, 255, 0.05); /* subtle chip/input fill */
+  --color-surface-faint: rgba(255, 255, 255, 0.03);
+
+  /* === component-anchored colors === */
+  --color-ink: #1a1a1a; /* text on gold fills (buttons, badges) */
+  --color-cover-hi: #1b2452; /* card cover gradient top (also reel band kin) */
+  --color-cover-lo: #0b1024; /* card cover gradient bottom / reel band ground */
+  --color-warm-muted: rgba(245, 232, 208, 0.72); /* cream body text on card covers */
+  --color-stamp-paper: #1e160e; /* stamp callout paper (dots must match exactly) */
+  --color-code-bg: #0a0e22;
+  --color-code-text: #cdd3e8;
+  --color-code-green: #9bdc8a; /* code symbol accent */
+  --color-icon-stroke: var(--color-gold-deep); /* draw-in icons resting stroke — orange (Rod 2026-08-11; was pale #cdd8f0 from the stephan source) */
+
+  /* type (hybrid fork: hand logo / display headers / body / mono workhorse) */
+  --font-hand: "Caveat", cursive;
+  /* TYPE DECISION LOCKED 2026-08-18 (ROD): "rounded gothic is fine and we should use it for the
+     project cards and headers as well." So DISPLAY is no longer a serif - the site has one text
+     face plus the hand face plus mono, and nothing reaches for a mincho any more.
+     This settles the open problem that had run since the font audit: four of the five harumaki
+     sites render in mincho/serif, which contradicted the locked "hand-drawn name + clean mono,
+     no serif" call. Rod picked the /ndt/ side, so the original call survives intact.
+     Changing the TOKEN rather than each page is deliberate - card titles, section heads, the post
+     header, the dated timeline, the quote block and the stamp callout all reach for --font-display,
+     so they move together and cannot drift apart later. */
+  --font-display: "M PLUS Rounded 1c", sans-serif;
+  --font-body: "M PLUS Rounded 1c", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  /* z-index scale */
+  --z-content: 1;
+  --z-chrome: 60;
+  --z-overlay: 200;
+}
+}

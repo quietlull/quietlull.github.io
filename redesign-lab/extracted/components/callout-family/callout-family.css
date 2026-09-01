@@ -1,0 +1,295 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* ============================================================================================
+   callout-family - the BOX under the washi tape. THREE VERSIONS for Rod to pick between.
+
+   Built 2026-08-23 from the reference brief at
+   analysis/reference-briefs/callout-family-the-box-under-the-tape.md, which re-verified every
+   source live rather than trusting the saved notes.
+
+   ===== READ THIS FIRST: THE STATED SOURCE DOES NOT COVER THIS COMPONENT =====
+
+   The tape is fully sourced (gneiss `.taped` + winterwind's tear). THE BOX IS NOT, and neither is
+   the five-way differentiation. gneiss.place has NO callout system at all - all six of its
+   stylesheets were grepped for callout|notice|warning|admonition|aside and returned ZERO hits.
+   Its only prose device in that family is a bare blockquote.
+
+   So this file does not pretend gneiss is the parent. Each version below names the real site it
+   comes from, and all four were re-fetched and byte-checked this session.
+
+   ===== WHAT THE TAPE ALREADY DECIDES, so the box does not have to =====
+
+   The tape is the differentiator: warning = D corners/pink, note = A top/green, tldr = B left/
+   orange, quote = C L-corners/blue, reference = none. That is why the strongest box answer is the
+   one that differs LEAST between categories - flamedfury's, where the variant changes exactly one
+   thing. A box that also differentiates would be saying the same thing twice.
+
+   ===== GEOMETRY CONTRACT - inherited from washi-tape.css, NOT redefined here =====
+   --tape-w 26px, --tape-bite 7px (top override 16px). Host width
+   calc(100% - 2 * (tape-w - tape-bite)) with margin-left 19px. Host needs position:relative and
+   MUST NOT set overflow:hidden - every placement overhangs. The colour class goes on the HOST,
+   never on .tape: .tape declares --tape-hue only as a var() fallback so the host value inherits,
+   and setting it on .tape renders grey.
+
+   ===== PALETTE / SCENE CORRECTIONS APPLIED TO EVERY VERSION =====
+   cyanilux #00aabb chip -> dropped (cool UI accent). flamedfury #999 -> --color-silver.
+   catlikecoding #ddd/#ccc and .dark #444/#555 -> --color-panel (their #444 is an OPAQUE fill that
+   would kill the scene). gneiss --bg-paper/--ink-primary -> our night tokens. gneiss --accent-red
+   -> --color-silver. All radii -> 0 (square by default; catlikecoding and flamedfury are already
+   square, so for those two it is a transcription, not a deviation).
+   NOT TAKEN: gneiss .glassine-overlay-box, which carries backdrop-filter: blur(2px) and sits in
+   the same file as the rules that ARE taken.
+
+   ===== THE BLUE IS AN EXCEPTION ON THE TAPE ONLY =====
+   The palette law bans cool accents outside the sky. Rod approved the blue L directly, so it
+   stands ON THE TAPE OBJECT. It must NOT migrate to a box border, box text or a chip. Stated here
+   so the next agent does not read the exception as a licence.
+   ============================================================================================ */
+
+/* ── SHARED SHELL ──────────────────────────────────────────────────────────────────────────
+   Everything all three versions agree on. Kept separate so the versions differ only where they
+   genuinely differ. */
+.co {
+  position: relative;                 /* the tape is absolutely positioned against this */
+  width: calc(100% - 2 * (26px - 7px));
+  margin-left: 19px;
+  margin-block: 1.9rem;
+  border-radius: 0;                   /* square by default */
+  color: var(--color-text, #f5f3ef);
+}
+.co > :first-child { margin-top: 0; }
+.co > :last-child { margin-bottom: 0; }
+.co p { line-height: 1.7; }
+
+/* The category LABEL. Free-form text, not a fixed severity set - maxime's pattern, though his
+   own straddling tab is deliberately NOT copied because it is structurally the same move as tape
+   on an edge and would read as the device repeated. */
+.co__label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-silver, #a3a19d);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   VERSION 1 - "one shell, the variant changes one thing"
+   SOURCE: flamedfury.com, z2Ai70SrDv.css (103,170 bytes), re-fetched and byte-matched.
+   TIER: Remixed. Idea-origin: theirs for the structure, ROD for the tape system it serves.
+
+   Their `aside` is ONE box; the role class (note/warning/tip/skateboard) changes ONLY the icon.
+   That is exactly the property this system needs, because the tape is already carrying the
+   difference. Rod also picked this device once before, on 2026-08-22, for its orb.
+
+   VERBATIM, with our tokens substituted:
+     --border-width: 0.2rem; border: var(--border-width) solid #999;
+     padding-inline: var(--space-s-m); padding-block: var(--space-s-m);
+     margin-block: var(--space-m-l); position: relative;
+
+   THEIR SPACING SCALE, taken as-is because it is what makes the box feel theirs:
+     --space-s-m:  clamp(0.625rem,  0.41rem + 1.06vw, 1.3125rem)
+     --space-m-l:  clamp(0.875rem,  0.55rem + 1.63vw, 1.9375rem)
+
+   SQUARE IS A TRANSCRIPTION HERE, NOT A DEVIATION. Their rule says
+   `border-radius: var(--border-radius)` and that bare token is defined ZERO times in their file -
+   only --border-radius-medium and -small exist. It resolves to nothing and their aside renders
+   square. Confirmed live.
+
+   THE ORB IS DELIBERATELY ABSENT. Their `aside::before` punches a circle through the border,
+   filled with the page background. That trick needs an OPAQUE page; ours is 55% translucent over
+   a live scene, so the punch reads as a disc rather than a hole. Rod superseded it with the tape
+   system anyway. Not carried.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.co--v1 {
+  --border-width: 0.2rem;
+  --space-s-m: clamp(0.625rem, 0.41rem + 1.06vw, 1.3125rem);
+  --space-m-l: clamp(0.875rem, 0.55rem + 1.63vw, 1.9375rem);
+
+  border: var(--border-width) solid var(--color-silver, #a3a19d);
+  background-color: var(--color-panel, rgba(28, 26, 24, 0.55));
+  padding-inline: var(--space-s-m);
+  padding-block: var(--space-s-m);
+  margin-block: var(--space-m-l);
+  /* HARD offset shadow, zero blur - gneiss `.pinned-note`, verbatim geometry.
+     A blurred shadow smears the live three.js scene behind the card; a hard offset does not.
+     Their colour #bda77d is a light-paper value and becomes our warm line token. */
+  box-shadow: 3px 3px 0 rgba(88, 70, 48, 0.5);
+}
+/* The four corner tabs on the warning variant overhang all four corners, so text has to be kept
+   out from under them. This is the only place a category changes the BOX in v1. */
+.co--v1.co--warning { padding: calc(var(--space-s-m) + 8px); }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   VERSION 2 - "the quiet secondary rail"
+   SOURCE: catlikecoding.com/unity/tutorials/tutorials.css, `aside` at line 236, re-fetched.
+   TIER: Remixed. Idea-origin: theirs.
+
+   VERBATIM:
+     aside { background-color:#ddd; border:2px solid #ccc; font-size:14px; margin:1em; padding:0 1em }
+     aside h3 { font-size:14px; margin:0 0 1em; padding:1em 0 0; cursor:pointer }
+
+   THE IDEA WORTH HAVING: the box is ONE NOTCH SMALLER THAN PROSE - 14px against their 16px body.
+   A run of callouts then reads as a quiet secondary rail rather than a stack of banners. With
+   five categories that could all appear in one post, that matters more here than on their site.
+   Their h3 also gets NO size hierarchy at all - the heading is the same 14px as the body.
+
+   Already square, 2px flat border, no radius, no shadow. Nothing to correct but the colours:
+   their #444 dark-mode fill is OPAQUE and would black out the scene behind the card.
+
+   NOT TAKEN: the disclosure behaviour (`aside div{display:none}` + `.expanded`). Their aside is a
+   collapsible, not an admonition, and a callout that hides its own content is a different device
+   from the one Rod decided. Their `@media print{aside div{display:block}}` is the good half of
+   that idea and is moot without the collapse.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.co--v2 {
+  font-size: 0.875rem;                /* one notch under prose - the whole point */
+  line-height: 1.75;
+  border: 2px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  background-color: var(--color-panel, rgba(28, 26, 24, 0.55));
+  padding: 0 1em;
+  margin-block: 1em;
+  /* CAUGHT BY MEASURING, not by reading: `.taped` (washi-tape.css) sets its own
+     box-shadow: 0 3px 5px rgba(0,0,0,.45), and every callout here carries `.taped` for the tape
+     geometry. So v2 was silently inheriting a shadow catlikecoding does not have, which is the
+     one thing that distinguishes it from v3. Cancelled explicitly.
+     This is worth knowing generally: `.taped` brings a shadow with it, so any box that wants a
+     different one - or none - has to say so. */
+  box-shadow: none;
+}
+.co--v2 p { padding: 1em 0; margin: 0; font-size: inherit; }
+.co--v2 .co__label { padding-top: 1em; margin-bottom: 0; font-size: 0.66rem; }
+.co--v2 .co__label + p { padding-top: 0.5em; }
+.co--v2.co--warning { padding: 0 calc(1em + 8px); }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   VERSION 3 - "the tape's actual partner box"
+   SOURCE: gneiss.place box.css `.box` + `.polaroid`, re-fetched this session.
+   TIER: Remixed. Idea-origin: theirs.
+
+   THIS IS THE ONE THE TAPE WAS DESIGNED AGAINST. gneiss's own taped markup is
+   `class="taped polaroid"` - so the tape's real partner is NOT an evenly padded card, it is the
+   polaroid, whose deep bottom sill is the device:
+
+     .polaroid { padding: 1rem 1rem 3rem 1rem; }        <- the asymmetry IS the polaroid
+     .box { box-shadow: 0 3px 5px rgba(88,70,48,0.50); } <- the warm shadow, verbatim
+
+   That asymmetric padding is theirs and it is free. It also does something useful here: the deep
+   bottom sill gives the bottom corner tapes somewhere to sit without touching text.
+
+   THE WARM BLUR IS THE TRADE. `0 3px 5px rgba(88,70,48,.5)` is the real gneiss value and is
+   warmer and softer than v1's hard offset - but it BLURS, which smears the live scene behind the
+   card. v1 and v3 are deliberately opposite on exactly this point so Rod can see both.
+
+   CORRECTION THIS VERSION CARRIES: washi-tape.css shipped `box-shadow: 0 3px 5px rgba(0,0,0,.45)`
+   with a comment saying it "becomes rgba(88,70,48,.5) when colour lands". Colour has landed and
+   the real value is verified. This is that value.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.co--v3 {
+  background: var(--color-panel, rgba(28, 26, 24, 0.55));
+  border: 2px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
+  padding: 1rem 1rem 3rem 1rem;       /* theirs, verbatim - the sill is the device */
+  box-shadow: 0 3px 5px rgba(88, 70, 48, 0.5);
+  margin-block: 1.9rem;
+}
+.co--v3.co--warning { padding: calc(1rem + 8px) calc(1rem + 8px) 3rem; }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   REFERENCE / LINKS - NO BOX AT ALL, and this is the cleanest sourced answer in the set.
+   SOURCE: stripe.dev additionalResourcesList. TIER: Remixed. Idea-origin: theirs.
+
+   Rod decided reference gets no tape and no rotation. Stripe goes one further: no box either.
+     .ListItem { border-bottom: .5px solid var(--borderColor); display: grid }
+     .link { padding: 12px 0; align-items: center; display: grid }
+     .SquareIcon { background-color: ...; width:8px; height:8px }   <- an 8px HARD SQUARE marker
+
+   Hairline .5px bottom rules, an 8px square marker, list-style:none, 12px row padding. No card,
+   no border, no fill. It is the same shape as the decision: quiet end matter that does not
+   interrupt.
+   Their .5px is kept - it is a real sub-pixel hairline on retina and rounding it to 1px doubles
+   the weight of the one device this has.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+.co-ref { width: 100%; margin-left: 0; margin-block: 1.9rem; }
+.co-ref ul { list-style: none; margin: 0; padding: 0; display: grid; }
+.co-ref li { border-bottom: 0.5px solid var(--color-line-soft, rgba(255, 255, 255, 0.1)); }
+.co-ref a {
+  display: grid;
+  grid-template-columns: 8px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  text-decoration: none;
+  color: var(--color-text, #f5f3ef);
+  border-bottom: 0;                   /* cancels the prose-link hairline; the row rule is the device */
+}
+.co-ref a::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-gold, #fbbf24);   /* their square marker, our accent */
+}
+.co-ref a:hover { background: none; color: var(--color-gold, #fbbf24); }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   THE QUOTE PROBLEM - stated in CSS because it must not be silently resolved.
+
+   THREE INDEPENDENT SOURCES REFUSE A BOX:
+     maxime    - no bar, no rule, no glyph, NO BACKGROUND. The device is typographic contrast plus
+                 a width break that lets the quote escape the measure.
+     stripe    - has a blockquote rule, but it is REJECTED ON USAGE: zero <blockquote> elements
+                 across four fetched articles. Dead CSS, not a used device.
+     gneiss    - the tape's OWN site also refuses a box: left rule, italic, display face.
+
+   So `quote + card + L-corner tape` HAS NO SOURCE. Rod chose tape C for it knowing the corners
+   need corners to sit on. The boxed version below is therefore tiered SLOP, idea-origin CLAUDE,
+   and is drawn ONLY because the decision requires it. `.co-quote--boxless` is the sourced
+   alternative and is drawn beside it so the two can be compared honestly.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+/* SLOP - no source. Exists because tape C needs corners. */
+.co-quote--boxed { }                  /* takes whichever version shell is picked; no extra rules */
+
+/* SOURCED alternative: the one treatment all three sites share is a left rule and italic.
+   gneiss verbatim geometry, our tokens, their --accent-red on the cite replaced with silver. */
+.co-quote--boxless {
+  width: 100%;
+  margin: 1.5rem 0 1.5rem 1rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--color-silver, #a3a19d);
+  font-style: italic;
+  font-size: 1.05rem;
+  background: none;
+  border-top: 0; border-right: 0; border-bottom: 0;
+  box-shadow: none;
+}
+.co-quote--boxless cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  font-style: normal;
+  color: var(--color-silver, #a3a19d);   /* theirs is --accent-red; no red */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .co, .co-ref a { transition: none; }
+}
+}

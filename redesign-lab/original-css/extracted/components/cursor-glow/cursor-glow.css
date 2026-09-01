@@ -1,0 +1,44 @@
+/* cursor-glow — warm "cursor-as-lantern" vignette that follows the pointer.
+   Technique: brittanychiang / merodev `.cursorglow` fixed full-viewport radial at --cx/--cy.
+   Remix: recolored from merodev's purple to the festival gold (Rule 32 — token, no magic color);
+   swap --cursor-glow-tint to --color-accent-cool for a cool wash instead. */
+.cursorglow {
+  --cursor-glow-radius: 520px; /* merodev source value */
+  --cursor-glow-tint: color-mix(in srgb, var(--color-gold) 14%, transparent);
+  position: fixed;
+  inset: 0;
+  z-index: -1; /* behind content, above the page background */
+  pointer-events: none;
+  background: radial-gradient(
+    var(--cursor-glow-radius) circle at var(--cx, -700px) var(--cy, -700px),
+    var(--cursor-glow-tint),
+    transparent 70%
+  );
+}
+
+/* --- LAB DEMO ONLY (never ships): gives the glow something to wash across so it reads --- */
+.cursor-glow-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  min-height: 70vh;
+  padding: var(--space-6) var(--space-4);
+}
+.cursor-glow-demo__hint {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+.cursor-glow-demo__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 160px);
+  gap: var(--space-4);
+}
+.cursor-glow-demo__panel {
+  height: 120px;
+  border-radius: 14px;
+  background: var(--color-panel);
+  box-shadow: inset 0 0 0 1px var(--color-line-faint);
+}

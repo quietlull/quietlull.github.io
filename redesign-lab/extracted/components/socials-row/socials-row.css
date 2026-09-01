@@ -1,0 +1,294 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* =================================================================================================
+   socials-row - "Elsewhere". The five places Rod exists off this site.
+
+   RESERVATION: 191 x 120, measured off about-blockout.html at viewport 1440 and recorded in
+   analysis/2026-08-23-blockout-contract.md (ABOUT table, "Socials"). The same slot exists on the
+   post rail (final-post.html:616, data-slot="socials (Elsewhere)", min-height 90px) - that one is
+   SMALLER, so a version that fits 120 does not automatically fit 90. Flagged, not assumed.
+
+   THE MARKS ARE NOT SOURCED HERE, THEY ARE REUSED.
+   references/social-icons/ holds github / x / linkedin / artstation / itchdotio, fetched verbatim
+   from unpkg.com/simple-icons@13.0.0 on 2026-08-23 and already used by the portal windows
+   (portal-window.css:338). element-tracker.md logs them as "Social icons (5) | True | mine".
+   Nothing new was fetched and no mark is drawn or approximated. Inlined rather than <img> for the
+   reason skills-row already gives: an <img> cannot take colour from outside.
+
+   THE LINKS ARE REAL. _data/contact.yml plus _config.yml:41-42:
+     github.com/quietlull, twitter.com/AQuietLull, linkedin.com/in/rodneyfan,
+     artstation.com/rodneyfan, rodneyfan.itch.io
+
+   =================================================================================================
+   A CORRECTION TO A SAVED SOURCE, FOUND BY CHECKING IT. sources/cortiz-socials.md is WRONG on
+   three points. Live cortiz.dev fetched 2026-08-23 (index 22,691 bytes plus
+   /_next/static/css/e603ef32f6459a22.css). THE LIVE SITE WINS and the corrected values are used
+   below.
+
+     1. THE NOTE SAYS 50 x 50. Live desktop is 70 x 70. 50 x 50 is the <=768px value.
+          .SocialMedia_socialMedia__608e_.SocialMedia_outlined__FgJp7 a
+              { border:2px solid hsla(0,0%,100%,.711); width:70px; height:70px }
+          @media(max-width:768px){ ...same selector... { width:50px; height:50px } }
+     2. THE NOTE SAYS "the HOVER is GSAP-driven (no CSS hover rule found)". There IS a CSS hover,
+        and it is the whole state change:
+          .SocialMedia_socialMedia__608e_ a:hover     { border-color:#fff }
+          .SocialMedia_socialMedia__608e_ a:hover svg { color:#fff }
+          .SocialMedia_socialMedia__608e_ a svg       { color:hsla(0,0%,100%,.711);
+                                                        transition:color .2s ease-in-out }
+        Rest and hover are the SAME hue at two alphas - the mark and the ring brighten together.
+     3. THE NOTE PUTS THE RULE ON .mediaLink. .mediaLink carries no CSS at all; it is a bare hook.
+        The styling is all on `.SocialMedia_socialMedia__608e_ a`.
+   Also new, and absent from the note: the row is `<div class="flex gap-[12px]">` (gap 12px), and
+   the marks are `width="1em" height="1em"` at `text-[20px] lg:text-[30px]`, so their 70px ring
+   pairs with a 30px mark and their 50px ring pairs with a 20px mark. That pairing is used below
+   rather than a size of my own.
+   ============================================================================================= */
+
+
+/* -- SHARED ------------------------------------------------------------------------------------
+   Nothing here is decorative. Type size is decisions.css:423 (.d-tag, 0.75rem) rather than a new
+   number; the label recipe is TheRealMJP's kicker, already verified live and built in
+   extracted/components/prevnext-real/prevnext-real.css:58 - reused, not re-sourced. */
+.socials-row {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.75rem;
+  color: var(--color-silver, #a3a19d);
+}
+
+.socials-row__label {
+  font-size: 0.8em;
+  line-height: 1;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.socials-row__list {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.socials-row__mark {
+  fill: currentcolor;
+  flex: none;
+}
+
+/* Hover and focus are the same state everywhere below. That is stephanewillems' rule
+   (sources/stephanewillems-skills.md: tabindex on every icon, "the hover state is a FOCUS state
+   too"), and it is the half most implementations forget. The focus RING itself is not declared
+   here - extracted/styles/generic.css:25 owns it globally. */
+
+
+/* -- V1 "RING" - cortiz.dev, corrected against the live site -----------------------------------
+   TIER: Remixed. IDEA ORIGIN: Rod (he named the cortiz social buttons; sources/cortiz-socials.md
+   opens "Rod wants: the social buttons").
+
+   VERBATIM: the 12px gap, the 50px box, the 2px ring, border-radius 50%, flex centring, the 20px
+   mark that goes with the 50px box, and `transition: color .2s ease-in-out`.
+
+   *** THIS IS THE ONE ROUND THING IN THE COMPONENT AND IT NEEDS ROD'S WORD. ***
+   Square-by-default is a locked rule. The circular ring is not decoration on this source, it is
+   the ONLY liftable part of it - the hover was thought to be GSAP (it is not, see above) and the
+   colour cannot transfer, so squaring the ring leaves nothing of cortiz behind. Kept round and
+   flagged rather than squared silently. If Rod squares it, V1 stops being sourced.
+
+   TWO CHANGES, both stated rather than buried:
+     - COLOUR. Theirs is white at 71.1% resting, 100% on hover: one hue, two values. Ours is
+       --color-silver resting (which is literally #f5f3ef mixed 62% into the panel, per
+       decisions.css:20) lifting to --color-gold. The VALUE RELATIONSHIP is theirs; the hue is the
+       site's, because white ring plus white mark on a night ground is the cool-neutral look the
+       palette law is written against.
+     - `border: 2px solid currentcolor` instead of a separate border-color. Theirs transitions
+       only `color`, so their ring SNAPS to white while the mark fades. Ours fades together. That
+       is a real behavioural difference, not a tidy-up.
+
+   FIT, MEASURED off this component's own demo in headless Chrome at 1440, not computed:
+   191 x 112. Five wrap 3 + 2 at a 62px stride (50 + 12), rows at x 130/192/254 then 130/192.
+   8px of height to spare.
+   NO LABEL, and that is forced arithmetic on measured parts, not a taste call: the label block
+   measures 9.59 + 8 margin = 17.59px, which puts the total at 129.59 against a 120 reservation.
+   The marks carry the meaning and aria-label carries the name. */
+.socials-row--ring .socials-row__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.socials-row--ring .socials-row__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border: 2px solid currentcolor;
+  border-radius: 50%;
+  color: var(--color-silver, #a3a19d);
+  transition: color 0.2s ease-in-out;
+}
+
+.socials-row--ring .socials-row__link:hover,
+.socials-row--ring .socials-row__link:focus-visible {
+  color: var(--color-gold, #fbbf24);
+}
+
+.socials-row--ring .socials-row__mark {
+  width: 20px;
+  height: 20px;
+}
+
+
+/* -- V2 "NAMES" - 109ichiki.com footer SNS list, verbatim --------------------------------------
+   TIER: True on the link rule, Remixed as a block (the label is grafted from TheRealMJP).
+   IDEA ORIGIN: theirs.
+
+   SOURCE: https://109ichiki.com/profile/ + https://109ichiki.com/_astro/style.COBHKi4A.css
+   (62,906 bytes, fetched 2026-08-23 - the same file and the same byte count already recorded in
+   sources/109ichiki-dialog-window.md, so that note verifies). Rod tiered this site himself and
+   his gallery note on the profile page reads "socials as small labelled buttons".
+
+   VERBATIM, class `_snsLink_m7rmt_45`:
+       display:flex; align-items:center;
+       text-decoration:underline;
+       text-decoration-thickness:1px;
+       text-underline-offset:.1875rem;
+       text-decoration-color:color-mix(in srgb,currentColor 60%,transparent)
+       :hover { text-decoration:none }
+   and its container `_sns_m7rmt_35`:
+       { display:flex; gap:1.25rem }
+       @media screen and (max-width:576px){ display:block }
+
+   THE STACK IS THEIRS TOO. A 191px rail cannot hold five names in a row, and rather than invent a
+   stack I took the rule they already ship for exactly that case - their own <=576px `display:block`.
+   No layout was originated.
+
+   THE HOVER IS THE INTERESTING PART AND IT IS BACKWARDS ON PURPOSE: the underline is present at
+   rest and REMOVED on hover. That is a non-colour state change, which is what WCAG 1.4.1 wants,
+   and it costs no motion over the live scene.
+
+   ONE ADDITION, and it is ours: `color` also moves to gold. Theirs does not change colour, but
+   theirs sits on an opaque page - on a night ground the underline vanishing is the only cue and it
+   reads as the link switching off. Say the word and the colour half comes out.
+
+   line-height 1.5 IS OURS and here is the number behind it: the house body value is 1.7
+   (extracted/styles/generic.css:18), which makes five names 5 * 20.4 = 102, and 102 plus the
+   measured 17.59 label block = 119.59 of a 120 reservation. That is 0.41px of slack, which is not
+   slack. At 1.5 the block measures 191 x 107.59 and the slack is 12.41px.
+
+   ONE THING TO KNOW RATHER THAN FIX: the link measures the full 191 wide because their own
+   narrow-viewport layout is a block <li> with a display:flex <a> inside it, so the <a> stretches.
+   The UNDERLINE does not - it is painted on the text run, measured at 43.2 / 7.2 / 57.61 / 72 /
+   50.41px for the five names. So the hit target is the whole row and the mark is only the word.
+   That is theirs, and it is a bigger keyboard and pointer target than the text, so it stays. */
+.socials-row--names .socials-row__link {
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+  color: var(--color-text, #f5f3ef);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.1875rem;
+  text-decoration-color: color-mix(in srgb, currentcolor 60%, transparent);
+}
+
+.socials-row--names .socials-row__link:hover,
+.socials-row--names .socials-row__link:focus-visible {
+  text-decoration: none;
+  color: var(--color-gold, #fbbf24);
+}
+
+
+/* -- V3 "MARKED" - 109ichiki.com labelled button, unpacked into a rail list --------------------
+   TIER: Remixed. IDEA ORIGIN: theirs.
+
+   This is the OTHER social device on the same site - the pill link that appears on the profile and
+   loading screens, `<a class="_root_2nwwz_1"><span class="_inner_2nwwz_27">Twitter<span
+   class="_arrow_2nwwz_35"><svg .../></span></span></a>`. Verbatim from the same stylesheet:
+       ._inner_2nwwz_27 { display:flex; align-items:center; justify-content:center;
+                          gap:.5em; padding:.25em 1.2em .3em }
+       ._arrow_2nwwz_35 { width:.8em; display:flex; align-items:center;
+                          justify-content:center; margin-top:.16em }
+       [target=_blank] ._arrow_2nwwz_35 { transform:rotate(-45deg) }
+       ._root_2nwwz_1  { border-radius:100vh; border:solid 1px var(--color-border);
+                         transition:background-color ..., color ... }
+       ._root_2nwwz_1:hover { background-color:var(--color-text); color:var(--color-bg) }
+   The arrow PATH below is theirs byte for byte (viewBox 0 0 12 9).
+
+   WHAT DID NOT TRANSFER, AND WHY:
+     THE PILL ITSELF. `border-radius:100vh` is a full pill, against square-by-default, and squaring
+     it lands on something the site already owns twice (.d-tag / .tag-badge) so it would add a
+     third box for one job. It also does not fit, and this is ARITHMETIC FROM THEIR OWN DECLARED
+     VALUES rather than a measured render: at 0.75rem their padding (.25em 1.2em .3em) plus a 1px
+     border makes each chip 12 + 3 + 3.6 + 2 = 20.6px tall and 14.4px of side padding each side,
+     which against the measured name widths (43.2 / 7.2 / 57.61 / 72 / 50.41) wraps five chips to
+     four rows inside 191px. That is roughly 100px of chips before the label's measured 17.59, and
+     what is left will not hold the padding that makes a pill a pill. So the BOX is dropped and the
+     row geometry inside it is kept. If Rod wants the chips, this needs building and measuring, not
+     estimating.
+     THE INVERT HOVER goes with it - filling a box requires a box.
+   WHAT IS KEPT is `_inner`'s row (flex, centred, gap .5em) and the outbound arrow, which is the
+   one device here the site does not already have.
+
+   The mark is `width:1em; height:1em` - that is cortiz's own markup (`height="1em" width="1em"`
+   on every social svg), so the mark tracks the label size instead of being pinned.
+
+   The arrow's wrapper span is dropped and its rules applied to the svg directly. One element
+   instead of two, same geometry (D5). */
+.socials-row--marked .socials-row__link {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  line-height: 1.5;
+  color: var(--color-silver, #a3a19d);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.socials-row--marked .socials-row__link:hover,
+.socials-row--marked .socials-row__link:focus-visible {
+  color: var(--color-gold, #fbbf24);
+}
+
+.socials-row--marked .socials-row__mark {
+  width: 1em;
+  height: 1em;
+}
+
+.socials-row--marked .socials-row__arrow {
+  width: 0.8em;
+  margin-top: 0.16em;
+  transform: rotate(-45deg);
+  flex: none;
+}
+
+
+/* -- REDUCED MOTION ----------------------------------------------------------------------------
+   The only motion in the file is the 0.2s colour fade V1 and V3 inherit from cortiz. It is
+   removed rather than shortened, so the state still changes and only the tween goes. */
+@media (prefers-reduced-motion: reduce) {
+  .socials-row__link {
+    transition: none;
+  }
+}
+}

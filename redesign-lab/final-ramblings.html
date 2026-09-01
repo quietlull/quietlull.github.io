@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FINAL - Ramblings</title>
+<!--
+  ===== THE "FINAL" GROUP (started 2026-08-18, ROD) =====
+  "i want you to start a new group of pages called final... each of these pages will contain just
+   the chosen blockout and we will replace and add each element one by one so everything on the
+   page has had human approval."
+
+  SO THE RULE FOR THIS FILE IS ABSOLUTE:
+    - It starts as the CHOSEN BLOCKOUT and nothing else. Every slot is greybox.
+    - A slot becomes real ONLY when Rod has approved that specific element. Not when it looks
+      ready, not when a component exists, not when another lab page has one.
+    - Nothing is added that the blockout does not declare. An extra element is a PROPOSAL and goes
+      back to the blockout first (docs/PAGE-PROCESS.md, THE BLOCKOUT IS A CONTRACT).
+    - Every 'approved' state below cites Rod saying so.
+
+  CHOSEN BLOCKOUT: ramblings-blockout.html?v=hairline
+  WHY: Eve OFFICIAL hairline column (D15) - the only variant that handles a mix of illustrated and text-only rows without moving the row left edge.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/washi-tape/washi-tape.css">
+<style>
+/* state-panel headings were <h4> and put bench chrome into the document outline,
+   producing an h2 -> h4 skip on every final page. Same look, no outline cost. */
+.sp__h{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  margin:10px 0 4px;color:#8e8e8e}
+
+/* The universal reset lives in foundations.css, in the `reset` cascade layer, and this page
+   loads it. The duplicate that used to sit here was UNLAYERED, and unlayered CSS beats every
+   layer - so `margin:0;padding:0` was overriding the padding of every layered component.
+   Measured: 452 computed-style differences across five pages, all from this one line. */
+html{scroll-behavior:smooth}
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+/* ---- the scene, when a page carries it ---- */
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;transition:opacity .5s;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+
+/* ---- PENDING SLOT: the greybox. Deliberately ugly. It must never read as a design. ---- */
+.slot{position:relative;border:1.5px dashed #4a4a4a;background:rgba(20,20,20,.55);
+  display:grid;place-items:center;text-align:center;padding:22px 18px;gap:6px}
+.slot__name{font-family:var(--font-mono,ui-monospace),monospace;font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:#9a9a9a}
+.slot__wait{font-family:var(--font-mono,ui-monospace),monospace;font-size:.58rem;letter-spacing:.06em;
+  color:#6f6f6f;max-width:52ch;line-height:1.6}
+.slot__tag{position:absolute;top:6px;left:6px;font:9px ui-monospace,monospace;letter-spacing:.12em;
+  color:#141414;background:#8a8a8a;padding:1px 6px}
+
+/* ---- APPROVED slot: a hairline mark so Rod can see at a glance what is real ---- */
+.ok{position:relative}
+.ok::after{content:'APPROVED';position:absolute;top:6px;left:6px;z-index:40;
+  font:9px ui-monospace,monospace;letter-spacing:.12em;color:#0d2a12;background:#7ee0b8;
+  padding:1px 6px;pointer-events:none;opacity:0;transition:opacity .2s}
+body.show-state .ok::after{opacity:1}
+body:not(.show-state) .slot__tag{opacity:0}
+
+/* ---- the state panel ---- */
+#state{position:fixed;right:14px;bottom:14px;z-index:90;width:300px;max-height:70vh;overflow:auto;
+  background:rgba(8,10,18,.95);border:1px solid rgba(255,255,255,.2);padding:12px 13px;
+  font:11px/1.6 ui-monospace,Consolas,monospace;color:#dcdcdc}
+#state h4{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8e8e8e;margin:9px 0 3px}
+#state .bar{height:6px;background:#2a2a2a;margin:6px 0 10px}
+#state .bar i{display:block;height:100%;background:#7ee0b8}
+#state ul{margin:0;padding-left:14px}#state li{margin-bottom:2px;color:#bdbdbd}
+#state .a li{color:#7ee0b8}
+#state button{background:none;border:1px solid #555;color:#bbb;font:9px ui-monospace,monospace;
+  letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;cursor:pointer;margin-top:8px}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font:10px ui-monospace,monospace;
+  color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold,#F3B53C)}
+
+/* `max-width:none` ADDED 2026-08-24. Rod: "fix this ramblings off center issue".
+   THE COLUMN WAS 58px RIGHT OF CENTRE and the cause is a restated shorthand that did not restate
+   enough. This rule sets `width: min(1180px, 92vw)`, but `foundations.css` sets
+   `.wrap{max-width: var(--measure)}` = 64rem = 1024px, and **width and max-width are different
+   properties** - restating one does not beat the other. So `.wrap` computed 1024 while `.wf` inside
+   it is 1140, over-constraining `margin:0 auto` to 0 and left-aligning the whole column, which then
+   overhung 116px to the right. Gutters measured 200.5 / 84.5 at 1440.
+   Releasing the inherited cap lets `margin:0 auto` work again: 142.5 / 142.5, column still 1140,
+   page height unchanged. **This is the SAME defect on `final-projects.html`, 76px off**, where a
+   note claims it was already fixed - it was not, because that fix also restated `width` when
+   `max-width` was the binding term. Left alone there; he asked about ramblings. */
+.wrap{width:min(1180px,92vw);max-width:none;margin:0 auto;padding:56px 0 120px;position:relative;z-index:1}
+.stack{display:grid;gap:18px}
+.two{display:grid;grid-template-columns:6fr 12fr;gap:32px;align-items:start}
+@media(max-width:900px){.two{grid-template-columns:1fr}}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.three{grid-template-columns:1fr}}
+
+/* ==========================================================================================
+   THE LAYOUT.  Transcribed from ramblings-blockout.html?v=hairline, itself read from
+   eveofficial.com/news/  /css/style.css (36,914 bytes).  D15: "RAMBLINGS -> Eve OFFICIAL, the
+   hairline variant. Fixed 1140px centred column."  The deciding property, in D15's words: it is
+   the only one of the four that handles a mix of illustrated and text-only rows WITHOUT moving the
+   row's left edge - and Rod's ramblings will be exactly that mix.
+   Numbers are the blockout's, unchanged:
+     .wf 1140px centred (max 96vw) · titlebar 37px vertical padding, centred, 80px below
+     .list a 1px top hairline · .row 30px vertical padding + 1px bottom hairline
+     rows WITH a thumb reserve 270px on the right; the 240x135 thumb sits at right:0 top:30px
+     title 66% wide, blurb 72%, tag/date strip above at 16px tall
+   Row cadence is the blockout's N=8 with PINS=2.
+
+   DECLARED DEVIATION, carried over from the blockout rather than introduced here: NONE of the four
+   ramblings sources has a SEARCH field. Its geometry comes from the live site's own #post-search
+   (_layouts/ramblings.html), which is why it is 360x40 and right-aligned. Marked "ours" in the
+   blockout and marked ours here.
+   ========================================================================================== */
+.wf{width:1170px;max-width:92vw   /* was 96vw, and that was the 8px overflow. `.wrap` is
+     `min(1180px, 92vw)`, so a 4vw difference between the two exceeds the wrap's centred left
+     gutter by exactly 7.5px at EVERY width below ~1113px - it is a constant, not a point defect.
+     `body{overflow-x:clip}` hid it: no scrollbar appeared and the right 7.5px was simply cut,
+     taking the panel's entire right hairline with it at 1000. Matching the wrap's 92vw closes it.
+     Measured: 1000 goes 993 -> 985, and 1280 and 1440 are byte-identical because the clamp is not
+     the binding term up there. `final-projects.html` already uses 92vw, which is exactly why that
+     page has no overflow at 1000 and this one did. */;margin:0 auto}
+.titlebar{padding:37px 0;text-align:center;margin-bottom:0;}
+/* minmax(0,1fr) bounds the track. Without it the grid sizes to max-content, so a
+   560px measurement cell made the TRACK 560 wide and its own max-width:100% resolved
+   against that - the page overflowed by 187px at 390 and nothing looked wrong in the CSS. */
+
+
+
+
+
+
+/* .gb marks a row as greybox WITHOUT touching its layout. Using .slot here would have applied
+   display:grid + place-items:center + text-align:center and centred every row, destroying the
+   still left edge that is the whole reason D15 picked this variant. Outline, not border, so it
+   costs the box model nothing (docs/TRAPS.md). */
+.cell{border:1.5px dashed #3f3f3f;background:rgba(20,20,20,.45);max-width:100%;min-width:0;display:grid;place-items:center;
+  font-family:var(--font-mono,ui-monospace),monospace;font-size:.55rem;letter-spacing:.1em;
+  text-transform:uppercase;color:#6f6f6f;padding:2px 6px;text-align:center}
+.row .strip .cell{flex:none}
+.gb{position:relative;outline:1.5px dashed #4a4a4a;outline-offset:-2px}
+.gb>.slot__tag{position:absolute;top:6px;left:6px}
+.gb>.slot__wait{display:block;font-family:var(--font-mono,ui-monospace),monospace;font-size:.58rem;
+  letter-spacing:.06em;color:#6f6f6f;line-height:1.6;margin-bottom:12px;padding-left:74px}
+
+/* `justify-content:flex-end` DELETED - it was inert anyway, because `.list-controls` was
+   `width:100%` so flex-end had nothing to push against, and its own `justify-items:center` then
+   centred the field. The 24px is load-bearing: `.er-list::before`'s inset arithmetic is measured
+   against it, see the note on that rule. */
+.searchrow{margin-bottom:20px}
+.sf--ronja{height:50px}
+/* THE FILTER ROW IS GONE, 2026-08-24. Rod: "remove tags under the search bar for ramblings ...
+   i think for ramblings we can have tags but not show them let them search it up using the box."
+   So the tags stay ON the rows and stay SEARCHABLE - the field's corpus is title + blurb + tags
+   (`search-field.js`), which is why typing a tag name still filters even with no chips on screen.
+   Only the visible chip row goes. That also puts the page back in line with its own blockout,
+   which never declared a filter row; the deviation note above is now moot and says so. */
+@media(max-width:820px){.row--media{padding-right:0}
+  .row .thumb{position:static;width:100%;margin-top:15px}}
+
+/* FOOTER - the `footer-line` component is linked in <head> and is the ONLY copy.
+   Rod 2026-08-23: "put it in the workbench so we can get it right across the site."
+   Six inline copies used to live here, one per page, and they had already drifted -
+   the landing was still on 2.5rem/3rem at .66rem while the other five were on the
+   corrected 1.2rem/1.6rem at .62rem. Restating it here would re-create that. */
+
+/* generated separators, so the markup stays a plain list and a middot cannot orphan at a wrap */
+
+
+
+
+
+
+/* the footer spans the page and anchors left, rather than following the content column */
+
+/* the name is the way home (Rod 2026-08-23: "clicking my name should bring you to the landing
+   page"). It keeps the name styling and does NOT take the gold link colour - it reads as the
+   signature, not as another nav item, until you touch it. */
+
+
+</style>
+<link rel="stylesheet" href="/redesign-lab/extracted/components/footer-line/footer-line.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/button-kit/button-kit.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/page-title-desc/page-title-desc.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/search-field/search-field.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/entry-row/entry-row.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/empty-state/empty-state.css">
+<link rel="stylesheet" href="/redesign-lab/decisions.css">
+<style>
+/* BACKING BOX FOR THE ENTRY LIST. Rod 2026-08-24: "give the ramblings posts a backing box other
+   than that it looks alright."
+
+   ONE PANEL BEHIND THE LIST, NOT ONE BOX PER ROW, and that is a real choice rather than a detail.
+   entry-row is D15's pick - Eve's HAIRLINE-SEPARATED LIST - so giving each row its own border and
+   fill would turn a list into a stack of cards and fight the design that was picked. The other
+   finals panel their CONTENT AREA (the post does exactly this with `.prose::before`), so the list
+   gets the same treatment at the same values.
+
+   VALUES ARE THE POST'S, COPIED DELIBERATELY rather than re-picked: rgba(8,15,27,.92) fill, 1px
+   amber hairline at .15, the same soft drop. Rod has asked repeatedly for the finals to match each
+   other, so a new colour here would be the problem, not the fix.
+
+   Painted by a pseudo-element with a negative inset, the same technique the post and the rail use:
+   it costs the layout nothing, so the row rhythm and the 6.8px reservation overrun are untouched. */
+.wf .er-list{position:relative;isolation:isolate}
+/* HORIZONTAL BLEED IS 0, and that is forced rather than chosen. A -1.5rem bleed pushed the page
+   to scrollWidth 1017 against a 985 viewport. The panel was not the whole story: `.wf` is 960
+   wide at left 33, so the container ALREADY reached 993 on a 985 viewport - a pre-existing 8px
+   overflow caused by the layout being sized as if there were no scrollbar. Any horizontal bleed
+   compounds that, so the panel takes its vertical air only and sits flush to the list sideways.
+   The 8px container overflow is NOT mine and is left alone - it is a page-width question and
+   Rod owns layout. Flagged rather than quietly patched. */
+.wf .er-list::before{content:'';position:absolute;inset:0 -20px   /* was -2rem: the panel was overlapping the search control by exactly 7px.
+     The arithmetic: searchrow margin-bottom 24 + the list's own 1px border-top, minus the 32px
+     bleed, = -7. (An earlier pass called it 8 by omitting that border, which sits INSIDE the
+     panel's containing block because `inset` resolves against the padding box.) 1.5rem clears it
+     by 1px and stays SYMMETRIC, since `inset` is a shorthand at both ends. The alternative -
+     raising the search margin to 32px - clears the same pixel but moves the list, the footer and
+     the page height down 8px, so this one was taken instead. */;z-index:-1;pointer-events:none;
+  background:rgba(8,15,27,.92);border:1px solid rgba(245,158,11,.15);
+  box-shadow:0 4px 40px rgba(0,0,0,.4)}
+</style>
+
+<link rel="stylesheet" href="/redesign-lab/focus-ring.css">
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0" style="opacity:0"></div>
+<div id="scrim"></div>
+
+<main id="main"><div class="wrap"><div class="wf">
+
+  <!-- MERGED 2026-08-23. Greybox out, components in. Every data-slot and data-state is carried
+       across unchanged, so the page still reports the same 12 slots and none of them silently
+       becomes approved by being built - that is still Rod's call.
+       The lab reservation wrappers (.rsv) and the demo hooks (data-ttl / data-blurb) are NOT
+       carried over: they are bench chrome for measuring against the blockout, not part of the
+       component. -->
+
+  <div class="titlebar" data-slot="page title + description" data-state="pending">
+    <!-- PICKED 1 - the sub line. component-review: "PICKED 1." -->
+    <div class="ptd ptd--ramblings ptd--sub">
+      <h1 class="ptd__title d-h1">Ramblings</h1>
+      <p class="ptd__desc">Just a few thoughts, projects, and ideas from me. Sometimes its about games, other times its art and music and more. Just a museum of my thoughts.</p>
+    </div>
+  </div>
+
+  <!-- THE SEARCH IS NOW THE SAME FIELD AS PROJECTS (Rod 2026-08-24): "ramblings should have their
+       search bar updated to match the project one with the tags too", then "make it match the
+       horizontal length of the ramblings themselves".
+       So it spans the full column - 1140, the same width as an entry row - rather than the 340px
+       centred pill `list-controls` drew. That is a real layout change and it is his instruction.
+       WHY list-controls HAD TO GO regardless of preference: it declares itself circular-citation
+       Slop in its own header. Its box traces to `rework-stephan.html`, a file in this repo, so the
+       chain never left the building and Slop cannot ship. Its OTHER parts (filter pills, empty
+       state) are still used by two pre-final lab pages, so the file stays, it is just unlinked here.
+       NO FILTER ROW, and that is back in line with the blockout. One was built and then removed
+       the same day on Rod's word: "for ramblings we can have tags but not show them let them search
+       it up using the box." The tags are still on the rows and still searchable through the field,
+       because its corpus is title + blurb + tags. `ramblings-blockout.html?v=hairline` never
+       declared a filter row either, so the page and its blockout agree again. -->
+  <div class="searchrow">
+    <div class="sf sf--ronja" data-slot="search" data-state="pending">
+      <input class="sf__input" type="text" placeholder="search ramblings &amp; tags"
+             aria-label="Filter ramblings by title, blurb or tag">
+    </div>
+  </div>
+
+  <!-- PICKED B - filterable tags. Carried across with its known debt: the row sits 6.8px over its
+       blockout reservation, which was accepted at pick time rather than hidden. -->
+  <ul class="er-list">
+    <li class="er-row er-row--media" data-slot="entry row (with thumbnail) 1" data-state="pending">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2025.10.01</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/ludum-dare/">ludum-dare</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/ludum-dare-58/">ludum-dare-58</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/posts/LudumDareWhatIf/">Ludum Dare 58: What Could Have Been</a></h2>
+        <p class="er-blurb">talking about Ludumdare58 and what other game ideas we had other doomsday sales.</p>
+        <img class="er-thumb" src="/assets/media/LudumDareWhatIF/CSgo.jpg" alt="" loading="lazy">
+      </div>
+    </li>
+    <li class="er-row" data-slot="entry row (text only) 2" data-state="pending">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2026.07.25</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/game-design/">game-design</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/umamusume/">umamusume</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/roguelike/">roguelike</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/systems-design/">systems-design</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/game-design/posts/UmamusumeInheritance/">Umamusume: One of the Best Systems I&rsquo;ve Seen in Games</a></h2>
+        <p class="er-blurb">A breakdown of Umamusume&rsquo;s inheritance system, one mechanic that quietly pulls double duty as half a dozen systems at once.</p>
+      </div>
+    </li>
+    <li class="er-row" data-slot="entry row (text only) 3" data-state="pending" data-placeholder="true">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2026.03.20</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/unity/">unity</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/shader/">shader</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/compute/">compute</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/3d/">3D</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/tech-art/posts/ComputeGrass/">Compute Grass</a></h2>
+        <p class="er-blurb">GPU-driven grass rendering in Unity using compute shaders, instanced drawing, and render texture controls for interaction and culling.</p>
+      </div>
+    </li>
+    <li class="er-row er-row--media" data-slot="entry row (with thumbnail) 4" data-state="pending" data-placeholder="true">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2026.03.25</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/tool/">tool</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/2d/">2D</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/3d/">3D</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/shader/">shader</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/tech-art/posts/SpriteBaker9000/">The SpriteBaker9000</a></h2>
+        <p class="er-blurb">A custom 3D-to-2D pixel art rendering pipeline for Blender.</p>
+        <img class="er-thumb" src="/assets/media/SpriteBaker9000/Aseprite_3PcWQqrjDW.gif" alt="" loading="lazy">
+      </div>
+    </li>
+    <li class="er-row" data-slot="entry row (text only) 5" data-state="pending" data-placeholder="true">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2026.03.11</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/unity/">unity</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/shader/">shader</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/3d/">3D</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/tech-art/posts/Procedural3DMask/">Procedural 3D Mask</a></h2>
+        <p class="er-blurb">A reusable SDF-like dynamic zone system in Unity with ShaderGraph support, used for terrain blending, wall transparency, dissolves, and more.</p>
+      </div>
+    </li>
+    <li class="er-row" data-slot="entry row (text only) 6" data-state="pending" data-placeholder="true">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2025.10.01</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/unreal/">unreal</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/3d/">3D</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/vfx/">vfx</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/shader/">shader</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/tech-art/posts/Doomsday-Sales/">Doomsday Sales!</a></h2>
+        <p class="er-blurb">Talking about Doomsday Sales the game i took part in making in.</p>
+      </div>
+    </li>
+    <li class="er-row er-row--media" data-slot="entry row (with thumbnail) 7" data-state="pending" data-placeholder="true">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2024.10.01</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/unreal/">unreal</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/3d/">3D</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/rigging/">rigging</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/shader/">shader</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/tech-art/posts/FishGame/">A Fish Based Game</a></h2>
+        <p class="er-blurb">Procedural fish generation with blendshapes, gradient mapping, and emergent AI behaviors in a Ludum Dare 56 game jam.</p>
+        <img class="er-thumb" src="/assets/media/AFishBasedGame/68677.gif" alt="" loading="lazy">
+      </div>
+    </li>
+    <li class="er-row" data-slot="entry row (text only) 8" data-state="pending" data-placeholder="true">
+      <div class="er-body">
+        <div class="er-strip"><span class="er-date">2024.12.01</span><a class="kit-tag js-magnetic" data-strength="25" href="/tags/unity/">unity</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/shader/">shader</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/study/">study</a><a class="kit-tag js-magnetic" data-strength="25" href="/tags/3d/">3D</a></div>
+        <h2 class="er-ttl"><a class="er-link" href="/tech-art/posts/DecompilingShaders/">Decompiling the Shaders of ZZZ!</a></h2>
+        <p class="er-blurb">Breaking down a compiled toon shader from Zenless Zone Zero to figure out what makes the game look the way it does.</p>
+      </div>
+    </li>
+  </ul>
+
+  <div style="height:24px"></div>
+
+  <!-- PICKED 1. -->
+  <!-- HIDDEN BY DEFAULT. This is a NO-RESULTS state: on the live site it appears only when a
+       search matches nothing. Rendered permanently it sat under eight visible rows telling a
+       screen reader, through role="status", that there were no results. -->
+  <div class="es es--stack" role="status" hidden data-slot="empty state" data-state="pending">
+    <div class="es__content">
+      <p class="es__title">No ramblings matching <b>&ldquo;raymarching&rdquo;</b></p>
+      <p class="es__body">Try a shorter word, or
+        <a class="es__action" href="#">show all 8 ramblings</a>.</p>
+    </div>
+  </div>
+
+  <div style="height:80px"></div>
+</div></div>
+<!-- LEFT ANCHORED (Rod 2026-08-23). The footer used to sit in the page's content
+     column, so on About it started 249px in at a 1440 viewport. It now spans the page
+     with a 2.5vw gutter, so it anchors left instead of following the column.
+     The lab tag was checked and is NOT the cause - it is fixed at left:14/bottom:10 and
+     does not overlap the footer at any width. -->
+<div class="footer-wrap">
+  <footer class="footer-line ok" data-slot="footer" data-state="approved">
+    <!-- The way back, first item, exactly where the lab tag puts its own "&larr; lab".
+         Rod 2026-08-23: "for pages that arent the landing add the back arrow to landing too."
+         The landing does not get one - it would link to itself. -->
+    <a class="footer-line__item footer-line__back" href="/redesign-lab/final-landing.html">&larr; Landing</a>
+    <a class="footer-line__item footer-line__name" href="/redesign-lab/final-landing.html">Rodney Fan</a>
+    <a class="footer-line__item" href="/redesign-lab/final-projects.html">Projects</a>
+    <a class="footer-line__item" href="/redesign-lab/final-about.html">About</a>
+    <a class="footer-line__item" href="/redesign-lab/final-ramblings.html">Ramblings</a>
+    <span class="footer-line__item footer-line__end">Built by hand</span>
+  </footer>
+</div></main>
+<div id="state"></div>
+<!-- NOTE: the old stub carried an "archives timeline" slot. The hairline blockout does NOT
+     declare one, and THE BLOCKOUT IS A CONTRACT - fewer is allowed, more is not. It is dropped
+     here rather than silently kept, and it stays on the unsourced list as a PROPOSAL for Rod. -->
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; FINAL &middot; Ramblings &middot;
+  <a href="/redesign-lab/ramblings-blockout.html?v=hairline">its blockout</a></div>
+<script>
+(function(){
+  var slots=[].slice.call(document.querySelectorAll('[data-slot]'));
+  var ok=slots.filter(function(s){return s.dataset.state==='approved';});
+  var el=document.getElementById('state');
+  var pct=slots.length?Math.round(ok.length/slots.length*100):0;
+  el.innerHTML='<b>'+ok.length+' of '+slots.length+' slots approved</b>'
+    +'<div class="bar"><i style="width:'+pct+'%"></i></div>'
+    +'<div class="sp__h">approved</div><ul class="a">'+(ok.length?ok.map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join(''):'<li style="color:#6f6f6f">none yet</li>')+'</ul>'
+    +'<div class="sp__h">waiting on you</div><ul>'+slots.filter(function(s){return s.dataset.state!=='approved';})
+      .map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join('')+'</ul>'
+    +'<button id="tog">toggle state badges</button>';
+  document.getElementById('tog').addEventListener('click',function(){
+    document.body.classList.toggle('show-state');});
+})();
+</script>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+
+<script type="module">
+  /* The page ran NO component JS before this - the search is the first thing here that needs it. */
+  import { init as initSearch } from '/redesign-lab/extracted/components/search-field/search-field.js';
+  import { init as initMagnetic } from '/redesign-lab/extracted/components/drift-magnet/drift-magnet.js';
+  initSearch(document);
+  initMagnetic(document);
+</script>
+<script type="module" src="/redesign-lab/effects/sparkler-init.js"></script>
+<script type="module" src="/redesign-lab/effects/scene-mode.js"></script>
+</body>
+</html>

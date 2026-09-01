@@ -1,0 +1,35 @@
+/* magnetic — demo-only styles; the behavior itself is pure JS (magnetic.js, which also
+   sets will-change inline — no CSS on js- hooks per Rule 26). */
+.magnetic-demo {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.magnetic-demo__target {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--color-gold);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-panel);
+  cursor: pointer;
+}
+
+.magnetic-demo__target span {
+  display: inline-block;
+}
+
+.magnetic-demo__hint {
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}

@@ -1,0 +1,202 @@
+@layer reset, tokens, prose, components, overrides;
+/* ==========================================================================================
+   CASCADE LAYER: components
+   Rod 2026-08-23: "i feel like this nesting is really bad in general and we should design this
+   better ... i mean this is how CSS is intended to be used to begin with."
+
+   The layer ORDER above decides everything, and it beats specificity outright. A `.prose a` in the
+   prose layer can never override a `.co-ref a` in the components layer, however the two selectors
+   compare and whichever file the browser happened to load first. That is the whole fix: components
+   no longer have to know that prose exists, and 53 losing declarations across 8 components were
+   left exactly as they were written.
+
+   The order statement is repeated at the top of EVERY layered file on purpose. It is idempotent -
+   the first one a page sees wins, the rest are no-ops - so each stylesheet is correct on its own,
+   no matter which bench page loads it or in what order.
+
+   ONE FOOTGUN, and it is the only one: UNLAYERED CSS BEATS EVERY LAYER. A stylesheet that forgets
+   its wrapper does not fail loudly, it silently wins. If something starts overriding everything for
+   no visible reason, check that its file is wrapped.
+   ========================================================================================== */
+@layer components {
+/* GLOW EDGE TESTS — why the cursor band-reveal reads as METAL, and what changes that.
+   Rod 2026-08-13: "the reveal looks more like a metal band than a glow". The shape is NOT in
+   question here and no treatment alters it.
+
+   The baseline reveal (project-cards-expensive.css) is a 1.5px ring: a pseudo-element with
+   `padding:1.5px` and a content-box XOR mask, filled with a cursor-tracked radial gradient.
+   That construction has three properties, and all three are what the eye uses to identify metal:
+     1. CONSTANT WIDTH with hard cuts on both sides   -> a physical strip, not light
+     2. a bright spot SLIDING ALONG that strip        -> literally a travelling specular highlight
+     3. no spill inward or outward (the mask forbids it) -> light always bleeds; metal does not
+   Each treatment below attacks exactly one of those, so they can be judged apart. The last panel
+   stacks them. Nothing here touches the live card until Rod picks. */
+
+.gedge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.gedge__note {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  max-width: 78ch;
+}
+
+.gedge__sync {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.gedge__sync input {
+  accent-color: var(--color-gold);
+}
+
+.gedge__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.6rem 1.2rem;
+}
+
+.gedge__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* One card per panel, forced square. merged-card sizes its whole chain with height:100%, which
+   normally comes from the grid row, so an isolated card needs the height handed to it explicitly
+   or it collapses to its 14rem min-height and the panel gaps blow out. */
+.gedge__card {
+  aspect-ratio: 1 / 1;
+  position: relative;
+}
+
+.gedge__card .merged-cards,
+.gedge__card .merged-cards > * {
+  display: block;
+  height: 100%;
+}
+
+.gedge__card .post-card {
+  min-height: 0;
+}
+
+.gedge__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.gedge__why {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   TREATMENTS. Each sits on the .epx-cards grid so it out-specifies the base
+   rule (.epx-cards .ct-glow-card .glass-plane::before).
+   --------------------------------------------------------------------------- */
+
+/* B. SOFT EDGE — blur the ring so its two hard cuts become falloff.
+      Attacks cue 1: a band with no terminator stops being a strip. */
+.epx-cards.gedge--soft .ct-glow-card .glass-plane::before,
+.epx-cards.gedge--soft .ct-glow-card .glass-plane::after {
+  filter: blur(2.5px);
+}
+
+/* C. ADDITIVE — emit instead of paint. Metal REFLECTS a highlight; a lantern ADDS light.
+      Attacks the material read directly, without touching the geometry. */
+.epx-cards.gedge--add .ct-glow-card .glass-plane::before,
+.epx-cards.gedge--add .ct-glow-card .glass-plane::after {
+  mix-blend-mode: plus-lighter;
+}
+
+/* D. LONG TAIL — the hot spot fades ALONG the band instead of ending.
+      A short bright arc travelling a rail is the specular signature. */
+.epx-cards.gedge--tail .ct-glow-card .glass-plane::before {
+  background: radial-gradient(
+    420px 420px at var(--mx, -9999px) var(--my, -9999px),
+    var(--color-glow) 0%,
+    color-mix(in srgb, var(--color-glow) 40%, transparent) 30%,
+    transparent 100%
+  );
+}
+
+/* E. INWARD SPILL — light coming off an edge washes the surface beside it.
+      The mask makes that impossible, so it is added as an unmasked layer under the ring. */
+.epx-cards.gedge--spill .ct-glow-card .glass-plane {
+  background:
+    radial-gradient(180px 180px at var(--mx, -9999px) var(--my, -9999px),
+      color-mix(in srgb, var(--color-glow) 14%, transparent), transparent 70%),
+    linear-gradient(0deg, rgba(255, 232, 176, 0.04) 0%, rgba(255, 232, 176, 0.12) 100%);
+}
+
+/* F. DIM CORE — a blown-out white-hot core is a specular; emission is dimmer and warmer.
+      Same geometry, less intensity. */
+.epx-cards.gedge--dim .ct-glow-card .glass-plane::before {
+  background: radial-gradient(var(--glow-r, 220px) var(--glow-r, 220px) at var(--mx, -9999px) var(--my, -9999px),
+    color-mix(in srgb, var(--color-glow) 55%, transparent), transparent 100%);
+}
+
+.epx-cards.gedge--dim .ct-glow-card .glass-plane::after {
+  background: radial-gradient(140px 140px at var(--mx, -9999px) var(--my, -9999px),
+    color-mix(in srgb, var(--color-glow-soft, #ffd9a8) 45%, transparent), transparent 100%);
+}
+
+/* G. ROUND THE LIGHT, NOT THE CARD — the card silhouette stays exactly square. Only the glow
+      ring's own corners round, so the band stops turning a hard mitre. Mitre joints are the
+      strongest "fabricated object" cue there is, and this removes them without a shape change. */
+.epx-cards.gedge--round .ct-glow-card .glass-plane::before,
+.epx-cards.gedge--round .ct-glow-card .glass-plane::after {
+  border-radius: 14px;
+}
+
+/* H. STACKED — every treatment above at once. */
+.epx-cards.gedge--all .ct-glow-card .glass-plane {
+  background:
+    radial-gradient(180px 180px at var(--mx, -9999px) var(--my, -9999px),
+      color-mix(in srgb, var(--color-glow) 14%, transparent), transparent 70%),
+    linear-gradient(0deg, rgba(255, 232, 176, 0.04) 0%, rgba(255, 232, 176, 0.12) 100%);
+}
+
+.epx-cards.gedge--all .ct-glow-card .glass-plane::before,
+.epx-cards.gedge--all .ct-glow-card .glass-plane::after {
+  filter: blur(2.5px);
+  mix-blend-mode: plus-lighter;
+  border-radius: 14px;
+}
+
+.epx-cards.gedge--all .ct-glow-card .glass-plane::before {
+  background: radial-gradient(420px 420px at var(--mx, -9999px) var(--my, -9999px),
+    color-mix(in srgb, var(--color-glow) 55%, transparent) 0%,
+    color-mix(in srgb, var(--color-glow) 22%, transparent) 30%,
+    transparent 100%);
+}
+
+.epx-cards.gedge--all .ct-glow-card .glass-plane::after {
+  background: radial-gradient(140px 140px at var(--mx, -9999px) var(--my, -9999px),
+    color-mix(in srgb, var(--color-glow-soft, #ffd9a8) 45%, transparent), transparent 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gedge__note::after {
+    content: ' (these are cursor-driven; move the pointer over a card to see anything)';
+  }
+}
+}

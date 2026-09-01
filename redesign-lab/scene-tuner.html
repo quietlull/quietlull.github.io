@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SCENE TUNER — push the optimisations, watch the ms</title>
+<!--
+  SCENE TUNER (Rod 2026-08-18): "give me a test scene with toggles and sliders to see how far we
+  can push all the optimizations and removal, have an FPS counter so i can see how it is without
+  hardware accel."
+
+  Runs the REAL scene bundle (/assets/js/dist/three-background-scene.min.js) - not a mock - and
+  drives it through the debug globals that bundle already exposes: renderer, composer, bloomPass,
+  lanternController, fireworkController, mirroredSurface.
+
+  READ THE ms, NOT THE fps. With hardware acceleration on, fps pins to the vsync ceiling and hides
+  everything; frame time in milliseconds keeps its shape either way. p95 is the number that decides
+  whether the page FEELS smooth - a good median with a bad p95 is visible stutter.
+
+  MEASURED BASELINE, software rasterisation, 2026-08-18 (Rod's machine):
+    whole scene    16.5 ms/frame
+      of which bloom       8.5 ms   (52%)
+      of which the rest    8.0 ms   - dominated by the water reflection, which renders the ENTIRE
+                                      scene a second time every frame
+    project cards   5.5 ms
+    backdrop-filter 3.4 ms
+    everything else within noise
+
+  THAT BASELINE IS STALE and has NOT been re-measured. It was taken with UnrealBloomPass (~12
+  passes), a FULL-window reflection and pixel ratio 1. All three are gone: bloom is a 5-render Dual
+  Kawase at 0.25 scale, the reflection is at 0.25, the pixel ratio is 0.5, a paper filter rides in
+  the bloom composite and the firework vertex shader no longer recomputes its directions. Every
+  number above describes a scene that no longer exists. RE-RUN THE ABLATION before quoting any of
+  them - that is open request #37.
+-->
+<style>
+  @layer reset, tokens, prose, components, overrides;
+/* This page does not load foundations.css, so it keeps its own reset - but LAYERED.
+   Unlayered, it outranks every layer and wipes the padding of every component here. */
+@layer reset{*{box-sizing:border-box;margin:0;padding:0}}
+  body{background:#070C23;color:#F5F3EF;font-family:"IBM Plex Mono",ui-monospace,monospace;
+    min-height:100vh;overflow-x:hidden}
+
+  /* ---- readout ---- */
+  #hud{position:fixed;top:12px;left:12px;z-index:60;background:rgba(8,10,18,.92);
+    border:1px solid rgba(255,255,255,.2);padding:12px 14px;min-width:236px}
+  #hud .big{font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+  #hud .big small{font-size:12px;color:#9aa3bd}
+  #hud .row{display:flex;justify-content:space-between;font-size:11px;color:#9aa3bd;margin-top:5px}
+  #hud .row b{color:#F5F3EF;font-weight:400;font-variant-numeric:tabular-nums}
+  #hud .bar{height:5px;background:#20263f;margin-top:8px;position:relative;overflow:hidden}
+  #hud .bar i{position:absolute;inset:0 auto 0 0;background:#7ee0b8}
+  #hud .bar i.warn{background:#F3B53C}#hud .bar i.bad{background:#ff8a8a}
+  #gpu{margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.14);font-size:10px;
+    color:#9aa3bd;line-height:1.5;word-break:break-word}
+  #gpu b{color:#7ee0b8;font-weight:500}#gpu b.soft{color:#ff8a8a}
+
+  /* ---- controls ---- */
+  #panel{position:fixed;top:12px;right:12px;bottom:12px;z-index:60;width:290px;overflow-y:auto;
+    background:rgba(8,10,18,.94);border:1px solid rgba(255,255,255,.2);padding:12px 14px}
+  #panel h3{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#F3B53C;
+    margin:14px 0 6px}#panel h3:first-child{margin-top:0}
+  .ctl{margin-bottom:9px}
+  .ctl label{display:flex;justify-content:space-between;font-size:10.5px;color:#c8cde0;margin-bottom:3px}
+  .ctl label b{color:#F3B53C;font-weight:400;font-variant-numeric:tabular-nums}
+  .ctl input[type=range]{width:100%;accent-color:#F3B53C}
+  .tog{display:flex;align-items:center;gap:8px;font-size:11px;color:#c8cde0;margin-bottom:6px;cursor:pointer}
+  .tog input{accent-color:#F3B53C}
+  .presets{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:4px}
+  .presets button,#reset{background:none;border:1px solid #555;color:#bbb;font:10px ui-monospace,monospace;
+    letter-spacing:.08em;text-transform:uppercase;padding:6px 4px;cursor:pointer}
+  .presets button:hover,#reset:hover{border-color:#F3B53C;color:#F3B53C}
+  #reset{width:100%;margin-top:8px}
+  .note{font-size:9.5px;color:#7d84a0;line-height:1.55;margin-top:6px}
+  .cost{font-size:9.5px;color:#F3B53C;margin-top:2px}
+
+</style>
+</head>
+<body>
+
+<div id="hud">
+  <div class="big"><span id="ms">--</span><small> ms/frame</small></div>
+  <div class="row"><span>fps</span><b id="fps">--</b></div>
+  <div class="row"><span>p95 frame</span><b id="p95">--</b></div>
+  <div class="row"><span>worst (3s)</span><b id="worst">--</b></div>
+  <div class="row"><span>frames &gt; 33ms</span><b id="long">--</b></div>
+  <div class="bar"><i id="bar" style="width:0"></i></div>
+  <div id="gpu">detecting renderer&hellip;</div>
+</div>
+
+<div id="panel">
+  <h3>Presets</h3>
+  <div class="presets">
+    <button data-preset="full">Full</button>
+    <button data-preset="balanced">Balanced</button>
+    <button data-preset="software">Software</button>
+    <button data-preset="minimum">Minimum</button>
+  </div>
+
+  <h3>Resolution</h3>
+  <div class="ctl">
+    <label>Pixel ratio <b id="v-dpr">0.50</b></label>
+    <input type="range" id="dpr" min="0.25" max="2" step="0.05" value="0.5">
+    <div class="note">Fragments scale with the SQUARE of this. The single biggest lever.</div>
+  </div>
+  <div class="ctl">
+    <label>Bloom resolution <b id="v-bloomres">0.25</b></label>
+    <input type="range" id="bloomres" min="0.125" max="1" step="0.025" value="0.25">
+    <div class="cost">NOT re-measured since the Kawase port - see the header</div>
+  </div>
+  <div class="ctl">
+    <label>Reflection resolution <b id="v-reflres">0.25</b></label>
+    <input type="range" id="reflres" min="0.125" max="1" step="0.025" value="0.25">
+    <div class="cost">renders the WHOLE scene a second time, every frame (geometry AND fragments,
+      so this scales differently from the fragment-only levers)</div>
+  </div>
+
+  <h3>Bloom <span style="color:#7d84a0">(Dual Kawase, 2 levels)</span></h3>
+  <label class="tog"><input type="checkbox" id="t-bloom" checked> bloom pass</label>
+  <div class="ctl"><label>strength <b id="v-str">0.70</b></label>
+    <input type="range" id="str" min="0" max="2" step="0.05" value="0.7"></div>
+  <div class="ctl">
+    <label>radius <b id="v-rad">0.15</b></label>
+    <input type="range" id="rad" min="0" max="1" step="0.05" value="0.15">
+    <div class="note">NOT a blur width. It rebalances the tight band against the wide one, and
+      widens the tap reach from 0.25 to 1.0 source texels across its range.</div>
+  </div>
+  <div class="note">Depth is fixed at 2 levels and there is no threshold: the bright pass is gone,
+    so the whole frame blurs and is added back (D23). Tone mapping is gone too - the scene is lit
+    by the sky now, not by an output curve.</div>
+
+  <h3>Paper filter <span style="color:#7d84a0">(APPROVED 2026-08-22)</span></h3>
+  <label class="tog"><input type="checkbox" id="t-paper" checked> paper filter</label>
+  <div class="note">Folded into the bloom composite, so it adds NO pass and NO render target. Two
+    sheets cost two texture fetches and ONE extra tap of the frame - the normals are combined before
+    the tap, not sampled twice. This is what pays for dpr 0.5 / bloom 0.25 / reflection 0.25.</div>
+  <div class="ctl">
+    <label>Sheet A <span style="color:#7d84a0">(the coarse one)</span></label>
+    <select id="papertex" style="width:100%;background:#0d1430;color:#F5F3EF;border:1px solid #555;
+      font:11px ui-monospace,monospace;padding:4px">
+      <option value="paper-wove">Wove - fine, tight, polite</option>
+      <option value="paper-coldpress">Cold press - coarse tooth, obviously paper</option>
+      <option value="paper-washi" selected>Washi - fibres + laid lines, handmade</option>
+    </select>
+  </div>
+  <div class="ctl"><label>tile A <b id="v-ptile">1.0</b></label>
+    <input type="range" id="ptile" min="1" max="16" step="0.5" value="1">
+    <div class="note">Repeats across the screen. Higher = finer grain.</div></div>
+  <div class="ctl">
+    <label>Sheet B <span style="color:#7d84a0">(layered on top)</span></label>
+    <select id="papertex2" style="width:100%;background:#0d1430;color:#F5F3EF;border:1px solid #555;
+      font:11px ui-monospace,monospace;padding:4px">
+      <option value="">none - single sheet</option>
+      <option value="paper-wove">Wove - fine, tight, polite</option>
+      <option value="paper-coldpress" selected>Cold press - coarse tooth, obviously paper</option>
+      <option value="paper-washi">Washi - fibres + laid lines, handmade</option>
+    </select>
+    <div class="note">Real paper has structure at more than one scale. Put the coarse sheet in A at
+      a low tile and the fine one in B at a high tile.</div>
+  </div>
+  <div class="ctl"><label>tile B <b id="v-ptile2">4.0</b></label>
+    <input type="range" id="ptile2" min="1" max="32" step="0.5" value="4"></div>
+  <div class="ctl">
+    <label>Blend</label>
+    <select id="pblend" style="width:100%;background:#0d1430;color:#F5F3EF;border:1px solid #555;
+      font:11px ui-monospace,monospace;padding:4px">
+      <option value="0">Lerp - crossfade</option>
+      <option value="1">Add - roughness accumulates</option>
+      <option value="2" selected>Subtract - B carves into A</option>
+      <option value="3">Modulate - A gates where B shows</option>
+      <option value="4">Max - the more extreme sheet wins</option>
+      <option value="5">Min - the flatter sheet wins</option>
+    </select>
+    <div class="note">Both sheets are SIGNED fields (normal in -1..1, height centred on 0), so these
+      are signal ops, not Photoshop modes. Add and Subtract can push past the normal range - that is
+      allowed, it just means mix wants to come down.</div>
+  </div>
+  <div class="ctl"><label>A/B mix <b id="v-pmix">0.50</b></label>
+    <input type="range" id="pmix" min="0" max="1" step="0.05" value="0.5">
+    <div class="note">Lerp: 0 = sheet A only, 1 = sheet B only. Every other mode: how hard B acts
+      on A.</div></div>
+  <div class="ctl"><label>amount <b id="v-pamt">1.00</b></label>
+    <input type="range" id="pamt" min="0" max="1" step="0.05" value="1">
+    <div class="note">Master. Scales bleed and tooth together.</div></div>
+  <div class="ctl"><label>bleed <b id="v-pbleed">0.50</b></label>
+    <input type="range" id="pbleed" min="0" max="1" step="0.05" value="0.5">
+    <div class="note">How much of the image comes from the tap pulled along the paper normal. The
+      source blended 0.4/0.6.</div></div>
+  <div class="ctl"><label>displace <b id="v-pdisp">0.0075</b></label>
+    <input type="range" id="pdisp" min="0" max="0.02" step="0.0005" value="0.0075"></div>
+  <div class="ctl"><label>tooth <b id="v-ptooth">0.050</b></label>
+    <input type="range" id="ptooth" min="0" max="0.3" step="0.005" value="0.05">
+    <div class="note">The sheet's own surface, added OVER the glow so the scene reads as printed on
+      it. This is the knob that decides whether it looks like paper or like fog.</div></div>
+  <div class="ctl"><label>boil <b id="v-pboil">3.25/sec</b></label>
+    <input type="range" id="pboil" min="1.5" max="5" step="0.25" value="3.25">
+    <div class="note">Re-rolls the sheets N times a second instead of every frame - the hand-drawn
+      "boiling line". Range narrowed to 1.5-5 by Rod; the checkbox above is the only off switch now.
+      The two sheets boil out of step so they do not pulse together.</div></div>
+
+  <h3>Sky &amp; water <span style="color:#7d84a0">(the water reflects the sky)</span></h3>
+  <div class="ctl">
+    <label>Sky colour <b id="v-sky">#162237</b></label>
+    <input type="color" id="sky" value="#162237" style="width:100%;height:26px;background:none;border:1px solid #555">
+    <div class="note">three-shared.js sets scene.background to #162237, raised from #080f1b on
+      2026-08-21. The water is a mirror, so the sky is most of the scene's light: at rgb(8,15,27)
+      it was near-black and bloom was the only thing making anything readable.</div>
+  </div>
+  <div class="ctl">
+    <label>Water base colour <b id="v-water">#0a1426</b></label>
+    <input type="color" id="water" value="#0a1426" style="width:100%;height:26px;background:none;border:1px solid #555">
+    <div class="note">uWaterColor - what the fresnel blends toward at grazing angles.</div>
+  </div>
+  <div class="ctl">
+    <label>Moonlight lift <b id="v-lift">1.50</b></label>
+    <input type="range" id="lift" min="0" max="1.5" step="0.01" value="1.5">
+  </div>
+  <div class="ctl">
+    <label>Moonlight diffuse <b id="v-diff">0.13</b></label>
+    <input type="range" id="diff" min="0" max="1.5" step="0.01" value="0.13">
+  </div>
+  <div class="ctl">
+    <label>Reflection intensity <b id="v-refi">1.00</b></label>
+    <input type="range" id="refi" min="0" max="2" step="0.05" value="1">
+  </div>
+
+
+  <h3>Fireworks <span style="color:#7d84a0">(directions baked, 2026-08-22)</span></h3>
+  <div class="ctl"><label>particle trail copies <b id="v-fwtrail">10</b></label>
+    <input type="range" id="fwtrail" min="1" max="10" step="1" value="10">
+    <div class="cost">MULTIPLIES vertex count: 400 particles x this</div></div>
+  <div class="ctl"><label>stress: shells/sec <b id="v-fwrate">off</b></label>
+    <input type="range" id="fwrate" min="0" max="30" step="1" value="0">
+    <div class="note">Drives the reward emitter hard to reproduce the lag. The controller caps live
+      shells at 50 regardless.</div></div>
+  <div class="ctl"><label>live vertices <b id="v-fwverts">0</b></label></div>
+
+  <h3>Scene features</h3>
+  <label class="tog"><input type="checkbox" id="t-refl" checked> water reflection</label>
+  <label class="tog"><input type="checkbox" id="t-lantern" checked> lantern sway + avoidance</label>
+  <label class="tog"><input type="checkbox" id="t-shader" checked> lantern shader updates</label>
+  <label class="tog"><input type="checkbox" id="t-fw" checked> fireworks</label>
+  <label class="tog"><input type="checkbox" id="t-scene" checked> render at all</label>
+  <div class="note">Each unchecks a single updatable in the loop, so the cost attributes cleanly.</div>
+
+  <h3>Frame cap</h3>
+  <div class="ctl">
+    <label>max fps <b id="v-cap">off</b></label>
+    <input type="range" id="cap" min="0" max="120" step="10" value="0">
+    <div class="note">0 = uncapped. An ambient background rarely needs more than 30.</div>
+  </div>
+
+  <button id="reset">reset to shipped defaults</button>
+  <div class="note" style="margin-top:10px">Shipped now: dpr 0.5, bloom 0.25, reflection 0.25,
+    strength 0.7, radius 0.15, sky #162237, paper ON (washi 1 + cold press 4, subtract 0.5, boil 3.25).</div>
+</div>
+
+<!-- The bundle now BUILDS the Kawase pass itself (_javascript/shader/kawaseBloom.js), so there is
+     no runtime swap and no second copy of the pass to load. -->
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+<script>
+/* ---------------------------------------------------------------- GPU detection
+   The direct answer to "can we detect if the user has a GPU". WEBGL_debug_renderer_info gives the
+   UNMASKED renderer string; software rasterisers identify themselves in it. This is the same check
+   that would drive an automatic downgrade. */
+function detectRenderer() {
+  try {
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl2') || c.getContext('webgl');
+    if (!gl) return { ok: false, software: true, name: 'no WebGL at all' };
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+    const software = /swiftshader|llvmpipe|software|basic render|mesa offscreen/i.test(name || '');
+    return { ok: true, software, name: name || 'unknown' };
+  } catch (e) {
+    return { ok: false, software: true, name: 'detection threw: ' + e.message };
+  }
+}
+const GPU = detectRenderer();
+document.getElementById('gpu').innerHTML =
+  'renderer<br><b class="' + (GPU.software ? 'soft' : '') + '">' + GPU.name + '</b><br>' +
+  (GPU.software ? 'SOFTWARE rasterisation - every fragment is CPU work'
+                : 'hardware accelerated');
+
+/* ---------------------------------------------------------------- frame timing */
+const el = (id) => document.getElementById(id);
+const gaps = [];
+let last = performance.now();
+(function tick(t) {
+  const d = t - last; last = t;
+  if (d < 1000) gaps.push(d);
+  if (gaps.length > 180) gaps.shift();
+  requestAnimationFrame(tick);
+})(last);
+
+setInterval(() => {
+  if (gaps.length < 20) return;
+  const s = gaps.slice().sort((a, b) => a - b);
+  const med = s[Math.floor(s.length / 2)];
+  const p95 = s[Math.floor(s.length * 0.95)];
+  const worst = s[s.length - 1];
+  el('ms').textContent = med.toFixed(1);
+  el('fps').textContent = (1000 / med).toFixed(0);
+  el('p95').textContent = p95.toFixed(1) + ' ms';
+  el('worst').textContent = worst.toFixed(1) + ' ms';
+  el('long').textContent = gaps.filter((g) => g > 33).length;
+  const bar = el('bar');
+  bar.style.width = Math.min(100, (med / 33) * 100) + '%';
+  bar.className = med < 16.7 ? '' : med < 33 ? 'warn' : 'bad';
+}, 500);
+
+/* ---------------------------------------------------------------- wiring
+   Everything below drives the debug globals the scene bundle already exposes. The only two added
+   for this page were window.composer and window.mirroredSurface; the rest predate it. */
+const W = () => window.innerWidth, H = () => window.innerHeight;
+const ready = () => window.renderer && window.composer && window.bloomPass;
+
+/* EffectComposer caches the pixel ratio at CONSTRUCTION and exposes its own setter. Without the
+   setPixelRatio call the composer kept ratio 1 while the canvas shrank, so dragging dpr DOWN made
+   the post chain render ~4x the canvas pixels and throw them away on the final blit - the opposite
+   of what the slider claims. Every dpr reading before 2026-08-22 was measuring that. */
+function applyDpr(v) {
+  if (!ready()) return;
+  window.renderer.setPixelRatio(v);
+  window.composer.setPixelRatio(v);
+  window.renderer.setSize(W(), H());
+  window.composer.setSize(W(), H());
+}
+function applyBloomRes(v) {
+  if (!ready()) return;
+  window.bloomPass.scale = v;
+  window.bloomPass.setSize(W(), H());
+}
+/* Set reflectionScale rather than sizing the target directly, or handleResize() recomputes from
+   the old scale and silently throws the slider away on the next window resize. */
+function applyReflRes(v) {
+  const m = window.mirroredSurface;
+  if (!m || !m.renderTarget) return;
+  m.reflectionScale = v;
+  m.renderTarget.setSize(Math.round(W() * v), Math.round(H() * v));
+}
+
+/* feature toggles: replace the updatable's update() with a no-op and keep the original to restore.
+   Cheaper and more honest than rebuilding the scene, and it isolates exactly one cost. */
+const stash = {};
+function toggleUpdate(obj, key, on) {
+  if (!obj) return;
+  if (!on) { if (!stash[key]) { stash[key] = obj.update; obj.update = () => {}; } }
+  else if (stash[key]) { obj.update = stash[key]; stash[key] = null; }
+}
+
+let capFps = 0, lastRender = 0, origSetLoop = null;
+function applyCap(v) {
+  capFps = v;
+  el('v-cap').textContent = v ? v + ' fps' : 'off';
+}
+
+function bindRange(id, valId, fn, fmt) {
+  const r = el(id);
+  r.addEventListener('input', () => {
+    const v = parseFloat(r.value);
+    el(valId).textContent = fmt ? fmt(v) : v.toFixed(2);
+    fn(v);
+  });
+}
+bindRange('dpr', 'v-dpr', applyDpr);
+bindRange('bloomres', 'v-bloomres', applyBloomRes);
+bindRange('reflres', 'v-reflres', applyReflRes);
+bindRange('str', 'v-str', (v) => { if (ready()) window.bloomPass.strength = v; });
+bindRange('rad', 'v-rad', (v) => { if (ready()) window.bloomPass.radius = v; });
+bindRange('cap', 'v-cap', applyCap, (v) => (v ? v + ' fps' : 'off'));
+
+el('t-bloom').addEventListener('change', (e) => { if (ready()) window.bloomPass.enabled = e.target.checked; });
+el('t-refl').addEventListener('change', (e) => {
+  const m = window.mirroredSurface;
+  toggleUpdate(m, 'refl', e.target.checked);
+});
+el('t-lantern').addEventListener('change', (e) => toggleUpdate(window.lanternController, 'lantern', e.target.checked));
+el('t-shader').addEventListener('change', (e) => toggleUpdate(window.lanternMaterialManager, 'shader', e.target.checked));
+el('t-fw').addEventListener('change', (e) => toggleUpdate(window.fireworkController, 'fw', e.target.checked));
+el('t-scene').addEventListener('change', (e) => {
+  const c = document.querySelector('canvas');
+  if (c) c.style.display = e.target.checked ? '' : 'none';
+  if (window.renderer) {
+    if (!e.target.checked) { origSetLoop = window.renderer.getAnimationLoop && window.renderer.getAnimationLoop(); window.renderer.setAnimationLoop(null); }
+    else if (window.composer) window.renderer.setAnimationLoop(() => window.composer.render());
+  }
+});
+
+/* ---- fireworks ---------------------------------------------------------
+   particleTrail is read when a shell is BUILT, so changing it clears the sky rather than
+   retrofitting the shells already in the air. */
+function rebuildFireworks() {
+  const fc = window.fireworkController;
+  if (!fc) return;
+  fc.clear();
+  fc.config.particleTrail = parseInt(el('fwtrail').value, 10);
+  applyStressRate();
+}
+/* Spawns directly rather than through an emitter: getRandomDelay() clamps every emitter to a 0.5s
+   floor (firework-controller.js:120), so no emitter can exceed 2 shells/sec and no auto stream can
+   reproduce the lag Rod gets from clicking.
+   Driven from rAF, not setInterval. A backgrounded tab clamps timers hard - measured 3 fires where
+   24 were asked for - which would quietly understate the load being tested. */
+let stressRate = 0, stressDebt = 0, stressLast = performance.now();
+function applyStressRate() {
+  stressRate = parseFloat(el('fwrate').value);
+  stressDebt = 0;
+  stressLast = performance.now();
+}
+(function stressPump(now) {
+  requestAnimationFrame(stressPump);
+  const fc = window.fireworkController;
+  if (!fc || stressRate <= 0) { stressLast = now; return; }
+  stressDebt += ((now - stressLast) / 1000) * stressRate;
+  stressLast = now;
+  while (stressDebt >= 1) { fc.createAutoFirework('reward'); stressDebt -= 1; }
+})(performance.now());
+bindRange('fwtrail', 'v-fwtrail', rebuildFireworks, (v) => String(v));
+bindRange('fwrate', 'v-fwrate', applyStressRate, (v) => (v ? v + '/sec' : 'off'));
+
+setInterval(() => {
+  if (!window.scene) return;
+  let verts = 0;
+  for (const o of window.scene.children) {
+    if (o.isPoints && o.geometry && o.geometry.attributes.position) {
+      verts += o.geometry.attributes.position.count;
+    }
+  }
+  el('v-fwverts').textContent = verts.toLocaleString();
+}, 400);
+
+/* ---- paper filter ------------------------------------------------------
+   The pass owns the uniforms; this panel owns the texture. Loading happens here so swapping sheets
+   never touches the pass. */
+const paperCache = {};
+function loadPaper(name) {
+  if (!paperCache[name]) {
+    paperCache[name] = new window.THREE.TextureLoader().load('/assets/tex/' + name + '.png');
+  }
+  return paperCache[name];
+}
+function applyPaper() {
+  const b = window.bloomPass;
+  if (!b || !b.paper) return;
+  const second = el('papertex2').value;
+  b.setPaperTexture(loadPaper(el('papertex').value), 0);
+  b.setPaperTexture(second ? loadPaper(second) : null, 1);
+  b.paper.amount = el('t-paper').checked ? parseFloat(el('pamt').value) : 0;
+  b.paper.tile = parseFloat(el('ptile').value);
+  b.paper.tile2 = parseFloat(el('ptile2').value);
+  b.paper.mix = parseFloat(el('pmix').value);
+  b.paper.blend = parseInt(el('pblend').value, 10);
+  b.paper.bleed = parseFloat(el('pbleed').value);
+  b.paper.displace = parseFloat(el('pdisp').value);
+  b.paper.tooth = parseFloat(el('ptooth').value);
+  b.paper.boilHz = parseFloat(el('pboil').value);
+}
+el('t-paper').addEventListener('change', applyPaper);
+el('papertex').addEventListener('change', applyPaper);
+el('papertex2').addEventListener('change', applyPaper);
+el('pblend').addEventListener('change', applyPaper);
+bindRange('pamt', 'v-pamt', applyPaper);
+bindRange('ptile', 'v-ptile', applyPaper, (v) => v.toFixed(1));
+bindRange('ptile2', 'v-ptile2', applyPaper, (v) => v.toFixed(1));
+bindRange('pmix', 'v-pmix', applyPaper);
+bindRange('pbleed', 'v-pbleed', applyPaper);
+bindRange('pdisp', 'v-pdisp', applyPaper, (v) => v.toFixed(4));
+bindRange('ptooth', 'v-ptooth', applyPaper, (v) => v.toFixed(3));
+bindRange('pboil', 'v-pboil', applyPaper, (v) => v + '/sec');
+
+/* ---- sky + water ------------------------------------------------------- */
+const waterU = () => (window.mirroredSurface && window.mirroredSurface.material)
+  ? window.mirroredSurface.material.uniforms : null;
+
+el('sky').addEventListener('input', (e) => {
+  el('v-sky').textContent = e.target.value;
+  if (window.scene && window.scene.background) window.scene.background.set(e.target.value);
+});
+el('water').addEventListener('input', (e) => {
+  el('v-water').textContent = e.target.value;
+  const u = waterU(); if (u && u.uWaterColor) u.uWaterColor.value.set(e.target.value);
+});
+bindRange('lift', 'v-lift', (v) => { const u = waterU(); if (u && u.uSunLift) u.uSunLift.value = v; });
+bindRange('diff', 'v-diff', (v) => { const u = waterU(); if (u && u.uSunDiffuse) u.uSunDiffuse.value = v; });
+bindRange('refi', 'v-refi', (v) => { const u = waterU(); if (u && u.uReflectionIntensity) u.uReflectionIntensity.value = v; });
+
+
+/* Tone mapping is deliberately absent. The renderer stays on THREE's default NoToneMapping at
+   exposure 1.0, which is what the shipped code has always done - an output curve multiplies, and
+   anything x near-black is still black, so it never was the fix for an unlit scene. The sky is. */
+
+const PRESETS = {
+  full:     { dpr: 1.5, bloomres: 1,     reflres: 1,    bloom: true,  refl: true },
+  /* SHIPPED - what three-config.js and three-shared.js actually build. Keep in sync with them. */
+  balanced: { dpr: 0.5, bloomres: 0.25,  reflres: 0.25, bloom: true,  refl: true,
+              strength: 0.7, radius: 0.15 },
+  software: { dpr: 0.75, bloomres: 0.25, reflres: 0.35, bloom: true,  refl: false },
+  minimum:  { dpr: 0.5, bloomres: 0.125, reflres: 0.25, bloom: false, refl: false },
+};
+document.querySelectorAll('[data-preset]').forEach((b) => {
+  b.addEventListener('click', () => {
+    const p = PRESETS[b.dataset.preset];
+    el('dpr').value = p.dpr; el('v-dpr').textContent = p.dpr.toFixed(2); applyDpr(p.dpr);
+    el('bloomres').value = p.bloomres; el('v-bloomres').textContent = p.bloomres.toFixed(2); applyBloomRes(p.bloomres);
+    el('reflres').value = p.reflres; el('v-reflres').textContent = p.reflres.toFixed(2); applyReflRes(p.reflres);
+    el('t-bloom').checked = p.bloom; if (ready()) window.bloomPass.enabled = p.bloom;
+    el('t-refl').checked = p.refl;
+    toggleUpdate(window.mirroredSurface, 'refl', p.refl);
+    if (p.strength !== undefined) {
+      el('str').value = p.strength; el('v-str').textContent = p.strength.toFixed(2);
+      if (window.bloomPass) window.bloomPass.strength = p.strength;
+    }
+    if (p.radius !== undefined) {
+      el('rad').value = p.radius; el('v-rad').textContent = p.radius.toFixed(2);
+      if (window.bloomPass) window.bloomPass.radius = p.radius;
+    }
+  });
+});
+el('reset').addEventListener('click', () => document.querySelector('[data-preset="balanced"]').click());
+
+/* re-apply once the bundle has finished building the scene */
+const waitFor = setInterval(() => {
+  if (!ready()) return;
+  clearInterval(waitFor);
+  /* The bundle builds Kawase itself now, so there is nothing to install - just mirror what it
+     actually made, or the panel lies about the live values. */
+  applyDpr(parseFloat(el('dpr').value));
+  applyBloomRes(parseFloat(el('bloomres').value));
+  applyReflRes(parseFloat(el('reflres').value));
+  el('str').value = window.bloomPass.strength;
+  el('v-str').textContent = window.bloomPass.strength.toFixed(2);
+  el('rad').value = window.bloomPass.radius;
+  el('v-rad').textContent = window.bloomPass.radius.toFixed(2);
+  applyPaper();
+}, 400);
+</script>
+</body>
+</html>

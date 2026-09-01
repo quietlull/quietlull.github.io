@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SECTION HEAD - the three we already have</title>
+<!--
+  ===== SECTION HEAD TESTS (2026-08-22, ROD) =====
+  Rod: "is there a generated example for section head?" then "yes render these so I can see it".
+
+  THREE EXIST. NONE OF THEM IS SOURCED. Every one is our own build, which is exactly why the slot
+  on final-landing.html is still PENDING and why Rod picked the section heads out by eye on
+  2026-08-18 without being told which elements were unsourced.
+
+    A  a3-assembly.html / archive/2026-08-18-retired/final-landing-v1.html
+    B  a3-assembly.html          (same family as A, two real differences)
+    C  archive/2026-08-18-retired/aggregate.html
+
+  Under the bench rule, a3-assembly and the archived aggregates are source CANDIDATES, never
+  sources. Taking one of these is a decision Rod can make - it just gets filed as ORIGIN: ROD,
+  not as provenance. The alternative is on the ledger: element-tracker.md:74 holds
+  hana.b-rave.tokyo as a real source for a per-letter spawn treatment, plus 109ichiki mono.
+
+  CSS below is VERBATIM from each file. The one edit is flagged inline: C specified a serif, which
+  D16 has since overruled, so it renders in the display face with the original noted.
+
+  Background is the bloom, not the scene - this page is about type and rule, not the scene.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<style>
+/* The universal reset lives in foundations.css, inside @layer reset, and this page loads it.
+   The duplicate that sat here was UNLAYERED, and unlayered CSS outranks every layer - so
+   margin:0;padding:0 was wiping the padding of every layered component on the page. */
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:blur(20px) brightness(.6) saturate(1.03)}
+.bg-1{opacity:1}.bg-2{opacity:0;animation:bgfade 12s ease-in-out infinite}
+@keyframes bgfade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.bg-2{animation:none;opacity:.6}}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+
+/* ---- page chrome (lab only) ---- */
+header.top{position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid var(--color-line-faint);padding:14px 28px;display:flex;
+  align-items:baseline;gap:18px;flex-wrap:wrap;font-family:var(--font-mono)}
+header.top h1{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin:0}
+header.top .sub{font-size:10px;color:var(--color-muted)}
+header.top a{color:var(--color-gold)}
+
+.wrap{width:min(1180px,92vw);margin:0 auto;padding:56px 0 140px;position:relative;z-index:1}
+
+.case{margin-bottom:92px}
+.tagrow{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;background:#8a8a8a;color:#141414}
+.badge--ours{background:#c9a227;color:#141414}
+.case h2{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--color-muted);font-weight:400}
+.prov{font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--color-muted);
+  border-left:2px solid var(--color-line-faint);padding-left:14px;margin:14px 0 26px;max-width:76ch}
+.prov b{color:var(--color-text);font-weight:500}
+.prov code{color:var(--color-gold)}
+
+/* the stage each variant sits on: the landing's own content column, over the same ground */
+.stage{background:rgba(8,15,27,.72);border:1px solid var(--color-line-faint);padding:44px 46px 46px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+.cardph{height:132px;border:1.5px dashed var(--color-line-soft);background:rgba(20,20,20,.4);
+  display:grid;place-items:center;font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:#6f6f6f}
+
+/* =========================================================================================
+   A - SPLIT HEAD WITH A HAIRLINE.  VERBATIM from
+   archive/2026-08-18-retired/final-landing-v1.html. Its own comment: "This is the assembly's
+   real two-part head: a display-face label on the left, a mono action on the right. ndt keeps
+   its labels CENTRED, which is why the row centres itself while its two halves stay split."
+   ========================================================================================= */
+.a .shead{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  margin:0 auto 26px;padding-bottom:10px;border-bottom:1px solid var(--color-line-faint)}
+.a .shead__l{font-family:var(--font-display);font-size:1.5rem;color:var(--color-gold-deep);
+  letter-spacing:.04em}
+.a .shead__r{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--color-muted);text-decoration:none}
+.a .shead__r:hover{color:var(--color-gold)}
+
+/* =========================================================================================
+   B - SPLIT HEAD, NO RULE.  VERBATIM from a3-assembly.html. Two real differences from A:
+   align-items is CENTER not baseline, and there is no border-bottom and no bottom margin.
+   ========================================================================================= */
+.b .shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:0 auto}
+.b .shead__l{font-family:var(--font-display);font-size:1.5rem;color:var(--color-gold-deep);
+  letter-spacing:.04em}
+.b .shead__r{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--color-muted);text-decoration:none}
+.b .shead__r:hover{color:var(--color-gold)}
+
+/* =========================================================================================
+   C - CENTRED TILDE HEAD.  VERBATIM from archive/2026-08-18-retired/aggregate.html, whose own
+   CSS header reads "section header (harumaki ~tilde~, PROVISIONAL - not a picked slot)".
+   ONE EDIT, FLAGGED: the original sets the name in --fs, a SERIF, with the comment
+   "T0-B: serif headers, hand reserved for logo". D16 overruled serif entirely, so it renders
+   in --font-display here. Everything else is untouched.
+   ========================================================================================= */
+.c .shead{text-align:center;margin:0 0 1.8rem}
+.c .shead .num{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.3em;
+  color:var(--color-gold-deep);display:block;margin-bottom:.3rem;text-transform:uppercase}
+.c .shead .nm{font-family:var(--font-display);font-weight:700;font-size:2.4rem;
+  color:var(--color-gold-deep)}
+.c .shead .nm::before{content:"~ ";color:var(--color-gold)}
+.c .shead .nm::after{content:" ~";color:var(--color-gold)}
+
+/* C as originally authored, serif and all, for the comparison D16 makes you choose between */
+.c2 .shead{text-align:center;margin:0 0 1.8rem}
+.c2 .shead .num{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.3em;
+  color:var(--color-gold-deep);display:block;margin-bottom:.3rem;text-transform:uppercase}
+.c2 .shead .nm{font-family:"Shippori Mincho",serif;font-weight:700;font-size:2.4rem;
+  color:var(--color-gold-deep)}
+.c2 .shead .nm::before{content:"~ ";color:var(--color-gold)}
+.c2 .shead .nm::after{content:" ~";color:var(--color-gold)}
+
+/* ---- THE REAL HARUMAKI SECTION HEADERS, pulled from the live site 2026-08-22 ---- */
+.real{margin-bottom:76px}
+.realgrid{display:grid;gap:0;border:1px solid var(--color-line-faint);background:rgba(8,15,27,.82)}
+.realrow{display:flex;align-items:center;gap:26px;padding:22px 26px;
+  border-bottom:1px solid var(--color-line-faint)}
+.realrow:last-child{border-bottom:0}
+.realrow img{display:block;image-rendering:auto}
+.realmeta{font-family:var(--font-mono);font-size:10px;line-height:1.9;color:var(--color-muted)}
+.realmeta b{color:var(--color-text);font-weight:500}
+.swatch{display:inline-block;width:9px;height:9px;vertical-align:-1px;margin-right:4px;
+  border:1px solid rgba(255,255,255,.25)}
+
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font-family:var(--font-mono);
+  font-size:10px;color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold)}
+</style>
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>
+<div id="scrim"></div>
+
+<header class="top">
+  <h1>Section head</h1>
+  <span class="sub">the real harumaki headers, then the four we already have &middot;
+    <a href="/redesign-lab/">lab</a> &middot;
+    <a href="/redesign-lab/final-landing.html">final-landing</a></span>
+</header>
+
+<div class="wrap">
+
+  <div class="prov" style="margin-bottom:56px">
+    <b>All three are OURS.</b> They come from <code>a3-assembly.html</code> and the archived
+    aggregates, which under the bench rule are source CANDIDATES and never sources. Taking one is a
+    call you can make; it gets filed as <b>origin ROD</b>, not as provenance.<br>
+    The sourced alternative is already on the ledger: <code>element-tracker.md:74</code> holds
+    <b>hana.b-rave.tokyo</b> for a per-letter left-to-right spawn treatment on section titles, plus
+    109ichiki mono as a second lead. Neither has been built.
+  </div>
+
+
+  <!-- ============ THE REAL THING ============ -->
+  <section class="case real">
+    <div class="tagrow"><span class="badge" style="background:#7ee0b8;color:#0d2a12">the actual site</span>
+      <h2>harumakigohan.com &middot; its real section headers</h2></div>
+    <div class="prov">Pulled from the live site on 2026-08-22, from
+      <code>wp-content/themes/gohantheme/img/</code>. Two measured facts about that page first:
+      it has <b>124 images and ZERO html headings</b> - not one <code>h1</code> through
+      <code>h6</code> anywhere - and <b>not a single tilde character</b> in its text.
+      Every section header is a <b>drawn PNG</b>. The <code>m_</code> prefix is
+      <i>midashi</i>, Japanese for heading.<br><br>
+      <b>The structure is the same in all four:</b> a drawn squiggle on the left, the white label,
+      a drawn squiggle on the right. Colour census over the pixels gives
+      <span class="swatch" style="background:#f0f0f0"></span><code>#f0f0f0</code> for the label and
+      <span class="swatch" style="background:#f078f0"></span><code>#f078f0</code> for the ornaments,
+      a bright magenta-pink. Heights are a fixed <b>30px</b> on the main sections and 22px on the
+      smaller ones; width just follows the word.</div>
+    <div class="realgrid">
+      <div class="realrow"><img src="/redesign-lab/references/harumaki-heads/m_news.png" alt="harumaki NEWS section header" width="192" height="30">
+        <span class="realmeta"><b>m_news.png</b> &middot; 192 x 30</span></div>
+      <div class="realrow"><img src="/redesign-lab/references/harumaki-heads/m_disco.png" alt="harumaki DISCOGRAPHY section header" width="318" height="30">
+        <span class="realmeta"><b>m_disco.png</b> &middot; 318 x 30</span></div>
+      <div class="realrow"><img src="/redesign-lab/references/harumaki-heads/m_live.png" alt="harumaki LIVE section header" width="157" height="22">
+        <span class="realmeta"><b>m_live.png</b> &middot; 157 x 22</span></div>
+      <div class="realrow"><img src="/redesign-lab/references/harumaki-heads/m_contact.png" alt="harumaki CONTACT section header" width="169" height="22">
+        <span class="realmeta"><b>m_contact.png</b> &middot; 169 x 22</span></div>
+    </div>
+    <div class="prov" style="margin-top:22px"><b>What this means for C, and I nearly got it
+      backwards.</b> I was about to report the "harumaki ~tilde~" citation as fabricated, because
+      there is no tilde on their site. It is not fabricated - it is an <b>approximation</b>. Their
+      flanking ornament is real and it is exactly the device C copies; what C does is substitute a
+      typed <code>~</code> for a drawn wave, and gold for their pink. So the idea has a real
+      parent, and the execution is a text stand-in for artwork.<br><br>
+      That is D10 in one artefact: <b>the warmth is in the drawn asset</b>. Matching this properly
+      means drawing an ornament, not typing a character - and per D10 that is shader and asset work,
+      not a CSS problem.</div>
+  </section>
+
+  <!-- A -->
+  <section class="case a">
+    <div class="tagrow"><span class="badge badge--ours">ours</span>
+      <h2>A &middot; split head, with a hairline</h2></div>
+    <div class="prov">From <code>final-landing-v1.html</code>, the most developed of the three and
+      what the previous landing actually used. Display-face label left, mono action right, hairline
+      under the row. Rebuilt 2026-08-18 after you said <b>"our new landing is still missing alot of
+      the headers"</b> - the thing it replaced was a bare centred label with no action, so a section
+      could not be entered from its own head.</div>
+    <div class="stage">
+      <div class="shead"><span class="shead__l">Featured Projects</span>
+        <a class="shead__r" href="#">View all</a></div>
+      <div class="cards"><div class="cardph">project card</div><div class="cardph">project card</div>
+        <div class="cardph">project card</div></div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="case b">
+    <div class="tagrow"><span class="badge badge--ours">ours</span>
+      <h2>B &middot; split head, no rule</h2></div>
+    <div class="prov">From <code>a3-assembly.html</code>. Same family as A with two real
+      differences: it aligns <b>center</b> rather than baseline, and it has <b>no hairline and no
+      bottom margin</b>, so the head sits closer to what follows and the section is separated by
+      space alone. That matches the 2026-08-13 call that sections are divided by SPACE and by the
+      scene showing through, not by painted strips.</div>
+    <div class="stage">
+      <div class="shead"><span class="shead__l">Featured Projects</span>
+        <a class="shead__r" href="#">View all</a></div>
+      <div class="cards" style="margin-top:26px"><div class="cardph">project card</div>
+        <div class="cardph">project card</div><div class="cardph">project card</div></div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="case c">
+    <div class="tagrow"><span class="badge badge--ours">ours</span>
+      <span class="badge">provisional</span>
+      <h2>C &middot; centred tilde head, in the current display face</h2></div>
+    <div class="prov">From the retired <code>aggregate.html</code>, whose own CSS header calls it
+      <b>"harumaki ~tilde~, PROVISIONAL - not a picked slot"</b>. A mono kicker above, the name
+      flanked by tildes. <b>No action link</b>, so a section cannot be entered from its head.
+      Shown here in the rounded gothic, because <b>D16 overruled the serif it was written in</b>.</div>
+    <div class="stage">
+      <div class="shead"><span class="num">02</span><span class="nm">Featured Projects</span></div>
+      <div class="cards"><div class="cardph">project card</div><div class="cardph">project card</div>
+        <div class="cardph">project card</div></div>
+    </div>
+  </section>
+
+  <!-- C as authored -->
+  <section class="case c2">
+    <div class="tagrow"><span class="badge badge--ours">ours</span>
+      <span class="badge">overruled by D16</span>
+      <h2>C&prime; &middot; the same head as originally authored, in serif</h2></div>
+    <div class="prov">The same rule set, untouched, with its original <b>serif</b> name. Included
+      only so the D16 call is visible rather than asserted: this is what the tilde head was designed
+      as, and it is the version the type decision rules out.</div>
+    <div class="stage">
+      <div class="shead"><span class="num">02</span><span class="nm">Featured Projects</span></div>
+      <div class="cards"><div class="cardph">project card</div><div class="cardph">project card</div>
+        <div class="cardph">project card</div></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; section-head tests &middot;
+  all four are OUR builds, none sourced</div>
+<script src="/redesign-lab/hana-bloom.js"></script>
+</body>
+</html>

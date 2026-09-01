@@ -1,0 +1,152 @@
+/* drift-magnet — demo styles + the dennissnellenberg rising-circle FILL (pure CSS).
+   The motion (drift + magnet) is owned by drift-magnet.js; CSS here is the shape/fill only.
+   PROVENANCE: rising fill = dennissnellenberg.com/work .btn-fill (150%x200% circle parked below,
+   slides to 0 on hover; overflow:hidden clips it) -> sources/dennissnellenberg-buttons.md, recolored
+   to tokens. */
+.dm-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.dm-row {
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: var(--space-5) 0;
+}
+
+/* circular social (harumaki register: right of the hero, circle buttons) */
+.dm-social {
+  position: relative;
+  overflow: hidden;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+/* the fill: oversized circle parked below, rises to cover on hover (verbatim geometry) */
+.dm-social__fill {
+  position: absolute;
+  top: -50%;
+  left: -25%;
+  width: 150%;
+  height: 200%;
+  border-radius: 50%;
+  background: var(--color-gold);
+  transform: translate3d(0, 76%, 0);
+  transition: transform 0.6s cubic-bezier(0.7, 0, 0.3, 1);
+  will-change: transform;
+  z-index: 1;
+}
+
+.dm-social:hover .dm-social__fill {
+  transform: translate3d(0, 0, 0);
+}
+
+.dm-social__glyph {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--color-gold);
+  transition: color 0.3s ease;
+}
+
+/* text inverts as the fill covers (dennissnellenberg .btn-text-inner.change) */
+.dm-social:hover .dm-social__glyph {
+  color: var(--color-night);
+}
+
+/* favicon-style: magnetic but CLAMPED to its box + spins on hover */
+.dm-favicon {
+  position: relative;
+  width: 2.6rem;
+  height: 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-panel);
+  cursor: pointer;
+}
+
+.dm-favicon__icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, var(--color-glow), var(--color-gold-deep));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 50%, transparent);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dm-favicon:hover .dm-favicon__icon {
+  transform: rotate(360deg);
+}
+
+.dm-demo__hint {
+  max-width: 42ch;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.dm-demo__hint--small {
+  font-size: 0.56rem;
+  opacity: 0.8;
+}
+
+.dm-motion-btn {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  background: transparent;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.dm-motion-btn:hover {
+  border-color: var(--color-glow);
+}
+
+/* --- BASE behavior (not demo-only): click border-flash ---
+   the border ignites then flies outward and fades (phojanecki outline-ripple, on CLICK). Opt-in via
+   data-click-flash; drift-magnet.js toggles .dm-flash. outline/box-shadow paint outside the box, so a
+   social's own overflow:hidden does NOT clip them.
+   PROVENANCE: phojanecki (codepen.io/phojanecki/pen/vwyZpY) — same ripple as button-kit/tags. */
+.dm-flash {
+  animation: dm-border-fly 0.5s ease-out;
+}
+
+@keyframes dm-border-fly {
+  0% {
+    outline: 1px solid var(--color-glow);
+    outline-offset: 0;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 45%, transparent);
+  }
+  100% {
+    outline: 1px solid transparent;
+    outline-offset: 14px;
+    box-shadow: 0 0 22px color-mix(in srgb, var(--color-glow) 0%, transparent);
+  }
+}

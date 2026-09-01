@@ -1,0 +1,911 @@
+<!doctype html>
+<!-- PROMOTED 2026-08-24. Rod: "remove the old final project this is leagues better instantly".
+     This page was built as final-projects: the LIVE /tech-art/projects/ layout measured and
+     used as the blockout, with already-approved components laid into it. It replaces the
+     sticker/hybrid build, which had been rebuilt twice in one day and still read wrong to him.
+     The superseded file is kept at archive/2026-08-24-projects-superseded/ rather than deleted:
+     it is the only record of that blockout, and its slot notes carry provenance the ledger
+     still cites. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FINAL - Projects</title>
+<!--
+  ===== FINAL - PROJECTS, SECOND ATTEMPT. NEW FILE, NOTHING COPIED FROM final-projects.html =====
+
+  WHY THIS FILE EXISTS. Rod 2026-08-24:
+    "Projects page is landing really poorly i actually think our old one is better can you try
+     grabbing the old one create a blockout page using it and lay the new elements into that
+     instead?"
+  and, separately:
+    "Projects page currently doesnt match any of the colors or conventions of anything else in
+     the finals backing card is a weird transparent color and tags are weird amalgams"
+    "Search bar isnt the one we made together im fairly sure"
+
+  SO THE BLOCKOUT SOURCE FOR THIS PAGE IS THE LIVE SITE, not projects-blockout.html?v=sticker.
+  final-projects.html was rebuilt three times today off the sticker blockout (landing bento ->
+  epx is-regular -> its own 3x300) and still read wrong. The layout below is a transcription of
+  http://localhost:4000/tech-art/projects/ as measured over CDP at 1440x900. Every number in the
+  page CSS carries the measurement it came from.
+
+  NOTE ON THE URL: /projects/ 404s. The live projects pages are section-scoped -
+  /tech-art/projects/ and /game-design/projects/. The measurements are the tech-art one, which is
+  the page with all sixteen posts and the filter row.
+
+  THE RULES THIS FILE FOLLOWS (unchanged from the rest of the FINAL group):
+    - It starts as the chosen blockout and nothing else. Every slot is greybox until Rod approves
+      that specific element.
+    - A slot does NOT become approved because someone built it. Everything below is data-state
+      "pending" except the two that cite Rod approving them.
+    - Nothing is added that the blockout does not declare. Where something IS added anyway it is
+      flagged in a comment as a proposal, never slipped in.
+    - No component rule is restated here. The page owns GEOMETRY, the components own LOOK, and
+      decisions.css owns TYPE. Where the two disagree the ladder wins and the difference is
+      written down rather than patched with an exception (Rod: "we shouldnt be making 100
+      exceptions just a few simple rules").
+
+  CONTENT IS REAL. All sixteen cards are the actual posts in _posts/tech-art/ - real titles,
+  real descriptions, real role/engine lines, real tags, real pin/wip flags, real takeaways, real
+  cover media paths (all eleven verified present on disk). Nothing here is invented copy.
+-->
+<link rel="stylesheet" href="/redesign-lab/foundations.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/redesign-lab/extracted/styles/settings.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/favicon/favicon.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/top-bar/top-bar.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/line-boil/line-boil.css">
+<style>
+/* ==========================================================================================
+   LAB CHROME. Identical to the other final-* pages so this one is judged the same way.
+   It must never move the design: everything here is fixed-position or a greybox marker.
+   ========================================================================================== */
+.sp__h{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  margin:10px 0 4px;color:#8e8e8e}
+
+/* The universal reset lives in foundations.css, in the `reset` cascade layer, and this page
+   loads it. Do NOT add a second one here - an unlayered `margin:0;padding:0` beats every layer
+   and silently strips the padding off every component on the page. */
+html{scroll-behavior:smooth}
+body{background:var(--color-night,#070C23);color:var(--color-text,#F5F3EF);
+  font-family:"M PLUS Rounded 1c",sans-serif;line-height:1.7;overflow-x:clip}
+
+/* ---- the scene ---- */
+#hana-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--color-night);
+  pointer-events:none;transition:opacity .5s;
+  -webkit-mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%);
+  mask-image:radial-gradient(115% 80% at 50% 40%,#000 26%,transparent 80%)}
+#scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0 14%,rgba(6,10,28,.5) 40%,rgba(6,10,28,.72) 100%)}
+
+/* ---- PENDING SLOT: the greybox. Deliberately ugly. It must never read as a design. ----
+   Two flavours, and the difference matters:
+     .slot  block-level greybox that OWNS its box (centres its label, has its own padding)
+     .gb    a greybox MARK on a box that already has geometry. Outline, not border, so it costs
+            the box model nothing - a border here would push every reserved size out by 3px. */
+.slot{position:relative;border:1.5px dashed #4a4a4a;background:rgba(20,20,20,.55);
+  display:grid;place-items:center;text-align:center;padding:22px 18px;gap:6px}
+.slot__name{font-family:var(--font-mono,ui-monospace),monospace;font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:#9a9a9a}
+.slot__wait{font-family:var(--font-mono,ui-monospace),monospace;font-size:.58rem;letter-spacing:.06em;
+  color:#6f6f6f;max-width:52ch;line-height:1.6}
+.slot__tag{position:absolute;top:6px;left:6px;font:9px ui-monospace,monospace;letter-spacing:.12em;
+  color:#141414;background:#8a8a8a;padding:1px 6px}
+/* `.gb` and `.gb__lbl` DELETED 2026-08-24 with the search greybox, their only user on this page
+   (D36: a slot's page CSS is stripped WITH the thing that replaces it). `.slot__tag` stays, it is
+   still used elsewhere. Note the grey dashed outline these drew is the "weird silver border" Rod
+   reported on the tags - it was chrome that had never been cleared, and it is now fully gone. */
+
+/* ---- APPROVED slot: a hairline mark so Rod can see at a glance what is real ---- */
+.ok{position:relative}
+.ok::after{content:'APPROVED';position:absolute;top:6px;left:6px;z-index:40;
+  font:9px ui-monospace,monospace;letter-spacing:.12em;color:#0d2a12;background:#7ee0b8;
+  padding:1px 6px;pointer-events:none;opacity:0;transition:opacity .2s}
+body.show-state .ok::after{opacity:1}
+body:not(.show-state) .slot__tag{opacity:0}
+
+/* ---- the state panel ---- */
+#state{position:fixed;right:14px;bottom:14px;z-index:90;width:300px;max-height:70vh;overflow:auto;
+  background:rgba(8,10,18,.95);border:1px solid rgba(255,255,255,.2);padding:12px 13px;
+  font:11px/1.6 ui-monospace,Consolas,monospace;color:#dcdcdc}
+#state .bar{height:6px;background:#2a2a2a;margin:6px 0 10px}
+#state .bar i{display:block;height:100%;background:#7ee0b8}
+#state ul{margin:0;padding-left:14px}#state li{margin-bottom:2px;color:#bdbdbd}
+#state .a li{color:#7ee0b8}
+#state .u li{color:#c9a05e}
+#state button{background:none;border:1px solid #555;color:#bbb;font:9px ui-monospace,monospace;
+  letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;cursor:pointer;margin-top:8px}
+.labtag{position:fixed;left:14px;bottom:10px;z-index:50;font:10px ui-monospace,monospace;
+  color:rgba(245,243,239,.45)}
+.labtag a{color:var(--color-gold,#F3B53C)}
+
+/* ==========================================================================================
+   THE LAYOUT.  Transcribed from http://localhost:4000/tech-art/projects/ at 1440x900.
+   Every value below is a measured number from that page, and every one carries its source.
+
+   SECTION ORDER, top to bottom, exactly as the live page has it:
+     top bar -> h1 -> controls panel (search, then filter row) -> "Pinned Posts" h2 ->
+     3-up pinned grid -> hr -> all-posts grid -> footer
+   No "view all" button, because you are already looking at every project. No pagination and no
+   "load more": all sixteen posts render at once, which is what the live page does.
+
+   THE CONTENT COLUMN is 1176px. Measured: #blog-page x=127 w=1176, produced by
+   .container.px-xxl-5 (max 1320, 48px padding) > main.col-12.px-md-4 (24px padding).
+   Reproduced directly rather than by rebuilding Bootstrap's four nested boxes.
+
+   THE GRID IS THE PAGE'S JOB, NOT THE COMPONENT'S, and this is the one place the page restates
+   something a component also sets. merged-card.css ships a 12-column BENTO grid with
+   [data-column-span] spans; the live projects grid is three equal columns. Geometry is what a
+   blockout is FOR and D25 says layout is Rod's, so it is set here, once, and the bento spans are
+   simply not used (no [data-column-span] attributes on the cells, so nothing to override).
+   Nothing else a component owns - no colour, no type, no border, no radius - is restated on this
+   page. If you find yourself adding one, that is the bug.
+   ========================================================================================== */
+.top-bar{position:sticky;top:0;z-index:60}
+
+/* WIDTH AND MARGIN RESTORED. The v2 build restated `padding` here but not `width`, so
+   `foundations.css`'s `.wrap{max-width:var(--measure)}` survived underneath - and `--measure` is
+   64rem, i.e. 1024px. The result: `.wrap` computed 1024 while `.col` is 1176, so the column
+   overflowed its own wrapper and the WHOLE PAGE sat 76px right of centre - gutters measured
+   208 / 56 against the live page's 132 / 132.
+   `width:min(1180px,92vw); margin:0 auto` is exactly what final-about and final-ramblings declare;
+   v2 simply dropped it. Restating a shorthand PARTIALLY is its own trap: the half you leave out
+   keeps inheriting from a layer you have already stopped thinking about. */
+.wrap{width:min(1180px,92vw);margin:0 auto;position:relative;z-index:1;padding:48px 0 120px}
+/* live: content starts at y=262 (below the bar), the h1 sits at 309.6 - a 48px gap, which is the
+   h1's own margin-top on the live page. Ours comes from the wrap because decisions.css sets
+   h1 margin to `0 0 0`. */
+.col{width:1176px;max-width:92vw;margin:0 auto}
+
+/* HEADER. live: header.blog-header.mb-4 y=309.6 h=38.39, margin-bottom 24px (mb-4). */
+.pv2-head{margin-bottom:24px}
+
+/* CONTROLS PANEL. live: div.blog-controls.mb-4 y=372 h=192.78 w=1176 - padding 20px, border 1px,
+   margin-bottom 24px. It is the ONLY panel on the live page; there is no big backing card behind
+   the grid, which is the direct answer to "backing card is a weird transparent color" - the old
+   final had a 1000x35 .panel wrapping the whole page and the live page has nothing of the kind.
+   COLOUR: --color-panel (the warm grey Rod picked 2026-08-23, "Warm grey is the winner") and
+   --color-line (the gold hairline). Both are tokens; there is no literal here.
+   DECLARED DEVIATION: the live panel is border-radius 10px. Everything in the FINAL group is
+   squared (the 2026-08-16 shape pass, and .merged-cards--square below), so it is 0 here. That is
+   a convention call, flagged rather than silently taken.
+   NOT CARRIED OVER: the live panel's 7s `breathe-slow` border animation, its blur(12px) backdrop
+   and its amber inner/outer glow. Those are live-site decisions from before the redesign; if Rod
+   wants the breathe back it is one line, but importing it would be adding an element the blockout
+   does not declare. */
+.pv2-controls{padding:20px;margin-bottom:0;
+  background:var(--color-panel);border:1px solid var(--color-line)}
+
+/* live: .search-wrapper y=393 h=50 w=1134, margin-bottom 16px. 1134 = 1176 - 40 padding - 2 border. */
+/* PADDING DELETED 2026-08-24. Rod: "its really not identical to the A in search-field.html", and
+   he was right - the text started at 17px here against 1px on the candidates page. This rule is
+   the page's own and UNLAYERED, so it beat the component outright and its 16px stacked on top of
+   the field's own 12px. The padding existed because this was a GREYBOX that had to mimic a field's
+   inner inset; a real field brings its own, so the reservation must not restate it.
+   Exactly the fault Rod named the rule for: delete the page's copy, do not add an exception. */
+.pv2-search{height:50px;margin-bottom:16px;display:flex;align-items:center}
+
+/* live: #filter-pills y=459 h=84.78 w=1134, gap 8px, wrap, justify-content center. */
+.pv2-filters{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+
+/* ICONS ON THE FILTER PILLS. Rod 2026-08-24: "add the tag images to the tags under the search bar
+   too". **ADD, not replace**, and the live site is what decides that rather than my reading of the
+   verb: `_includes/filter-pills.html:3-32` is `<img class="pill-icon"> Unity`, and the JS-injected
+   Clear at `post-filter.js:25` is `<i class="fas fa-times"></i> Clear`. Icon-ONLY is what the CARD
+   badges do; pills and badges are two different components live and they differ on exactly this.
+   All 11 pills have an icon, so the row cannot end up half-glyph half-word.
+   AND ICON-ONLY WOULD HAVE BEEN A REAL DEFECT HERE, not a taste call. Stripped to the glyph these
+   measure **16px tall and as little as 10.2px wide**, against WCAG 2.5.8's 24x24 minimum for a
+   pointer target - every one would fail. They are `<button>`s; the card tags can be chipless
+   because a `<span>` label is not a target. The magnetic behaviour breaks too: its offset is
+   +/-12.5px regardless of box size, so a 10.2px pill oscillates.
+   SIZES ARE LIVE'S RATIO, carried across: `_sass/pages/_projects.scss:117` is 1.25rem icon against
+   a 0.85rem label, and the gap is its own 0.5rem.
+   IT ADDS ONLY display/align/gap - it strips nothing, so the chip, the hover ripple and the focus
+   ring all survive, which is what makes this safe on a control where stripping was not.
+   ONE PIXEL OF MOVEMENT, FLAGGED: a 16px icon is 1.01px taller than the 14.99px text line, so the
+   pill goes 24.59 -> 25.59 and the panel 132.59 -> 133.59. A 0.93rem icon moves nothing but matches
+   neither live's ratio nor the card tags on this page. */
+.pv2-filters .kit-tag{display:inline-flex;align-items:center;gap:.5rem}
+.pv2-filters .badge-icon{width:1rem;height:1rem;display:block}
+.pv2-filters .kit-tag .fas{font-size:.85rem;line-height:1}
+
+/* THE GRID. live: .posts-grid.row.g-4 is a Bootstrap FLEX row, not a CSS grid: item width exactly
+   400.00 (1200/3) with 12px side padding, so the CARD is 376.00 and the measured gutter between
+   two card edges is 24.0px. Row gap 24px (g-4). Three columns at >=992, two at 768-991, one below.
+   (1176 - 2*24) / 3 = 376.00 exactly, so a plain 3-track grid at gap 24 lands on the same numbers
+   without Bootstrap's negative-margin overhang. */
+.pv2-grid{grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:991px){.pv2-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:767px){.pv2-grid{grid-template-columns:1fr}}
+
+/* THE CARD BOX. live card 376 x 421.39, split cover 200 + body 219.39.
+
+   HOW THE APPROVED CARD MAPS ONTO THAT BOX. merged-card is a cover-tile: the media fills the tile
+   and the title + meta overlay its bottom, so the component covers the live cover, the title row
+   and the role row in one piece:
+       200 cover + 26 title + 8 + 22.39 role + 8  =  264.39  ->  264px
+
+   THE STRIP IS GONE AND THE FIELDS ARE ON THE CARD (Rod 2026-08-24): "the fields under the flip
+   cards should be added to the cards themselves and the current strips should be removed."
+   Description, date + read time and tags now live on the flip's BACK FACE. The row that used to
+   hold them - 16 pad + 73.5 + 16 + 35.5 + 16 pad = 157px - is deleted, so the cell is a single
+   264px row and the page is ~942px shorter. This also closes two things at once: the description
+   no longer loses its third line to make room (there is no 73.5px box to fit), and the card cannot
+   grow with its content, which is Rod on P321: "the boxes should always be the same size bigger
+   titles make it larger sometimes causing an uneven look."
+
+   AND IT REMOVES THE GREY EDGE ROD REPORTED. The strip's two boxes carried `gb`, whose
+   `outline:1.5px dashed #4a4a4a` ran 2px off every tag - lab chrome that was never cleared after
+   the real tags landed. 33 gb marks -> 1. */
+.pv2-cell{display:grid;grid-template-rows:421px}
+
+/* THE CARD'S TEXT, ON THE FRONT (Rod 2026-08-24): "dont add it to the back add it to the front
+   ... place them how they were laid out pre change" + "i also want to expand the cards and add a
+   dividing line for them."
+
+   THE ARRANGEMENT IS THE PRE-CHANGE STRIP'S, LIFTED INTACT: a fixed description box holding the
+   description then the date + read time, and under it the right-aligned tag row. Only the two
+   horizontal insets are dropped (descbox 0 10px, metabox 4px 8px) - the strip's own padding was
+   16px and the card body's is 24px, so keeping them would stagger the description 10px right of
+   the title above it, a misalignment that did not exist when they sat in separate boxes.
+
+   THE BOX IS A FIXED HEIGHT, NOT A CLAMP, and that is what holds P321. A clamp cuts long text but
+   does not pad short text: with the clamp alone, cards 10 and 11 have one-line descriptions and
+   their bodies measured 224 and 223 against everyone else's 249. The fixed 73.5px box makes all
+   sixteen exactly 249. `.pv2-metabox` is `height`, not `min-height`, for the same reason: tagless
+   card 11 measured 36 against the other fifteen's 37.
+
+   CARD 264 -> 421. The fields cost 126px (73.5 + 16 + 37), not the strip's 157, because the card
+   body's existing 20.8px bottom padding replaces the strip's 16px. 421 is chosen over the derived
+   390 because it restores the pre-change column height exactly (264 + 157.05 = 421.05) and is the
+   live page's own card height. The spare 31px goes into cover art: 141 -> 172.
+
+   THE DIVIDING LINE IS THE LIVE PAGE'S, NOT DRAWN HERE.
+   `_sass/layout/_projectspreview.scss:221-226` - `padding-top:.5rem; border-top:1px solid
+   var(--main-border-color)`, which resolves to rgba(245,158,11,.1) in dark. The pre-change strip
+   had NO line; what read as one was the greybox `.gb` dashed outline, which died with the strip.
+   `--color-line` is the lab's own gold hairline and is used instead of restating the live rgba. */
+.pv2-descbox{height:73.5px;overflow:hidden}
+.pv2-desc,
+.pv2-date{margin:0;font-size:14px;line-height:1.75;color:var(--color-warm-muted)}
+/* THREE LINES, AND THE DATE NOW SITS IN THE TAG ROW. Rod 2026-08-24: "separate the date and read
+   time put them in same row as tags so there is more space for the description".
+   THE BOX DOES NOT CHANGE. It was always 73.5px = 3 x 24.5, holding two clamped description lines
+   plus the date; moving the date sideways frees the third line at ZERO cost in card height. That is
+   the door P343 was blocked on - it offered only "grow the strip" or "move the fields onto the
+   tile", and he found a third.
+   IT ONLY FITS BECAUSE THE TAGS ARE SYMBOLS. Applied once with worded tags and backed out: the
+   widest run was 218px against a 144.6px date in a 328px row, and the row wrapped OUT of its 28px
+   box on 8 of 16 cards at 1440. No date size rescued that. Bare icons take the run to ~74px.
+   The two changes are one change.
+   ORIGINAL NOTE: Rod asked to move the date into the tag row
+   so the description could have a third line, and it works - truncated descriptions go 9 of 16 to
+   2 of 16 at desktop widths, with zero change in card height. IT WAS APPLIED, MEASURED, AND BACKED
+   OUT, because the move is COUPLED to the tag-symbol change he asked for in the same breath:
+   the widest worded tag run is 218px and the widest date is 144.6px, which needs 372.6px against
+   the 328px the row has. Measured after the move: the row wrapped OUT of its 28px box on 8 of 16
+   cards at 1440 and 10 of 16 at 768, and `.pv2-metabox` is `overflow:visible`, so it spills rather
+   than clips. No date size rescues it - even at the chip's own 10.56px, 4 cards still overflow.
+   Bare icon tags take the run from 218px to 74px and fit at every width, so the two land together
+   or not at all. The comment below is the original note and stays accurate for the current state. */
+/* ORIGINAL NOTE (Rod 2026-08-24): "separate the date and read time
+   put them in same row as tags so there is more space for the description". The 73.5px box was
+   always 3 x 24.5 - two clamped description lines plus the date. Moving the date sideways frees the
+   third line at ZERO cost in card height, which is the door P343 was blocked on: that row offered
+   only "grow the strip 24.5px" or "move the fields onto the tile", and he found a third.
+   Measured: truncated descriptions go from 9 of 16 to 2 of 16 at 1440 and 1280, and to 0 at 991.
+   It does not close at narrow widths - 7 of 16 still cut at 768 - because the card is narrower
+   there. Closing those needs a 4-line box, which costs 24.5px per card and 147px of page. */
+.pv2-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+
+/* Z DEPTH ON THE TAG ROW (Rod: "tags should have some Z depth like the pinned and wip icons").
+   The mechanism is merged-card.css:120-128 `.z-layer` - a real translateZ inside the card's
+   perspective:1000px, flattened to 0 on touch. Nothing is invented here: it reuses --z-title, in
+   the same parent and the same nesting position the title already uses.
+   DEPTHS COMPOSE, and that is the catch. `.card-body` sits at 32, so a local 12 renders at 44.
+   The pin is 36/72. Using the PIN's own tokens here would render 68/114, roughly double the pin,
+   because the pin is a direct child of `.card-front` and this is not. */
+/* THE LINE MOVED UNDER role . engine (Rod 2026-08-24). Page-scoped because merged-card.css owns
+   `.card-meta` and the landing's eight cards share it; `.pv2-grid` keeps this off them.
+   HEIGHT-NEUTRAL BY CONSTRUCTION: card-meta gains 8px padding + 1px border (19 -> 28) and
+   .pv2-metabox gives up exactly the 8px padding-top + 1px border it used to carry (37 -> 28), so
+   the body stays 249 and the card stays 421. */
+.pv2-grid .card-front .card-meta{padding-bottom:8px;border-bottom:1px solid var(--color-line)}
+
+/* THE ART STOPS AT THE LINE (Rod: "make it so the image stops there to keep it consistent with the
+   other cards"). `.card-cover` is `position:absolute; inset:0`, so it grew to the full 421 when the
+   card did, and `object-fit:cover` started cutting every landscape thumbnail roughly in half - 47%
+   of the source width surviving against ~75% before the card grew. Releasing the bottom anchor and
+   letting height take over puts it back to ~70-75%, which is the consistency he means.
+   285, and the exact number is measured not chosen: `.card-cover` carries its own 1px border, so at
+   285 its bottom edge lands on exactly the same row as card-meta's new border-bottom, so the art
+   meets the line rather than stopping a hairline short of it. Measured after: cover bottom 285.1,
+   divider 285.1. The agent's derived 283 was two rows high against the real render. */
+.pv2-grid .card-cover{bottom:auto;height:285px}
+/* the glass plane is the cursor band-reveal, inset 8px. Capped to the same line (8 + 275 = 283) or
+   the glow keeps sweeping over the text region below the art, which reads as a bug. */
+.pv2-grid .glass-plane{bottom:auto;height:277px}
+
+/* A GROUND BEHIND THE TEXT, and this is the one thing here Rod did not ask for. Stopping the art
+   REQUIRES it: `.card-body`, `.card-front`, `.post-card` and `.pv2-cell` are all transparent, so
+   without a fill the 138px below the line becomes a window onto the Three.js scene, straight
+   through the description and tags. `--cover-lo` is the cover gradient's OWN end colour, so the art
+   and the text ground read as one surface rather than two. One word to change it. */
+.pv2-grid .card-front{background:var(--cover-lo)}
+
+.pv2-metabox{height:28px;margin-top:16px;display:flex;align-items:center;
+  justify-content:space-between;gap:10px;flex-wrap:wrap;
+  /* MORE DEPTH (Rod: "push the Z of the tags up father"). 36/52 composes to 68 rest / 94 hover
+     against `.card-body`'s 32/42 - well past the pin's 36, and 6.96px clear of the card edge at
+     rest against a measured ceiling of ~98 where the row starts hanging outside the card.
+     The pin's OWN tokens were the one option to avoid: --z-pin-hover 72 composes to 114 here and
+     pushes the row past the edge even without the hover tilt. */
+  --z:36;--z-hover:52}
+/* TAGS ARE THE LIVE SITE'S SYMBOLS NOW (Rod 2026-08-24): "make the tags symbols instead like the
+   main site on the cards just put the tag symbol rather than the name", then "like the ones in
+   /tech-art/projects/". Every glyph and every number below is verbatim from the live page -
+   `_includes/tag-badges.html:13-33` for the map, `_sass/layout/_projectspreview.scss:266-292` for
+   the geometry (gap .4rem, opacity .65 to 1 on card hover, img 1rem, icon .85rem).
+   THE CHIP IS GONE, because the live badge has no chip: no padding, no fill, no outline, no radius.
+   That also silently retires `.kit-tag:hover`'s outline animation on these, which had nothing left
+   to animate.
+   TWO THINGS HE SHOULD KNOW, both flagged rather than solved here:
+   1. `compute` has NO branch in the live map, so live renders nothing for it and neither do we.
+      Three cards lose a real tag that way - it matches live exactly, which is what he asked for.
+   2. FIVE OF THE SEVEN LIVE COLOURS ARE OUTSIDE THE PALETTE LAW. The shader brush is a five-stop
+      gradient containing #ff6b6b, a RED, and vfx is blue, rigging purple, 2D green. Only 3D and
+      study are warm. He named the live page as the reference, so they are carried verbatim rather
+      than muted - but this is the palette law being overridden by a direct instruction, not an
+      oversight, and muting them to one colour is one edit away.
+   ACCESSIBILITY: the live markup gives these no accessible name at all (`alt=""`, pseudo-element
+   glyphs, `title` on a non-interactive span). `role="img"` plus `aria-label` is added here because
+   copying that as-is would fail WCAG 1.1.1 for the tag information. `title` is kept for the hover
+   reveal the live site has. */
+.pv2-tags{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.pv2-tags .kit-tag{padding:0;background:none;outline:0;border:0;border-radius:0;line-height:1;
+  font-size:.85rem;display:inline-flex;align-items:center;opacity:.65;transition:opacity .35s}
+.pv2-grid .post-card:hover .pv2-tags .kit-tag{opacity:1}
+.pv2-tags .badge-icon{width:1rem;height:1rem;display:block}
+
+/* THE NINE BACKS WITH NO TAKEAWAY. Moving the fields to the front left 9 of 16 cards flipping to
+   a single link floating in a 374px void. Rod 2026-08-24: "in the case a card doesnt have a
+   takeaway just add something that says 'nothing to see here'". It reuses `.takeaway-text` so it
+   sits exactly where a real takeaway would, and only drops the emphasis - it is a state, not a
+   quote. */
+.pv2-grid .takeaway-text--none{opacity:.55;font-style:normal}
+
+/* live: hr.my-4 between the pinned grid and the all-posts grid - 1px, margin 24px 0, opacity .5.
+   The live rule is amber at .1 alpha; --color-line-faint is the token the rest of the FINAL group
+   uses for a whisper hairline, so it takes that rather than a fourth hairline value. */
+.pv2-rule{border:0;border-top:1px solid var(--color-line-faint);margin:24px 0}
+
+/* the pinned grid is a single 3-up row on the live page (three cards, all 421.39) */
+.pv2-pinned{margin-bottom:0}
+</style>
+<link rel="stylesheet" href="/redesign-lab/extracted/components/page-title-desc/page-title-desc.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/button-kit/button-kit.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/merged-card/merged-card.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/project-cards-expensive/project-cards-expensive.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/drift-magnet/drift-magnet.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/empty-state/empty-state.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/footer-line/footer-line.css">
+<link rel="stylesheet" href="/assets/lib/fontawesome-subset/css/all.min.css">
+<link rel="stylesheet" href="/redesign-lab/extracted/components/search-field/search-field.css">
+<link rel="stylesheet" href="/redesign-lab/decisions.css">
+<link rel="stylesheet" href="/redesign-lab/focus-ring.css">
+</head>
+<body>
+<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0" style="opacity:0"></div>
+<div id="scrim"></div>
+
+<!-- TOP BAR. The bar is PENDING - Rod 2026-08-18: "the spacing is weird and the nav isnt
+     centered", and the nav-centring fix landed but he has not signed the bar off since.
+     The FAVICON is approved (his own Figma mark).
+     Toggles are absent, matching final-post: removed 2026-08-18 (D20/D21), one combined control
+     governs scene + motion and where it lives is still open. Their absence is what makes the nav
+     genuinely centred.
+     The live page's own header is a 261.61px three-row Chirpy topbar. It is NOT transcribed -
+     the whole point of the redesign is that our bar replaces it. -->
+<header class="top-bar" data-slot="top bar" data-state="pending">
+  <span class="slot__tag">PENDING</span>
+  <div class="top-bar__left">
+    <a class="favicon favicon--square ok" data-slot="favicon" data-state="approved" href="/redesign-lab/final-landing.html" aria-label="Home">
+      <span class="favicon__magnet js-magnetic" data-strength="50" data-magnet-clamp="6">
+        <img class="favicon__img" src="/assets/img/favicons/favicon.svg" alt="" width="24" height="24" />
+      </span>
+    </a>
+    <span class="top-bar__logo lb">RODNEY FAN</span>
+  </div>
+  <nav class="top-bar__nav">
+    <a class="top-bar__link js-magnetic" data-strength="40" href="/redesign-lab/final-landing.html">Home</a>
+    <a class="top-bar__link is-active js-magnetic" data-strength="40" href="#">Projects</a>
+    <a class="top-bar__link js-magnetic" data-strength="40" href="/redesign-lab/final-about.html">About</a>
+    <a class="top-bar__link js-magnetic" data-strength="40" href="/redesign-lab/final-ramblings.html">Ramblings</a>
+  </nav>
+</header>
+
+<main id="main"><div class="wrap"><div class="col">
+
+  <!-- ==================================================================================
+       1. HEADER.  live: h1.page-title "Tech Art Projects" only.
+       page-title-desc, PICKED 1 (the sub line). component-review.html: "PICKED 1."
+
+       FLAGGED ADDITION, not slipped in: the live page renders NO description. The measurement
+       pass confirmed it - neither tech-art/projects.html nor game-design/projects.html defines a
+       `description` key, so .page-description never renders at all. The line below is here
+       because the approved page-title component IS the title+sub-line pair and every other FINAL
+       page carries one. If Rod wants the live page's bare h1, delete the <p> and the slot.
+
+       SIZE IS THE LADDER'S, NOT THE LIVE PAGE'S. decisions.css sets h1 to
+       clamp(2.75rem, 7vw, 101px) at weight 300; the live h1 is 32px/600. That is a real
+       difference and it is deliberate - fixing it here would mean restating a decisions.css rule
+       in the page, which is the thing we are trying to stop. The ladder wins, the difference is
+       recorded, Rod decides.
+       ================================================================================== -->
+  <div class="pv2-head">
+    <div class="ptd ptd--projects ptd--sub">
+      <h1 class="ptd__title d-h1" data-slot="page title" data-state="pending">Tech Art Projects</h1>
+      <!-- TAGLINE DELETED 2026-08-24. Rod: "we dont need a tagline under tech art projects".
+           It was lab-written copy, not content: `tech-art/projects.html` front matter has no
+           `description:` key, `_layouts/section-projects.html:19` gates the element behind
+           `{% if page.description %}`, and the live page renders zero `.page-description`. So
+           removing it matches the live page rather than diverging from it. The slot went with it.
+           Measured at 1440x900: reclaims exactly 34px (16px line box + the 18px `--ptd-gap`),
+           the h1 does not move, and every element below translates up by that same 34px with no
+           element changing its own height and nothing re-wrapping. Slots 26 -> 25.
+           `final-ramblings.html` still has its own tagline and was NOT touched: there the title
+           and description are ONE slot, it runs 3 lines not 1, and removing it would reclaim 60px.
+           That needs its own instruction. -->
+    </div>
+  </div>
+
+  <!-- ==================================================================================
+       2. CONTROLS PANEL.  live: one glass panel holding the search field, then the filter row.
+       ================================================================================== -->
+  <div class="pv2-controls">
+
+    <!-- ****** THE SEARCH FIELD IS UNRESOLVED. THIS IS ROD'S CALL, NOT MINE. ******
+         Rod 2026-08-24: "Search bar isnt the one we made together im fairly sure."
+         He is right that something is wrong, and there are three facts and no clean answer:
+
+         1. component-review.html records the pick as NEITHER of the two search variants:
+            "NEITHER. Rod was right that this already existed on the workbench - list-controls
+             has .list-controls__input. The agents rebuilt what was already there."
+            So the recorded pick is list-controls' own field, and that is what final-ramblings
+            and the old final-projects both use.
+
+         2. BUT list-controls.css's own file header says, verbatim:
+            "!! CIRCULAR CITATION - CORRECTED 2026-08-16 !! ... This component therefore has NO
+             EXTERNAL PROVENANCE and is Slop until a real live site is found and its CSS read from
+             source."
+            SLOP CANNOT SHIP. So the recorded pick is a component that is disqualified by the
+            provenance contract.
+
+         3. AND extracted/components/search-bar/ exists as a third option - the two-variant demo
+            (A: atelierbram blinking border-caret, B: 109ichiki underscore caret). Its own review
+            note says the gallery has essentially no search bar: ten sites fetched, zero text
+            inputs, so both carets come from verified caret notes rather than a page that has one.
+
+         Picking between "the recorded pick that is Slop", "the rebuilt one that was rejected" and
+         "no search field at all" is a decision, so the slot stays greybox at the live geometry
+         (1134 x 50, full width inside the panel, not a centred pill and not max-width capped).
+         ****** -->
+    <div class="pv2-search sf sf--ronja" data-slot="search field" data-state="pending">
+      <input class="sf__input" type="text" placeholder="search projects &amp; tags"
+             aria-label="Filter projects by title, description or tag">
+    </div>
+
+    <!-- FILTER ROW. The ten tags are the real ones from _includes/filter-pills.html, in the live
+         order: unity, unreal, godot, shader, tool, vfx, rigging, 2d, 3d, study.
+         `.kit-tag` is THE tag, once, everywhere. Rod 2026-08-24: "we arent using these tags like
+         i asked. they should just have their drift stripped why did we make a new tag style" and
+         "tags are weird amalgams". So: no filter-pills component, no tag-badge component, no
+         icon-only card badges, no second tag style anywhere on this page. One class.
+         DRIFT IS STRIPPED as he asked - no data-drift, so no ambient float. Magnetism stays only
+         because these are real controls; the card tags below are labels and carry neither.
+         NOT CARRIED OVER: the live pills' JS-injected live counts and their opacity-0.4
+         empty-pill dimming. Those need the filter JS, which this page does not run. -->
+    <div class="pv2-filters" data-slot="filter tags" data-state="pending">
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="unity" type="button"><img src="/assets/img/icons/unity.svg" alt="" class="badge-icon">Unity</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="unreal" type="button"><img src="/assets/img/icons/unreal.svg" alt="" class="badge-icon">Unreal</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="godot" type="button"><img src="/assets/img/icons/godot.svg" alt="" class="badge-icon">Godot</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="shader" type="button"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i>Shader</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="tool" type="button"><i class="fas fa-wrench" aria-hidden="true" style="color:#b0b8c4"></i>Tool</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="vfx" type="button"><i class="fas fa-wand-magic-sparkles" aria-hidden="true" style="color:#4d96ff"></i>VFX</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="rigging" type="button"><i class="fas fa-bone" aria-hidden="true" style="color:#9b59b6"></i>Rigging</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="2d" type="button"><i class="fas fa-image" aria-hidden="true" style="color:#6bcb77"></i>2D</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="3d" type="button"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i>3D</button>
+      <button class="kit-tag js-magnetic" data-strength="25" data-tag="study" type="button"><i class="fas fa-book" aria-hidden="true" style="color:#e8a87c"></i>Study</button>
+      <!-- live: an 11th "Clear" pill is JS-injected and sits display:none until a filter or a
+           query is active. Hidden here for the same reason, so the row reserves the same space it
+           does live once something is filtered. -->
+      <button class="kit-tag js-magnetic" data-strength="25" type="button" hidden><i class="fas fa-times" aria-hidden="true"></i>Clear</button>
+    </div>
+  </div>
+
+  <!-- ==================================================================================
+       3. PINNED SECTION.  live: h2 "Pinned Posts" + a 3-up grid + an <hr>.
+       Three posts carry `pin: true` in _posts/tech-art/: ComputeGrass, Procedural3DMask and
+       DecompilingShaders. That is exactly the three the measurement pass counted.
+
+       THE THUMBTACK AND ITS RED ARE DROPPED, and that is the answer to "doesnt match any of the
+       colors". The live h2 leads with <i class="fas fa-thumbtack text-danger"> in rgb(220,53,69),
+       and the pinned cards take Bootstrap's `border-danger` - the ONE non-amber colour on the
+       whole live page. The measurement pass also found that red is DEAD CODE fighting itself:
+       `.border-danger` carries !important, so it overrides the `pinned-glow` keyframes' own
+       border-color steps and what actually renders is a frozen Bootstrap red hairline under an
+       animated gold glow. It is not carried forward. Pinned is marked by the star pin instead,
+       which is the component's own approved badge (reference-gallery tier-badge shape, Rod's own
+       gallery UI).
+
+       HEADING TYPE IS THE LADDER'S. A bare <h2> takes decisions.css: 2.4rem / weight 300 /
+       margin 4.5rem 0 2.25rem. Live is 24px/600 with a 16px bottom margin. The margins are much
+       bigger than live and that WILL show. Left alone deliberately - the ladder owns h2 and the
+       page must not restate it. The counter and the ruled divider do not appear because those are
+       scoped to `.prose h2` / `.d-h2`, which this is not.
+       ================================================================================== -->
+  <section class="pv2-pinned">
+    <h2 data-slot="pinned heading" data-state="pending">Pinned Posts</h2>
+
+    <div class="merged-cards merged-cards--square epx-cards pv2-grid">
+
+      <!-- CARD 1 of 16 - and the ONE place the description/meta greybox carries a data-slot.
+           The same greybox sits under all sixteen cards; giving each its own slot would put
+           sixteen identical rows in the state panel and drown the list. One slot, named for all
+           of them, is the honest count. -->
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 1" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/GrassCompute/GrassHeroAndPreviewImage.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Compute Grass</h3><p class="card-meta">Artist &middot; Unity</p><div class="pv2-descbox"><p class="pv2-desc">GPU-driven grass rendering in Unity using compute shaders, instanced drawing, and render texture controls for interaction and culling.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 19, 2026 &middot; 11 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unity" title="Unity"><img src="/assets/img/icons/unity.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span></span></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text">Even older techniques have value, even in modern games. If I wrote off GPU Gems as a resource just because it was released in 2004 I would likely not have as deep of an understanding of the fundamentals as I do now.</p></span><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 2" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/P3DM/TerrainShowcase.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Procedural 3D Mask</h3><p class="card-meta">Solo Developer &middot; Unity</p><div class="pv2-descbox"><p class="pv2-desc">A reusable SDF-like dynamic zone system in Unity with ShaderGraph support, used for terrain blending, wall transparency, dissolves, and more.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 10, 2026 &middot; 6 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unity" title="Unity"><img src="/assets/img/icons/unity.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span></span></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text">A single, simple-to-use tool that works on everything is worth more than a thousand specialized single use ones. When tools are made to be flexible every new use case layers on top of the system without needing to rebuild anything.</p></span><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 3" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/ZZZProject/CodeScroll.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--star z-layer" role="img" aria-label="Pinned">&#9733;</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Decompiling the Shaders of ZZZ!</h3><p class="card-meta">Research &middot; Unity</p><div class="pv2-descbox"><p class="pv2-desc">Breaking down a compiled toon shader from Zenless Zone Zero to figure out what makes the game look the way it does.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Dec 01, 2024 &middot; 6 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unity" title="Unity"><img src="/assets/img/icons/unity.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="Study" title="Study"><i class="fas fa-book" aria-hidden="true" style="color:#e8a87c"></i></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span></span></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text">Reverse engineering compiled shaders taught me you can deduce a lot from tiny components. When it comes to reverse engineering things it's often the smallest thread that ends up unraveling the ball of yarn.</p></span><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="pv2-rule">
+
+  <!-- ==================================================================================
+       4. ALL-POSTS SECTION.  live: one grid, thirteen items, no heading of its own and no
+       pagination. The heading is genuinely absent on the live page - the measurement pass found
+       only ONE h2 on the whole page - so none is invented here. The old final-projects.html added
+       an "All Projects" heading; it is dropped, because the blockout contract allows fewer and
+       not more, and the live page is the blockout.
+
+       WIP BADGES are the real `wip: true` flags from the front matter: ten of the sixteen posts
+       carry one. The measurement pass counted nine badges live; the extra one is 2DPhysicsCompute,
+       whose flag is set but which the live page may be ordering differently. Flagged, not fudged.
+
+       COVERS ARE THE REAL `image.path` values, all verified present on disk. Six of the sixteen
+       point at /assets/img/placeholder-wip.svg on the live site, which is the site's own
+       work-in-progress placeholder rather than a missing file.
+       ================================================================================== -->
+  <section class="all-posts-section">
+    <div class="merged-cards merged-cards--square epx-cards pv2-grid">
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 4" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/media/SpriteBaker9000/Aseprite_3PcWQqrjDW.gif" alt=""></div>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">The SpriteBaker9000</h3><p class="card-meta">Solo Developer &middot; Blender</p><div class="pv2-descbox"><p class="pv2-desc">A custom 3D-to-2D pixel art rendering pipeline for Blender.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 25, 2026 &middot; 5 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Tool" title="Tool"><i class="fas fa-wrench" aria-hidden="true" style="color:#b0b8c4"></i></span><span class="kit-tag" role="img" aria-label="2D" title="2D"><i class="fas fa-image" aria-hidden="true" style="color:#6bcb77"></i></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span></span></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text">Working with multiple artist workflows taught me that the best tools need to meet people where they are, not where you think they should be.</p></span><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 5" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/UnfinishedProjects/PhysicsCompute_Crystals.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">2D Physics Compute</h3><p class="card-meta">Solo Developer &middot; Unity</p><div class="pv2-descbox"><p class="pv2-desc">2D physics simulation powered by compute shaders &mdash; collision detection, spatial hashing, and particle dynamics all running on the GPU.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 18, 2026 &middot; 2 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unity" title="Unity"><img src="/assets/img/icons/unity.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="2D" title="2D"><i class="fas fa-image" aria-hidden="true" style="color:#6bcb77"></i></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 6" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/img/placeholder-wip.svg" alt=""></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">2D Rotation with Upscaling</h3><p class="card-meta">Solo Developer</p><div class="pv2-descbox"><p class="pv2-desc">Clean 2D rotation and upscaling techniques for pixel-perfect rendering.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 17, 2026 &middot; 1 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="2D" title="2D"><i class="fas fa-image" aria-hidden="true" style="color:#6bcb77"></i></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 7" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/UnfinishedProjects/DisplayShader_Interaction.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Compute Display Shaders + Dot Matrix</h3><p class="card-meta">Solo Developer &middot; Unity</p><div class="pv2-descbox"><p class="pv2-desc">A compute-driven dot matrix display system in Unity &mdash; world-space pixel snapping, direct render texture drawing, and framerate-independent decay.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 16, 2026 &middot; 3 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unity" title="Unity"><img src="/assets/img/icons/unity.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 8" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/img/placeholder-wip.svg" alt=""></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Portal Shaders in Godot</h3><p class="card-meta">Solo Developer &middot; Godot</p><div class="pv2-descbox"><p class="pv2-desc">Stencil-based portal rendering in Godot &mdash; see-through doorways, recursive reflections, and seamless world transitions using Godot&rsquo;s shader language.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 15, 2026 &middot; 2 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="Godot" title="Godot"><img src="/assets/img/icons/godot.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span></span></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text">Knowing when to keep going and when to walk away is important, especially when on tight deadlines. Working with the restrictions of the tools is sometimes needed.</p></span><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 9" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/UnfinishedProjects/SegmentDisplay_Idle.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Quick 7 Segment Display</h3><p class="card-meta">Solo Developer</p><div class="pv2-descbox"><p class="pv2-desc">A shader-based 7 segment display implementation.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 14, 2026 &middot; 1 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 10" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/img/placeholder-wip.svg" alt=""></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Student Projects</h3><p class="card-meta">Student</p><div class="pv2-descbox"><p class="pv2-desc">A collection of projects from my studies.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 13, 2026 &middot; 1 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Study" title="Study"><i class="fas fa-book" aria-hidden="true" style="color:#e8a87c"></i></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 11" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/UnfinishedProjects/Snatchems_MatrixShader.mp4" type="video/mp4"></video></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Snatchems &mdash; A Dive into the Internet</h3><p class="card-meta">Solo Developer</p><div class="pv2-descbox"><p class="pv2-desc">Snatchems: exploring the depths of the internet.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 12, 2026 &middot; 1 min</p></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 12" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/img/placeholder-wip.svg" alt=""></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Unreal Rigging Contract</h3><p class="card-meta">Technical Artist &middot; Unreal Engine 5</p><div class="pv2-descbox"><p class="pv2-desc">Professional character rigging contract in Unreal Engine 5 &mdash; skeleton setup, control rigs, IK solvers, and animation blueprint integration.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 11, 2026 &middot; 2 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Rigging" title="Rigging"><i class="fas fa-bone" aria-hidden="true" style="color:#9b59b6"></i></span><span class="kit-tag" role="img" aria-label="Unreal Engine" title="Unreal Engine"><img src="/assets/img/icons/unreal.svg" alt="" class="badge-icon"></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 13" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/img/placeholder-wip.svg" alt=""></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Studying the Shaders of Arknights Endfield</h3><p class="card-meta">Research &middot; Unity</p><div class="pv2-descbox"><p class="pv2-desc">Breaking down the toon shading, outline rendering, and material techniques used in Arknights: Endfield through shader analysis.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 09, 2026 &middot; 2 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unity" title="Unity"><img src="/assets/img/icons/unity.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span><span class="kit-tag" role="img" aria-label="Study" title="Study"><i class="fas fa-book" aria-hidden="true" style="color:#e8a87c"></i></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 14" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/img/placeholder-wip.svg" alt=""></div>
+              <span class="card-pin card-pin--wip z-layer">WIP</span>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">CG World Translation</h3><p class="card-meta">Translator / Researcher</p><div class="pv2-descbox"><p class="pv2-desc">Translation and study of a CG World magazine article.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Mar 08, 2026 &middot; 1 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Study" title="Study"><i class="fas fa-book" aria-hidden="true" style="color:#e8a87c"></i></span></span></div></div>
+            </div>
+            <div class="card-back"></span><p class="takeaway-text takeaway-text--none">Nothing to see here.</p><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-a">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 15" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><video loop muted playsinline preload="metadata"><source src="/assets/media/DoomsdaySales/UnrealEditor_2dzGAmnox1.mp4" type="video/mp4"></video></div>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">Doomsday Sales!</h3><p class="card-meta">Technical Artist &middot; Unreal Engine 5</p><div class="pv2-descbox"><p class="pv2-desc">Talking about Doomsday Sales the game i took part in making in.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Oct 01, 2025 &middot; 5 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unreal Engine" title="Unreal Engine"><img src="/assets/img/icons/unreal.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span><span class="kit-tag" role="img" aria-label="VFX" title="VFX"><i class="fas fa-wand-magic-sparkles" aria-hidden="true" style="color:#4d96ff"></i></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span></span></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text">Learning shaders in a new engine under time pressure forced me to actually understand the fundamentals rather than relying on muscle memory.</p></span><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+      <div class="pv2-cell posts-grid-hue-b">
+        <article class="post-card ct-glow-card js-magnetic" data-drift="4" data-strength="20"
+                 data-slot="project card 16" data-state="pending">
+          <a href="/redesign-lab/final-post.html" class="card-link"><div class="card-tilt"><div class="card-flipper">
+            <div class="card-front">
+              <div class="card-cover z-layer"><img src="/assets/media/AFishBasedGame/68677.gif" alt=""></div>
+              <div class="glass-plane z-layer"></div>
+              <div class="card-body z-layer"><h3 class="card-title z-layer">A Fish Based Game</h3><p class="card-meta">Artist &middot; Unreal Engine 5</p><div class="pv2-descbox"><p class="pv2-desc">Procedural fish generation with blendshapes, gradient mapping, and emergent AI behaviors in a Ludum Dare 56 game jam.</p></div><div class="pv2-metabox z-layer"><p class="pv2-date">Oct 01, 2024 &middot; 4 min</p><span class="pv2-tags"><span class="kit-tag" role="img" aria-label="Unreal Engine" title="Unreal Engine"><img src="/assets/img/icons/unreal.svg" alt="" class="badge-icon"></span><span class="kit-tag" role="img" aria-label="3D" title="3D"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i></span><span class="kit-tag" role="img" aria-label="Rigging" title="Rigging"><i class="fas fa-bone" aria-hidden="true" style="color:#9b59b6"></i></span><span class="kit-tag" role="img" aria-label="Shader" title="Shader"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i></span></span></div></div>
+            </div>
+            <div class="card-back"><p class="takeaway-text">Procedural blendshapes and gradient mapping in Unreal taught me to exaggerate shapes more than I think I need to, and large variations can come from just a handful of factors.</p></span><span class="back-read">Read the post &rarr;</span></div>
+          </div></div></a>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EMPTY STATE. empty-state, PICKED 1 (the centred stack, PatternFly's real shape).
+       HIDDEN BY DEFAULT and that is not cosmetic: on the live site this only appears when a
+       search or a filter matches nothing (post-filter.js). Rendered permanently it would sit
+       under sixteen visible cards telling a screen reader, through role="status", that there are
+       no results.
+       The copy follows the live empty state, which is CONTEXTUAL - it names both the active tag
+       and the query. -->
+  <div class="es es--stack" role="status" hidden data-slot="empty state" data-state="pending">
+    <div class="es__content">
+      <p class="es__title">No projects matching <b>&ldquo;raymarching&rdquo;</b></p>
+      <p class="es__body">Try a shorter word, or
+        <a class="es__action" href="#">show all 16 projects</a>.</p>
+    </div>
+  </div>
+
+  <div style="height:80px"></div>
+</div></div>
+
+<!-- LEFT ANCHORED (Rod 2026-08-23). The footer spans the page with a 2.5vw gutter rather than
+     following the content column. footer-line.css is linked in <head> and is the ONLY copy -
+     six inline copies used to live in these pages and they had already drifted. -->
+<div class="footer-wrap">
+  <footer class="footer-line ok" data-slot="footer" data-state="approved">
+    <a class="footer-line__item footer-line__back" href="/redesign-lab/final-landing.html">&larr; Landing</a>
+    <a class="footer-line__item footer-line__name" href="/redesign-lab/final-landing.html">Rodney Fan</a>
+    <a class="footer-line__item" href="/redesign-lab/final-projects.html">Projects</a>
+    <a class="footer-line__item" href="/redesign-lab/final-about.html">About</a>
+    <a class="footer-line__item" href="/redesign-lab/final-ramblings.html">Ramblings</a>
+    <span class="footer-line__item footer-line__end">Built by hand</span>
+  </footer>
+</div></main>
+
+<div id="state"></div>
+<div class="labtag"><a href="/redesign-lab/">&larr; lab</a> &middot; FINAL &middot; Projects v2 &middot;
+  blockout = <a href="http://localhost:4000/tech-art/projects/">the live page</a></div>
+
+<script>
+(function(){
+  var slots=[].slice.call(document.querySelectorAll('[data-slot]'));
+  var ok=slots.filter(function(s){return s.dataset.state==='approved';});
+  var el=document.getElementById('state');
+  var pct=slots.length?Math.round(ok.length/slots.length*100):0;
+  /* THE THIRD LIST is new on this page and it is the honest half of the count: things the LIVE
+     page has that no approved component covers, so they are not built at all. Without it they
+     would just be silently missing and the panel would read as if the page were complete. */
+  /* the description and the date + read time came OFF this list on 2026-08-24 (P338): the content
+     is now real on all 16 cards. They are still greybox, because no component has been picked for
+     how they should LOOK - that is the "card description + meta rule" slot in the list above. */
+  var unbuilt=[
+    'live filter counts + empty-pill dimming',
+    'results counter ("Showing N of 16")',
+    'controls panel breathe (7s) + pinned glow (4s)'
+  ];
+  el.innerHTML='<b>'+ok.length+' of '+slots.length+' slots approved</b>'
+    +'<div class="bar"><i style="width:'+pct+'%"></i></div>'
+    +'<div class="sp__h">approved</div><ul class="a">'+(ok.length?ok.map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join(''):'<li style="color:#6f6f6f">none yet</li>')+'</ul>'
+    +'<div class="sp__h">waiting on you</div><ul>'+slots.filter(function(s){return s.dataset.state!=='approved';})
+      .map(function(s){return '<li>'+s.dataset.slot+'</li>';}).join('')+'</ul>'
+    +'<div class="sp__h">live page has it, no pick, NOT built</div><ul class="u">'
+      +unbuilt.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>'
+    +'<button id="tog">toggle state badges</button>';
+  document.getElementById('tog').addEventListener('click',function(){
+    document.body.classList.toggle('show-state');});
+})();
+</script>
+<script type="module">
+  /* A component is its markup AND its container AND its JS. The old final-projects.html shipped
+     the cards without this block and Rod called the page "clearly broken": nothing magnetic
+     initialised, no card could flip (merged-card owns `.is-flipped`, so every takeaway back was
+     unreachable) and no cover video played, because project-cards-expensive.js is what starts
+     them on hover. */
+  import { init as initTopBar } from '/redesign-lab/extracted/components/top-bar/top-bar.js';
+  import { init as initMagnetic } from '/redesign-lab/extracted/components/drift-magnet/drift-magnet.js';
+  import { init as initCards } from '/redesign-lab/extracted/components/project-cards-expensive/project-cards-expensive.js';
+  import { init as initSearch } from '/redesign-lab/extracted/components/search-field/search-field.js';
+  initTopBar(document);
+  initMagnetic(document);
+  initCards(document);   /* also runs initMergedCard + initDriftMagnet internally */
+  initSearch(document);
+</script>
+<script src="/redesign-lab/hana-bloom.js"></script>
+<script defer src="/assets/js/dist/three-background-scene.min.js"></script>
+<script type="module" src="/redesign-lab/effects/sparkler-init.js"></script>
+<script type="module" src="/redesign-lab/effects/scene-mode.js"></script>
+<script type="module">
+  /* the bar's wordmark IS the site mark at a smaller size, so it boils too
+     (Rod 2026-08-23: "add the line boil text to the top bar as well") */
+  import { initLineBoil } from '/redesign-lab/extracted/components/line-boil/line-boil.js';
+  document.querySelectorAll('.top-bar__logo').forEach(function (mark) { initLineBoil(mark); });
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!-- filter-pills - bench fragment. Was a standalone page; converted 2026-08-25 so the one gallery at
+     extracted/index.html?c=filter-pills can mount it. Page chrome is scoped to .cb-filter-pills; the head comment
+     below is the page's own, kept verbatim because it carries the provenance and the measurements.
+     PAGE TITLE WAS: filter-pills - 3 versions at the measured blockout size -->
+<!--
+  Self-contained bench page. Open it at viewport 1440 to compare against the blockout.
+  The dashed boxes are the MEASURED reservation, drawn behind each row:
+    outer 930 dashed = the header band inside the 1000px panel (panel 1000, padding 35)
+    inner 500 x 58 dashed = .filters, read off projects-blockout.html body.sticker at 1440
+  The readout under each row is measured live by the page itself, not asserted here.
+-->
+<div class="cb cb-filter-pills">
+<style>
+.cb-filter-pills {
+  --color-silver: #a3a19d;
+  margin: 0;
+  padding: 40px 0 90px;
+  background: var(--color-night);
+  color: var(--color-text);
+  font-family: var(--font-body);
+
+  /* token values copied from extracted/styles/settings.css:5-49 and decisions.css:20 so this
+     page renders standalone. Values only, no new tokens. */
+  & * { box-sizing: border-box;
+  }
+  & .lede {
+    width: 930px;
+    max-width: 94vw;
+    margin: 0 auto 44px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--color-silver);
+  }
+  & .lede b { color: var(--color-gold); font-weight: 400;
+  }
+  & .lede code { color: var(--color-text);
+  }
+  & h2 {
+    width: 930px;
+    max-width: 94vw;
+    margin: 0 auto 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+  }
+  & .note {
+    width: 930px;
+    max-width: 94vw;
+    margin: 0 auto 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.7;
+    color: var(--color-silver);
+  }
+  & section { margin-bottom: 64px;
+  }
+  /* the panel the row actually sits in: 1000 wide, 35 padding, translucent warm grey.
+     Drawn so the versions are judged on the surface they will live on, not on bare night. */
+  & .panel {
+    width: 1000px;
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 35px;
+    background: var(--color-panel);
+  }
+  /* the 930 header band inside it */
+  & .band {
+    outline: 1px dashed rgba(255, 255, 255, 0.14);
+    outline-offset: 0;
+  }
+  /* THE RESERVATION. outline, not border, so it adds nothing to the layout. */
+  & .reserve {
+    width: 500px;
+    height: 58px;
+    margin: 0 auto;
+    outline: 1px dashed var(--color-gold-deep);
+    outline-offset: 0;
+  }
+  & .fit {
+    width: 930px;
+    max-width: 94vw;
+    margin: 12px auto 0;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-silver);
+  }
+  & .fit .ok { color: #6fbf73;
+  }
+  & .fit .bad { color: var(--color-glow);
+  }
+}
+</style>
+<header class="top" style="position:sticky;top:0;z-index:20;background:rgba(8,10,18,.95);
+  border-bottom:1px solid rgba(255,255,255,.06);padding:14px 28px;display:flex;gap:18px;
+  align-items:baseline;flex-wrap:wrap;font-family:var(--font-mono)">
+  <h1 style="font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase">Filter pills</h1>
+  <span style="font-size:10px;color:#7d7d7d">REBUILT &middot; list-controls behaviour + button-kit tag box</span>
+</header>
+
+<div style="width:min(1100px,92vw);margin:0 auto;padding:40px 0 120px">
+  <div style="font-family:var(--font-mono);font-size:11.5px;line-height:1.9;color:#9a9a9a;
+    border:1px solid #2c2c2c;padding:16px 18px;margin-bottom:34px;max-width:96ch;background:rgba(8,10,18,.72)">
+    <b style="color:#e4e4e4">The previous version was rejected and it deserved to be.</b> It offered a tab,
+    a bracket and an underline &mdash; all three re-inventing the INTERACTION, which was never open.
+    It already exists on the workbench and is already approved.<br><br>
+    <b style="color:#e4e4e4">This is a reuse, not a design.</b>
+    Behaviour from <code style="color:var(--color-gold)">list-controls</code> (the main site's own
+    filter and <code style="color:var(--color-gold)">.is-active</code>), box from
+    <code style="color:var(--color-gold)">button-kit</code>'s <code style="color:var(--color-gold)">.kit-tag</code>,
+    which you named. Nothing here is originated.<br><br>
+    <b style="color:#e0a86a">Two law fixes the parent needed</b>, applied and stated rather than smuggled:
+    <code style="color:var(--color-gold)">.kit-tag</code> is <b>border-radius 6px</b> (squared &mdash; which
+    also makes it agree with the tag-badge you squared on 08-21) and it sets
+    <b>--color-muted</b>, the banned blue (swapped to silver). Its
+    <code style="color:var(--color-gold)">transition: all</code> is named to the two properties that
+    actually change.
+  </div>
+
+  <p style="font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:#6f6f6f;margin-bottom:10px">click one &mdash; real buttons, real keyboard behaviour</p>
+  <div class="fp" id="fp">
+    <button type="button" class="fp__pill is-active" aria-pressed="true">All</button>
+    <button type="button" class="fp__pill" aria-pressed="false">Shaders</button>
+    <button type="button" class="fp__pill" aria-pressed="false">Compute</button>
+    <button type="button" class="fp__pill" aria-pressed="false">Unity</button>
+    <button type="button" class="fp__pill" aria-pressed="false">Unreal</button>
+    <button type="button" class="fp__pill" aria-pressed="false">Tools</button>
+  </div>
+
+  <p style="font-family:var(--font-mono);font-size:10px;line-height:1.8;color:#7d7d7d;margin-top:22px;max-width:92ch">
+    <b style="color:#ccc">Measured live:</b> <span id="m">measuring...</span>
+  </p>
+</div>
+</div>
