@@ -6,13 +6,18 @@
 @layer components {
 /* cursor-glow - a warm lantern vignette that follows the pointer.
    brittanychiang / merodev `.cursorglow`, recoloured purple to gold. Remixed, theirs.
+   Mechanism moved 2026-09-01 from a repainting full-viewport background to a small box on a
+   composited transform, for paint cost; the look is unchanged.
    Swap --cursor-glow-tint to --color-accent-cool for a cool wash. See cursor-glow.md. */
 .cursorglow {
   --cursor-glow-radius: 350px; /* Rod 2026-08-25. merodev shipped 520px */
   --cursor-glow-tint: color-mix(in srgb, var(--color-gold) 15%, transparent);
 
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: calc(var(--cursor-glow-radius) * 2);
+  height: calc(var(--cursor-glow-radius) * 2);
 
   /* TOPMOST, and the number was never the hard part. This sat at 600 and still rendered
      under everything, because the markup nested it inside `#scrim` (z-index -1), whose own
@@ -20,13 +25,23 @@
      is what makes it beat the toasts and the skip link too. */
   z-index: var(--z-cursor, 10050);
 
-  /* This layer covers the whole viewport, so dropping this swallows every click on the site. */
+  /* This box rides under the pointer at all times, so dropping this swallows every click. */
   pointer-events: none;
   background: radial-gradient(
-    var(--cursor-glow-radius) circle at var(--cx, -700px) var(--cy, -700px),
+    var(--cursor-glow-radius) circle at center,
     var(--cursor-glow-tint),
     transparent 15%
   );
+
+  /* --cx/--cy are the cursor's client coords (written by cursor-glow.js). Shifting back by one
+     radius puts the gradient centre exactly on the cursor. The -9999px default parks the whole
+     box off-viewport until the first pointer event. */
+  transform: translate3d(
+    calc(var(--cx, -9999px) - var(--cursor-glow-radius)),
+    calc(var(--cy, -9999px) - var(--cursor-glow-radius)),
+    0
+  );
+  will-change: transform;
 }
 
 }

@@ -22,7 +22,7 @@ export function init(root = document) {
     if (!glowElement) {
       return;
     }
-    // .cursorglow is position:fixed inset:0, so element-local coords == client coords.
+    // Client coords go straight in; the CSS transform shifts the box so its centre lands on them.
     glowElement.style.setProperty('--cx', `${cx}px`);
     glowElement.style.setProperty('--cy', `${cy}px`);
   });
