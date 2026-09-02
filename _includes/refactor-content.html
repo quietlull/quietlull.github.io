@@ -207,13 +207,18 @@
         <span data-label-text="{{ _label_text | strip }}"><i class="{{ _label_icon }}"></i></span>
       {% endcapture %}
 
+      {% comment %}
+        `data-title-succeed` came off this button on 2026-09-02 with the tooltips (D48 fallout).
+        It carried the "Copied!" string for Bootstrap's Tooltip, and clipboard.js no longer reads
+        it - the button's real feedback is the icon swap to `fas fa-check`, which never depended on
+        the tooltip. A Liquid comment cannot sit inside an `assign` filter chain, which is why this
+        note is here rather than on the line it describes.
+      {% endcomment %}
       {% assign _new_content = _new_content
         | append: _snippet
         | append: '<div class="code-header">'
         | append: _label
-        | append: '<button aria-label="copy" data-title-succeed="'
-        | append: site.data.locales[include.lang].post.button.copy_code.succeed
-        | append: '"><i class="far fa-clipboard"></i></button></div>'
+        | append: '<button aria-label="copy"><i class="far fa-clipboard"></i></button></div>'
         | append: '<div class="highlight"><code>'
       %}
     {% endif %}
