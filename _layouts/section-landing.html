@@ -107,7 +107,17 @@ script_includes:
   {% if page.show_reel %}
     <div class="col sec">
       <h2 class="section-head"><span class="section-head__name">Reel</span></h2>
-      <video class="reel__bar" id="reel-bar" muted playsinline autoplay preload="auto"></video>
+      {% comment %}
+        `disablePictureInPicture` is not decoration. Edge on Windows pops a PLAYING video out
+        into a floating mini-player once it scrolls out of view, and that player then follows
+        the scroll - Rod 2026-09-02 saw "a mysterious box that moves when i scroll" here and
+        confirmed it went away when he deleted this element. The reel is the only video on the
+        site that plays continuously without being hovered, which is why it is the one that
+        triggers it. INFERENCE, not measured: Edge cannot be driven from here, so if the box
+        survives this the cause is something else and this attribute is a harmless no-op.
+      {% endcomment %}
+      <video class="reel__bar" id="reel-bar" muted playsinline autoplay preload="auto"
+             disablepictureinpicture disableremoteplayback></video>
     </div>
   {% endif %}
 
