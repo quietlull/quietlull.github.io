@@ -299,16 +299,10 @@
     animation: aw-prism 3.4s linear infinite;
   }
 
-  /* Redacted, not blank. A locked field shows the SHAPE of what is hidden, so it reads as
-     withheld rather than unwritten. Rod's ask. */
+  /* The criterion line under a progress bar. The comment that used to sit here described
+     `.aw__val--masked`, which is deleted: Rod's 2026-09-02 call makes both the flavor and effect
+     fields read one fixed string on every achievement, so there is no redacted value to style. */
   .aw__crit { display: block; margin: 6px 0 0; font-size: 13.12px; line-height: 1.6; color: var(--color-muted-warm, #9c8f7d); }
-
-  .aw__val--masked {
-    color: var(--color-muted-warm, #9c8f7d);
-    opacity: .55;
-    letter-spacing: .06em;
-    overflow-wrap: anywhere;
-  }
 
   /* The blockout's hover scale, off by default because Rod took the rim instead. Kept switchable
      so the substitution is visible rather than assumed.

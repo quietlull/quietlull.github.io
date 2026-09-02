@@ -127,20 +127,6 @@ function tierFor(cur, target) {
   return 'bronze';
 }
 
-/* REDACTION. Rod: "same amount of characters as real text but all in ?"
-   Spaces are preserved so the mask keeps the word rhythm of what it hides - a single run of 48
-   question marks reads as a censor bar, whereas broken runs read as withheld words. */
-function mask(text) {
-  return String(text).replace(/\S/g, '?');
-}
-
-/* Flavor text does not exist yet - he has said twice it is "empty for now" - so there is no real
-   string to take a length from. These are STAND-IN LENGTHS purely so the redacted line has a
-   believable shape to look at; the moment he writes the real flavour text, `mask()` should be run
-   against that instead and this table deleted. Marked here rather than left to look like content. */
-const FLAVOR_PLACEHOLDER_LEN = 54;
-const flavorStandIn = (a) => 'x'.repeat(Math.max(20, FLAVOR_PLACEHOLDER_LEN - (a.title.length % 12)));
-
 let earnedState = {};
 let earnedSet = new Set();
 
@@ -176,26 +162,16 @@ function panelMarkup(a, isActive) {
 
   const state = unlocked ? (isActive ? 'Active' : 'Inactive') : 'Locked';
 
-  /* FLAVOR and EFFECT are redacted while locked and readable once earned. */
-  let flavor;
-  if (unlocked) {
-    flavor = '<div class="aw__val aw__val--empty">yours to write</div>';
-  } else {
-    flavor = '<div class="aw__val aw__val--masked">' + mask(flavorStandIn(a)) + '</div>';
-  }
-
-  /* A LOCKED EFFECT IS REDACTED WHETHER OR NOT ONE EXISTS. Showing "no scene effect on this one"
-     while locked would leak which of the 29 carry a reward - the four that do would be the only
-     ones with a mask, so the mask itself becomes the answer. Only 4 of 29 have a reward today, so
-     that leak would have been very legible. */
-  let effect;
-  if (!unlocked) {
-    effect = '<div class="aw__val aw__val--masked">' + mask(a.reward || flavorStandIn(a).slice(0, 22)) + '</div>';
-  } else if (a.reward) {
-    effect = '<div class="aw__val">' + esc(a.reward) + '</div>';
-  } else {
-    effect = '<div class="aw__val aw__val--empty">no scene effect on this one</div>';
-  }
+  /* FLAVOR AND EFFECT READ THE SAME ON EVERY ACHIEVEMENT, locked or earned. Rod 2026-09-02:
+     "change all the flavor text in the achievements to 'No flavor text available' and all effects
+     to 'No effects'". This overrides two earlier calls of his, both worth naming rather than
+     quietly dropping: the redaction he asked for ("same amount of characters as real text but all
+     in ?") is gone, since a fixed string has no shape to hide; and the four `reward` values stop
+     being shown. Those were internal slugs (`auto-fireworks`, `lantern-shape`, `lantern-color`,
+     `lantern-panel`), never display prose, and nothing outside this file reads them, so the field
+     stays in the data as a record of intent. Restoring either behaviour is a local change here. */
+  const flavor = '<div class="aw__val aw__val--empty">No flavor text available</div>';
+  const effect = '<div class="aw__val aw__val--empty">No effects</div>';
 
   return ''
     + '<h3 class="aw__dttl">' + esc(name) + '</h3>'
