@@ -1,5 +1,19 @@
 # Breathing system
 
+> **THIS SYSTEM NO LONGER EXISTS. Read this note as history, not as a description of the site.**
+> D43 (Rod, 2026-08-26) killed breathing: *"breathing is dead its listed in memory many times."*
+> MEASURED 2026-09-02: zero matches for `--breathe`, `$breathe-selectors` or `data-breathing` in
+> `_sass/`, `_includes/`, `_layouts/`, `_javascript/` or `assets/js/`. The 144 token references
+> across 12 partials and 6 keyframes described below are all gone.
+>
+> **What replaced it, and it is not a straight swap.** Drift and magnetism
+> (`assets/js/components/drift-magnet.js`). Breathing was ambient, so everything pulsed on a shared
+> clock whether you touched it or not; drift and magnetism are responsive. The site stopped having
+> a heartbeat and started having reflexes, which was the point.
+>
+> This note is kept because the older notes name breathing constantly and a reader needs to know
+> what they are reading about.
+
 The ambient glow animation system: tiered box-shadow/border "breathing" on glass elements.
 Folded from PROJECT-STATUS.md 2026-08-11. The per-element inventory is deliberately NOT documented
 here - it goes stale instantly; grep the SCSS for `breathe-|throb-` when you need it.

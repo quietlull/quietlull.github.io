@@ -45,6 +45,12 @@ audit-and-fix session. Everything below is measured, not recalled.
 - **Comments trimmed 7,362 to 4,821** with the rendered CSS byte-identical.
 - **Nothing that moves has been confirmed by anyone.** The automation cannot run animation frames.
   That is Rod's first job and it is the top row of `redesign-lab/todo.html`.
+- **The three.js scene was re-profiled 2026-09-01** (request #52) - the first real measurement since
+  Kawase landed. The About page holds 60fps without hardware acceleration at the top of the scroll
+  and ran at 30fps at the dock view; fireworks spike frames everywhere; no memory leaks. Six
+  invisible fixes have landed, one of them Rod-approved (the water's ripple loop is now gated,
+  worth 2.6-3.8ms/frame). Everything else is a costed, measured proposal in
+  `redesign-lab/perf-diffs/` waiting on his picks.
 
 ## The five documents from that night
 

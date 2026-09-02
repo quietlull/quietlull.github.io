@@ -4,10 +4,13 @@ Brief: the flaws the 2026-08-11 scan found, and the phased plan to fix them. Eac
 independently shippable and names its own test recipe before work starts. Owner tags: ROD =
 in-editor/manual, CLAUDE = code or docs on request, preview-first.
 
-**TIMING (ROD, 2026-08-11): Phases 1-3 are DEFERRED until the visual redesign ships** - the
-redesign replaces the very surfaces Phase 1 would extract (post.html, topbar, theme Sass), so the
-boundary work happens ONCE, on the final surfaces ([DECISIONS.md](DECISIONS.md) D6). Phase 0 is
-done. Housekeeping items can land any time.
+**TIMING, UPDATED 2026-09-02. The wait is over: the redesign shipped** (merged to `main` at
+`ff72c0e` on 2026-08-26, all 53 pages ported). The original note read *"Phases 1-3 are DEFERRED
+until the visual redesign ships"*, on the reasoning that the redesign replaces the very surfaces
+Phase 1 would extract, so the boundary work should happen ONCE on the final surfaces
+([DECISIONS.md](DECISIONS.md) D6). That held, and it worked. **Phases 0 and 1 are now DONE**
+(Phase 1's audit is [THEME-BOUNDARY-AUDIT.md](THEME-BOUNDARY-AUDIT.md)); **Phase 2 is the next
+phase and nothing blocks it.** Housekeeping items can land any time.
 
 ## The flaws (scan of 2026-08-11)
 
@@ -30,8 +33,10 @@ done. Housekeeping items can land any time.
 **Hygiene**
 
 - `_gif-archive/` 414 MB and `.claude/worktrees/` ~900 MB inflate the working copy.
-- `redesign-lab/` carries separate copies of live Three.js modules (intentional during the
-  redesign; still a hazard).
+- `redesign-lab/` carries separate copies of live Three.js modules. The redesign shipped, so
+  "intentional for now" no longer applies and this is just a hazard: as of 2026-09-01 the lab's
+  water is five changes behind live ([TRAPS.md](TRAPS.md)). Folding or deleting the duplicates is
+  the Phase 2 item below.
 - 10 of 16 tech-art posts are `wip: true` placeholders (content debt, not code debt).
 
 **What is already good** - eslint/stylelint/prettier/commitlint/husky + CI all in place; dead theme
@@ -47,7 +52,13 @@ cruft has been actively pruned before; the custom subsystems themselves are feat
 - **Test recipe:** a fresh Claude session orients from CLAUDE.md + STATUS alone, without reading
   any superseded doc; `npm run build && bundle exec jekyll b` still passes untouched.
 
-## Phase 1 - draw the theme boundary (no behavior changes) [DEFERRED: post-redesign]
+## Phase 1 - draw the theme boundary (no behavior changes) [DONE 2026-08-25]
+
+**Every file is diffed against upstream Chirpy 7.3.1 in
+[THEME-BOUNDARY-AUDIT.md](THEME-BOUNDARY-AUDIT.md): 25 stock, 46 modified, 81 ours, 39 deleted
+after the strip pass.** The extraction items below are recorded as written; the ones the redesign
+made moot (the theme Sass split, `_animations.scss` splitting off breathing) went a different way,
+because D42 declared the old design's styles dead and D43 killed breathing outright.
 
 - Diff every `_layouts/`, `_includes/`, `_sass/`, `_javascript/` file against upstream Chirpy;
   fill the stock/modified/custom table in [THEME-BOUNDARY.md](THEME-BOUNDARY.md). Pin the fork
@@ -58,16 +69,23 @@ cruft has been actively pruned before; the custom subsystems themselves are feat
   split `_animations.scss` into stock-remnant vs breathing-system files.
 - Foldered separation in `_javascript/` between Chirpy-original and custom modules.
 - **Test recipe per extraction:** build passes AND the rendered page is pixel-identical (Rod
-  spot-checks the affected page); PurgeCSS output diff reviewed after any include/layout move
-  (its scan paths changed - see [TRAPS.md](TRAPS.md)).
+  spot-checks the affected page). ~~PurgeCSS output diff reviewed after any include/layout move~~
+  **STRUCK 2026-09-02: PurgeCSS is gone (D48), so moving an include can no longer drop styles.**
 
 ## Phase 2 - decouple the subsystems (contracts over couplings) [DEFERRED: post-redesign]
 
-- `data-breathing` attribute as the single semantic hook: Sass targets it, `mouse-trail.js` queries
-  it - kills the `$breathe-selectors` manual sync AND the `animationName` string-match in one move.
+- ~~`data-breathing` attribute as the single semantic hook: Sass targets it, `mouse-trail.js`
+  queries it - kills the `$breathe-selectors` manual sync AND the `animationName` string-match in
+  one move.~~ **STRUCK 2026-09-02: there is nothing left to hook.** Breathing is dead (D43) and its
+  tokens went with it. MEASURED: zero matches for `data-breathing`, `$breathe-selectors` or
+  `--breathe` anywhere in `_sass/`, `_includes/`, `_layouts/`, `_javascript/` or `assets/js/`. Its
+  successors are drift and magnetism, which are already single-purpose behaviours (D39), which was
+  the point of the hook.
 - Front matter consumed through a small set of dedicated includes instead of scattered reads.
-- Document the layout->bundle map and the PurgeCSS scan paths as named contracts with drift
-  warnings at both ends.
+- Document the layout->bundle map as a named contract with drift warnings at both ends.
+  ~~and the PurgeCSS scan paths~~ **STRUCK 2026-09-02: PurgeCSS no longer exists.** D48 removed
+  Bootstrap completely, and `purgecss.js` and `_sass/vendors/` went with it. MEASURED: neither path
+  is on disk, and `package.json` has one build script left, `build:js`.
 - Fold or delete the redesign-lab Three.js duplicates (ROD decides keep/kill per file).
 - **Teardown + memory audit** (ROD 2026-08-14, parked here deliberately rather than done during the
   redesign, since it would audit surfaces the redesign is about to replace). Every
@@ -84,19 +102,32 @@ cruft has been actively pruned before; the custom subsystems themselves are feat
   behave identically; grep proves zero remaining `animationName` matching and zero direct
   `$breathe-selectors` consumers; heap after N navigations returns to its starting floor.
 
-## Phase 3 - theme-swap readiness [DEFERRED: after Phases 1-2]
+## Phase 3 - vendored but clean [DEFERRED: after Phase 2]
 
-- Write the site/theme contract: what any theme must provide (layout names or a mapping layer, the
-  hooks our includes attach to, the custom-property surface our Sass expects).
-- Decide vendored-but-clean vs returning to a gem-based theme. DEFERRED until Phases 1-2 land -
-  the decision is meaningless while the boundary does not exist.
-- **Test recipe:** a written walkthrough of "swap to theme X" touches only contract files, not
-  subsystem internals.
+**REWRITTEN 2026-09-02. Rod ruled on 2026-09-02 that Phase 3 is "vendored but clean", so the goal is
+no longer theme-swap readiness.** We stay on the vendored fork and own our layer of it well enough
+that **a Chirpy upgrade is a clean overwrite plus a re-apply list**: drop the new upstream in, then
+work down a written list of our changes and put them back. Nothing is built to make swapping to a
+different theme easy, because nobody is swapping.
+
+- **The old first item is answered and comes out:** *"decide vendored-but-clean vs returning to a
+  gem-based theme"*. Vendored, clean. It was deferred on the grounds that the decision is
+  meaningless until the boundary exists; the boundary now exists (Phase 1 is done,
+  [THEME-BOUNDARY-AUDIT.md](THEME-BOUNDARY-AUDIT.md)) and Rod has decided.
+- Write the upgrade contract: for every file the audit marks MODIFIED, what we changed and why, in
+  a form that can be re-applied against a newer upstream. The STOCK files need nothing, and the
+  OURS files are not upstream's business.
+- Shrink the re-apply list by moving our logic out of modified stock files, which is Phase 1's
+  extraction work continued rather than a new idea.
+- **Test recipe:** a written walkthrough of "upgrade to Chirpy X" that names every file the
+  overwrite would clobber and where its replacement lives. If a file is on the list and nobody can
+  say what we changed in it, the contract is not done.
 
 ## Order
 
-0 (done) before 1; 1 before 2 (cannot decouple what you cannot tell apart); 3 only after 2. All of
-1-3 wait for the redesign. Housekeeping items can land any time.
+0 (done) before 1 (done, cannot decouple what you cannot tell apart); 3 only after 2. **The
+redesign no longer gates anything - it shipped.** Phase 2 is next. Housekeeping items can land any
+time.
 
 ## Behaviours split out from components (D39, Rod 2026-08-24)
 

@@ -22,8 +22,9 @@ source it derives from.
 - `extracted/components/merged-card/` keeps the source vocabulary of its parent code
   (`.card-tilt`/`.z-layer`/...) instead of strict BEM — renaming a working source's coupled
   CSS+JS invites the drift the provenance contract exists to stop.
-- WCAG 2.3.3 (reduced motion) is Level AAA but adopted as a HARD rule here (Rule 89) — this is
-  an animation-heavy site.
+- WCAG 2.3.3 (reduced motion) was adopted as a HARD rule here despite being Level AAA. **No longer:
+  D34 (Rod, 2026-08-23) rules motion preference out of scope.** Rule 89 carries the detail. What
+  exists stays; nothing new gets built for it; a missing reduced-motion path is not a defect.
 - Rule 86 (accessible authentication / redundant entry) is **dormant**: the site is static with
   no forms. It activates if comments/contact ever ship. Rule 60 (input purpose) likewise.
 
@@ -255,7 +256,7 @@ verifiable against the spec.
 
 **Rule 70 - Single-character keyboard shortcuts can be turned off or remapped, or only fire on focus.** (2.1.4 — modifier combos like Ctrl+Shift+A are fine.)
 
-**Rule 71 - Auto-starting motion that lasts over 5 seconds and sits alongside other content can be paused, stopped, or hidden — decorative motion included** (the criterion is not limited to content-bearing animation). Time limits are adjustable. (2.2.2, 2.2.1) **Project notes:** (a) the breathing/sparkler/fireworks/scene kill toggles exist for exactly this; every NEW ambient surface must join them. (b) **The muted autoplay demo-loop videos (card covers, post media) are auto-starting moving content under this criterion** — they need a pause path too: wire them to the global motion kill (pause all `<video autoplay>` when motion is off) or switch to hover/in-view play with a pause control. A loop with no off switch is a violation on the site's most important surface.
+**Rule 71 - Auto-starting motion that lasts over 5 seconds and sits alongside other content can be paused, stopped, or hidden — decorative motion included** (the criterion is not limited to content-bearing animation). Time limits are adjustable. (2.2.2, 2.2.1) **THE CRITERION STANDS; BOTH PROJECT NOTES ARE SUPERSEDED.** 2.2.2 is Level A and stays inside the WCAG 2.2 AA the site adopts, so it is not what [DECISIONS.md](docs/DECISIONS.md) D34 ruled out of scope. The notes are, because both of them cashed the rule out as work on the motion kill: (a) said *"the breathing/sparkler/fireworks/scene kill toggles exist for exactly this; every NEW ambient surface must join them"* — **breathing and its toggle are dead (D43)**, and D34 moved the remaining controls onto the trophy wall, which is not built, so there is no list for a new surface to join. (b) said the muted autoplay demo loops *"need a pause path too: wire them to the global motion kill"* — D34 stopped building the motion kill, and MEASURED 2026-09-02 no stylesheet reacts to `body.motion-off` at all, so that wiring has nothing to wire to. **What to do instead:** treat a demo loop with no off switch as a known open item for Rod, not a bug to fix unasked. Any real pause path is a new build and needs his go.
 
 **Rule 72 - Nothing flashes more than 3 times per second.** (2.3.1) **Project note: the fireworks feature is the one surface on this site that needs a real flash-threshold audit** — burst frequency, area, and red-flash content. Method in Section J, Step 1.
 
@@ -295,7 +296,7 @@ verifiable against the spec.
 
 **Rule 88 - Status messages are announced via `role="status"`/live regions without moving focus.** (4.1.3 — the achievement toast already does this; keep it true.)
 
-**Rule 89 - Respect `prefers-reduced-motion` for all non-essential animation.** Strictly AAA (2.3.3) but adopted as HARD here: reduced/static variants of the canvas scene and transitions are mandatory.
+**Rule 89 - SUPERSEDED BY [DECISIONS.md](docs/DECISIONS.md) D34 (Rod, 2026-08-23).** It used to read: *"Respect `prefers-reduced-motion` for all non-essential animation. Strictly AAA (2.3.3) but adopted as HARD here: reduced/static variants of the canvas scene and transitions are mandatory."* Rod ruled motion preference out of scope: *"as for reduced motion and other features we are ignoring that even if it might be 'more accessible'."* D34 closed three specific gaps as WILL NOT DO, including the missing reduced-motion path on the portal CSS. **What this does and does not mean.** It is a stop, not a strip: the reduced-motion handling that already exists stays and is not to be removed. MEASURED 2026-09-02, it is real but partial - a kill switch in `_sass/abstracts/_animations.scss:96-128` plus one-off guards in nine more partials, and `assets/js/components/drift-magnet.js:271` still adds `body.motion-off` from the OS preference. A component shipping WITHOUT a reduced-motion path is no longer a defect, so do not open bugs for the gaps and do not build new coverage unasked. **Not covered by this:** the fireworks flash audit, which D34 keeps open because 2.3.1 is a seizure threshold at Level A, not a comfort preference, and has never been measured.
 
 ---
 
@@ -412,5 +413,5 @@ Read before analyzing, in this order:
 - Build: keep Rollup; hashed output; code-split Three.js scenes.
 - Enforcement: Prettier + ESLint + Stylelint + EditorConfig on pre-commit; axe-core/Lighthouse
   against rendered pages in CI.
-- Accessibility: WCAG 2.2 AA hard, plus reduced-motion (AAA 2.3.3) adopted as hard.
+- Accessibility: WCAG 2.2 AA hard. Reduced motion (AAA 2.3.3) is NOT, since D34 - see Rule 89.
 - UX analysis: Section J procedure; design vision and provenance contract always in scope.

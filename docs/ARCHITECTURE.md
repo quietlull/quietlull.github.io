@@ -42,7 +42,11 @@ relying on them. If this disagrees with the code, this is stale - fix it.
   for everything else (35 embers, scroll-locked camera, mouse avoidance, and nothing else - no
   fireworks anywhere but About). Plus `three-shared.js` (`createBaseScene` owns renderer, composer,
   bloom and the paper filter), `three-config.js`, `lantern-controller.js` (physics, avoidance, click
-  raycast), `firework-controller.js`, GLSL in `shader/`.
+  raycast), `firework-controller.js`, GLSL in `shader/`. The water's 16-slot click-ripple loop is
+  gated by `uRippleAlive`, written each frame in `MirroredSurface.update()` from
+  `getActiveRipple()`: with no ripple alive the loop is skipped entirely (2026-09-01, measured).
+  **`spawnRipple()` is therefore the only legal way to start a ripple** - a direct write to
+  `uRippleStart` renders nothing.
 - **Post-processing is one pass, not several.** `shader/kawaseBloom.js` is a 2-level Dual Kawase
   with no bright pass (D23), and the paper-grain filter is composited INSIDE its final pass rather
   than added as its own - see D24. Two sheets from `assets/tex/paper-*.png`, which are baked

@@ -4,6 +4,17 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**You patch the water shader and the lab water page performs (or looks) exactly the same ->**
+you patched the live file and the lab pages import their own copy. `water-scene.html`,
+`character-scene.html` and `anime-glow-scene.html` all load
+`redesign-lab/scene/shader/mirroredSurface-bob.js`, which as of 2026-09-01 is **five** changes
+behind the live shader: `uRidge` 0 vs 1 (smooth hills vs sharp crests), `uSunLift` 0.2 vs 1.5
+(crest moonlight, 7.5x), `uDistort` .05 vs .1, a full-window reflection target vs quarter-res,
+and no ripple-loop gate. **Lab water milliseconds are not live milliseconds and lab water is not
+the live look.** Profile the real thing through `scene-tuner.html`, which drives the rebuilt
+bundle. There is also an orphan `redesign-lab/scene/shader/mirroredSurface.js` that nothing
+imports and whose NAME matches the live file, which is the decoy that starts this.
+
 **A measurement returns 0 for everything and reads like a real result ->**
 the element was not in the document yet. `getBoundingClientRect()` on a detached node does not throw
 and does not warn - it returns zeros, which look exactly like a measurement of something very small.

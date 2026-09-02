@@ -1,3 +1,41 @@
+# 2026-09-01, later - THE WATER RIPPLE LOOP IS GATED (Rod approved)
+
+**Decided by ROD** ("sure I approve this change"), from perf-diffs/04 Option A.
+
+**What it was.** The water's click-ripple support keeps 16 slots and every water pixel summed all
+16 every frame. The per-slot gate that skips dead slots is branchless, so it multiplies by zero
+only AFTER paying a square root, a cosine, a power and two exponentials - and the slots are dead
+essentially always, because a ripple only exists for 4 seconds after a click on the water. At the
+dock view the water covers 35-46% of the frame, so that was on the order of 1.6 million wave-packet
+evaluations per frame producing nothing. The branchless form is the normally-correct choice when a
+condition varies per pixel; here the slot times are uniforms, so the answer is the same for every
+pixel and a branch is free.
+
+**The fix**, 4 code lines in `_javascript/shader/mirroredSurface.js`: a `uRippleAlive` uniform
+written each frame in `update()` from `getActiveRipple()`, and an early-out at the top of
+`rippleOffset()`. When a ripple IS alive every line runs exactly as before.
+
+**Measured on the shipped build** (not the runtime patch), one page load with the gate alternated
+on and off, SwiftShader: **+3.8 ms/frame at 1x**, where the dock's typical frame returns to 16.7 ms
+(60 fps, from 30), and **+2.6 ms at 4x CPU throttle**, where it saves real time but does not cross
+the deadline. **These are software-rasteriser numbers and the 33.3 -> 16.7 figure is vsync-
+quantised**, so the honest headline is the milliseconds, not "half the frame time"; the earlier
+report's claim that the 60 fps flip also happened throttled did not reproduce and is corrected.
+
+**Verified before shipping.** With every slot dead the old loop returns exactly `vec2(0.0)` three
+times over (dead gate plus both exponentials underflowing), so the skip is bit-identical rather
+than approximate. One behavioural difference: a ripple's final frame can land up to one frame
+earlier, at 9.1% amplitude, on about half of clicks - and that end was always a hard cut.
+**Rejected:** a per-slot `uRippleCount` dynamic loop bound, because the pool is round-robin so live
+slots are not contiguous and the only case worth optimising is "all dead".
+
+**Two traps written down rather than fixed:** `spawnRipple()` is now the ONLY legal way to start a
+ripple (a direct write to `uRippleStart` leaves the gate shut and renders nothing), and
+`getActiveRipple()` is now load-bearing for rendering rather than just for the character's
+head-look - both noted in the code, ARCHITECTURE and the character handoff. The lab water copies
+were deliberately NOT updated: they are already five changes behind live, so TRAPS.md now records
+that lab water is neither the live look nor live milliseconds.
+
 # 2026-09-01 - THE SCENE PERF AUDIT (#52): re-profiled, five fixes landed, everything else is Rod's pick
 
 **The scene was finally re-profiled** (the D23 numbers had measured a pass that no longer exists).

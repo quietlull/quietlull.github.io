@@ -986,6 +986,33 @@ components - which is how a component file reached out and changed the whole pag
 
 ## D31 - The text system: one ladder, one colour ramp, 23 picks (2026-08-23, ROD)
 
+> **PARTLY SUPERSEDED. The ladder's SHAPE survives; its numbers and two of its colours do not.**
+> Corrected 2026-09-02 against the code, which is the truth here. What the ladder renders now,
+> MEASURED in `_sass/base/_decisions.scss`:
+>
+> | rung | size | weight | colour | file:line |
+> | --- | --- | --- | --- | --- |
+> | h1 | `3.84rem` = 61.44px | 500 | `--color-orange` `#f86a03` | `_decisions.scss:75-77`, `:29-30` |
+> | h2 | `2.4rem` = 38.4px | 500 | `--color-gold` `#fbbf24` | `_decisions.scss:92-93`, `:31` |
+> | h3 | `1.5rem` = 24px | 500 | `--color-gold` `#fbbf24` | `_decisions.scss:147-148`, `:36` |
+> | h4 | `0.9375rem` = 15px | 500 | `--color-silver` `#a3a19d` | `_decisions.scss:168-169`, `:37` |
+>
+> Three separate later calls did it, and each is cited in the code beside the value it changed:
+> - **The sizes** became a constant x1.6 at the port, 2026-08-25. D38's 101/48/24 was fluid at h1
+>   and drifted from 1.87x at 1024 to 2.63x at 1920, so h1 read as a missing level. See D38's own
+>   superseded note and `docs/STATUS.md` "The type ladder is settled, and H1 is now on it".
+> - **The weight** went 300 to 500, Rod 2026-08-25 (*"i dont like the current sans font ... i want
+>   to do a rounded sans"*): the face was already M PLUS Rounded 1c, but at Light on a 61px heading
+>   the rounded stroke ends are too thin to read as rounded. `_decisions.scss:69-74`. Weight is
+>   still not the hierarchy, because it is now the SAME on every rung.
+> - **The colours** moved twice. H0/H1 are `#f86a03`, not `#ff6a00`, Rod 2026-08-23 (*"H1 and H0
+>   should be #f86a03"*), a new token rather than a repoint of `--color-glow`. **H3 went GOLD**,
+>   Rod 2026-08-24 (*"H3 should be yellow too"*), taken as the whole rung. Only H4 is silver now,
+>   so "headings recede, prose leads" still happens but one rung later.
+>
+> Everything else in D31 stands: the H0-H4 role structure, the 23 picks, the two process notes, and
+> the still-open WCAG heading-order failure on the post.
+
 Judged on `redesign-lab/text-decisions.html`, which replaced four separate comparison pages
 (`prose-blockout`, `component-blockout`, `callout-tests`, `orb-callout-tests`) after Rod:
 *"Rather than making alot of comparison pages just add things to the component block out rename it
@@ -1018,8 +1045,13 @@ six `final-*` pages at 1440, not read off class names:**
 
 ### The colour ramp - and it deliberately inverts at the bottom
 
-`H0`/`H1` **signature orange** `#ff6a00` - `H2` **yellow** `#fbbf24` - `H3`/`H4` **silver**
-`#a3a19d` - **body PRISTINE WHITE** `#f5f3ef`. Bold takes the H2 yellow.
+**AS DECIDED HERE, and two of these four are no longer what renders:** `H0`/`H1` **signature
+orange** `#ff6a00` - `H2` **yellow** `#fbbf24` - `H3`/`H4` **silver** `#a3a19d` - **body PRISTINE
+WHITE** `#f5f3ef`. Bold takes the H2 yellow.
+
+**WHAT RENDERS NOW:** H0/H1 `#f86a03` (Rod 2026-08-23, three shades off the orange written above),
+H2 and **H3** both `#fbbf24` gold (H3 moved 2026-08-24), H4 `#a3a19d` silver, body `#f5f3ef`. The
+table at the top of this decision is the current state; the paragraph above is what was picked.
 
 Rod: *"keep the pristine white text for the things we are going to be reading the most often."*
 **So body copy is the brightest thing on the page and H3/H4 sit UNDER it - headings recede, prose
@@ -1029,6 +1061,11 @@ leads.** That is the interesting part of the call and it is intentional.
 brightness:** body 17.31 > H2 yellow 11.49 > silver 7.44 > **H0/H1 orange 6.68**. All clear WCAG,
 but the two most important headings are the lowest-contrast text on the page and silver
 out-contrasts them. Flagged to Rod as a deliberate call rather than an accident.
+
+**THESE FOUR NUMBERS ARE FOR THE RAMP AS PICKED, NOT AS SHIPPED**, and nobody has re-measured since:
+H0/H1 changed hue and H3 moved from silver to gold, so there are now three rungs at 11.49 and one
+step of silver. The shape of the finding (headings sit under body text) is unchanged. Re-measuring
+against `#080f1b` is an open job, not a claim this doc can make.
 
 - **Silver was DERIVED, not invented** - `color-mix(--color-text 62%, --color-panel-solid)`, from
   two tokens already approved. Of three candidates only this one keeps the ramp monotonic: the
@@ -1311,6 +1348,22 @@ unwinding. What survives and is worth not re-deriving:
   in the repo** (D24), so washi / cold press / wove is the entire palette of paper available.
 
 ## D38 - CASE G KEEPS ITS MECHANISM AND GIVES UP ITS SIZE (ROD, 2026-08-24)
+
+> **SUPERSEDED ON THE NUMBERS, 2026-08-25 at the port. The reasoning below still explains WHY the
+> quiet treatment moved down to h3, and that part holds; the four sizes do not.**
+> The ladder is now a constant x1.6 at every rung and every width, weight 500 throughout:
+> **h1 61.44px, h2 38.4px, h3 24px, h4 15px** (`_sass/base/_decisions.scss:75`, `:92`, `:147`,
+> `:168`, MEASURED). D38's h1 was the only fluid size in the file and rendered 100.8px at 1440,
+> 2.625x its h2, so the eye read a missing level between them; its ratio also drifted from 1.87x at
+> 1024 to 2.63x at 1920. Weight 300 became 500 the same day, Rod's call, because M PLUS Rounded 1c
+> only shows its rounded stroke ends at 500 or heavier (`_decisions.scss:69-74`).
+>
+> **Two things D38 left open or flagged are now closed by the code:**
+> - *"`.section-head__name` renders 2.4rem while the post's h2 is 3rem. Two section-level headings
+>   at two sizes."* They are ONE size now, both 2.4rem: `_decisions.scss:92` and `:572`.
+> - *"At 48px a long heading eats the line, so one heading has no divider at all."* Gone. The
+>   divider moved from beside the heading to under it (Rod 2026-08-24), so every heading gets the
+>   same full-width rule whatever its length. `_decisions.scss:121-137`.
 
 Rod, seeing the post: *"H2 isnt meant to look like how it is on the post page"*, then
 *"hierarchies across the site should be consistent"*, then *"please do 2"*.

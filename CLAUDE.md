@@ -1,8 +1,10 @@
 # Website - Claude context
 
 Personal portfolio site. Jekyll + a vendored fork of the Chirpy theme + custom JS/SCSS subsystems.
-Forever project: maintainability beats speed. A full visual REDESIGN is in progress (see below);
-the structural refactor is deferred until it ships - see [docs/REFACTOR-PLAN.md](docs/REFACTOR-PLAN.md).
+Forever project: maintainability beats speed. **The visual redesign has SHIPPED** - it merged to
+`main` at `ff72c0e` on 2026-08-26 and all 53 pages are the redesign now. Refactor Phase 1 (the
+theme boundary) is done; Phases 2 and 3 are the open work, see
+[docs/REFACTOR-PLAN.md](docs/REFACTOR-PLAN.md).
 
 ## Read first, load only what the task touches
 
@@ -38,18 +40,28 @@ the structural refactor is deferred until it ships - see [docs/REFACTOR-PLAN.md]
   agent working this repo - unsynced learnings die with the session.
 - **Ship check.** When Rod finalizes ANY creative step ("lock it in", "keeper", "approved",
   "bake it", picking a bench element), run the `/ship-check` skill gates before calling it done.
-- **Machine-owned files - never hand-edit:** `_sass/vendors/_bootstrap.scss` (PurgeCSS output),
-  `assets/js/dist/` (Rollup output).
+- **Machine-owned files - never hand-edit:** `assets/js/dist/` (Rollup output). There is no longer
+  a PurgeCSS output to protect: D48 deleted Bootstrap, so `_sass/vendors/_bootstrap.scss` and
+  `purgecss.js` are both gone from the repo.
 
-## Redesign (active)
+## The lab (reference, not a workbench)
 
-`redesign-lab/` (gitignored) is the ACTIVE design workbench, not debt: component bench in
-`extracted/`, reference gallery, palette explorer, session logs. Its copies of the live Three.js
-modules are intentionally separate during the redesign (still a wrong-copy hazard - see
-[docs/TRAPS.md](docs/TRAPS.md)). Orient from `redesign-lab/HANDOFF.md` before redesign work.
+`redesign-lab/` is version-controlled now (D49) and it is a REFERENCE, not the place work happens:
+component bench in `extracted/`, reference gallery, palette explorer, session logs, the six
+`final-*` pages the port was made from. Two things follow from that:
+
+- **It never ships.** `.github/workflows/pages-deploy.yml:68` deletes it out of `_site` before
+  upload. It is still browsable on localhost, which is the point.
+- **Editing a lab page changes nothing a visitor sees.** D22 is lifted, the live tree ships. Before
+  tuning anything, ask which file renders the URL Rod is looking at.
+
+Its copies of the live Three.js modules are still separate and still a wrong-copy hazard, and the
+lab water is now five changes behind live - see [docs/TRAPS.md](docs/TRAPS.md).
+`redesign-lab/HANDOFF.md` is still the orientation doc for the sourcing pass that is finishing the
+lab's own citation trail.
 
 ## Build
 
-- `npm run build` - JS bundles + CSS purge (both required before Jekyll)
+- `npm run build` - JS bundles (Rollup). This is the only build step Jekyll needs.
 - `bundle exec jekyll s` - local serve
 - `npm test` - eslint + stylelint
