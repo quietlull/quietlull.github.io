@@ -4,11 +4,24 @@
 @layer reset, tokens, prose, components, overrides;
 
 @layer components {
-/* toc-real - Starlight's desktop rail and mobile popup, one system.
+/* toc-real - Starlight's desktop rail, ported without their mobile popup.
    docs.astro.build, read from their served file. Remixed: theirs structurally, ours for every
-   colour, the squaring, the panel fill, the dropped shadows and the sticky-not-fixed choice.
-   72rem IS THE SINGLE SWITCH. Below 1152px the popup bar is the TOC, above it the rail is.
-   Starlight flips both in the same query and so do we. See toc-real.md. */
+   colour, the squaring and the sticky-not-fixed choice.
+
+   THIS FILE STATES NO BREAKPOINT, AND THAT IS THE FIX. The narrow-width TOC on the live site is
+   Chirpy's `#toc-bar` plus its `<dialog id="toc-popup">`, because `toc.js` decides which of the
+   two tocbot instances runs from `matchMedia('(min-width: 1200px)')` and below that it fills
+   `#toc-popup-content`, never `#toc`. The rail is empty under 1200px whatever CSS says, so the
+   number belongs to the JS and the one CSS statement of it lives with the page that owns the
+   rail's layout: `_sass/pages/_post.scss` hides `#toc-wrapper`, the whole Contents block, label
+   included. Hiding `.toc--v3` from here as well left the label stranded above nothing, and did
+   it at a different number (72rem / 1152px), which is what put a second breakpoint in play.
+
+   Starlight's `.toc-pop` popup went with it. It was ported as a full component and no markup for
+   it was ever written, on this page or any other, so what shipped below 1152px was always the
+   Chirpy bar and the popup CSS was dead weight. The lab page still has both, in its own copy at
+   redesign-lab/extracted/components/toc-real/toc-real.css, which this file does not feed.
+   See toc-real.md. */
 
 .toc { --pad-inline: 0.5rem; }
 
@@ -75,101 +88,16 @@
 
 .toc--v3 a[aria-current="true"] { border-left-color: var(--color-gold, #fbbf24); }
 
-/* The mobile popup, a <details> with the active heading in its closed summary. Their geometry,
-   our surfaces: their solid black fills and their four stacked shadows all fight the live scene,
-   so they become --color-panel and nothing. See toc-real.md. */
-.toc-pop { display: block; }
-
-@media (min-width: 72rem) { .toc-pop { display: none; } }
-
-@media (max-width: 71.99rem) { .toc--v1, .toc--v2, .toc--v3 { display: none; } }
-
-.toc-pop__bar {
-  position: fixed;
-  inset-inline: 0;
-  top: calc(var(--nav-h, 3.5rem) - 1px);
-  z-index: 4;                              /* their --sl-z-index-toc */
-  border-top: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
-  background-color: var(--color-panel, rgba(28, 26, 24, 0.55));
-}
-
-.toc-pop summary {
-  height: 3rem;                            /* their --sl-mobile-toc-height */
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  outline-offset: -0.1875rem;              /* their --sl-outline-offset-inside */
-  border-bottom: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
-}
-
-.toc-pop summary::marker,
-.toc-pop summary::-webkit-details-marker { display: none; }
-
-.toc-pop__toggle {
-  display: flex;
-  flex-shrink: 0;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding-block: 0.5rem;
-  padding-inline: 0.75rem 0.5rem;
-  line-height: 1;
-  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
-  border-radius: 0;                        /* theirs is .5rem */
-  background-color: transparent;           /* theirs is solid black */
-  user-select: none;
-  cursor: pointer;
-}
-
-.toc-pop details[open] .toc-pop__toggle { color: var(--color-text, #f5f3ef); border-color: var(--color-gold, #fbbf24); }
-
-.toc-pop__toggle:hover { color: var(--color-text, #f5f3ef); border-color: var(--color-silver, #a3a19d); }
-
-.toc-pop details[open] .toc-pop__caret { transform: rotate(90deg); }
-
-/* The summary shows the current heading, and JS writes it - Starlight ships this element empty.
-   Ours needs a pre-JS default, so it says "On this page" rather than nothing. */
-.toc-pop__current { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: var(--color-text, #f5f3ef); }
-
-.toc-pop__list {
-  max-height: calc(85vh - var(--nav-h, 3.5rem) - 3rem);   /* theirs, verbatim */
-  overflow-y: auto;
-  overscroll-behavior: contain;                            /* theirs; stops scroll chaining */
-  border: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
-  background-color: var(--color-panel, rgba(28, 26, 24, 0.55));
-
-  /* their --sl-shadow-md is four stacked shadows; dropped */
-}
-
-/* Their mobile row treatment, which the saved note missed entirely. */
-.toc-pop__list a {
-  --pad-inline: 1rem;
-
-  display: flex;
-  justify-content: space-between;
-  gap: var(--pad-inline);
-  border-top: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
-  border-radius: 0;                        /* Starlight itself ships square on mobile */
-  padding-block: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.toc-pop__list li:first-child > a { border-top: 0; }   /* their :first-child reset */
-
 /* THE ANCHOR-UNDER-HEADER FIX IS DELIBERATELY NOT HERE. decisions.scss already sets
    scroll-margin-top on the heading targets, and adding scroll-padding-top on html does not
    override it - THE TWO ADD, and every in-page jump overshot by 80 to 116px. One offset, on the
    target, is enough. Starlight's own formula is worth keeping in mind if the offset ever moves
    off the targets, and it is in toc-real.md. */
 
-/* No reduced-motion path is needed: Starlight's caret has no transition at all, it snaps, and
-   so does ours. If motion is ever added, copy their inverse gate and opt IN to motion instead:
+/* No reduced-motion path is needed: nothing here transitions. If motion is ever added, copy
+   Starlight's inverse gate and opt IN to motion instead:
    @media (prefers-reduced-motion: no-preference). */
 
-/* NOT TAKEN, and each would need its own source: their base64 checkmark, their real 24x24
-   chevron SVG (the demo uses a CSS triangle so nothing unsourced ships), and a sliding marker
+/* NOT TAKEN, and each would need its own source: their base64 checkmark and a sliding marker
    instead of a colour swap - that last one is VitePress's geometry, not Starlight's. */
 }

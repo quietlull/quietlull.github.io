@@ -18,6 +18,10 @@ refactor: true
   `post-enhance.js` and `clipboard.js` bind to it for image popups and code copying. One element
   keeps all three working while `.prose > * + *` still reaches the post's own paragraphs.
 
+  IT IS A JS HOOK HERE AND NOTHING ELSE. `.content` in base/_base.scss used to size its own text,
+  unlayered, so it beat the prose layer and set the inherited size for the whole post body. It is
+  scoped to `:not(.prose)` now, so the prose ladder owns the type on this page.
+
   Dropped with the lab page: `#state`, `.labtag`, every `data-slot` / `data-state`, and its
   hand-written article - callouts, code blocks, figures and pull quotes are all things a Markdown
   post cannot emit today, so the slots for them are not carried as empty furniture. The takeaway
@@ -139,7 +143,19 @@ refactor: true
 {% include social-sprite.html %}
 
 {% if enable_toc %}
-  {% comment %} The narrow-width TOC. `toc-mobile.js` fills the dialog and the site's own JS opens it. {% endcomment %}
+  {% comment %}
+    THE NARROW-WIDTH TOC, AND THE ONLY ONE. Chirpy's bar plus its dialog: `toc-mobile.js` fills
+    `#toc-popup-content` and wires the triggers, the close button, the backdrop click and Escape.
+
+    ONE SWITCH FOR THE HANDOVER, AND IT IS 1200px, because `toc.js` reads
+    `matchMedia('(min-width: 1200px)')` to pick which tocbot instance runs and nothing in CSS can
+    move that. `_sass/pages/_post.scss` states it once, hiding `#toc-wrapper` below it and this
+    bar above it. components/_toc-real.scss states no breakpoint at all.
+
+    The rail component was ported with a Starlight `.toc-pop` popup as well, at 1152px. No markup
+    for it was ever written, so it never rendered and this bar was always what appeared; the dead
+    CSS and its second breakpoint are both gone.
+  {% endcomment %}
   <div id="toc-bar" class="d-flex align-items-center justify-content-between invisible">
     <span class="label text-truncate">{{ page.title }}</span>
     <button type="button" class="toc-trigger btn me-1"><i class="fa-solid fa-list-ul fa-fw"></i></button>

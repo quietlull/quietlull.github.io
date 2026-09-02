@@ -137,12 +137,23 @@ h1.dynamic-title {
 }
 
 .content {
-  font-size: 1.08rem;
   margin-top: 2rem;
   overflow-wrap: break-word;
 
-  @include bp.xl {
-    font-size: 1.03rem;
+  // SIZE ONLY WHERE `.content` IS THE PAGE BODY. On a post it is not: `_layouts/post.html` puts
+  // it on the same div as `.prose` purely as a JS hook - tocbot's `contentSelector`,
+  // post-enhance and clipboard all query `.content` - and the prose ladder sets the type there.
+  // Unscoped, this rule is unlayered, so it beat the prose layer and set 17.28px as the
+  // inherited size for everything in a post body that has no size of its own. `.prose p` and
+  // `.prose li` are pinned by the page sheet so they were never affected; the code-header
+  // language label with its copy icon, and the post-nav "back to all" button, were.
+  // `_layouts/page.html` still gets Chirpy's size, which is the only place this was ever for.
+  &:not(.prose) {
+    font-size: 1.08rem;
+
+    @include bp.xl {
+      font-size: 1.03rem;
+    }
   }
 
   a {

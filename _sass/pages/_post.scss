@@ -1,3 +1,33 @@
+// ================================================================================================
+// OWNERSHIP: this file is OURS. The filename is Chirpy's, the contents are almost entirely not.
+// ================================================================================================
+// Measured 2026-09-02 against pristine Chirpy 7.3.1 (`_sass/pages/_post.scss`, 496 lines; ours is
+// also 496, which is coincidence, not shared ancestry). 66 lines match theirs verbatim; strip the
+// bare braces and blanks and 35 carry content, of which 2 are accidental collisions (a
+// `display: block` and a `width: 100%` that happen to sit in our own `.content img` rule). So 33
+// lines, under 7 percent, are genuinely inherited. Everything else is the redesign's post layout.
+// Upstream's version of this file is superseded wholesale: a clean overwrite deletes the post page.
+//
+// THE UPSTREAM FRAGMENTS THAT SURVIVE, and an upgrade only has to re-check these:
+//   1. The four `@use` lines below, byte-identical to theirs.
+//   2. `#toc-solo-trigger` - the closest thing to an untouched upstream block. Two changes only:
+//      our margin-top/margin-bottom, and `var(--font-display)` where they read
+//      `v.$font-family-heading`, a variable this repo no longer defines.
+//   3. `#toc-bar` - upstream's rule skeleton (sticky, top 0, z-index 1, the -1rem side pull, the
+//      `@extend %btn-color`, the `bp.xl` hide, `.label`, `&.invisible`) with about half its
+//      declarations replaced: our flex row, `mx.glass` instead of `background: var(--main-bg)`,
+//      no bottom border, and a LOCAL `$toc-bar-height: 3rem` where they read `v.$topbar-height`.
+//      That fork is load-bearing: abstracts/_variables.scss re-pointed $topbar-height to 260px, so
+//      reading theirs would give the bar a 260px height with no error. Do not "restore" it.
+// Everything upstream styled and we deleted - post-tail-wrapper, the share row, .post-tags,
+// #related-posts, the Disqus and utterances hooks, the fade-up keyframes, %top-cover - styled
+// markup that no longer exists. An upgrade re-adding those rules re-adds dead CSS, not features.
+//
+// THIS FILE IS UNLAYERED ON PURPOSE. A page sheet must beat the component sheets, and that is how
+// it does it: unlayered CSS wins over every `@layer`. Do NOT wrap it in a layer. The consequence is
+// written out in the note just below, and it is the reason so few declarations are here.
+// ================================================================================================
+
 @use '../abstracts/variables' as v;
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/mixins' as mx;
