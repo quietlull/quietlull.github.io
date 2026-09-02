@@ -132,10 +132,20 @@ six lab pages: it rendered, then the canvas covered it. The scene's own vignette
 proven; the copies in `aggregate/home/new-landing/rework-hana/palette-explorer` are still there and
 still need checking one at a time, since a page with no scene canvas would actually show its scrim.
 
-**Styles vanish from a component after moving/renaming an include or layout ->** PurgeCSS scans
-`_includes/**`, `_layouts/**`, `_javascript/**` to generate `_sass/vendors/_bootstrap.scss`; a
-moved file drops its classes from the scan and they get purged. Re-run `npm run build:css` and
-review the output diff after any structural move. Never hand-edit the generated file.
+**~~Styles vanish from a component after moving/renaming an include or layout~~ -> CANNOT HAPPEN
+ANY MORE.** This trap was PurgeCSS: it scanned `_includes/**`, `_layouts/**`, `_javascript/**` to
+generate `_sass/vendors/_bootstrap.scss`, so a moved file dropped its classes from the scan and they
+got purged. D48 removed Bootstrap completely and `purgecss.js`, `_sass/vendors/` and
+`_sass/main.bundle.scss` went with it. MEASURED 2026-09-02: none of those paths exist, there is no
+`build:css` script, and nothing prunes CSS at build time. Kept struck through rather than deleted
+because several older notes still send people here.
+
+**A rule paints the wrong thing and only the @forward ORDER decides it ->** two partials declare the
+same PROPERTY on the same element at the same specificity, layer, media condition and state. The
+wordmark is `class="top-bar__logo lb"`, so `_top-bar.scss` and `_line-boil.scss` both styled it and
+it painted in the wrong font and colour for weeks. `node tools/css-order-check.mjs` finds these: it
+parses the built stylesheet and attributes every rule back to its partial through the Sass source
+map, because `document.styleSheets` and plain greps have both under-reported here before.
 
 **A page's JS features silently stop working after a layout rename ->** `_includes/js-selector.html`
 maps layout name -> Rollup bundle. Renaming a layout without updating the map loads no bundle.
@@ -156,9 +166,12 @@ between subdirectories changes its permalink site-wide.
 
 **A Three.js change works in redesign-lab but not on the live site (or vice versa) ->**
 `redesign-lab/scene/` holds a separate copy of `lantern-controller.js`, `firework-controller.js`,
-`three-config.js`, `three-shared.js`, and shaders (intentional during the redesign). You edited
-the other copy. Check which one the build actually uses before diagnosing anything. Live-site
-`_javascript/` three-bg edits also need `BUILD=production npx rollup -c` before they show.
+`three-config.js`, `three-shared.js`, and shaders. You edited the other copy. Check which one the
+build actually uses before diagnosing anything. Live-site `_javascript/` three-bg edits also need
+`BUILD=production npx rollup -c` before they show. **The split was "intentional during the
+redesign"; the redesign shipped, so it is now just a hazard** (corrected 2026-09-02), and the copies
+have drifted: the lab water is five changes behind live. Folding or deleting them is Phase 2 of
+[REFACTOR-PLAN.md](REFACTOR-PLAN.md). Editing a lab copy changes nothing a visitor sees.
 
 **Cleanup numbers do not match an old log ->** doc counts go stale within weeks (CLEANUP-LOG
 logged `_animations.scss` at 401 lines; later measured 574). Do not trust any doc's counts

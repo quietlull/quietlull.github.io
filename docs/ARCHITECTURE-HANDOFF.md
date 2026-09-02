@@ -4,6 +4,22 @@
 > went **8 of 26 to 19 of 26**. The seven still unreachable need markup that does not exist yet:
 > `bio-block`, `callout-family`, `figure-real`, `reference-links`, `slap-toggle`, `washi-tape`,
 > `cursor-glow`. Any line below claiming 18 stylesheets render nowhere is stale.
+>
+> **STALENESS NOTICE, 2026-09-02. This note is a file-by-file snapshot of one night, and six of the
+> files it inventories no longer exist.** Everything else in it still reads true, so it is corrected
+> here at the top rather than rewritten. MEASURED, all six are off disk:
+>
+> | the note says | what is true now |
+> | --- | --- |
+> | `purgecss.js`, `_sass/vendors/_bootstrap.scss`, `_sass/main.bundle.scss` (rows at lines 78-82, and lines 179, 395, 463) | **deleted with Bootstrap (D48).** `assets/css/jekyll-theme-chirpy.scss` is a bare `@use 'main'`, so dev and production compile the identical sheet. No CSS build step, no machine-owned stylesheet. |
+> | `_sass/components/_callout-family.scss` (lines 5, 134, 618) | **deleted.** The callout system is the `{% callout %}` Liquid block in `_plugins/callout.rb`, writing `.d-callout` styled from `_sass/base/_decisions.scss:507-638`. |
+> | `_sass/components/_slap-toggle.scss` and `assets/js/components/top-bar.js` (lines 5, 142, 363-366, 619, 647-648) | **deleted** in the D47 strip. The slap toggle chain went with them. |
+> | `_sass/pages/_home.scss` (line 170) and `_sass/layout/_blogspreview.scss` (line 171) | **renamed:** `_sass/pages/_stub-pages.scss` and `_sass/pages/_blog.scss`. |
+> | "`redesign-lab/` is gitignored. It has no history." (lines 52, 710, 780) | **no longer true.** D49 put the lab in version control; `.gitignore:37-38` now holds only the two hold piles. Deletions there ARE recoverable. What keeps the lab off production is `.github/workflows/pages-deploy.yml:68`, which removes it from `_site` before upload. |
+>
+> New since this note: `tools/css-order-check.mjs`, which catches two partials painting the same
+> property on the same element where only the `@forward` order decides the winner. That is the real
+> version of the load-order question this note discusses.
 
 
 Written for the agent who picks up the optimization and architecture restructure cold, with no

@@ -2,6 +2,14 @@
 
 **Report only. No code was changed.**
 
+> **DATED SNAPSHOT, corrected 2026-09-02.** Two file:line citations below point at files that have
+> since been deleted: `_sass/components/_callout-family.scss:167` and
+> `_sass/components/_slap-toggle.scss:122`, and `_sass/vendors/_bootstrap.scss` is gone with
+> Bootstrap (D48). Also read every reduced-motion finding here against
+> [DECISIONS.md](DECISIONS.md) D34, which rules motion preference out of scope: a missing
+> reduced-motion path is no longer a defect. The fireworks flash audit (2.3.1) is NOT covered by
+> that and is still open.
+
 Measured **2026-08-25, 07:26 to 07:31 PDT**, against the live dev server on `localhost:4000`,
 in real Chrome driven over CDP at 1440x900. Nine page types, **239 focusable controls**, every
 number below measured that morning rather than read off a stylesheet.

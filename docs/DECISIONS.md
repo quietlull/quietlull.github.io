@@ -544,6 +544,8 @@ generally; the three.js scene was already carved out of this rule, and this is i
 - The live-site items in [MERGE-WORKLIST.md](MERGE-WORKLIST.md) gates 4-6 - the dead search
   subsystem, PWA theme-colour, og:image, PurgeCSS globs, the 11 real eslint errors - are NOT
   cancelled. They are PORT-TIME work, and they stay in the worklist under those gates.
+  (One of those five is since void: the PurgeCSS globs item was struck 2026-09-02 because D48
+  deleted Bootstrap and `purgecss.js` with it, so there is no scan left to extend.)
 - Repo hygiene that touches no rendered surface (git, docs, dependency merges) stays allowed.
 - If a lab page needs something from the live site, it COPIES it into the lab rather than editing
   the original.

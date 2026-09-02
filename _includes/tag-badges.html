@@ -7,6 +7,14 @@
   brand hues with no token, and minting seven names for them is a separate call.
 {% endcomment %}
 
+{% comment %}
+  THE ICON COLOURS LIVE IN CSS NOW, not on the elements. They were eight raw hex values written
+  inline here, which broke two rules (STYLE.md forbids inline style; D42 says every colour is a
+  token so it can be changed in one place) and caused one visible fault: the FILTER ROW above
+  these cards paints the same seven icons, so when that row moved to tokens on 2026-09-02 and
+  this file did not, the same icon rendered two different colours on the same screen.
+  Both sides now read the `--pill-icon-*` tokens through the `.pill-icon--*` classes.
+{% endcomment %}
 {% assign badge_tags = include.tags | where_exp: 't', 't != "project"' %}
 {% if badge_tags.size > 0 %}
 {% if include.variant == 'kit' %}<span class="pv2-tags">{% else %}<div class="tag-badges">{% endif %}
@@ -25,25 +33,25 @@
       {% capture icon %}<img src="{{ '/assets/img/icons/godot.svg' | relative_url }}" alt="" class="badge-icon">{% endcapture %}
     {% elsif t == 'shader' %}
       {% assign label = 'Shader' %}
-      {% capture icon %}<i class="fas fa-brush" aria-hidden="true" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>{% endcapture %}
+      {% capture icon %}<i class="fas fa-brush pill-icon--shader" aria-hidden="true"></i>{% endcapture %}
     {% elsif t == 'tool' %}
       {% assign label = 'Tool' %}
-      {% capture icon %}<i class="fas fa-wrench" aria-hidden="true" style="color: #b0b8c4;"></i>{% endcapture %}
+      {% capture icon %}<i class="fas fa-wrench pill-icon--tool" aria-hidden="true"></i>{% endcapture %}
     {% elsif t == 'vfx' %}
       {% assign label = 'VFX' %}
-      {% capture icon %}<i class="fas fa-wand-magic-sparkles" aria-hidden="true" style="color: #4d96ff;"></i>{% endcapture %}
+      {% capture icon %}<i class="fas fa-wand-magic-sparkles pill-icon--vfx" aria-hidden="true"></i>{% endcapture %}
     {% elsif t == 'rigging' %}
       {% assign label = 'Rigging' %}
-      {% capture icon %}<i class="fas fa-bone" aria-hidden="true" style="color: #9b59b6;"></i>{% endcapture %}
+      {% capture icon %}<i class="fas fa-bone pill-icon--rigging" aria-hidden="true"></i>{% endcapture %}
     {% elsif t == '2d' %}
       {% assign label = '2D' %}
-      {% capture icon %}<i class="fas fa-image" aria-hidden="true" style="color: #6bcb77;"></i>{% endcapture %}
+      {% capture icon %}<i class="fas fa-image pill-icon--2d" aria-hidden="true"></i>{% endcapture %}
     {% elsif t == '3d' %}
       {% assign label = '3D' %}
-      {% capture icon %}<i class="fas fa-cube" aria-hidden="true" style="color: #f0a500;"></i>{% endcapture %}
+      {% capture icon %}<i class="fas fa-cube pill-icon--3d" aria-hidden="true"></i>{% endcapture %}
     {% elsif t == 'study' %}
       {% assign label = 'Study' %}
-      {% capture icon %}<i class="fas fa-book" aria-hidden="true" style="color: #e8a87c;"></i>{% endcapture %}
+      {% capture icon %}<i class="fas fa-book pill-icon--study" aria-hidden="true"></i>{% endcapture %}
     {% endif %}
     {% if label != '' %}
       {%- if include.variant == 'kit' -%}

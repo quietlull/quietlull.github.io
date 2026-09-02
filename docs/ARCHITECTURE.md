@@ -5,17 +5,22 @@ relying on them. If this disagrees with the code, this is stale - fix it.
 
 ## Build: two toolchains, one deploy
 
-1. **Node** - `npm run build` runs both in parallel:
-   - `rollup.config.js` - 11 targets: Chirpy-convention page bundles (`commons`, `home`, `page`,
-     `post`, `categories`, `misc`), PWA `app`/`sw` (front matter injected by a custom plugin), and
+1. **Node** - `npm run build` now runs ONE thing, not two (corrected 2026-09-02):
+   - `rollup.config.js` - Chirpy-convention page bundles (`commons`, `home`, `page`, `post`,
+     `categories`, `misc`), PWA `app`/`sw` (front matter injected by a custom plugin), and
      2 standalone Three.js bundles. Output: `assets/js/dist/` (gitignored, machine-owned).
      **Each Three.js bundle carries its OWN copy of three.js**, which is why `minimal` is ~525 KB to
      draw 35 spheres. Separate URLs get separate caches, so moving between a section page and About
      downloads two complete copies. A shared vendor chunk is the fix and has not been attempted.
-   - `purgecss.js` - strips Bootstrap down to classes actually used in `_includes/**`,
-     `_layouts/**`, `_javascript/**`. Output: `_sass/vendors/_bootstrap.scss` (checked in but
-     machine-owned - never hand-edit).
-2. **Ruby** - `bundle exec jekyll b` consumes the Node outputs.
+   - ~~`purgecss.js` - strips Bootstrap down to classes actually used~~ **GONE. D48 removed
+     Bootstrap completely, and `purgecss.js` and `_sass/vendors/` went with it.** MEASURED
+     2026-09-02: neither path is on disk and `package.json` has one build script left, `build:js`.
+     There is no CSS build step and no machine-owned stylesheet any more.
+2. **Ruby** - `bundle exec jekyll b` consumes the Node outputs. **One sheet for every environment.**
+   `assets/css/jekyll-theme-chirpy.scss` used to pick `main` in dev and `main.bundle` in production,
+   where `main.bundle` prepended the purged Bootstrap. `_sass/main.bundle.scss` is deleted, the entry
+   is a bare `@use 'main'`, and dev and production compile the identical sheet. That kills the whole
+   class of dev-versus-production layout surprises D48 describes.
 3. **CI** (`.github/workflows/pages-deploy.yml`): Ruby setup -> npm build -> jekyll build ->
    htmlproofer (internal links only) -> GitHub Pages deploy.
 
@@ -83,9 +88,13 @@ Site-wide glass morphism lives in `abstracts/_mixins.scss` / `_variables.scss`.
 
 ## Non-build directories
 
-- `redesign-lab/` - gitignored ACTIVE design workbench for the redesign (component bench in
-  `extracted/`, reference gallery, palette explorer, session logs). Holds intentionally separate
-  copies of the live Three.js modules during the redesign - still a wrong-copy hazard (see
-  [TRAPS.md](TRAPS.md)); fold/delete decision comes with the post-redesign refactor.
+- `redesign-lab/` - **version-controlled REFERENCE, not an active workbench** (D49, corrected
+  2026-09-02). The redesign shipped; this is the bench, reference gallery, palette explorer, session
+  logs and the six `final-*` pages the port was made from. It never reaches a visitor:
+  `.github/workflows/pages-deploy.yml:68` deletes it out of `_site` before upload, while localhost
+  still serves it. Editing a lab page therefore changes nothing on the live site. It still holds
+  separate copies of the live Three.js modules and they are now behind (the lab water is five
+  changes back as of 2026-09-01) - a wrong-copy hazard, see [TRAPS.md](TRAPS.md). The fold/delete
+  decision is Phase 2 of [REFACTOR-PLAN.md](REFACTOR-PLAN.md).
 - `_gif-archive/` - 414 MB of original GIF sources kept post-compression; moving out of the repo.
 - `tools/run.sh` - excluded from the Jekyll build.

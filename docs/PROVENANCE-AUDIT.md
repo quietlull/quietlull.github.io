@@ -2,6 +2,14 @@
 
 **Report only. Nothing was changed except this file.**
 
+> **DATED SNAPSHOT, corrected 2026-09-02.** Two components it rows and grades have since been
+> deleted: `callout-family` (replaced by the `{% callout %}` block in `_plugins/callout.rb` writing
+> `.d-callout`, styled in `_sass/base/_decisions.scss:507-638`) and `slap-toggle` (stripped under
+> D47). Their provenance rows are kept as the record of what was cited; they are no longer claims
+> about shipping code. The PurgeCSS paragraph is also dead: Bootstrap and `purgecss.js` are gone
+> (D48), so nothing prunes CSS at build time and the point about our own unused rules surviving now
+> applies to the whole sheet.
+
 Audited 2026-08-25 against the working tree as it stood at 03:00 and against the built site in
 `_site/` (timestamped 02:45, 53 pages, lab pages excluded). Other agents were editing `_sass/`
 while this ran, so treat every file:line as a snapshot. The conclusions rest on the built output

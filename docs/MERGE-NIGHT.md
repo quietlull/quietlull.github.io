@@ -1,5 +1,12 @@
 # The merge night, 2026-08-25 -> 26
 
+> **DATED RECORD of one night, 2026-08-25/26. Read it as history.** Corrected 2026-09-02:
+> every PurgeCSS and `vendors/_bootstrap.scss` line here is about machinery that no longer exists
+> (D48 removed Bootstrap, `purgecss.js` and `_sass/main.bundle.scss`), `_blogspreview.scss` and
+> `_home.scss` are `_sass/pages/_blog.scss` and `_sass/pages/_stub-pages.scss` now,
+> `callout-family` is gone in favour of the `{% raw %}{% callout %}{% endraw %}` plugin, and
+> `redesign-lab/` is no longer gitignored, so "nothing here is in git" no longer holds (D49).
+
 **Read this first in the morning.** It is the running record of the overnight merge: what landed,
 what is reversible, what is still open, and what needs your eye. Rod: *"try to get as much done as
 possible ... please finish EVERYTHING that isnt blocked and if blocked lean on a fix that can be

@@ -185,10 +185,11 @@ cannot be built until the picks are made.
     `_includes/js-selector.html:66-79` maps layout name to exactly one bundle. *(claude, medium)*
 12. **Decide the SCSS delivery shape** - 27 flat component `.css` files have to become partials in
     the `_sass/main.scss` forward chain.
-13. **Extend the PurgeCSS content globs** before porting any markup outside `_includes`/`_layouts`/
-    `_javascript`. `purgecss.js:8` does not scan `assets/**`, `_tabs/*.md`, `index.html`,
-    `ramblings.html`, `tech-art/*.html`, `game-design/*.html` or `_posts/**`. Latent today -
-    `assets/404.html:19` uses `me-2` and survives only because `_layouts` also uses it. *(small)*
+13. ~~**Extend the PurgeCSS content globs** before porting any markup outside
+    `_includes`/`_layouts`/`_javascript`.~~ **STRUCK 2026-09-02: DEAD, and it never had to be done.**
+    D48 removed Bootstrap completely, and `purgecss.js` went with it. MEASURED: the file is off disk,
+    there is no `build:css` script, and nothing prunes CSS at build time, so no markup path can be
+    missed by a scan any more. *(no longer applicable)*
 
 ## Gate 3 - build what does not exist
 
@@ -282,9 +283,13 @@ The live site is **nine surfaces**, and three layouts each serve two subjects:
     `strict: "1"`, and the gemspec ships no `jekyll-redirect-from` - so any changed permalink
     silently detaches every existing comment thread, with no way to redirect. *(Rod, small)*
 38. ~~Exclude `CLAUDE.md` and `STYLE.md`~~ **done 2026-08-18** - both were publishing as real
-    pages. **`redesign-lab` is deliberately NOT excluded:** it is gitignored so CI never sees it and
-    production is already safe, and excluding it would 404 every blockout URL the review workflow
-    runs on. The only cost is a local sitemap listing lab pages. Revisit at merge time. *(done)*
+    pages. **The `redesign-lab` half of this item is superseded, corrected 2026-09-02.** It used to
+    say the lab is safe because it is gitignored so CI never sees it. **The lab is no longer
+    gitignored** (D49: it is version-controlled now; MEASURED, `.gitignore:37-38` holds only the two
+    hold piles `_TRASH-2026-08-25/` and `_BACKUP-pre-deletion-2026-08-26/`). What keeps it out of
+    production instead is `.github/workflows/pages-deploy.yml:68`, which deletes it from `_site`
+    before upload. It is still not in `_config.yml`'s `exclude:`, on purpose, so every blockout URL
+    still resolves on localhost. *(done)*
 39. **Rebrand the browser-chrome and PWA colours.** `_includes/favicons.html:19` emits an
     unconditional `theme-color: #ffffff` that lands last and wins on a dark-only site; TileColor is
     still Chirpy stock `#da532c`. *(claude, small)*
@@ -439,9 +444,12 @@ that was never built, so this doubles as the "what is still missing" check befor
 
 # THE PRE-MERGE INVENTORY (2026-08-25) - measured, nothing deleted
 
-**The constraint that governs every line: `redesign-lab/` is gitignored.** No blobs, no reflog, no
-stash behind any of its 800 files. A wrong `rm` is permanent, so every DELETE needs Rod's per-line
-sign-off. `archive/versions/` WAS the only version history the lab had; Rod gave the direct answer 2026-08-25 ("keep the final and keep a list of what changed") and the 54 snapshots are gone. The finals were verified byte-identical to the live lab-root files first, and the condensed diff trail is `redesign-lab/archive/VERSIONS.md`. The old guard line continued:
+**The constraint that governed every line was: `redesign-lab/` is gitignored** - no blobs, no
+reflog, no stash behind any of its 800 files, so a wrong `rm` was permanent and every DELETE needed
+Rod's per-line sign-off. **THAT CONSTRAINT IS LIFTED, 2026-09-02.** D49 landed: the lab is in
+version control now (MEASURED, `.gitignore:37-38` holds only the two hold piles), so it has history
+and a wrong deletion is recoverable. The inventory below is kept as the record of what was decided
+under the old constraint; do not re-derive its urgency from it. `archive/versions/` WAS the only version history the lab had; Rod gave the direct answer 2026-08-25 ("keep the final and keep a list of what changed") and the 54 snapshots are gone. The finals were verified byte-identical to the live lab-root files first, and the condensed diff trail is `redesign-lab/archive/VERSIONS.md`. The old guard line continued:
 why it sits in ASK and not DELETE.
 
 | bucket | files | MB |

@@ -120,8 +120,10 @@ and the rule gets rewritten.
 - **Fail loudly.** Unreachable branches and broken contracts throw or `console.error` naming the
   exact invariant - never a silent no-op.
 - **Cross-boundary string contracts get a comment stating the exact literal and the failure mode
-  if it drifts.** Live examples: the layout-to-bundle map in `_includes/js-selector.html`, PurgeCSS
-  safelist regexes, any selector list a JS module depends on.
+  if it drifts.** Live examples: the layout-to-bundle map in `_includes/js-selector.html`, the
+  callout type names shared between `_plugins/callout.rb` and the `.d-callout--<type>` classes in
+  `_sass/base/_decisions.scss`, any selector list a JS module depends on. (The PurgeCSS safelist
+  regexes were the third example here until 2026-09-02; PurgeCSS is gone with Bootstrap, D48.)
 - **Dead code is flagged and deleted**, never left with a "maybe later" comment.
 
 ## Process

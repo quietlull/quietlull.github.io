@@ -10,6 +10,15 @@ still sits at the root and `_config.yml:4` still says `theme: jekyll-theme-chirp
 actual theme files are vendored siblings. There is no way to tell "installed by gem" from
 "vendored and modified" except by diffing against upstream, which is what the audit below is.
 
+> **THIS IS A DATED SNAPSHOT, and files have been deleted since. Corrected 2026-09-02.** Six rows
+> below name files that no longer exist: `_sass/main.bundle.scss` (line 59),
+> `_sass/vendors/_bootstrap.scss` (194) and `purgecss.js` went with Bootstrap under D48;
+> `_sass/components/_callout-family.scss` (166) and `_sass/components/_slap-toggle.scss` were
+> deleted with the callout rework and the D47 strip; `_sass/pages/_home.scss` (110) and
+> `_sass/layout/_blogspreview.scss` (188) are `_sass/pages/_stub-pages.scss` and
+> `_sass/pages/_blog.scss` now. The COUNTS in the table below are still the right ones to quote,
+> because they were taken after the strip pass. Re-run the method rather than editing rows.
+
 ## The file audit (Phase 1 deliverable) - DONE 2026-08-25
 
 **Method, so it can be re-run rather than trusted.** Downloaded the upstream tag the fork claims,

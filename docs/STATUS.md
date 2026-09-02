@@ -24,7 +24,8 @@ audit-and-fix session. Everything below is measured, not recalled.
 - **A day of measured fixes landed before that:** sticky restored site-wide (`overflow-x: clip`),
   the boil wordmark first-paints in its own face, the cursor glow escaped `#scrim`, the rejected
   card hover glow is gone, the mobile TOC has a background, Rouge code colours render, heading
-  weight 300 -> 500, Bootstrap-free local parity understood (dev builds `main`, prod `main.bundle`).
+  weight 300 -> 500, Bootstrap-free local parity understood. **That last one is now moot: D48 landed,
+  `_sass/main.bundle.scss` is deleted, and every environment compiles the same sheet.**
 - **Not committed yet.** The working tree holds all of it; committing in themed chunks is the next
   action. Bootstrap removal (D48) and the callout decision are the two open fronts.
 
@@ -38,7 +39,8 @@ audit-and-fix session. Everything below is measured, not recalled.
   resources, 0 images missing alt, 0 duplicate ids.
 - **All six pages ported** - portal, landing, about, projects, post, ramblings. They are the redesign
   now, not the old site with new CSS available.
-- **The type ladder reaches real markup site-wide**: h1 61.44 / h2 38.4 / h3 24 / h4 15, weight 300,
+- **The type ladder reaches real markup site-wide**: h1 61.44 / h2 38.4 / h3 24 / h4 15, **weight
+  500** (this snapshot said 300; the weight went to 500 later the same day, see the bullet above),
   h2 and h3 gold, all in M PLUS Rounded 1c.
 - **The old design is gone** - about 2,770 lines: breathing, `_light.scss`, the search subsystem, 8
   dead includes, 2 dead layouts.
@@ -175,7 +177,10 @@ Two that are not ambiguous:
 
 ## The type ladder is settled, and H1 is now on it
 
-**61.44 / 38.4 / 24 / 15, a constant x1.6 at every width, weight 300 throughout.**
+**61.44 / 38.4 / 24 / 15, a constant x1.6 at every width, weight 500 throughout.**
+(Written as 300 when this section was first drafted; Rod raised it to 500 on 2026-08-25 because
+M PLUS Rounded 1c only shows its rounded stroke ends at 500 or heavier. MEASURED in
+`_sass/base/_decisions.scss:75-77`, `:92-93`, `:147-148`, `:168-169`.)
 
 H2/H3/H4 were already a perfect x1.6 scale and **H1 was the only level off it**, rendering 100.8px
 at 1440 - 2.625x H2, almost exactly two rungs, which is why it read as a missing level rather than a
