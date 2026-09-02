@@ -2,18 +2,23 @@
   The projects filter row, redesign variant. Same ten tags the old `.filter-pill` row carried, drawn
   as `kit-tag` buttons. The Clear button starts hidden and `search-field.js` unhides it once
   something is filtering.
+
+  ICON COLOUR IS CSS, NOT MARKUP, as of 2026-09-02. Each icon used to carry its colour in an inline
+  `style=` attribute, which STYLE.md Rule 13 forbids and D42 forbids again for colour specifically.
+  The class is the only thing here now; the colours are `--pill-icon-*` in
+  `_sass/abstracts/_tokens.scss` and the rules that read them are in `_sass/pages/_projects.scss`.
 {% endcomment %}
 
 <div class="pv2-filters">
   <button class="kit-tag js-magnetic" data-strength="25" data-tag="unity" type="button" aria-pressed="false"><img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="" class="badge-icon">Unity</button>
   <button class="kit-tag js-magnetic" data-strength="25" data-tag="unreal" type="button" aria-pressed="false"><img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="" class="badge-icon">Unreal</button>
   <button class="kit-tag js-magnetic" data-strength="25" data-tag="godot" type="button" aria-pressed="false"><img src="{{ '/assets/img/icons/godot.svg' | relative_url }}" alt="" class="badge-icon">Godot</button>
-  <button class="kit-tag js-magnetic" data-strength="25" data-tag="shader" type="button" aria-pressed="false"><i class="fas fa-brush" aria-hidden="true" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i>Shader</button>
-  <button class="kit-tag js-magnetic" data-strength="25" data-tag="tool" type="button" aria-pressed="false"><i class="fas fa-wrench" aria-hidden="true" style="color:#b0b8c4"></i>Tool</button>
-  <button class="kit-tag js-magnetic" data-strength="25" data-tag="vfx" type="button" aria-pressed="false"><i class="fas fa-wand-magic-sparkles" aria-hidden="true" style="color:#4d96ff"></i>VFX</button>
-  <button class="kit-tag js-magnetic" data-strength="25" data-tag="rigging" type="button" aria-pressed="false"><i class="fas fa-bone" aria-hidden="true" style="color:#9b59b6"></i>Rigging</button>
-  <button class="kit-tag js-magnetic" data-strength="25" data-tag="2d" type="button" aria-pressed="false"><i class="fas fa-image" aria-hidden="true" style="color:#6bcb77"></i>2D</button>
-  <button class="kit-tag js-magnetic" data-strength="25" data-tag="3d" type="button" aria-pressed="false"><i class="fas fa-cube" aria-hidden="true" style="color:#f0a500"></i>3D</button>
-  <button class="kit-tag js-magnetic" data-strength="25" data-tag="study" type="button" aria-pressed="false"><i class="fas fa-book" aria-hidden="true" style="color:#e8a87c"></i>Study</button>
+  <button class="kit-tag js-magnetic" data-strength="25" data-tag="shader" type="button" aria-pressed="false"><i class="fas fa-brush pill-icon pill-icon--shader" aria-hidden="true"></i>Shader</button>
+  <button class="kit-tag js-magnetic" data-strength="25" data-tag="tool" type="button" aria-pressed="false"><i class="fas fa-wrench pill-icon pill-icon--tool" aria-hidden="true"></i>Tool</button>
+  <button class="kit-tag js-magnetic" data-strength="25" data-tag="vfx" type="button" aria-pressed="false"><i class="fas fa-wand-magic-sparkles pill-icon pill-icon--vfx" aria-hidden="true"></i>VFX</button>
+  <button class="kit-tag js-magnetic" data-strength="25" data-tag="rigging" type="button" aria-pressed="false"><i class="fas fa-bone pill-icon pill-icon--rigging" aria-hidden="true"></i>Rigging</button>
+  <button class="kit-tag js-magnetic" data-strength="25" data-tag="2d" type="button" aria-pressed="false"><i class="fas fa-image pill-icon pill-icon--2d" aria-hidden="true"></i>2D</button>
+  <button class="kit-tag js-magnetic" data-strength="25" data-tag="3d" type="button" aria-pressed="false"><i class="fas fa-cube pill-icon pill-icon--3d" aria-hidden="true"></i>3D</button>
+  <button class="kit-tag js-magnetic" data-strength="25" data-tag="study" type="button" aria-pressed="false"><i class="fas fa-book pill-icon pill-icon--study" aria-hidden="true"></i>Study</button>
   <button class="kit-tag js-magnetic" data-strength="25" type="button" data-clear hidden><i class="fas fa-times" aria-hidden="true"></i>Clear</button>
 </div>

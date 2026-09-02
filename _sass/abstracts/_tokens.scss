@@ -270,6 +270,55 @@
   --tape-pink: #f078f0;
   --tape-green: #6fbf73;
 
+  /* --- the projects filter pill icons ----------------------------------------------------------
+     PROMOTED 2026-09-02. `_includes/kit-filter-pills.html` painted these seven icons with inline
+     `style=` attributes, which breaks STYLE.md Rule 13 (no inline style) and D42 (every colour is a
+     token so it can be changed in one place). Three of the eight values it used also broke the
+     palette law, which bans a red and bans a cool accent outside the sky: #ff6b6b is a red,
+     #4d96ff a cool blue, #9b59b6 a purple.
+
+     NOTHING NEW IS MINTED HERE. Every value below points at a colour the site already ships, so
+     these are aliases, not paint. The mapping and the reason for each:
+       shader   was #ff6b6b #ffd93d #6bcb77 #4d96ff #9b59b6, a five-stop rainbow. It becomes the
+                site's OWN five-stop rainbow, the prismatic tier ramp, matched stop for stop by
+                hue. Prismatic is already the palette's one declared cool exception (see the
+                --tier-prismatic-* block above), so the rainbow keeps its meaning without opening a
+                second exception, and the red is gone.
+       tool     was #b0b8c4 -> --tier-silver #c9cbd1. A wrench reads as metal and silver is the
+                palette's metal. Nearest existing colour as well as the right meaning.
+       vfx      was #4d96ff -> --tier-prismatic-sky #7dd3fc. FLAGGED FOR ROD: this is the least
+                settled of the seven. It swaps an unsanctioned blue for a sanctioned one rather
+                than for a warm colour, because the palette has no warm equivalent of "blue".
+                The alternatives are --color-accent-cool (the one true cool accent, but its own
+                rule says spend it on the single most important mark per view, which a filter icon
+                is not) or --color-glow-soft if he wants the row fully warm.
+       rigging  was #9b59b6 -> --tier-prismatic-pink #e879a6. Purple has no home in the palette;
+                pink is the nearest hue that ships and it leans warm. Same ramp as the shader icon.
+       2d       was #6bcb77 -> --tape-green #6fbf73. Effectively the same green already, 4 points
+                of red apart, and green is a tape hue Rod picked himself (D27).
+       3d       was #f0a500 -> --color-gold-deep #f59e0b. Effectively the same amber already.
+       study    was #e8a87c -> --tier-bronze-light #d99a5c. The warm tan rung that ships; a shade
+                deeper than the old value.
+
+     STILL INLINE AND STILL RAW: `_includes/tag-badges.html` paints the SAME seven icons with the
+     SAME eight hex values on the project cards, and its own comment says minting names for them is
+     a separate call. This is that call. Until that include points at these tokens, a card badge and
+     a filter pill for the same tag render different colours. */
+  --pill-icon-shader: linear-gradient(
+    135deg,
+    var(--color-glow),
+    var(--color-gold),
+    var(--tier-prismatic-green),
+    var(--tier-prismatic-sky),
+    var(--tier-prismatic-pink)
+  );
+  --pill-icon-tool: var(--tier-silver);
+  --pill-icon-vfx: var(--tier-prismatic-sky);
+  --pill-icon-rigging: var(--tier-prismatic-pink);
+  --pill-icon-2d: var(--tape-green);
+  --pill-icon-3d: var(--color-gold-deep);
+  --pill-icon-study: var(--tier-bronze-light);
+
   /* --- the page ground -------------------------------------------------------------------------
      What every page is painted on, from `foundations`: a warm wash rising off the floor, a blue
      wash falling from the top right, and three saturated-orange blobs. They used to drift.

@@ -62,6 +62,32 @@
       font-size: 0.85rem;
       line-height: 1;
     }
+
+    /* THE ICON COLOURS, moved off inline `style=` attributes 2026-09-02 (STYLE.md Rule 13, D42).
+       The values are `--pill-icon-*` in abstracts/_tokens.scss, which is also where the old-to-new
+       mapping and the flag on the VFX colour are written down. Nothing here names a colour.
+       These beat `.kit-tag:hover`, so an icon keeps its own colour when the pill lights up. That
+       is what the inline attributes did too, so the hover look is unchanged. */
+    .pill-icon--tool { color: var(--pill-icon-tool); }
+
+    .pill-icon--vfx { color: var(--pill-icon-vfx); }
+
+    .pill-icon--rigging { color: var(--pill-icon-rigging); }
+
+    .pill-icon--2d { color: var(--pill-icon-2d); }
+
+    .pill-icon--3d { color: var(--pill-icon-3d); }
+
+    .pill-icon--study { color: var(--pill-icon-study); }
+
+    /* The shader icon is painted by a ramp rather than a colour: the gradient fills the box, the
+       box is clipped to the letterform, and the glyph's own fill goes transparent so the ramp
+       shows through. Transcribed from the inline rule it replaces, prefixes and all. */
+    .pill-icon--shader {
+      background: var(--pill-icon-shader);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   }
 
   .pv2-grid {
