@@ -23,6 +23,33 @@
 //   --limit   max findings printed, default 40
 //   --css     read another built stylesheet, for testing the checker itself
 // Exit 1 when a hazard is found, 2 when it cannot run (no build to read).
+//
+// PROVE IT STILL BITES. A checker that reports zero is worth nothing until you have watched it
+// report non-zero, and this repo has shipped two tools that quietly under-reported. Both recipes
+// build to a THROWAWAY destination, so `_site` and the dev server are never touched, and both
+// restore the file from a backup rather than from git. Takes about a minute each.
+//
+//   Test B, a new order-decided property. `class="top-bar__logo lb"` is the historical case.
+//     cp _sass/components/_line-boil.scss /tmp/lb.bak
+//     sed -i '97a\  letter-spacing: 0.1em;' _sass/components/_line-boil.scss   # .lb, inside the rule
+//     bundle exec jekyll build -d /tmp/tB --quiet
+//     cp /tmp/lb.bak _sass/components/_line-boil.scss && git diff --stat -- _sass/
+//     node tools/css-order-check.mjs --css /tmp/tB/assets/css/jekyll-theme-chirpy.css
+//   Expect: exit 1, "HAZARD letter-spacing" naming _line-boil.scss and _top-bar.scss, and
+//   `git diff --stat` empty. `.top-bar__logo` already sets letter-spacing, so the two collide at
+//   the same specificity in the same layer and only the @forward order picks the winner.
+//
+//   Test C, a lost `@layer components` wrapper.
+//     cp _sass/components/_cursor-glow.scss /tmp/cg.bak
+//     sed -i '6d;47d' _sass/components/_cursor-glow.scss      # drops `@layer components {` and its }
+//     bundle exec jekyll build -d /tmp/tC --quiet
+//     cp /tmp/cg.bak _sass/components/_cursor-glow.scss && git diff --stat -- _sass/
+//     node tools/css-order-check.mjs --css /tmp/tC/assets/css/jekyll-theme-chirpy.css
+//   Expect: exit 1, "_cursor-glow.scss emits 1 rule(s) outside any layer".
+//
+// Test C is why the wrapper check is written as a POSITIVE assertion. The first version only
+// looked for files SPLIT between layered and unlayered, and this recipe walked straight past it:
+// strip the wrapper completely and every rule in the file is unlayered, which looks consistent.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -56,7 +83,7 @@ function stripComments(s) {
       if (c === str) str = null;
       i++; continue;
     }
-    if (c === '"' || c === "'") { str = c; i++; continue; }
+    if (c === '"' || c === '\'') { str = c; i++; continue; }
     if (c === '/' && s[i + 1] === '*') {
       let j = s.indexOf('*/', i + 2);
       if (j < 0) j = s.length - 2;
@@ -80,7 +107,7 @@ function splitTop(s, sep) {
       if (c === str) str = null;
       continue;
     }
-    if (c === '"' || c === "'") { str = c; cur += c; continue; }
+    if (c === '"' || c === '\'') { str = c; cur += c; continue; }
     if (c === '(' || c === '[') { depth++; cur += c; continue; }
     if (c === ')' || c === ']') { depth--; cur += c; continue; }
     if (c === sep && depth === 0) { out.push(cur); cur = ''; continue; }
@@ -106,7 +133,7 @@ function parseStylesheet(clean) {
         if (c === str) str = null;
         i++; continue;
       }
-      if (c === '"' || c === "'") { str = c; i++; continue; }
+      if (c === '"' || c === '\'') { str = c; i++; continue; }
       if (c === '(') { depth++; i++; continue; }
       if (c === ')') { depth--; i++; continue; }
       if (depth > 0) { i++; continue; }
@@ -122,7 +149,7 @@ function parseStylesheet(clean) {
           if (q === s2) s2 = null;
           j++; continue;
         }
-        if (q === '"' || q === "'") { s2 = q; j++; continue; }
+        if (q === '"' || q === '\'') { s2 = q; j++; continue; }
         if (q === '{') d++;
         else if (q === '}') d--;
         j++;
@@ -177,7 +204,7 @@ function decodeVLQ(str) {
 }
 
 function buildSourceLookup(css, map) {
-  let srcIdx = 0, srcLine = 0, srcCol = 0;
+  let srcIdx = 0, srcLine = 0;
   const segsByLine = map.mappings.split(';').map((line) => {
     let genCol = 0;
     const segs = [];
@@ -186,7 +213,7 @@ function buildSourceLookup(css, map) {
       const f = decodeVLQ(seg);
       genCol += f[0];
       if (f.length >= 4) {
-        srcIdx += f[1]; srcLine += f[2]; srcCol += f[3];
+        srcIdx += f[1]; srcLine += f[2];
         segs.push([genCol, srcIdx, srcLine]);
       }
     }
@@ -226,7 +253,7 @@ const STATE_PSEUDO = new Set([
   'future', 'local-link'
 ]);
 const FUNCTIONAL_FILTER = new Set(['not', 'is', 'where', 'matches', '-webkit-any', 'has']);
-const NAME_CHAR = /[-\w -￿]/;
+const NAME_CHAR = /[-\w\u00a0-\uffff]/;
 
 // Split a compound (no combinators) into simple selectors.
 function parseCompound(text) {
@@ -246,7 +273,7 @@ function parseCompound(text) {
       while (j < text.length) {
         const q = text[j];
         if (str) { if (q === str) str = null; j++; continue; }
-        if (q === '"' || q === "'") { str = q; j++; continue; }
+        if (q === '"' || q === '\'') { str = q; j++; continue; }
         if (q === ']') break;
         j++;
       }
@@ -273,7 +300,7 @@ function parseCompound(text) {
       i = j; continue;
     }
     let j = i;
-    while (j < text.length && (NAME_CHAR.test(text[j]) || text[j] === "|")) j++;
+    while (j < text.length && (NAME_CHAR.test(text[j]) || text[j] === '|')) j++;
     if (j === i) { i++; continue; }
     parts.push({ kind: 'type', name: text.slice(i, j).toLowerCase() });
     i = j;
@@ -293,7 +320,7 @@ function parseComplex(sel) {
   for (let i = 0; i < sel.length; i++) {
     const c = sel[i];
     if (str) { cur += c; if (c === str) str = null; continue; }
-    if (c === '"' || c === "'") { str = c; cur += c; continue; }
+    if (c === '"' || c === '\'') { str = c; cur += c; continue; }
     if (c === '(' || c === '[') { depth++; cur += c; continue; }
     if (c === ')' || c === ']') { depth--; cur += c; continue; }
     if (depth === 0 && (c === '>' || c === '+' || c === '~')) {
@@ -448,7 +475,7 @@ function parseHtml(html, file) {
     while (end < html.length) {
       const c = html[end];
       if (str) { if (c === str) str = null; end++; continue; }
-      if (c === '"' || c === "'") { str = c; end++; continue; }
+      if (c === '"' || c === '\'') { str = c; end++; continue; }
       if (c === '>') break;
       end++;
     }
@@ -689,7 +716,7 @@ const PINNED = [
     props: ['color'],
     partials: ['_sass/components/_line-boil.scss', '_sass/components/_top-bar.scss'],
     winner: '_sass/components/_top-bar.scss',
-    why: "Rod's call, docs/REQUESTS.md P457: offered the boil's orange or the port's gold he said " +
+    why: 'Rod\'s call, docs/REQUESTS.md P457: offered the boil\'s orange or the port\'s gold he said ' +
       '"it should stay the gold it is now". The top bar and the portal centre mark are deliberately ' +
       'different colours. The font-family half of the same collision was fixed by deleting the ' +
       'declaration from _top-bar.scss rather than by reordering.'
@@ -700,7 +727,7 @@ const PINNED = [
     partials: ['_sass/components/_merged-card.scss', '_sass/components/_project-cards-expensive.scss'],
     winner: '_sass/components/_project-cards-expensive.scss',
     why: 'Deliberate suppressor, _sass/components/_project-cards-expensive.scss:205: it holds ' +
-      "merged-card's hover down so the cursor reveal is the one that reads. The grid is " +
+      'merged-card\'s hover down so the cursor reveal is the one that reads. The grid is ' +
       'class="merged-cards merged-cards--square epx-cards" and the card is ' +
       'class="post-card ct-glow-card", so both partials hit the same cover.'
   },
@@ -710,7 +737,7 @@ const PINNED = [
     partials: ['_sass/components/_button-kit.scss', '_sass/components/_portal-window.scss'],
     winner: '_sass/components/_portal-window.scss',
     why: 'Deliberate override, _sass/components/_portal-window.scss:296: the Enter affordance IS ' +
-      "button-kit's primary and this file adds placement, squares off the kit's 8px radius against " +
+      'button-kit\'s primary and this file adds placement, squares off the kit\'s 8px radius against ' +
       'the locked square rule, and sizes the label to the window header.'
   }
 ];
@@ -849,18 +876,58 @@ for (const { el, tier, flat } of sample) {
 
 // A partial that loses its `@layer components` wrapper goes UNLAYERED, and unlayered CSS beats every
 // layer, so it silently wins over everything (D36, docs/TRAPS.md - it shipped broken to 40 pages
-// once). A file whose rules come out split across layered and unlayered is the shape that happens
-// when a wrapper closes early or a rule is added below it.
+// once).
+//
+// This has to be a POSITIVE assertion, not a hunt for oddities. The first version only flagged files
+// SPLIT between layered and unlayered, and test C below walked straight past it: strip a wrapper
+// entirely and every rule in the file is unlayered, which looks perfectly consistent. So the rule is
+// that no partial under `_sass/components/` may emit a rule OUTSIDE a layer, unless it is named here
+// as one of the old site's, which are unlayered on purpose (`_index.scss` says so too).
+//
+// Being in some OTHER named layer is fine and must not be flagged: `_search-field.scss:140` closes
+// its components block and opens a deliberate `@layer overrides` one. Only "no layer at all" is the
+// footgun, because only that beats everything.
+// Files allowed to emit rules outside a layer, each with the reason it is not the D36 footgun.
+// Anything NOT listed that opens a layer block and still emits an unlayered rule is a fault.
+const LAYER_EXEMPT = new Map([
+  ['_sass/components/_buttons.scss',
+    'the old site\'s, unlayered throughout on purpose - this port is additive (_index.scss:3)'],
+  ['_sass/components/_popups.scss',
+    'the old site\'s, unlayered throughout on purpose - this port is additive (_index.scss:3)'],
+  ['_sass/base/_typography.scss',
+    'part-migrated and mixed: the type ladder left for base/_decisions.scss, so what remains is '
+    + 'Chirpy\'s heading anchor and scroll offsets. 26 rules unlayered, 3 in reset. Harmless only '
+    + 'for as long as no layered rule wants those properties. NOT REVIEWED, see the handoff.'],
+  ['_sass/base/_foundations.scss',
+    'the two Bootstrap survivors .d-none and .invisible (D48) sit BELOW the reset block at '
+    + '_foundations.scss:81-82, so they beat every layer. That suits a hiding utility and '
+    + '.d-none is !important anyway, but nothing in the file says it was chosen. NOT REVIEWED.']
+]);
+
 const layerCensus = new Map();
 for (const r of rules) {
   if (!layerCensus.has(r.file)) layerCensus.set(r.file, new Map());
   const byLayer = layerCensus.get(r.file);
   byLayer.set(r.layer, (byLayer.get(r.layer) || 0) + 1);
 }
+// A partial that opens a layer block in its SOURCE must not also emit rules outside one. That test
+// needs no list and covers base/ and pages/ too, wherever a wrapper closes early.
+const opensALayer = new Set(
+  walkFiles(path.join(ROOT, '_sass'), ['.scss'])
+    .filter((f) => /@layer\s+[\w\s,-]+\{/.test(fs.readFileSync(f, 'utf8')))
+    .map((f) => rel(f))
+);
+
 const splitLayer = [...layerCensus.entries()]
-  .filter(([file, byLayer]) => file.startsWith('_sass/components/')
-    && byLayer.size > 1 && byLayer.has('(unlayered)'))
-  .map(([file, byLayer]) => ({ file, layers: [...byLayer].map(([l, n]) => `${l}:${n}`).join(', ') }));
+  .filter(([file, byLayer]) => byLayer.has('(unlayered)')
+    && (opensALayer.has(file)
+      || file.startsWith('_sass/components/'))
+    && !LAYER_EXEMPT.has(file))
+  .map(([file, byLayer]) => ({
+    file,
+    unlayered: byLayer.get('(unlayered)'),
+    layers: [...byLayer].map(([l, n]) => `${l}:${n}`).join(', ')
+  }));
 
 // ---------------------------------------------------------------- report
 
@@ -896,9 +963,18 @@ if (JSON_OUT) {
     + `${sample.length} distinct multi-class elements`);
   line();
 
+  const exemptSeen = [...layerCensus.entries()]
+    .filter(([file, byLayer]) => byLayer.has('(unlayered)') && LAYER_EXEMPT.has(file));
+  for (const [file, byLayer] of exemptSeen) {
+    line(`unlayered  ${file} (${byLayer.get('(unlayered)')} rule(s) outside any layer)`);
+    line(`           ${LAYER_EXEMPT.get(file)}`);
+  }
+  if (exemptSeen.length) line();
+
   for (const s of splitLayer) {
-    line(`HAZARD  ${s.file} emits rules both inside and outside a layer (${s.layers}).`);
-    line('        Unlayered CSS beats every layer, so the stray rules win over everything. D36.');
+    line(`HAZARD  ${s.file} emits ${s.unlayered} rule(s) outside any layer (${s.layers}).`);
+    line('        Unlayered CSS beats every layer, so those rules win over everything. D36.');
+    line('        Its `@layer components` wrapper is missing or closes early.');
     line();
   }
 

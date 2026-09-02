@@ -1,18 +1,35 @@
 // COMPONENTS
 //
 // `buttons` and `popups` are the OLD site's and stay put - this port is additive.
-// Under them, the redesign's 26 stylesheets, ported 2026-08-25 from
+// Under them, the redesign's 24 stylesheets, ported 2026-08-25 from
 // redesign-lab/extracted/components/<name>/<name>.css, one partial each.
 //
 // EVERY PORTED FILE OPENS WITH THE @layer ORDER STATEMENT AND WRAPS ITS BODY IN
-// `@layer components`. Repeating it 26 times is correct, not redundant - it is idempotent, so
+// `@layer components`. Repeating it 24 times is correct, not redundant - it is idempotent, so
 // each file is right on its own whatever loads it. The footgun: unlayered CSS beats every layer,
 // so a file that loses its wrapper silently wins over everything (D36, docs/TRAPS.md).
 //
 // ORDER IS ALPHABETICAL, and that is a choice rather than a default: the six final-* lab pages
-// disagree about load order, so there is no single lab order to reproduce. Verified it does not
-// matter - no top-level selector is declared by two of these 26 files, so nothing here can shadow
-// anything else whatever the order.
+// disagree about load order, so there is no single lab order to reproduce.
+//
+// ORDER MATTERS. THIS USED TO CLAIM IT DID NOT, and that claim cost the wordmark weeks in the
+// wrong font and the wrong colour (docs/REQUESTS.md P457). The old wording said no two of these
+// files declare the same SELECTOR, so nothing here can shadow anything. That is true, and it is
+// the wrong test. An element carries SEVERAL component classes at once, so two DIFFERENT
+// selectors land on the SAME element: the wordmark is `class="top-bar__logo lb"`, so
+// `_top-bar.scss` and `_line-boil.scss` both style it, both one class deep, both in this layer.
+// Nothing but the order of these lines separates them.
+//
+// WHAT PROVES THE ORDER SAFE IS THE CHECKER, NOT THIS COMMENT.
+//   node tools/css-order-check.mjs
+// It reads the built CSS and every rendered page, and fails on any property that two partials
+// decide by load order alone. Three places depend on this order deliberately, and each is pinned
+// WITH ITS REASON in that file's PINNED list:
+//   `top-bar` after `line-boil`                    the wordmark's colour, Rod's call (P457)
+//   `project-cards-expensive` after `merged-card`  the card hover suppressor
+//   `portal-window` after `button-kit`             the Enter button's placement overrides
+// Re-sorting these lines is allowed. A sort that flips one of those three winners fails the
+// checker, which is the whole point of it.
 //
 // `cursor-coords` is in the closure but ships JS only; there is no CSS to port.
 

@@ -232,6 +232,7 @@
      cross-origin and therefore cannot be read from script, which is why no earlier sweep of ours
      ever saw it. The rule above already paints our gold bar as the link's `border-left`, so the
      list was carrying TWO left bars in two different colours. This removes theirs and leaves ours. */
+
   /* WIDENED FROM THE ACTIVE LINK TO EVERY LINK, Rod 2026-09-01: "we already have the yellow
      and grey lines for TOC we dont need this white one ... the main issue is its inconsistent".
      tocbot draws its faint rail as a `::before` on EVERY link, and suppressing only the active
@@ -407,7 +408,6 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   position: -webkit-sticky;
   position: sticky;
   top: 0;

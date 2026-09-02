@@ -11,7 +11,12 @@
 //   focus-ring  - @layer overrides  the global :focus-visible ring (WCAG 2.4.7 / 2.4.11)
 //
 // SOURCE ORDER BETWEEN THESE THREE MEANS NOTHING and must not be read as a cascade - each sits in
-// a different layer, and layer order decides who wins, not who loaded last.
+// a different layer, and layer order decides who wins, not who loaded last. Re-measured 2026-09-02
+// and still true: foundations opens `@layer reset`, decisions `@layer prose`, focus-ring
+// `@layer overrides`. It is a narrower claim than the one that used to sit in
+// `_sass/components/_index.scss`, which said order does not matter because no two files share a
+// selector, and was wrong for the reason spelled out there. `node tools/css-order-check.mjs` is
+// what proves it now, and it also fails if any of these three ever emits a rule outside its layer.
 //
 // They are listed AFTER the old site's partials for one reason that DOES matter: the old partials
 // are UNLAYERED, and unlayered CSS beats every layer. So where these three and the old site style

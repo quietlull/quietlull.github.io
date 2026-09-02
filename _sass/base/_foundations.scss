@@ -78,6 +78,12 @@ body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none
    markup and scripts we keep, so they get three lines here instead of a framework:
      .d-none     - mermaid.js:29 hides the pre-render backup element with it
      .invisible  - the post's #toc-bar ships with it and scripts toggle it on scroll
-   Named identically on purpose: renaming would mean editing stock Chirpy scripts (D2). */
+   Named identically on purpose: renaming would mean editing stock Chirpy scripts (D2).
+   THEY SIT OUTSIDE EVERY LAYER DELIBERATELY, which the load-order checker flags unless it is
+   said out loud here. Unlayered CSS beats every layer, and that is exactly what a hiding
+   utility needs: `.d-none` must win over whatever a component says about display, or the
+   thing it is meant to hide stays visible. `.d-none` carries !important for the same reason.
+   This is the ONE place in the codebase where beating the layers is the intent. */
 .d-none { display: none !important; }
+
 .invisible { visibility: hidden; }
