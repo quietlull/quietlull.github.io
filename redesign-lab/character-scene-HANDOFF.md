@@ -119,6 +119,11 @@ to his WIP water look). Same `class MirroredSurface` / constructor `(scene, came
 **Bob's cross-agent contract (this is what state 3 reads):**
 - `mirroredSurface.getActiveRipple()` -> `{ origin: THREE.Vector3 (world, on the water plane), age: seconds }`, or
   **`null`** once `age > uRippleLife` (default **4s**). `origin` = the head-look TARGET for "watch the water".
+  **AS OF 2026-09-01 THE WATER SHADER READS THIS TOO** and it is now load-bearing for rendering, not
+  just for her head: `update()` gates the ripple loop on it (`uRippleAlive`), so narrowing this
+  method's window, or making it return something always-truthy, changes what the WATER draws and
+  what it costs. Change ripple duration through `uRippleLife`, never by editing this method. Its
+  `origin` is also returned BY REFERENCE - mutating it in place corrupts every later read.
 - `mirroredSurface.spawnRipple(worldPoint)` -> seeds a ripple (16-slot pool, start = the material clock). **His module
   does NOT self-handle clicks** — the CALLER spawns (the character's pointerdown in the test, or the live scene's click).
 

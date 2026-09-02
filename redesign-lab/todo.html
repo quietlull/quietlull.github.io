@@ -142,6 +142,185 @@ they are there so you can see what is moving and what is not. Full history lives
       Leave them a week if you want. They cost 34MB and nothing else.</p>
   </div></div>
 
+<h2 class="sec">PERF AUDIT &middot; the three.js scene (#52, 2026-09-01)</h2>
+<p class="secnote">Profiled with hardware acceleration OFF (SwiftShader), with and without a 4x
+  CPU throttle, plus a hardware pass for reference. Milliseconds per frame, not fps. Five
+  invisible one-line fixes were applied under your "minor may land" rule and are listed first
+  so you can eyeball the diffs; everything visible or structural is a proposal in
+  <a href="/redesign-lab/perf-diffs/00-README.md">redesign-lab/perf-diffs/</a> and waits on you.</p>
+
+  <div class="row"><input type="checkbox" data-key="perf::ripplegate-landed"><div>
+    <p class="id">SHIPPED: the water's ripple loop is gated - one look needed</p>
+    <p class="said">"sure I approve this change"</p>
+    <p class="did">Applied to the live shader, lint clean, bundles rebuilt, and re-measured on the
+      BUILT code rather than the patch: the dock view gains <b>3.8 ms</b> per frame at full speed,
+      where the typical frame goes back to 16.7 ms (60 fps from 30), and <b>2.6 ms</b> on the
+      4x-throttled weak-machine proxy, where it saves real time but does not cross the 60 fps line.
+      <b>I overstated the first report and am correcting it:</b> I said "back to 60 fps" off a run
+      that flipped at 4x too, and that flip does not reproduce on the shipped build. Verified
+      before shipping: with no ripple alive the old loop returned exactly zero three times over, so
+      the skip is bit-identical, not just close; a ripple's last frame can land one frame earlier
+      at 9% amplitude on about half of clicks, and it was always a hard cut anyway. Three agents
+      tried to break it and could not. <b>The only thing nobody has checked is the obvious one:
+      click the water on About and confirm a ripple still spreads.</b> That is your five seconds.</p>
+    <p class="look"><a href="http://localhost:4000/tech-art/about/">localhost:4000/tech-art/about/</a> - scroll to the dock, click the water</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::measured"><div>
+    <p class="id">the proposals were A/B-measured for real - what actually moves the needle</p>
+    <p class="said">"can you do agents to see how big of a change these changes would actually be on performance"</p>
+    <p class="did">Each option was applied AT RUNTIME to the live page (exact same shader code as
+      the diffs, injected over CDP - no repo files touched) and measured against a same-load
+      baseline under software rendering, at 1x and with a 4x CPU throttle. The decisive result:
+      the RIPPLE GATE alone is most of the whole win (+2.6 to +4.9 ms depending on the run; it
+      returns the dock to a 60 fps typical frame at full speed but NOT on the throttled proxy -
+      see the corrected row above, which supersedes this line). Burst frame-drops are
+      killed by EITHER shells-out-of-reflection OR trail 10 to 5 (p95 33.3 to 16.8 both; trail 7
+      does NOT clear it). Cheap-bleed is the best bloom cut (+1.25 throttled). Two honest
+      negatives: the far-water octave drop measured nothing, and the weak-machine preset AS
+      FIRST SPECCED measured nothing at the dock (its buffer shrinks miss the real costs) - the
+      preset doc now carries the revised, measured recipe. Whole recommended stack: +5.6 ms
+      throttled, typical dock frame back at 16.7. Measured blocks are at the top of each
+      perf-diffs doc.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/00-README.md">perf-diffs/00-README.md</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::verdict"><div>
+    <p class="id">the headline: the scene now holds 60 fps without a GPU, except fireworks</p>
+    <p class="said">"profile every detail and report back to me the per frame costs"</p>
+    <p class="did">On this machine under software rendering the About page holds ~16.7 ms/frame
+      (avg 17.2, min 16.5, max 50). The old "bloom is half the frame" world is gone - your
+      dpr 0.5 / bloom 0.25 / reflection 0.25 calls bought it. What still hurts: firework bursts
+      spike frames to 33-50 ms every time (worse on a throttled CPU: portal hit 99.9 ms), the
+      reflection cost ~5.8 ms of headroom, the paper ~2.6 ms. No memory leaks found - heap flat,
+      geometry/texture/program counts return to baseline after shells die. Full numbers in the
+      chat report and docs/REQUESTS.md #52.</p>
+    <p class="look"><a href="/tech-art/about/">/tech-art/about/</a> - and the raw JSON lives in the session scratchpad</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::applied"><div>
+    <p class="id">five one-line fixes I applied - eyeball the diffs</p>
+    <p class="said">"if they are minor single line changes you may just change them"</p>
+    <p class="did">All invisible on screen, all in the working tree for your manual review:
+      (1) the hidden reflection no longer renders on minimal-tier pages - mirroredSurface.js
+      skips the second full-scene render while the water's material is invisible, this was the
+      single biggest silent waste on portal/projects/ramblings; (2) the 404 no longer polls a
+      scene that can never satisfy it for 10 s - scene-mode.js skips the embers tier, measured
+      at 30 fps for its first ten seconds on a throttled CPU before the fix; (3) fireworks-toggle
+      no longer allocates a media query on every scroll tick; (4) the firework fade no longer
+      writes a material opacity the shader never reads, and the shrink now reads
+      config.particleSize instead of a hardcoded 20; (5) the D-key debug listener only registers
+      when CONFIG.debugEnabled is true - typing "d" in any text field used to flip on the debug
+      rings. Bundles rebuilt.</p>
+    <p class="look">git diff on _javascript/ + assets/js/effects/scene-mode.js</p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::onebundle"><div>
+    <p class="id">decision: one bundle, honest tiers (the 843 KB-everywhere problem)</p>
+    <p class="did">Eight page types on the "minimal" tier still download the full About bundle
+      plus three FBX files and a 259 KB water texture, and run fireworks your P72 tier
+      definition never gave them. The proposal folds both bundles into one with a tier branch,
+      per your own "STILL A DEMO" note in scene-mode.js. Visible change on those pages:
+      fireworks disappear (conflict: the greeting is also your "permanent top-of-page greeting" -
+      your word needed). Lanterns, embers, bloom stay.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/01-one-bundle-honest-tiers.md">perf-diffs/01</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::waterclock"><div>
+    <p class="id">decision: the water animates per frame, everything else per second</p>
+    <p class="did">The loop hands every updatable a time delta; the water wrapper drops it, so
+      on a 30 fps machine waves and click-ripples run at half speed and on a 120 Hz screen at
+      double. One-token fix, but it changes the wave speed you tuned by eye, so you look once
+      after it lands. Two coded options in the doc, recommendation: pass the delta through.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/02-correctness-trio.md">perf-diffs/02 (fault 1)</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::fwspikes"><div>
+    <p class="id">decision: fireworks are the one thing that still drops frames</p>
+    <p class="did">Every burst is 400 particles times 10 trail copies, drawn twice while the
+      reflection runs. Three independent levers: keep shells out of the water reflection
+      (recommended, near-invisible), trail 10 to 5 (streaks thin slightly), cap simultaneous
+      shells 50 to 12 (only click-spam notices). Your eye picks which.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/03-fireworks-spike-diet.md">perf-diffs/03</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::ripplegate"><div>
+    <p class="id">decision: the water pays for 16 click-ripples even when nobody clicked</p>
+    <p class="did">Three stacking cuts for the 30 fps dock view, each with the code written:
+      skip the ripple loop while no ripple is alive (zero pixel change, ~a quarter of the water
+      shader), a 3-tap slope estimate instead of 4 (one look-check for a diagonal smear in the
+      crest light), and dropping the fine chop octave on far water only (reuses the existing
+      distance falloff). Savings are itemised against the measured 4.1 / 10.8 ms water bill.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/04-water-fragment-cuts.md">perf-diffs/04</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::deadcode"><div>
+    <p class="id">decision: the dead-code batch (includes a 259 KB texture fetched and never used)</p>
+    <p class="did">Verified-unreachable code grouped for your hand review: the three dead lantern
+      gradient uniforms plumbed through five files, the water shader's dead A/B paths - which
+      means DUV.png downloads on every scene page and is never sampled - dead exports
+      (spawnProceduralLanterns, PRESETS, the whole performance-monitor.js file), firework
+      leftovers. Two groups held for your call: the debug rings (the Sarah radii re-tune may
+      still want them) and the console tuning globals.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/05-dead-code-batch.md">perf-diffs/05</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::phantomcursor"><div>
+    <p class="id">decision: lanterns dodge a phantom cursor after the mouse leaves the window</p>
+    <p class="did">The mouse-left-the-window listener never fires (wrong event target), so the
+      lanterns hold their dodge toward wherever the cursor last was, forever. One-line fix, but
+      lanterns would visibly ease home at the window edge, so it waits on you. Two coded options;
+      the recommended one also releases the field after a touch tap.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/02-correctness-trio.md">perf-diffs/02 (fault 2)</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::embermap"><div>
+    <p class="id">decision: ember pages scroll at the wrong rate after a phone rotate</p>
+    <p class="did">The scroll-to-camera mapping is captured once at load and the fix-up function
+      is never called. Pick: delete the dead function (honest), or wire it into the existing
+      resize hook with zero new lines (fixes rotate). The wiring option needs one reorder in the
+      shared resize handler or it re-reads a stale camera; the doc has both diffs.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/02-correctness-trio.md">perf-diffs/02 (fault 3)</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::adaptive"><div>
+    <p class="id">decision: a weak-machine preset + the missing reduced-motion path</p>
+    <p class="did">The scene ships identical work to a gaming GPU and a software rasteriser -
+      there is no degrade path anywhere. Three coded options: a boot-time check of the
+      renderer's own name that shrinks the two off-screen buffers, drops the paper's second
+      sheet and shortens firework trails ONLY on software-rendered machines (invisible to
+      everyone with a GPU, ~7 ms back at the dock view); a measured auto-degrade held in the
+      drawer (most code, nondeterministic, flagged against D5); and the reduced-motion path
+      D21 has required all along - grain boil, lantern float and water freeze for visitors who
+      asked the OS for stillness. Recommendation in the doc: the preset + reduced-motion
+      together, hold the auto-degrade.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/08-adaptive-quality.md">perf-diffs/08</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::bloomcomposite"><div>
+    <p class="id">decision: the bloom chain's full-screen composite is most of its cost</p>
+    <p class="did">Bloom off gains 3.2 ms (6.7 throttled) at the dock view, and nearly all of it
+      is the final full-resolution composite with its six texture reads, not the tiny blur
+      pyramid. Coded options: merge the plain copy pass into the downsample (one fewer render
+      every frame, a subtle blur-shape risk the paper grain likely masks), drop the paper's
+      second sheet (the fine tooth inside the washi fibre), and a cheaper ink-bleed tap. Bloom
+      is the lighting rig, so every option is a look-once.</p>
+    <p class="look"><a href="/redesign-lab/perf-diffs/09-bloom-composite.md">perf-diffs/09</a></p>
+  </div></div>
+
+  <div class="row"><input type="checkbox" data-key="perf::character"><div>
+    <p class="id">the character plan: what she costs, and six questions only you can answer</p>
+    <p class="said">"plan out the future where we may add the character animations and character teleport"</p>
+    <p class="did">The teleport is the dissolve cycle itself - dissolve out, move during the
+      0.8 s gap, materialize in. Plan written with a per-frame budget: she fits under ~2 ms on a
+      no-GPU machine only with reflection exclusion, an idle petal gate (zero pixels change at
+      rest), on-screen culling, a low-poly export and the mobile petal cut. Also the port traps:
+      the lab's ember tag differs from the live one, her whites were judged under a different
+      bloom, and the lab's click handlers would double-spawn ripples. Six batched questions at
+      the end of the plan.</p>
+    <p class="look"><a href="/redesign-lab/character-scene-INTEGRATION-PLAN.md">character-scene-INTEGRATION-PLAN.md</a></p>
+  </div></div>
+
 <h2 class="sec">AUDIT &middot; did the old fixes survive the merge?</h2>
 <p class="secnote">You asked whether previously fixed things still land now the site is merged. Five agents read the tracker, the decisions, the traps, every component against its ported copy, and every element styled by two files at once. <b>Seven of these I measured on the live site myself, so they are facts and not suspicions</b> - those say I MEASURED IT. The rest come from reading the code and are marked that way. One is already fixed and just needs your eye. <b>Ordered by how much it matters, not by how hard it is.</b></p>
 
