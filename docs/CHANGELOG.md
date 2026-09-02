@@ -1,3 +1,19 @@
+# 2026-09-02 - THE SCENE PERF WORK IS CLOSED, THE REMAINDER ICEBOXED
+
+**Decided by ROD**: *"cool log this for now what and leave the remaining performance boosts to
+iceboxed."* The three.js audit (#52) is finished and shipped what it was going to ship - the water
+ripple gate plus five invisible fixes. Everything else it produced is parked **with its
+measurements intact**, not abandoned and not open: seven costed proposals in
+`redesign-lab/perf-diffs/`, indexed by a single ICEBOX row in `redesign-lab/todo.html` that
+replaced the eight rows previously asking him to choose.
+
+Left on the table, in the order I would take them back up: the fireworks levers (either
+shells-out-of-reflection or trail 10->5 kills the burst frame-drop by itself), the honest tiers,
+the dead-code batch including a 259 KB texture fetched and never sampled, the bloom composite cuts,
+a weak-machine preset plus the reduced-motion path D21 still requires, and three correctness faults.
+The character integration plan parks with them. **Two options are recorded as measured duds so they
+are not re-proposed:** the far-water octave cut and the buffer-shrink preset both bought nothing.
+
 # 2026-09-01, later - THE WATER RIPPLE LOOP IS GATED (Rod approved)
 
 **Decided by ROD** ("sure I approve this change"), from perf-diffs/04 Option A.

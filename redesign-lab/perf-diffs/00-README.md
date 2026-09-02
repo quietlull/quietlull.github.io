@@ -1,7 +1,14 @@
-# Perf audit proposals (request #52, 2026-09-01)
+# Perf audit proposals (request #52, 2026-09-01) - ICEBOXED 2026-09-02
+
+**ICEBOX. Nothing in this folder is open work.** Rod, 2026-09-02: *"leave the remaining
+performance boosts to iceboxed."* One proposal shipped (04 Option A, the water ripple gate);
+everything else is parked with its measurements intact so it can be picked up cold. **Do not
+re-raise these as findings or re-run the audit** - the numbers below were measured on the real
+site and the code is written. If Rod reopens it, the fireworks levers (03) are the biggest
+remaining win and the cheapest to land.
 
 Each file is one problem the audit measured, with 2-3 coded solution options for Rod to pick
-from. Nothing here is applied. The five minor fixes that WERE applied (his "minor single line
+from. Nothing here is applied except 04 Option A. The five minor fixes that WERE applied (his "minor single line
 changes you may just change them" rule) are listed in the todo board's PERF AUDIT section and
 in `docs/REQUESTS.md` #52.
 
