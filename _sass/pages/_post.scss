@@ -261,10 +261,23 @@
 
   }
 
-  // 1200px is `toc.js`'s own switch: below it tocbot fills the popup instead, so the rail would
-  // hold an empty Contents box. The component hides `.toc--v3` at 1152px, which is a third number
-  // for the same decision - flagged, not silently equalised.
-  @media (max-width: 1199px) {
+  // 1200px is the ONE switch for the narrow-viewport contents list, and this is its CSS half.
+  // `_javascript/modules/components/toc.js:4` runs `matchMedia('(min-width: 1200px)')` to pick
+  // which tocbot instance gets built; below that it fills the popup and never `#toc`, so the
+  // rail would hold an empty Contents box. This hides the whole block, label included.
+  // THE THIRD NUMBER IS GONE, 2026-09-02. components/_toc-real.scss used to hide `.toc--v3` at
+  // 72rem (1152px); it now states no breakpoint at all, by its own header note at its line 11,
+  // so nothing but 1200px is left in play. The earlier version of this comment flagged that
+  // third number as unresolved and is simply out of date.
+  // 1199.98px, NOT 1199px, and the 0.02 is load-bearing. `bp.xl` is `min-width: 1200px`
+  // (abstracts/_breakpoints.scss:10), and `#toc-bar` and `#toc-solo-trigger` hide inside it. At
+  // a fractional viewport width like 1199.5px the old `max-width: 1199px` did not match and
+  // `bp.xl` did not either, so the rail and the mobile bar both drew at once. The 0.02px step
+  // is the Bootstrap convention for butting a max-width against a min-width and it covers
+  // every fractional width a browser actually reports. It is NOT a mathematical complement:
+  // a hypothetical 1199.99px still matches neither query. If that sliver ever turns out to be
+  // real, the exact form is `@media not all and (min-width: 1200px)`.
+  @media (max-width: 1199.98px) {
     #toc-wrapper { display: none; }
   }
 
