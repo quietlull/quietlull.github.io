@@ -1,8 +1,43 @@
 // ============================================================================
+// OWNERSHIP: this file is OURS. The filename is Chirpy's, the contents are not.
+// ============================================================================
+// Measured 2026-09-02 against pristine Chirpy 7.3.1 (`_sass/abstracts/_variables.scss`, 30 lines,
+// 19 variables). This file declares 123. Thirteen of them still carry upstream's exact value:
+//   $back2top-size $code-dot-gap $code-dot-size $code-font-size $code-header-height
+//   $code-icon-width $footer-height $footer-height-large $radius-lg $radius-sm $sb-btn-gap
+//   $sb-btn-gap-lg $search-max-width
+// So 110 of 123, or 89 percent, are ours. Upstream's version of this file is superseded wholesale.
+//
+// THE PART THAT MATTERS MORE THAN THE PERCENTAGE. Only 15 of the 123 are read anywhere in `_sass/`
+// at all, and 2 of those 15 are read only by other variables in this same file. Of the 13 that any
+// other partial actually reads, EVERY ONE is a name Chirpy invented:
+//   $back2top-size, the five $code-*, $footer-height, $footer-height-large,
+//   $main-content-max-width, $radius-lg, $radius-sm, $sidebar-width, $sidebar-width-large.
+// Everything we added here - the spacing scale, the font ladder, the z-index ladder, the container
+// widths, the aspect ratios, the $lantern-* palette, the glow intensities - is read by nothing.
+// The redesign moved all of it to CSS custom properties in `abstracts/_tokens.scss`. So this file
+// is 89 percent our names and 0 percent our vocabulary in the built sheet. Deleting the 110 unread
+// ones is a separate, larger call than tonight's pass and is NOT done here.
+//
+// WHAT AN UPGRADE HAS TO RE-CHECK. Four names we kept but re-pointed, three of them live:
+//   $main-content-max-width  1250px -> 1400px   read at components/_buttons.scss:32
+//   $sidebar-width           260px  -> 0px      read at components/_buttons.scss:27
+//   $sidebar-width-large     300px  -> 0px      read at components/_buttons.scss:32
+//   $topbar-height           3rem   -> 260px    read by NOTHING, and a landmine: 260px is
+//     upstream's $sidebar-width, so the value looks like a paste that lost its name. Chirpy sizes
+//     `#toc-bar` from $topbar-height, which is why pages/_post.scss had to declare its own local
+//     $toc-bar-height: 3rem rather than read this one. If an upgrade reintroduces a partial that
+//     reads $topbar-height, it gets a 260px navigation bar with no error.
+// Two upstream names we dropped: $font-family-base and $font-family-heading. Type now comes from
+// the --font-body and --font-display custom properties, so a re-added Chirpy partial that reads
+// either variable will fail to compile, which is the good failure. Take theirs on those two only.
+//
+// ============================================================================
 // VARIABLES - Static SCSS Variables
 // ============================================================================
-// Static values that don't change between themes
-// For theme-specific values, see themes/_dark.scss and themes/_light.scss
+// Static values that don't change between themes.
+// Theme-specific values live in themes/_dark.scss, which is the only theme: _light.scss was
+// deleted in the merge and base/_base.scss:12 includes the dark mixin unconditionally.
 
 @use 'sass:math';
 
@@ -95,6 +130,9 @@ $btn-mb: 0.5rem !default;
 // ============================================================================
 // TOPBAR - Navigation dimensions
 // ============================================================================
+// READ BY NOTHING (measured 2026-09-02). Upstream's $topbar-height is 3rem and Chirpy sizes
+// `#toc-bar` from it; 260px is upstream's $sidebar-width. See the landmine note in the banner
+// at the top of this file before giving either of these a consumer.
 
 $topbar-height: 260px !default;
 $topbar-height-large: 300px !default;
@@ -164,8 +202,9 @@ $line-height-loose: 2 !default;
 // ============================================================================
 // LANTERN COLORS - Static color references
 // ============================================================================
-// Note: These are SCSS variables for calculations/functions
-// For actual theming, use CSS custom properties from themes/_dark.scss or _light.scss
+// Note: These are SCSS variables for calculations/functions.
+// For actual theming, use the CSS custom properties in abstracts/_tokens.scss.
+// MEASURED 2026-09-02: nothing reads any of the 17 names below.
 
 $lantern-amber-50: #fffbeb !default;
 $lantern-amber-100: #fef3c7 !default;
