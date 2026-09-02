@@ -16,6 +16,11 @@
   it in the workbench so we can get it right across the site." Do not inline a variant of this
   in a layout; change it here.
 
+  NO "Built by hand" END SLOT. Rod removed it 2026-09-02. It was the only `.footer-line__end`
+  on the site, so its two CSS rules went with it; nothing else moves, because a `margin-left:auto`
+  item pulls only itself. It was also the last of the four sub-4.5:1 contrast failures listed in
+  docs/AUDIT-A11Y.md, at 3.76:1 on eight pages, so that row is closed by deletion rather than a fix.
+
   It REPLACES `_includes/footer.html` (the copyright line), which is left on disk untouched.
   THE COPYRIGHT NOTICE IS GONE WITH IT and that is a real loss, not a tidy-up - it was
   `© <year> <name>` plus the locale copyright tooltip. The lab footer has no slot for it and
@@ -61,7 +66,5 @@
       <a class="footer-line__item" href="{{ about_url | relative_url }}">About</a>
     {% endif %}
     <a class="footer-line__item" href="{{ '/ramblings/' | relative_url }}">Ramblings</a>
-
-    <span class="footer-line__item footer-line__end">Built by hand</span>
   </footer>
 </div>

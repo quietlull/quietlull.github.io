@@ -78,13 +78,4 @@
 .footer-line a:focus-visible {
   color: var(--color-glow-soft, #ffd9a8);
 }
-
-/* Pushed to the far end rather than given its own row, so the line stays one line. */
-.footer-line__end {
-  margin-left: auto;
-}
-
-.footer-line__end::before {
-  content: none;
-}
 }
