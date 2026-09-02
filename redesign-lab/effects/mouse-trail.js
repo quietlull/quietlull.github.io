@@ -1,3 +1,20 @@
+/* WORKBENCH COPY, NOT THE SHIPPING FILE.
+   The shipping version of this module is:
+       _javascript/modules/components/mouse-trail.js
+   It has ALREADY DRIFTED from that file, so they are two different programs now.
+
+   READ THIS BEFORE COPYING ANYTHING OUT OF HERE. The live tree is authoritative: it has
+   received fixes this copy never saw, and a performance pass edits it independently. Porting
+   from the lab to the site has already shipped stale code once, which is why this header
+   exists rather than the file simply being deleted.
+
+   IT IS KEPT ON PURPOSE, not by neglect. Checked 2026-09-02: every file under
+   redesign-lab/scene/ and redesign-lab/effects/ is imported by something here. This one is
+   reachable from the lab pages, and deleting it would break them. The scene files serve the
+   character-scene track; the effects files serve the six final-*.html reference pages and
+   the tuners Rod works from.
+
+   Fixing a bug? Fix it in the shipping file. Change this one only when the LAB PAGE needs it. */
 /* LAB COPY - taken verbatim from _javascript/modules/components/mouse-trail.js on 2026-08-22.
    WHY A COPY: D22 makes `_javascript/` off limits, and the handoff's rule is "if a lab page needs
    something from the live site, COPY IT INTO THE LAB; never edit the original."
