@@ -141,9 +141,11 @@ layout: compress
       `commons.min.js` reads it with no null guard, and it throws before `initMouseTrail()` runs, so
       a page without it loses the sparkler too. It is `position: fixed` and hidden until you scroll,
       so it costs the portal nothing. Moved out of `#main-wrapper` so there is one copy.
+
+      `btn-lg` was a dead Bootstrap class (D48) - matched no CSS - and has been removed.
     {% endcomment %}
     <aside aria-label="Scroll to Top">
-      <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow" aria-label="Scroll to top">
+      <button id="back-to-top" type="button" class="btn btn-box-shadow" aria-label="Scroll to top">
         <i class="fas fa-angle-up"></i>
       </button>
     </aside>

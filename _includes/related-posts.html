@@ -107,7 +107,8 @@
             <div class="card-body">
               {% include datetime.html date=post.date lang=include.lang %}
               <h4 class="pt-0 my-2">{{ post.title }}</h4>
-              <div class="text-muted">
+              {% comment %} text-muted was a dead Bootstrap class (D48), matched no CSS. {% endcomment %}
+              <div>
                 <p>{% include post-description.html %}</p>
               </div>
             </div>

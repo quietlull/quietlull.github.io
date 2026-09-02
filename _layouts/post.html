@@ -155,22 +155,28 @@ refactor: true
     The rail component was ported with a Starlight `.toc-pop` popup as well, at 1152px. No markup
     for it was ever written, so it never rendered and this bar was always what appeared; the dead
     CSS and its second breakpoint are both gone.
+
+    The Bootstrap utility classes below (d-flex, flex-row, align-items-center,
+    justify-content-between, text-truncate, me-1, btn-outline-secondary, ps-2, pe-1, p-0, py-2,
+    ms-4, my-1, opacity-75, px-4, py-3, pb-4) are gone (D48): they matched no CSS. The flex/spacing
+    layout they used to supply for #toc-bar and .header now lives in
+    _sass/components/_popups.scss:99 and _sass/pages/_post.scss:407.
   {% endcomment %}
-  <div id="toc-bar" class="d-flex align-items-center justify-content-between invisible">
-    <span class="label text-truncate">{{ page.title }}</span>
-    <button type="button" class="toc-trigger btn me-1"><i class="fa-solid fa-list-ul fa-fw"></i></button>
+  <div id="toc-bar" class="invisible">
+    <span class="label">{{ page.title }}</span>
+    <button type="button" class="toc-trigger btn"><i class="fa-solid fa-list-ul fa-fw"></i></button>
   </div>
 
-  <button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm">
-    <span class="label ps-2 pe-1">{{- site.data.locales[lang].panel.toc -}}</span>
+  <button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-sm">
+    <span class="label">{{- site.data.locales[lang].panel.toc -}}</span>
     <i class="fa-solid fa-angle-right fa-fw"></i>
   </button>
 
-  <dialog id="toc-popup" class="p-0">
-    <div class="header d-flex flex-row align-items-center justify-content-between">
-      <div class="label text-truncate py-2 ms-4">{{- page.title -}}</div>
-      <button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75"><i class="fas fa-close"></i></button>
+  <dialog id="toc-popup">
+    <div class="header">
+      <div class="label">{{- page.title -}}</div>
+      <button id="toc-popup-close" type="button" class="btn mx-1"><i class="fas fa-close"></i></button>
     </div>
-    <div id="toc-popup-content" class="px-4 py-3 pb-4"></div>
+    <div id="toc-popup-content"></div>
   </dialog>
 {% endif %}

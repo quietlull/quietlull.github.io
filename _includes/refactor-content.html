@@ -223,6 +223,8 @@
 {% endif %}
 
 <!-- Create heading anchors -->
+<!-- `text-muted` on the anchor and `me-2` on the span below were dead Bootstrap classes (D48),
+     matched no CSS, and have been removed. `anchor` itself is still styled. -->
 
 {% assign heading_levels = '2,3,4,5' | split: ',' %}
 {% assign _heading_content = _content %}
@@ -244,12 +246,12 @@
       {% assign id = snippet | split: '"' | first %}
       {% assign anchor = '<a href="#'
         | append: id
-        | append: '" class="anchor text-muted"><i class="fas fa-hashtag"></i></a>'
+        | append: '" class="anchor"><i class="fas fa-hashtag"></i></a>'
       %}
 
       {% assign left = snippet | split: mark_end | first %}
       {% assign right = snippet | slice: left.size, snippet.size %}
-      {% assign left = left | replace_first: '">', '"><span class="me-2">' | append: '</span>' %}
+      {% assign left = left | replace_first: '">', '"><span>' | append: '</span>' %}
 
       {% assign _new_content = _new_content | append: mark_start | append: left | append: anchor | append: right %}
     {% endfor %}

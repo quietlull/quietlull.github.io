@@ -328,21 +328,16 @@ h1.dynamic-title {
   box-shadow: var(--card-shadow);
 }
 
-/* Feed Bootstrap our colour instead of fighting it. Its .text-muted is
-   `color: var(--bs-secondary-color) !important`, and since Bootstrap moved into a layer, important
-   declarations invert layer order and its !important now beats ours. Setting the variable it reads
-   wins without a specificity war, and it fixes every other Bootstrap utility that reads the same
-   name. Measured before: post descriptions at 1.16:1 against a 4.5 bar. */
-:root {
-  --bs-secondary-color: var(--text-muted-color);
-}
+/* --bs-secondary-color and .tooltip-inner removed - D48 deleted Bootstrap's own SCSS entirely,
+   so neither Bootstrap's `.text-muted` rule nor its `.tooltip` markup exist anywhere in the
+   compiled output any more for these to feed or override. `.text-muted` is still used as an
+   HTML class in a few includes but currently renders with no colour override at all (checked:
+   no `.text-muted` rule exists anywhere in _sass) - that is a separate pre-existing gap, not
+   something this deletion introduces, and out of scope for a tooltip removal.
 
-/* Overwrite bootstrap tooltip */
-.tooltip-inner {
-  font-size: 0.7rem;
-  max-width: 220px;
-  text-align: left;
-}
+   .btn.btn-outline-primary below is KEPT, unlike its two neighbours above - it is not dead.
+   post-nav.html's "Back to all X projects" button still carries this exact class combo, and
+   _a11y.scss (touch target) and _animations.scss (reduced-motion list) both still target it. */
 
 /* Overwrite bootstrap outline button — amber theme */
 .btn.btn-outline-primary {

@@ -6,15 +6,17 @@
 {% assign df_strftime = site.data.locales[include.lang].df.post.strftime | default: '%d/%m/%Y' %}
 {% assign df_dayjs = site.data.locales[include.lang].df.post.dayjs | default: 'DD/MM/YYYY' %}
 
+<!--
+  include.tooltip removed - it only added Bootstrap's tooltip-trigger attributes, and Bootstrap
+  is gone (D48). No caller was passing tooltip=true anyway (only caller is related-posts.html,
+  without the param), so nothing here changed what ships.
+-->
 <time
   {% if include.class %}
     class="{{ include.class }}"
   {% endif %}
   data-ts="{{ include.date | date: '%s' }}"
   data-df="{{ df_dayjs }}"
-  {% if include.tooltip %}
-    data-bs-toggle="tooltip" data-bs-placement="bottom"
-  {% endif %}
 >
   {{ include.date | date: df_strftime }}
 </time>

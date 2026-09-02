@@ -1,44 +1,46 @@
 <!-- Navigation buttons at the bottom of the post. -->
+<!-- Bootstrap spacing utility classes (me-1, ms-1, text-muted, text-center, mt-4) removed
+     below - D48 deleted Bootstrap and they matched no CSS rule. -->
 
 <nav class="post-navigation" aria-label="Post Navigation">
   <div class="post-nav-grid">
     {% if page.previous.url %}
       <a href="{{ site.baseurl }}{{ page.previous.url }}" class="post-nav-card post-nav-prev">
         <span class="post-nav-label">
-          <i class="fas fa-arrow-left me-1"></i> Previous
+          <i class="fas fa-arrow-left"></i> Previous
         </span>
         <span class="post-nav-title">{{ page.previous.title }}</span>
       </a>
     {% else %}
       <div class="post-nav-card post-nav-prev disabled">
         <span class="post-nav-label">
-          <i class="fas fa-arrow-left me-1"></i> Previous
+          <i class="fas fa-arrow-left"></i> Previous
         </span>
-        <span class="post-nav-title text-muted">No previous post</span>
+        <span class="post-nav-title">No previous post</span>
       </div>
     {% endif %}
 
     {% if page.next.url %}
       <a href="{{ site.baseurl }}{{ page.next.url }}" class="post-nav-card post-nav-next">
         <span class="post-nav-label">
-          Next <i class="fas fa-arrow-right ms-1"></i>
+          Next <i class="fas fa-arrow-right"></i>
         </span>
         <span class="post-nav-title">{{ page.next.title }}</span>
       </a>
     {% else %}
       <div class="post-nav-card post-nav-next disabled">
         <span class="post-nav-label">
-          Next <i class="fas fa-arrow-right ms-1"></i>
+          Next <i class="fas fa-arrow-right"></i>
         </span>
-        <span class="post-nav-title text-muted">No next post</span>
+        <span class="post-nav-title">No next post</span>
       </div>
     {% endif %}
   </div>
 
   {% if page.section %}
-    <div class="post-nav-back text-center mt-4">
+    <div class="post-nav-back">
       <a href="{{ '/' | append: page.section | append: '/projects/' | relative_url }}" class="btn btn-outline-primary btn-sm">
-        <i class="fas fa-th-large me-1"></i> Back to all {{ page.section | replace: '-', ' ' | capitalize }} projects
+        <i class="fas fa-th-large"></i> Back to all {{ page.section | replace: '-', ' ' | capitalize }} projects
       </a>
     </div>
   {% endif %}

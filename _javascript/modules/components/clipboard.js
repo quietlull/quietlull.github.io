@@ -5,7 +5,9 @@
  *    clipboard.js (https://github.com/zenorocha/clipboard.js)
  */
 
-import Tooltip from 'bootstrap/js/src/tooltip';
+// Tooltip import removed - it only drove the "Copied!" bubble, and Bootstrap is gone (D48).
+// The icon swap below (ICON_DEFAULT <-> ICON_SUCCESS) is the copy button's own feedback and
+// did not depend on the tooltip; it still runs unchanged.
 
 const clipboardSelector = '.code-header>button';
 
@@ -13,8 +15,6 @@ const ICON_DEFAULT = 'far fa-clipboard';
 const ICON_SUCCESS = 'fas fa-check';
 
 const ATTR_TIMEOUT = 'timeout';
-const ATTR_TITLE_SUCCEED = 'data-title-succeed';
-const ATTR_TITLE_ORIGIN = 'data-bs-original-title';
 const TIMEOUT = 2000; // in milliseconds
 
 function isLocked(node) {
@@ -34,17 +34,6 @@ function lock(node) {
 
 function unlock(node) {
   node.removeAttribute(ATTR_TIMEOUT);
-}
-
-function showTooltip(btn) {
-  const succeedTitle = btn.getAttribute(ATTR_TITLE_SUCCEED);
-  btn.setAttribute(ATTR_TITLE_ORIGIN, succeedTitle);
-  Tooltip.getInstance(btn).show();
-}
-
-function hideTooltip(btn) {
-  Tooltip.getInstance(btn).hide();
-  btn.removeAttribute(ATTR_TITLE_ORIGIN);
 }
 
 function setSuccessIcon(btn) {
@@ -72,13 +61,6 @@ function setCodeClipboard() {
     }
   });
 
-  [...clipboardList].map(
-    (elem) =>
-      new Tooltip(elem, {
-        placement: 'left'
-      })
-  );
-
   clipboard.on('success', (e) => {
     const trigger = e.trigger;
 
@@ -89,7 +71,6 @@ function setCodeClipboard() {
     }
 
     setSuccessIcon(trigger);
-    showTooltip(trigger);
     lock(trigger);
     // OURS: achievement hook + sparkler burst on a successful copy (re-apply on Chirpy upgrade)
     document.dispatchEvent(new Event('achievement:codecopy'));
@@ -100,7 +81,6 @@ function setCodeClipboard() {
     }
 
     setTimeout(() => {
-      hideTooltip(trigger);
       resumeIcon(trigger);
       unlock(trigger);
     }, TIMEOUT);
@@ -114,6 +94,10 @@ function setLinkClipboard() {
     return;
   }
 
+  // NOTE: this button's "Copied!" feedback was 100% the tooltip title swap below - unlike the
+  // code-copy button above, it has no icon swap or other visual of its own. Removing the
+  // tooltip leaves the copy working but silent (no confirmation shown at all). That is a real
+  // UX loss, not a like-for-like removal - flagging for Rod rather than inventing a new visual.
   btnCopyLink.addEventListener('click', (e) => {
     const target = e.target;
 
@@ -123,24 +107,12 @@ function setLinkClipboard() {
 
     // Copy URL to clipboard
     navigator.clipboard.writeText(window.location.href).then(() => {
-      const defaultTitle = target.getAttribute(ATTR_TITLE_ORIGIN);
-      const succeedTitle = target.getAttribute(ATTR_TITLE_SUCCEED);
-
-      // Switch tooltip title
-      target.setAttribute(ATTR_TITLE_ORIGIN, succeedTitle);
-      Tooltip.getInstance(target).show();
-
       lock(target);
 
       setTimeout(() => {
-        target.setAttribute(ATTR_TITLE_ORIGIN, defaultTitle);
         unlock(target);
       }, TIMEOUT);
     });
-  });
-
-  btnCopyLink.addEventListener('mouseleave', (e) => {
-    Tooltip.getInstance(e.target).hide();
   });
 }
 

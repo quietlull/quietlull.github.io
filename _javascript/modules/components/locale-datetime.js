@@ -39,15 +39,8 @@ export function initLocaleDatetime() {
       elem.textContent = text;
       elem.removeAttribute(LocaleHelper.attrTimestamp);
       elem.removeAttribute(LocaleHelper.attrDateFormat);
-
-      // setup tooltips
-      if (
-        elem.hasAttribute('data-bs-toggle') &&
-        elem.getAttribute('data-bs-toggle') === 'tooltip'
-      ) {
-        // see: https://day.js.org/docs/en/display/format#list-of-localized-formats
-        const tooltipText = date.format('llll');
-        elem.setAttribute('data-bs-title', tooltipText);
-      }
+      // Tooltip branch removed here (used to set data-bs-title for Bootstrap's tooltip).
+      // Bootstrap is gone (D48); its only caller (datetime.html) never actually passed
+      // tooltip=true, so this never rendered anything on the live site either.
     });
 }

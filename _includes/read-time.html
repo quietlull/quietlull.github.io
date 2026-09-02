@@ -18,10 +18,10 @@
 {% endcapture %}
 
 <!-- return element -->
+<!-- Bootstrap's tooltip-trigger attributes removed here - Bootstrap is gone (D48). The title=
+     below already carries the word count as a native browser tooltip, so nothing is lost. -->
 <span
   class="readtime"
-  data-bs-toggle="tooltip"
-  data-bs-placement="bottom"
   title="{{ words }} {{ site.data.locales[include.lang].post.words }}"
 >
   <em>
