@@ -103,6 +103,7 @@ export class MirroredSurface {
   uniform float uSunDiffuse, uSunLift; uniform vec3 uSunDir2, uSunColor2;   // (3) FAKE directional light -> broad wave shading (darken-biased)
   uniform vec2 uRippleOrigin[16]; uniform float uRippleStart[16];   // (6) click ripples: world xz + spawn time per slot
   uniform float uRippleSpeed, uRippleFreq, uRippleWidth, uRippleDecay, uRippleLife, uRippleAmp, uRippleSlope;
+  uniform float uRippleAlive;   // 0 = every slot expired; the loop sums to exactly 0.0 then, so skip it
   varying vec2 vUv;
   varying vec4 vWorldPosition;
   varying vec3 vNormal;
@@ -185,6 +186,9 @@ export class MirroredSurface {
   // ldBXDD core cos((d - front)*freq) [front = age*speed] x gaussian ring around the front x time-decay. Source:
   // sources/water-ripple-formula.md (Godot/Shadertoy ldBXDD + annulus + decay). Applied like the ambient distortion.
   vec2 rippleOffset(vec2 worldXZ) {
+    /* The per-slot gate below is branchless, which is right when a condition varies per pixel and
+       wrong here: the slot times are uniforms, so the answer is the same for every pixel. */
+    if (uRippleAlive < 0.5) return vec2(0.0);
     vec2 acc = vec2(0.0);
     for (int i = 0; i < 16; i++) {
       float age = uTime - uRippleStart[i];
@@ -279,7 +283,8 @@ export class MirroredSurface {
         uRippleOrigin: { value: Array.from({ length: 16 }, () => new THREE.Vector2()) },
         uRippleStart: { value: new Array(16).fill(-1000.0) },   // far-past = inactive
         uRippleSpeed: { value: 80.0 }, uRippleFreq: { value: 0.2 }, uRippleWidth: { value: 30.0 },
-        uRippleDecay: { value: 0.6 }, uRippleLife: { value: 4.0 }, uRippleAmp: { value: 0.03 }, uRippleSlope: { value: 2.0 }
+        uRippleDecay: { value: 0.6 }, uRippleLife: { value: 4.0 }, uRippleAmp: { value: 0.03 }, uRippleSlope: { value: 2.0 },
+        uRippleAlive: { value: 0.0 }   // owned by update(); starts dead
       },
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
@@ -292,6 +297,9 @@ export class MirroredSurface {
   update(normalizedDelta = 1.0) {
     this.time += normalizedDelta * 0.016;
     this.material.uniforms.uTime.value = this.time;
+    /* Every ripple shares one lifetime, so the newest is the last to die. Set before the frustum
+       early-return below, so the flag cannot go stale while the water is off-screen. */
+    this.material.uniforms.uRippleAlive.value = this.getActiveRipple() ? 1.0 : 0.0;
 
     if (!this._frustum) {
       this._frustum = new THREE.Frustum();
@@ -303,6 +311,12 @@ export class MirroredSurface {
     if (!this._frustum.intersectsObject(this.mirrorPlane)) {
       return;
     }
+
+    /* When the water is hidden (scene-mode's minimal tier sets material.visible = false) nothing
+       ever samples the reflection texture, so the second full-scene render below was pure waste
+       on every minimal-tier page. Zero pixel change: this only skips while the water is already
+       invisible. */
+    if (this.mirrorPlane.material && this.mirrorPlane.material.visible === false) return;
 
     this.mirrorCamera.position.copy(this.camera.position);
     const distanceFromPlane = this.camera.position.y - this.mirrorPlaneY;
@@ -353,6 +367,8 @@ export class MirroredSurface {
 
   // Spawn a ripple at a WORLD point (Vector3). Round-robins a 16-slot pool. Start time = the material's own clock
   // (same base as the shader's uTime). getActiveRipple() drives the character's "watch the water" head-look.
+  // THE ONLY legal way to start a ripple: writing uRippleStart directly leaves uRippleAlive at 0 and the
+  // shader's early-out swallows the ripple silently. Same reason getActiveRipple() must keep its exact window.
   spawnRipple(worldPoint) {
     const U = this.material.uniforms;
     if (this._rippleHead === undefined) this._rippleHead = 0;

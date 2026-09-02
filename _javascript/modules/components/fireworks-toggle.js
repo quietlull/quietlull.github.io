@@ -17,6 +17,10 @@
 // The greeting belongs to the top of the page, so it ends on the first real scroll gesture.
 const GATE_FRACTION = 0.3;
 
+// One MediaQueryList for the page. apply() runs on every scroll event, and calling matchMedia
+// there allocated a fresh query object per scroll tick.
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
+
 export function fireworksToggle() {
   window.addEventListener('scroll', apply, { passive: true });
   whenControllerReady(apply);
@@ -27,7 +31,7 @@ function apply() {
   if (!controller) return;
 
   const atTop = window.scrollY < window.innerHeight * GATE_FRACTION;
-  const stillness = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stillness = REDUCED_MOTION.matches;
 
   controller.setGreeting(atTop && !stillness);
 }

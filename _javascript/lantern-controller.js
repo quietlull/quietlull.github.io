@@ -52,8 +52,10 @@ export class LanternController {
       this.isMouseOverCanvas = false;
     });
 
-    // Toggle debug with 'D' key
-    document.addEventListener('keydown', (event) => {
+    // Toggle debug with 'D' key. Registered only when the config asks for it: unconditional, it
+    // meant a visitor typing the letter d into any text field flipped on the debug rings, which
+    // allocate a sphere + two ring meshes per lantern per frame.
+    if (this.config.debugEnabled) document.addEventListener('keydown', (event) => {
       if (event.key === 'd' || event.key === 'D') {
         this.debugEnabled = !this.debugEnabled;
         console.log('Debug mode:', this.debugEnabled ? 'ON' : 'OFF');

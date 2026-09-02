@@ -92,8 +92,10 @@ window.__sceneTier = {
 /* `none` pages never load the bundle at all, so there is nothing to wait for and no timer to
    start. Returning here rather than letting the poll below run and time out is the difference
    between a post page doing nothing and a post page polling ten seconds for a scene that is
-   never coming. */
-if (tier !== 'none') {
+   never coming. `embers` pages (the 404) skip for the mirror reason: their bundle spawns only
+   unnamed ember meshes, so the lanterns/dock/water stop condition below can never be satisfied
+   and the poll always burned its full ten seconds (measured at 30 fps on a throttled CPU). */
+if (tier !== 'none' && tier !== 'embers') {
   /* The bundle is deferred and the FBX lands later still, so one pass at load would find an empty
      graph. Re-apply until the tier is satisfied, then stop - and cap the attempts so a page whose
      scene fails to load does not leave a timer running. */

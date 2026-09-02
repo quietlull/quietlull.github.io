@@ -458,9 +458,10 @@ export class FireworkController {
 
         firework.explosion.userData.time.value = bloomTime;
 
-        // Fade out and shrink
-        firework.explosion.material.size = 20 * (1 - bloomTime) + 5;
-        firework.explosion.material.opacity = 1 - bloomTime;
+        // Shrink over the burst. The opacity write that used to sit beside this was dead: the
+        // custom fragment shader computes its own fade from uTime and never reads the material's
+        // opacity uniform, so three uploaded it every frame for nothing.
+        firework.explosion.material.size = this.config.particleSize * (1 - bloomTime) + 5;
 
         // Remove when animation is complete
         if (bloomTime >= 1) {
