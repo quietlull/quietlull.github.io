@@ -250,6 +250,21 @@
 
   .post-foot { margin-top: 64px; }
 
+  /* THE COMMENTS. Rod 2026-09-03: "make the spacing match the center so its not like a huge bar at
+     the bottom and feels connected to the post."
+     The width fix is not here - it is that the widget now mounts inside `.post-foot` instead of
+     beside the full-bleed footer, so it inherits the column and needs no width of its own. What is
+     here is the spacing: 48px off prev/next, which is the same step the rail and the related block
+     use, so the foot reads as three stacked pieces of ONE column rather than a page section.
+     `min-height` reserves the frame's own starting height, so the footer does not jump upward and
+     then back down while the lazy iframe loads. */
+  .post-comments {
+    margin-top: 48px;
+    min-height: 372px;
+  }
+
+  .post-comments iframe { display: block; width: 100%; }
+
   // ---- narrow ---------------------------------------------------------------------------------
 
   @media (max-width: 1000px) {

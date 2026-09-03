@@ -1,11 +1,37 @@
 <!-- https://giscus.app/ -->
+
+{% comment %}
+  A REAL MOUNT POINT, so the widget lands in the post column instead of the page footer.
+  Stock giscus anchors on `document.querySelector('footer')` and inserts itself beside it. On this
+  layout the footer lives in `.footer-wrap`, which is FULL BLEED - so the comments measured
+  1894px wide against a ~760px column and read as a bar bolted to the bottom of the page. Rod:
+  "can we also make the spacing match the center so its not like a huge bar at the bottom and
+  feels connected to the post?"
+  `_layouts/post.html` already includes this inside `.post-foot`, right under prev/next, which is
+  where comments belong. There was simply no ELEMENT there to anchor to - the include is a bare
+  <script> - so the stock code fell through to the footer. This div is that anchor.
+{% endcomment %}
+<div class="post-comments"></div>
+
 <script>
   // OURS (re-apply on Chirpy upgrade): stock runs this IIFE at parse time and anchors on
   // document.querySelector('footer'). The redesign moved the footer BELOW main, so at parse
   // time it did not exist yet and the mount threw on null. DOMContentLoaded is the smallest
   // change that waits for it; everything inside is stock.
   document.addEventListener('DOMContentLoaded', function () {
-    const themeMapper = Theme.getThemeMapper('light', 'dark_dimmed');
+    {%- comment -%}
+      THE THEME IS OURS, NOT ONE OF GISCUS'S. It was `dark_dimmed`, which is GitHub's desaturated
+      BLUE-grey, on a site whose palette law is warm. No built-in giscus theme is warm.
+      THE URL IS ABSOLUTE AND POINTS AT PRODUCTION ON PURPOSE - do not "fix" it to a relative
+      path. giscus fetches this stylesheet from inside its own iframe on giscus.app, so it must be
+      a public HTTPS URL; a localhost path is both cross-origin and mixed-content and is refused.
+      Pointing at the live URL is what makes the theme visible in LOCAL dev too, at the cost of
+      the file needing to be deployed before a change to it shows up anywhere.
+    {%- endcomment -%}
+    const themeMapper = Theme.getThemeMapper(
+      '{{ site.url }}/assets/css/giscus.css',
+      '{{ site.url }}/assets/css/giscus.css'
+    );
     const initTheme = themeMapper[Theme.visualState];
 
     let lang = '{{ site.comments.giscus.lang | default: lang }}';
@@ -37,8 +63,7 @@
       giscusNode.setAttribute(key, value)
     );
 
-    const $footer = document.querySelector('footer');
-    $footer.insertAdjacentElement("beforebegin", giscusNode);
+    document.querySelector('.post-comments').appendChild(giscusNode);
 
     addEventListener('message', (event) => {
       if (event.source === window && event.data && event.data.id === Theme.ID) {

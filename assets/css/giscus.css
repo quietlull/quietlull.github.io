@@ -1,0 +1,122 @@
+---
+# Jekyll front matter, so this file is copied to _site as-is. It is NOT a Sass partial: giscus
+# fetches it from its own iframe over the public internet, so it has to be a plain CSS file at a
+# stable URL and it cannot use any of our tokens - every value below is a literal copy of one.
+---
+
+/* GISCUS CUSTOM THEME - the comments, wearing the site's palette instead of GitHub's.
+   Rod 2026-09-03: "I did not realize comments were live lets keep the shape update the colors to
+   match the rest of the site."
+
+   WHY A CUSTOM THEME AND NOT A BUILT-IN. giscus was on `dark_dimmed`, which is GitHub's
+   desaturated BLUE-grey. The palette law here is warm, and no built-in giscus theme is
+   (`transparent_dark` gets closest and still leaves GitHub blue on every link and a green button).
+   A custom theme is the only way to actually match, so this is it.
+
+   WHAT IT IS. giscus's app is built on GitHub Primer, so theming it means overriding Primer's
+   custom properties. The variable NAMES below are Primer's, not ours - do not rename them.
+   Values are literal copies of our tokens, because the iframe is a different document and cannot
+   see `_sass/abstracts/_tokens.scss`:
+
+     --color-text          #f5f3ef      --color-gold        #fbbf24
+     --color-panel-solid   #1c1a18      --color-gold-deep   #f59e0b
+     --color-night         #070c23      --color-glow        #ff6a00
+     --color-silver        #a3a19d      --color-muted-warm  #7d7a76
+     --color-line-soft     rgba(255,255,255,.1)
+
+   IF A TOKEN CHANGES, THIS FILE DOES NOT FOLLOW IT. That is the cost of the iframe boundary and
+   it is why every value is annotated with the token it came from. */
+
+main {
+  /* --- ground and text ------------------------------------------------------------------- */
+  --color-canvas-default: transparent;              /* let the post's own ground show through */
+  --color-canvas-overlay: #1c1a18;                  /* --color-panel-solid */
+  --color-canvas-inset: #070c23;                    /* --color-night */
+  --color-canvas-subtle: rgba(255, 255, 255, 0.03);
+
+  --color-fg-default: #f5f3ef;                      /* --color-text */
+  --color-fg-muted: #a3a19d;                        /* --color-silver */
+  --color-fg-subtle: #7d7a76;                       /* --color-muted-warm */
+  --color-fg-on-emphasis: #1c1a18;                  /* text ON the gold button, so it is the dark */
+
+  /* --- borders --------------------------------------------------------------------------- */
+  --color-border-default: rgba(255, 255, 255, 0.1); /* --color-line-soft */
+  --color-border-muted: rgba(255, 255, 255, 0.06);  /* --color-line-faint */
+  --color-neutral-muted: rgba(255, 255, 255, 0.06);
+  --color-neutral-emphasis: #7d7a76;
+
+  /* --- the accent. Every GitHub blue in the widget resolves through these. ----------------- */
+  --color-accent-fg: #fbbf24;                       /* --color-gold: links, @mentions */
+  --color-accent-emphasis: #f59e0b;                 /* --color-gold-deep */
+  --color-accent-muted: rgba(251, 191, 36, 0.3);
+  --color-accent-subtle: rgba(251, 191, 36, 0.08);
+
+  /* --- buttons. The primary is the gold, not GitHub's green. ------------------------------- */
+  --color-btn-text: #f5f3ef;
+  --color-btn-bg: rgba(255, 255, 255, 0.04);
+  --color-btn-border: rgba(255, 255, 255, 0.1);
+  --color-btn-hover-bg: rgba(251, 191, 36, 0.1);
+  --color-btn-hover-border: rgba(251, 191, 36, 0.3);
+  --color-btn-active-bg: rgba(251, 191, 36, 0.15);
+  --color-btn-selected-bg: rgba(251, 191, 36, 0.12);
+
+  --color-btn-primary-text: #1c1a18;
+  --color-btn-primary-bg: #fbbf24;                  /* --color-gold */
+  --color-btn-primary-border: #f59e0b;
+  --color-btn-primary-hover-bg: #f59e0b;            /* --color-gold-deep */
+  --color-btn-primary-hover-border: #ff6a00;        /* --color-glow, the ignite end */
+  --color-btn-primary-disabled-text: rgba(28, 26, 24, 0.5);
+  --color-btn-primary-disabled-bg: rgba(251, 191, 36, 0.4);
+  --color-btn-primary-disabled-border: transparent;
+
+  /* --- reactions, mostly the same warm family ---------------------------------------------- */
+  --color-social-reaction-bg-hover: rgba(251, 191, 36, 0.1);
+  --color-social-reaction-bg-reacted-hover: rgba(251, 191, 36, 0.2);
+
+  /* --- states ------------------------------------------------------------------------------ */
+  --color-success-fg: #6fbf73;                      /* --tape-green */
+  --color-danger-fg: #ff6a00;                       /* --color-glow: this palette has no red */
+  --color-attention-fg: #fbbf24;
+
+  /* --- inputs ------------------------------------------------------------------------------ */
+  --color-primer-border-active: #fbbf24;
+  --color-primer-shadow-inset: none;
+
+  /* --- typography. The site's own faces, so the widget does not read as a foreign object. --- */
+  --primer-text-body-font: 'M PLUS Rounded 1c', sans-serif;
+
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  color: #f5f3ef;
+}
+
+/* The comment box and each comment sit on the warm panel rather than a blue-grey card. */
+.gsc-comment-box,
+.gsc-comment > .gsc-comment-box,
+.gsc-timeline .gsc-comment > div {
+  background: rgba(28, 26, 24, 0.55);               /* --color-panel */
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Code inside a comment, matched to the site's inline code rather than GitHub's grey chip. */
+.gsc-comment-content code,
+.gsc-comment-content pre {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  background: rgba(251, 191, 36, 0.05);             /* --inline-code-bg */
+}
+
+/* The "Sign in with GitHub" prompt is the first thing a reader sees, so it gets the gold too
+   rather than staying the one blue object in the block. */
+.gsc-comment-box-buttons .btn-primary {
+  font-weight: 500;
+}
+
+/* SQUARED, matching the shape pass and D20's code block: the widget is the only round-cornered
+   object left in the post otherwise. */
+.gsc-comment-box,
+.gsc-comment-box-tabs,
+.gsc-comment-box-write,
+.gsc-reactions-count,
+.gsc-comment > div,
+.btn {
+  border-radius: 0 !important;
+}
