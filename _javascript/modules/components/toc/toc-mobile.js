@@ -3,7 +3,6 @@
  */
 
 const $tocBar = document.getElementById('toc-bar');
-const $soloTrigger = document.getElementById('toc-solo-trigger');
 const $triggers = document.getElementsByClassName('toc-trigger');
 const $popup = document.getElementById('toc-popup');
 const $btnClose = document.getElementById('toc-popup-close');
@@ -36,7 +35,19 @@ export class TocMobile {
       { rootMargin: `-${this.#barHeight}px 0px 0px 0px` }
     );
 
-    observer.observe($soloTrigger);
+    /* THE SENTINEL IS THE POST TITLE NOW. It used to be `#toc-solo-trigger`, the inline
+       "Contents" button, which Rod had removed 2026-09-03 ("this is weird and shouldnt exist").
+       Deleting that button alone would have thrown on `observer.observe(null)` and taken the
+       whole narrow-width TOC with it - the bar, the popup and every trigger - because this runs
+       first in initComponents().
+       The h1 is the right replacement rather than a convenience: the bar's job is to appear once
+       the title has scrolled away, which is exactly what the old button approximated by sitting
+       just under it. If a layout ever drops the h1, the guard below keeps the popup working and
+       only the auto-hiding bar stops. */
+    const $sentinel = document.querySelector('#post-page h1') || document.querySelector('h1');
+    if ($sentinel) {
+      observer.observe($sentinel);
+    }
     this.#invisible = false;
   }
 

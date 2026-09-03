@@ -34,19 +34,25 @@ body {
   background: transparent;
 }
 
+// YELLOW AT REST, ORANGE ON HOVER. Rod 2026-09-03: "Scrollbar on the right should be the yellow
+// ... by default and then turn orange instead its really hard to see".
+// It was --gold-20 resting and --gold-35 on hover: gold at 20% and 35% alpha over a near-black
+// ground, which is why it was hard to find. Both ends are solid now, and they are the same
+// yellow -> orange pair the rest of the site ignites with (--color-gold -> --color-glow), so the
+// bar behaves like every other interactive object here rather than like browser chrome.
 *::-webkit-scrollbar-thumb {
-  background: var(--gold-20);
+  background: var(--color-gold);
   border-radius: 4px;
 
   &:hover {
-    background: var(--gold-35);
+    background: var(--color-glow);
   }
 }
 
-// Firefox
+// Firefox takes one pair and has no hover state for it, so it gets the resting colour.
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--gold-20) transparent;
+  scrollbar-color: var(--color-gold) transparent;
 }
 
 // F4: Amber text selection

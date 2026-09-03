@@ -99,15 +99,9 @@ function initReadingProgress() {
   // Passive scroll listener — single style update, no rAF needed
   window.addEventListener('scroll', updateProgress, { passive: true });
 
-  // Click-to-jump: click position on bar maps to article scroll position
-  bar.addEventListener('click', (e) => {
-    const ratio = e.clientX / window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const total = articleHeight - viewportHeight;
-    if (total <= 0) return;
-    const targetY = articleTop + ratio * total;
-    window.scrollTo({ top: targetY, behavior: 'smooth' });
-  });
+  /* NO CLICK-TO-JUMP. Rod 2026-09-03: "make the progress bar not interactable."
+     The handler mapped a click's x to a scroll position. The CSS now sets `pointer-events: none`,
+     so this could never fire again anyway - leaving it would be dead code that reads as live. */
 
   updateProgress();
 }
@@ -164,10 +158,16 @@ function initSectionSparks() {
           && !fired.has(entry.target)) {
         fired.add(entry.target);
 
-        const h2 = entry.target.querySelector('h2');
-        if (h2 && typeof window.sparklerBurst === 'function') {
-          const rect = h2.getBoundingClientRect();
-          window.sparklerBurst(rect.left + rect.width / 2, rect.bottom);
+        /* THE BURST FIRES AT THE PROGRESS BAR, not at the heading. Rod 2026-09-03: "there are
+           sparks playing when you use it that should move to the top progress bar".
+           It used to fire at the h2's own position, which by definition is just above the top of
+           the viewport at the moment a section leaves - so the sparks appeared at a scattered x,
+           clipped, and read as random debris while scrolling. The bar's leading edge is where the
+           reader's progress actually IS, so the burst now marks it: same event, one meaning. */
+        const progressBar = document.querySelector('.reading-progress-bar');
+        if (progressBar && typeof window.sparklerBurst === 'function') {
+          const rect = progressBar.getBoundingClientRect();
+          window.sparklerBurst(rect.right, rect.bottom);
         }
       }
     }

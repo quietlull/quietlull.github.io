@@ -20,18 +20,24 @@
   // change that waits for it; everything inside is stock.
   document.addEventListener('DOMContentLoaded', function () {
     {%- comment -%}
-      THE THEME IS OURS, NOT ONE OF GISCUS'S. It was `dark_dimmed`, which is GitHub's desaturated
-      BLUE-grey, on a site whose palette law is warm. No built-in giscus theme is warm.
-      THE URL IS ABSOLUTE AND POINTS AT PRODUCTION ON PURPOSE - do not "fix" it to a relative
-      path. giscus fetches this stylesheet from inside its own iframe on giscus.app, so it must be
-      a public HTTPS URL; a localhost path is both cross-origin and mixed-content and is refused.
-      Pointing at the live URL is what makes the theme visible in LOCAL dev too, at the cost of
-      the file needing to be deployed before a change to it shows up anywhere.
+      BACK ON A BUILT-IN THEME. Rod 2026-09-03: "the giscus section is white again ... PLEASE
+      revert the color change."
+
+      WHY THE CUSTOM THEME WENT WHITE, because the file itself was fine - it deploys, returns 200
+      as text/css with `access-control-allow-origin: *`, and all five of its rules parse. The
+      fragility is the ARCHITECTURE, not the CSS: giscus fetches a custom theme by URL from inside
+      its own iframe, and when that fetch does not land it falls back to its DEFAULT theme, which
+      is light. Our theme also set `--color-canvas-default: transparent`, so there was nothing of
+      ours holding a dark ground either. Any hiccup - a mid-deploy window on Pages, a cached miss,
+      an offline moment - therefore shows a full-width WHITE block on a dark page. That is a bad
+      failure mode for a decorative win, and it is why this is a built-in again.
+
+      `assets/css/giscus.css` is kept on disk rather than deleted: it is a working translation of
+      the site's palette into Primer's variables and it took several passes with Rod to get the
+      lines/fills split right. If the custom theme is ever retried, it needs a real answer to the
+      fallback problem first.
     {%- endcomment -%}
-    const themeMapper = Theme.getThemeMapper(
-      '{{ site.url }}/assets/css/giscus.css',
-      '{{ site.url }}/assets/css/giscus.css'
-    );
+    const themeMapper = Theme.getThemeMapper('light', 'dark_dimmed');
     const initTheme = themeMapper[Theme.visualState];
 
     let lang = '{{ site.comments.giscus.lang | default: lang }}';

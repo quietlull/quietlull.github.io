@@ -43,21 +43,17 @@
   );
   will-change: transform;
 
-  /* The fade exists only for the iframe case below. It is short enough not to lag the pointer on
-     ordinary movement, where opacity never changes at all. */
-  transition: opacity 0.18s ease;
-}
-
-/* PARKED OVER AN IFRAME. Rod 2026-09-03: "cursor effect break when hovering giscus elements".
-   A cross-origin iframe swallows pointer events, so this document stops receiving `pointermove`
-   the instant the cursor crosses into the comments and the lantern FREEZES at the frame's edge -
-   which reads as broken, where simply being absent reads as intentional. The parent still gets
-   `mouseover` on the iframe ELEMENT (that element is in this document), which is what
-   cursor-glow.js uses to toggle this.
-   Fading rather than hiding: `display:none` would drop the composited layer and cost a re-raster
-   on the way back out. */
-.cursorglow.is-hidden {
-  opacity: 0;
+  /* WHY THE LANTERN STOPS AT THE COMMENTS, and why there is no CSS here that fixes it.
+     A cross-origin iframe consumes pointer events entirely: giscus.app is a different origin, so
+     the moment the cursor crosses into that frame THIS document stops receiving `pointermove` and
+     the lantern holds its last position. That is a browser security boundary, not our layering -
+     the glow is z-index 10050 and `pointer-events: none`, so it is already drawn ABOVE the frame
+     and is already not eating clicks. Verified by hit-testing three points over the frame: all
+     three return the iframe.
+     A FADE-ON-ENTER WAS TRIED AND REJECTED (Rod, 2026-09-03) - he wants the lantern to reach the
+     comments, not to disappear before them. The only ways to actually track the cursor in there
+     are to put `pointer-events: none` on the iframe, which would make the comments unusable, or
+     for giscus to postMessage its coordinates out, which it does not do. */
 }
 
 }

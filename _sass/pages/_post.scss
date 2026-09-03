@@ -10,7 +10,8 @@
 //
 // THE UPSTREAM FRAGMENTS THAT SURVIVE, and an upgrade only has to re-check these:
 //   1. The four `@use` lines below, byte-identical to theirs.
-//   2. `#toc-solo-trigger` - the closest thing to an untouched upstream block. Two changes only:
+//   2. `#toc-solo-trigger` - DELETED 2026-09-03 on Rod's word. It was the closest thing to an
+//      untouched upstream Chirpy block left in this file, which is why it read as foreign.
 //      our margin-top/margin-bottom, and `var(--font-display)` where they read
 //      `v.$font-family-heading`, a variable this repo no longer defines.
 //   3. `#toc-bar` - upstream's rule skeleton (sticky, top 0, z-index 1, the -1rem side pull, the
@@ -286,7 +287,7 @@
   // so nothing but 1200px is left in play. The earlier version of this comment flagged that
   // third number as unresolved and is simply out of date.
   // 1199.98px, NOT 1199px, and the 0.02 is load-bearing. `bp.xl` is `min-width: 1200px`
-  // (abstracts/_breakpoints.scss:10), and `#toc-bar` and `#toc-solo-trigger` hide inside it. At
+  // (abstracts/_breakpoints.scss:10), and `#toc-bar` hides inside it. At
   // a fractional viewport width like 1199.5px the old `max-width: 1199px` did not match and
   // `bp.xl` did not either, so the rail and the mobile bar both drew at once. The 0.02px step
   // is the Bootstrap convention for butting a max-width against a min-width and it covers
@@ -455,28 +456,6 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
   }
 }
 
-#toc-solo-trigger {
-  color: var(--text-muted-color);
-  border-color: var(--btn-border-color);
-  border-radius: v.$radius-lg;
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
-
-  @include bp.xl {
-    display: none !important;
-  }
-
-  .label {
-    font-size: 1rem;
-    font-family: var(--font-display);
-  }
-
-  &:hover {
-    box-shadow: none;
-    background: none;
-  }
-}
-
 // --- Reading progress bar ---
 .reading-progress-bar {
   position: fixed;
@@ -491,15 +470,18 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
   );
   box-shadow: 0 0 8px rgb(var(--glow-hue), 0.40);
   z-index: 9999;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: width 0.1s linear, height 0.15s ease, box-shadow 0.15s ease;
-  border-radius: 0 2px 2px 0;
 
-  &:hover {
-    height: 6px;
-    box-shadow: 0 0 12px rgb(var(--glow-hue), 0.55);
-  }
+  /* NOT A CONTROL. Rod 2026-09-03: "make the progress bar not interactable."
+     It used to carry `pointer-events: auto`, `cursor: pointer` and a hover state that grew it to
+     6px, backed by a click-to-jump handler in post-enhance.js - all three are gone, handler
+     included. It is a readout, and a 3px strip pinned under the top edge of the window is a bad
+     click target anyway: it sits exactly where a reader throws the pointer to reach the tab bar,
+     so every near-miss teleported them somewhere in the article.
+     `pointer-events: none` is the load-bearing line. Without it the strip still swallows a
+     hover along the very top of the viewport even with no handler attached. */
+  pointer-events: none;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
 }
 
 // --- Post ambient fireflies ---
