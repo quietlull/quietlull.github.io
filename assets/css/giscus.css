@@ -24,6 +24,13 @@
      --color-silver        #a3a19d      --color-muted-warm  #7d7a76
      --color-line-soft     rgba(255,255,255,.1)
 
+   EVERY LINE IN HERE IS AMBER, NOT WHITE. Rod 2026-09-03: "rather than white lines lets do the
+   yellow we use everywhere else". The first version of this file used `rgba(255,255,255,.1)`
+   hairlines, copied from --color-line-soft, which is the NEUTRAL UI hairline the rest of the site
+   spends on chrome. Every bordered object a reader actually looks at - cards, buttons, the code
+   block, the panels - is on the amber pair instead: rgba(245,158,11,.2) for a real edge and
+   rgba(245,158,11,.1) for a quiet one. Those two are --btn-border-color and --glass-border.
+
    IF A TOKEN CHANGES, THIS FILE DOES NOT FOLLOW IT. That is the cost of the iframe boundary and
    it is why every value is annotated with the token it came from. */
 
@@ -32,7 +39,7 @@ main {
   --color-canvas-default: transparent;              /* let the post's own ground show through */
   --color-canvas-overlay: #1c1a18;                  /* --color-panel-solid */
   --color-canvas-inset: #070c23;                    /* --color-night */
-  --color-canvas-subtle: rgba(255, 255, 255, 0.03);
+  --color-canvas-subtle: rgba(245, 158, 11, 0.04);   /* warm wash, not a grey one */
 
   --color-fg-default: #f5f3ef;                      /* --color-text */
   --color-fg-muted: #a3a19d;                        /* --color-silver */
@@ -40,9 +47,9 @@ main {
   --color-fg-on-emphasis: #1c1a18;                  /* text ON the gold button, so it is the dark */
 
   /* --- borders --------------------------------------------------------------------------- */
-  --color-border-default: rgba(255, 255, 255, 0.1); /* --color-line-soft */
-  --color-border-muted: rgba(255, 255, 255, 0.06);  /* --color-line-faint */
-  --color-neutral-muted: rgba(255, 255, 255, 0.06);
+  --color-border-default: rgba(245, 158, 11, 0.2);  /* --btn-border-color: THE line colour */
+  --color-border-muted: rgba(245, 158, 11, 0.1);    /* --glass-border: the quieter one */
+  --color-neutral-muted: rgba(245, 158, 11, 0.1);
   --color-neutral-emphasis: #7d7a76;
 
   /* --- the accent. Every GitHub blue in the widget resolves through these. ----------------- */
@@ -53,8 +60,8 @@ main {
 
   /* --- buttons. The primary is the gold, not GitHub's green. ------------------------------- */
   --color-btn-text: #f5f3ef;
-  --color-btn-bg: rgba(255, 255, 255, 0.04);
-  --color-btn-border: rgba(255, 255, 255, 0.1);
+  --color-btn-bg: rgba(245, 158, 11, 0.06);
+  --color-btn-border: rgba(245, 158, 11, 0.2);      /* --btn-border-color */
   --color-btn-hover-bg: rgba(251, 191, 36, 0.1);
   --color-btn-hover-border: rgba(251, 191, 36, 0.3);
   --color-btn-active-bg: rgba(251, 191, 36, 0.15);
@@ -94,7 +101,7 @@ main {
 .gsc-comment > .gsc-comment-box,
 .gsc-timeline .gsc-comment > div {
   background: rgba(28, 26, 24, 0.55);               /* --color-panel */
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);            /* --btn-border-color */
 }
 
 /* Code inside a comment, matched to the site's inline code rather than GitHub's grey chip. */
