@@ -1685,8 +1685,18 @@ comment green.
 install because the theme does not define it and VS Code falls back to built-ins. Only level 1 is
 reproducible - Rouge emits flat spans with no nesting depth.
 
-**Accepted rather than chosen: HLSL semantics share the constant blue.** He questioned it
-(*"im also not sure POSITION and TEXCOORD0 should be purple as well as they are vertex buffers
-right?"*), saw three options drawn, and approved. It has its own `--syn-semantic` token so moving
-it later is one line.
+**HLSL semantics take the class green #4ec9b0** (Rod, *"i think iii looks right"*). He questioned
+the original blue (*"im also not sure POSITION and TEXCOORD0 should be purple as well as they are
+vertex buffers right?"*), saw three options drawn, and picked the green over the constant blue it
+had shipped on for a day.
+
+**Rejected: i, the constant blue** (it collides with SCREAMING_SNAKE constants) and **ii, the
+variable blue** (it collides with every ordinary identifier). Both losing options collide with a
+far commoner token than the winner does.
+
+**The accepted cost, stated because it is real:** `--syn-semantic` is the SAME value as
+`--syn-class`, so a semantic and a struct name are not distinguishable from each other. I told him
+so when applying it. They are both reserved type-like names, so they read as one family, and both
+are rare - which is the argument for spending one hue on the pair rather than a fifth hue. It is
+still its own token, so splitting them later is a one-line change.
 

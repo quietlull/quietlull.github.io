@@ -661,9 +661,14 @@ body.spacious .bio-h--lesser {
                                Was #ce9178, which is Dark+'s STRING colour and was only ever
                                borrowed while "same as VS Code" was still the citation.          */
   --syn-const: #569cd6;     /* named CONSTANTS - Rod 2026-08-23 "keep dark blue for constants"   */
-  --syn-semantic: #569cd6;  /* HLSL semantics - POSITION, TEXCOORD0, SV_Target. Shares the
-                               constant blue for now; Rod accepted it seeing it drawn. It is a
-                               SEPARATE token so changing it later is one line, not a hunt.      */
+  --syn-semantic: #4ec9b0;  /* HLSL semantics - POSITION, TEXCOORD0, SV_Target. Rod picked the
+                               class green (option iii) on 2026-09-03, over the constant blue it
+                               shipped on for a day. DELIBERATELY THE SAME VALUE AS --syn-class:
+                               a semantic and a struct name are both reserved type-like names, so
+                               they read as one family, and they are NOT distinguishable from each
+                               other. That is the accepted cost - the alternative was sharing with
+                               constants (i) or with plain variables (ii), both of which are far
+                               commoner tokens and would have collided constantly.               */
   --syn-var: #9cdcfe;       /* plain variables - the lighter blue, so const reads apart from var */
   --syn-class: #4ec9b0;     /* classes / type NAMES - Dark+ teal-green                           */
   --syn-func: #c586c0;      /* functions - ROD's PINK. Control flow SHARES it, his call

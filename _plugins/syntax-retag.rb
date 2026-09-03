@@ -17,8 +17,8 @@
 # is POSITIONAL or a closed word list - none of them guess, and none need per-language maintenance
 # beyond the two keyword sets.
 #
-# ALL FOUR OF THE PROBLEMS THIS SOLVES WERE FOUND BY ROD LOOKING AT A RENDERED BLOCK, not by any
-# checker, which is worth remembering: a wrong colour is still a valid colour and nothing errors.
+# EVERY FAULT THIS FIXES WAS FOUND BY ROD LOOKING AT A RENDERED BLOCK, not by any checker, which
+# is the thing worth remembering: a wrong colour is still a valid colour and nothing errors.
 #
 # SCOPE. Only inside `<div class="highlight">`, which Rouge emits for code BLOCKS. Inline code has
 # no such wrapper, so D31 ("inline code is not included in the carve-out") holds by construction
@@ -29,7 +29,6 @@ module SyntaxRetag
   # single class attribute is exact rather than approximate.
   SPAN = /<span class="([a-z0-9]+)">(.*?)<\/span>/m.freeze
 
-  # Only the code-block wrapper. `[^"]*` because Rouge sometimes adds a language class.
   BLOCK = /<div class="highlight">.*?<\/div>/m.freeze
 
   CONTROL = %w[if else return for while do switch case default break continue discard].freeze
@@ -37,23 +36,36 @@ module SyntaxRetag
                groupshared precise centroid nointerpolation packoffset].freeze
   SCALARS = %w[float int uint bool half double fixed dword min16float].freeze
 
-  SCREAMING = /\A[A-Z][A-Z0-9_]+\z/.freeze
-  BRACKET   = /\A[()\[\]{}]+\z/.freeze
+  SCREAMING   = /\A[A-Z][A-Z0-9_]+\z/.freeze
+  CAPITALISED = /\A[A-Z]/.freeze
+  BRACKET     = /\A[()\[\]{}]+\z/.freeze
 
-  # Rouge escapes markup before it writes a span, so a token's text can still carry entities.
-  # Comparisons below are all against plain ASCII operators, which are never escaped - except
-  # `&gt;` and `&lt;`, which cannot be any of the tokens we test for. Decoding is therefore not
-  # needed, and doing it would risk re-encoding differences on the way out.
+  # Rouge escapes markup before it writes a span, so a token's text can carry entities. Every
+  # comparison below is against a plain ASCII operator, and the only escaped characters Rouge
+  # produces are `&gt;` `&lt;` `&amp;` `&quot;`, none of which can be one of those operators. So
+  # decoding is unnecessary here, and doing it would risk re-encoding differences on the way out.
   def self.retag(html)
     html.gsub(BLOCK) { |block| retag_block(block) }
+  end
+
+  # Walks back from a colon to the start of its line. A `?` on the way means the colon closes a
+  # TERNARY rather than introducing a semantic. A newline ends the search, which is how Rouge
+  # marks a line break.
+  def self.ternary_colon?(tokens, meaningful, here)
+    (here - 1).downto(0) do |n|
+      text = tokens[meaningful[n]][1]
+      return false if text.include?("\n")
+      return true if text.strip == '?'
+    end
+    false
   end
 
   def self.retag_block(block)
     tokens = block.scan(SPAN)
     return block if tokens.empty?
 
-    # index of the next / previous token whose text is not blank, so the positional rules are not
-    # fooled by the whitespace Rouge emits between tokens
+    # indices of the tokens whose text is not blank, so the positional rules are not fooled by the
+    # whitespace Rouge emits between tokens
     meaningful = tokens.each_index.reject { |i| tokens[i][1].strip.empty? }
     position   = meaningful.each_with_index.to_h { |token_index, n| [token_index, n] }
 
@@ -63,18 +75,27 @@ module SyntaxRetag
       text = raw.strip
       next if text.empty?
 
-      here = position[index]
+      here      = position[index]
       following = meaningful[here + 1]
       preceding = here.positive? ? meaningful[here - 1] : nil
 
-      next_text = following ? tokens[following][1].strip : ''
-      prev_text = preceding ? tokens[preceding][1].strip : ''
+      next_text    = following ? tokens[following][1].strip : ''
+      prev_text    = preceding ? tokens[preceding][1].strip : ''
       call_follows = next_text.start_with?('(')
 
-      # A SEMANTIC is anything after a colon: POSITION, TEXCOORD0, SV_Target. Positional, so it
-      # catches all three even though Rouge classed the first two `nb` and the third plain `n` -
-      # which is exactly why they used to render three different colours.
-      if prev_text == ':'
+      # A SEMANTIC is an identifier after a colon: POSITION, TEXCOORD0, SV_DispatchThreadID.
+      # Positional, so it catches them even though Rouge classes some `nb` (the same class as
+      # `lerp`) and others plain `n` - which is exactly why they used to render different colours
+      # from each other.
+      #
+      # TWO GUARDS, both added after the bare rule fired on a real post:
+      # `next = next < 0.005 ? 0.0 : next;` in ComputeGrass painted that last `next` as a semantic,
+      # because a ternary's colon is indistinguishable from a declaration's on its own.
+      #   1. a ternary has a `?` earlier on the SAME LINE; a declaration never does
+      #   2. HLSL semantics are capitalised by convention
+      # Either guard alone would have caught that case. Both are cheap and they fail differently,
+      # which is the point of keeping the pair.
+      if prev_text == ':' && text.match?(CAPITALISED) && !ternary_colon?(tokens, meaningful, here)
         extra[index] << 'x-semantic'
         next
       end
