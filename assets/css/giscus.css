@@ -33,9 +33,10 @@
    one (--btn-border-color and --glass-border). A FILL is the blue slate panel. Amber never
    becomes a background here; it is a line colour and an accent, nothing else.
 
-   The panel values are MEASURED off `.post-nav-card` on a real post rather than picked, because
-   the comment box sits directly under the prev/next cards and should read as the same object:
-   background rgba(15,23,42,.4), border rgba(245,158,11,.1).
+   AND THERE IS ONLY ONE FILL. Rod again, after seeing it drawn: "why are the other blue parts
+   not just the same color as the comment box". Every surface in the widget is #070c23 - our
+   --color-night, which is the value giscus already puts on the textarea via `form-control
+   input-contrast`. The border rgba(245,158,11,.1) is what separates one piece from the next.
 
    IF A TOKEN CHANGES, THIS FILE DOES NOT FOLLOW IT. That is the cost of the iframe boundary and
    it is why every value is annotated with the token it came from. */
@@ -43,9 +44,9 @@
 main {
   /* --- ground and text ------------------------------------------------------------------- */
   --color-canvas-default: transparent;              /* let the post's own ground show through */
-  --color-canvas-overlay: rgb(15, 23, 42);          /* the BLUE panel, measured off .post-nav-card */
+  --color-canvas-overlay: #070c23;                  /* --color-night: THE one blue, see below */
   --color-canvas-inset: #070c23;                    /* --color-night */
-  --color-canvas-subtle: rgba(15, 23, 42, 0.4);     /* a PANEL, so it is blue - not a line */
+  --color-canvas-subtle: #070c23;                   /* --color-night: the tab strip, same blue */
 
   --color-fg-default: #f5f3ef;                      /* --color-text */
   --color-fg-muted: #a3a19d;                        /* --color-silver */
@@ -66,7 +67,7 @@ main {
 
   /* --- buttons. The primary is the gold, not GitHub's green. ------------------------------- */
   --color-btn-text: #f5f3ef;
-  --color-btn-bg: rgba(15, 23, 42, 0.6);            /* --card-bg. A FILL, so it stays blue. */
+  --color-btn-bg: #070c23;                          /* --color-night. A FILL, so it stays blue. */
   --color-btn-border: rgba(245, 158, 11, 0.2);      /* --btn-border-color: this is a LINE */
   --color-btn-hover-bg: rgba(251, 191, 36, 0.1);
   --color-btn-hover-border: rgba(251, 191, 36, 0.3);
@@ -103,13 +104,22 @@ main {
 }
 
 /* The comment box and each comment sit on the warm panel rather than a blue-grey card. */
+/* ONE BLUE, NOT THREE. Rod 2026-09-03: "why are the other blue parts not just the same color as
+   the comment box use this same blue in <textarea class='form-control input-contrast'> on the
+   other elements".
+   The textarea sits on --color-canvas-inset (#070c23, our --color-night) because giscus gives it
+   `form-control input-contrast`. The form around it and the tab strip above it were on two OTHER
+   values, so the widget read as three stacked shades of navy. Everything is the textarea's blue
+   now, and the amber hairlines are what separate the pieces - which is the same way the rest of
+   the site distinguishes a card from its ground. */
 .gsc-comment-box,
+.gsc-comment-box-tabs,
+.gsc-comment-box-main,
+.gsc-comment-box-bottom,
 .gsc-comment > .gsc-comment-box,
 .gsc-timeline .gsc-comment > div {
-  /* MEASURED off `.post-nav-card` on a real post, so the comment box is the same object as the
-     prev/next cards sitting directly above it: blue fill, amber hairline. */
-  background: rgba(15, 23, 42, 0.4);
-  border-color: rgba(245, 158, 11, 0.1);            /* --glass-border, what those cards use */
+  background: #070c23;
+  border-color: rgba(245, 158, 11, 0.1);            /* --glass-border */
 }
 
 /* Code inside a comment, matched to the site's inline code rather than GitHub's grey chip. */
