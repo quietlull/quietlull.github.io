@@ -119,17 +119,29 @@ main {
   background: rgba(251, 191, 36, 0.05);             /* --inline-code-bg */
 }
 
-/* The "Sign in with GitHub" prompt is the first thing a reader sees, so it gets the gold too
-   rather than staying the one blue object in the block. */
+/* The "Sign in with GitHub" prompt is the first thing a reader sees on a post with no comments
+   yet, and it is the widget's one loud object. Its GOLD comes from --color-btn-primary-bg above,
+   not from here - this only matches the weight the rest of the site's buttons use. Verified
+   rendering on the real widget: background rgb(251,191,36), text rgb(28,26,24). */
 .gsc-comment-box-buttons .btn-primary {
   font-weight: 500;
 }
 
 /* SQUARED, matching the shape pass and D20's code block: the widget is the only round-cornered
    object left in the post otherwise. */
+/* SQUARED, matching the shape pass and D20's code block: the widget is otherwise the only
+   round-cornered object left in the post.
+   THE SELECTOR LIST IS MEASURED, NOT GUESSED. Opened the widget directly at giscus.app and
+   enumerated its real classes, which is how `.gsc-comment-box-textarea` got caught - it carries
+   its OWN `border-radius: 4px 4px 0 0` and was still rounded while everything around it was
+   square. The `.gsc-comment*` selectors that are not in that list only exist once a post HAS
+   comments, so they cannot be confirmed on an empty thread and are kept on giscus's documented
+   names. */
 .gsc-comment-box,
 .gsc-comment-box-tabs,
 .gsc-comment-box-write,
+.gsc-comment-box-textarea,
+.gsc-comment-box-bottom,
 .gsc-reactions-count,
 .gsc-comment > div,
 .btn {

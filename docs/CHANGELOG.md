@@ -1,3 +1,63 @@
+# 2026-09-03, later - THE COMMENTS JOIN THE SITE, AND A BLACK BOX COMES OFF THE REEL
+
+**Decided by ROD**, who found both by looking: *"I did not realize comments were live lets keep
+the shape update the colors to match the rest of the site"*, *"can we also make the spacing match
+the center so its not like a huge bar at the bottom"*, and on the reel *"if there is CSS that
+creates a box behind the demo reel i think we should remove it"*.
+
+**The comments were 1894px wide against a 767px column, and that was not a width bug.** Stock
+giscus anchors on `document.querySelector('footer')` and inserts itself beside it; our footer sits
+in `.footer-wrap`, which is full bleed. `_layouts/post.html` had already been including the widget
+inside `.post-foot` under prev/next, where it belongs - there was simply no ELEMENT there to
+anchor to, because the include is a bare `<script>`, so the stock code fell through to the footer.
+Adding `.post-comments` as that anchor fixes the width **by inheritance rather than by declaring
+one**. Measured after: 767px at left 655, matching `.prose` exactly.
+
+**The theme is ours now.** It was on `dark_dimmed`, GitHub's desaturated BLUE-grey, on a site whose
+palette law is warm; no built-in giscus theme is warm. `assets/css/giscus.css` overrides Primer's
+own custom properties - their variable names, our values.
+
+**THE URL IS ABSOLUTE AND POINTS AT PRODUCTION ON PURPOSE.** giscus fetches the stylesheet from
+inside its iframe on giscus.app, so it must be a public HTTPS URL; a localhost path is both
+cross-origin and mixed content and is refused. Pointing at the live URL is what makes the theme
+visible in local dev too - at the cost that any change to it must be DEPLOYED before it shows up
+anywhere, localhost included. That is a real dev/prod split and it is commented at both ends.
+
+**I over-applied the colour instruction and Rod caught it.** He asked for the LINES to go from
+white to yellow; I moved two fills and the comment box onto amber as well. The rule is now stated
+at the top of the file: **lines are amber, fills are blue.** The panel values are MEASURED off
+`.post-nav-card` on a real post rather than picked, because the comment box sits directly under
+the prev/next cards and should read as the same object.
+
+**The selector list was then verified rather than trusted**, by opening the widget directly at
+giscus.app and enumerating its real classes. That caught `.gsc-comment-box-textarea`, which
+carries its own `border-radius: 4px 4px 0 0` and was still rounded inside an otherwise squared
+widget, and confirmed the overrides resolve (`--color-accent-fg` #fbbf24, `--color-border-default`
+rgba(245,158,11,.2), the site's font on `main`).
+
+**THE REEL: the Edge ghost box was a black rectangle we were painting ourselves.** `.reel__bar`
+had `background: var(--color-black)` - an opaque box at exactly the size Rod kept describing
+("roughly around the same size as the reel and it moves up and down throughout the page"). An
+opaque paint behind a live video layer is what browsers composite separately, and a ghost of it
+that does not re-composite with the scroll is that symptom exactly. It cost nothing to lose:
+`object-fit: cover` on a 21/9 frame means the clip fills it edge to edge, so the black was only
+visible before the first clip decoded.
+
+**Two wrong attempts are recorded in the file so they are not retried.** Attempt 1 was
+`disablepictureinpicture`, on the theory Edge was floating a mini-player - Rod confirmed the box
+survived it, so that theory is dead (the attribute stays, because opting a decorative autoplaying
+reel out of PiP is correct on its own merits, but it is not the fix). Attempt 2 was
+`transform: translateZ(0)`, written and then deliberately REVERTED in the same session: shipping a
+compositing hint alongside the removal would have made the result unattributable, and a hint left
+behind for a bug it did not solve is a permanent layer paid for nothing.
+
+**A note on the Gemini analysis Rod forwarded**, because reviewing it was the useful part: it
+correctly confirmed the PiP attribute was live, but never established whether the symptom
+persisted - which was the only fact that mattered. Three of its four recommendations were
+declined: `overflow: visible !important` on a video that cannot overflow, re-enabling PiP (which
+would undo a defensible change), and `will-change: transform`, which permanently promotes a layer
+for an element that never animates and is the exact cost D5 and the perf pass have been removing.
+
 # 2026-09-03 - THE CODE BLOCKS ACTUALLY RENDER NOW (D20 shipped, four Rouge lies fixed)
 
 **Decided by ROD**, across a long correction loop that is the real content of this entry:
