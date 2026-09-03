@@ -13,11 +13,14 @@
   dead classes were fine, on the true-at-the-time grounds that production built with Bootstrap.
   D48 falsified that and nobody re-opened the rows. Both are corrected. **Treat a withdrawal as
   perishable as a claim.**
-- **THE CODE BLOCKS ARE BROKEN AND THE FIX IS WAITING ON ROD.** Rouge's table layout nests code as
-  `code > table > td > pre`, inverting what every selector assumes, so the syntax colours are
-  undefined, the inline-code chip rule swallows whole blocks, and nothing sets the block font.
-  Three symptoms, one cause, and it is NOT a cache and NOT live-only - localhost is identical.
-  Comparison page: `redesign-lab/codeblock-fix.html`. See TRAPS.
+- **THE CODE BLOCKS ARE FIXED AND D20 IS SHIPPED (2026-09-03).** The syntax palette had never
+  rendered: the `--syn-*` variables sat on `.prose pre code`, which matches nothing once Rouge's
+  table layout inverts the nesting, so 1,001 spans inherited one flat colour under a locked
+  palette. Now on `.prose div.highlight`, which also gives D31 for free. The agreed wrapper
+  (Maxime Heckel's strip, squared) is ported, Chirpy's macOS traffic-light dots are deleted, and
+  `_plugins/syntax-retag.rb` supplies the four mappings Rouge cannot express. Measured on a real
+  post: 8 distinct colours where there was 1, all 11 clearing AA, comments 3.53 -> 5.73:1.
+  **Rod has seen the bench, not the live post** - that is the one open ship-check item.
 - **Row 22 of the todo board was wrong**: the 2026-08 code-colour fix was marked DONE and never
   worked. The spans got rules; the variables those rules read were defined on a non-matching
   selector. Reopened.

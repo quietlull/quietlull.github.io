@@ -1,12 +1,12 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Code block wrapper &middot; built, and the two open picks</title>
+<title>Code block wrapper &middot; built &middot; one pick left</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
 <style>
 :root{
   --ground:#0a0e22; --bar:#0d1228; --line:rgba(255,255,255,.09);
   --dim:rgba(254,243,199,.45); --fg:#d4d4d4;
-  --orange:#CE9178; --ctl:#C586C0;
+  --orange:#D79A5B; --ctl:#C586C0; --semantic:#569CD6;
 }
 body{margin:0;padding:26px;background:#070a18;font-family:ui-monospace,monospace}
 .h{color:#9c8f7d;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 6px}
@@ -20,6 +20,12 @@ h3 + p{color:#6f6a63;font-size:11px;line-height:1.7;margin:0 0 14px;max-width:96
 @media(max-width:1150px){.g2,.g4{grid-template-columns:1fr}}
 .cell > h4{color:#c9bda9;font-size:11px;letter-spacing:.08em;margin:0 0 3px;font-weight:500}
 .cell > p{color:#6f6a63;font-size:10.5px;line-height:1.6;margin:0 0 10px}
+table.fx{border-collapse:collapse;font-size:10.5px;color:#8f887d;margin:0 0 22px;max-width:118ch}
+table.fx th{text-align:left;color:#6f6a63;font-weight:400;padding:5px 16px 5px 0;
+            border-bottom:1px solid rgba(255,255,255,.12)}
+table.fx td{padding:6px 16px 6px 0;vertical-align:top;border-bottom:1px solid rgba(255,255,255,.05)}
+table.fx code{color:#c9bda9}
+table.fx b{color:#c9bda9}
 .chip{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;
       vertical-align:-1px;border:1px solid rgba(255,255,255,.22)}
 
@@ -65,86 +71,51 @@ h3 + p{color:#6f6a63;font-size:11px;line-height:1.7;margin:0 0 14px;max-width:96
 .cw .x-class                        { color:#4EC9B0; }         /* classes + type NAMES      */
 .cw .x-const                        { color:#569CD6; }         /* named constants           */
 .cw .x-bracket                      { color:#FFD700; }
+.cw .x-func                         { color:#C586C0; }         /* SCREAMING macro FUNCTIONS */
+.cw .x-semantic                     { color:var(--semantic); } /* POSITION TEXCOORD0 SV_Target */
+.cw .x-notcall                      { color:#9CDCFE; }         /* `noise` - a var Rouge calls a fn */
 </style></head><body>
 
-<p class="h">The code block wrapper &middot; built &middot; two picks left</p>
+<p class="h">The code block wrapper &middot; built &middot; one pick left</p>
 <p class="note">
-  <b>This is D20 pick A, actually built.</b> Maxime Heckel's header strip, transcribed from the
-  verbatim CSS in <code>analysis/component-sources/source-code-block.md</code>: bordered
-  overflow-hidden card, flex <code>space-between</code> bar with the filename left and copy right,
-  separated only by a <code>border-bottom</code>, and a <code>display:table</code> line-number
-  gutter at 45px so long shader lines scroll without the gutter sliding away.<br>
-  <b>Your three changes are in:</b> squared (D20), no traffic lights (never added &mdash; the source
-  has none), and the background slot filled with the night ground instead of his cool
-  <code>--gray-200</code>. Dropped on purpose: his <code>backdrop-filter</code> card blur, which is
-  glassmorphism, and FiraCode, which we do not need.<br><br>
-  <b>The sample is your own</b>, from the bench &mdash; it has a <code>struct</code> in it, which is
-  why <b>the green finally appears</b>. It never has on the site because none of your posts declare
-  one, and Rouge files struct names as variables anyway.
+  <b>D20 pick A, built.</b> Maxime Heckel's header strip transcribed from the verbatim CSS in
+  <code>analysis/component-sources/source-code-block.md</code> &mdash; overflow-hidden bordered
+  card, flex <code>space-between</code> bar (filename left, copy right) separated only by a
+  <code>border-bottom</code>, <code>display:table</code> 45px gutter so long lines scroll without
+  the gutter sliding. Squared per D20, no traffic lights, night ground in place of his cool
+  <code>--gray-200</code>. Dropped: his card blur and FiraCode.<br><br>
+  <b>LOCKED this round:</b> orange <b>B #D79A5B</b>, and control flow purple with the functions
+  (you said <i>"should be purple too"</i>, so they deliberately share <code>#C586C0</code>).<br><br>
+  <b>Four things you caught, all now fixed, and all four were Rouge lying rather than a colour
+  being wrong.</b> None of them are expressible in CSS, which is why the shipped version needs a
+  build-time pass:
+</p>
+<table class="fx">
+  <tr><th>you said</th><th>what Rouge did</th><th>the rule that fixes it</th></tr>
+  <tr><td><code>SAMPLE_TEXTURE2D</code> is a function</td>
+      <td>class <code>n</code>; my SCREAMING_SNAKE rule then called it a constant</td>
+      <td>SCREAMING_SNAKE <b>followed by <code>(</code></b> is a macro function, not a constant</td></tr>
+  <tr><td><code>noise</code> is purple and shouldn't be</td>
+      <td>class <code>nb</code> &mdash; HLSL really has a <code>noise()</code> intrinsic, but here it is a local variable</td>
+      <td>a function token <b>not followed by <code>(</code></b> is not a call &rarr; demote to variable</td></tr>
+  <tr><td><code>POSITION</code>/<code>TEXCOORD0</code> shouldn't be purple</td>
+      <td><code>nb</code> &mdash; the same class as <code>lerp</code></td>
+      <td>a token <b>preceded by <code>:</code></b> is a semantic</td></tr>
+  <tr><td>(found while fixing) <code>SV_Target</code></td>
+      <td>plain <code>n</code> &mdash; so your three semantics rendered THREE different colours</td>
+      <td>same <code>:</code> rule catches all three regardless of Rouge's class</td></tr>
+</table>
+<p class="note">
+  Every rule above is positional, not a word list, so it does not need maintaining per language.
+  One known limit: <code>#define MAX_STEPS 64</code> is swallowed by Rouge into a single
+  preprocessor span, so nothing inside a <code>#define</code> can be coloured separately.
 </p>
 
-<h3>1 &middot; Control flow &mdash; the contradiction I need you to settle</h3>
-<p>Your written spec puts <code>return if for</code> under ORANGE with the storage keywords. Then
-you said <i>"else's should also be purple"</i>. Both cannot hold. Left is the spec as written;
-right moves control flow onto the purple. Everything else is identical.</p>
-<div class="grid g2">
-  <div class="cell"><h4><span class="chip" style="background:#CE9178"></span>1A &middot; spec as written &mdash; control flow ORANGE</h4>
-    <p><code>if else return</code> sit with <code>static const struct float</code>.</p>
-    <div style="--ctl:var(--orange)"><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
-<div class="cw__line"><span class="cw__no">2</span><span class="cw__code"><span class="cp">#define MAX_STEPS 64</span></div>
-<div class="cw__line"><span class="cw__no">3</span><span class="cw__code"></span><span class="k">static</span> <span class="k">const</span> <span class="n">float</span> <span class="n">EDGE_SOFTNESS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">15</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">4</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">5</span><span class="cw__code"><span class="k">struct</span> <span class="n">Attributes</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">6</span><span class="cw__code">    <span class="kt">float4</span> <span class="n">positionOS</span> <span class="o">:</span> <span class="nb">POSITION</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">7</span><span class="cw__code">    <span class="kt">float2</span> <span class="n">uv</span>         <span class="o">:</span> <span class="nb">TEXCOORD0</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">8</span><span class="cw__code"><span class="p">};</span></span></div>
-<div class="cw__line"><span class="cw__no">9</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">10</span><span class="cw__code"><span class="n">float</span> <span class="nf">InverseLerp</span><span class="p">(</span><span class="n">float</span> <span class="n">a</span><span class="p">,</span> <span class="n">float</span> <span class="n">b</span><span class="p">,</span> <span class="n">float</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">11</span><span class="cw__code">    <span class="k">return</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">12</span><span class="cw__code"><span class="p">}</span></span></div>
-<div class="cw__line"><span class="cw__no">13</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">14</span><span class="cw__code"><span class="kt">float4</span> <span class="nf">Frag</span><span class="p">(</span><span class="n">Varyings</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">15</span><span class="cw__code">    <span class="n">float</span> <span class="nb">noise</span> <span class="o">=</span> <span class="n">SAMPLE_TEXTURE2D</span><span class="p">(</span><span class="n">_NoiseTex</span><span class="p">,</span> <span class="n">sampler_NoiseTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">).</span><span class="n">r</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">16</span><span class="cw__code">    <span class="n">float</span> <span class="n">edge</span>  <span class="o">=</span> <span class="n">InverseLerp</span><span class="p">(</span><span class="n">_Cutoff</span><span class="p">,</span> <span class="n">_Cutoff</span> <span class="o">+</span> <span class="n">EDGE_SOFTNESS</span><span class="p">,</span> <span class="nb">noise</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">17</span><span class="cw__code">    <span class="k">if</span> <span class="p">(</span><span class="n">edge</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">18</span><span class="cw__code">        <span class="nb">clip</span><span class="p">(</span><span class="nb">noise</span> <span class="o">-</span> <span class="n">_Cutoff</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">19</span><span class="cw__code">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">20</span><span class="cw__code">        <span class="k">return</span> <span class="kt">float4</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">21</span><span class="cw__code">    <span class="p">}</span></span></div>
-<div class="cw__line"><span class="cw__no">22</span><span class="cw__code">    <span class="k">return</span> <span class="nb">lerp</span><span class="p">(</span><span class="n">_EdgeColor</span><span class="p">,</span> <span class="n">baseColor</span><span class="p">,</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">edge</span><span class="p">));</span></span></div>
-<div class="cw__line"><span class="cw__no">23</span><span class="cw__code"><span class="p">}</span></span></div></div></div></div></div>
-  <div class="cell"><h4><span class="chip" style="background:#C586C0"></span>1B &middot; your correction &mdash; control flow PURPLE</h4>
-    <p><code>if else return</code> move to the function purple. Orange keeps types + storage.</p>
-    <div><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
-<div class="cw__line"><span class="cw__no">2</span><span class="cw__code"><span class="cp">#define MAX_STEPS 64</span></div>
-<div class="cw__line"><span class="cw__no">3</span><span class="cw__code"></span><span class="k">static</span> <span class="k">const</span> <span class="n">float</span> <span class="n">EDGE_SOFTNESS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">15</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">4</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">5</span><span class="cw__code"><span class="k">struct</span> <span class="n">Attributes</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">6</span><span class="cw__code">    <span class="kt">float4</span> <span class="n">positionOS</span> <span class="o">:</span> <span class="nb">POSITION</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">7</span><span class="cw__code">    <span class="kt">float2</span> <span class="n">uv</span>         <span class="o">:</span> <span class="nb">TEXCOORD0</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">8</span><span class="cw__code"><span class="p">};</span></span></div>
-<div class="cw__line"><span class="cw__no">9</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">10</span><span class="cw__code"><span class="n">float</span> <span class="nf">InverseLerp</span><span class="p">(</span><span class="n">float</span> <span class="n">a</span><span class="p">,</span> <span class="n">float</span> <span class="n">b</span><span class="p">,</span> <span class="n">float</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">11</span><span class="cw__code">    <span class="k">return</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">12</span><span class="cw__code"><span class="p">}</span></span></div>
-<div class="cw__line"><span class="cw__no">13</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">14</span><span class="cw__code"><span class="kt">float4</span> <span class="nf">Frag</span><span class="p">(</span><span class="n">Varyings</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">15</span><span class="cw__code">    <span class="n">float</span> <span class="nb">noise</span> <span class="o">=</span> <span class="n">SAMPLE_TEXTURE2D</span><span class="p">(</span><span class="n">_NoiseTex</span><span class="p">,</span> <span class="n">sampler_NoiseTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">).</span><span class="n">r</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">16</span><span class="cw__code">    <span class="n">float</span> <span class="n">edge</span>  <span class="o">=</span> <span class="n">InverseLerp</span><span class="p">(</span><span class="n">_Cutoff</span><span class="p">,</span> <span class="n">_Cutoff</span> <span class="o">+</span> <span class="n">EDGE_SOFTNESS</span><span class="p">,</span> <span class="nb">noise</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">17</span><span class="cw__code">    <span class="k">if</span> <span class="p">(</span><span class="n">edge</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">18</span><span class="cw__code">        <span class="nb">clip</span><span class="p">(</span><span class="nb">noise</span> <span class="o">-</span> <span class="n">_Cutoff</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">19</span><span class="cw__code">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">20</span><span class="cw__code">        <span class="k">return</span> <span class="kt">float4</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">21</span><span class="cw__code">    <span class="p">}</span></span></div>
-<div class="cw__line"><span class="cw__no">22</span><span class="cw__code">    <span class="k">return</span> <span class="nb">lerp</span><span class="p">(</span><span class="n">_EdgeColor</span><span class="p">,</span> <span class="n">baseColor</span><span class="p">,</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">edge</span><span class="p">));</span></span></div>
-<div class="cw__line"><span class="cw__no">23</span><span class="cw__code"><span class="p">}</span></span></div></div></div></div></div>
-</div>
-
-<h3>2 &middot; The orange &mdash; you said the current one is wrong</h3>
-<p>Since <i>"so it seems my vs code isnt using vs code dark+ but i like it anyways its fine"</i>
-retired &ldquo;same as VS Code&rdquo; as the citation, the orange is an open pick rather than a
-lookup. All four use 1B's purple control flow. Only the orange differs.</p>
-<div class="grid g4"><div class="cell" style="--orange:#CE9178"><h4><span class="chip" style="background:#CE9178"></span>A &middot; #CE9178</h4><p>what the code holds now &mdash; Dark+'s STRING colour, borrowed back when &ldquo;same as VS Code&rdquo; was still the citation</p><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
+<h3>The last pick &mdash; what colour is a semantic?</h3>
+<p>You asked whether <code>POSITION</code> and <code>TEXCOORD0</code> should be purple, since
+they are vertex bindings. They are not functions, so they are off the purple either way. Three
+candidates below; everything else is identical and locked. Look at line 6, 7 and 15.</p>
+<div class="grid g4"><div class="cell" style="--semantic:#569CD6"><h4><span class="chip" style="background:#569CD6"></span>i &middot; #569CD6</h4><p>the constant blue &mdash; treats a semantic as a fixed reserved name. What it does now, and it collides with <code>EDGE_SOFTNESS</code>.</p><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
 <div class="cw__line"><span class="cw__no">2</span><span class="cw__code"><span class="cp">#define MAX_STEPS 64</span></div>
 <div class="cw__line"><span class="cw__no">3</span><span class="cw__code"></span><span class="k">static</span> <span class="k">const</span> <span class="n">float</span> <span class="n">EDGE_SOFTNESS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">15</span><span class="p">;</span></span></div>
 <div class="cw__line"><span class="cw__no">4</span><span class="cw__code">&nbsp;</span></div>
@@ -167,7 +138,7 @@ lookup. All four use 1B's purple control flow. Only the orange differs.</p>
 <div class="cw__line"><span class="cw__no">21</span><span class="cw__code">    <span class="p">}</span></span></div>
 <div class="cw__line"><span class="cw__no">22</span><span class="cw__code">    <span class="k">return</span> <span class="nb">lerp</span><span class="p">(</span><span class="n">_EdgeColor</span><span class="p">,</span> <span class="n">baseColor</span><span class="p">,</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">edge</span><span class="p">));</span></span></div>
 <div class="cw__line"><span class="cw__no">23</span><span class="cw__code"><span class="p">}</span></span></div></div></div></div>
-<div class="cell" style="--orange:#D79A5B"><h4><span class="chip" style="background:#D79A5B"></span>B &middot; #D79A5B</h4><p>a true mid orange, warmer and less pink than A</p><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
+<div class="cell" style="--semantic:#9CDCFE"><h4><span class="chip" style="background:#9CDCFE"></span>ii &middot; #9CDCFE</h4><p>the variable blue &mdash; treats it as naming a data location, which is what a vertex binding is. Collides with ordinary variables.</p><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
 <div class="cw__line"><span class="cw__no">2</span><span class="cw__code"><span class="cp">#define MAX_STEPS 64</span></div>
 <div class="cw__line"><span class="cw__no">3</span><span class="cw__code"></span><span class="k">static</span> <span class="k">const</span> <span class="n">float</span> <span class="n">EDGE_SOFTNESS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">15</span><span class="p">;</span></span></div>
 <div class="cw__line"><span class="cw__no">4</span><span class="cw__code">&nbsp;</span></div>
@@ -190,30 +161,7 @@ lookup. All four use 1B's purple control flow. Only the orange differs.</p>
 <div class="cw__line"><span class="cw__no">21</span><span class="cw__code">    <span class="p">}</span></span></div>
 <div class="cw__line"><span class="cw__no">22</span><span class="cw__code">    <span class="k">return</span> <span class="nb">lerp</span><span class="p">(</span><span class="n">_EdgeColor</span><span class="p">,</span> <span class="n">baseColor</span><span class="p">,</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">edge</span><span class="p">));</span></span></div>
 <div class="cw__line"><span class="cw__no">23</span><span class="cw__code"><span class="p">}</span></span></div></div></div></div>
-<div class="cell" style="--orange:#E8A87C"><h4><span class="chip" style="background:#E8A87C"></span>C &middot; #E8A87C</h4><p>the site's own warm mid &mdash; already a token here (--pill-icon-study)</p><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
-<div class="cw__line"><span class="cw__no">2</span><span class="cw__code"><span class="cp">#define MAX_STEPS 64</span></div>
-<div class="cw__line"><span class="cw__no">3</span><span class="cw__code"></span><span class="k">static</span> <span class="k">const</span> <span class="n">float</span> <span class="n">EDGE_SOFTNESS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">15</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">4</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">5</span><span class="cw__code"><span class="k">struct</span> <span class="n">Attributes</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">6</span><span class="cw__code">    <span class="kt">float4</span> <span class="n">positionOS</span> <span class="o">:</span> <span class="nb">POSITION</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">7</span><span class="cw__code">    <span class="kt">float2</span> <span class="n">uv</span>         <span class="o">:</span> <span class="nb">TEXCOORD0</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">8</span><span class="cw__code"><span class="p">};</span></span></div>
-<div class="cw__line"><span class="cw__no">9</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">10</span><span class="cw__code"><span class="n">float</span> <span class="nf">InverseLerp</span><span class="p">(</span><span class="n">float</span> <span class="n">a</span><span class="p">,</span> <span class="n">float</span> <span class="n">b</span><span class="p">,</span> <span class="n">float</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">11</span><span class="cw__code">    <span class="k">return</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">12</span><span class="cw__code"><span class="p">}</span></span></div>
-<div class="cw__line"><span class="cw__no">13</span><span class="cw__code">&nbsp;</span></div>
-<div class="cw__line"><span class="cw__no">14</span><span class="cw__code"><span class="kt">float4</span> <span class="nf">Frag</span><span class="p">(</span><span class="n">Varyings</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="n">SV_Target</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">15</span><span class="cw__code">    <span class="n">float</span> <span class="nb">noise</span> <span class="o">=</span> <span class="n">SAMPLE_TEXTURE2D</span><span class="p">(</span><span class="n">_NoiseTex</span><span class="p">,</span> <span class="n">sampler_NoiseTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">).</span><span class="n">r</span><span class="p">;</span></span></div>
-<div class="cw__line"><span class="cw__no">16</span><span class="cw__code">    <span class="n">float</span> <span class="n">edge</span>  <span class="o">=</span> <span class="n">InverseLerp</span><span class="p">(</span><span class="n">_Cutoff</span><span class="p">,</span> <span class="n">_Cutoff</span> <span class="o">+</span> <span class="n">EDGE_SOFTNESS</span><span class="p">,</span> <span class="nb">noise</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">17</span><span class="cw__code">    <span class="k">if</span> <span class="p">(</span><span class="n">edge</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">18</span><span class="cw__code">        <span class="nb">clip</span><span class="p">(</span><span class="nb">noise</span> <span class="o">-</span> <span class="n">_Cutoff</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">19</span><span class="cw__code">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></span></div>
-<div class="cw__line"><span class="cw__no">20</span><span class="cw__code">        <span class="k">return</span> <span class="kt">float4</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span></span></div>
-<div class="cw__line"><span class="cw__no">21</span><span class="cw__code">    <span class="p">}</span></span></div>
-<div class="cw__line"><span class="cw__no">22</span><span class="cw__code">    <span class="k">return</span> <span class="nb">lerp</span><span class="p">(</span><span class="n">_EdgeColor</span><span class="p">,</span> <span class="n">baseColor</span><span class="p">,</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">edge</span><span class="p">));</span></span></div>
-<div class="cw__line"><span class="cw__no">23</span><span class="cw__code"><span class="p">}</span></span></div></div></div></div>
-<div class="cell" style="--orange:#F0A500"><h4><span class="chip" style="background:#F0A500"></span>D &middot; #F0A500</h4><p>the palette's gold-deep &mdash; the most saturated, closest to the site's own orange</p><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
+<div class="cell" style="--semantic:#4EC9B0"><h4><span class="chip" style="background:#4EC9B0"></span>iii &middot; #4EC9B0</h4><p>the class green &mdash; reserved type-like names. Green is nearly unused otherwise, so nothing collides.</p><div class="cw"><div class="cw__bar"><span class="cw__name">dissolve.hlsl</span><button class="cw__copy" type="button">Copy</button></div><div class="cw__pre"><div class="cw__line"><span class="cw__no">1</span><span class="cw__code"><span class="c1">// dissolve.hlsl - edge burn</span></span></div>
 <div class="cw__line"><span class="cw__no">2</span><span class="cw__code"><span class="cp">#define MAX_STEPS 64</span></div>
 <div class="cw__line"><span class="cw__no">3</span><span class="cw__code"></span><span class="k">static</span> <span class="k">const</span> <span class="n">float</span> <span class="n">EDGE_SOFTNESS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">15</span><span class="p">;</span></span></div>
 <div class="cw__line"><span class="cw__no">4</span><span class="cw__code">&nbsp;</span></div>
@@ -249,21 +197,56 @@ const SCALARS = new Set(['float','int','uint','bool','half','double','fixed','dw
    result; the shipped version would do the same split once at build time. */
 function retag(root) {
   const spans = [...root.querySelectorAll('.cw__code span')];
+
+  /* the next / previous NON-BLANK sibling, so the positional rules below are not fooled by the
+     whitespace spans Rouge emits between tokens */
+  const nextTok = (i) => { for (let j = i + 1; j < spans.length; j++) if (spans[j].textContent.trim()) return spans[j]; return null; };
+  const prevTok = (i) => { for (let j = i - 1; j >= 0; j--) if (spans[j].textContent.trim()) return spans[j]; return null; };
+
   spans.forEach((s, i) => {
     const t = s.textContent.trim();
+    if (!t) return;
+
     if (s.classList.contains('k')) s.classList.add(CONTROL.has(t) ? 'x-ctl' : 'x-store');
+
+    /* A SEMANTIC is any token preceded by `:` - POSITION, TEXCOORD0, SV_Target. Positional, so it
+       catches all three regardless of what Rouge called them, and Rouge called them three
+       DIFFERENT things: POSITION and TEXCOORD0 came out `nb` (builtin, same class as `lerp`) and
+       SV_Target came out plain `n`. That is why they rendered three different colours.
+       Checked for false positives in this sample: the only other `:` is inside the `//` comment,
+       which Rouge keeps as one span, so nothing else can match. A ternary `?:` would - noted. */
+    const prev = prevTok(i);
+    if (prev && prev.textContent.trim() === ':') { s.classList.add('x-semantic'); return; }
+
     if (s.classList.contains('n')) {
-      if (SCALARS.has(t))                 s.classList.add('x-type');
-      else if (/^[A-Z0-9_]{2,}$/.test(t)) s.classList.add('x-const');
-    }
-    /* a struct NAME is the identifier right after `struct` - positional, so no type-name list */
-    if (s.classList.contains('k') && t === 'struct') {
-      for (let j = i + 1; j < spans.length; j++) {
-        if (!spans[j].textContent.trim()) continue;
-        if (spans[j].classList.contains('n')) spans[j].classList.add('x-class');
-        break;
+      if (SCALARS.has(t)) {
+        s.classList.add('x-type');
+      } else if (/^[A-Z0-9_]{2,}$/.test(t)) {
+        /* SCREAMING_SNAKE is NOT enough to mean constant. A SCREAMING macro FUNCTION is followed
+           by `(` - Rod caught SAMPLE_TEXTURE2D rendering as a constant. Positional again. */
+        const nx = nextTok(i);
+        s.classList.add(nx && nx.textContent.trim().startsWith('(') ? 'x-func' : 'x-const');
       }
     }
+
+    /* a struct NAME is the identifier right after `struct` - positional, so no type-name list */
+    if (s.classList.contains('k') && t === 'struct') {
+      const nx = nextTok(i);
+      if (nx && nx.classList.contains('n')) nx.classList.add('x-class');
+    }
+
+    /* ROUGE'S FUNCTION CLASSES ARE NOT RELIABLE - only the `(` is. Rod caught `noise` rendering
+       purple: Rouge classes it `nb` because HLSL HAS a noise() intrinsic, but here it is a local
+       variable (`float noise = ...`). So a token Rouge calls a function that is NOT followed by
+       `(` is not a call, and gets demoted to a variable.
+       Declarations still pass: `InverseLerp(`, `Frag(`, `lerp(`, `saturate(` are all followed by
+       `(`. The case this would get wrong is a function used as a VALUE, which HLSL barely allows
+       and this codebase does not do. */
+    if (s.classList.contains('nb') || s.classList.contains('nf')) {
+      const nx = nextTok(i);
+      if (!(nx && nx.textContent.trim().startsWith('('))) s.classList.add('x-notcall');
+    }
+
     if (s.classList.contains('p') && /^[()[\]{}]+$/.test(t)) s.classList.add('x-bracket');
   });
 }

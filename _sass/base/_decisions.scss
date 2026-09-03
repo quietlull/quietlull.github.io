@@ -642,17 +642,44 @@ body.spacious .bio-h--lesser {
    one - four warm hues would be four oranges at 13px. Rod named blue and pink deliberately.
    THE CARVE-OUT IS SCOPED TO `pre code` ONLY. These hues must never reach UI, prose, links,
    headings or chrome, and inline code is not included (D31).
-   Values are VS Code Dark+'s, because "same as VS code" is the citation. Rod's role mapping and
-   the open comments-vs-classes conflict are in redesign-lab/decisions.md. */
-.prose pre code {
-  --syn-type: #ce9178;      /* types + storage keywords - ROD's ORANGE. void const float float4  */
+   The hues are Dark+'s, the ROLES are Rod's. "same as VS Code" was retired as the citation on
+   2026-08-23 ("so it seems my vs code isnt using vs code dark+ but i like it anyways its fine"),
+   so the role list in redesign-lab/text-decisions.html is the spec and Dark+ is only where the
+   values came from.
+
+   THE SELECTOR IS `div.highlight`, AND THAT IS THE WHOLE BUG THIS FIXES. It used to be
+   `.prose pre code`, which MATCHES NOTHING: with `line_numbers: true`, Rouge emits its table
+   layout and nests code as `code > table > td > pre`, so the <code> is the PARENT of <pre>, not
+   the child. Every --syn-* below was therefore undefined, every `var(--syn-*)` resolved to
+   nothing, and all 1,001 token spans inherited one flat colour - for as long as this file has
+   existed. Nothing errored, because an undefined custom property is not an error.
+   `div.highlight` is what Rouge wraps every code BLOCK in, and inline code never has one, so
+   D31's "inline code is not included" now holds by CONSTRUCTION rather than by a selector that
+   has to be kept correct. See TRAPS. */
+.prose div.highlight {
+  --syn-type: #d79a5b;      /* types + storage keywords - ROD's ORANGE, pick B on 2026-09-03.
+                               Was #ce9178, which is Dark+'s STRING colour and was only ever
+                               borrowed while "same as VS Code" was still the citation.          */
   --syn-const: #569cd6;     /* named CONSTANTS - Rod 2026-08-23 "keep dark blue for constants"   */
+  --syn-semantic: #569cd6;  /* HLSL semantics - POSITION, TEXCOORD0, SV_Target. Shares the
+                               constant blue for now; Rod accepted it seeing it drawn. It is a
+                               SEPARATE token so changing it later is one line, not a hunt.      */
   --syn-var: #9cdcfe;       /* plain variables - the lighter blue, so const reads apart from var */
-  --syn-class: #4ec9b0;     /* classes / type names - Dark+ teal-green                           */
-  --syn-func: #c586c0;      /* functions - ROD's PINK                                            */
-  --syn-comment: #6a6a6a;   /* held neutral until the green-vs-comments conflict is resolved     */
+  --syn-class: #4ec9b0;     /* classes / type NAMES - Dark+ teal-green                           */
+  --syn-func: #c586c0;      /* functions - ROD's PINK. Control flow SHARES it, his call
+                               2026-09-03: "SAMPLE_TEXTURE2D is a function and should be purple
+                               too" - so if/else/return and the calls are deliberately one hue.  */
+  --syn-comment: #6a9955;   /* GREEN, and this closes an AA failure rather than a taste call: the
+                               old #6a6a6a placeholder measured 3.53:1 on the night ground and
+                               failed. This measures 5.73:1. The green-vs-comments question is
+                               answered by taking VS Code's own comment green.                   */
   --syn-number: #b5cea8;
-  --syn-string: #ce9178;    /* SHARES the type orange. Open, see the STRING COLLISION note below */
+  --syn-string: #ce9178;    /* SHARES nothing now - types moved to #d79a5b, so the old string /
+                               type collision is gone as a side effect of the orange pick.       */
+  --syn-bracket: #ffd700;   /* Brackets only, not all punctuation. This is VS Code's bracket-pair
+                               colourisation level 1, read out of Rod's own install (the THEME
+                               does not define it, so VS Code falls back to built-ins). Rouge has
+                               no nesting depth, so only level 1 is reproducible.                */
 }
 
 /* Rod settled this 2026-08-23: "Keep dark blue for constants but 100% a." His role list wins.
@@ -726,4 +753,32 @@ body.spacious .bio-h--lesser {
 .prose pre .tok-number                             { color: var(--syn-number); }
 
 .prose pre .tok-string                             { color: var(--syn-string); }
+
+/* ---------------------------------------------------------------------------------------------
+   THE RE-TAG OVERRIDES. `_plugins/syntax-retag.rb` adds these classes ALONGSIDE Rouge's own at
+   build time, because Rouge puts tokens with different roles in the same class and no selector
+   can separate them. Each rule below exists because Rod looked at a rendered block and caught it.
+
+   THEIR POSITION IN THIS FILE IS LOAD-BEARING. A span reads `class="n x-type"`, so both rules
+   match at the same specificity (0,2,0) and the LAST one wins. Written above the block, every
+   one of these silently loses and the token keeps Rouge's colour - which is the exact failure
+   tools/css-order-check.mjs exists to catch, and which I shipped into the bench page once before
+   noticing. Do not move them up.
+   --------------------------------------------------------------------------------------------- */
+.prose pre .x-type,
+.prose pre .x-storage                              { color: var(--syn-type); }
+
+.prose pre .x-control                              { color: var(--syn-func); }
+
+.prose pre .x-func                                 { color: var(--syn-func); }
+
+.prose pre .x-notcall                              { color: var(--syn-var); }
+
+.prose pre .x-class                                { color: var(--syn-class); }
+
+.prose pre .x-const                                { color: var(--syn-const); }
+
+.prose pre .x-semantic                             { color: var(--syn-semantic); }
+
+.prose pre .x-bracket                              { color: var(--syn-bracket); }
 }

@@ -15,6 +15,20 @@ the live look.** Profile the real thing through `scene-tuner.html`, which drives
 bundle. There is also an orphan `redesign-lab/scene/shader/mirroredSurface.js` that nothing
 imports and whose NAME matches the live file, which is the decoy that starts this.
 
+**A token is the wrong colour and the palette is not the problem ->**
+Rouge's token classes do not line up with roles, so no stylesheet can express a role mapping on
+its own. Measured on this project's own Rouge over HLSL: `k` holds `return if else` AND
+`static const struct`; `n` holds `float bool` AND ordinary variables AND struct NAMES AND
+SCREAMING_SNAKE macro functions; `nb` holds `lerp saturate` AND `noise`, which is a local variable
+that happens to share a name with an intrinsic, AND the vertex semantics `POSITION`/`TEXCOORD0` -
+while `SV_Target` comes back plain `n`, so three semantics render three colours.
+**The fixes are positional, never word lists where avoidable**, and live in
+`_plugins/syntax-retag.rb`: SCREAMING followed by `(` is a function not a constant; a function
+token NOT followed by `(` is not a call and demotes to a variable; anything preceded by `:` is a
+semantic; the identifier after `struct` is a class name. **Rouge's function classes are unreliable
+and only the paren is trustworthy.** Every one of these was found by Rod looking at a rendered
+block, not by any checker - a wrong colour is a valid colour.
+
 **Code blocks render flat, in the wrong font, inside a small bordered chip ->**
 Rouge's TABLE layout inverts the nesting every selector assumes. With `block: line_numbers: true`
 in `_config.yml`, Rouge emits `code > table > td > pre`, so the `<code>` is the PARENT of `<pre>`,

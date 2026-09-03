@@ -1653,3 +1653,40 @@ rather than through a framework we no longer carry.
 means giving it feedback first. The code-BLOCK copy button is unaffected - its icon swap to
 `fas fa-check` never went through the tooltip.
 
+## D51 - The code block is D20 pick A, built; orange B; control flow shares the function purple (2026-09-03, ROD)
+
+Rod: *"2B for color"*, *"else's should also be purple"*, *"SAMPLE_TEXTURE2D is a function and
+should be purple too"*, *"yeah this looks correct now lets ship it"*.
+
+**This does not overturn D20, it executes it.** D20 picked Maxime Heckel's header strip, squared,
+on 2026-08-18 and it was built on the bench the same week. It was never ported, so the live site
+kept upstream Chirpy's chrome for two weeks while the tracker read "NOT YET BUILT" and the bench
+read "PICKED". Both were true.
+
+**What Rod settled that was genuinely open.** D20 left *"whose colours"* unanswered for the block
+chrome and the orange unnamed. The orange is now **#d79a5b**. The old #ce9178 was Dark+'s STRING
+colour, borrowed only while "same as VS Code" stood as the citation - and he had already retired
+that citation on 2026-08-23 (*"so it seems my vs code isnt using vs code dark+ but i like it
+anyways its fine"*), which left the value with nothing behind it. Moving off it also dissolved the
+string/type collision that had been logged as open.
+
+**Rejected: keeping control flow on the orange.** His written role list put `return if for` with
+the types and storage keywords. He revised it in front of the rendered block, and control flow now
+shares the function purple #c586c0 deliberately - I raised that the two roles become
+indistinguishable and he confirmed it with *"should be purple too"*. Recorded because the written
+spec still reads the old way and the later call wins.
+
+**Comments go green (#6a9955), and that is a correctness fix as much as a taste one.** The #6a6a6a
+placeholder measured 3.53:1 on the night ground and failed AA; green measures 5.73:1. The
+"green-vs-comments conflict" that had been holding the slot is answered by taking VS Code's own
+comment green.
+
+**Brackets are new: #ffd700**, VS Code's bracket-pair colourisation level 1, read out of Rod's own
+install because the theme does not define it and VS Code falls back to built-ins. Only level 1 is
+reproducible - Rouge emits flat spans with no nesting depth.
+
+**Accepted rather than chosen: HLSL semantics share the constant blue.** He questioned it
+(*"im also not sure POSITION and TEXCOORD0 should be purple as well as they are vertex buffers
+right?"*), saw three options drawn, and approved. It has its own `--syn-semantic` token so moving
+it later is one line.
+

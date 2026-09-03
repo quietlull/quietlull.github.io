@@ -1,3 +1,76 @@
+# 2026-09-03 - THE CODE BLOCKS ACTUALLY RENDER NOW (D20 shipped, four Rouge lies fixed)
+
+**Decided by ROD**, across a long correction loop that is the real content of this entry:
+*"the codeblocks on live look completely wrong can you explain why?"* -> *"2B for color"* ->
+*"yeah this looks correct now lets ship it"*.
+
+**The headline is not the colours, it is that a locked decision had never rendered.** The eight
+`--syn-*` variables were defined on `.prose pre code`. That selector matches NOTHING: with
+`block: line_numbers: true`, Rouge emits its table layout and nests code as
+`code > table > td > pre`, so the `<code>` is the PARENT of `<pre>`. So every variable was
+undefined, every `var(--syn-*)` resolved to nothing, and all 1,001 token spans inherited one flat
+colour - underneath a full, argued, twice-locked palette. Nothing ever errored, because an
+undefined custom property is not an error and a wrong colour is still a valid colour.
+
+The same inversion did a second thing: `.prose code:not(pre code)`, written to catch inline code
+only, matched every code BLOCK too (the block's outer `<code>` has no `pre` ancestor either), so
+each block was wearing the inline-code chip - `display:inline-block`, 2px 6px padding, a border.
+And a third: nothing in the repo ever set a font on a code block, so `pre` fell to the browser's
+UA `monospace` while IBM Plex Mono sat loaded and unasked-for. Three symptoms, one cause.
+
+**Ruled out first, by measurement, which is the only reason this did not get chased into the
+deploy:** the live CSS is byte-equivalent to local, the stylesheet link tags match, and the code
+text is byte-identical with the line-number gutter aligned. `compress_html` skips development but
+only drops optional `</td>` tags and inter-tag whitespace, which parses to the same DOM. It was
+never a cache and never live-only - localhost was identically broken.
+
+**FOUR THINGS ROD CAUGHT BY EYE, and every one was Rouge lying rather than a colour being wrong.**
+None are expressible in CSS, which is why `_plugins/syntax-retag.rb` now exists. Each rule is
+positional or a closed word list:
+- `SAMPLE_TEXTURE2D` rendered as a constant. SCREAMING_SNAKE alone does not mean constant - a
+  SCREAMING macro FUNCTION is followed by `(`.
+- `noise` rendered purple. Rouge classes it `nb` because HLSL really has a `noise()` intrinsic,
+  but `float noise = ...` is a local variable. **A function token not followed by `(` is not a
+  call.** Rouge's function classes are unreliable; only the paren is.
+- `POSITION` / `TEXCOORD0` rendered purple, same class as `lerp`. A token preceded by `:` is a
+  semantic.
+- Found while fixing that: `SV_Target` came back plain `n`, so his three semantics were rendering
+  three different colours. The one `:` rule catches all three regardless of Rouge's class.
+
+**And the correction I needed twice.** Told to match his editor, I read his VS Code install and
+copied Dark+'s ROLE assignment as well as its hues - which flattened a decision locked on
+2026-08-23. `element-tracker.md` is explicit that the hues are Dark+'s and **the mapping is his**:
+orange on types where Dark+ spends it on strings, pink on functions where Dark+ spends it on
+control flow. Worse, the bench already recorded him retiring the citation outright - *"so it seems
+my vs code isnt using vs code dark+ but i like it anyways its fine"* - so I was working from a
+source he had dropped three weeks earlier. **The values in the file had been right all along.**
+That is also why the orange was wrong: #ce9178 is Dark+'s string colour, borrowed only while that
+citation stood. It is #d79a5b now, his pick B, which dissolved the old string/type collision as a
+side effect.
+
+**I also told him the agreed component was never built. It was.** The element tracker says
+"NOT YET BUILT" and I stopped there; `redesign-lab/text-decisions.html` has it built, picked and
+annotated. Both records were true - built on the bench, never ported - and reading one and
+asserting from it is the same failure as trusting a comment.
+
+**What shipped**: D20 pick A, Maxime Heckel's header strip transcribed from the verbatim CSS in
+`analysis/component-sources/source-code-block.md` - full-width strip, filename left, copy right,
+border-bottom as the only separator. Squared (D20). Chirpy's three macOS traffic-light dots
+deleted, which is the thing Rod was actually looking at: *"i never have used a mac so this is not
+something that represents me"*. The backdrop blur dropped - glassmorphism, and the source doc puts
+its own card blur under doesNotTransfer unprompted. Orange #d79a5b, control flow sharing the
+function purple on his call, comments green, brackets gold from VS Code's bracket-pair level 1
+read out of his install.
+
+**Measured after**: 8 distinct colours on a real post where there was 1; gutter aligned on all 5
+blocks; inline code byte-identical, so D31 holds by construction rather than by a selector;
+all 11 colours clear AA, and comments improve from a failing 3.53:1 to 5.73:1.
+
+**Ship-check flagged two things and both are closed here**: the ledger tiered the chrome Slop,
+which cannot ship (now Remixed, with the three departures named), and the docs were unsynced.
+Still open by its own rules: Rod has seen the bench, not the live post, and the claude-idea ratio
+rollup is self-marked STALE so the <25% gate could not be verified.
+
 # 2026-09-02, later - BOOTSTRAP'S LAST TENANTS EVICTED, AND WHY THE CODE BLOCKS LOOK WRONG
 
 **Decided by ROD**: *"delete the tooltips entirely and run the sweep"*, after
