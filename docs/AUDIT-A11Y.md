@@ -140,7 +140,7 @@ So someone tabbing the wall hears 29 names and none of the content.
 ### 9 to 11: the smaller ones
 
 - **Code line numbers**, `pre.lineno` at `rgba(254, 243, 199, 0.3)`, measure **2.39:1**. Raise the alpha.
-- **Four pieces of text sit just under the line:** the takeaway callout `p.takeaway-text` at **3.04:1**, the `WIP` badge at **3.58:1**, the `Built by hand` footer credit at **3.76:1** on eight pages, and the blogs tag buttons at **4.34:1**. The two achievement labels, `.aw__lbl` at **4.30:1** and `.aw__grouplbl` at **4.49:1**, are close enough to the 4.5 line to be a rounding argument, but they are still under it.
+- **Four pieces of text sit just under the line:** the takeaway callout `p.takeaway-text` at **3.04:1**, the `WIP` badge at **3.58:1**, the `Built by hand` footer credit at **3.76:1** on eight pages (**that one is now CLOSED: Rod had the element deleted on 2026-09-02, so it fails on zero pages**), and the blogs tag buttons at **4.34:1**. The two achievement labels, `.aw__lbl` at **4.30:1** and `.aw__grouplbl` at **4.49:1**, are close enough to the 4.5 line to be a rounding argument, but they are still under it.
 - **Narrow screens:** at a 320px viewport the blogs page is **367px** wide because `nav.top-bar__nav` will not wrap, and the post page is **336px** because of the code block. At 200% zoom only the post page still overflows, by 16px.
 
 ---
@@ -272,7 +272,7 @@ and whatever is behind it.
 | `h3.card-title` project card title | 15px | **3.03** | 4.5 | landing, projects |
 | `p.takeaway-text` | 12.8px | **3.04** | 4.5 | projects |
 | `span.card-pin--wip` WIP badge | 8.8px | **3.58** | 4.5 | landing, projects |
-| `span.footer-line__end` "Built by hand" | 10px | **3.76** | 4.5 | 8 pages |
+| ~~`span.footer-line__end` "Built by hand"~~ | 10px | **3.76** | 4.5 | **CLOSED 2026-09-02 - element deleted on Rod's ask, so the failure is gone rather than fixed** |
 | `span.aw__lbl` | 11.2px | **4.30** | 4.5 | about |
 | `button.btn-outline-secondary` tag buttons | 14px | **4.34** | 4.5 | blogs |
 | `div.aw__grouplbl` | 11.2px | **4.49** | 4.5 | about |

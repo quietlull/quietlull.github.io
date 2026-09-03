@@ -339,19 +339,20 @@ they are there so you can see what is moving and what is not. Full history lives
 <p class="secnote">You said you were seeing weird leftover HTML all over the place. An agent read the BUILT pages rather than the templates, which is the real markup. <b>Read the first row before the rest</b>, because it changes how much of this you should care about. <b>Three things I told it were leftovers turned out to be live</b> and are not listed here: the contents popup, the previous/next links and the code-block clipboard bar all work, they are just invisible on a wide desktop window.</p>
 
   <div class="row"><input type="checkbox" data-key="str::phantom"><div>
-    <p class="id"><b class="num">20</b> a lot of what you are seeing in devtools is not on the real site &nbsp;<span class="said">read first</span></p>
-    <p class="did"><b>Bigger than it looked.</b> Your local preview is missing Bootstrap entirely as well as keeping comments the real site strips. So a class looking dead in devtools, or a layout looking wrong, may be correct in production. <b>Judge layout on a production build, not localhost.</b></p>
+    <p class="id"><b class="num">20</b> a lot of what you are seeing in devtools is not on the real site &nbsp;<span class="said">NO LONGER TRUE - ignore this row</span></p>
+    <p class="did"><b>This row expired and I did not notice for a week.</b> It was right when written: local was missing Bootstrap while production had it. <b>Then D48 deleted Bootstrap from both, so localhost and production now compile the same stylesheet</b> and what you see in devtools IS the real site. Production still strips comments and drops optional closing tags, but that parses to the same page. <b>Judge layout wherever you like.</b> The reason this matters: rows 20 and 21 together talked you out of a real defect, which is why you were still seeing dead markup on 2026-09-02.</p>
   </div></div>
 
   <div class="row"><input type="checkbox" data-key="str::bootstrap"><div>
-    <p class="id"><b class="num">21</b> 1,646 leftover class names that no longer do anything, and a few break layout &nbsp;<span class="said">I WAS WRONG - not dead</span></p>
-    <p class="did"><b>Withdrawn.</b> Those classes are NOT dead. Your local preview builds without Bootstrap at all; production builds with it, and the purge keeps them. So they work on the real site and only vanish on localhost. Nothing to do here.</p>
+    <p class="id"><b class="num">21</b> 1,646 leftover class names that no longer do anything, and a few break layout &nbsp;<span class="said">THE WITHDRAWAL WAS ITSELF WRONG - now DONE</span></p>
+    <p class="did"><b>Un-withdrawn, then fixed.</b> The withdrawal was correct on the day: production really did build with Bootstrap and the purge really did keep those classes. <b>D48 then deleted Bootstrap from every build, which quietly turned the withdrawal false</b> - and a withdrawal rots exactly like a claim. Re-measured 2026-09-02: 417 dead class tokens across 23 names in 5 templates, every one with zero matching rules in every built stylesheet and zero references in every bundle. All 417 removed; the count now measures zero. Removing a class nothing styles cannot change rendering, which is why it was safe in bulk. <b>Two names were deliberately left in place because they are bugs, not dead code:</b> <code>post-nav-prev</code> has no rules while <code>post-nav-next</code> has two, and <code>.readtime</code> has none either - deleting them would bury a missing-style bug.</p>
     <p class="look"><span>look at:</span> <a href="/tags/shader/">a tag page</a></p>
   </div></div>
 
   <div class="row"><input type="checkbox" data-key="str::rouge"><div>
-    <p class="id"><b class="num">22</b> code is one flat colour, and there are 1,001 spans doing nothing &nbsp;<span class="said">DONE</span></p>
-    <p class="did">Fixed with the code colours above. The spans now have rules.</p>
+    <p class="id"><b class="num">22</b> code is one flat colour, and there are 1,001 spans doing nothing &nbsp;<span class="said">NOT ACTUALLY FIXED - reopened 2026-09-02</span></p>
+    <p class="did"><b>I called this done and it never worked.</b> The spans did get rules - that half was true and I checked it. What I never checked is that the rules read <code>var(--syn-*)</code> variables defined on <code>.prose pre code</code>, <b>a selector that matches nothing</b>: with line numbers on, Rouge nests code as <code>code &gt; table &gt; td &gt; pre</code>, so the <code>&lt;code&gt;</code> is the PARENT of <code>&lt;pre&gt;</code>. Undefined variable, so every token still inherits one flat colour. Two more symptoms from the same cause: the inline-code chip rule also matches the whole block, and nothing gives the block a font so it uses the browser default. A <code>var()</code> that resolves to nothing renders wrong without erroring. Fix is three selectors keyed on <code>div.highlight</code>; comparison page below.</p>
+    <p class="look"><span>look at:</span> <a href="/redesign-lab/codeblock-fix.html">before and after, real markup</a></p>
     <p class="look"><span>look at:</span> <a href="/tech-art/posts/ComputeGrass/">a post with code</a></p>
   </div></div>
 

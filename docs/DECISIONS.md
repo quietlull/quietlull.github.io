@@ -1630,3 +1630,26 @@ Three conditions, and **the ORDER of the work is forced by a hazard rather than 
    the size has to come down BEFORE the first commit, not after.
 
 Doing these in any other order either ships the workbench publicly or bakes 140 MB into history.
+
+## D50 - The tooltips go, they do not get restored (2026-09-02, ROD)
+
+Rod: *"delete the tooltips entirely and run the sweep"*.
+
+**The situation he was ruling on.** D48 deleted Bootstrap's CSS but not its JavaScript. The tooltip
+module was still imported by `tooltip-loader.js` and `clipboard.js`, still bundled into five
+shipped bundles, and still ran against 73 `data-bs-toggle="tooltip"` elements - injecting a
+`<div class="tooltip">` that had no positioning, background or z-index left to style it. So the
+feature was neither working nor absent.
+
+**Rejected: restore a minimal tooltip CSS.** It was the smaller diff and it would have kept the
+hover text on dates and read-times. Rod chose deletion, consistent with D44 (delete the old rather
+than working around it) and with his standing "we can also branch back" - the native `title=`
+attributes were kept, so those elements still surface their text on hover, just through the browser
+rather than through a framework we no longer carry.
+
+**What it cost, recorded rather than glossed:** the copy-LINK button's "Copied!" confirmation was
+100% the tooltip title swap, so that button is now silent. It is unreachable on the live site today
+(nothing emits `id="copy-link"`), so nothing visibly regressed, but wiring that button up again
+means giving it feedback first. The code-BLOCK copy button is unaffected - its icon swap to
+`fas fa-check` never went through the tooltip.
+

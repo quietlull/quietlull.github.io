@@ -354,7 +354,7 @@ imports. `modules/layouts/basic.js` (17) is the per-page init that decides what 
 | `modules/components/toc.js` | 36 | `components.js` |
 | `modules/components/toc/toc-desktop.js` | 20 | `modules/components/toc.js` |
 | `modules/components/mode-toggle.js` | 15 | `components.js` |
-| `modules/components/tooltip-loader.js` | 11 | `components.js` |
+| `modules/components/tooltip-loader.js` | 11 | `components.js` **DELETED 2026-09-02 (D50), the file no longer exists** |
 | `modules/config/storage-keys.js` | 10 | 4 components. The single source for localStorage keys. |
 | `modules/utils/color-utils.js` | 32 | `mouse-trail.js` |
 

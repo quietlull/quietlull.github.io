@@ -1,3 +1,64 @@
+# 2026-09-02, later - BOOTSTRAP'S LAST TENANTS EVICTED, AND WHY THE CODE BLOCKS LOOK WRONG
+
+**Decided by ROD**: *"delete the tooltips entirely and run the sweep"*, after
+*"i still see lots of dead HTML to be honest with you"*.
+
+**He was right, and this repo's own todo page had been telling him he was not.** Row 21 of
+`redesign-lab/todo.html` withdrew a dead-class finding on the grounds that "production builds with
+Bootstrap and the purge keeps them", and row 20 said what you see in devtools is not the real site.
+Both were TRUE when written and **D48 falsified them the moment Bootstrap was deleted** - dev and
+production compile the same sheet now. A withdrawal can rot exactly like a claim, and this one sent
+a real defect back to sleep for a week. Both rows are corrected rather than deleted.
+
+**The sweep**: 417 dead class tokens, 23 names, 5 templates, all measuring zero matching rules in
+every built stylesheet and zero references in every bundle. Removing a class that matches no rule
+cannot change rendering, which is the whole reason this was safe to do in bulk. **Two names were
+deliberately NOT swept because they are bugs wearing the same costume**: `post-nav-prev` has no
+rules while its sibling `post-nav-next` has two, and `.readtime` has none either. Deleting them
+would have buried a missing-style bug instead of fixing it.
+
+**The tooltips are gone end to end** - the loader, its export and call site, the `Tooltip` import in
+`clipboard.js`, the branch in `locale-datetime.js`, 73 `data-bs-*` attribute pairs, the `bootstrap`
+dependency, and two dead override rules. They had been in a broken half-state since D48: the
+JavaScript still ran and still injected `<div class="tooltip">`, while the base CSS that positioned
+it had been deleted. **`@popperjs/core` is now orphaned** and left in place rather than removed on
+a guess. **`.btn.btn-outline-primary` was NOT deleted** though it looked dead to me - an agent
+checked and found `_includes/post-nav.html` renders it, with a 44px touch-target rule and a
+reduced-motion selector keyed on it. That correction is the useful half of the job.
+
+**Three counting corrections worth keeping**, all from re-checking rather than trusting a scan:
+`#toc` looked dead because its JS writes `'#toc'` and an exact-token match misses it; `si-x` is
+used twice; `language-hlsl` is matched by `[class^=language-]`. And the 509-vs-417 gap between my
+count and the agent's resolved to **exactly 92** - the two names above, at 73 and 19 occurrences.
+
+**THE CODE BLOCKS** (diagnosed, fix awaiting Rod). Rod: *"the codeblocks on live look completely
+wrong can you explain why?"* One root cause, three symptoms, and it is NOT a cache and NOT
+live-only - see TRAPS. Ruled out first, by measurement: deployed CSS is byte-equivalent to local
+(one `rgba`/`hsla` notation difference from a different Sass on the runner), the stylesheet link
+tags match, and the code text is byte-identical with the gutter aligned. `compress_html` skips
+development, but all it changes is dropping optional `</td>` tags and inter-tag whitespace, which
+parses to the same DOM.
+
+**What is actually wrong**: `block: line_numbers: true` makes Rouge emit its TABLE layout, nesting
+code as `code > table > td > pre`. The `<code>` is the PARENT of `<pre>`, the inverse of the
+`<pre><code>` that every one of our selectors assumes. So `.prose pre code`, which defines all
+eight `--syn-*` colours, matches nothing and every token inherits one flat colour; and
+`.prose code:not(pre code)`, meant for inline code only, matches all five code BLOCKS and gives
+each the inline chip treatment. Nothing sets a font on the block `<pre>` at all, so it falls to the
+browser default while IBM Plex Mono sits loaded and unasked-for.
+
+**This is the same failure mode as the P477 fix that preceded it**: that pass remapped the
+selectors from `.tok-*` to Rouge's real token names and confirmed the spans had rules, but never
+checked that the VARIABLES those rules read were defined on a matching element. A `var()` that
+resolves to nothing renders wrong without erring.
+
+Also this session, all Rod's calls: the footer's "Built by hand" credit is deleted (it was the last
+sub-4.5:1 contrast failure in AUDIT-A11Y, so that row closes by deletion); every achievement's
+flavour and effect now read one fixed string, which retires the redaction machinery and stops
+displaying four internal reward slugs; and the reel video opts out of picture-in-picture, which is
+INFERENCE about Edge's floating mini-player rather than a measurement, since Edge cannot be driven
+from here.
+
 # 2026-09-02 - THE SCENE PERF WORK IS CLOSED, THE REMAINDER ICEBOXED
 
 **Decided by ROD**: *"cool log this for now what and leave the remaining performance boosts to

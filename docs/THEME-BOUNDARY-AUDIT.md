@@ -72,7 +72,7 @@ rewrite.
 | `_javascript/modules/components/toc.js` | 36 |  |
 | `_javascript/modules/components/toc/toc-desktop.js` | 20 |  |
 | `_javascript/modules/components/toc/toc-mobile.js` | 125 |  |
-| `_javascript/modules/components/tooltip-loader.js` | 11 |  |
+| `_javascript/modules/components/tooltip-loader.js` | 11 **DELETED 2026-09-02 (D50), the file no longer exists** |
 | `_javascript/pwa/sw.js` | 92 |  |
 
 **Three are provably unreachable today** and are the cheapest wins in the strip pass. The rest

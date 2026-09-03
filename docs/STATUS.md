@@ -1,9 +1,36 @@
 # Status
 
-**THE WHOLE SITE IS PORTED AND THE STRIP PASS HAS RUN.** Compiled 2026-08-25 evening, after the
-audit-and-fix session. Everything below is measured, not recalled.
+**THE WHOLE SITE IS PORTED, THE STRIP PASS HAS RUN, AND BOOTSTRAP IS FULLY EVICTED.** Compiled
+2026-09-02 evening. Everything below is measured, not recalled.
 
-## The one-screen update (2026-08-25 evening)
+## The one-screen update (2026-09-02 evening)
+
+- **Bootstrap's last tenants are gone.** D48 had removed the CSS; this session removed what was
+  still running: the tooltip JS (D50, Rod's call), 73 `data-bs-*` attribute pairs, the `bootstrap`
+  dependency, two dead override rules, and 417 dead class tokens across 23 names in 5 templates.
+  The site now measures **zero** of those names.
+- **A withdrawal had rotted and cost a week.** `redesign-lab/todo.html` rows 20 and 21 told Rod the
+  dead classes were fine, on the true-at-the-time grounds that production built with Bootstrap.
+  D48 falsified that and nobody re-opened the rows. Both are corrected. **Treat a withdrawal as
+  perishable as a claim.**
+- **THE CODE BLOCKS ARE BROKEN AND THE FIX IS WAITING ON ROD.** Rouge's table layout nests code as
+  `code > table > td > pre`, inverting what every selector assumes, so the syntax colours are
+  undefined, the inline-code chip rule swallows whole blocks, and nothing sets the block font.
+  Three symptoms, one cause, and it is NOT a cache and NOT live-only - localhost is identical.
+  Comparison page: `redesign-lab/codeblock-fix.html`. See TRAPS.
+- **Row 22 of the todo board was wrong**: the 2026-08 code-colour fix was marked DONE and never
+  worked. The spans got rules; the variables those rules read were defined on a non-matching
+  selector. Reopened.
+- **Smaller Rod calls landed**: the footer's "Built by hand" credit is deleted (closing the last
+  sub-4.5:1 contrast failure in AUDIT-A11Y by deletion), every achievement's flavour and effect
+  read one fixed string, and the reel video opts out of Edge's picture-in-picture.
+- **Left flagged, not fixed:** `@popperjs/core` is orphaned; the copy-LINK button has no feedback
+  left (and is unreachable anyway); `related-posts.html`'s `{% else %}` branch never renders;
+  `post-nav-prev` and `.readtime` have no rules at all, which are real missing-style bugs rather
+  than dead classes.
+- `npm test` green throughout: eslint 0, stylelint 0, load-order checker 0 hazards.
+
+## The previous one-screen update (2026-08-25 evening)
 
 - **All 53 pages are the redesign now.** The 25 that were still old Chirpy (19 tag pages, the
   archive, game-design/blogs, under-construction, the 404) were ported in one pass under D46,

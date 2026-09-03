@@ -15,6 +15,27 @@ the live look.** Profile the real thing through `scene-tuner.html`, which drives
 bundle. There is also an orphan `redesign-lab/scene/shader/mirroredSurface.js` that nothing
 imports and whose NAME matches the live file, which is the decoy that starts this.
 
+**Code blocks render flat, in the wrong font, inside a small bordered chip ->**
+Rouge's TABLE layout inverts the nesting every selector assumes. With `block: line_numbers: true`
+in `_config.yml`, Rouge emits `code > table > td > pre`, so the `<code>` is the PARENT of `<pre>`,
+not the child. Consequences, all at once: `.prose pre code` matches NOTHING, so any custom property
+defined there (the eight `--syn-*` syntax colours) is undefined and every token falls back to one
+inherited colour; `.prose code:not(pre code)` was written to catch inline code only, but the
+block's outer `<code>` has no `pre` ancestor either, so it matches every code BLOCK and applies the
+inline chip's padding, border and `display:inline-block`; and nothing sets a font on the block
+`<pre>`, so it takes the browser default `monospace` however many mono webfonts are loaded.
+**Key block-code rules on `div.highlight`, which Rouge emits for every block in both layouts and
+which inline code never has.** Turning line numbers off also fixes it, by restoring `<pre><code>`.
+**Do not chase this in the deploy**: production's `compress_html` only drops optional `</td>` tags
+and inter-tag whitespace and parses to the same DOM, and the deployed CSS is byte-equivalent to
+local. It looks identical on localhost.
+
+**A `var()` in a shipped rule silently renders nothing ->**
+the property it names is defined on a selector that does not match. This has now cost two separate
+passes. The check is not "does the rule exist" and not "does the selector match" - it is
+`getComputedStyle(el).getPropertyValue('--name')` on the real element, which returns an empty
+string when the definition never landed. See also the font-weight and `--nav-h` cases.
+
 **A measurement returns 0 for everything and reads like a real result ->**
 the element was not in the document yet. `getBoundingClientRect()` on a detached node does not throw
 and does not warn - it returns zeros, which look exactly like a measurement of something very small.
