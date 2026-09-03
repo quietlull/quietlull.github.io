@@ -42,6 +42,22 @@
     0
   );
   will-change: transform;
+
+  /* The fade exists only for the iframe case below. It is short enough not to lag the pointer on
+     ordinary movement, where opacity never changes at all. */
+  transition: opacity 0.18s ease;
+}
+
+/* PARKED OVER AN IFRAME. Rod 2026-09-03: "cursor effect break when hovering giscus elements".
+   A cross-origin iframe swallows pointer events, so this document stops receiving `pointermove`
+   the instant the cursor crosses into the comments and the lantern FREEZES at the frame's edge -
+   which reads as broken, where simply being absent reads as intentional. The parent still gets
+   `mouseover` on the iframe ELEMENT (that element is in this document), which is what
+   cursor-glow.js uses to toggle this.
+   Fading rather than hiding: `display:none` would drop the composited layer and cost a re-raster
+   on the way back out. */
+.cursorglow.is-hidden {
+  opacity: 0;
 }
 
 }
