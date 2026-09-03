@@ -20,24 +20,24 @@
   // change that waits for it; everything inside is stock.
   document.addEventListener('DOMContentLoaded', function () {
     {%- comment -%}
-      BACK ON A BUILT-IN THEME. Rod 2026-09-03: "the giscus section is white again ... PLEASE
-      revert the color change."
+      OUR OWN THEME, restored on Rod's word after one revert. `assets/css/giscus.css`.
 
-      WHY THE CUSTOM THEME WENT WHITE, because the file itself was fine - it deploys, returns 200
-      as text/css with `access-control-allow-origin: *`, and all five of its rules parse. The
-      fragility is the ARCHITECTURE, not the CSS: giscus fetches a custom theme by URL from inside
-      its own iframe, and when that fetch does not land it falls back to its DEFAULT theme, which
-      is light. Our theme also set `--color-canvas-default: transparent`, so there was nothing of
-      ours holding a dark ground either. Any hiccup - a mid-deploy window on Pages, a cached miss,
-      an offline moment - therefore shows a full-width WHITE block on a dark page. That is a bad
-      failure mode for a decorative win, and it is why this is a built-in again.
+      THE URL IS ABSOLUTE AND POINTS AT PRODUCTION ON PURPOSE - do not "fix" it to a relative
+      path. giscus fetches this stylesheet from inside its own iframe on giscus.app, so it must be
+      a public HTTPS URL; a localhost path is cross-origin AND mixed content and is refused.
+      Pointing at the live URL is what makes the theme visible in local dev too, at the cost of the
+      file needing to be deployed before a change to it shows up anywhere.
 
-      `assets/css/giscus.css` is kept on disk rather than deleted: it is a working translation of
-      the site's palette into Primer's variables and it took several passes with Rod to get the
-      lines/fills split right. If the custom theme is ever retried, it needs a real answer to the
-      fallback problem first.
+      KNOWN FAILURE MODE, so it is recognised rather than re-diagnosed: if that fetch does not
+      land, giscus falls back to its DEFAULT theme, which is LIGHT, and the comments render as a
+      white block on a dark page. That is what Rod saw once mid-deploy. The file itself is fine -
+      it returns 200 as text/css with `access-control-allow-origin: *` and all its rules parse.
+      If the white block appears again, check the deploy before touching the CSS.
     {%- endcomment -%}
-    const themeMapper = Theme.getThemeMapper('light', 'dark_dimmed');
+    const themeMapper = Theme.getThemeMapper(
+      '{{ site.url }}/assets/css/giscus.css',
+      '{{ site.url }}/assets/css/giscus.css'
+    );
     const initTheme = themeMapper[Theme.visualState];
 
     let lang = '{{ site.comments.giscus.lang | default: lang }}';

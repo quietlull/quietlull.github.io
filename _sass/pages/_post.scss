@@ -260,8 +260,20 @@
      `min-height` reserves the frame's own starting height, so the footer does not jump upward and
      then back down while the lazy iframe loads. */
   .post-comments {
+    position: relative; /* the shield below is absolutely placed against this */
     margin-top: 48px;
     min-height: 372px;
+  }
+
+  /* THE CURSOR SHIELD. A transparent sheet of OUR document laid over the giscus iframe, and the
+     only way the cursor lantern can see the pointer over the comments at all - measured, the
+     frame delivers zero events to this document, not even at its boundary. cursor-glow.js drops
+     its `pointer-events` the moment the pointer holds still, so a click still reaches the frame.
+     No paint of its own: it exists to be a hit target. */
+  .cursor-shield {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
   }
 
   .post-comments iframe { display: block; width: 100%; }

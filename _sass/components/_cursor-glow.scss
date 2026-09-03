@@ -43,7 +43,16 @@
   );
   will-change: transform;
 
-  /* WHY THE LANTERN STOPS AT THE COMMENTS, and why there is no CSS here that fixes it.
+  /* THE SETTLE. While the cursor is inside a region this document cannot track through, the
+     lantern glides to that region's centre and holds instead of freezing wherever the cursor
+     happened to cross. The transition is what sells it as deliberate - the same held position
+     without it is exactly the bug it replaces. Only applied via the class, so ordinary pointer
+     movement never pays for a transition. */
+  &.is-settled {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* WHY THE LANTERN CANNOT SIMPLY FOLLOW INTO THE COMMENTS.
      A cross-origin iframe consumes pointer events entirely: giscus.app is a different origin, so
      the moment the cursor crosses into that frame THIS document stops receiving `pointermove` and
      the lantern holds its last position. That is a browser security boundary, not our layering -
