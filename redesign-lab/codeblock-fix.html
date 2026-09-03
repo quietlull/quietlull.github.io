@@ -29,40 +29,41 @@
                margin-right: 7px; vertical-align: -1px; border: 1px solid rgba(255,255,255,.18); }
 
 /* ============================================================================================
-   VS CODE DARK+ , READ OUT OF ROD'S OWN INSTALL, NOT TRANSCRIBED FROM A BLOG POST.
-   His settings.json sets no `workbench.colorTheme`, so he is on the default Dark Modern, which
-   includes dark_plus.json -> dark_vs.json and adds NO tokenColors of its own. The syntax palette
-   is therefore exactly Dark+.
+   ROD'S LOCKED MAPPING, NOT a literal copy of VS Code. Corrected 2026-09-02 after he caught me
+   flattening it: "keywords like float and float2 int, etc should be orange".
 
-   The Rouge-class -> VS Code-scope mapping is read off the BUILT posts. The site has 6 HLSL
-   blocks and 30 plaintext ones, and these are the classes that actually appear, with the words
-   they actually wrap:
-     kt  float2 float4 float3 void      -> storage.type            #569CD6  (was ORANGE here)
-     nb  saturate sin lerp dot pow      -> support.function        #DCDCAA  (was PINK here)
-     k   if return else inline          -> keyword.control         #C586C0
-     nf  UpdateDecay P3DM_Shape_Sphere  -> entity.name.function    #DCDCAA
-     n   _GrassRT uv prevPush id        -> variable                #9CDCFE
-     c1  // Wind                        -> comment                 #6A9955  (was GREY here)
-     mi mo mf  0 5 12 1e-6              -> constant.numeric        #B5CEA8
-     o   = * + - > /                    -> keyword.operator        #D4D4D4
-     p   ( ) , . ;                      -> default foreground      #D4D4D4
+   `redesign-lab/element-tracker.md` line 132, LOCKED 2026-08-23, is the authority:
+   "Every HUE is Dark+'s own... what is OURS is the MAPPING - orange to types/storage keywords
+   (Dark+ spends it on strings), pink to functions (Dark+ spends it on control flow), dark blue to
+   named constants, light blue to plain variables."
+   So the hues are VS Code's and the ROLES are his. My previous pass copied Dark+'s role
+   assignment too, which broke a locked decision. These values are the ones already in
+   _sass/base/_decisions.scss - they were right all along and simply never rendered, because the
+   selector that defines them matches nothing.
+
+   NEW THIS ROUND: brackets. Rod: "brackets should be yellow". That is VS Code's bracket-pair
+   colourisation, which is ON by default and which the THEME does not define - VS Code falls back
+   to built-ins, read out of his own install:
+     editorBracketHighlight.foreground1  dark: #FFD700   <- the yellow he sees
+     editorBracketHighlight.foreground2  dark: #DA70D6
+     editorBracketHighlight.foreground3  dark: #179FFF
+   Rouge emits flat `p` spans with NO nesting depth, so only level 1 is reproducible. Brackets get
+   gold; the other punctuation (commas, semicolons, dots) stays at the plain foreground.
    ============================================================================================ */
 .fix .prose div.highlight {
-  --syn-keyword:  #569CD6;   /* storage, storage.type, storage.modifier, constant.language */
-  --syn-control:  #C586C0;   /* keyword.control - if / return / else */
-  --syn-func:     #DCDCAA;   /* entity.name.function, support.function */
-  --syn-class:    #4EC9B0;   /* support.class, support.type, entity.name.type */
-  --syn-var:      #9CDCFE;   /* variable, support.variable, entity.other.attribute-name */
-  --syn-const:    #4FC1FF;   /* variable.other.constant, enum members */
-  --syn-number:   #B5CEA8;   /* constant.numeric */
-  --syn-string:   #CE9178;   /* string */
-  --syn-comment:  #6A9955;   /* comment - VS Code's GREEN */
-  --syn-escape:   #D7BA7D;   /* constant.character.escape */
-  --syn-invalid:  #F44747;   /* invalid */
-  --syn-plain:    #D4D4D4;   /* operators and punctuation sit at the default foreground */
+  --syn-type:    #ce9178;   /* types + storage keywords - ROD's ORANGE. float float2 int void   */
+  --syn-const:   #569cd6;   /* named CONSTANTS, SCREAMING_SNAKE only - "keep dark blue"         */
+  --syn-var:     #9cdcfe;   /* plain variables, _Prefixed uniforms included                     */
+  --syn-class:   #4ec9b0;   /* classes / type names                                            */
+  --syn-func:    #c586c0;   /* functions - ROD's PINK                                          */
+  --syn-comment: #6a6a6a;   /* PLACEHOLDER. Measures 3.53:1, BELOW AA. green-vs-comments open   */
+  --syn-number:  #b5cea8;
+  --syn-string:  #ce9178;   /* shares the type orange; Dark+ has no second string hue           */
+  --syn-bracket: #FFD700;   /* NEW - bracket pair colourisation level 1                         */
+  --syn-plain:   #d4d4d4;   /* operators and non-bracket punctuation                            */
 }
 
-/* The block wrapper stops being treated as an inline-code chip, and the block gets a font. */
+/* The block stops being treated as an inline-code chip, and gets a font. */
 .fix .prose div.highlight > code {
   display: block; padding: 0; border: 0; background: none;
   font-size: inherit; overflow-wrap: normal;
@@ -71,16 +72,14 @@
 .fix .prose div.highlight td.rouge-code pre { color: var(--syn-plain); }
 
 /* --- the token map, keyed on div.highlight so inline code is untouched by construction ------- */
-.fix .prose div.highlight .k,
-.fix .prose div.highlight .kd, .fix .prose div.highlight .kn,
-.fix .prose div.highlight .kp, .fix .prose div.highlight .kr,
-.fix .prose div.highlight .kc, .fix .prose div.highlight .bp { color: var(--syn-control); }
-.fix .prose div.highlight .kt                                { color: var(--syn-keyword); }
-.fix .prose div.highlight .cp                                { color: var(--syn-keyword); }
+.fix .prose div.highlight .kt, .fix .prose div.highlight .kd,
+.fix .prose div.highlight .kr, .fix .prose div.highlight .k,
+.fix .prose div.highlight .kp, .fix .prose div.highlight .kn { color: var(--syn-type); }
+.fix .prose div.highlight .kc, .fix .prose div.highlight .no,
+.fix .prose div.highlight .bp                                { color: var(--syn-const); }
 .fix .prose div.highlight .nb, .fix .prose div.highlight .nf,
 .fix .prose div.highlight .fm                                { color: var(--syn-func); }
 .fix .prose div.highlight .nc, .fix .prose div.highlight .nn { color: var(--syn-class); }
-.fix .prose div.highlight .no                                { color: var(--syn-const); }
 .fix .prose div.highlight .n,  .fix .prose div.highlight .nv,
 .fix .prose div.highlight .na, .fix .prose div.highlight .py,
 .fix .prose div.highlight .vc, .fix .prose div.highlight .vg,
@@ -96,38 +95,62 @@
 .fix .prose div.highlight .ss, .fix .prose div.highlight .dl { color: var(--syn-string); }
 .fix .prose div.highlight .c,  .fix .prose div.highlight .c1,
 .fix .prose div.highlight .cm, .fix .prose div.highlight .cs,
-.fix .prose div.highlight .cd                                { color: var(--syn-comment); }
-.fix .prose div.highlight .se                                { color: var(--syn-escape); }
-.fix .prose div.highlight .err                               { color: var(--syn-invalid); }
-.fix .prose div.highlight .o,  .fix .prose div.highlight .ow,
+.fix .prose div.highlight .cd, .fix .prose div.highlight .cp { color: var(--syn-comment); }
+.fix .prose div.highlight .o,  .fix .prose div.highlight .ow { color: var(--syn-plain); }
 .fix .prose div.highlight .p                                 { color: var(--syn-plain); }
+
+/* SHAPE, and this is D20 being honoured rather than a new design: the three macOS traffic-light
+   dots are stock Chirpy and Rod rejected them TWICE on the record. The 10px rounded bottom
+   corners fail the 2026-08-11 shape pass, which D20 restates as "squared". Both undone here.
+   This is the MINIMUM correction - the agreed component (Maxime Heckel's header strip) has never
+   been built, and building it is a component job, not a CSS tweak. */
+.fix .code-header::before { content: none !important; }
+.fix .code-header span    { margin-left: 0 !important; }
+.fix div.highlight        { border-radius: 0 !important; }
+.fix .code-header         { border-radius: 0 !important; }
 
 </style>
 </head>
 <body>
-  <p class="lab-head">Code blocks &middot; current vs VS Code Dark+</p>
+  <p class="lab-head">Code blocks &middot; current vs your locked mapping</p>
   <p class="lab-note">
-    Both columns are the SAME markup, lifted verbatim from the built ComputeGrass post, and both
-    load the site's own compiled stylesheet. Nothing here is a mock-up, and nothing here ships.<br>
-    <b>The colours on the right are read out of your own VS Code install</b>, not transcribed:
-    your settings.json sets no theme, so you are on the default Dark Modern, which includes
-    dark_plus.json and adds no token colours of its own.<br>
-    <b>Three of these reverse an earlier call of yours</b> and that is worth seeing before you
-    agree: types go orange &rarr; blue, functions go pink &rarr; yellow, and comments go grey
-    &rarr; green. The old comment in the code calls the first two "ROD's ORANGE" and "ROD's PINK",
-    and the grey was being held pending a green-vs-comments question. Copying VS Code answers that
-    question as green.
+    Both columns are the SAME markup, lifted verbatim from your built posts, both loading the
+    site's own stylesheet. Nothing here is a mock-up and nothing here ships.<br>
+    <b>Corrected: my last pass was wrong.</b> I copied VS Code's ROLE assignment as well as its
+    hues, which flattened a locked decision. element-tracker.md line 132 (locked 2026-08-23) says
+    the hues are Dark+'s and <b>the mapping is yours</b> - orange on types where Dark+ spends it on
+    strings, pink on functions where Dark+ spends it on control flow. These are the values already
+    in the code; they were right all along and simply never rendered.<br>
+    <b>Brackets are new and they are real:</b> VS Code's bracket-pair colourisation is on by
+    default and the theme does not define it, so VS Code uses built-ins - level 1 is
+    <b>#FFD700</b>, read out of your install. Rouge has no nesting depth, so only level 1 is
+    reproducible.<br>
+    <b>Shape:</b> the right column also drops the three macOS traffic-light dots and squares the
+    corners. That is D20 being honoured, not a new design - but <b>the component you actually
+    agreed on has never been built</b>. See the note under the columns.
   </p>
 
   <table class="sw">
     <tr><th>Rouge</th><th>wraps</th><th>now</th><th>VS Code</th><th>scope</th></tr>
-    <tr><td><code>kt</code></td><td>float4 void</td><td><i style="background:#CE9178"></i>#CE9178</td><td><i style="background:#569CD6"></i>#569CD6</td><td>storage.type</td></tr>
-<tr><td><code>nb / nf</code></td><td>saturate lerp dot</td><td><i style="background:#C586C0"></i>#C586C0</td><td><i style="background:#DCDCAA"></i>#DCDCAA</td><td>support.function</td></tr>
-<tr><td><code>c1</code></td><td>// comment</td><td><i style="background:#6A6A6A"></i>#6A6A6A</td><td><i style="background:#6A9955"></i>#6A9955</td><td>comment</td></tr>
-<tr><td><code>k</code></td><td>if return else</td><td><i style="background:transparent"></i>(none)</td><td><i style="background:#C586C0"></i>#C586C0</td><td>keyword.control</td></tr>
-<tr><td><code>n</code></td><td>_GrassRT uv</td><td><i style="background:#9CDCFE"></i>#9CDCFE</td><td><i style="background:#9CDCFE"></i>#9CDCFE</td><td>variable</td></tr>
-<tr><td><code>mi</code></td><td>0 12 60</td><td><i style="background:#B5CEA8"></i>#B5CEA8</td><td><i style="background:#B5CEA8"></i>#B5CEA8</td><td>constant.numeric</td></tr>
+    <tr><td><code>kt / k</code></td><td>float float2 int void</td><td><i style="background:transparent"></i>(flat)</td><td><i style="background:#CE9178"></i>#CE9178</td><td>ROD's orange - types + storage</td></tr>
+<tr><td><code>nb / nf</code></td><td>saturate lerp dot noise</td><td><i style="background:transparent"></i>(flat)</td><td><i style="background:#C586C0"></i>#C586C0</td><td>ROD's pink - functions</td></tr>
+<tr><td><code>p</code></td><td>brackets ( ) [ ] { }</td><td><i style="background:transparent"></i>(flat)</td><td><i style="background:#FFD700"></i>#FFD700</td><td>NEW - VS Code bracket pair level 1</td></tr>
+<tr><td><code>n</code></td><td>_GrassRT uv prevPush</td><td><i style="background:transparent"></i>(flat)</td><td><i style="background:#9CDCFE"></i>#9CDCFE</td><td>plain variables</td></tr>
+<tr><td><code>no / kc</code></td><td>SCREAMING_SNAKE only</td><td><i style="background:transparent"></i>(flat)</td><td><i style="background:#569CD6"></i>#569CD6</td><td>named constants</td></tr>
+<tr><td><code>mi mf mo</code></td><td>0 12 1e-6</td><td><i style="background:transparent"></i>(flat)</td><td><i style="background:#B5CEA8"></i>#B5CEA8</td><td>numbers</td></tr>
+<tr><td><code>c1</code></td><td>// comment</td><td><i style="background:transparent"></i>(flat)</td><td><i style="background:#6A6A6A"></i>#6A6A6A</td><td>PLACEHOLDER grey, fails AA at 3.53:1</td></tr>
   </table>
+
+  <script>
+    /* Rouge tags every bracket, comma, dot and semicolon as the same `p` class, so the brackets
+       have to be picked out by their TEXT. This is a preview-only shim to show the colour; if Rod
+       takes it, the real version does the same split once at build time. */
+    addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.col.fix td.rouge-code pre span.p').forEach(s => {
+        if (/^[()\[\]{}]+$/.test(s.textContent.trim())) s.style.color = '#FFD700';
+      });
+    });
+  </script>
 
   <div class="cols">
     <div class="col now">
@@ -207,7 +230,7 @@
 </pre></td></tr></tbody></table></code></div></div></div></div>
     </div>
     <div class="col fix">
-      <h2>Proposed &middot; real VS Code Dark+</h2>
+      <h2>Proposed &middot; your locked mapping + gold brackets</h2>
       <div class="frame"><div class="prose content"><div class="language-hlsl highlighter-rouge"><div class="code-header">
         <span data-label-text="Hlsl"><i class="fas fa-code fa-fw small"></i></span>
       <button aria-label="copy"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
