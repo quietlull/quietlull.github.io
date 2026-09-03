@@ -11,7 +11,8 @@
   .lab-head { font-family: ui-monospace, monospace; color: #9c8f7d; font-size: 12px;
               letter-spacing: .1em; text-transform: uppercase; margin: 0 0 6px; }
   .lab-note { font-family: ui-monospace, monospace; color: #6f6a63; font-size: 11px;
-              line-height: 1.7; margin: 0 0 22px; max-width: 70ch; }
+              line-height: 1.75; margin: 0 0 20px; max-width: 96ch; }
+  .lab-note b { color: #c9bda9; }
   .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: start; }
   @media (max-width: 1100px) { .cols { grid-template-columns: 1fr; } }
   .col > h2 { font-family: ui-monospace, monospace; font-size: 12px; letter-spacing: .12em;
@@ -19,60 +20,114 @@
   .col.now > h2 { color: #d98080; }
   .col.fix > h2 { color: #7fc48a; }
   .frame { border: 1px dashed rgba(255,255,255,.12); padding: 14px; border-radius: 4px; }
+  table.sw { border-collapse: collapse; margin: 0 0 24px; font-family: ui-monospace, monospace;
+             font-size: 11px; color: #b9b2a6; }
+  table.sw th { text-align: left; padding: 4px 14px 4px 0; color: #6f6a63; font-weight: 400;
+                border-bottom: 1px solid rgba(255,255,255,.1); }
+  table.sw td { padding: 4px 14px 4px 0; vertical-align: middle; }
+  table.sw i { display: inline-block; width: 11px; height: 11px; border-radius: 2px;
+               margin-right: 7px; vertical-align: -1px; border: 1px solid rgba(255,255,255,.18); }
 
 /* ============================================================================================
-   THE PROPOSED FIX - three selectors, nothing else. Scoped under .fix here ONLY so this page can
-   show both states at once; in the real change they replace the originals in place.
+   VS CODE DARK+ , READ OUT OF ROD'S OWN INSTALL, NOT TRANSCRIBED FROM A BLOG POST.
+   His settings.json sets no `workbench.colorTheme`, so he is on the default Dark Modern, which
+   includes dark_plus.json -> dark_vs.json and adds NO tokenColors of its own. The syntax palette
+   is therefore exactly Dark+.
 
-   ROOT CAUSE: `block: line_numbers: true` (_config.yml:154) makes Rouge emit its TABLE layout,
-   which nests code as  code > table > td > pre.  The <code> is the PARENT of <pre>, the inverse
-   of the <pre><code> every one of our selectors was written for.
+   The Rouge-class -> VS Code-scope mapping is read off the BUILT posts. The site has 6 HLSL
+   blocks and 30 plaintext ones, and these are the classes that actually appear, with the words
+   they actually wrap:
+     kt  float2 float4 float3 void      -> storage.type            #569CD6  (was ORANGE here)
+     nb  saturate sin lerp dot pow      -> support.function        #DCDCAA  (was PINK here)
+     k   if return else inline          -> keyword.control         #C586C0
+     nf  UpdateDecay P3DM_Shape_Sphere  -> entity.name.function    #DCDCAA
+     n   _GrassRT uv prevPush id        -> variable                #9CDCFE
+     c1  // Wind                        -> comment                 #6A9955  (was GREY here)
+     mi mo mf  0 5 12 1e-6              -> constant.numeric        #B5CEA8
+     o   = * + - > /                    -> keyword.operator        #D4D4D4
+     p   ( ) , . ;                      -> default foreground      #D4D4D4
    ============================================================================================ */
-
-/* 1. THE SYNTAX COLOURS. Was `.prose pre code`, which matches 0 elements in the table layout, so
-      all eight --syn-* were undefined and every token inherited one flat colour.
-      `div.highlight` is the wrapper Rouge emits for every code BLOCK in both layouts, and inline
-      code never has one - so D31's "inline code is not included" still holds, by construction. */
 .fix .prose div.highlight {
-  --syn-type: #ce9178;
-  --syn-const: #569cd6;
-  --syn-var: #9cdcfe;
-  --syn-class: #4ec9b0;
-  --syn-func: #c586c0;
-  --syn-comment: #6a6a6a;
-  --syn-number: #b5cea8;
-  --syn-string: #ce9178;
+  --syn-keyword:  #569CD6;   /* storage, storage.type, storage.modifier, constant.language */
+  --syn-control:  #C586C0;   /* keyword.control - if / return / else */
+  --syn-func:     #DCDCAA;   /* entity.name.function, support.function */
+  --syn-class:    #4EC9B0;   /* support.class, support.type, entity.name.type */
+  --syn-var:      #9CDCFE;   /* variable, support.variable, entity.other.attribute-name */
+  --syn-const:    #4FC1FF;   /* variable.other.constant, enum members */
+  --syn-number:   #B5CEA8;   /* constant.numeric */
+  --syn-string:   #CE9178;   /* string */
+  --syn-comment:  #6A9955;   /* comment - VS Code's GREEN */
+  --syn-escape:   #D7BA7D;   /* constant.character.escape */
+  --syn-invalid:  #F44747;   /* invalid */
+  --syn-plain:    #D4D4D4;   /* operators and punctuation sit at the default foreground */
 }
 
-/* 2. THE INLINE-CODE CHIP MUST STOP EATING BLOCKS. `.prose code:not(pre code)` was meant to catch
-      inline code only, but the block's outer <code> has no `pre` ancestor either, so it matched
-      all five blocks and gave each one padding, a border and display:inline-block.
-      Undone here for block code only; the inline chip below is untouched. */
+/* The block wrapper stops being treated as an inline-code chip, and the block gets a font. */
 .fix .prose div.highlight > code {
-  display: block;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-size: inherit;
-  overflow-wrap: normal;
+  display: block; padding: 0; border: 0; background: none;
+  font-size: inherit; overflow-wrap: normal;
 }
+.fix .prose div.highlight pre { font-family: var(--font-mono, "IBM Plex Mono", monospace); }
+.fix .prose div.highlight td.rouge-code pre { color: var(--syn-plain); }
 
-/* 3. THE FONT. Nothing set one on the block <pre>, so it fell to the browser's default
-      `monospace` - IBM Plex Mono was loaded the whole time and simply never asked for. */
-.fix .prose div.highlight pre {
-  font-family: var(--font-mono, "IBM Plex Mono", monospace);
-}
+/* --- the token map, keyed on div.highlight so inline code is untouched by construction ------- */
+.fix .prose div.highlight .k,
+.fix .prose div.highlight .kd, .fix .prose div.highlight .kn,
+.fix .prose div.highlight .kp, .fix .prose div.highlight .kr,
+.fix .prose div.highlight .kc, .fix .prose div.highlight .bp { color: var(--syn-control); }
+.fix .prose div.highlight .kt                                { color: var(--syn-keyword); }
+.fix .prose div.highlight .cp                                { color: var(--syn-keyword); }
+.fix .prose div.highlight .nb, .fix .prose div.highlight .nf,
+.fix .prose div.highlight .fm                                { color: var(--syn-func); }
+.fix .prose div.highlight .nc, .fix .prose div.highlight .nn { color: var(--syn-class); }
+.fix .prose div.highlight .no                                { color: var(--syn-const); }
+.fix .prose div.highlight .n,  .fix .prose div.highlight .nv,
+.fix .prose div.highlight .na, .fix .prose div.highlight .py,
+.fix .prose div.highlight .vc, .fix .prose div.highlight .vg,
+.fix .prose div.highlight .vi                                { color: var(--syn-var); }
+.fix .prose div.highlight .m,  .fix .prose div.highlight .mi,
+.fix .prose div.highlight .mf, .fix .prose div.highlight .mo,
+.fix .prose div.highlight .mb, .fix .prose div.highlight .mh { color: var(--syn-number); }
+.fix .prose div.highlight .s,  .fix .prose div.highlight .s1,
+.fix .prose div.highlight .s2, .fix .prose div.highlight .sb,
+.fix .prose div.highlight .sc, .fix .prose div.highlight .sd,
+.fix .prose div.highlight .sh, .fix .prose div.highlight .si,
+.fix .prose div.highlight .sx, .fix .prose div.highlight .sr,
+.fix .prose div.highlight .ss, .fix .prose div.highlight .dl { color: var(--syn-string); }
+.fix .prose div.highlight .c,  .fix .prose div.highlight .c1,
+.fix .prose div.highlight .cm, .fix .prose div.highlight .cs,
+.fix .prose div.highlight .cd                                { color: var(--syn-comment); }
+.fix .prose div.highlight .se                                { color: var(--syn-escape); }
+.fix .prose div.highlight .err                               { color: var(--syn-invalid); }
+.fix .prose div.highlight .o,  .fix .prose div.highlight .ow,
+.fix .prose div.highlight .p                                 { color: var(--syn-plain); }
 
 </style>
 </head>
 <body>
-  <p class="lab-head">Code blocks &middot; current vs proposed</p>
+  <p class="lab-head">Code blocks &middot; current vs VS Code Dark+</p>
   <p class="lab-note">
     Both columns are the SAME markup, lifted verbatim from the built ComputeGrass post, and both
-    load the site's own compiled stylesheet. The only difference is the three corrected selectors
-    on the right. Nothing on this page is a mock-up and nothing here ships:
-    the deploy workflow deletes redesign-lab from _site before upload.
+    load the site's own compiled stylesheet. Nothing here is a mock-up, and nothing here ships.<br>
+    <b>The colours on the right are read out of your own VS Code install</b>, not transcribed:
+    your settings.json sets no theme, so you are on the default Dark Modern, which includes
+    dark_plus.json and adds no token colours of its own.<br>
+    <b>Three of these reverse an earlier call of yours</b> and that is worth seeing before you
+    agree: types go orange &rarr; blue, functions go pink &rarr; yellow, and comments go grey
+    &rarr; green. The old comment in the code calls the first two "ROD's ORANGE" and "ROD's PINK",
+    and the grey was being held pending a green-vs-comments question. Copying VS Code answers that
+    question as green.
   </p>
+
+  <table class="sw">
+    <tr><th>Rouge</th><th>wraps</th><th>now</th><th>VS Code</th><th>scope</th></tr>
+    <tr><td><code>kt</code></td><td>float4 void</td><td><i style="background:#CE9178"></i>#CE9178</td><td><i style="background:#569CD6"></i>#569CD6</td><td>storage.type</td></tr>
+<tr><td><code>nb / nf</code></td><td>saturate lerp dot</td><td><i style="background:#C586C0"></i>#C586C0</td><td><i style="background:#DCDCAA"></i>#DCDCAA</td><td>support.function</td></tr>
+<tr><td><code>c1</code></td><td>// comment</td><td><i style="background:#6A6A6A"></i>#6A6A6A</td><td><i style="background:#6A9955"></i>#6A9955</td><td>comment</td></tr>
+<tr><td><code>k</code></td><td>if return else</td><td><i style="background:transparent"></i>(none)</td><td><i style="background:#C586C0"></i>#C586C0</td><td>keyword.control</td></tr>
+<tr><td><code>n</code></td><td>_GrassRT uv</td><td><i style="background:#9CDCFE"></i>#9CDCFE</td><td><i style="background:#9CDCFE"></i>#9CDCFE</td><td>variable</td></tr>
+<tr><td><code>mi</code></td><td>0 12 60</td><td><i style="background:#B5CEA8"></i>#B5CEA8</td><td><i style="background:#B5CEA8"></i>#B5CEA8</td><td>constant.numeric</td></tr>
+  </table>
 
   <div class="cols">
     <div class="col now">
@@ -89,16 +144,20 @@
 8
 9
 10
-</pre></td><td class="rouge-code"><pre>    <span class="n">float</span> <span class="n">d</span>          <span class="o">=</span> <span class="n">_GrassRTParams</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">sampleDist</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">16</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
-
-    <span class="n">float</span> <span class="n">rR</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">+</span> <span class="kt">float2</span><span class="p">(</span><span class="n">sampleDist</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">rL</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">-</span> <span class="kt">float2</span><span class="p">(</span><span class="n">sampleDist</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">rU</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">+</span> <span class="kt">float2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sampleDist</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">rD</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">-</span> <span class="kt">float2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sampleDist</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-
-    <span class="kt">float2</span> <span class="n">grad</span>    <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span><span class="n">rR</span> <span class="o">-</span> <span class="n">rL</span><span class="p">,</span> <span class="n">rU</span> <span class="o">-</span> <span class="n">rD</span><span class="p">);</span>
-    <span class="n">float</span>  <span class="n">gradLen</span> <span class="o">=</span> <span class="nb">length</span><span class="p">(</span><span class="n">grad</span><span class="p">);</span>
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="c1">//Example of a function used to construct a sphere on the GPU</span>
+<span class="k">inline</span> <span class="n">float</span> <span class="nf">P3DM_Shape_Sphere</span><span class="p">(</span>
+    <span class="kt">float3</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">float3</span> <span class="n">center</span><span class="p">,</span>
+    <span class="n">float</span> <span class="n">radius</span><span class="p">,</span> <span class="n">float</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">float</span> <span class="n">edgeSize</span><span class="p">,</span> <span class="n">float</span> <span class="n">smooth</span><span class="p">,</span>
+    <span class="n">float</span> <span class="nb">noise</span><span class="p">,</span> <span class="n">float</span> <span class="n">noiseStrength</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">float</span> <span class="n">d</span> <span class="o">=</span> <span class="nb">distance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">center</span><span class="p">);</span>
+    <span class="n">float</span> <span class="n">r</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">+</span> <span class="nb">noise</span> <span class="o">*</span> <span class="n">noiseStrength</span><span class="p">;</span>
+    <span class="n">float</span> <span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="o">-</span> <span class="nb">saturate</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="n">r</span> <span class="o">+</span> <span class="n">edgeSize</span><span class="p">)</span> <span class="o">/</span> <span class="n">edgeSize</span><span class="p">);</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">smooth</span> <span class="o">+</span> <span class="mi">0</span><span class="p">.</span><span class="mo">01</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">shape</span> <span class="o">*</span> <span class="n">intensity</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></td></tr></tbody></table></code></div></div> <p>Kicked off with <code class="language-plaintext highlighter-rouge">Graphics.DrawProceduralIndirect</code>, once per chunk.</p> <div class="language-hlsl highlighter-rouge"><div class="code-header">
         <span data-label-text="Hlsl"><i class="fas fa-code fa-fw small"></i></span>
       <button aria-label="copy"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -112,21 +171,43 @@
 9
 10
 11
-</pre></td><td class="rouge-code"><pre>    <span class="c1">// Wind </span>
-    <span class="n">float</span>  <span class="n">windPhase</span>  <span class="o">=</span> <span class="nb">dot</span><span class="p">(</span><span class="n">bladePos</span><span class="p">.</span><span class="n">xz</span><span class="p">,</span> <span class="n">_WindDir</span><span class="p">)</span> <span class="o">*</span> <span class="n">_WindFreq</span> <span class="o">+</span> <span class="n">_GrassTime</span> <span class="o">*</span> <span class="n">_WindSpeed</span><span class="p">;</span>
-    <span class="n">float</span>  <span class="n">windAmt</span>    <span class="o">=</span> <span class="nb">sin</span><span class="p">(</span><span class="n">windPhase</span><span class="p">)</span> <span class="o">*</span> <span class="n">_WindStrength</span><span class="p">;</span>
-    <span class="kt">float2</span> <span class="n">windOffset</span> <span class="o">=</span> <span class="n">_WindDir</span> <span class="o">*</span> <span class="n">windAmt</span><span class="p">;</span>
-    <span class="kt">float2</span> <span class="n">tipXZ</span>      <span class="o">=</span> <span class="n">smoothPush</span> <span class="o">+</span> <span class="n">windOffset</span><span class="p">;</span>
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre>    <span class="n">float</span>  <span class="n">pushStr</span>  <span class="o">=</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">rt</span><span class="p">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">_InteractionStr</span><span class="p">);</span>
+    <span class="kt">float2</span> <span class="n">prevPush</span> <span class="o">=</span> <span class="n">_BladeTipOffsets</span><span class="p">[</span><span class="n">bladeID</span><span class="p">];</span>
+    <span class="n">float</span>  <span class="n">prevMag</span>  <span class="o">=</span> <span class="nb">length</span><span class="p">(</span><span class="n">prevPush</span><span class="p">);</span>
 
-    <span class="c1">// Blade Orientation </span>
-    <span class="n">float</span>  <span class="n">angle</span>  <span class="o">=</span> <span class="n">Hash</span><span class="p">(</span><span class="n">bladePos</span><span class="p">.</span><span class="n">xz</span><span class="p">)</span> <span class="o">*</span> <span class="mi">6</span><span class="p">.</span><span class="mi">28318</span><span class="p">;</span>
-    <span class="kt">float2</span> <span class="n">rightA</span> <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span> <span class="nb">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="nb">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">));</span>
-    <span class="kt">float2</span> <span class="n">rightB</span> <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span><span class="o">-</span><span class="nb">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="nb">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">));</span> <span class="c1">// 90°, only used in X mode</span>
-    <span class="n">float</span>  <span class="n">halfW</span>  <span class="o">=</span> <span class="n">_BladeWidth</span> <span class="o">*</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">;</span>
+    <span class="kt">float2</span> <span class="n">targetPush</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">gradLen</span> <span class="o">&gt;</span> <span class="n">_InteractionDir</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">targetPush</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">grad</span> <span class="o">/</span> <span class="n">gradLen</span><span class="p">)</span> <span class="o">*</span> <span class="n">pushStr</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">pushStr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">prevMag</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">targetPush</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevPush</span> <span class="o">/</span> <span class="n">prevMag</span><span class="p">)</span> <span class="o">*</span> <span class="n">pushStr</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">targetPush</span> <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">float</span>  <span class="n">t</span>          <span class="o">=</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">_ReturnSpeed</span> <span class="o">*</span> <span class="n">_DeltaTime</span> <span class="o">*</span> <span class="mi">60</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+    <span class="kt">float2</span> <span class="n">smoothPush</span> <span class="o">=</span> <span class="nb">lerp</span><span class="p">(</span><span class="n">prevPush</span><span class="p">,</span> <span class="n">targetPush</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+    <span class="n">_BladeTipOffsets</span><span class="p">[</span><span class="n">bladeID</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothPush</span><span class="p">;</span>
 </pre></td></tr></tbody></table></code></div></div></div></div>
     </div>
     <div class="col fix">
-      <h2>Proposed &middot; three selectors changed</h2>
+      <h2>Proposed &middot; real VS Code Dark+</h2>
       <div class="frame"><div class="prose content"><div class="language-hlsl highlighter-rouge"><div class="code-header">
         <span data-label-text="Hlsl"><i class="fas fa-code fa-fw small"></i></span>
       <button aria-label="copy"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -139,16 +220,20 @@
 8
 9
 10
-</pre></td><td class="rouge-code"><pre>    <span class="n">float</span> <span class="n">d</span>          <span class="o">=</span> <span class="n">_GrassRTParams</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">sampleDist</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">16</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
-
-    <span class="n">float</span> <span class="n">rR</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">+</span> <span class="kt">float2</span><span class="p">(</span><span class="n">sampleDist</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">rL</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">-</span> <span class="kt">float2</span><span class="p">(</span><span class="n">sampleDist</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">rU</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">+</span> <span class="kt">float2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sampleDist</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-    <span class="n">float</span> <span class="n">rD</span> <span class="o">=</span> <span class="n">_GrassRT</span><span class="p">.</span><span class="n">SampleLevel</span><span class="p">(</span><span class="n">sampler_linear_clamp</span><span class="p">,</span> <span class="n">uv</span> <span class="o">-</span> <span class="kt">float2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sampleDist</span><span class="p">),</span> <span class="mi">0</span><span class="p">).</span><span class="n">r</span><span class="p">;</span>
-
-    <span class="kt">float2</span> <span class="n">grad</span>    <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span><span class="n">rR</span> <span class="o">-</span> <span class="n">rL</span><span class="p">,</span> <span class="n">rU</span> <span class="o">-</span> <span class="n">rD</span><span class="p">);</span>
-    <span class="n">float</span>  <span class="n">gradLen</span> <span class="o">=</span> <span class="nb">length</span><span class="p">(</span><span class="n">grad</span><span class="p">);</span>
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="c1">//Example of a function used to construct a sphere on the GPU</span>
+<span class="k">inline</span> <span class="n">float</span> <span class="nf">P3DM_Shape_Sphere</span><span class="p">(</span>
+    <span class="kt">float3</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">float3</span> <span class="n">center</span><span class="p">,</span>
+    <span class="n">float</span> <span class="n">radius</span><span class="p">,</span> <span class="n">float</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">float</span> <span class="n">edgeSize</span><span class="p">,</span> <span class="n">float</span> <span class="n">smooth</span><span class="p">,</span>
+    <span class="n">float</span> <span class="nb">noise</span><span class="p">,</span> <span class="n">float</span> <span class="n">noiseStrength</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">float</span> <span class="n">d</span> <span class="o">=</span> <span class="nb">distance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">center</span><span class="p">);</span>
+    <span class="n">float</span> <span class="n">r</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">+</span> <span class="nb">noise</span> <span class="o">*</span> <span class="n">noiseStrength</span><span class="p">;</span>
+    <span class="n">float</span> <span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="o">-</span> <span class="nb">saturate</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="n">r</span> <span class="o">+</span> <span class="n">edgeSize</span><span class="p">)</span> <span class="o">/</span> <span class="n">edgeSize</span><span class="p">);</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">smooth</span> <span class="o">+</span> <span class="mi">0</span><span class="p">.</span><span class="mo">01</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">shape</span> <span class="o">*</span> <span class="n">intensity</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></td></tr></tbody></table></code></div></div> <p>Kicked off with <code class="language-plaintext highlighter-rouge">Graphics.DrawProceduralIndirect</code>, once per chunk.</p> <div class="language-hlsl highlighter-rouge"><div class="code-header">
         <span data-label-text="Hlsl"><i class="fas fa-code fa-fw small"></i></span>
       <button aria-label="copy"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -162,17 +247,39 @@
 9
 10
 11
-</pre></td><td class="rouge-code"><pre>    <span class="c1">// Wind </span>
-    <span class="n">float</span>  <span class="n">windPhase</span>  <span class="o">=</span> <span class="nb">dot</span><span class="p">(</span><span class="n">bladePos</span><span class="p">.</span><span class="n">xz</span><span class="p">,</span> <span class="n">_WindDir</span><span class="p">)</span> <span class="o">*</span> <span class="n">_WindFreq</span> <span class="o">+</span> <span class="n">_GrassTime</span> <span class="o">*</span> <span class="n">_WindSpeed</span><span class="p">;</span>
-    <span class="n">float</span>  <span class="n">windAmt</span>    <span class="o">=</span> <span class="nb">sin</span><span class="p">(</span><span class="n">windPhase</span><span class="p">)</span> <span class="o">*</span> <span class="n">_WindStrength</span><span class="p">;</span>
-    <span class="kt">float2</span> <span class="n">windOffset</span> <span class="o">=</span> <span class="n">_WindDir</span> <span class="o">*</span> <span class="n">windAmt</span><span class="p">;</span>
-    <span class="kt">float2</span> <span class="n">tipXZ</span>      <span class="o">=</span> <span class="n">smoothPush</span> <span class="o">+</span> <span class="n">windOffset</span><span class="p">;</span>
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre>    <span class="n">float</span>  <span class="n">pushStr</span>  <span class="o">=</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">rt</span><span class="p">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">_InteractionStr</span><span class="p">);</span>
+    <span class="kt">float2</span> <span class="n">prevPush</span> <span class="o">=</span> <span class="n">_BladeTipOffsets</span><span class="p">[</span><span class="n">bladeID</span><span class="p">];</span>
+    <span class="n">float</span>  <span class="n">prevMag</span>  <span class="o">=</span> <span class="nb">length</span><span class="p">(</span><span class="n">prevPush</span><span class="p">);</span>
 
-    <span class="c1">// Blade Orientation </span>
-    <span class="n">float</span>  <span class="n">angle</span>  <span class="o">=</span> <span class="n">Hash</span><span class="p">(</span><span class="n">bladePos</span><span class="p">.</span><span class="n">xz</span><span class="p">)</span> <span class="o">*</span> <span class="mi">6</span><span class="p">.</span><span class="mi">28318</span><span class="p">;</span>
-    <span class="kt">float2</span> <span class="n">rightA</span> <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span> <span class="nb">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="nb">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">));</span>
-    <span class="kt">float2</span> <span class="n">rightB</span> <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span><span class="o">-</span><span class="nb">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="nb">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">));</span> <span class="c1">// 90°, only used in X mode</span>
-    <span class="n">float</span>  <span class="n">halfW</span>  <span class="o">=</span> <span class="n">_BladeWidth</span> <span class="o">*</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">;</span>
+    <span class="kt">float2</span> <span class="n">targetPush</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">gradLen</span> <span class="o">&gt;</span> <span class="n">_InteractionDir</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">targetPush</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">grad</span> <span class="o">/</span> <span class="n">gradLen</span><span class="p">)</span> <span class="o">*</span> <span class="n">pushStr</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">pushStr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">prevMag</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">targetPush</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevPush</span> <span class="o">/</span> <span class="n">prevMag</span><span class="p">)</span> <span class="o">*</span> <span class="n">pushStr</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">targetPush</span> <span class="o">=</span> <span class="kt">float2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">float</span>  <span class="n">t</span>          <span class="o">=</span> <span class="nb">saturate</span><span class="p">(</span><span class="n">_ReturnSpeed</span> <span class="o">*</span> <span class="n">_DeltaTime</span> <span class="o">*</span> <span class="mi">60</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+    <span class="kt">float2</span> <span class="n">smoothPush</span> <span class="o">=</span> <span class="nb">lerp</span><span class="p">(</span><span class="n">prevPush</span><span class="p">,</span> <span class="n">targetPush</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+    <span class="n">_BladeTipOffsets</span><span class="p">[</span><span class="n">bladeID</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothPush</span><span class="p">;</span>
 </pre></td></tr></tbody></table></code></div></div></div></div>
     </div>
   </div>
