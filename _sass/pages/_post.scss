@@ -431,43 +431,6 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
   }
 }
 
-#toc-bar {
-  /* The row layout d-flex used to supply (D48). */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  margin: 0 -1rem;
-  height: $toc-bar-height;
-
-  @include mx.glass;
-
-  border-bottom: none;
-  transition: all var(--transition-fast) ease-in-out;
-
-  @extend %btn-color;
-
-  @include bp.xl {
-    display: none !important;
-  }
-
-  .label {
-    margin-left: 0.375rem;
-    padding: 0 0.75rem;
-    color: inherit;
-  }
-
-  &.invisible {
-    top: -#{$toc-bar-height};
-    height: 0;
-    overflow: hidden;
-    transition: none;
-  }
-}
-
 // --- Reading progress bar ---
 .reading-progress-bar {
   position: fixed;

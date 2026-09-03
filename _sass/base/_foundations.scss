@@ -77,7 +77,8 @@ body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none
    or already re-specified by our own components; these two class names are toggled or carried by
    markup and scripts we keep, so they get three lines here instead of a framework:
      .d-none     - mermaid.js:29 hides the pre-render backup element with it
-     .invisible  - the post's #toc-bar ships with it and scripts toggle it on scroll
+     .invisible  - `#toc-wrapper` ships with it and toc.js removes it once the rail is built.
+                   (It used to name the post's #toc-bar too; that element was deleted 2026-09-03.)
    Named identically on purpose: renaming would mean editing stock Chirpy scripts (D2).
    THEY SIT OUTSIDE EVERY LAYER DELIBERATELY, which the load-order checker flags unless it is
    said out loud here. Unlayered CSS beats every layer, and that is exactly what a hiding

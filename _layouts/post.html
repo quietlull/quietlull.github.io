@@ -142,36 +142,18 @@ refactor: true
 
 {% include social-sprite.html %}
 
-{% if enable_toc %}
-  {% comment %}
-    THE NARROW-WIDTH TOC, AND THE ONLY ONE. Chirpy's bar plus its dialog: `toc-mobile.js` fills
-    `#toc-popup-content` and wires the triggers, the close button, the backdrop click and Escape.
+{% comment %}
+  THE NARROW-VIEWPORT TOC IS DELETED (Rod, 2026-09-03, asked twice: "this is weird and shouldnt
+  exist", then "the toc button still exists AGAIN").
 
-    ONE SWITCH FOR THE HANDOVER, AND IT IS 1200px, because `toc.js` reads
-    `matchMedia('(min-width: 1200px)')` to pick which tocbot instance runs and nothing in CSS can
-    move that. `_sass/pages/_post.scss` states it once, hiding `#toc-wrapper` below it and this
-    bar above it. components/_toc-real.scss states no breakpoint at all.
+  What went: `#toc-solo-trigger`, the inline Contents button; `#toc-bar`, the sticky strip that
+  replaced it on scroll; and `#toc-popup`, the dialog they both opened. Measured before removing,
+  so the loss is stated rather than discovered later: at a 1023px viewport that bar was rendering
+  `display:flex`, 1045x48, sticky, with one visible trigger - it was not a leftover, it worked.
 
-    The rail component was ported with a Starlight `.toc-pop` popup as well, at 1152px. No markup
-    for it was ever written, so it never rendered and this bar was always what appeared; the dead
-    CSS and its second breakpoint are both gone.
+  WHAT THIS COSTS: under 1200px there is now no table of contents at all. The rail
+  (`#toc-wrapper`) is the only one left and `_sass/pages/_post.scss` hides it below 1199.98px.
+  Headings still carry their anchors, so deep links keep working.
 
-    The Bootstrap utility classes below (d-flex, flex-row, align-items-center,
-    justify-content-between, text-truncate, me-1, btn-outline-secondary, ps-2, pe-1, p-0, py-2,
-    ms-4, my-1, opacity-75, px-4, py-3, pb-4) are gone (D48): they matched no CSS. The flex/spacing
-    layout they used to supply for #toc-bar and .header now lives in
-    _sass/components/_popups.scss:99 and _sass/pages/_post.scss:407.
-  {% endcomment %}
-  <div id="toc-bar" class="invisible">
-    <span class="label">{{ page.title }}</span>
-    <button type="button" class="toc-trigger btn"><i class="fa-solid fa-list-ul fa-fw"></i></button>
-  </div>
-
-  <dialog id="toc-popup">
-    <div class="header">
-      <div class="label">{{- page.title -}}</div>
-      <button id="toc-popup-close" type="button" class="btn mx-1"><i class="fas fa-close"></i></button>
-    </div>
-    <div id="toc-popup-content"></div>
-  </dialog>
-{% endif %}
+  `toc-mobile.js` is deleted with it and `toc.js` no longer branches on width.
+{% endcomment %}
