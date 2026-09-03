@@ -24,12 +24,18 @@
      --color-silver        #a3a19d      --color-muted-warm  #7d7a76
      --color-line-soft     rgba(255,255,255,.1)
 
-   EVERY LINE IN HERE IS AMBER, NOT WHITE. Rod 2026-09-03: "rather than white lines lets do the
-   yellow we use everywhere else". The first version of this file used `rgba(255,255,255,.1)`
-   hairlines, copied from --color-line-soft, which is the NEUTRAL UI hairline the rest of the site
-   spends on chrome. Every bordered object a reader actually looks at - cards, buttons, the code
-   block, the panels - is on the amber pair instead: rgba(245,158,11,.2) for a real edge and
-   rgba(245,158,11,.1) for a quiet one. Those two are --btn-border-color and --glass-border.
+   LINES ARE AMBER. FILLS ARE BLUE. That split is the whole rule here and I got it wrong twice.
+   Rod 2026-09-03: "rather than white lines lets do the yellow we use everywhere else", then
+   "i asked for just the lines to be changed from white to yellow but the boxes changed to yellow
+   too the panels or cards should be the blue color they were before".
+
+   So: a BORDER is amber - rgba(245,158,11,.2) for a real edge, rgba(245,158,11,.1) for a quiet
+   one (--btn-border-color and --glass-border). A FILL is the blue slate panel. Amber never
+   becomes a background here; it is a line colour and an accent, nothing else.
+
+   The panel values are MEASURED off `.post-nav-card` on a real post rather than picked, because
+   the comment box sits directly under the prev/next cards and should read as the same object:
+   background rgba(15,23,42,.4), border rgba(245,158,11,.1).
 
    IF A TOKEN CHANGES, THIS FILE DOES NOT FOLLOW IT. That is the cost of the iframe boundary and
    it is why every value is annotated with the token it came from. */
@@ -37,9 +43,9 @@
 main {
   /* --- ground and text ------------------------------------------------------------------- */
   --color-canvas-default: transparent;              /* let the post's own ground show through */
-  --color-canvas-overlay: #1c1a18;                  /* --color-panel-solid */
+  --color-canvas-overlay: rgb(15, 23, 42);          /* the BLUE panel, measured off .post-nav-card */
   --color-canvas-inset: #070c23;                    /* --color-night */
-  --color-canvas-subtle: rgba(245, 158, 11, 0.04);   /* warm wash, not a grey one */
+  --color-canvas-subtle: rgba(15, 23, 42, 0.4);     /* a PANEL, so it is blue - not a line */
 
   --color-fg-default: #f5f3ef;                      /* --color-text */
   --color-fg-muted: #a3a19d;                        /* --color-silver */
@@ -60,8 +66,8 @@ main {
 
   /* --- buttons. The primary is the gold, not GitHub's green. ------------------------------- */
   --color-btn-text: #f5f3ef;
-  --color-btn-bg: rgba(245, 158, 11, 0.06);
-  --color-btn-border: rgba(245, 158, 11, 0.2);      /* --btn-border-color */
+  --color-btn-bg: rgba(15, 23, 42, 0.6);            /* --card-bg. A FILL, so it stays blue. */
+  --color-btn-border: rgba(245, 158, 11, 0.2);      /* --btn-border-color: this is a LINE */
   --color-btn-hover-bg: rgba(251, 191, 36, 0.1);
   --color-btn-hover-border: rgba(251, 191, 36, 0.3);
   --color-btn-active-bg: rgba(251, 191, 36, 0.15);
@@ -100,8 +106,10 @@ main {
 .gsc-comment-box,
 .gsc-comment > .gsc-comment-box,
 .gsc-timeline .gsc-comment > div {
-  background: rgba(28, 26, 24, 0.55);               /* --color-panel */
-  border-color: rgba(245, 158, 11, 0.2);            /* --btn-border-color */
+  /* MEASURED off `.post-nav-card` on a real post, so the comment box is the same object as the
+     prev/next cards sitting directly above it: blue fill, amber hairline. */
+  background: rgba(15, 23, 42, 0.4);
+  border-color: rgba(245, 158, 11, 0.1);            /* --glass-border, what those cards use */
 }
 
 /* Code inside a comment, matched to the site's inline code rather than GitHub's grey chip. */

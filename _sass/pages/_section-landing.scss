@@ -158,8 +158,30 @@
     width: 100%;
     aspect-ratio: 21 / 9;
     border: 1px solid var(--color-line-faint);
-    background: var(--color-black);
     object-fit: cover;
+
+    /* NO `background` HERE, AND THAT IS THE FIX, NOT A TIDY-UP. Rod on Windows Edge: "its a
+       rectangular box roughly around the same size as the reel and it moves up and down
+       throughout the page as i scroll", then "if there is CSS that creates a box behind the demo
+       reel i think we should remove it". There was one: `background: var(--color-black)`, an
+       opaque black rectangle painted behind the video at exactly the reel's size. An opaque paint
+       behind a live video layer is the thing browsers composite separately, and a ghost of it that
+       does not re-composite in step with the scroll is precisely the symptom he describes.
+
+       It cost nothing to lose. `object-fit: cover` on a 21/9 box means the clip fills the frame
+       edge to edge, so the black was only ever visible in the gap before the first clip decodes -
+       and the page's own ground sits there perfectly well instead.
+
+       ATTEMPT 1 WAS WRONG AND IS RECORDED SO IT IS NOT RETRIED: `disablepictureinpicture`, on the
+       theory Edge was floating a mini-player. He confirmed the box survives it. The attribute
+       stays on the element because opting a decorative autoplaying reel out of PiP is correct on
+       its own merits, but it is not this fix.
+
+       ATTEMPT 2 WAS `transform: translateZ(0)` and it is deliberately NOT here. Shipping a
+       compositing hint alongside this removal would make the result unattributable, and a hint
+       left behind for a bug it did not solve is a permanent layer paid for nothing. If the box
+       survives THIS, that is the next thing to try, followed by `overflow-x: clip` in
+       base/_foundations.scss - our own change, and testable by reverting it. */
   }
 
   @media (max-width: 820px) {
