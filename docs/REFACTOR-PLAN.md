@@ -123,6 +123,75 @@ different theme easy, because nobody is swapping.
   overwrite would clobber and where its replacement lives. If a file is on the list and nobody can
   say what we changed in it, the contract is not done.
 
+## THE NEXT PHASE - the CSS/JS split and rebuild (PROPOSED 2026-09-03, awaiting Rod)
+
+Rod named this himself: *"I think ill do the naming pass once we start the full CSS and JS
+splitting and rebuild"*. It absorbs what was left of Phase 2 rather than running beside it - the
+"layout -> bundle map as a named contract" item IS this work, and the naming pass (P511/P514) rides
+along because renaming is cheapest while the files are already being moved.
+
+**Everything below is measured, 2026-09-03.** Re-measure before trusting any number.
+
+### What is actually there now
+
+| | files | lines | ships as |
+|---|---|---|---|
+| `_sass/` | 59 | 10,079 | ONE stylesheet, on every page including the 404 |
+| `_javascript/` | 39 | 4,914 | Rollup -> 10 bundles in `assets/js/dist/` |
+| `assets/js/` (excl. dist) | 16 | 2,506 | raw ES modules, `<script type="module">`, no build step |
+
+Bundles by weight: `three-background-scene` **823KB**, `three-background-minimal` **512KB**, then
+`post` 29KB, `page` 25KB, `home` 24KB, `misc` 23KB. The scene bundles are two orders of magnitude
+above everything else, so any conversation about JS size is a conversation about those two.
+
+### The four problems, in the order they cost the most
+
+**1. THERE ARE TWO JAVASCRIPT SYSTEMS AND THEY HAVE DIFFERENT RULES.** `_javascript/` is bundled by
+Rollup; `assets/js/` is served raw as ES modules. Same language, same site, two build stories, two
+places to look, two conventions for imports. This is the single biggest structural problem and
+nearly every other item gets easier once it is one system. It is also the direct cause of a bug
+class we have already hit: `merged-card.js` and `project-cards-expensive.js` both existed, one was
+dead, and a comment inside the dead one claimed the opposite.
+
+**2. THE `minimal` TIER IS NOT MINIMAL.** `chrome-scripts.html` only branches on `none`, so every
+other tier including `minimal` falls through to the 823KB full scene. Eight page types (portal,
+projects, ramblings, archives, blog, page, tag, under-construction) download it and never render a
+scene. This is the largest user-facing win available anywhere in the repo and it is a routing fix,
+not an optimisation.
+
+**3. ONE STYLESHEET SHIPS TO EVERY PAGE.** 10,079 lines, including `pages/_post.scss` (511) on the
+portal and `pages/_portal.scss` on posts. Splitting per-page is real work because of the cascade
+layers (D36) - load order currently decides several ties, and `tools/css-order-check.mjs` exists
+because getting that wrong cost the wordmark once.
+
+**4. THREE NAMING CONVENTIONS ARE LIVE AT ONCE.** Upstream Chirpy ids (`#toc-bar`), vendor classes
+we now theme (`.gsc-*`, Primer `--color-canvas-*`), and two of our own token families that overlap
+(`--gold-20`/`--gold-35` alpha ramps vs `--color-gold`/`--color-glow` semantic names). The
+scrollbar being invisible was exactly that overlap - an alpha-ramp token used where a semantic one
+was meant.
+
+### Proposed order, and why this order
+
+1. **Honest tiers first.** Biggest win, smallest diff, touches one include. Independent of
+   everything else, so it can ship on its own and be judged on its own.
+2. **Collapse the two JS trees into one.** Decide bundled-or-raw once, move the 16 stragglers,
+   delete the duplicate-module hazard. Do this BEFORE any renaming, so names are only changed once.
+3. **The bundle contract**, which is Phase 2's outstanding item: write down which layout loads
+   which bundle, with a drift warning at both ends. Cheap once step 2 makes the map true.
+4. **Split the stylesheet per page.** Largest and riskiest, and it wants the load-order checker
+   watching every step. Do it last, when nothing else is moving.
+5. **The naming pass rides steps 2 and 4** rather than being its own pass.
+
+### What needs Rod before starting
+
+- **Bundled or raw?** Step 2 needs one answer. Rollup for everything is consistent and gives real
+  bundles; raw ES modules for everything drops the build step entirely but ships more requests.
+- **How far does the CSS split go?** Per-page sheets, or just lifting the four heaviest page
+  stylesheets out of the global one?
+- **Is the 823KB scene bundle in scope?** Making the tiers honest does not shrink it; it only stops
+  sending it to pages that never use it. Shrinking it is a separate, larger question and the perf
+  audit's iceboxed items already speak to it.
+
 ## Order
 
 0 (done) before 1 (done, cannot decouple what you cannot tell apart); 3 only after 2. **The
