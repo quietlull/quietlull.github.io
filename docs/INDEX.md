@@ -14,6 +14,7 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
 - [REQUESTS.md](REQUESTS.md) - Rod's request queue with statuses. Read the OPEN table; done rows are phantoms.
 - [MERGE-WORKLIST.md](MERGE-WORKLIST.md) - **the ROADMAP** (3 stages: finish the lab -> port -> Jekyll refactor, with where we are) + every port gate in order. Stage 2 is done: the port shipped.
 - [REFACTOR-PLAN.md](REFACTOR-PLAN.md) - the flaws found 2026-08-11 + the phased plan. Phases 0 and 1 are DONE; Phase 2 is next and nothing gates it; Phase 3 is "vendored but clean" (Rod, 2026-09-02).
+- [SPARKLER-PERF-PLAN.md](SPARKLER-PERF-PLAN.md) - the cursor sparkler profiling pass, PLANNED not run. Read before running it.
 - [TRAPS.md](TRAPS.md) - symptom-first list of things that bite. Search here FIRST when debugging.
 - [DECISIONS.md](DECISIONS.md) - decisions with the rejected options and why. Losers get re-suggested.
 - [DEAD-ENDS.md](DEAD-ENDS.md) - attempts that died and why. Do not re-litigate.
