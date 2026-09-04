@@ -123,7 +123,13 @@ different theme easy, because nobody is swapping.
   overwrite would clobber and where its replacement lives. If a file is on the list and nobody can
   say what we changed in it, the contract is not done.
 
-## THE NEXT PHASE - the CSS/JS split and rebuild (PROPOSED 2026-09-03, awaiting Rod)
+## THE NEXT PHASE - the CSS/JS split and rebuild (ACCEPTED 2026-09-03)
+
+**Rod's three calls, 2026-09-03:** the refactor goes FIRST and the post-video work queues behind
+it; **everything moves into Rollup** (one system - note Rollup cannot be dropped either way, the
+Three.js scene needs it); and the CSS split **lifts only the four heaviest page stylesheets** out
+of the global sheet rather than going fully per-page. The 823KB scene bundle stays OUT of scope -
+the perf audit is closed and iceboxed.
 
 Rod named this himself: *"I think ill do the naming pass once we start the full CSS and JS
 splitting and rebuild"*. It absorbs what was left of Phase 2 rather than running beside it - the
@@ -153,11 +159,30 @@ nearly every other item gets easier once it is one system. It is also the direct
 class we have already hit: `merged-card.js` and `project-cards-expensive.js` both existed, one was
 dead, and a comment inside the dead one claimed the opposite.
 
-**2. THE `minimal` TIER IS NOT MINIMAL.** `chrome-scripts.html` only branches on `none`, so every
-other tier including `minimal` falls through to the 823KB full scene. Eight page types (portal,
-projects, ramblings, archives, blog, page, tag, under-construction) download it and never render a
-scene. This is the largest user-facing win available anywhere in the repo and it is a routing fix,
-not an optimisation.
+**2. THE `minimal` TIER SHIPS GEOMETRY IT THEN HIDES.** `chrome-scripts.html` branches only on
+`none` and `embers`, so `minimal` falls through to the same 823KB full scene bundle that `full`
+gets. Measured across the built site: 4 pages `full`, **29 `minimal`**, 19 `none`, 1 `embers`.
+
+**THE FIRST VERSION OF THIS ITEM WAS WRONG AND IS CORRECTED HERE.** It claimed those pages
+"download it and never render a scene", and called the fix a one-line routing change and the
+largest win in the repo. **`minimal` renders a scene.** `_layouts/default.html:26` defines it as
+lanterns + fireflies + post-processing, *the same scene with dock and water hidden by*
+`assets/js/effects/scene-mode.js`. Not requesting the bundle would take the background off 29
+pages. The comment in that file already said so - *"a design change nobody asked for"* - and the
+plan was written without reading it.
+
+**So the real item is narrower and it is not free:** `minimal` downloads dock and water and then
+hides them. Recovering that means a THIRD Rollup entry point built without those two, which is
+real work and belongs with the bundle consolidation, not ahead of it as a quick win. Note the
+existing `three-background-minimal.min.js` (512KB) is NOT that bundle - it is embers-only, and the
+404 is its one consumer.
+
+**CORRECTED 2026-09-03, same day it was written: it is NOT the largest win in the repo.** That
+claim stood for about an hour. Measured on `/tech-art/posts/ComputeGrass/`: **31.43 MB of transfer,
+99.1% of it autoplaying video**, against 0.29 MB for a post with none - and ten 1920x1016 clips
+decoding at 265 megapixels/second while sitting off screen, which is 3.4x what a full-screen 60fps
+display pushes. That is 38x the scene bundle, on a page type that never loads the scene bundle at
+all. **Post video outranks everything in this plan.** See P515.
 
 **3. ONE STYLESHEET SHIPS TO EVERY PAGE.** 10,079 lines, including `pages/_post.scss` (511) on the
 portal and `pages/_portal.scss` on posts. Splitting per-page is real work because of the cascade
@@ -172,10 +197,13 @@ was meant.
 
 ### Proposed order, and why this order
 
-1. **Honest tiers first.** Biggest win, smallest diff, touches one include. Independent of
-   everything else, so it can ship on its own and be judged on its own.
-2. **Collapse the two JS trees into one.** Decide bundled-or-raw once, move the 16 stragglers,
-   delete the duplicate-module hazard. Do this BEFORE any renaming, so names are only changed once.
+1. **Collapse the two JS trees into one, through Rollup** (ROD, 2026-09-03). Move the 16 raw
+   `assets/js/` modules into the build, delete the duplicate-module hazard. First because the
+   step that used to be first evaporated - see problem 2, "honest tiers" was never a free win.
+   Do this BEFORE any renaming, so names are only changed once.
+2. **A true `minimal` scene bundle**, if it survives being costed: a third entry point with dock
+   and water left out, so the 29 `minimal` pages stop downloading what they hide. Same visual
+   result or it does not ship.
 3. **The bundle contract**, which is Phase 2's outstanding item: write down which layout loads
    which bundle, with a drift warning at both ends. Cheap once step 2 makes the map true.
 4. **Split the stylesheet per page.** Largest and riskiest, and it wants the load-order checker
