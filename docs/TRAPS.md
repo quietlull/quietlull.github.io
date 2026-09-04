@@ -15,6 +15,34 @@ the live look.** Profile the real thing through `scene-tuner.html`, which drives
 bundle. There is also an orphan `redesign-lab/scene/shader/mirroredSurface.js` that nothing
 imports and whose NAME matches the live file, which is the decoy that starts this.
 
+**An embedded third-party widget is unthemed on localhost but fine in production ->**
+`{{ site.url }}` is NOT the production URL while `jekyll serve` is running. Jekyll replaces it with
+the local server address, regardless of what `_config.yml` says. Measured on giscus: the widget
+rendered `data-theme="http://localhost:4000/assets/css/giscus.css"`, which its iframe on
+giscus.app cannot fetch - cross-origin AND mixed content - so it fell back to its DEFAULT theme,
+which is LIGHT, and painted a white block across a dark page. **Every local view, every time.**
+It cost two rounds of blaming the deploy, and one comment in the codebase asserting that as fact.
+**Any URL a third party must fetch has to be written out literally**, not built from `site.url`.
+
+**A cursor effect freezes at an embedded widget, and no event you attach ever fires ->**
+a cross-origin iframe delivers **ZERO** events to the parent document - not `pointermove`, and
+**not the boundary events either**. MEASURED twice on giscus, after two fixes built on the
+opposite assumption: a `pointermove` counter saw 2 events just above the frame and 0 across three
+positions inside it; then probes on `pointerenter`, `pointerover`, `mouseenter`, `mouseover`,
+`pointerleave` and `mouseout`, attached to BOTH the iframe element and its wrapper, caught nothing
+at all as the cursor stepped across. The hit target moves into the frame's own document and ours
+is never told. This is also why the wrapper trick fails: entering a child iframe does not fire
+`pointerenter` on its parent the way entering an ordinary child does.
+**The only thing that can see the cursor over a frame is an element of YOURS on top of it.**
+`assets/js/components/cursor-glow.js` does that - a transparent shield inside `.post-comments`
+which steps aside after 140ms of stillness so clicks still land, and re-arms on a pointermove
+whose target is outside the region (a signal that exists precisely BECAUSE the frame is opaque).
+
+**"I verified it with a synthetic event" ->** you verified that a handler is attached, nothing
+more. `element.dispatchEvent(new PointerEvent('pointerenter'))` succeeds whether or not the
+browser would ever fire that event there. The iframe fade above passed exactly that test and did
+nothing in reality. **Drive the real input, or you have tested your own code against itself.**
+
 **A token is the wrong colour and the palette is not the problem ->**
 Rouge's token classes do not line up with roles, so no stylesheet can express a role mapping on
 its own. Measured on this project's own Rouge over HLSL: `k` holds `return if else` AND

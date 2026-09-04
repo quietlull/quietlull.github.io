@@ -1,3 +1,55 @@
+# 2026-09-03, evening - THE COMMENTS AREA STOPS LOOKING BROKEN, AND I LEARN TO DRIVE THE REAL INPUT
+
+**Decided by ROD**, across a session where he corrected me more than once and was right each time.
+
+**THE HEADLINE IS A METHOD FAILURE, not a feature.** The cursor lantern froze at the comments.
+I "fixed" it twice on reasoning and shipped both: first fading the glow on `mouseover` of the
+iframe, then settling it on `pointerenter` of the wrapper. **Neither event ever fires.** A
+cross-origin iframe delivers ZERO events to the parent - measured with probes on six event types
+across both the frame and its wrapper, nothing at all as the cursor stepped over the boundary.
+The first attempt had been "verified" with a synthetic event, which proves only that a handler is
+attached. See TRAPS, both entries.
+
+The working fix is a transparent shield of our own document over the frame, since that is the only
+thing that can see the cursor there. It steps aside after 140ms of stillness - what someone about
+to click does - and re-arms on a pointermove whose target is outside the region, a signal that
+exists precisely because the frame is opaque. Measured after: the lantern tracks to cy 717px deep
+inside the comments where it used to stop at 510, and holding still over "Sign in with GitHub"
+leaves the iframe as the top element there, so the click lands.
+
+**I also read one of his reports backwards.** He wanted the lantern to REACH the comments; I
+shipped a change that hid it before them. Worth recording as its own mistake rather than folding
+it into the above.
+
+**THE GISCUS THEME went custom, then got reverted, then restored - and the white block was my bug,
+not the deploy.** I blamed a mid-deploy fetch window twice and wrote that into the code as fact.
+Rod asked a third time ("why does that keep happening?") and measuring finally gave the answer:
+**`jekyll serve` REPLACES `site.url` with the local server address**, so the include rendered
+`data-theme="http://localhost:4000/assets/css/giscus.css"` - a URL the giscus iframe cannot fetch,
+being cross-origin and mixed content. giscus falls back to its LIGHT default, and ours sets
+`--color-canvas-default: transparent`, so nothing of ours held a dark ground either. It happened on
+every local view, deterministically, which is exactly what "keeps happening" should have told me.
+The URL is written out literally now. See TRAPS. **The colour instruction itself took three passes and every miss was mine:** white
+hairlines to amber, then over-applying amber onto FILLS he had not asked about, then three
+different navies where he wanted one. The file now leads with the rule - lines are amber, fills
+are `#070c23` - so there is nothing left to pick.
+
+**Also his calls, all measured:** the comments moved from 1894px full-bleed into the post column
+at 767px (the widget was anchoring on the footer, which is full bleed; `.post-foot` already
+wrapped the include but had no ELEMENT to anchor to); the scrollbar went from gold at 20% alpha to
+solid `--color-gold` with `--color-glow` on hover, because 20% over near-black is why he could not
+find it; the reading progress bar became a readout rather than a control, losing its click-to-jump
+handler, its hover-grow and its pointer-events; and the section sparks moved onto that bar's
+leading edge, since firing them at the h2 meant firing them just above the viewport top where they
+clipped and read as debris.
+
+**The Edge ghost box** turned out to be a black rectangle we were painting ourselves -
+`background: var(--color-black)` on `.reel__bar`, at exactly the size he kept describing. Two
+wrong attempts before it are recorded in that file so neither gets retried.
+
+**And the narrow TOC is gone (D52)**, on his second asking - the first pass removed the button and
+left the sticky bar doing the same job.
+
 # 2026-09-03, later - THE COMMENTS JOIN THE SITE, AND A BLACK BOX COMES OFF THE REEL
 
 **Decided by ROD**, who found both by looking: *"I did not realize comments were live lets keep

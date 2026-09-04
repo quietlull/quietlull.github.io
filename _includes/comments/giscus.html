@@ -20,23 +20,30 @@
   // change that waits for it; everything inside is stock.
   document.addEventListener('DOMContentLoaded', function () {
     {%- comment -%}
-      OUR OWN THEME, restored on Rod's word after one revert. `assets/css/giscus.css`.
+      OUR OWN THEME, `assets/css/giscus.css`.
 
-      THE URL IS ABSOLUTE AND POINTS AT PRODUCTION ON PURPOSE - do not "fix" it to a relative
-      path. giscus fetches this stylesheet from inside its own iframe on giscus.app, so it must be
-      a public HTTPS URL; a localhost path is cross-origin AND mixed content and is refused.
-      Pointing at the live URL is what makes the theme visible in local dev too, at the cost of the
-      file needing to be deployed before a change to it shows up anywhere.
+      THE URL IS HARDCODED, AND `{{ site.url }}` IS EXACTLY THE BUG THAT KEEPS BRINGING THE WHITE
+      BLOCK BACK. Rod, twice: "the giscus section is white again", "the non themed giscus is back
+      why does that keep happening?"
 
-      KNOWN FAILURE MODE, so it is recognised rather than re-diagnosed: if that fetch does not
-      land, giscus falls back to its DEFAULT theme, which is LIGHT, and the comments render as a
-      white block on a dark page. That is what Rod saw once mid-deploy. The file itself is fine -
-      it returns 200 as text/css with `access-control-allow-origin: *` and all its rules parse.
-      If the white block appears again, check the deploy before touching the CSS.
+      MEASURED: under `jekyll serve` this rendered
+        data-theme="http://localhost:4000/assets/css/giscus.css"
+      because Jekyll REPLACES `site.url` with the local server address while serving, even though
+      _config.yml sets it to the production domain. giscus fetches the theme from inside its own
+      iframe on giscus.app, which is HTTPS - so a localhost URL is cross-origin AND mixed content,
+      is refused, and giscus falls back to its DEFAULT theme, which is LIGHT. That is the white
+      block, every time, on every local view. It was never the deploy; an earlier note in this file
+      blamed the deploy and was wrong.
+
+      So the literal production URL is written out. It has to be absolute and public for giscus to
+      reach it at all, and it has to survive `jekyll serve`, which `site.url` does not.
+
+      THE COST, unchanged: this file must be DEPLOYED before any edit to it is visible anywhere,
+      localhost included. That is the price of the iframe fetching it over the public internet.
     {%- endcomment -%}
     const themeMapper = Theme.getThemeMapper(
-      '{{ site.url }}/assets/css/giscus.css',
-      '{{ site.url }}/assets/css/giscus.css'
+      'https://quietlull.github.io/assets/css/giscus.css',
+      'https://quietlull.github.io/assets/css/giscus.css'
     );
     const initTheme = themeMapper[Theme.visualState];
 

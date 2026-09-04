@@ -1700,3 +1700,26 @@ so when applying it. They are both reserved type-like names, so they read as one
 are rare - which is the argument for spending one hue on the pair rather than a fifth hue. It is
 still its own token, so splitting them later is a one-line change.
 
+## D52 - The narrow-viewport table of contents is deleted (2026-09-03, ROD)
+
+Rod, twice: *"this is weird and shouldnt exist"* (selecting `#toc-solo-trigger`), then
+*"the toc button still exists AGAIN"*.
+
+**Why it took two passes, which is the part worth keeping.** The first removal took only
+`#toc-solo-trigger`, the inline Contents button. `#toc-bar` then simply took over as the entry
+point on scroll, so from his side nothing had changed - the same popup, reachable the same way.
+Removing the visible half of a two-part control is not removing the control.
+
+**Measured before cutting rather than assumed dead:** at a 1023px viewport `#toc-bar` was
+rendering `display:flex`, 1045x48, sticky, with one visible trigger. It worked.
+
+**What went:** `#toc-solo-trigger`, `#toc-bar`, `#toc-popup`, `toc-mobile.js`, their CSS in
+`pages/_post.scss` and `components/_popups.scss`, and the width branch in `toc.js`.
+
+**THE COST, stated because it is real and reversible:** under 1200px there is now no table of
+contents at all. The rail is the only one left and `_post.scss` hides it below 1199.98px. Heading
+anchors are untouched (verified, 5 ids on the test post), so deep links still work.
+
+**Rejected: keeping the bar and dropping only the popup.** That leaves a control that opens
+nothing. The pieces only make sense together, which is why they leave together.
+

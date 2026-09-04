@@ -3,7 +3,29 @@
 **THE WHOLE SITE IS PORTED, THE STRIP PASS HAS RUN, AND BOOTSTRAP IS FULLY EVICTED.** Compiled
 2026-09-02 evening. Everything below is measured, not recalled.
 
-## The one-screen update (2026-09-02 evening)
+## The one-screen update (2026-09-03 evening)
+
+- **The post page's furniture is finished for now.** Code blocks render D20's wrapper with Rod's
+  syntax mapping; the comments sit in the post column wearing the site's palette; the scrollbar is
+  findable; the progress bar is a readout; the narrow TOC is deleted (D52).
+- **THE METHOD LESSON OF THE SESSION, and it cost three attempts:** a cross-origin iframe delivers
+  **zero** events to the parent, boundary events included. Two fixes were built on the opposite
+  assumption and shipped before measurement caught them. **A synthetic `dispatchEvent` proves a
+  handler is attached and nothing else.** Both entries are in TRAPS.
+- **The cursor lantern works over the comments** via a transparent shield in `.post-comments` that
+  steps aside after 140ms of stillness so clicks still land. Measured: tracks to cy 717px inside
+  the frame where it used to stop at 510.
+- **giscus is on our own theme** (`assets/css/giscus.css`) after one revert. **Known failure mode:
+  if the theme URL fails to fetch, giscus falls back to its LIGHT default and the block goes
+  white.** Check the deploy before the CSS.
+- **Left flagged, not fixed:** the Edge ghost box needs Rod's eye on Edge after the black
+  `.reel__bar` background was removed (two earlier attempts recorded as dead in that file); under
+  1200px there is no table of contents at all, which is D52's accepted cost; and the element-naming
+  pass Rod asked for (`#toc-solo-trigger` vs `.gsc-*` vs `--gold-20` vs `--color-gold` - three
+  conventions) has not started.
+- `npm test` green throughout.
+
+## The previous one-screen update (2026-09-02 evening)
 
 - **Bootstrap's last tenants are gone.** D48 had removed the CSS; this session removed what was
   still running: the tooltip JS (D50, Rod's call), 73 `data-bs-*` attribute pairs, the `bootstrap`
