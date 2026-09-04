@@ -1,6 +1,8 @@
 # Why post pages drop frames (P515) - investigation and optimization plan
 
-**Status: PLANNED, NOT RUN.** Rod, 2026-09-02: *"my post pages run really poorly even though they
+**Status: PLANNED, NOT RUN. INVESTIGATION ONLY - see section 7 before touching anything.**
+
+Rod, 2026-09-02: *"my post pages run really poorly even though they
 have no three.js scene at all which would do that"*, then *"ill make you work on all of p515 make a
 plan for it and start making optimizations"*, then the scope call: *"specifically im targeting
 frames not like memory or stuff like that."*
@@ -170,10 +172,19 @@ not fps. The 16.7 ms line is the 60 fps deadline and 33.3 ms means a dropped fra
 
 ## 7. Optimization guardrails
 
-Rod wants optimizations, not just a report, so these are the rules for landing them.
+**THIS PASS IS INVESTIGATION ONLY. DO NOT CHANGE ANY SHIPPING CODE.** Rod, 2026-09-02, overriding
+the #52 contract for this request: *"this is just investigation for now not changes until verified
+and i agree to it after looking at the visual change."*
 
-- **Same contract as #52:** minor single-line invisible fixes may land directly with their numbers;
-  anything visible or structural becomes a diff plus a measured saving for his call.
+So: **nothing lands, not even a one-line invisible fix.** That is a deliberate reversal of the #52
+rule where minor invisible fixes could land directly, and it applies to everything here. Measure,
+write the diff, show the number, show him the visual, and wait. He approves after looking, then it
+lands.
+
+Runtime patching for measurement is fine and expected, since it touches no file. Writing to
+`_javascript/`, `assets/js/`, `_sass/`, `_includes/` or `_layouts/` is not.
+
+The rest of the rules still apply to whatever he later approves:
 - **P483 is not a blocker but must be respected.** Rod previously ruled **autoplaying videos
   "WONT FIX"**: *"i dont care enough to fix it and theres not enough motion in these to do anything
   crazy."* That ruling was about **motion and accessibility**, not frames, and it was answering a
@@ -232,7 +243,7 @@ and on #52 that produced a headline that did not reproduce.
    and on a light one, against a page Rod does not call slow.
 3. Two or three coded options per real problem, each with the diff, the measured saving, and the
    visible consequence. Duds recorded as duds so nobody re-proposes them.
-4. Invisible single-line fixes landed directly, with numbers.
+4. **NOTHING APPLIED.** Every fix stays a proposal until Rod has seen the visual and said yes.
 5. Docs synced per CLAUDE.md: CHANGELOG, REQUESTS P515, this file's status, and a todo row.
 
 ---
@@ -246,5 +257,6 @@ and on #52 that produced a headline that did not reproduce.
 5. Ablate the top hits to confirm, starting with pausing offscreen video.
 6. Fan out read-only agents for static analysis and solution options in parallel; keep measurement
    serial, because parallel profiling on one CPU is worthless.
-7. A/B every candidate within-load, rebuild and re-measure anything applied.
-8. Report, sync docs, let Rod pick the visible ones.
+7. A/B every candidate within-load as a **runtime patch**. Do not apply anything to source.
+8. Report, sync docs, and show Rod each change on the page so he can judge the visual before
+   anything is applied.
