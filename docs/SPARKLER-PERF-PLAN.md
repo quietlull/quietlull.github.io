@@ -8,6 +8,12 @@ Written to be executed COLD by a session that has been compacted and remembers n
 three.js pass. Everything needed is here or cited by path. The method is the one that worked on
 request #52; where it differs, the reason is stated.
 
+> **READ [POST-FRAMES-PLAN.md](POST-FRAMES-PLAN.md) FIRST.** Rod handed the whole of P515 (post
+> pages dropping frames) to this lane on 2026-09-02 and scoped it to frames. That is now the parent
+> investigation and the sparkler is one candidate inside it, ranked fifth. Run the attribution in
+> that plan before spending a session on this one: the leading hypothesis there is ten
+> continuously decoding autoplay videos, not the cursor.
+
 ---
 
 ## 1. The job
