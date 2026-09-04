@@ -1,3 +1,57 @@
+> ## THE LAB CLEANUP, 2026-09-04 (ROD) - 101 files, all recoverable at `047213e`
+>
+> *"i think we can remove alot of stuff now that most of it has been committed once to git. i want
+> it clean since the major visual refactor has already been done and finished."*
+>
+> **Everything below is TRACKED and comes back with `git show 047213e:<path>`.**
+>
+> - **7 shipped pages** - the six `final-*.html` the port was made from, plus `a3-assembly.html`.
+> - **7 blockouts** - `about/landing/portal/post/projects/ramblings/resume-blockout.html`. The
+>   greybox stage ended when the redesign shipped.
+> - **7 ratios/tuners** - `about/hero/portal/rambling/rail-ratios.html`, `paper-tuner.html`,
+>   `cursor-ratios.html`. Most tuned the `final-*` pages, which no longer exist.
+> - **5 `rework-*.html`** - source CANDIDATES, never sources (see the bench rule). The design shipped.
+> - **9 `*-tests.html`** - achievement, card-greys, hero, icon-wobble, paper, reference-block,
+>   section-break, section-head, tool-icons.
+> - **`archive/`** (5 files) and **`original-css/`** (61 files, the pre-redesign CSS; the strip is
+>   committed so git already holds that state).
+>
+> **DELIBERATELY KEPT, and each for a stated reason:**
+>
+> - **`scene-tuner.html`** - it loads the LIVE `three-background-scene.min.js`, so it still tunes the
+>   real scene. The other tuners pointed at deleted pages or at lab copies.
+> - **`washi-tape-tests.html`** - Rod: the tape tips are not finished (they still need serrated ends).
+> - **`references/`** (197 files) - this IS the reference gallery. `reference-gallery.html` loads 147
+>   images from `references/shots` and 84 from `references/captures`; delete it and the gallery empties.
+> - **`analysis/`** and **`sources/`** - the written teardowns and snippets that provenance citations
+>   point at.
+> - **`_TRASH-2026-08-25/`** and **`_BACKUP-pre-deletion-2026-08-26/`** - **NOT DELETED, and this is the
+>   trap worth remembering: both are gitignored with ZERO tracked files, so deleting them is
+>   permanent.** The name says disposable and git cannot undo it. 34M of that is
+>   `_TRASH-2026-08-25/_ref-emissive-dissolve`, a reference feeding the live character-scene dissolve
+>   track - it is 45% of the lab by size, which is why "just delete the trash folder" looks like a big
+>   win and is actually the riskiest button in here.
+
+> ## THE SIX `final-*` PAGES AND `a3-assembly.html` ARE DELETED (2026-09-04, ROD)
+>
+> *"we can delete the final lab pages actually since they have already been merged to the main site
+> you can also kill the a3 assembly."* The port is done and the live tree ships, so they had stopped
+> being a workbench and become a second copy that could drift.
+>
+> **They are cited across roughly ten docs as the source the port was made from**, so the citation
+> trail is preserved here rather than left dangling: they last existed at commit **`047213e`**.
+> To read one:
+>
+> ```
+> git show 047213e:redesign-lab/final-landing.html
+> ```
+>
+> Deleted: `final-landing.html`, `final-about.html`, `final-portal.html`, `final-post.html`,
+> `final-projects.html`, `final-ramblings.html`, `a3-assembly.html`.
+>
+> **Known dangling links, to be fixed by the workbench rebuild rather than patched now:**
+> `redesign-lab/index.html`, `about-ratios.html`, `hero-ratios.html`, `hero-tests.html`.
+
 # REDESIGN HANDOFF - current state 2026-08-24
 
 Read this, then `docs/STATUS.md`. The port roadmap is at the top of `docs/MERGE-WORKLIST.md`.
