@@ -112,7 +112,7 @@ function pinGlyphAdvance(host, text) {
       return;
     }
     const cell = document.createElement('span');
-    cell.className = 'lb__g';
+    cell.className = 'line-boil-text__g';
     cell.textContent = character;
     cell.style.inlineSize = advances[index].toFixed(2) + 'px';
     cell.dataset.face = String(Math.floor(Math.random() * LINE_BOIL_FACES.length));
@@ -122,7 +122,7 @@ function pinGlyphAdvance(host, text) {
 }
 
 function boilTick(host) {
-  for (const cell of host.querySelectorAll('.lb__g')) {
+  for (const cell of host.querySelectorAll('.line-boil-text__g')) {
     const next = (Number(cell.dataset.face) + 1) % LINE_BOIL_FACES.length;
     cell.dataset.face = String(next);
     cell.style.fontFamily = LINE_BOIL_FACES[next];
@@ -133,7 +133,7 @@ export function initLineBoil(host, { rate = LINE_BOIL_RATE } = {}) {
   if (!host) return null;
   const text = host.textContent.trim();
 
-  host.classList.add('lb');
+  host.classList.add('line-boil-text');
 
   let timer = null;
   let repin = null;

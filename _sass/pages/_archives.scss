@@ -36,7 +36,7 @@
 
   // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the ladder's
   // own `h1 { margin: 0 }` and pushes the title down. Same restatement as ramblings and projects.
-  .ptd__title { margin: 0; }
+  .page-heading__title { margin: 0; }
 
   // The year takes the H2 rung whole - size, weight and colour all come from base/_decisions.scss
   // and nothing about them is set here. Only the space around it is this page's business.

@@ -47,7 +47,7 @@ body:has(.pground)::before {
   transform: translate(-50%, -50%);
 }
 
-// OVERRIDES `.lb` in `@layer components`, which would otherwise pick the boil's own colour.
+// OVERRIDES `.line-boil-text` in `@layer components`, which would otherwise pick the boil's own colour.
 .centre__mark {
   display: block;
   color: var(--h0-color);

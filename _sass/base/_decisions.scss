@@ -58,7 +58,7 @@
    while the colours were right. That is why it read as "a little weird" rather than broken.
    CASE G DOES NOT COME WITH IT: the counter and the divider stay on `.prose h2` below. They are
    a prose device, not the h2 scale. See redesign-lab/decisions.md. */
-h1, .d-h1, .prose > h1 {
+h1, .heading-1-display, .prose > h1 {
   color: var(--h1-color);
 
   /* 3.84rem = 61.44px, because H2/H3/H4 are a perfect x1.6 scale (38.4 / 24 / 15) and H1 was

@@ -43,9 +43,9 @@ script_includes:
       specific blockout, and there is no blockout for this page, so it takes the component's own
       defaults rather than borrowing a width that was measured for Ramblings.
     {% endcomment %}
-    <div class="ptd ptd--sub">
-      <h1 class="ptd__title d-h1">{{ page.title | default: 'Blogs' }}</h1>
-      {% if page.description %}<p class="ptd__desc">{{ page.description }}</p>{% endif %}
+    <div class="page-heading page-heading--sub">
+      <h1 class="page-heading__title heading-1-display">{{ page.title | default: 'Blogs' }}</h1>
+      {% if page.description %}<p class="page-heading__desc">{{ page.description }}</p>{% endif %}
     </div>
   </div>
 

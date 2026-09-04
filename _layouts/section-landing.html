@@ -36,18 +36,18 @@ script_includes:
 
 <div id="section-landing">
 
-  <section class="h">
+  <section class="hero">
     {% comment %} The visible mark is the vertical columns, so these two carry the heading for anyone reading the page rather than looking at it. {% endcomment %}
-    <h1 class="h__name">{{ site.social.name | default: site.title }}</h1>
-    <p class="h__role">{{ page.heading | default: page.title }}</p>
+    <h1 class="hero__name">{{ site.social.name | default: site.title }}</h1>
+    <p class="hero__role">{{ page.heading | default: page.title }}</p>
 
-    <div class="h__vert">
-      <div class="h__vert-cols" aria-hidden="true">
+    <div class="hero__vert">
+      <div class="hero__vert-cols" aria-hidden="true">
         {% assign columns = page.hero_columns | default: page.title | split: ',' %}
-        {% for column in columns %}<span class="h__col lb">{{ column | strip }}</span>{% endfor %}
+        {% for column in columns %}<span class="hero__col line-boil-text">{{ column | strip }}</span>{% endfor %}
       </div>
 
-      <nav class="h__social" aria-label="Elsewhere">
+      <nav class="hero__social" aria-label="Elsewhere">
         <a class="dm-social js-magnetic" data-drift="6" data-strength="45" data-strength-text="22" data-click-flash href="https://github.com/quietlull" aria-label="GitHub">
           <span class="dm-social__fill" aria-hidden="true"></span>
           <span class="dm-social__glyph js-magnetic-inner" aria-hidden="true"><svg class="dm-social__mark" viewBox="0 0 24 24"><use href="#si-github"/></svg></span>
@@ -67,11 +67,11 @@ script_includes:
       </nav>
     </div>
 
-    <p class="h__clock lb" aria-hidden="true">--:--:--</p>
+    <p class="hero__clock line-boil-text" aria-hidden="true">--:--:--</p>
   </section>
 
   {% if featured.size > 0 %}
-    <div class="col sec sec--head">
+    <div class="wrapper-content-column wrapper-section-band wrapper-section-band--head">
       <h2 class="section-head"><span class="section-head__name">Featured Projects</span></h2>
       <div class="viewall-row">
         <a class="kit-button kit-button--pill js-magnetic" data-strength="55" data-strength-text="27"
@@ -82,8 +82,8 @@ script_includes:
       </div>
     </div>
 
-    <div class="col sec">
-      <div class="merged-cards merged-cards--square epx-cards">
+    <div class="wrapper-content-column wrapper-section-band">
+      <div class="merged-cards merged-cards--square wrapper-project-card-grid">
         {% for post in featured limit: 8 %}
           {% assign parity = forloop.index0 | modulo: 2 %}
           {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
@@ -98,26 +98,23 @@ script_includes:
     </div>
   {% endif %}
 
-  <div class="col sec">
+  <div class="wrapper-content-column wrapper-section-band">
     <h2 class="section-head"><span class="section-head__name">Skills</span></h2>
     {% include skills-row.html skills=page.skills %}
   </div>
 
   {% comment %} The reel plays one post hero at a time; `landing-scripts.html` builds the list from front matter. {% endcomment %}
   {% if page.show_reel %}
-    <div class="col sec">
+    <div class="wrapper-content-column wrapper-section-band">
       <h2 class="section-head"><span class="section-head__name">Reel</span></h2>
       {% comment %}
-        `disablePictureInPicture` is not decoration. Edge on Windows pops a PLAYING video out
-        into a floating mini-player once it scrolls out of view, and that player then follows
-        the scroll - Rod 2026-09-02 saw "a mysterious box that moves when i scroll" here and
-        confirmed it went away when he deleted this element. The reel is the only video on the
-        site that plays continuously without being hovered, which is why it is the one that
-        triggers it. INFERENCE, not measured: Edge cannot be driven from here, so if the box
-        survives this the cause is something else and this attribute is a harmless no-op.
+        This host stays in the markup for the page's whole life. The `<video>` itself is built
+        and destroyed by `landing-scripts.html` as the reel enters and leaves view.
+
+        IT WAS WRITTEN AS AN EDGE GHOST-BOX FIX AND IT IS NOT ONE - see that file. It stays on its
+        own merits: a section that is off screen most of the time should not be decoding video.
       {% endcomment %}
-      <video class="reel__bar" id="reel-bar" muted playsinline autoplay preload="auto"
-             disablepictureinpicture disableremoteplayback></video>
+      <div class="reel__bar" id="reel-bar"></div>
     </div>
   {% endif %}
 

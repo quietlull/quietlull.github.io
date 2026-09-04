@@ -74,7 +74,7 @@
 }
 
 /* NO font-family HERE, and its absence is the fix rather than an oversight. This element is
-   `class="top-bar__logo lb"` (_includes/top-bar.html:57), so line-boil styles it too, and `.lb`
+   `class="top-bar__logo lb"` (_includes/top-bar.html:57), so line-boil styles it too, and `.line-boil-text`
    and `.top-bar__logo` are both one class deep inside `@layer components` - nothing but SOURCE
    ORDER separated them. `_sass/components/_index.scss` forwards line-boil at :33 and top-bar at
    :46, so this rule used to win and the name painted in Caveat until the boil script wrote a real
@@ -82,11 +82,11 @@
    shouldnt change to boil font afterwards". The same bug was logged and fixed once before, P296.
    DELETING the declaration beats reordering the two forwards, and the lab had already reached the
    same answer for the identical fault on the landing clock: "font-family REMOVED 2026-08-24. This
-   unlayered rule forced IBM Plex Mono and beat `.lb` ... the same flash Rod caught on the top bar"
+   unlayered rule forced IBM Plex Mono and beat `.line-boil-text` ... the same flash Rod caught on the top bar"
    (redesign-lab/final-landing.html:174). A deletion cannot come back the next time that index is
    re-sorted, and the file's stated policy is alphabetical order, so a reorder would have been a
    trap left armed for the next person.
-   `color` STAYS ON PURPOSE. It also beat `.lb`, which is why the mark renders gold #f59e0b rather
+   `color` STAYS ON PURPOSE. It also beat `.line-boil-text`, which is why the mark renders gold #f59e0b rather
    than the boil's own orange #f86a03, and that turned out to be a real design change the port made
    silently. Put to Rod 2026-08-25 and he chose to keep it: "it should stay the gold it is now".
    `font-weight: 700` is likewise unchanged and is NOT a new synthetic-bold problem: the glyph cells

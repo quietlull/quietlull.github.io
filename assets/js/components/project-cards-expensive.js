@@ -60,7 +60,7 @@ function bindHoverVideo(root) {
 }
 
 function bindControls(root) {
-  const grid = root.querySelector('.epx-cards');
+  const grid = root.querySelector('.wrapper-project-card-grid');
   if (!grid) {
     return;
   }

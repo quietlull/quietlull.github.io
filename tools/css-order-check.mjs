@@ -5,7 +5,8 @@
 // `_sass/components/_index.scss` argued the alphabetical @forward order was safe because no two
 // partials declare the same SELECTOR. That is true and it is the wrong question. An element carries
 // several component classes at once, so two DIFFERENT selectors land on the SAME element: the
-// wordmark is `class="top-bar__logo lb"`, so `_top-bar.scss` and `_line-boil.scss` both style it.
+// wordmark is `class="top-bar__logo line-boil-text"`, so `_top-bar.scss` and `_line-boil.scss`
+// both style it.
 // Both are one class deep, in the same layer, so only source order separated them, and the wordmark
 // painted in the wrong font and the wrong colour for weeks.
 //
@@ -29,9 +30,10 @@
 // build to a THROWAWAY destination, so `_site` and the dev server are never touched, and both
 // restore the file from a backup rather than from git. Takes about a minute each.
 //
-//   Test B, a new order-decided property. `class="top-bar__logo lb"` is the historical case.
+//   Test B, a new order-decided property. `class="top-bar__logo line-boil-text"` is the
+//   historical case.
 //     cp _sass/components/_line-boil.scss /tmp/lb.bak
-//     sed -i '97a\  letter-spacing: 0.1em;' _sass/components/_line-boil.scss   # .lb, inside the rule
+//     sed -i '97a\  letter-spacing: 0.1em;' _sass/components/_line-boil.scss   # inside .line-boil-text
 //     bundle exec jekyll build -d /tmp/tB --quiet
 //     cp /tmp/lb.bak _sass/components/_line-boil.scss && git diff --stat -- _sass/
 //     node tools/css-order-check.mjs --css /tmp/tB/assets/css/jekyll-theme-chirpy.css
@@ -712,7 +714,7 @@ function collectJsAugmented(markupElements) {
 
 const PINNED = [
   {
-    classes: 'lb top-bar__logo',
+    classes: 'line-boil-text top-bar__logo',
     props: ['color'],
     partials: ['_sass/components/_line-boil.scss', '_sass/components/_top-bar.scss'],
     winner: '_sass/components/_top-bar.scss',
@@ -722,13 +724,13 @@ const PINNED = [
       'declaration from _top-bar.scss rather than by reordering.'
   },
   {
-    classes: 'card-cover z-layer',
+    classes: 'card-cover parallax-z-layer',
     props: ['border-color', 'box-shadow'],
     partials: ['_sass/components/_merged-card.scss', '_sass/components/_project-cards-expensive.scss'],
     winner: '_sass/components/_project-cards-expensive.scss',
     why: 'Deliberate suppressor, _sass/components/_project-cards-expensive.scss:205: it holds ' +
       'merged-card\'s hover down so the cursor reveal is the one that reads. The grid is ' +
-      'class="merged-cards merged-cards--square epx-cards" and the card is ' +
+      'class="merged-cards merged-cards--square wrapper-project-card-grid" and the card is ' +
       'class="post-card ct-glow-card", so both partials hit the same cover.'
   },
   {

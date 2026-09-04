@@ -1,6 +1,6 @@
 // About, ported 2026-08-26 from the inline <style> of `redesign-lab/final-about.html`.
 // The lab scoped all of this under `body.spacious`, its variant switch. There is one About design
-// now, so the scope is the page root instead - and it has to stay scoped, because `.col`, `.band`,
+// now, so the scope is the page root instead - and it has to stay scoped, because `.wrapper-content-column`, `.band`,
 // `.hero` and `.sect` are names other pages and Bootstrap also use.
 // Rod's model, 2026-08-23: "about page is the landing page except the about me is the hero, the
 // achievements are the project cards." The numbers come from his own landing, not a reference site.
@@ -13,7 +13,7 @@
   min-height: 100vh;
 
   // The content column. 60.063rem is the landing's own width.
-  .col {
+  .wrapper-content-column {
     width: 100%;
     max-width: 60.063rem;
     padding: 0 30px;
@@ -111,10 +111,10 @@
     line-height: 1.5;
   }
 
-  // OVERRIDES `.lb` in `@layer components`, and each line fixes a measured defect. The boil faces
-  // carry a 143% ascent/descent that grew the heading 2px, `.lb` paints H0 orange inside a gold
+  // OVERRIDES `.line-boil-text` in `@layer components`, and each line fixes a measured defect. The boil faces
+  // carry a 143% ascent/descent that grew the heading 2px, `.line-boil-text` paints H0 orange inside a gold
   // heading, and every boiled glyph is a break opportunity so "Rod" broke as "Ro / d".
-  .bio-h .lb {
+  .bio-h .line-boil-text {
     color: inherit;
     font-family: var(--font-display);
     white-space: nowrap;

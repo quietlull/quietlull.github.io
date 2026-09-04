@@ -47,7 +47,7 @@
     </a>
     {% comment %}
       The wordmark boils - it is the site mark at a smaller size (Rod 2026-08-23: "add the line
-      boil text to the top bar as well"). `.lb` is what line-boil.js adds itself; it is written
+      boil text to the top bar as well"). `.line-boil-text` is what line-boil.js adds itself; it is written
       here too so the pinned-glyph CSS applies on the first paint rather than one frame late.
 
       IT IS NOW A LINK HOME. Rod 2026-08-25: "can you also make sure clicking on my name takes you
@@ -64,7 +64,7 @@
       otherwise, which is the same destination the favicon beside it already uses.
     {% endcomment %}
     <a class="top-bar__home" href="{{ home_url | relative_url }}">
-      <span class="top-bar__logo lb">RODNEY FAN</span>
+      <span class="top-bar__logo line-boil-text">RODNEY FAN</span>
     </a>
   </div>
 

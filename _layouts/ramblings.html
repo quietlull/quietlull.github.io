@@ -34,9 +34,9 @@ script_includes:
   <div class="wf">
 
     <div class="titlebar">
-      <div class="ptd ptd--ramblings ptd--sub">
-        <h1 class="ptd__title d-h1">{{ page.title | default: 'Ramblings' }}</h1>
-        {% if page.description %}<p class="ptd__desc">{{ page.description }}</p>{% endif %}
+      <div class="page-heading page-heading--ramblings page-heading--sub">
+        <h1 class="page-heading__title heading-1-display">{{ page.title | default: 'Ramblings' }}</h1>
+        {% if page.description %}<p class="page-heading__desc">{{ page.description }}</p>{% endif %}
       </div>
     </div>
 

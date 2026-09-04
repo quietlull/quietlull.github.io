@@ -34,9 +34,9 @@ refactor: true
   <div class="wf">
 
     <div class="titlebar">
-      <div class="ptd ptd--sub">
-        <h1 class="ptd__title d-h1">{{ page.title | default: 'Archives' }}</h1>
-        <p class="ptd__desc">{{ site.posts.size }} post{% unless site.posts.size == 1 %}s{% endunless %}, newest first</p>
+      <div class="page-heading page-heading--sub">
+        <h1 class="page-heading__title heading-1-display">{{ page.title | default: 'Archives' }}</h1>
+        <p class="page-heading__desc">{{ site.posts.size }} post{% unless site.posts.size == 1 %}s{% endunless %}, newest first</p>
       </div>
     </div>
 

@@ -43,9 +43,9 @@ refactor: true
         380px and the description to 520px, both measured off the ramblings blockout. A tag name
         is one word and has no blockout of its own, so it takes the component's own defaults.
       {% endcomment %}
-      <div class="ptd ptd--sub">
-        <h1 class="ptd__title d-h1">{{ page.title }}</h1>
-        <p class="ptd__desc">{{ posts.size }} post{% unless posts.size == 1 %}s{% endunless %}</p>
+      <div class="page-heading page-heading--sub">
+        <h1 class="page-heading__title heading-1-display">{{ page.title }}</h1>
+        <p class="page-heading__desc">{{ posts.size }} post{% unless posts.size == 1 %}s{% endunless %}</p>
       </div>
     </div>
 

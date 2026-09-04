@@ -88,7 +88,7 @@
    view steady when it changes. The boil replaces every glyph six times a second, so the browser
    re-anchored six times a second and the page rocked. Measured: scrollY drifted 8px in time with
    the boil while every box stayed stable to three decimals. Fixed to 0. See line-boil.md. */
-.lb {
+.line-boil-text {
   overflow-anchor: none;
   /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword --
      no generic fallback ON PURPOSE: a fallback face would paint wrong glyphs during the load
@@ -104,8 +104,8 @@
    own text, and the three faces do not share one, so every swap re-seated the cell and the line
    box grew and shrank by a pixel six times a second. `top` takes them off the baseline entirely.
    Measured on the top-bar mark: container swung 59.84 <-> 60.84. See line-boil.md. */
-.lb__g {
-  overflow-anchor: none;   /* the swapped element itself; see .lb above */
+.line-boil-text__g {
+  overflow-anchor: none;   /* the swapped element itself; see .line-boil-text above */
   vertical-align: top;
   display: inline-block;
   text-align: center;

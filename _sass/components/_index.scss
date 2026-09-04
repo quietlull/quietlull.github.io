@@ -16,7 +16,7 @@
 // wrong font and the wrong colour (docs/REQUESTS.md P457). The old wording said no two of these
 // files declare the same SELECTOR, so nothing here can shadow anything. That is true, and it is
 // the wrong test. An element carries SEVERAL component classes at once, so two DIFFERENT
-// selectors land on the SAME element: the wordmark is `class="top-bar__logo lb"`, so
+// selectors land on the SAME element: the wordmark is `class="top-bar__logo line-boil-text"`, so
 // `_top-bar.scss` and `_line-boil.scss` both style it, both one class deep, both in this layer.
 // Nothing but the order of these lines separates them.
 //

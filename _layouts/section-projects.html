@@ -31,12 +31,12 @@ script_includes:
 {% assign normal = all_projects | where_exp: 'item', 'item.pin != true' | sort: 'priority' | reverse %}
 
 <div id="projects-page">
-  <div class="col">
+  <div class="wrapper-content-column">
 
     <div class="pv2-head">
-      <div class="ptd ptd--projects ptd--sub">
-        <h1 class="ptd__title d-h1">{{ page.title | default: 'Projects' }}</h1>
-        {% if page.description %}<p class="ptd__desc">{{ page.description }}</p>{% endif %}
+      <div class="page-heading page-heading--projects page-heading--sub">
+        <h1 class="page-heading__title heading-1-display">{{ page.title | default: 'Projects' }}</h1>
+        {% if page.description %}<p class="page-heading__desc">{{ page.description }}</p>{% endif %}
       </div>
     </div>
 
@@ -51,7 +51,7 @@ script_includes:
     {% if pinned.size > 0 %}
       <section class="pv2-pinned">
         <h2>Pinned Posts</h2>
-        <div class="merged-cards merged-cards--square epx-cards pv2-grid">
+        <div class="merged-cards merged-cards--square wrapper-project-card-grid pv2-grid">
           {% for post in pinned %}
             {% assign parity = forloop.index0 | modulo: 2 %}
             {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
@@ -64,7 +64,7 @@ script_includes:
     {% endif %}
 
     <section>
-      <div class="merged-cards merged-cards--square epx-cards pv2-grid">
+      <div class="merged-cards merged-cards--square wrapper-project-card-grid pv2-grid">
         {% comment %} The a/b alternation runs across both grids, so this one picks up where the pinned grid stopped. {% endcomment %}
         {% for post in normal %}
           {% assign parity = forloop.index0 | plus: pinned.size | modulo: 2 %}

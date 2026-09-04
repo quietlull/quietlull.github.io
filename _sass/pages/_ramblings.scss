@@ -31,7 +31,7 @@
   // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the ladder's
   // own `h1 { margin: 0 }` and pushed the title 48px down. Restated here rather than deleted -
   // that rule still spaces the h1 on 60 pages whose markup has not been ported yet.
-  .ptd__title { margin: 0; }
+  .page-heading__title { margin: 0; }
 
   .searchrow { margin-bottom: 20px; }
 

@@ -35,7 +35,7 @@
   // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the type
   // ladder's own `h1 { margin: 0 }` and pushes the title down. Restated here, the same way
   // Ramblings, Projects and the post page all have to restate it.
-  .ptd__title { margin: 0; }
+  .page-heading__title { margin: 0; }
 
   .blog-searchrow { margin-bottom: 20px; }
 

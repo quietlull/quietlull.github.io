@@ -100,13 +100,13 @@
   transform: rotateY(180deg);
 }
 
-.merged-cards .z-layer {
+.merged-cards .parallax-z-layer {
   transform: translateZ(calc(var(--z, 0) * var(--depth, 1) * 1px));
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   backface-visibility: hidden;
 }
 
-.merged-cards .post-card:hover .z-layer {
+.merged-cards .post-card:hover .parallax-z-layer {
   --z: var(--z-hover, var(--z, 0));
 }
 
