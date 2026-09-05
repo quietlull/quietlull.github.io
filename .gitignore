@@ -39,3 +39,4 @@ redesign-lab/_BACKUP-pre-deletion-2026-08-26/
 
 # Reel editing source material (large MP4s, planning docs)
 .claude/reel-planning/
+__pycache__/
