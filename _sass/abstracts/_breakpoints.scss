@@ -34,12 +34,6 @@ $-breakpoints: (
   }
 }
 
-@mixin md {
-  @media all and (min-width: get(md)) {
-    @content;
-  }
-}
-
 @mixin lg {
   @media all and (min-width: get(lg)) {
     @content;
@@ -60,12 +54,6 @@ $-breakpoints: (
 
 @mixin xxxl {
   @media all and (min-width: get(xxxl)) {
-    @content;
-  }
-}
-
-@mixin between($min, $max) {
-  @media all and (min-width: $min) and (max-width: $max) {
     @content;
   }
 }
