@@ -33,16 +33,16 @@ layout: compress
     <div class="cursorglow"></div>
 
     {% if has_chrome %}
-      {% include top-bar.html lang=lang %}
+      {% include top-bar.html %}
     {% endif %}
 
     {% assign full_bleed = 'portal,section-about,ramblings,section-projects,post,section-landing,tag,archives,blog' | split: ',' %}
-    {% if full_bleed contains page.layout %}<main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% endif %}>{% include refactor-content.html content=content lang=lang %}</main>
+    {% if full_bleed contains page.layout %}<main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% endif %}>{% include refactor-content.html content=content %}</main>
     {% else %}
 
     <main id="main-content" aria-label="Main Content" class="page-column"{% if page.section %} data-section="{{ page.section }}"{% endif %}>
       {% if layout.refactor or layout.layout == 'default' %}
-        {% include refactor-content.html content=content lang=lang %}
+        {% include refactor-content.html content=content %}
       {% else %}
         {{ content }}
       {% endif %}
@@ -56,7 +56,7 @@ layout: compress
     </aside>
 
     {% if has_chrome %}
-      {% include footer-line.html lang=lang %}
+      {% include footer-line.html %}
     {% endif %}
 
 
