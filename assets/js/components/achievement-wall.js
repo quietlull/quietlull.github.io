@@ -1,4 +1,6 @@
-export const ACHIEVEMENTS = [
+import { onCursor } from './cursor-coords.js';
+
+const ACHIEVEMENTS = [
   { id: 'first-light', cat: 'explorer', title: 'First Light', icon: '\u{2600}', desc: 'Welcome to the portfolio!', hasProgress: false, reward: null },
   { id: 'explorer', cat: 'explorer', title: 'Explorer', icon: '\u{1F9ED}', desc: 'Visited both worlds', hasProgress: false, reward: null },
   { id: 'curator', cat: 'explorer', title: 'Curator', icon: '\u{1F3A8}', desc: 'Viewed 5 projects', hasProgress: false, reward: null },
@@ -82,8 +84,6 @@ function panelMarkup(a, isActive) {
   }
   const unlocked = earnedSet.has(a.id);
 
-  const name = a.title;
-
   const p = progressFrom(earnedState, a.id);
   let progress;
   if (p) {
@@ -103,7 +103,7 @@ function panelMarkup(a, isActive) {
   const effect = '<div class="aw__val aw__val--empty">No effects</div>';
 
   return ''
-    + '<h3 class="aw__dttl">' + esc(name) + '</h3>'
+    + '<h3 class="aw__dttl">' + esc(a.title) + '</h3>'
     + '<div class="aw__field"><span class="aw__lbl">Progress</span>' + progress + '</div>'
     + '<div class="aw__field"><span class="aw__lbl">State</span>'
     + '<span class="aw__state' + (isActive ? ' is-on' : '') + '"><i class="aw__dot"></i>'
@@ -131,7 +131,7 @@ function saveActive(set) {
 
 export function init(root = document) {
   const host = root.querySelector('.aw');
-  if (!host) return () => {};
+  if (!host) return;
   const cat = host.querySelector('.aw__cat');
   const detail = host.querySelector('.aw__detail');
   earnedState = loadEarned();
@@ -243,18 +243,13 @@ export function init(root = document) {
   const startOrbit = () => { if (!raf && active.size) raf = requestAnimationFrame(orbit); };
   startOrbit();
 
-  let stop = () => {};
-  import('./cursor-coords.js').then(({ onCursor }) => {
-    const tiles = [...cat.querySelectorAll('.aw__tile')];
-    stop = onCursor((cx, cy) => {
-      for (const tile of tiles) {
-        if (tile.getAttribute('aria-pressed') === 'true') continue;
-        const r = tile.getBoundingClientRect();
-        tile.style.setProperty('--mx', (cx - r.left) + 'px');
-        tile.style.setProperty('--my', (cy - r.top) + 'px');
-      }
-    });
+  const tiles = [...cat.querySelectorAll('.aw__tile')];
+  onCursor((cx, cy) => {
+    for (const tile of tiles) {
+      if (tile.getAttribute('aria-pressed') === 'true') continue;
+      const r = tile.getBoundingClientRect();
+      tile.style.setProperty('--mx', (cx - r.left) + 'px');
+      tile.style.setProperty('--my', (cy - r.top) + 'px');
+    }
   });
-
-  return () => { stop(); if (raf) cancelAnimationFrame(raf); if (tiltFrame) cancelAnimationFrame(tiltFrame); };
 }

@@ -26,5 +26,4 @@ export function onCursor(fn) {
       { passive: true }
     );
   }
-  return () => handlers.delete(fn);
 }
