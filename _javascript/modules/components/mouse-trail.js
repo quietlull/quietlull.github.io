@@ -52,12 +52,7 @@ function themeFromColor(rgb) {
 export function initMouseTrail() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const toggle = document.getElementById('sparkler-toggle');
-  const checkbox = toggle ? toggle.querySelector('input[type="checkbox"]') : null;
-  const saved = localStorage.getItem(STORAGE_KEY);
-  let enabled = saved !== 'true';
-
-  if (checkbox) checkbox.checked = enabled;
+  const enabled = localStorage.getItem(STORAGE_KEY) !== 'true';
 
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'position:fixed;inset:0;z-index:500;pointer-events:none;';
@@ -83,23 +78,6 @@ export function initMouseTrail() {
   let tipStreaks = null;
   let tipTimer = 0;
   let activeTheme = THEME_DEFAULT;
-
-  function setEnabled(val) {
-    enabled = val;
-    localStorage.setItem(STORAGE_KEY, val ? 'false' : 'true');
-    if (val) {
-      canvas.style.display = '';
-      if (mouseOnPage) startLoop();
-    } else {
-      canvas.style.display = 'none';
-      for (let i = 0; i < MAX_PARTICLES; i++) pool[i].active = false;
-      animating = false;
-    }
-  }
-
-  if (checkbox) {
-    checkbox.addEventListener('change', () => setEnabled(checkbox.checked));
-  }
 
   function resize() {
     canvas.width = window.innerWidth;
