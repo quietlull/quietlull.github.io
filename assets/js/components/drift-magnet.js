@@ -8,10 +8,9 @@ const DEFAULT_STRENGTH_TEXT = 20;
 const DEFAULT_DRIFT_AMP = 6;
 const TWO_PI = Math.PI * 2;
 
-let rafId = null;
-let startTime = 0;
-let cullObserver = null;
+const startTime = performance.now();
 const elementToEntry = new Map();
+let rafId = null;
 
 function lerp(a, b, t) {
   return a + (b - a) * t;
@@ -175,26 +174,21 @@ function bindClickFlash(element) {
   });
 }
 
-export function init(root = document) {
-  if (!startTime) {
-    startTime = performance.now();
-  }
-  if (!init.gated) {
-    init.gated = true;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.body.classList.add('motion-off');
-    }
-    cullObserver = new IntersectionObserver(
-      (records) => {
-        records.forEach((rec) => {
-          elementToEntry.get(rec.target).onScreen = rec.isIntersecting;
-        });
-        wake();
-      },
-      { rootMargin: '200px' }
-    );
-  }
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.body.classList.add('motion-off');
+}
 
+const cullObserver = new IntersectionObserver(
+  (records) => {
+    records.forEach((rec) => {
+      elementToEntry.get(rec.target).onScreen = rec.isIntersecting;
+    });
+    wake();
+  },
+  { rootMargin: '200px' }
+);
+
+export function init(root = document) {
   root.querySelectorAll(
     '.js-magnetic, [data-drift], [data-drift-x], [data-drift-y]').forEach((el) => {
     if (elementToEntry.has(el)) {
