@@ -1,6 +1,5 @@
 :root {
   --color-night: #070c23;
-  --color-night-2: #0a1030;
   --color-text: #f5f3ef;
   --color-muted: #9aa3bd;
   --color-glow-soft: #ffd9a8;
@@ -15,17 +14,12 @@
   --color-line-soft: rgba(255, 255, 255, 0.1);
   --color-line-faint: rgba(255, 255, 255, 0.06);
   --color-surface: rgba(255, 255, 255, 0.05);
-  --color-surface-faint: rgba(255, 255, 255, 0.03);
   --color-ink: #1a1a1a;
   --color-cover-hi: #1b2452;
   --color-cover-lo: #0b1024;
   --color-warm-muted: rgba(245, 232, 208, 0.72);
-  --color-stamp-paper: #1e160e;
   --color-code-bg: #0a0e22;
   --color-code-text: #cdd3e8;
-  --color-code-green: #9bdc8a;
-  --color-icon-stroke: var(--color-gold-deep);
-  --font-hand: "Caveat", cursive;
   --font-display: "M PLUS Rounded 1c", sans-serif;
   --font-body: "M PLUS Rounded 1c", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
@@ -52,7 +46,6 @@
   --color-shadow-card: rgba(0, 0, 0, 0.55);
   --color-shadow-lift: rgba(0, 0, 0, 0.6);
   --color-shadow-text: rgba(0, 0, 0, 0.9);
-  --color-shadow-warm: rgba(88, 70, 48, 0.5);
   --color-glass-sheen-lo: rgba(255, 232, 176, 0.04);
   --color-glass-sheen-hi: rgba(255, 232, 176, 0.12);
   --color-glass-edge: rgba(251, 191, 36, 0.5);
