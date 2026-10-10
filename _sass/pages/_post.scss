@@ -1,7 +1,6 @@
 @use '../abstracts/variables' as v;
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/mixins' as mx;
-@use '../abstracts/placeholders';
 
 
 #post-page {
@@ -209,40 +208,6 @@
     .prose { --char-w: 7.25px; }
   }
 }
-
-.figmat {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border: 1px solid var(--color-line-soft);
-  border-radius: 4px;
-  background: var(--color-surface);
-  padding: 8px;
-  margin: 24px 0 0;
-}
-
-@media (min-width: 760px) {
-  .figmat { padding: 16px; }
-}
-
-.figmat video {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 4px;
-  background: var(--color-black);
-}
-
-.figcap {
-  margin-top: 9px;
-  color: var(--color-text-quiet);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
-}
-
-$toc-bar-height: 3rem;
-
 
 .post-navigation {
   margin-top: 3rem;
