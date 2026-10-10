@@ -191,9 +191,6 @@ const cullObserver = new IntersectionObserver(
 export function init(root = document) {
   root.querySelectorAll(
     '.js-magnetic, [data-drift], [data-drift-x], [data-drift-y]').forEach((el) => {
-    if (elementToEntry.has(el)) {
-      return;
-    }
     const entry = createEntry(el);
     elementToEntry.set(el, entry);
     cullObserver.observe(el);

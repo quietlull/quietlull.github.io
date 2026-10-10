@@ -1,5 +1,3 @@
-import { init as initDriftMagnet } from '../components/drift-magnet.js';
-
 const REF_W = 500;
 const REF_H = 520;
 
@@ -306,8 +304,6 @@ function init(field) {
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => { layout(); wake(); });
   }
-
-  initDriftMagnet(field);
 
   window.addEventListener('pagehide', () => {
     if (raf !== null) cancelAnimationFrame(raf);

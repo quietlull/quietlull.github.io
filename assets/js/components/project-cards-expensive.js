@@ -1,5 +1,4 @@
 import { init as initMergedCard } from './merged-card.js';
-import { init as initDriftMagnet } from './drift-magnet.js';
 import { onCursor } from './cursor-coords.js';
 
 let revealTilts = [];
@@ -81,7 +80,6 @@ function bindControls(root) {
 
 export function init(root = document) {
   initMergedCard(root);
-  initDriftMagnet(root);
   bindReveal(root);
   bindHoverVideo(root);
   bindControls(root);
