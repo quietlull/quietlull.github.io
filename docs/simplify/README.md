@@ -143,7 +143,9 @@ HTML, will not show up where you expect. Check before you cut.
 ## Commits and report
 
 - Small commits, one kind of change each. The message says what went and what proved it safe.
-- End with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+- End with a `Co-Authored-By` line naming the model you actually are, for example
+  `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`. The templates agent was told to
+  write Opus and was Sonnet; its 20 commits carry the wrong name.
 - Write `docs/simplify/<area>.md` and commit it:
   - lines of code before and after, per file you touched
   - every deletion, with the evidence that it was dead
