@@ -6,7 +6,6 @@ export { initToc } from './components/toc';
 export { loadMermaid } from './components/mermaid';
 export { fireworksToggle } from './components/fireworks-toggle';
 export { back2top } from './components/back-to-top';
-export { initToolTaglines } from './components/tool-taglines';
 export { initMouseTrail } from './components/mouse-trail';
 export { initPostEnhance } from './components/post-enhance';
 export { initPageTransition } from './components/page-transition';
