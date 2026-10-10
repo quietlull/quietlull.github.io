@@ -1,142 +1,40 @@
-// ============================================================================
-// OWNERSHIP: this file is OURS. The filename is Chirpy's, the contents are not.
-// ============================================================================
-// Measured 2026-09-02 against pristine Chirpy 7.3.1 (`_sass/themes/_dark.scss`, 303 lines).
-// Of the 121 custom properties declared below, exactly ONE still carries upstream's value:
-//   --btn-backtotop-color: var(--text-color)
-// 56 of our names are also names upstream uses, because Chirpy's own stylesheets read them, but
-// every one of those was given a new value here (64 shared before the delete pass below).
-// Nothing else survives. Upstream's version of this file is superseded WHOLESALE: a clean
-// overwrite loses the entire site palette.
-//
-// WHAT AN UPGRADE HAS TO RE-CHECK, and it is only these three things:
-//   1. `@mixin styles` plus `color-scheme: dark` - the shape base/_base.scss:12 calls.
-//   2. The 56 shared token NAMES. If upstream adds a name, nothing here defines it and the rule
-//      that reads it silently renders its fallback. Diff the name lists, never the values.
-//   3. `.light { display: none; }` at the foot - upstream's dark/light icon swap.
-//
-// THERE IS NO LIGHT THEME. `_sass/themes/_light.scss` was deleted in the merge and
-// base/_base.scss:12 includes this mixin unconditionally, with no data-mode branch, so every
-// value here is THE value and not the dark half of a pair. Two leftovers follow from that,
-// reported rather than changed because both would alter the built CSS: the `.light` rule at the
-// foot now matches no markup in `_includes/` or `_layouts/`, and this file is a palette, not a
-// theme. A rename to something that says so is PROPOSED, not done, because the files that point
-// at it belong to other owners.
-//
-// TOKENS DELETED HERE 2026-09-02 (D42): 43 names that NOTHING read, found by exact-name grep over
-// _sass, _includes, _layouts, _javascript, assets and _data, counting JS setProperty calls as
-// readers. Two traps that the grep alone would have got wrong, both checked by hand:
-//   - The eight `--prompt-*` names LOOK unread and are NOT. abstracts/_mixins.scss:337 and :341
-//     build them by interpolation, `var(--prompt-#{$type}-bg)`, from base/_typography.scss:80-83.
-//     Never delete a token without first grepping for an interpolated read of its prefix.
-//   - `--slate-950`, `--slate-800` and `--bg-tertiary` had readers, but only inside this file and
-//     only feeding tokens that were themselves unread, so the whole chain went.
-// Three names here are also declared on `:root` in abstracts/_tokens.scss (--color-white,
-// --color-black, --z-overlay). `:root` outranks this `html` selector, so those three declarations
-// never win: --z-overlay reads 200 from tokens.scss, not the 500 written below. Left alone because
-// they are shadowed, not unread, and removing them is a separate call.
-//
-// ============================================================================
-// DARK THEME - Lantern Aesthetic
-// ============================================================================
-// Based on the floating lantern design with warm amber glows
-// Matches React component styling from LanternGlowSite
-
 @mixin styles {
   color-scheme: dark;
 
-  // ==========================================================================
-  // CORE PALETTE
-  // ==========================================================================
-  --slate-900: #0f172a;         // rgb(15, 23, 42) - main bg
-  --amber-400: #fbbf24;         // rgb(251, 191, 36) - bright accents
-  --amber-300: #fcd34d;         // rgb(252, 211, 77) - highlights
-  
-
-  // ==========================================================================
-  // BACKGROUNDS - Layered depth with gradients
-  // ==========================================================================
+  --slate-900: #0f172a;
+  --amber-400: #fbbf24;
+  --amber-300: #fcd34d;
   --bg-secondary: var(--slate-900);
-  
-  // Glass morphism
   --bg-glass: rgba(15, 23, 42, 0.4);
   --bg-glass-strong: rgba(15, 23, 42, 0.6);
-  
-  // Gradients
   --img-bg: radial-gradient(circle, var(--slate-900) 0%, #1a1a1a 100%);
-
-  // ==========================================================================
-  // TEXT - Warm stone palette for readability on dark backgrounds
-  // ==========================================================================
-  --text-color: #E8E0D4;                                // warm stone - less saturated for long reading
-  --text-muted-color: rgba(232, 224, 212, 0.78);       // warm stone/78 — bumped from 0.6 for card + caption readability
+  --text-color: #E8E0D4;
+  --text-muted-color: rgba(232, 224, 212, 0.78);
   --text-muted-highlight-color: rgba(232, 224, 212, 0.7);
-  --heading-color: #FFF9F0;                             // lantern paper off-white - crisp
+  --heading-color: #FFF9F0;
   --label-color: rgba(232, 224, 212, 0.7);
-
-  // ============================================================================
-  // ICON COLORS - Add after text colors section (~line 60)
-  // ============================================================================
-
-
-  // ==========================================================================
-  // BORDERS & GLASS EFFECTS - Subtle amber glow
-  // ==========================================================================
   --main-border-color: rgba(245, 158, 11, 0.1);
   --glass-border: rgba(245, 158, 11, 0.1);
   --glass-border-strong: rgba(245, 158, 11, 0.2);
-  
-  // Triple-layer shadow for depth + glow + inner highlight
   --glass-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.6),           // Deep shadow
     0 0 60px rgba(251, 191, 36, 0.03),       // Ambient glow
-    inset 0 1px 0 rgba(251, 191, 36, 0.05);  // Top highlight
-  
+    inset 0 1px 0 rgba(251, 191, 36, 0.05);
   --glass-shadow-strong: 
     0 8px 32px rgba(0, 0, 0, 0.6),
     0 0 80px rgba(251, 191, 36, 0.05),
     inset 0 1px 0 rgba(251, 191, 36, 0.08);
-
-  // ==========================================================================
-  // LANTERN GLOWS - Core visual identity
-  // ==========================================================================
   --glow-subtle: rgba(251, 191, 36, 0.03);
   --glow-medium: rgba(251, 191, 36, 0.06);
   --glow-strong: rgba(251, 191, 36, 0.1);
-  
-  // Glow shadows for dot/orb elements
   --glow-ring: 
   0 0 20px 4px rgba(251, 191, 36, 0.6),
   0 0 40px 8px rgba(251, 191, 36, 0.3);
   --glow-ring-small: 
   0 0 10px 2px rgba(251, 191, 36, 0.5),
   0 0 20px 4px rgba(251, 191, 36, 0.2);
-  
-  // Orange variants (matching amber structure)
-  
-  // Yellow variants
-
-  // ==========================================================================
-  // GLOW TIER SYSTEM — ember / candle / lantern / bonfire / star
-  // ==========================================================================
-  // Tier 0 (Ember):  background atmosphere, 0.02-0.06, 40-80px, 1 layer
-  // Tier 1 (Candle): resting interactive, 0.10-0.20, 8-20px, 1 layer
-  // Tier 2 (Lantern): hover/focus feedback, 0.20-0.35, 12-24px, 1-2 layers
-  // Tier 3 (Bonfire): emphasized/pinned, 0.30-0.50, 12-36px, 2-3 layers
-  // Tier 4 (Star):   indicator dots/orbs, 0.40-0.70, 8-20px, dual ring
-
-
-  // ==========================================================================
-  // CONSOLIDATED COLOR PALETTE — single source of truth for theme tuning
-  // ==========================================================================
-  // To adjust the entire site's color feel, modify these values.
-  // All component files reference these instead of hardcoding rgba().
-
-  // -- Glow hue channels (override per-element for a coloured glow) --
-  --glow-hue: 251, 191, 36;          // gold (default)
-  --glow-border-hue: 245, 158, 11;   // amber (default)
-
-  // -- Gold (251, 191, 36) — primary glow/accent family --
+  --glow-hue: 251, 191, 36;
+  --glow-border-hue: 245, 158, 11;
   --gold-03: rgba(251, 191, 36, 0.03);
   --gold-05: rgba(251, 191, 36, 0.05);
   --gold-06: rgba(251, 191, 36, 0.06);
@@ -150,12 +48,8 @@
   --gold-50: rgba(251, 191, 36, 0.50);
   --gold-60: rgba(251, 191, 36, 0.6);
   --gold-80: rgba(251, 191, 36, 0.8);
-
-  // -- Amber (245, 158, 11) — border/accent family --
   --amber-a10: rgba(245, 158, 11, 0.1);
   --amber-a30: rgba(245, 158, 11, 0.3);
-
-  // -- Orange (249, 115, 22) — warm secondary accent --
   --orange-a10: rgba(249, 115, 22, 0.10);
   --orange-a15: rgba(249, 115, 22, 0.15);
   --orange-a20: rgba(249, 115, 22, 0.2);
@@ -163,109 +57,44 @@
   --orange-a60: rgba(249, 115, 22, 0.6);
   --orange-a80: rgba(249, 115, 22, 0.8);
   --orange-a90: rgba(249, 115, 22, 0.9);
-
-  // -- Yellow (250, 204, 21) — warm highlight accent --
   --yellow-a15: rgba(250, 204, 21, 0.15);
   --yellow-a20: rgba(250, 204, 21, 0.2);
   --yellow-a35: rgba(250, 204, 21, 0.35);
   --yellow-a60: rgba(250, 204, 21, 0.6);
   --yellow-a80: rgba(250, 204, 21, 0.8);
-
-  // -- Red (239, 68, 68) — warm danger accent --
   --red-a10: rgba(239, 68, 68, 0.1);
-
-  // -- White highlights --
   --white-a08: rgba(255, 255, 255, 0.08);
-
-  // -- Shadow/depth (0, 0, 0) --
   --shadow-a15: rgba(0, 0, 0, 0.15);
   --shadow-a40: rgba(0, 0, 0, 0.4);
   --shadow-a60: rgba(0, 0, 0, 0.6);
-
-  // -- Slate backgrounds (15, 23, 42) --
   --slate-a40: rgba(15, 23, 42, 0.4);
   --slate-a95: rgba(15, 23, 42, 0.95);
-
-  // ==========================================================================
-  // TRANSITION TIMINGS
-  // ==========================================================================
   --transition-fast: 300ms;
   --transition-normal: 500ms;
-  
-  
-  // ==========================================================================
-  // ANIMATION DURATIONS
-  // ==========================================================================
-  
-  // ==========================================================================
-  // Z-INDEX LAYERS
-  // ==========================================================================
   --z-overlay: 500;
-  
-  // ==========================================================================
-  // SPACING SCALE
-  // ==========================================================================
-  
-  // ==========================================================================
-  // LINKS - Amber with glow on hover
-  // ==========================================================================
   --link-color: var(--amber-400);
   --link-hover-color: var(--amber-300);
   --link-underline-color: rgba(251, 191, 36, 0.3);
   --link-underline-glow: 0 0 8px rgba(251, 191, 36, 0.6);
-  
-  // ==========================================================================
-  // BUTTONS - Layered glass with glow states
-  // ==========================================================================
   --button-bg: rgba(245, 158, 11, 0.1);
   --button-hover-bg: rgba(245, 158, 11, 0.15);
   --button-active-bg: rgba(245, 158, 11, 0.2);
   --btn-border-color: rgba(245, 158, 11, 0.2);
   --btn-hover-glow: 0 0 20px rgba(251, 191, 36, 0.2);
-  
-  // Specific button types
   --btn-backtotop-color: var(--text-color);
   --btn-backtotop-border-color: var(--glass-border);
-
-  // ==========================================================================
-  // TOPBAR - Navigation with lantern aesthetic
-  // ==========================================================================
   --topbar-text-color: rgba(254, 243, 199, 0.6);
   --topbar-active-color: rgba(254, 243, 199, 0.95);
-  
-  // Avatar
-  
-  // Site titles
-  
-  // ==========================================================================
-  // SEARCH/INPUT
-  // ==========================================================================
   --input-focus-border-color: rgba(251, 191, 36, 0.3);
   --input-focus-glow: 0 0 12px rgba(251, 191, 36, 0.3);
-
-  // ==========================================================================
-  // CARDS - Glass effect matching React component
-  // ==========================================================================
   --card-bg: rgba(15, 23, 42, 0.6);
   --card-hover-bg: rgba(245, 158, 11, 0.08);
   --card-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.6), 
     0 0 60px rgba(251, 191, 36, 0.02);
-
-  // ==========================================================================
-  // TAGS
-  // ==========================================================================
   --tag-hover: rgba(245, 158, 11, 0.15);
-
-  // ==========================================================================
-  // BLOCKQUOTES
-  // ==========================================================================
   --blockquote-border-color: rgba(251, 191, 36, 0.3);
   --blockquote-text-color: rgba(254, 243, 199, 0.7);
-
-  // ==========================================================================
-  // PROMPTS/ALERTS
-  // ==========================================================================
   --prompt-text-color: rgba(254, 243, 199, 0.75);
   --prompt-tip-bg: rgba(134, 239, 172, 0.1);
   --prompt-tip-icon-color: #86efac;
@@ -275,10 +104,6 @@
   --prompt-warning-icon-color: var(--amber-400);
   --prompt-danger-bg: rgba(252, 165, 165, 0.1);
   --prompt-danger-icon-color: #fca5a5;
-
-  // ==========================================================================
-  // CODE BLOCKS
-  // ==========================================================================
   --language-border-color: var(--glass-border);
   --highlight-bg-color: rgba(15, 23, 42, 0.8);
   --highlighter-rouge-color: var(--amber-300);
@@ -290,80 +115,37 @@
   --code-header-icon-color: rgba(254, 243, 199, 0.5);
   --clipboard-checked-color: #86efac;
   --filepath-text-color: var(--amber-300);
-
-  // ==========================================================================
-  // TABLES
-  // ==========================================================================
   --tb-odd-bg: rgba(15, 23, 42, 0.4);
   --tb-even-bg: rgba(15, 23, 42, 0.6);
   --tb-border-color: var(--glass-border);
-
-  // ==========================================================================
-  // CATEGORIES. The timeline tokens that shared this block went with the archives port.
-  // ==========================================================================
   --categories-border: var(--glass-border);
   --categories-hover-bg: var(--button-hover-bg);
   --categories-icon-hover-color: var(--amber-400);
   --dash-color: rgba(245, 158, 11, 0.2);
-
-  // ==========================================================================
-  // TABLE OF CONTENTS
-  // ==========================================================================
   --toc-highlight: var(--amber-400);
   --toc-popup-border-color: rgba(245, 158, 11, 0.2);
-
-  // ==========================================================================
-  // MISC ELEMENTS
-  // ==========================================================================
   --footnote-target-bg: rgba(251, 191, 36, 0.1);
   --kbd-wrap-color: rgba(245, 158, 11, 0.3);
   --kbd-text-color: rgba(254, 243, 199, 0.9);
   --kbd-bg-color: rgba(15, 23, 42, 0.8);
   --checkbox-color: rgba(254, 243, 199, 0.3);
   --checkbox-checked-color: var(--amber-400);
-
-  // ==========================================================================
-  // ANIMATIONS/EFFECTS
-  // ==========================================================================
-  // Shimmer effect for buttons (matching React)
   --shimmer-bg: linear-gradient(
     90deg, 
     transparent 0%, 
     rgba(251, 191, 36, 0.1) 50%, 
     transparent 100%
   );
-
-  // Floating animation for ambient glows
-
-  // ==========================================================================
-  // MISSING / SUPPLEMENTAL VARS
-  // ==========================================================================
   --separator-gradient: linear-gradient(
     to bottom,
     transparent,
     rgba(245, 158, 11, 0.3),
     transparent
   );
-
-  // Section title accent line
-
-  // Ambient orb colors
-
-  // ==========================================================================
-  // UTILITY COLORS - For avoiding hard-coding
-  // ==========================================================================
   --color-white: #ffffff;
   --color-black: #000000;
 
-  // ==========================================================================
-  // THEME-SPECIFIC VISIBILITY
-  // ==========================================================================
   .light { display: none; }
 
-  // ==========================================================================
-  // COMPONENT OVERRIDES
-  // ==========================================================================
 
-  /* The category-card and list-group rules that stood here died with the tag/archive port,
-     2026-08-25 - their markup was Chirpy's and the new pages use entry rows. */
 }

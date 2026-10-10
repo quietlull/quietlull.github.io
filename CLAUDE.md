@@ -24,6 +24,13 @@ theme boundary) is done; Phases 2 and 3 are the open work, see
 - **Preview-first.** Show every non-trivial change in chat and get a go BEFORE touching files.
   Rod is the eyes: never verify visuals by screenshot, make the change and ask what he sees.
 - **Code wins.** If a doc disagrees with the code, the doc is stale - fix the doc.
+- **No comments in the source.** Rod, 2026-10-09: "strip them all out ... Code should be self
+  explanatory or documenting." Scripts, stylesheets, templates and plugins carry no comments;
+  `npm test` fails if one appears (`npm run lint:comments`). Explain a file in
+  [docs/CODE-AUDIT.md](docs/CODE-AUDIT.md), which its review page shows. If code needs a comment to
+  be understood, rename things or restructure it until it does not. The only comments allowed are
+  instructions to a tool (a stylelint or eslint directive). The 2,565 that were removed are kept in
+  `docs/code-comments/`.
 - **Anti-bloat.** Optimizations that add code (caches, dirty flags, guards, helper extractions for
   micro-savings) are bloat. Fewer lines and readability win. This supersedes earlier
   micro-optimization passes (see DECISIONS D5).
@@ -68,5 +75,5 @@ lab water is now five changes behind live - see [docs/TRAPS.md](docs/TRAPS.md).
 
 - `npm run build` - JS bundles (Rollup). This is the only build step Jekyll needs.
 - `bundle exec jekyll s` - local serve
-- `npm test` - eslint + stylelint + the CSS load-order check
+- `npm test` - eslint + stylelint + the CSS load-order check + no comments in the source
 - `python tools/build_workbench.py` - rebuild the lab workbench by hand (the serve hook normally does it)

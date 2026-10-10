@@ -1,9 +1,3 @@
-// The portal at `/`, ported 2026-08-26 from the inline <style> of `redesign-lab/final-portal.html`.
-// The old glass-door page it replaced is gone; nothing here is shared with it.
-// UNLAYERED, like every other page partial, so it beats `@layer components` (P200 - pages may
-// override). Only two rules use that: `.pwin` and `.centre__mark`, and both say so below.
-
-// The page is a viewport-locked column: the field takes whatever the page does not.
 .pground {
   display: flex;
   overflow: hidden;
@@ -11,7 +5,6 @@
   height: 100svh;
 }
 
-// `min-height: 0` or the flex item refuses to shrink past its content and the scrollbar comes back.
 .field {
   position: relative;
   flex: 1 1 auto;
@@ -20,13 +13,10 @@
   margin: 51px 0 0;
 }
 
-// The portal is the one page with no glow behind it - the three.js scene is the whole background.
 body:has(.pground)::before {
   content: none;
 }
 
-// OVERRIDES the component. `_portal-window.scss` sets `position: relative` and fixed fallback sizes
-// so the window can render alone on the bench; here the drag engine owns the position and the size.
 .pwin {
   position: absolute;
   z-index: 10;
@@ -37,7 +27,6 @@ body:has(.pground)::before {
   will-change: transform;
 }
 
-// 272x165 is the area the Space Jam layout reserves for the centre. `--pscale` comes from the JS.
 .centre {
   position: absolute;
   top: 50%;
@@ -47,7 +36,6 @@ body:has(.pground)::before {
   transform: translate(-50%, -50%);
 }
 
-// OVERRIDES `.line-boil-text` in `@layer components`, which would otherwise pick the boil's own colour.
 .centre__mark {
   display: block;
   color: var(--h0-color);
@@ -58,30 +46,6 @@ body:has(.pground)::before {
   text-transform: uppercase;
 }
 
-// Absolutely positioned against the same centre point, so it costs the window field zero height.
-// 500px is measured: at 600px it collides with the ArtStation window at 1280 and 1440x900.
-// ANCHORED TO THE NAME, NOT TO THE MIDDLE. Rod 2026-08-25: "the welcome to my page needs to be
-// placed relative to the name boil text make it 20px below that". It was `top: 50% + 3.2rem`,
-// measured from the middle of the window field, and the name is NOT measured from there, so the
-// gap drifted with the viewport: 150px seen at 1029x918 against the 51px the number claimed. The
-// 99px of difference is three things and the big one moves. 86px is the empty lower half of
-// `.centre` (its box is 165px x --pscale and the name sits at the TOP of it), 5.7px is the space
-// under the name's letters, 7.2px the space over this line's.
-// So the calc walks DOWN FROM THE NAME instead: field middle, back up half of `.centre`'s scaled
-// box to reach its top edge, down the name's own line box (its font-size x the 1.15 line-height),
-// then the 20px he asked for. The two font-metric terms are folded into the constants: 1.15 minus
-// 0.1585 is the 0.9915, taking off the space under the letters, and 12.8 is his 20 minus the 7.2
-// over this line's.
-// MEASURED, NOT DERIVED. Those ratios come off the live page with canvas ink metrics, max across
-// the three Lineboil faces, and the font API quantises them to whole pixels, so the gap lands
-// within about half a pixel of 20 rather than exactly on it. They also encode THESE TWO STRINGS,
-// so changing the name or this line means re-measuring.
-// IT HOLDS AT EVERY SIZE, which the old number could not: both of the terms that move are in the
-// calc, so --pscale and the 3.5vw clamp are tracked instead of ignored.
-// THE TUNER WILL FLATTEN THIS. `redesign-lab/portal-ratios.html` emits `top: <rem>` for its
-// `welcome line` and `gap under the name` dials, so tuning either one replaces this calc with a
-// fixed number and the drift comes straight back. That emit needs updating before those dials are
-// used again.
 .centre__welcome {
   position: absolute;
   top: calc(50% - (165px * var(--pscale, 1)) / 2 + clamp(1.6rem, 3.5vw, 6rem) * 0.9915 + 12.8px);

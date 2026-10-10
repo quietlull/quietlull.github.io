@@ -1,10 +1,3 @@
-/* merged-card behavior — VERBATIM port of merged card v2 (rework-harumaki.html lines 400-431):
-   parallax z-layer tilt + dwell-flip + gyro tilt on touch. Changes vs source, per the contract:
-   - scoped to a passed root (bench mounts/unmounts components);
-   - dwell ring classes renamed on/fill -> is-on/is-filling (Rule 27 state prefixes);
-   - the document-level "first mouse move arms tilt" guard kept as in source.
-   Also wires the lab glass toggle (Rod: judge dropping the glass). */
-
 const TILT_MAX = 8;
 const SCALE_HOVER = 1.02;
 const LIFT_PX = 6;
@@ -15,7 +8,7 @@ const DWELL_RESET_PX = 48;
 
 function setupCard(card, ring) {
   if (card.__cardWired) {
-    return; // idempotent: safe to re-run init after appending more cards
+    return;
   }
   card.__cardWired = true;
   const tilt = card.querySelector('.card-tilt');
@@ -37,7 +30,7 @@ function setupCard(card, ring) {
     if (!active) {
       return;
     }
-    rect = tilt.getBoundingClientRect(); // recompute each frame (one hovered card) -> no scroll listener needed
+    rect = tilt.getBoundingClientRect();
     const x = ((pointerX - rect.left) / rect.width - 0.5) * 2;
     const y = ((pointerY - rect.top) / rect.height - 0.5) * 2;
     tilt.style.transform = `rotateX(${-y * TILT_MAX}deg) rotateY(${x * TILT_MAX}deg) translateY(-${LIFT_PX}px) scale(${SCALE_HOVER})`;
@@ -51,7 +44,7 @@ function setupCard(card, ring) {
     ring.style.left = `${x}px`;
     ring.style.top = `${y}px`;
     ring.classList.remove('is-filling');
-    void ring.offsetWidth; /* restart the conic fill animation */
+    void ring.offsetWidth;
     ring.classList.add('is-on', 'is-filling');
     clearTimeout(dwellTimer);
     dwellTimer = setTimeout(() => {
@@ -185,16 +178,6 @@ function setupGyroTilt(tiltLayers) {
   }
 }
 
-/* CARD COVER VIDEOS ARE NOT HANDLED HERE. `setupCardVideos` used to sit at this spot: it stripped
-   `autoplay`, paused each cover, seeked it to a real poster frame and wired hover-to-play, all
-   behind `if (!motionOff()) return;`. Two things were wrong with it, and it was deleted on
-   2026-08-31. Its header claimed "the markup keeps `autoplay`" - `_includes/project-card.html:40`
-   emits no autoplay at all, so nothing was auto-playing and the 2.2.2 pause path it existed to
-   provide was already satisfied by the markup. And because it bailed whenever motion was on, the
-   poster seek never ran on an ordinary visit, which is why every card video sat on a black frame.
-   Pause, poster frame and hover-play now live in ONE place, `project-cards-expensive.js`, which is
-   the only file that reaches this one. */
-
 export function init(root = document) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
@@ -204,7 +187,6 @@ export function init(root = document) {
     return;
   }
 
-  /* source guard: tilt only arms after the cursor genuinely moves (avoids load-position jank) */
   let tiltEnabled = false;
   let startPos = null;
   const onFirstMove = (event) => {

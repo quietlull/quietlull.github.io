@@ -31,7 +31,7 @@
   i {
     @extend %-category-icon-color;
 
-    font-size: 86%; /* fontawesome icons */
+    font-size: 86%;
 
     @include mx.transition(color);
   }
@@ -52,7 +52,7 @@
       border-bottom: 0;
     }
   }
-} /* .categories */
+}
 
 .category-trigger {
   width: 1.7rem;
@@ -79,7 +79,6 @@
   }
 }
 
-/* only works on desktop */
 @media (hover: hover) {
   .category-trigger:hover {
     background-color: var(--categories-hover-bg);

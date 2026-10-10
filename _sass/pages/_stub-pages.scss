@@ -1,39 +1,5 @@
-// The two stub pages, the 404 and Under construction, written 2026-08-31 when both were ported to
-// the redesign.
-
-// WHAT WAS HERE, and why it went. This was Chirpy's `_home.scss`, the stylesheet for
-// `_layouts/home.html`. That layout was deleted in the merge, and the file's last live selector
-// was `#post-list`, which only `_layouts/blog.html` still carried. The blog port dropped it, so
-// every rule in the file (`#post-list`, `.card-wrapper`, `.card`, `.preview-img`, `.card-body`,
-// `.post-meta` and the whole `.pagination` block, which lost its markup when
-// `_includes/post-paginator.html` was deleted) was styling nothing on any page.
-
-// THE FILENAME IS NOW WRONG, and that is a handoff rather than an oversight. Nothing here is about
-// a home page. Suggested name `_stub-pages.scss`, which means editing `_sass/pages/_index.scss`,
-// and that belongs to another pass.
-
-// UNLAYERED ON PURPOSE: page stylesheets sit outside the layers so a page can override a
-// component (D36). Do not wrap this in `@layer`.
-
-// ---- 404 ---------------------------------------------------------------------------------------
-
-/* THE 404 FITS ONE SCREEN. Rod 2026-08-25: "dont let it scroll down anymore."
-   The fix went through three shapes and the history matters enough to keep: the page measured
-   1025px in a 900px window because Bootstrap's container carried a 100vh minimum from an
-   ID-bearing rule in _base.scss, and two overrides lost to that ID before one carried the ID too.
-   THEN D48 DELETED THE WHOLE SCAFFOLD (2026-09-01), container, rule and all, so no override is
-   needed any more - the sizing below is the entire mechanism now.
-
-   The block takes the screen the bar and the footer leave and centres its contents in it.
-   THE 40px IS A BUDGET, not one measurement: 29px is the footer's own stated height, 2px the bar
-   border its token excludes, 9px slack so a rounding error cannot put the page back over the top.
-   `--top-bar-height` sits on `:root` and grows when the bar stacks, so this follows every
-   breakpoint. `dvh`, not `vh`, so a phone's collapsing address bar cannot reintroduce the scroll. */
 .not-found { min-height: calc(100dvh - var(--top-bar-height) - 40px); }
 
-/* The title and the line under it are `page-title-desc` now, so the geometry the old
-   `.not-found-title` / `.not-found-subtitle` rules carried has to be restated on the component's
-   own hooks. 450px is the old subtitle's measure, unchanged. */
 .not-found .page-heading {
   --ptd-desc-w: 450px;
 
@@ -41,11 +7,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Two things at once. The margin: `main h1 { margin-top: 3rem }` in base/_typography.scss is
-   unlayered, so it beats the type ladder's own `h1 { margin: 0 }`, and Ramblings, Projects and the
-   post page all restate it the same way. The animation: the page's own entrance stagger,
-   re-pointed at the elements that replaced the ones it used to name. Same keyframe, same
-   duration, same three delays. */
 .not-found .page-heading__title {
   margin: 0;
   animation: fade-in-up 0.6s ease-out 0.2s both;
@@ -55,8 +16,6 @@
 
 .not-found .kit-button { animation: fade-in-up 0.6s ease-out 0.8s both; }
 
-/* The old `.not-found-*` animations never honoured this and the kill-switch list in
-   abstracts/_animations.scss never named them. Anything this file starts, this file stops. */
 @media (prefers-reduced-motion: reduce) {
   .not-found .page-heading__title,
   .not-found .page-heading__desc,
@@ -65,11 +24,6 @@
   }
 }
 
-// ---- Under construction ------------------------------------------------------------------------
-
-/* Same two restatements as the 404, for the same two reasons. 500px is the old
-   `.construction-subtitle` measure and 2rem is the gap it left before the way back, both
-   unchanged. */
 .under-construction .page-heading {
   --ptd-desc-w: 500px;
 
@@ -79,9 +33,6 @@
 
 .under-construction .page-heading__title { margin: 0; }
 
-/* The one plain column for pages outside the full-bleed list - today the 404 and
-   under-construction. Replaces Bootstrap's container: same centring, no framework, and the
-   1170px matches the ported list pages so a stub does not read narrower than a real page. */
 .page-column {
   max-width: 1170px;
   margin: 0 auto;

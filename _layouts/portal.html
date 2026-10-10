@@ -6,17 +6,6 @@ script_includes:
 
 {% include lang.html %}
 
-{% comment %}
-  The portal, ported from `redesign-lab/final-portal.html`. It is a viewport-locked field of
-  draggable windows: sizes and positions come from spacejam.com/1996 (D15), the frame ratios from
-  zutomayo's served CSS, and the drag, throw, bounce and lean are ours. Full provenance lives in
-  `_sass/components/_portal-window.scss` and `assets/js/effects/portal-windows.js`.
-
-  It carries no top bar and no footer (Rod, 2026-08-23) and it does not scroll - `default.html`
-  handles both. `data-x/y/w/h` are Space Jam's measurements in its own 500x520 stage, not pixels on
-  this page; the JS rescales them. Do not correct them against what you measure here.
-{% endcomment %}
-
 <div class="pground">
   <div class="field">
 
@@ -76,8 +65,6 @@ script_includes:
         </div>
       </div>
     </div>
-
-    {% comment %} Inline SVG, not Font Awesome - the portal loads no icon font, and `.pwin__icon` styles a real svg. {% endcomment %}
 
     <div class="pwin pwin--social" data-x="224" data-y="388" data-w="62" data-h="62">
       <div class="pwin__inner" data-drift-x="24" data-drift-y="0" data-drift-speed="0.6">
@@ -154,8 +141,6 @@ script_includes:
       </div>
     </div>
 
-    {% comment %} The mark doubles as the reset control - clicking it restores every closed window. {% endcomment %}
-    {% comment %} The welcome line is a SIBLING: inside `.centre` the button's aria-label would swallow it. {% endcomment %}
     <div class="centre" role="button" tabindex="0" aria-label="Restore all closed windows">
       <span class="centre__mark line-boil-text">rodney fan</span>
     </div>

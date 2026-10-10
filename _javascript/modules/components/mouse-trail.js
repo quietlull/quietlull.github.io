@@ -1,13 +1,3 @@
-/**
- * Mouse trail sparkler — night-market sparkler cursor effect.
- * Canvas2D overlay with additive blending, motion-blur lines,
- * life-based color gradient (white-hot → amber → deep orange).
- * Ring buffer pool for zero GC. Speed-based emission scaling.
- * Reactive: scroll sparks, color pickup from hovered elements.
- * Toggle via topbar switch, persisted in localStorage.
- * Mobile: touch burst. Respects prefers-reduced-motion.
- */
-
 import { STORAGE_KEYS } from '../config/storage-keys';
 const STORAGE_KEY = STORAGE_KEYS.SPARKLER;
 const MAX_PARTICLES = 200;
@@ -20,20 +10,16 @@ const BURST_SPEED = 5;
 const TOUCH_BURST = 20;
 const INTERACTIVE_SELECTOR = '.card, a, button, .tool-icon, .fireworks-switch, .sparkler-switch, .post-tag, .pin-tag, .badge';
 
-// Default amber theme — hot stays warm gold, never white
 const THEME_DEFAULT = {
   hot: [255, 220, 120], mid: [251, 191, 36], cool: [249, 115, 22],
   tipColor: [255, 210, 100],
 };
 
-// ── Color sampling utilities (shared via utils/color-utils) ──
 import { parseRGB, isWarmColor } from '../utils/color-utils';
 
 function findWarmColor(el) {
   if (!el) return null;
 
-  // 1. Check interactive ancestors (buttons, links, cards). This used to be step 2, behind a
-  //    walk that sniffed for a breathing animation; breathing is gone, so the walk went with it.
   const interactive = el.closest(INTERACTIVE_SELECTOR);
   if (interactive) {
     const style = getComputedStyle(interactive);
@@ -43,7 +29,6 @@ function findWarmColor(el) {
     }
   }
 
-  // 2. Finally check the element itself
   const style = getComputedStyle(el);
   for (const prop of ['borderColor', 'backgroundColor', 'color']) {
     const rgb = parseRGB(style[prop]);
@@ -56,7 +41,6 @@ function findWarmColor(el) {
 function themeFromColor(rgb) {
   if (!rgb) return THEME_DEFAULT;
   const [r, g, b] = rgb;
-  // Hot stays warm-tinted: boost red most, green less, blue barely
   return {
     hot: [Math.min(255, r + 40), Math.min(255, g + 25), Math.min(255, b + 5)],
     mid: [r, g, b],
@@ -65,12 +49,9 @@ function themeFromColor(rgb) {
   };
 }
 
-// ── Main sparkler ──
-
 export function initMouseTrail() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // Toggle setup
   const toggle = document.getElementById('sparkler-toggle');
   const checkbox = toggle ? toggle.querySelector('input[type="checkbox"]') : null;
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -78,7 +59,6 @@ export function initMouseTrail() {
 
   if (checkbox) checkbox.checked = enabled;
 
-  // Canvas setup
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'position:fixed;inset:0;z-index:500;pointer-events:none;';
   document.body.appendChild(canvas);
@@ -86,7 +66,6 @@ export function initMouseTrail() {
 
   const ctx = canvas.getContext('2d', { alpha: true });
 
-  // Ring buffer pool
   const pool = Array.from({ length: MAX_PARTICLES }, () => ({
     active: false, x: 0, y: 0, vx: 0, vy: 0,
     life: 0, maxLife: 0, size: 0,
@@ -97,7 +76,7 @@ export function initMouseTrail() {
   let mouseX = 0, mouseY = 0;
   let lastMouseX = 0, lastMouseY = 0;
   let mouseOnPage = false;
-  let mouseMoving = false;   // true only while cursor is actively moving
+  let mouseMoving = false;
   let idleTimeout = null;
   let animating = false;
   let lastTime = 0;
@@ -172,9 +151,6 @@ export function initMouseTrail() {
 
     let anyActive = false;
 
-    // delta is constant across the frame, so these are loop-invariant.
-    // Hoist out of the per-particle loop (was up to 2*MAX_PARTICLES
-    // Math.pow calls/frame; now 1). Bit-identical math.
     const dragFactor = Math.pow(DRAG, delta);
     const gravityStep = GRAVITY * delta;
 
@@ -215,7 +191,6 @@ export function initMouseTrail() {
       ctx.stroke();
     }
 
-    // Sparkler tip — jagged radial streaks (only while cursor is moving)
     if (mouseMoving) {
       tipTimer--;
       if (!tipStreaks || tipTimer <= 0) {
@@ -253,7 +228,6 @@ export function initMouseTrail() {
     }
   }
 
-  // Track mouse presence — loop starts on movement, not just entering
   document.addEventListener('mouseenter', () => {
     mouseOnPage = true;
   });
@@ -264,21 +238,12 @@ export function initMouseTrail() {
     activeTheme = THEME_DEFAULT;
   });
 
-  // Desktop: speed-based emission + color sampling on mousemove
-  //
-  // Perf notes:
-  // - Position (mouseX/mouseY) updates on EVERY event so the sparkler tip
-  //   tracks the real cursor on 120/144Hz monitors. Previously this was
-  //   behind a 16ms throttle, halving the effective sample rate.
-  // - Color sampling (getComputedStyle + elementFromPoint) is deferred to
-  //   rAF so it never blocks the mousemove event thread. Sync sampling
-  //   was the #1 source of "feels laggy" input latency.
   let lastEmitTime = 0;
   let colorSampleScheduled = false;
   let lastSampleX = -1, lastSampleY = -1;
   let lastSampleTime = 0;
   const COLOR_SAMPLE_INTERVAL_MS = 100;
-  const COLOR_SAMPLE_MIN_MOVE_SQ = 144; // ~12px — skip sample if barely moved
+  const COLOR_SAMPLE_MIN_MOVE_SQ = 144;
 
   function sampleColorAsync() {
     colorSampleScheduled = false;
@@ -301,22 +266,14 @@ export function initMouseTrail() {
     clearTimeout(idleTimeout);
     idleTimeout = setTimeout(() => { mouseMoving = false; }, 400);
 
-    // Update position EVERY event — the sparkler tip needs to track the
-    // real cursor at display refresh rate for the site to feel responsive.
     mouseX = e.clientX;
     mouseY = e.clientY;
 
-    // Schedule color sampling off the event thread. rAF runs after paint
-    // so the synchronous getComputedStyle/elementFromPoint cost doesn't
-    // inflate input latency.
     if (!colorSampleScheduled) {
       colorSampleScheduled = true;
       requestAnimationFrame(sampleColorAsync);
     }
 
-    // Gate particle emission to ~60Hz so we don't spawn too many particles
-    // on high-refresh-rate displays. This gate is on EMISSION only, not
-    // position — the tip still updates every event.
     const now = performance.now();
     if (now - lastEmitTime < 16) {
       lastMouseX = mouseX;
@@ -329,8 +286,6 @@ export function initMouseTrail() {
     const dy = mouseY - lastMouseY;
     const speed = Math.sqrt(dx * dx + dy * dy);
 
-    // Rod's tune, approved on the lab bench 2026-08 and ported here 2026-08-31: sparks start
-    // after 1px of movement, at 0.5 per pixel. Was 2px / 0.4.
     if (speed > 1) {
       const count = Math.min(Math.floor(speed * 0.5), MAX_EMIT_PER_FRAME);
       emit(mouseX, mouseY, count, 1.2);
@@ -340,7 +295,6 @@ export function initMouseTrail() {
     lastMouseY = mouseY;
   }, { passive: true });
 
-  // Scroll sparks — emit at cursor position based on scroll speed
   let lastScrollY = window.scrollY;
   window.addEventListener('scroll', () => {
     if (!enabled || !mouseOnPage) return;
@@ -352,13 +306,11 @@ export function initMouseTrail() {
     }
   }, { passive: true });
 
-  // Mobile: burst on touch
   document.addEventListener('touchstart', (e) => {
     const touch = e.touches[0];
     emit(touch.clientX, touch.clientY, TOUCH_BURST, 1.5);
   }, { passive: true });
 
-  // Expose burst for page transitions
   window.sparklerBurst = (x, y) => {
     emit(x, y, 30, 2.0);
   };

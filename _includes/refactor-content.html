@@ -1,11 +1,4 @@
-<!-- Refactor the HTML structure -->
-
 {% assign _content = include.content %}
-
-<!--
-  In order to allow a wide table to scroll horizontally,
-  we suround the markdown table with `<div class="table-wrapper">` and `</div>`
--->
 
 {% if _content contains '<table' %}
   {% assign _content = _content
@@ -16,20 +9,12 @@
   %}
 {% endif %}
 
-<!--
-  Fixed kramdown code highlight rendering:
-  https://github.com/penibelst/jekyll-compress-html/issues/101
-  https://github.com/penibelst/jekyll-compress-html/issues/71#issuecomment-188144901
--->
-
 {% if _content contains '<pre class="highlight">' %}
   {% assign _content = _content
     | replace: '<div class="highlight"><pre class="highlight"><code', '<div class="highlight"><code'
     | replace: '</code></pre></div>', '</code></div>'
   %}
 {% endif %}
-
-<!-- Change the icon of checkbox -->
 
 {% if _content contains '<input type="checkbox"' %}
   {% assign _content = _content
@@ -39,8 +24,6 @@
       '<i class="far fa-circle fa-fw"></i>'
   %}
 {% endif %}
-
-<!-- Handle images -->
 
 {% assign IMG_TAG = '<img ' %}
 
@@ -87,7 +70,6 @@
       {% endcase %}
     {% endfor %}
 
-    <!-- take out classes -->
     {% assign _wrapper_class = '' %}
 
     {% if _class %}
@@ -126,14 +108,7 @@
     {% endif %}
 
     {% assign _final_src = null %}
-    {% assign _lazyload = true %}
-
-    {%- comment -%}
-      OURS: preview images (post cover images) resolve without the post's media_subpath, so a
-      shared cover asset does not get a post folder prepended; everything else keeps upstream's
-      subpath handling (re-apply on Chirpy upgrade)
-    {%- endcomment -%}
-    {%- capture _img_url -%}
+    {% assign _lazyload = true %}{%- capture _img_url -%}
       {%- if _class contains 'preview-img' -%}
         {%- include media-url.html src=_src -%}
       {%- else -%}
@@ -158,21 +133,16 @@
         {% assign _left = _left | replace: 'lqip="', _lqip_alt %}
       {% endunless %}
 
-      <!-- add image placeholder -->
       {% assign _left = _left | replace: 'src=', 'data-src=' | replace: ' lqip=', ' data-lqip="true" src=' %}
 
     {% else %}
       {% assign _wrapper_class = _wrapper_class | append: ' shimmer' %}
     {% endif %}
 
-    <!-- lazy-load images -->
     {% if _lazyload %}
       {% assign _left = _left | append: ' loading="lazy"' %}
     {% endif %}
 
-{% comment %} OURS: upstream wrapped every post image here in a lightbox link (a.popup.img-link) or a home preview div; the wrapper block is deleted and images render unwrapped. Re-apply this deletion on a Chirpy upgrade. {% endcomment %}
-
-    <!-- combine -->
     {% assign _img_content = _img_content | append: IMG_TAG | append: _left | append: _right %}
   {% endfor %}
 
@@ -180,8 +150,6 @@
     {% assign _content = _img_content %}
   {% endif %}
 {% endif %}
-
-<!-- Add header for code snippets -->
 
 {% if _content contains '<div class="highlight"><code>' %}
   {% assign _code_spippets = _content | split: '<div class="highlight"><code>' %}
@@ -207,13 +175,6 @@
         <span data-label-text="{{ _label_text | strip }}"><i class="{{ _label_icon }}"></i></span>
       {% endcapture %}
 
-      {% comment %}
-        `data-title-succeed` came off this button on 2026-09-02 with the tooltips (D48 fallout).
-        It carried the "Copied!" string for Bootstrap's Tooltip, and clipboard.js no longer reads
-        it - the button's real feedback is the icon swap to `fas fa-check`, which never depended on
-        the tooltip. A Liquid comment cannot sit inside an `assign` filter chain, which is why this
-        note is here rather than on the line it describes.
-      {% endcomment %}
       {% assign _new_content = _new_content
         | append: _snippet
         | append: '<div class="code-header">'
@@ -227,9 +188,6 @@
   {% assign _content = _new_content %}
 {% endif %}
 
-<!-- Create heading anchors -->
-<!-- `text-muted` on the anchor and `me-2` on the span below were dead Bootstrap classes (D48),
-     matched no CSS, and have been removed. `anchor` itself is still styled. -->
 
 {% assign heading_levels = '2,3,4,5' | split: ',' %}
 {% assign _heading_content = _content %}
@@ -267,5 +225,4 @@
 
 {% assign _content = _heading_content %}
 
-<!-- return -->
 {{ _content }}

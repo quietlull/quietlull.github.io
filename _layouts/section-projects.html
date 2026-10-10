@@ -7,24 +7,6 @@ script_includes:
 
 {% include lang.html %}
 
-{% comment %}
-  Projects, ported from `redesign-lab/final-projects.html` on 2026-08-25. A 1176px column: title,
-  a controls panel holding the search field and the tag row, the pinned grid, a rule, then the rest.
-
-  THE CARDS ARE `.merged-cards` NOW, which is the point of this commit beyond the look. Five old
-  class rules - `post-card`, `card-body`, `card-meta`, `card-link`, `takeaway-text` - could not be
-  deleted while their replacements only existed under a class no live page carried. This page
-  carries it.
-
-  Dropped with the lab page: `#state`, `.labtag`, every `data-slot` / `data-state`, and the trailing
-  spacer div. Dropped with the OLD page: the Bootstrap card grid, the results counter, the per-pill
-  match counts and the empty-pill dimming - the lab lists all three as things the redesign does not
-  have, and the approved `.es` empty state replaces the injected one.
-
-  There is no `description` on either projects page, so the title stands alone. Rod, 2026-08-24:
-  "we dont need a tagline under tech art projects."
-{% endcomment %}
-
 {% assign section = page.section %}
 {% assign all_projects = site.posts | where: 'section', section | where: 'tags', 'project' %}
 {% assign pinned = all_projects | where_exp: 'item', 'item.pin == true' | sort: 'priority' | reverse %}
@@ -65,7 +47,6 @@ script_includes:
 
     <section>
       <div class="merged-cards merged-cards--square wrapper-project-card-grid pv2-grid">
-        {% comment %} The a/b alternation runs across both grids, so this one picks up where the pinned grid stopped. {% endcomment %}
         {% for post in normal %}
           {% assign parity = forloop.index0 | plus: pinned.size | modulo: 2 %}
           {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
@@ -82,7 +63,6 @@ script_includes:
         </div>
       </div>
     {% else %}
-      {% comment %} A no-RESULTS state: hidden until a search or a tag matches nothing. {% endcomment %}
       <div class="es es--stack" role="status" hidden>
         <div class="es__content">
           <p class="es__title">No projects matching <b class="es__q"></b></p>

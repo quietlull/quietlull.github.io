@@ -1,10 +1,5 @@
 import * as THREE from 'three';
 
-/**
- * Firework Controller
- * Adapted from towrabbit's firework example
- * Integrated for lantern scene with camera at Z=500
- */
 export class FireworkController {
   constructor(scene, camera, config = {}) {
     this.scene = scene;
@@ -12,33 +7,19 @@ export class FireworkController {
     this.fireWorkGroup = [];
     this.maxFireworks = config.maxFireworks ?? 50;
 
-    // Configuration.
-    // `??` not `||` throughout: a configured 0 is a real value, and `||` silently discarded it.
-    // That bug ran for a long time - `minZ: 0` in three-config.js fell through to the -10000
-    // default, so shells spawned anywhere across a 9800-unit depth spread instead of the intended
-    // band, which is why the same burst could read 110% of screen height or 7% of it.
     this.config = {
-      // Z-depth range
       minZ: config.minZ ?? -10000,
       maxZ: config.maxZ ?? -10500,
 
-      // Launch timing
       launchSpeed: config.launchSpeed ?? 0.4,
       minDelay: config.minDelay ?? 0.1,
       maxDelay: config.maxDelay ?? 0.3,
 
-      // Height limits
       maxHeight: config.maxHeight ?? 10000,
       sceneBottom: config.sceneBottom ?? -100,
 
-      // How far below its centre a burst actually reaches, per unit of scale, as a multiple of
-      // explosionSpread: the particle sphere reaches ~1.1 and the shader's gravity term adds
-      // ~0.588 by the end of the explosion. Used to keep a burst's bottom clear of the water.
-      // DERIVED FROM THE SHADER, not measured - particle positions are computed on the GPU and
-      // cannot be read back, so this is a starting constant to confirm by eye.
       burstBottomFactor: config.burstBottomFactor ?? 1.69,
 
-      // Explosion properties
       particleCount: config.particleCount ?? 400,
       particleSize: config.particleSize ?? 20,
       explosionScaleMin: config.explosionScaleMin ?? 5.0,
@@ -46,25 +27,13 @@ export class FireworkController {
       explosionSpread: config.explosionSpread ?? 80.0,
       explosionDuration: config.explosionDuration ?? 1.2,
 
-      // Particle appearance
       particleBrightness: config.particleBrightness ?? 0.6,
 
-      /* PARTICLE TRAIL: how many ghost copies of each particle are emitted, each one step further
-         behind in time. This MULTIPLIES the vertex count - at 10 a 400-particle shell is 4000
-         vertices - and every copy runs the full vertex shader. 1 = no trail. */
       particleTrail: config.particleTrail ?? 10,
 
-      // Colors
       rainbowChance: config.rainbowChance ?? 0.5,
     };
 
-    // The auto-launch stream: it has its own timer and its own cap on how many of its shells may
-    // be in the air at once. GREETING is the calm welcome that runs while the top of the page is
-    // on screen. Whether it is active is decided by the page, not here.
-    // A second REWARD stream used to sit beside it, unlocked by the Pyrotechnician achievement and
-    // switched on from the old top bar. Rod scrapped every reward (D28), so it was deleted on
-    // 2026-08-31 together with its `auto*` config keys. This stays a map of streams because the
-    // greeting may not be the last one this scene gets.
     this.emitters = {
       greeting: {
         active: false, timer: 0, next: 0, maxLive: 4,
@@ -77,7 +46,7 @@ export class FireworkController {
       emitter.next = this.getRandomDelay(emitter);
     }
 
-    this._removeGroup = []; // reused each frame (avoid per-frame array allocation)
+    this._removeGroup = [];
 
     this.setupClickHandler();
   }
@@ -95,18 +64,6 @@ export class FireworkController {
     return live;
   }
 
-  /**
-   * Screen point (in normalized device coordinates) -> the world position on a given Z plane that
-   * actually appears there, using the camera's own matrices.
-   *
-   * This replaced frustum trigonometry (`ndcY * halfHeight + camera.y`) that silently assumed the
-   * camera looks straight down -Z. The About page pitches the camera 25 degrees at the top of the
-   * scroll, where that assumption put the top of the screen at world Y 1281 when the true value
-   * was 2455 - so the top of the page was unreachable and clicks landed short. Unprojecting a ray
-   * and intersecting the target plane is correct at any rotation, position, fov or aspect, which
-   * also made the old `extraHeight` compensation (a hand-tuned curve bolted onto the wrong
-   * projection) unnecessary; it was deleted rather than re-tuned.
-   */
   screenToWorldAtDepth(ndcX, ndcY, targetZ) {
     const direction = new THREE.Vector3(ndcX, ndcY, 0.5)
       .unproject(this.camera)
@@ -118,9 +75,7 @@ export class FireworkController {
   }
 
   setupClickHandler() {
-    // Handle clicks on the window since canvas has pointer-events: none
     window.addEventListener('click', (event) => {
-      // Don't trigger if clicking on actual UI elements
       if (event.target.tagName === 'A' || event.target.tagName === 'BUTTON') {
         return;
       }
@@ -134,46 +89,34 @@ export class FireworkController {
       return;
     }
 
-    // Convert screen coordinates to normalized device coordinates
     const x = (clientX / window.innerWidth) * 2 - 1;
     const y = -(clientY / window.innerHeight) * 2 + 1;
 
-    // Calculate world position at a random Z depth
     const randomZ = THREE.MathUtils.lerp(this.config.minZ, this.config.maxZ, Math.random());
 
-    // How big this burst will be decides how low it is allowed to sit, so the scale is drawn here
-    // rather than inside createFirework.
     const scale = Math.random() * (this.config.explosionScaleMax - this.config.explosionScaleMin)
       + this.config.explosionScaleMin;
 
     const target = this.screenToWorldAtDepth(x, y, randomZ);
 
-    // A burst must never be half-drowned, so its FLOOR scales with its own size: the particles
-    // reach burstBottomFactor * explosionSpread * scale below the centre. Small shells may
-    // therefore burst low over the water while big ones are pushed high, with no special case.
     const burstBottom = this.config.explosionSpread * this.config.burstBottomFactor * scale;
     const lowestCentre = this.config.sceneBottom + burstBottom;
     const worldY = Math.min(Math.max(target.y, lowestCentre), this.config.maxHeight);
 
     const endPoint = new THREE.Vector3(target.x, worldY, randomZ);
 
-    // Start point is BELOW the scene bottom (-100)
     const startPoint = new THREE.Vector3(target.x, this.config.sceneBottom - 200, randomZ);
 
-    // Random delay before explosion
     const explosionDelay = THREE.MathUtils.lerp(
       this.config.minDelay,
       this.config.maxDelay,
       Math.random()
     );
 
-    // Random rainbow or solid color
     const isRainbow = Math.random() < this.config.rainbowChance;
 
     this.createFirework(startPoint, endPoint, explosionDelay, isRainbow, source, scale);
 
-    // Only shells the visitor actually launched count toward Pyrotechnician. The greeting runs on
-    // its own forever, so counting it would unlock the reward while the visitor sits still.
     if (source === 'click') {
       document.dispatchEvent(new Event('achievement:firework'));
     }
@@ -184,9 +127,8 @@ export class FireworkController {
       return;
     }
 
-    // Random position across the screen, but above scene bottom
-    const randomX = (Math.random() * 2 - 1) * 0.8; // Stay within 80% of screen
-    const randomY = (Math.random() * 0.5 + 0.3); // Upper/middle portion of screen
+    const randomX = (Math.random() * 2 - 1) * 0.8;
+    const randomY = (Math.random() * 0.5 + 0.3);
 
     this.createFireworkFromClick(
       (randomX * 0.5 + 0.5) * window.innerWidth,
@@ -197,16 +139,14 @@ export class FireworkController {
 
 
   createFirework(startPoint, endPoint, explosionDelay = 0.5, isRainbow = false, source = 'click', scale = 1) {
-    // Random color
     const color = new THREE.Color(
       Math.random() * 0.6 + 0.4,
       Math.random() * 0.6 + 0.4,
       Math.random() * 0.6 + 0.4
     );
 
-    // Store data for explosion
     const firework = {
-      explosion: null, // Will be created once the launch delay has elapsed
+      explosion: null,
       color: color,
       isRainbow: isRainbow,
       scale: scale,
@@ -214,16 +154,13 @@ export class FireworkController {
       endPoint: endPoint.clone(),
       explosionDelay: explosionDelay,
       clock: new THREE.Clock(),
-      phase: 'launch', // 'launch' or 'explode'
-      source: source   // 'click' | 'greeting' | 'reward' — drives each emitter's live cap
+      phase: 'launch',
+      source: source
     };
 
     this.fireWorkGroup.push(firework);
   }
 
-  /* Uniform point in a shell of radius 0.9-1.1, matching the sphere maths this replaced in the
-     vertex shader. That version was fed three hashed values; three Math.random() calls have the
-     same distribution, so shells are statistically identical rather than bit-identical. */
   randomDirectionInSphere() {
     const theta = Math.random() * 2 * Math.PI;
     const phi = Math.acos(2 * Math.random() - 1);
@@ -250,7 +187,6 @@ export class FireworkController {
         }
       }
 
-      // position IS the direction - the shader uses it as-is
       const [x, y, z] = this.randomDirectionInSphere();
 
       for (let j = 0; j < times; j++) {
@@ -293,11 +229,10 @@ export class FireworkController {
       sizeAttenuation: true,
       depthTest: true,
       vertexColors: isRainbow,
-      blending: THREE.NormalBlending // CHANGED from AdditiveBlending
+      blending: THREE.NormalBlending
     });
 
     material.onBeforeCompile = (shader) => {
-      // Fragment shader - handles opacity fade
       shader.fragmentShader = `
         uniform vec3 diffuse;
         uniform float opacity;
@@ -348,7 +283,6 @@ export class FireworkController {
         }
       `;
 
-      // Vertex shader - handles particle animation
       shader.vertexShader = shader.vertexShader.replace(
         '#include <common>',
         `
@@ -396,22 +330,18 @@ export class FireworkController {
   }
 
   update(normalizedDelta = 1.0) {
-    // Auto-generate fireworks — every active emitter runs its own delay-based timer
     for (const source in this.emitters) {
       const emitter = this.emitters[source];
       if (!emitter.active) continue;
 
-      emitter.timer += 0.016 * normalizedDelta; // Increment timer (60fps baseline)
+      emitter.timer += 0.016 * normalizedDelta;
       if (emitter.timer < emitter.next) continue;
 
-      // Reset timer and get new random delay
       emitter.timer = 0;
       emitter.next = this.getRandomDelay(emitter);
 
-      // Hold the burst if this stream already has its share of the sky
       if (this.countLive(source) >= emitter.maxLive) continue;
 
-      // Fire burst of fireworks
       const variation = Math.floor(Math.random() * emitter.amountVariation * 2) - emitter.amountVariation;
       const amount = Math.max(1, emitter.amount + variation);
 
@@ -431,10 +361,6 @@ export class FireworkController {
       const time = elapsed * launchSpeed;
 
       if (firework.phase === 'launch') {
-        /* LAUNCH is now purely a delay - nothing is drawn during it. The rocket trail that used to
-           animate here was removed 2026-08-22 (Rod: "they cannot be seen anyways"), which also took
-           a draw call and a ShaderMaterial per shell with it. The delay stays because it is what
-           staggers the explosions instead of letting a burst detonate all at once. */
         if (time < explosionDelay) continue;
         firework.phase = 'explode';
 
@@ -452,25 +378,19 @@ export class FireworkController {
         firework.explosionClock = new THREE.Clock();
         this.scene.add(explosion);
       } else if (firework.phase === 'explode') {
-        // EXPLOSION PHASE - particles spreading
         const explosionTime = firework.explosionClock.getElapsedTime();
         const bloomTime = Math.min(explosionTime / this.config.explosionDuration, 1);
 
         firework.explosion.userData.time.value = bloomTime;
 
-        // Shrink over the burst. The opacity write that used to sit beside this was dead: the
-        // custom fragment shader computes its own fade from uTime and never reads the material's
-        // opacity uniform, so three uploaded it every frame for nothing.
         firework.explosion.material.size = this.config.particleSize * (1 - bloomTime) + 5;
 
-        // Remove when animation is complete
         if (bloomTime >= 1) {
           removeGroup.push(firework);
         }
       }
     }
 
-    // Clean up finished fireworks
     for (let firework of removeGroup) {
       const index = this.fireWorkGroup.indexOf(firework);
       if (index > -1) {
@@ -485,12 +405,10 @@ export class FireworkController {
     }
   }
 
-  // Debug info
   getFireworkCount() {
     return this.fireWorkGroup.length;
   }
 
-  // Clear all fireworks
   clear() {
     for (let firework of this.fireWorkGroup) {
       if (firework.explosion && firework.explosion.parent) {
@@ -502,7 +420,6 @@ export class FireworkController {
     this.fireWorkGroup = [];
   }
 
-  // Enable/disable the top-of-page greeting stream
   setGreeting(enabled) {
     this.emitters.greeting.active = enabled;
   }

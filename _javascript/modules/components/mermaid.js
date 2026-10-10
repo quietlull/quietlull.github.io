@@ -1,13 +1,8 @@
-/**
- * Mermaid-js loader
- */
-
 const MERMAID = 'mermaid';
 const themeMapper = Theme.getThemeMapper('default', 'dark');
 
 function refreshTheme(event) {
   if (event.source === window && event.data && event.data.id === Theme.ID) {
-    // Re-render the SVG › <https://github.com/mermaid-js/mermaid/issues/311#issuecomment-332557344>
     const mermaidList = document.getElementsByClassName(MERMAID);
 
     [...mermaidList].forEach((elem) => {
@@ -27,7 +22,6 @@ function setNode(elem) {
   const svgCode = elem.textContent;
   const backup = elem.parentElement;
   backup.classList.add('d-none');
-  // Create mermaid node
   const mermaid = document.createElement('pre');
   mermaid.classList.add(MERMAID);
   const text = document.createTextNode(svgCode);

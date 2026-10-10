@@ -1,20 +1,5 @@
 import * as THREE from 'three';
 
-/**
- * Water mirror surface for the About-page dock scene. Planar reflection + a NO-LIGHTING water look (the scene uses flat
- * materials, so nothing here adds a real light). The depth/wave read comes from the SHADING (a normal embossed by a fake
- * directional light), not from displacement:
- *   - procedural snoise HEIGHT field -> central-difference gradient = slope (uProcNoise=1 default)
- *   - uRidge: 1 - abs(height) creases the smooth hills into SHARP ridge lines, so the directional light embosses real crests
- *   - (1) distance-attenuated reflection-UV distortion (three.js Water / ameen)
- *   - (2) Fresnel depth: blend reflection toward dark uWaterColor by view angle (geometric, no light)
- *   - (3) fake directional light (darken-biased): broad wave shading from a CONSTANT sun direction (no scene light)
- *   - (6) click ripples: expanding wave-packets (ldBXDD) feeding the reflection AND the shading normal
- * `spawnRipple(worldPoint)` + `getActiveRipple()` drive interaction (e.g. the character's "watch the water" head-look).
- * Provenance: original planar reflection = Rod; distortion/Fresnel/directional = three.js examples Water.js + ameen-abdullah.dev;
- * ridge = standard ridged-noise; ripple = Godot/Shadertoy ldBXDD; snoise = Ashima/Gustavson (public domain). Reworked in the
- * lab water track (see redesign-lab/water-CHANGELOG.md).
- */
 export class MirroredSurface {
   constructor(scene, camera, renderer, mirrorPlane, options = {}) {
     this.scene = scene;
@@ -39,15 +24,6 @@ export class MirroredSurface {
 
     this.mirrorCamera = new THREE.PerspectiveCamera(camera.fov * 1, camera.aspect, 0.001, camera.far);
 
-    /* Quarter resolution (Rod: 0.5 on 2026-08-21, then 0.25 on 2026-08-22). This target renders the
-       ENTIRE scene a SECOND time every frame, so it is the second biggest fragment cost after bloom.
-       The reflection is read through a distorted, fresnel-blended UV on a moving water surface, so
-       the detail it loses is detail the water shader was already destroying - and since 08-22 the
-       paper filter masks the rest.
-       NOTE this scales window.innerWidth (CSS pixels), NOT the drawing buffer, so it does NOT
-       compound with the renderer's pixel ratio the way the bloom scale does. At dpr 0.5 the
-       reflection lands at half the canvas, not a quarter. The tuner does the same arithmetic, so
-       what Rod judged is what ships - but change one and the other will not follow. */
     this.reflectionScale = options.reflectionScale ?? 0.25;
     this.renderTarget = new THREE.WebGLRenderTarget(
       Math.round(window.innerWidth * this.reflectionScale),
@@ -269,22 +245,18 @@ export class MirroredSurface {
         uWaveScale: { value: this.waveScale },
         uWaveType: { value: this.waveType },
         uNoiseMode: { value: this.noiseMode },
-        uNoiseSpace: { value: 1.0 }, uWorldScale: { value: 0.0082 },   // Rod-tuned (procedural)
-        uProcNoise: { value: 1.0 },   // default = procedural (Rod trying it for big artifact-free waves)
-        // version: default to COMBINED so the new water shows on load (Version dropdown switches it)
+        uNoiseSpace: { value: 1.0 }, uWorldScale: { value: 0.0082 },
+        uProcNoise: { value: 1.0 },
         uUseOriginal: { value: 0.0 },
         uDistort: { value: 0.1 }, uDistortFalloff: { value: 150.0 }, uNormalUp: { value: 0.6 },
-        uRidge: { value: 1.0 },   // Rod-tuned: sharp crests
+        uRidge: { value: 1.0 },
         uFresnel: { value: 0.35 }, uFresnelPow: { value: 4.3 }, uWaterColor: { value: new THREE.Color(0x0a1426) },
-        // uSunLift 0.2 -> 1.5 (Rod, 2026-08-21), the top of the tuner's range. It was dialled almost
-        // to zero back when bloom was the lighting rig; with the sky doing that job the crest lift is
-        // real moonlight now. It multiplies uSunDiffuse, so crests gain 0.13 * 1.5 = 0.195 of uSunColor2.
-        uSunDiffuse: { value: 0.13 }, uSunLift: { value: 1.5 }, uSunDir2: { value: new THREE.Vector3(0.4, 0.5, 0.3).normalize() }, uSunColor2: { value: new THREE.Color(0xaec6f0) },   // moonlight (cool blue-white)
+        uSunDiffuse: { value: 0.13 }, uSunLift: { value: 1.5 }, uSunDir2: { value: new THREE.Vector3(0.4, 0.5, 0.3).normalize() }, uSunColor2: { value: new THREE.Color(0xaec6f0) },
         uRippleOrigin: { value: Array.from({ length: 16 }, () => new THREE.Vector2()) },
-        uRippleStart: { value: new Array(16).fill(-1000.0) },   // far-past = inactive
+        uRippleStart: { value: new Array(16).fill(-1000.0) },
         uRippleSpeed: { value: 80.0 }, uRippleFreq: { value: 0.2 }, uRippleWidth: { value: 30.0 },
         uRippleDecay: { value: 0.6 }, uRippleLife: { value: 4.0 }, uRippleAmp: { value: 0.03 }, uRippleSlope: { value: 2.0 },
-        uRippleAlive: { value: 0.0 }   // owned by update(); starts dead
+        uRippleAlive: { value: 0.0 }
       },
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
@@ -297,8 +269,6 @@ export class MirroredSurface {
   update(normalizedDelta = 1.0) {
     this.time += normalizedDelta * 0.016;
     this.material.uniforms.uTime.value = this.time;
-    /* Every ripple shares one lifetime, so the newest is the last to die. Set before the frustum
-       early-return below, so the flag cannot go stale while the water is off-screen. */
     this.material.uniforms.uRippleAlive.value = this.getActiveRipple() ? 1.0 : 0.0;
 
     if (!this._frustum) {
@@ -312,10 +282,6 @@ export class MirroredSurface {
       return;
     }
 
-    /* When the water is hidden (scene-mode's minimal tier sets material.visible = false) nothing
-       ever samples the reflection texture, so the second full-scene render below was pure waste
-       on every minimal-tier page. Zero pixel change: this only skips while the water is already
-       invisible. */
     if (this.mirrorPlane.material && this.mirrorPlane.material.visible === false) return;
 
     this.mirrorCamera.position.copy(this.camera.position);
@@ -349,7 +315,6 @@ export class MirroredSurface {
     this.mirrorCamera.updateProjectionMatrix();
   }
 
-  // [Bob] preset switch — sets the per-effect strengths for one of the 6 versions. Returns the uniforms it changed.
   applyVersion(name) {
     const u = this.material.uniforms;
     const P = {
@@ -365,10 +330,6 @@ export class MirroredSurface {
 
   setNoiseMode(mode) { this.noiseMode = mode ? 1 : 0; this.material.uniforms.uNoiseMode.value = this.noiseMode; }
 
-  // Spawn a ripple at a WORLD point (Vector3). Round-robins a 16-slot pool. Start time = the material's own clock
-  // (same base as the shader's uTime). getActiveRipple() drives the character's "watch the water" head-look.
-  // THE ONLY legal way to start a ripple: writing uRippleStart directly leaves uRippleAlive at 0 and the
-  // shader's early-out swallows the ripple silently. Same reason getActiveRipple() must keep its exact window.
   spawnRipple(worldPoint) {
     const U = this.material.uniforms;
     if (this._rippleHead === undefined) this._rippleHead = 0;

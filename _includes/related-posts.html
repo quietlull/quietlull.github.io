@@ -1,5 +1,3 @@
-<!-- Recommend the other 3 posts according to shared tags, preferring same section. -->
-
 {% assign TOTAL_SIZE = 3 %}
 {% assign TAG_SCORE = 1 %}
 {% assign SECTION_BONUS = 2 %}
@@ -30,7 +28,6 @@
 
   {% assign score = 0 %}
 
-  {% comment %} Boost posts from the same section {% endcomment %}
   {% if post.section == page.section %}
     {% assign score = score | plus: SECTION_BONUS %}
   {% endif %}
@@ -72,16 +69,13 @@
 
 {% if relate_posts.size > 0 %}
   {% if include.variant == 'rc' %}
-    {% comment %} The redesign's related grid. Same scoring above, different card. {% endcomment %}
     <div class="post-related">
       <div class="raillabel">Related</div>
       <div class="rc-grid">
         {% for post in relate_posts %}
           <a class="rc rc--v2" href="{{ post.url | relative_url }}">
             <div class="rc__cover">
-              {% assign rc_img = post.image.path | default: post.image %}
-              {%- comment -%} post-media branches on the extension. A bare img here rendered .mp4 covers as broken images. {%- endcomment -%}
-              {% if rc_img %}{% include post-media.html src=rc_img alt="" %}{% endif %}
+              {% assign rc_img = post.image.path | default: post.image %}{% if rc_img %}{% include post-media.html src=rc_img alt="" %}{% endif %}
             </div>
             <div class="rc__body">
               <div class="rc__title">{{ post.title }}</div>
@@ -107,7 +101,6 @@
             <div class="card-body">
               {% include datetime.html date=post.date lang=include.lang %}
               <h4 class="pt-0 my-2">{{ post.title }}</h4>
-              {% comment %} text-muted was a dead Bootstrap class (D48), matched no CSS. {% endcomment %}
               <div>
                 <p>{% include post-description.html %}</p>
               </div>
@@ -117,6 +110,5 @@
       {% endfor %}
     </nav>
   </aside>
-  <!-- #related-posts -->
   {% endif %}
 {% endif %}

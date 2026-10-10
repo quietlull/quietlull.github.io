@@ -1,33 +1,10 @@
-{%- comment -%}
-  Generate media resource final URL based on `site.cdn`, `page.media_subpath`
-
-  Arguments:
-    src - required, basic media resources path
-    subpath - optional, relative path of media resources
-    absolute - optional, boolean, if true, generate absolute URL
-
-  Return:
-    media resources URL
-{%- endcomment -%}
-
 {% assign url = include.src %}
 
 {%- if url -%}
-  {% unless url contains ':' %}
-    {%- comment -%}
-      OURS: absolute-path guard, PATCHED, see docs/UPSTREAM.md (re-apply on Chirpy upgrade).
-      Upstream prepends the subpath to any path without a scheme, including root-relative ones
-      that are already resolved. A post declaring media_subpath and pointing at a shared asset
-      got /assets/media/X/assets/img/placeholder-wip.svg. 21 broken images and html-proofer
-      fails on every one.
-    {%- endcomment -%}
-    {% assign _abs = url | slice: 0, 1 %}
+  {% unless url contains ':' %}{% assign _abs = url | slice: 0, 1 %}
     {% unless _abs == '/' %}
       {% assign url = include.subpath | default: '' | append: '/' | append: url %}
-    {% endunless %}
-
-    {%- comment -%} Prepend CND URL {%- endcomment -%}
-    {% if site.cdn %}
+    {% endunless %}{% if site.cdn %}
       {% assign url = site.cdn | append: '/' | append: url %}
     {% endif %}
 

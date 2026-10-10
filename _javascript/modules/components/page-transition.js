@@ -1,11 +1,6 @@
-/**
- * Smooth page transitions — fade out current content before navigating.
- * The existing #main-wrapper fade-in animation handles arrival.
- */
 export function initPageTransition() {
   const EXIT_DURATION = 300;
 
-  // Restore content visibility when returning via bfcache (back/forward)
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) {
       const wrapper = document.getElementById('main-wrapper');
@@ -17,14 +12,12 @@ export function initPageTransition() {
     const link = e.target.closest('a[href]');
     if (!link) return;
 
-    // Skip: modifier keys (open in new tab), target="_blank", downloads
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
     if (link.target === '_blank' || link.hasAttribute('download')) return;
 
     const url = link.href;
     if (!url) return;
 
-    // Skip: external links, hash-only links, javascript: links
     try {
       const dest = new URL(url, window.location.origin);
       if (dest.origin !== window.location.origin) return;
@@ -47,7 +40,6 @@ export function initPageTransition() {
       return;
     }
 
-    // Sparkler burst at click point
     if (typeof window.sparklerBurst === 'function') {
       window.sparklerBurst(e.clientX, e.clientY);
     }

@@ -1,8 +1,3 @@
-/**
- * Color parsing and warm-color detection utilities.
- * Shared across sparkler, achievements, and future color-aware features.
- */
-
 export function parseRGB(str) {
   if (!str || str === 'transparent') return null;
   const m = str.match(/rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/);

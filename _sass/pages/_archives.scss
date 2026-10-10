@@ -1,24 +1,7 @@
-// The archive, 2026-08-31. This file used to hold Chirpy's timeline: a 4px vertical rule drawn
-// with `::before` pseudo-elements at hardcoded left offsets, a pulsing dot per year, a second dot
-// per post, and a striped `nth-child(odd)` gradient on every row. All of it hung off `#archives`,
-// and that id is gone with the markup - `_layouts/archives.html` is now built from the same
-// components as the tag pages.
-
-// Everything visible on this page is a component now - page-title-desc, entry-row, empty-state -
-// so what is left here is the column, the year headings and the gaps. Same shape as `_tags.scss`
-// and `_ramblings.scss`, because it is the same page with a different filter.
-
-// Page stylesheets are UNLAYERED on purpose (D36), so anything written here beats every
-// component. Keep that in mind before adding a rule: it is a page override, not a suggestion.
-
 #archives-page {
   position: relative;
   z-index: var(--z-content);
   width: min(1180px, 92vw);
-
-  // 100% rather than 92vw, for the reason written out in `_tags.scss`: this page is not in the
-  // `full_bleed` list in _layouts/default.html, so its parent is the Bootstrap content column
-  // rather than the viewport, and the cap has to be measured against the parent.
   max-width: 100%;
   margin: 0 auto;
   padding: 56px 0 200px;
@@ -34,15 +17,9 @@
     text-align: center;
   }
 
-  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered, so it beats the ladder's
-  // own `h1 { margin: 0 }` and pushes the title down. Same restatement as ramblings and projects.
   .page-heading__title { margin: 0; }
 
-  // The year takes the H2 rung whole - size, weight and colour all come from base/_decisions.scss
-  // and nothing about them is set here. Only the space around it is this page's business.
   .arc-year { margin-bottom: 1rem; }
 
-  // The rung's own 4.5rem top margin is the gap BETWEEN years. The first year does not need one,
-  // because the title block above it already brings its own 37px of padding.
   .arc-group:first-of-type .arc-year { margin-top: 0; }
 }

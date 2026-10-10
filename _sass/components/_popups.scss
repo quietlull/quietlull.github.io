@@ -2,7 +2,6 @@
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/placeholders';
 
-/* PWA update popup */
 #notification {
   @-webkit-keyframes popup {
     from {

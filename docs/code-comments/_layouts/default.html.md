@@ -1,0 +1,178 @@
+# Comments removed from `_layouts/default.html`
+
+The review page for this file shows these beside the code. Line numbers are the file as it was
+when each batch was removed.
+
+## Removed 2026-10-10, from the file at commit e1b1351
+
+### Line 15, above `{% comment %}`
+
+```text
+`site.alt_lang` can specify a language different from the UI
+```
+
+### Line 16, above `{% case page.layout %}`
+
+```text
+============================================================================================
+THE SHARED CHROME, ported from the redesign 2026-08-25. Everything below that is new is
+gathered here so it can be read - and reverted - as a unit.
+
+THE SCENE TIER. Rod, P72 (2026-08-22): "for projects, portal, and ramblings please do a scene
+with only lanterns, the fireflies, and post processes this will become our minimal so about
+and landing have full ... and none will be the blobs."
+
+  full     lanterns + fireflies + post-processing + dock + water
+  minimal  the same, with dock and water hidden by assets/js/effects/scene-mode.js
+  none     no three.js at all; the hana bloom is the whole background
+
+KEYED ON THE LAYOUT, not on the URL. The lab's scene-mode.js keys a hardcoded map on
+`location.pathname`, which is fine for six fixed lab files and wrong here - posts, tags and
+archives multiply the URL space and everything unlisted would silently default to `full`.
+The layout is the thing the tier is actually a property of.
+
+`post` -> none is Rod's call from 2026-08-21, and it is the one tier that CHANGES what a live
+page loads rather than just what it shows: post pages currently pull
+`three-background-minimal.min.js` and will now pull nothing. That is the deliberate 525 KB
+saving. One word in the list below puts it back.
+============================================================================================
+```
+
+### Line 45, above `{% if page.permalink == '/404.html' %}{% assign scene_tier = 'embers' %}{% endif %}`
+
+```text
+THE 404 IS THE ONLY EMBERS-ONLY PAGE. Rod 2026-08-25: "the 404 page downloads the 3D scene
+twice ... But why??? just make it use the minimal version and dont let it scroll down anymore."
+THE ANSWER TO "why" is that `minimal` does not mean minimal. chrome-scripts.html only branches
+on `none`, so EVERY other tier including `minimal` falls through to the 843 KB full scene
+bundle. The 404 then loaded the 525 KB embers bundle itself, in its own page front matter, and
+got both.
+A SEPARATE TIER RATHER THAN FIXING `minimal`, on purpose: `minimal` is also portal, projects,
+ramblings, archives, blog, page, tag and under-construction. Making it honest would change the
+background on eight page types at once, which is a design change nobody asked for. That is
+logged instead. This changes one page.
+The value also reaches the CSS as `body[data-scene-tier="embers"]`, which is what stops the
+page scrolling without needing a body class hook that does not exist.
+```
+
+### Line 61, above `{% if page.layout == 'portal' %}{% assign has_chrome = false %}{% else %}{% assign has_chrome = true %}{% endi`
+
+```text
+THE PORTAL CARRIES NO BAR AND NO FOOTER. Rod 2026-08-23: "no footer on the portal." It is a
+full-bleed page that never scrolls, so there is nowhere for either to sit, and
+`final-portal.html` has neither. Every other layout gets both.
+```
+
+### Line 73, above `<a href="#main-content" class="skip-link">Skip to main content</a>`
+
+```text
+Skip link — visible only when focused via keyboard
+```
+
+### Line 76, above `<div id="hana-bg" data-base="7,12,35" data-peak="255,106,0"></div>`
+
+```text
+The backdrop, on every page. `#hana-bg` holds the bloom's two baked canvases and is hidden
+by `assets/css/chrome-scene.css` wherever the three.js scene runs; `#scrim` is the gradient
+that keeps text readable over both. Markup only - the rules live in that stylesheet.
+```
+
+### Line 83, above `<div class="cursorglow"></div>`
+
+```text
+THE GLOW IS A SIBLING OF #scrim, NOT ITS CHILD, and that nesting was the whole bug.
+Rod 2026-08-25: "Cursor glow isnt always the upmost layer it should be make it go up".
+#scrim is `position: fixed; z-index: -1`, and a positioned element with a z-index
+starts a NEW STACKING CONTEXT - so the glow's z-index was being resolved against its
+parent instead of the page, and no value it could name would ever have lifted it out.
+Measured before the move: the glow asked for 600, the scene canvas sat at 500, and
+`document.elementFromPoint` at the viewport centre never once returned the glow.
+Raising the number alone would have changed nothing, which is why this is a markup fix.
+`cursor-glow.js` finds it with `document.querySelector('.cursorglow')`, so moving it
+costs the script nothing.
+```
+
+### Line 97, above `{% if has_chrome %}`
+
+```text
+REPLACES `{% raw %}{% include topbar.html %}{% endraw %}`, which is left on disk untouched and is one line
+away from being restored. See the header of `_includes/top-bar.html` for the full list of
+controls the old bar carried that this one does not.
+```
+
+### Line 106, above `{% assign full_bleed = 'portal,section-about,ramblings,section-projects,post,section-landing,tag,archives,blog`
+
+```text
+THE PORTED PAGES SKIP THE BOOTSTRAP CONTENT COLUMN. Each one carries its own column width -
+961px on About, 1170px on Ramblings - so the container only fights them. Ramblings measured a
+12px horizontal overflow at a 1200px viewport with it, and the portal's drag engine reads the
+field's own width for the bounce edges, so a container puts a wall in the middle of the page.
+A layout joins this list when its markup is ported, not before.
+```
+
+### Line 115, above `<main id="main-content" aria-label="Main Content"{% if page.section %} data-section="{{ page.section }}"{% end`
+
+```text
+Run refactor-content here too. It fixes image paths, and a post needs that whether or not it
+sits in a container. Adding `post` to full_bleed skipped it and broke 46 images.
+```
+
+### Line 122, above `<main id="main-content" aria-label="Main Content" class="page-column"{% if page.section %} data-section="{{ pa`
+
+```text
+ONE PLAIN COLUMN, no framework. The Bootstrap scaffold that stood here
+(#main-wrapper > .container > .row > main.col-12) served exactly one page by the time it
+went - the 404 - because every ported layout is in the full_bleed list above and skips it.
+Its grid classes were also the last thing keeping Bootstrap in the build (D48). The panel
+branch died with it: nothing sets `panel_includes` any more, same as the tail column that
+left earlier. `.page-column` lives in _sass/pages/_stub-pages.scss.
+```
+
+### Line 139, above `<aside aria-label="Scroll to Top">`
+
+```text
+Every page needs this button, even the portal, which never scrolls. `back2top()` in
+`commons.min.js` reads it with no null guard, and it throws before `initMouseTrail()` runs, so
+a page without it loses the sparkler too. It is `position: fixed` and hidden until you scroll,
+so it costs the portal nothing. Moved out of `#main-wrapper` so there is one copy.
+
+`btn-lg` was a dead Bootstrap class (D48) - matched no CSS - and has been removed.
+```
+
+### Line 153, above `{% if has_chrome %}`
+
+```text
+THE FOOTER SITS OUTSIDE THE CONTENT COLUMN, on Rod's direct instruction 2026-08-23: "it
+should be left anchored". The lab hit this exact problem and wrote it down - inside the
+column the footer "started 249px in at a 1440 viewport" on About.
+
+Measured here before the move, on /tech-art/projects/ at an 895px viewport: the footer began
+118.5px in and ran 648px wide, so the same defect had come back with the port. Inside
+`#tail-wrapper` it inherits the Bootstrap container's width and gutters, which is the whole
+cause. As a sibling of `#main-wrapper` it spans the page and takes its own 14px inset from
+`.footer-line`, which is the number the component was measured to.
+```
+
+### Line 168, above `<!-- Embedded scripts -->`
+
+```text
+THE SIDEBAR DIMMER IS GONE, 2026-08-25. It was Chirpy's overlay for dimming the page
+behind an open sidebar, and the sidebar itself was removed in the redesign, so it
+rendered as a bare empty div on all 53 pages. Two agents checked it independently before
+it went: no `getElementById('mask')` anywhere in _javascript/, assets/js/, or the built
+dist bundles, and all five of its utility classes are stripped by PurgeCSS, which left it
+position:static with an `inset` that does nothing. Its one surviving rule went with it.
+```
+
+### Line 177, above `{% for _include in layout.script_includes %}`
+
+```text
+Embedded scripts
+```
+
+### Line 185, above `{% include chrome-scripts.html tier=scene_tier %}`
+
+```text
+Last, so the scene bundle is requested after the page's own scripts rather than ahead of
+them, and so the chrome's module runs against markup that already exists.
+```

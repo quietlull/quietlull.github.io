@@ -1,24 +1,9 @@
-{% comment %}
-  One project card, ported from `redesign-lab/final-projects.html` on 2026-08-25. The projects grid
-  and the landing's featured block both render this, so there is one card on the site.
-
-  Takes: post, section, hue ('a' or 'b'), and variant. The cover, the flip and the tilt are the
-  `project-cards-expensive` component; everything here is the markup it drives.
-
-  TWO VARIANTS, because the two pages ask the card for different things.
-    (default) projects  a `.pv2-cell` in a fixed three-up grid, with a description, a meta rule and
-                        an icon tag row. `data-tags` is what the search field filters on.
-    landing             a `[data-column-span]` cell in the merged grid, title and tech line only.
-                        Takes `span` and `rowspan`.
-{% endcomment %}
-
 {% assign post = include.post %}
 {% assign card_tags = post.tags | where_exp: 't', 't != "project"' %}
 {% assign cover = post.image.path | default: post.image %}
 {% assign words = post.content | number_of_words %}
 {% assign minutes = words | divided_by: 200 | plus: 1 %}
 
-{% comment %} A WIP stub with no post behind it yet goes to the placeholder page, not to an empty post. {% endcomment %}
 {% if post.wip and words < 20 %}
   {% capture card_url %}/{{ include.section }}/under-construction/?title={{ post.title }}&tags={{ card_tags | join: ',' }}{% endcapture %}
 {% else %}
@@ -36,9 +21,7 @@
         <div class="card-cover parallax-z-layer">
           {%- if cover -%}
             {%- assign ext = cover | split: '.' | last | downcase -%}
-            {%- if ext == 'mp4' or ext == 'webm' -%}
-              {%- comment -%} No autoplay: project-cards-expensive.js starts the cover on hover. {%- endcomment -%}
-              <video loop muted playsinline preload="metadata"><source src="{{ cover | relative_url }}" type="video/{{ ext }}"></video>
+            {%- if ext == 'mp4' or ext == 'webm' -%}<video loop muted playsinline preload="metadata"><source src="{{ cover | relative_url }}" type="video/{{ ext }}"></video>
             {%- else -%}
               <img src="{{ cover | relative_url }}" alt="">
             {%- endif -%}
@@ -50,7 +33,6 @@
         <div class="card-body parallax-z-layer">
           <h3 class="card-title parallax-z-layer">{{ post.title }}</h3>
           {% if include.variant == 'landing' %}
-            {% comment %} The tech line, from the post's own tags rather than a hand-written string. {% endcomment %}
             {% assign tech = card_tags | slice: 0, 3 %}
             <p class="card-meta">{{ tech | join: ' &middot; ' }}</p>
           {% else %}
@@ -63,10 +45,6 @@
           {% endif %}
         </div>
       </div>
-      {% comment %}
-        `.takeaway-quote` is drawn by the component and is NOT emitted: the lab's pull quotes were
-        hand-written per card and no front-matter field holds one. It is copy Rod owes, not markup.
-      {% endcomment %}
       <div class="card-back">
         {% if post.takeaway %}
           <p class="takeaway-text">{{ post.takeaway }}</p>

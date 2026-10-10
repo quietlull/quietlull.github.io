@@ -16,7 +16,6 @@ html {
   }
 }
 
-// Background, colour and overflow-x are the redesign's now - base/_foundations.scss paints them.
 body {
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -24,7 +23,6 @@ body {
   font-family: var(--font-body);
 }
 
-// F3: Custom amber scrollbar — global
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -34,12 +32,6 @@ body {
   background: transparent;
 }
 
-// YELLOW AT REST, ORANGE ON HOVER. Rod 2026-09-03: "Scrollbar on the right should be the yellow
-// ... by default and then turn orange instead its really hard to see".
-// It was --gold-20 resting and --gold-35 on hover: gold at 20% and 35% alpha over a near-black
-// ground, which is why it was hard to find. Both ends are solid now, and they are the same
-// yellow -> orange pair the rest of the site ignites with (--color-gold -> --color-glow), so the
-// bar behaves like every other interactive object here rather than like browser chrome.
 *::-webkit-scrollbar-thumb {
   background: var(--color-gold);
   border-radius: 4px;
@@ -49,20 +41,16 @@ body {
   }
 }
 
-// Firefox takes one pair and has no hover state for it, so it gets the resting colour.
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-gold) transparent;
 }
 
-// F4: Amber text selection
 ::selection {
   background: var(--gold-30);
   color: var(--heading-color);
 }
 
-// The redesign owns the focus ring now - see base/_focus-ring.scss. This one was unlayered, so it
-// beat the layered version and drew a second gold ring outside the search field's own border.
 
 h1.dynamic-title {
   @include bp.lt(bp.get(lg)) {
@@ -73,9 +61,6 @@ h1.dynamic-title {
     }
   }
 }
-
-/* An empty `main` shell sat here after its one rule (.col-12 grid padding) died with
-   Bootstrap (D48). */
 
 .preview-img {
   aspect-ratio: 40 / 21;
@@ -146,14 +131,6 @@ h1.dynamic-title {
   margin-top: 2rem;
   overflow-wrap: break-word;
 
-  // SIZE ONLY WHERE `.content` IS THE PAGE BODY. On a post it is not: `_layouts/post.html` puts
-  // it on the same div as `.prose` purely as a JS hook - tocbot's `contentSelector`,
-  // post-enhance and clipboard all query `.content` - and the prose ladder sets the type there.
-  // Unscoped, this rule is unlayered, so it beat the prose layer and set 17.28px as the
-  // inherited size for everything in a post body that has no size of its own. `.prose p` and
-  // `.prose li` are pinned by the page sheet so they were never affected; the code-header
-  // language label with its copy icon, and the post-nav "back to all" button, were.
-  // `_layouts/page.html` still gets Chirpy's size, which is the only place this was ever for.
   &:not(.prose) {
     font-size: 1.08rem;
 
@@ -209,7 +186,6 @@ h1.dynamic-title {
       list-style-type: none;
       padding-left: 0;
 
-      /* checkbox icon */
       > i {
         width: 2rem;
         margin-left: -1.25rem;
@@ -230,7 +206,7 @@ h1.dynamic-title {
       margin: 0 0.5rem 0.2rem -1.3rem;
       vertical-align: middle;
     }
-  } /* ul */
+  }
 
   dl > dd {
     margin-left: 1rem;
@@ -245,7 +221,7 @@ h1.dynamic-title {
       min-width: 70%;
     }
   }
-} /* .content */
+}
 
 .tag:hover {
   @extend %tag-hover;
@@ -324,8 +300,6 @@ h1.dynamic-title {
   @extend %img-caption;
 }
 
-/* --- Effects classes --- */
-
 .flex-grow-1 {
   flex-grow: 1 !important;
 }
@@ -334,18 +308,6 @@ h1.dynamic-title {
   box-shadow: var(--card-shadow);
 }
 
-/* --bs-secondary-color and .tooltip-inner removed - D48 deleted Bootstrap's own SCSS entirely,
-   so neither Bootstrap's `.text-muted` rule nor its `.tooltip` markup exist anywhere in the
-   compiled output any more for these to feed or override. `.text-muted` is still used as an
-   HTML class in a few includes but currently renders with no colour override at all (checked:
-   no `.text-muted` rule exists anywhere in _sass) - that is a separate pre-existing gap, not
-   something this deletion introduces, and out of scope for a tooltip removal.
-
-   .btn.btn-outline-primary below is KEPT, unlike its two neighbours above - it is not dead.
-   post-nav.html's "Back to all X projects" button still carries this exact class combo, and
-   _a11y.scss (touch target) and _animations.scss (reduced-motion list) both still target it. */
-
-/* Overwrite bootstrap outline button — amber theme */
 .btn.btn-outline-primary {
   color: var(--amber-400);
   border-color: var(--btn-border-color);
@@ -397,14 +359,10 @@ h1.dynamic-title {
   margin: 0.75rem 0 1rem 1rem;
 }
 
-/* --- Overriding --- */
-
-/* mermaid */
 .mermaid {
   text-align: center;
 }
 
-/* MathJax */
 mjx-container {
   overflow-y: hidden;
   min-width: auto !important;
@@ -424,21 +382,9 @@ mjx-container {
   }
 }
 
-/* `#mask` and its rule are gone with the sidebar that used it, 2026-08-25. */
-
-/* The #main-wrapper / .container / .row block that stood here is gone with the Bootstrap
-   scaffold it styled (D48, 2026-09-01). Its 100vh container minimum was also the rule that
-   beat two 404 fixes on ID specificity. */
-
-/* --- basic wrappers --- */
 
 
-/* `#tail-wrapper` and its rules are gone with the empty tail column, 2026-08-25.
-   Nothing set `tail_includes`, so the div rendered empty on 25 pages. */
 
-// ============================================================================
-// SECTION SEPARATOR
-// ============================================================================
 
 .home-content > section + section {
   position: relative;
@@ -453,15 +399,10 @@ mjx-container {
   }
 }
 
-// Scene spacer — one full viewport of empty space at the bottom.
-// Lets the user scroll past content to see just the dock/lake scene.
 .scene-spacer {
   height: 100vh;
 }
 
-// ============================================================================
-// SECTION ICON BOX — glass box with icon and dot
-// ============================================================================
 
 .section-icon-box {
   position: relative;
@@ -478,7 +419,6 @@ mjx-container {
 
   @include mx.transition(transform, border-color, box-shadow);
 
-  // Blurred orb behind the box — Tier 4 (largest)
   &::before {
     content: '';
     position: absolute;
@@ -501,7 +441,6 @@ mjx-container {
     }
   }
 
-  // Heartbeat dot — double-beat throb with glow
   .icon-dot {
     width: 10px;
     height: 10px;
@@ -511,9 +450,6 @@ mjx-container {
   }
 }
 
-// ============================================================================
-// CARD ICON BOX — animated rounded square inside each card (from reference)
-// ============================================================================
 
 .card-icon-box {
   position: relative;
@@ -522,7 +458,6 @@ mjx-container {
   margin-bottom: 0.75rem;
   flex-shrink: 0;
 
-  // Blurred glow behind the box
   .card-icon-glow {
     position: absolute;
     inset: -4px;
@@ -532,7 +467,6 @@ mjx-container {
     transition: background 300ms ease;
   }
 
-  // The visible rounded square
   .card-icon-inner {
     position: relative;
     width: 48px;
@@ -545,7 +479,6 @@ mjx-container {
     border: 1px solid var(--icon-border-color, var(--gold-20));
   }
 
-  // Heartbeat dot in center
   .card-icon-dot {
     width: 10px;
     height: 10px;
@@ -555,16 +488,11 @@ mjx-container {
   }
 }
 
-// Hover: glow brightens
 .post-card:hover .card-icon-glow {
   background: var(--icon-glow-color-hover, var(--gold-35));
 }
 
-// ============================================================================
-// CARD COLOR PALETTES — warm tone variance per nth-child
-// ============================================================================
 
-// Amber (default) — the glow keeps the default gold hue
 .card-palette-amber {
   --icon-glow-color: var(--gold-20);
   --icon-glow-color-hover: var(--gold-35);
@@ -574,7 +502,6 @@ mjx-container {
   --icon-dot-glow: var(--gold-60);
 }
 
-// Orange — the glow matches the orange icon colour
 .card-palette-orange {
   --glow-hue: 249, 115, 22;
   --glow-border-hue: 234, 88, 12;
@@ -586,7 +513,6 @@ mjx-container {
   --icon-dot-glow: var(--orange-a60);
 }
 
-// Yellow / Gold — the glow matches the yellow icon colour
 .card-palette-gold {
   --glow-hue: 234, 179, 8;
   --glow-border-hue: 202, 138, 4;

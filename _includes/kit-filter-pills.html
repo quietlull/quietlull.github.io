@@ -1,14 +1,3 @@
-{% comment %}
-  The projects filter row, redesign variant. Same ten tags the old `.filter-pill` row carried, drawn
-  as `kit-tag` buttons. The Clear button starts hidden and `search-field.js` unhides it once
-  something is filtering.
-
-  ICON COLOUR IS CSS, NOT MARKUP, as of 2026-09-02. Each icon used to carry its colour in an inline
-  `style=` attribute, which STYLE.md Rule 13 forbids and D42 forbids again for colour specifically.
-  The class is the only thing here now; the colours are `--pill-icon-*` in
-  `_sass/abstracts/_tokens.scss` and the rules that read them are in `_sass/pages/_projects.scss`.
-{% endcomment %}
-
 <div class="pv2-filters">
   <button class="kit-tag js-magnetic" data-strength="25" data-tag="unity" type="button" aria-pressed="false"><img src="{{ '/assets/img/icons/unity.svg' | relative_url }}" alt="" class="badge-icon">Unity</button>
   <button class="kit-tag js-magnetic" data-strength="25" data-tag="unreal" type="button" aria-pressed="false"><img src="{{ '/assets/img/icons/unreal.svg' | relative_url }}" alt="" class="badge-icon">Unreal</button>

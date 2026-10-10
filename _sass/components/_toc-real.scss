@@ -1,56 +1,28 @@
-// Ported 2026-08-25 from redesign-lab/extracted/components/toc-real/toc-real.css.
-// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
-// even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 
 @layer components {
-/* toc-real - Starlight's desktop rail, ported without their mobile popup.
-   docs.astro.build, read from their served file. Remixed: theirs structurally, ours for every
-   colour, the squaring and the sticky-not-fixed choice.
-
-   THIS FILE STATES NO BREAKPOINT, AND THAT IS THE FIX. The narrow-width TOC on the live site is
-   Chirpy's `#toc-bar` plus its `<dialog id="toc-popup">`, because `toc.js` decides which of the
-   two tocbot instances runs from `matchMedia('(min-width: 1200px)')` and below that it fills
-   `#toc-popup-content`, never `#toc`. The rail is empty under 1200px whatever CSS says, so the
-   number belongs to the JS and the one CSS statement of it lives with the page that owns the
-   rail's layout: `_sass/pages/_post.scss` hides `#toc-wrapper`, the whole Contents block, label
-   included. Hiding `.toc--v3` from here as well left the label stranded above nothing, and did
-   it at a different number (72rem / 1152px), which is what put a second breakpoint in play.
-
-   Starlight's `.toc-pop` popup went with it. It was ported as a full component and no markup for
-   it was ever written, on this page or any other, so what shipped below 1152px was always the
-   Chirpy bar and the popup CSS was dead weight. The lab page still has both, in its own copy at
-   redesign-lab/extracted/components/toc-real/toc-real.css, which this file does not feed.
-   See toc-real.md. */
 
 .toc { --pad-inline: 0.5rem; }
 
 .toc ul { padding: 0; list-style: none; margin: 0; }
 
-/* The indent formula, theirs, and the core of the treatment: one inline `style="--depth"` drives
-   the whole hierarchy. They write it on four elements; only `a` reads it, so we set it there. */
 .toc a {
   padding-block: 0.25rem;
   padding-inline: calc(1rem * var(--depth, 0) + var(--pad-inline)) var(--pad-inline);
-  border-radius: 0;                       /* theirs is .25rem; squared per the house rule */
+  border-radius: 0;
   line-height: 1.25;
   display: block;
-  font-size: 0.8125rem;                   /* their --sl-text-xs */
-  color: var(--color-silver, #a3a19d);    /* theirs is a cool grey #888c96; ours is warm */
+  font-size: 0.8125rem;
+  color: var(--color-silver, #a3a19d);
   text-decoration: none;
-  overflow-wrap: anywhere;                /* theirs; a long heading must not blow the rail out */
-  border-bottom: 0;                       /* cancels the global prose-link hairline */
+  overflow-wrap: anywhere;
+  border-bottom: 0;
 }
 
 .toc a:hover { color: var(--color-text, #f5f3ef); background: none; }
 
-/* The active state, and the nuance that keeps the rail quiet: Starlight carries it with a
-   LIGHTNESS STEP, not a hue pop. Gold against silver is the same step. Take the hue without the
-   lightness relationship and you get a much louder rail than theirs. See toc-real.md. */
 .toc a[aria-current="true"] { color: var(--color-gold, #fbbf24); }
 
-/* V1 - Starlight faithful, a FIXED rail. The cost is theirs and is why V2 exists: top:0 forces
-   a padding-top equal to the nav height just to push content back under the header. */
 .toc--v1 {
   position: fixed;
   top: 0;
@@ -58,12 +30,10 @@
   width: 100%;
   overflow-y: auto;
   scrollbar-width: none;
-  padding-top: var(--nav-h, 3.5rem);      /* the compensation a fixed rail forces */
+  padding-top: var(--nav-h, 3.5rem);
   border-inline-start: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
 }
 
-/* V2 - sticky instead of fixed. OURS, and a real simplification: a sticky rail never leaves the
-   flow, so it needs no padding-top compensation at all. Everything else matches V1. */
 .toc--v2 {
   position: sticky;
   top: var(--nav-h, 3.5rem);
@@ -73,8 +43,6 @@
   border-inline-start: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
 }
 
-/* V3 - sticky, plus a second channel on the active item. OURS. Marking it by colour alone is a
-   WCAG 1.4.1 exposure; Starlight has it and we do not have to inherit it. */
 .toc--v3 {
   position: sticky;
   top: var(--nav-h, 3.5rem);
@@ -88,16 +56,5 @@
 
 .toc--v3 a[aria-current="true"] { border-left-color: var(--color-gold, #fbbf24); }
 
-/* THE ANCHOR-UNDER-HEADER FIX IS DELIBERATELY NOT HERE. decisions.scss already sets
-   scroll-margin-top on the heading targets, and adding scroll-padding-top on html does not
-   override it - THE TWO ADD, and every in-page jump overshot by 80 to 116px. One offset, on the
-   target, is enough. Starlight's own formula is worth keeping in mind if the offset ever moves
-   off the targets, and it is in toc-real.md. */
 
-/* No reduced-motion path is needed: nothing here transitions. If motion is ever added, copy
-   Starlight's inverse gate and opt IN to motion instead:
-   @media (prefers-reduced-motion: no-preference). */
-
-/* NOT TAKEN, and each would need its own source: their base64 checkmark and a sliding marker
-   instead of a colour swap - that last one is VitePress's geometry, not Starlight's. */
 }

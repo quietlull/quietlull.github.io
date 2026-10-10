@@ -1,7 +1,3 @@
-/* cursor-coords — ONE window pointermove + ONE rAF, broadcast to registered handlers, so the cursor
-   effects (card band-reveal, icon recolor-circle, cursor-lantern) share a single event + frame
-   instead of each running their own listener/loop (script-size + perf dedup).
-   Each handler receives (clientX, clientY). Returns an unsubscribe fn. */
 const handlers = new Set();
 let x = -9999;
 let y = -9999;

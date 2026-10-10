@@ -1,7 +1,3 @@
-// Three.js Scene — About page
-// The scene IS the main focus here. Water, dock, scroll camera, fireworks,
-// mouse avoidance, lanterns — the full interactive experience.
-
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { LanternController } from './lantern-controller.js';
@@ -30,11 +26,9 @@ const fbxLoader = new FBXLoader();
 
 updateCameraFOV(camera);
 
-// Load all scene elements
 loadLanternsFBX(fbxLoader, scene, lanternController, lanternMaterialManager);
 loadDockFBX(fbxLoader, scene);
 
-// Water with mirror reflection
 let mirroredSurface = null;
 
 fbxLoader.load('/assets/mesh/lantern-night/Water.fbx', (fbx) => {
@@ -49,22 +43,19 @@ fbxLoader.load('/assets/mesh/lantern-night/Water.fbx', (fbx) => {
     reflectionIntensity: CONFIG.water.reflection.reflectionIntensity,
     reflectionTint: new THREE.Color(CONFIG.water.reflection.reflectionTint),
     waveStrength: CONFIG.water.waves.waveStrength,
-    waveSpeed: 1.5,   // [water rework] procedural-noise animation speed (CONFIG default 0.1 was for the old shader)
+    waveSpeed: 1.5,
     waveScale: CONFIG.water.waves.waveScale,
     waveType: CONFIG.water.waves.waveType,
   });
 
   waterMesh.material = mirroredSurface.material;
 
-  // Pre-warm: compile shader now to avoid first-scroll lag spike
   mirroredSurface.mirrorPlane.visible = false;
   renderer.setRenderTarget(mirroredSurface.renderTarget);
   renderer.render(scene, mirroredSurface.mirrorCamera);
   renderer.setRenderTarget(null);
   mirroredSurface.mirrorPlane.visible = true;
 
-  // Click the water -> ripple (water rework). Raycast the water MESH (so only clicks on the visible water ripple it),
-  // drag-vs-click guarded. The ripple feeds the reflection + the wave shading; getActiveRipple() drives the character look.
   const _rRay = new THREE.Raycaster(), _rNdc = new THREE.Vector2();
   let _rdx = 0, _rdy = 0, _rdt = 0;
   addEventListener('pointerdown', (e) => { _rdx = e.clientX; _rdy = e.clientY; _rdt = performance.now(); });
@@ -77,11 +68,9 @@ fbxLoader.load('/assets/mesh/lantern-night/Water.fbx', (fbx) => {
     if (hit) mirroredSurface.spawnRipple(hit.point);
   });
 
-  // Expose for the character's "watch the water" head-look (getActiveRipple) + debugging.
   window.mirroredSurface = mirroredSurface;
 });
 
-// Embers — white-yellow fireflies with organic, alive movement
 const EMBER_COUNT = 25;
 const emberGeometry = new THREE.SphereGeometry(5, 8, 6);
 emberGeometry.computeBoundingBox();
@@ -109,16 +98,13 @@ for (let i = 0; i < EMBER_COUNT; i++) {
   scene.add(mesh);
 }
 
-// Scroll-based camera
 const { updateScrollHeight } = setupScrollCamera(camera);
 
-// Resize
 setupResizeHandler(camera, renderer, composer, lanternController, {
   updateScrollHeight,
   getMirroredSurface: () => mirroredSurface,
 });
 
-// Animation loop
 startAnimationLoop(renderer, composer, [
   lanternMaterialManager,
   fireworkController,
@@ -126,7 +112,6 @@ startAnimationLoop(renderer, composer, [
   { update: () => { if (mirroredSurface) mirroredSurface.update(); } },
 ]);
 
-// Debug globals
 window.scene = scene;
 window.camera = camera;
 window.renderer = renderer;
@@ -136,12 +121,7 @@ window.bloomPass = bloomPass;
 window.lanternController = lanternController;
 window.lanternMaterialManager = lanternMaterialManager;
 window.fireworkController = fireworkController;
-// composer added 2026-08-18 so redesign-lab/scene-tuner.html can drive render-target sizes live.
-// It owns the bloom chain's targets. mirroredSurface is already exposed further down; it owns the
-// half-window reflection target that renders the whole scene a SECOND time every frame.
 window.composer = composer;
-// THREE itself, for poking at materials from the console. The runtime bloom A/B this was added for
-// is gone - Kawase won (D23) and is built by three-shared.js. Debug-only, like every line around it.
 window.THREE = THREE;
 
 }

@@ -1,24 +1,7 @@
-/**
- * Achievement system: tracks visitor progress and shows toast
- * notifications when milestones are unlocked.
- *
- * Integration: other modules dispatch custom events on `document`:
- *   - 'achievement:firework'      (firework launched)
- *   - 'achievement:codecopy'      (code block copied)
- *   - 'achievement:imageenlarge'   (lightbox opened)
- *   - 'achievement:fireflytouched' (firefly clicked)
- *   - 'achievement:lanternknock'   (3D lantern clicked)
- *   - 'achievement:toolhover'      { detail: toolName }
- */
 import { STORAGE_KEYS } from '../config/storage-keys';
 
-// ── Achievement definitions ─────────────────────────────────────
-// Categories: explorer, reader, interactor, secret, meta
 const ACHIEVEMENTS = [
-  // Scope tags: 'section' = achievable from one section, 'cross' = needs both sections,
-  //             'site' = needs portal/about/ramblings, 'meta' = depends on other achievements
 
-  // ── Explorer ──
   { id: 'first-light',    cat: 'explorer', scope: 'section', title: 'First Light',       desc: 'Welcome to the portfolio!',          icon: '\u{1F3EE}',
     check: (s) => s.visited.length >= 1 },
   { id: 'explorer',       cat: 'explorer', scope: 'cross',   title: 'Explorer',          desc: 'Visited both worlds',                icon: '\u{1F9ED}',
@@ -36,7 +19,6 @@ const ACHIEVEMENTS = [
   { id: 'rabbit-hole',    cat: 'secret',   scope: 'site',    title: 'Down the Rabbit Hole', desc: 'Discovered the ramblings',        icon: '\u{1F407}',
     check: (s) => s.visited.some(p => p.includes('/ramblings')) },
 
-  // ── Reader ──
   { id: 'scholar',        cat: 'reader',   scope: 'section', title: 'Scholar',           desc: 'Read an article to the end',         icon: '\u{1F4DC}',
     check: (s) => s.pagesScrolledToEnd.length >= 1 },
   { id: 'bookworm',       cat: 'reader',   scope: 'section', title: 'Bookworm',          desc: 'Read 3 articles to the end',         icon: '\u{1F4DA}',
@@ -50,7 +32,6 @@ const ACHIEVEMENTS = [
   { id: 'zoom-enhance',   cat: 'reader',   scope: 'section', title: 'Zoom Enhance',      desc: 'Clicked an image to enlarge it',     icon: '\u{1F50D}',
     check: (s) => s.imageEnlarged },
 
-  // ── Interactor ──
   { id: 'pyrotechnician', cat: 'interactor', scope: 'section', title: 'Pyrotechnician',  desc: 'Launched 50 fireworks',              icon: '\u{1F386}',
     check: (s) => s.fireworkCount >= 50, progress: (s) => [s.fireworkCount, 50] },
   { id: 'toolsmith',      cat: 'interactor', scope: 'section', title: 'Toolsmith',       desc: 'Hovered every tool on a landing page', icon: '\u{1F6E0}',
@@ -62,7 +43,6 @@ const ACHIEVEMENTS = [
   { id: 'touched-my-fly', cat: 'interactor', scope: 'section', title: 'Hey, You Touched My Fly!', desc: 'Caught a firefly',          icon: '\u{1FAB2}',
     check: (s) => s.fireflyTouched },
 
-  // ── Lantern progression ──
   { id: 'lantern-tapper',  cat: 'interactor', scope: 'section', title: 'Lantern Tapper',  desc: 'Knocked 25 lanterns',               icon: '\u{1F3EE}',
     check: (s) => s.lanternKnocks >= 25, progress: (s) => [s.lanternKnocks, 25] },
   { id: 'lantern-painter', cat: 'interactor', scope: 'section', title: 'Lantern Painter', desc: 'Knocked 50 lanterns',               icon: '\u{1F308}',
@@ -70,13 +50,11 @@ const ACHIEVEMENTS = [
   { id: 'lantern-master',  cat: 'interactor', scope: 'section', title: 'Lantern Master',  desc: 'Knocked 100 lanterns',              icon: '\u{1FA94}',
     check: (s) => s.lanternKnocks >= 100, progress: (s) => [s.lanternKnocks, 100] },
 
-  // ── Secret ──
   { id: 'night-owl',      cat: 'secret',   scope: 'section', title: 'Night Owl',         desc: 'Visited between midnight and 4am',   icon: '\u{1F989}',
     check: (s) => s.nightOwl },
   { id: 'early-bird',     cat: 'secret',   scope: 'section', title: 'Early Bird',        desc: 'Visited between 5am and 7am',        icon: '\u{1F426}',
     check: (s) => s.earlyBird },
 
-  // ── Meta (tiered completion) ──
   { id: 'getting-started',  cat: 'meta', scope: 'meta', title: 'Getting Started',  desc: 'Unlocked 5 achievements',                          icon: '\u{1F31F}',
     check: (s) => s.unlocked.length >= 5, progress: (s) => [s.unlocked.length, 5] },
   { id: 'collector',        cat: 'meta', scope: 'meta', title: 'Collector',        desc: 'Unlocked 15 achievements',                         icon: '\u{1F3C6}',
@@ -94,11 +72,10 @@ const CATEGORY_LABELS = {
   secret: 'Secret', meta: 'Meta'
 };
 
-// ── State ───────────────────────────────────────────────────────
 const DEFAULT_STATE = {
   unlocked: [],
   visited: [],
-  pagesScrolledToEnd: [],  // array of paths (migrated from boolean scrolledToEnd)
+  pagesScrolledToEnd: [],
   tagsRead: [],
   fireworkCount: 0,
   lanternKnocks: 0,
@@ -109,7 +86,7 @@ const DEFAULT_STATE = {
   avatarHoverTime: 0,
   nightOwl: false,
   earlyBird: false,
-  toolsHoveredSet: [],      // which tools have been hovered on current page
+  toolsHoveredSet: [],
 };
 
 function loadState() {
@@ -117,8 +94,6 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEYS.ACHIEVEMENTS);
     if (!raw) return { ...DEFAULT_STATE };
     const parsed = JSON.parse(raw);
-    // Merge saved state over defaults (old boolean scrolledToEnd is ignored —
-    // pagesScrolledToEnd array must be earned fresh)
     return { ...DEFAULT_STATE, ...parsed };
   } catch {
     return { ...DEFAULT_STATE };
@@ -128,10 +103,9 @@ function loadState() {
 function saveState(state) {
   try {
     localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(state));
-  } catch { /* storage full */ }
+  } catch {}
 }
 
-// ── Toast system ────────────────────────────────────────────────
 const activeToasts = [];
 const reducedMotion = typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -153,7 +127,6 @@ function showToast(achievement) {
   document.body.appendChild(toast);
   activeToasts.push(toast);
 
-  // Sparkler burst at toast position
   if (typeof window.sparklerBurst === 'function') {
     const rect = toast.getBoundingClientRect();
     window.sparklerBurst(rect.left + rect.width / 2, rect.top);
@@ -169,7 +142,6 @@ function showToast(achievement) {
   }, 4000);
 }
 
-// ── Achievement checking ────────────────────────────────────────
 function checkAchievements(state) {
   let newUnlocks = 0;
   for (const a of ACHIEVEMENTS) {
@@ -180,7 +152,6 @@ function checkAchievements(state) {
       newUnlocks++;
     }
   }
-  // Re-check meta achievements if we unlocked something (meta depends on unlock count)
   if (newUnlocks > 0) {
     for (const a of ACHIEVEMENTS.filter(a => a.cat === 'meta')) {
       if (!state.unlocked.includes(a.id) && a.check(state)) {
@@ -190,11 +161,9 @@ function checkAchievements(state) {
       }
     }
   }
-  // The trophy wall IS the payoff (D28: every reward is scrapped)
   renderTrophyCase(state);
 }
 
-// ── Trophy case (About page) ──────────────────────────────────
 function renderTrophyCase(state) {
   const grid = document.getElementById('trophy-grid');
   if (!grid) return;
@@ -208,7 +177,6 @@ function renderTrophyCase(state) {
     '<div class="trophy-bar"><div class="trophy-bar-fill" style="width:' + pct + '%"></div></div>' +
   '</div>';
 
-  // ACHIEVEMENTS array is already ordered by category — render flat
   for (const a of ACHIEVEMENTS) {
     const unlocked = state.unlocked.includes(a.id);
     const isSecret = a.cat === 'secret';
@@ -236,24 +204,20 @@ function renderTrophyCase(state) {
   grid.innerHTML = html;
 }
 
-// Helper: update state, save, and re-check
 function bump(state, mutator) {
   mutator(state);
   saveState(state);
   checkAchievements(state);
 }
 
-// ── Trackers ────────────────────────────────────────────────────
 function setupTrackers(state) {
   const pathname = window.location.pathname;
 
-  // ── Page visit tracking ──
   if (!state.visited.includes(pathname)) {
     state.visited.push(pathname);
     saveState(state);
   }
 
-  // ── Time-of-day ──
   const hour = new Date().getHours();
   if (hour >= 0 && hour < 4 && !state.nightOwl) {
     state.nightOwl = true;
@@ -264,18 +228,13 @@ function setupTrackers(state) {
     saveState(state);
   }
 
-  // ── Scroll-to-end tracking (posts only) ──
-  // Guard: only run on actual post pages (must have article + post-content-container)
   const isPostPage = !!document.querySelector('article') && !!document.querySelector('.post-content-container');
   if (isPostPage) {
     const postContent = document.querySelector('.post-content-container');
-    const initialScroll = window.scrollY;  // capture load position
+    const initialScroll = window.scrollY;
     let hasScrolled = false;
 
     function onScrollEnd() {
-      // Require real DOWNWARD user scrolling before checking. Directional
-      // (not abs) so mobile scroll-restoration / address-bar jumps on page
-      // load don't count as "reading to the end" and fire the achievement.
       if (!hasScrolled) {
         if (window.scrollY - initialScroll > 200) {
           hasScrolled = true;
@@ -288,7 +247,6 @@ function setupTrackers(state) {
       if (scrolled >= target && !state.pagesScrolledToEnd.includes(pathname)) {
         bump(state, (s) => {
           s.pagesScrolledToEnd.push(pathname);
-          // Collect tags from the page
           const tagEls = document.querySelectorAll('.post-tag, .pin-tag, a[href*="/tags/"]');
           const pageTags = new Set();
           tagEls.forEach(el => {
@@ -305,38 +263,32 @@ function setupTrackers(state) {
     window.addEventListener('scroll', onScrollEnd, { passive: true });
   }
 
-  // ── Firework counter ──
   document.addEventListener('achievement:firework', () => {
     bump(state, (s) => { s.fireworkCount++; });
   });
 
-  // ── Code copy ──
   document.addEventListener('achievement:codecopy', () => {
     if (!state.codeCopied) {
       bump(state, (s) => { s.codeCopied = true; });
     }
   });
 
-  // ── Image enlarge ──
   document.addEventListener('achievement:imageenlarge', () => {
     if (!state.imageEnlarged) {
       bump(state, (s) => { s.imageEnlarged = true; });
     }
   });
 
-  // ── Firefly touched ──
   document.addEventListener('achievement:fireflytouched', () => {
     if (!state.fireflyTouched) {
       bump(state, (s) => { s.fireflyTouched = true; });
     }
   });
 
-  // ── Lantern knock ──
   document.addEventListener('achievement:lanternknock', () => {
     bump(state, (s) => { s.lanternKnocks++; });
   });
 
-  // ── Tool hover tracking ──
   const toolIcons = document.querySelectorAll('.tool-icon');
   if (toolIcons.length > 0) {
     const hoveredTools = new Set(state.toolsHoveredSet || []);
@@ -358,7 +310,6 @@ function setupTrackers(state) {
     });
   }
 
-  // ── Avatar hover time ──
   const avatar = document.getElementById('avatar');
   if (avatar) {
     let hoverStart = 0;
@@ -366,23 +317,21 @@ function setupTrackers(state) {
       if (hoverStart > 0) {
         const elapsed = (Date.now() - hoverStart) / 1000;
         hoverStart = 0;
-        if (elapsed > 0.1) { // ignore micro-hovers
+        if (elapsed > 0.1) {
           bump(state, (s) => { s.avatarHoverTime = Math.round((s.avatarHoverTime + elapsed) * 10) / 10; });
         }
       }
     }
     avatar.addEventListener('mouseenter', () => { hoverStart = Date.now(); }, { passive: true });
     avatar.addEventListener('mouseleave', flushAvatarHover, { passive: true });
-    // Also flush on click (avatar is a link — navigates away before mouseleave fires)
     avatar.addEventListener('click', flushAvatarHover);
     window.addEventListener('beforeunload', flushAvatarHover);
   }
 }
 
-// ── Debug panel ─────────────────────────────────────────────────
 function createDebugPanel(state) {
   let panel = document.getElementById('achievement-debug');
-  if (panel) { panel.remove(); return; } // Toggle off
+  if (panel) { panel.remove(); return; }
 
   panel = document.createElement('div');
   panel.id = 'achievement-debug';
@@ -402,7 +351,6 @@ function createDebugPanel(state) {
         '<button id="achv-close">\u2715</button>' +
       '</div></div>';
 
-    // Counters
     html += '<div class="achv-debug-counters">' +
       '<div>Pages: <b>' + state.visited.length + '</b></div>' +
       '<div>Read to end: <b>' + state.pagesScrolledToEnd.length + '</b></div>' +
@@ -419,7 +367,6 @@ function createDebugPanel(state) {
         (state.earlyBird ? '\u2705' : '\u274C') + ' early' +
       '</div></div>';
 
-    // Achievements by category
     for (const [cat, label] of Object.entries(CATEGORY_LABELS)) {
       if (!cats[cat]) continue;
       html += '<div class="achv-debug-cat"><h4>' + label + '</h4>';
@@ -439,7 +386,6 @@ function createDebugPanel(state) {
 
     panel.innerHTML = html;
 
-    // Event handlers
     panel.querySelector('#achv-close').onclick = () => panel.remove();
     panel.querySelector('#achv-unlock-all').onclick = () => {
       ACHIEVEMENTS.forEach(a => { if (!state.unlocked.includes(a.id)) state.unlocked.push(a.id); });
@@ -471,7 +417,6 @@ function createDebugPanel(state) {
   render();
 }
 
-// ── Main init ───────────────────────────────────────────────────
 export function initAchievements() {
   const state = loadState();
 
@@ -479,7 +424,6 @@ export function initAchievements() {
   checkAchievements(state);
   renderTrophyCase(state);
 
-  // Debug panel: Ctrl+Shift+A
   document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.shiftKey && e.key === 'A') {
       e.preventDefault();
@@ -487,7 +431,6 @@ export function initAchievements() {
     }
   });
 
-  // Expose for console debugging
   window.__achievements = {
     state: () => loadState(),
     reset: () => { Object.assign(state, { ...DEFAULT_STATE }); saveState(state); console.log('Achievements reset'); },

@@ -1,6 +1,3 @@
-// Shared Three.js scene utilities — common to all preset entry files.
-// Each entry file (full/standard/minimal) imports what it needs from here.
-
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -9,15 +6,9 @@ import { CONFIG } from './three-config.js';
 
 export { CONFIG };
 
-// ---------------------------------------------------------------------------
-// Scene + renderer + bloom
-// ---------------------------------------------------------------------------
 
 export function createBaseScene() {
   const scene = new THREE.Scene();
-  /* Raised from 0x080f1b on 2026-08-21 (Rod). The scene has no lights at all and the water is a
-     mirror, so a near-black sky gave a near-black water and bloom was the only thing making the
-     scene readable. The sky IS the lighting until request #40 lands. */
   scene.background = new THREE.Color(0x162237);
 
   const camera = new THREE.PerspectiveCamera(
@@ -25,31 +16,12 @@ export function createBaseScene() {
   );
   camera.position.z = CONFIG.camera.positionZ;
 
-  /* antialias:false is deliberate, not an oversight. The scene never renders to the default
-     framebuffer - EffectComposer renders into its own WebGLRenderTarget, which carries no MSAA -
-     so the flag antialiased nothing while still allocating a multisampled backbuffer. Removing it
-     is a pure saving. (2026-08-18, measured under software rasterisation.) */
   const renderer = new THREE.WebGLRenderer({ antialias: false });
-  /* Capped at 0.5 (Rod, 2026-08-22; was 1, before that 1.5). This is a FRAGMENT lever and fragments
-     are the whole cost here: the scene is 27 draw calls and 733 triangles, so nothing about it is
-     geometry-bound. Half ratio shades a QUARTER of the pixels in every pass.
-     It is only acceptable because of the paper filter - at 0.5 the scene is visibly soft on its own,
-     and the paper grain is what turns that softness into a deliberate print look rather than a
-     rendering fault. Do not raise the paper amount and this together without re-judging both.
-     NOTE this must stay ABOVE the EffectComposer construction below: the composer captures the
-     renderer's pixel ratio once, at construction, and never re-reads it. */
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 0.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  // Post-processing bloom (identical on all pages)
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  /* Dual Kawase, two levels, no bright pass (D23). Bloom runs at HALF resolution: it is a blur
-     chain, so its output is low-frequency by definition and halving the buffer costs roughly a
-     quarter of the fragments for a difference that is very hard to see.
-     NOTE the size argument is the FULL frame, not the halved one UnrealBloomPass wanted. This pass
-     applies CONFIG.lanterns.bloom.scale itself inside setSize, so it STAYS at half resolution
-     after a window resize instead of being promoted to full by composer.setSize(). */
   const paper = CONFIG.lanterns.paper;
   const bloomPass = new KawaseBloomPass(window.innerWidth, window.innerHeight, {
     strength: CONFIG.lanterns.bloom.strength,
@@ -65,14 +37,11 @@ export function createBaseScene() {
     paperTooth: paper.tooth,
     paperBoilHz: paper.boilHz
   });
-  /* Loaded here rather than inside the pass so the pass never owns an asset path. Both sheets are
-     baked normal+height maps; see assets/tex/ and the generator note in DECISIONS D24. */
   const paperLoader = new THREE.TextureLoader();
   bloomPass.setPaperTexture(paperLoader.load(`/assets/tex/${paper.sheet}.png`), 0);
   bloomPass.setPaperTexture(paperLoader.load(`/assets/tex/${paper.sheet2}.png`), 1);
   composer.addPass(bloomPass);
 
-  // Canvas as fixed background
   const canvas = renderer.domElement;
   canvas.style.position = 'fixed';
   canvas.style.top = '0';
@@ -83,7 +52,6 @@ export function createBaseScene() {
   canvas.style.pointerEvents = 'none';
   document.body.appendChild(canvas);
 
-  // Vignette overlay
   const vignette = document.createElement('div');
   vignette.style.position = 'fixed';
   vignette.style.top = '0';
@@ -99,9 +67,6 @@ export function createBaseScene() {
   return { scene, camera, renderer, composer, bloomPass };
 }
 
-// ---------------------------------------------------------------------------
-// Responsive helpers
-// ---------------------------------------------------------------------------
 
 export function updateCameraFOV(camera) {
   camera.fov = window.innerWidth < window.innerHeight ? 80 : 55;
@@ -115,9 +80,6 @@ export function getResponsiveLanternScale() {
   return Math.max(0.7, Math.min(1.0, scaleFactor));
 }
 
-// ---------------------------------------------------------------------------
-// FBX loaders
-// ---------------------------------------------------------------------------
 
 export function loadLanternsFBX(
   fbxLoader, scene, lanternController, lanternMaterialManager,
@@ -165,9 +127,6 @@ export function loadDockFBX(fbxLoader, scene) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Camera modes
-// ---------------------------------------------------------------------------
 
 export function setupScrollCamera(camera) {
   let cachedScrollHeight = 0;
@@ -191,7 +150,6 @@ export function setupScrollCamera(camera) {
     );
   }
 
-  // ResizeObserver handles all timing: fonts, images, reflow, page transitions
   requestAnimationFrame(() => {
     const container = document.querySelector('#home-page') || document.body;
     new ResizeObserver(() => { recalc(); updateCameraFromScroll(); }).observe(container);
@@ -209,9 +167,6 @@ export function setupStaticCamera(camera) {
   camera.position.y = CONFIG.camera.startPositionY;
 }
 
-// ---------------------------------------------------------------------------
-// Resize handler
-// ---------------------------------------------------------------------------
 
 export function setupResizeHandler(
   camera, renderer, composer, lanternController, options = {}
@@ -235,9 +190,6 @@ export function setupResizeHandler(
   });
 }
 
-// ---------------------------------------------------------------------------
-// Procedural lantern spawning (general/minimal — no FBX needed)
-// ---------------------------------------------------------------------------
 
 export function spawnProceduralLanterns(
   scene, lanternController, lanternMaterialManager, count = 25
@@ -256,16 +208,13 @@ export function spawnProceduralLanterns(
       flickerColorShift: CONFIG.lanterns.shader.flickerColorShift,
     });
 
-    // Distribute: 80% in far side margins, 20% deep behind content
     let x, y, z;
     if (Math.random() > 0.2) {
-      // Side margins — far outside the content column
       const side = Math.random() > 0.5 ? 1 : -1;
       x = side * (400 + Math.random() * 350);
       y = (Math.random() - 0.5) * 700;
       z = -100 - Math.random() * 400;
     } else {
-      // Behind content — very deep, dim from distance
       x = (Math.random() - 0.5) * 500;
       y = (Math.random() - 0.5) * 700;
       z = -500 - Math.random() * 300;
@@ -279,17 +228,10 @@ export function spawnProceduralLanterns(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Screen-to-world coordinate conversion
-// ---------------------------------------------------------------------------
 
-/**
- * Convert a pixel value to world units at a given Z depth for a perspective camera.
- * Returns { worldPerPixelX, worldPerPixelY, screenToWorldX(px), screenToWorldY(px) }
- */
 export function screenToWorldMapper(camera) {
   const vFov = camera.fov * Math.PI / 180;
-  const z = camera.position.z; // distance from camera to z=0 plane
+  const z = camera.position.z;
   const visibleH = 2 * z * Math.tan(vFov / 2);
   const visibleW = visibleH * camera.aspect;
   const wppX = visibleW / window.innerWidth;
@@ -298,7 +240,6 @@ export function screenToWorldMapper(camera) {
   return {
     worldPerPixelX: wppX,
     worldPerPixelY: wppY,
-    // Screen pixel (client coords) → world XY at z=0
     screenToWorldX(px) { return (px - window.innerWidth / 2) * wppX; },
     screenToWorldY(px) { return -(px - window.innerHeight / 2) * wppY; },
   };
@@ -306,9 +247,6 @@ export function screenToWorldMapper(camera) {
 
 
 
-// ---------------------------------------------------------------------------
-// Scroll-locked camera (Y only, no rotation)
-// ---------------------------------------------------------------------------
 
 export function setupScrollLockedCamera(camera) {
   const mapper = screenToWorldMapper(camera);
@@ -329,9 +267,6 @@ export function setupScrollLockedCamera(camera) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Animation loop
-// ---------------------------------------------------------------------------
 
 export function startAnimationLoop(renderer, composer, updatables) {
   let lastTime = performance.now();
@@ -352,7 +287,6 @@ export function startAnimationLoop(renderer, composer, updatables) {
   function start() {
     if (running) return;
     running = true;
-    // Reset lastTime so normalizedDelta doesn't spike with the gap since pause.
     lastTime = performance.now();
     renderer.setAnimationLoop(animate);
   }
@@ -363,11 +297,8 @@ export function startAnimationLoop(renderer, composer, updatables) {
     renderer.setAnimationLoop(null);
   }
 
-  // Render only when BOTH the tab is visible AND the canvas is on-screen. Tracking the two states
-  // separately (instead of each calling start/stop) prevents a hidden tab from being resumed by the
-  // intersection observer — output is identical whenever it's actually visible.
   let pageVisible = !document.hidden;
-  let canvasOnScreen = true; // assumed until the observer reports; the observer drives the first start
+  let canvasOnScreen = true;
 
   function sync() {
     if (pageVisible && canvasOnScreen) start();
@@ -379,8 +310,6 @@ export function startAnimationLoop(renderer, composer, updatables) {
     sync();
   });
 
-  // Also pause when the canvas is scrolled fully off-screen. Saves cycles
-  // on long article pages where the background is usually not visible.
   const canvas = renderer.domElement;
   if ('IntersectionObserver' in window && canvas) {
     const observer = new IntersectionObserver((entries) => {

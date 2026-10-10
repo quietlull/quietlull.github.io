@@ -1,59 +1,21 @@
 import * as THREE from 'three';
 
-/**
- * Dual Kawase bloom - Marius Bjorge's dual filtering, fixed at TWO levels with no bright pass.
- *
- * WHY IT REPLACED UnrealBloomPass (DECISIONS D23): the stock pass builds a 5-level mip chain and
- * runs a separable gaussian at every level - two passes per mip plus a composite, ~12 passes over
- * 11 render targets. Ablation profiling on Rod's machine with hardware acceleration OFF measured
- * bloom at 8.5 ms/frame, 52% of a 16.5 ms scene, and that was already at HALF resolution. The
- * scene is 27 draw calls and 733 triangles, so it is fragment-bound: passes are the cost.
- *
- * This is five renders over four targets, all at half resolution or below:
- *   1 copy       frame    -> half      (no threshold, so nothing is cut)
- *   2 down       half     -> quarter   (5-tap)
- *   3 up         quarter  -> wide      (8-tap tent, stays at quarter res)
- *   4 up         wide     -> tight     (8-tap tent, back to half res)
- *   5 composite  base + tight*f0 + wide*f1
- *
- * NO BRIGHT PASS IS DELIBERATE. The whole frame blurs and is added back, which lifts the dark
- * water as well as the lanterns. That matters because the scene has ZERO lights - the lanterns are
- * visible only through emissive materials, and bloom has been standing in for a lighting rig.
- *
- * `wide` and `tight` are kept as SEPARATE targets so each survives as its own frequency band; that
- * is what the two-sampler composite sums. Every tap is offset to land between texels, so the GPU's
- * bilinear filter fetches four texels per sample for free.
- *
- * Ducks three's Pass interface (enabled / needsSwap / setSize / render), so EffectComposer drives
- * it exactly like the stock pass.
- */
-
-/* Buffer size as a fraction of the frame. A blur chain is low-frequency by definition, so half
-   resolution costs a quarter of the fragments for a difference that is very hard to see. */
 const DEFAULT_SCALE = 0.5;
 
-/* Tap offset. uHalfTexel is HALF_TEXEL/size, so taps land BETWEEN texels; uTapOffset then scales
-   that, making the reach in SOURCE TEXELS equal to
-       HALF_TEXEL * (TAP_OFFSET_BASE + radius * TAP_OFFSET_PER_RADIUS)
-   which is 0.25 texels at radius 0 and a full texel at radius 1. */
 const HALF_TEXEL = 0.5;
 const TAP_OFFSET_BASE = 0.5;
 const TAP_OFFSET_PER_RADIUS = 1.5;
 
-/* Rod's numbers, 2026-08-21. Radius is not a blur width: see lerpBloomFactor below. */
 const DEFAULT_STRENGTH = 0.7;
 const DEFAULT_RADIUS = 0.15;
 
 const VERT = `varying vec2 vUv;
   void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 
-/* Straight blit of the frame into the top of the pyramid. This is where the bright pass used to
-   be, and removing it is the whole difference between "glow on highlights" and "lift everything". */
 const COPY_FRAG = `uniform sampler2D tDiffuse;
   varying vec2 vUv;
   void main(){ gl_FragColor = texture2D(tDiffuse, vUv); }`;
 
-/* 5-tap downsample: centre plus four diagonals. */
 const DOWN_FRAG = `uniform sampler2D tDiffuse;
   uniform vec2 uHalfTexel;
   uniform float uTapOffset;
@@ -73,8 +35,6 @@ const DOWN_FRAG = `uniform sampler2D tDiffuse;
     gl_FragColor = sum / WEIGHT_SUM;
   }`;
 
-/* 8-tap tent upsample: four axis taps at double reach, four diagonals at single reach and double
-   weight. The tent is what keeps the halo smooth despite so few taps. */
 const UP_FRAG = `uniform sampler2D tDiffuse;
   uniform vec2 uHalfTexel;
   uniform float uTapOffset;
@@ -98,10 +58,6 @@ const UP_FRAG = `uniform sampler2D tDiffuse;
     gl_FragColor = sum / WEIGHT_SUM;
   }`;
 
-/* Unreal's composite, written out for exactly two bands.
-   FACTOR_TIGHT/FACTOR_WIDE are the first two of its [1.0, 0.8, 0.6, 0.4, 0.2] mip weights, and
-   lerpBloomFactor flips that ramp as radius rises. That is why radius rebalances TIGHT against
-   WIDE rather than changing the blur size, exactly as the stock knob did. */
 const COMPOSITE_FRAG = `uniform sampler2D tDiffuse;
   uniform sampler2D tMipTight;
   uniform sampler2D tMipWide;
@@ -234,19 +190,16 @@ export class KawaseBloomPass {
       vertexShader: VERT,
       fragmentShader: UP_FRAG
     });
-    /* Paper filter. Rod's numbers, approved 2026-08-22: it masks the artefacts from the low bloom
-       and reflection resolutions and makes them read as intentional. Source: Shadertoy
-       bump-from-depth paper displacement, remixed (procedural fbm replaced with a baked texture). */
     this.paper = {
       amount: options.paperAmount ?? 1,
       tile: options.paperTile ?? 4,
-      tile2: options.paperTile2 ?? 12,       // second sheet, deliberately a different scale
-      mix: options.paperMix ?? 0.5,          // 0 = first sheet only
-      blend: options.paperBlend ?? 0,        // see blendSheets() in COMPOSITE_FRAG
-      bleed: options.paperBleed ?? 0.5,      // the source blended 0.4/0.6; Rod took it to 0.5
+      tile2: options.paperTile2 ?? 12,
+      mix: options.paperMix ?? 0.5,
+      blend: options.paperBlend ?? 0,
+      bleed: options.paperBleed ?? 0.5,
       displace: options.paperDisplace ?? 0.0075,
       tooth: options.paperTooth ?? 0.05,
-      boilHz: options.paperBoilHz ?? 2       // the hand-drawn boil; the source used 4
+      boilHz: options.paperBoilHz ?? 2
     };
 
     this.composite = new THREE.ShaderMaterial({
@@ -274,7 +227,6 @@ export class KawaseBloomPass {
       depthWrite: false
     });
 
-    // one fullscreen quad, its material swapped per pass
     this.quadScene = new THREE.Scene();
     this.quadCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     this.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.copy);
@@ -297,8 +249,6 @@ export class KawaseBloomPass {
     this.tight = makeTarget(halfW, halfH);
   }
 
-  /* The pass does not load the texture itself - the caller owns that, so the tuner can swap between
-     paper variants without the pass knowing they exist. */
   setPaperTexture(texture, slot = 0) {
     if (texture) {
       texture.wrapS = THREE.RepeatWrapping;
@@ -324,21 +274,17 @@ export class KawaseBloomPass {
     const previousTarget = renderer.getRenderTarget();
     const tapOffset = TAP_OFFSET_BASE + this.radius * TAP_OFFSET_PER_RADIUS;
 
-    // 1. whole frame into the top of the pyramid
     this.copy.uniforms.tDiffuse.value = readBuffer.texture;
     this.blit(renderer, this.copy, this.half);
 
-    // 2. half -> quarter
     this.down.uniforms.tDiffuse.value = this.half.texture;
     this.down.uniforms.uHalfTexel.value.set(HALF_TEXEL / this.half.width, HALF_TEXEL / this.half.height);
     this.down.uniforms.uTapOffset.value = tapOffset;
     this.blit(renderer, this.down, this.quarter);
 
-    // 3 and 4. tent at quarter res for the WIDE band, then back up to half res for the TIGHT one
     this.tent(renderer, this.quarter, this.wide, tapOffset);
     this.tent(renderer, this.wide, this.tight, tapOffset);
 
-    // 5. sum both bands over the original frame
     const u = this.composite.uniforms;
     u.tDiffuse.value = readBuffer.texture;
     u.tMipTight.value = this.tight.texture;
@@ -350,14 +296,11 @@ export class KawaseBloomPass {
     u.uPaperAmount.value = p.amount;
     u.uPaperTile.value.set(p.tile, p.tile);
     u.uPaperTile2.value.set(p.tile2, p.tile2);
-    /* no second texture bound = no second layer, whatever the mix says */
     u.uPaperMix.value = u.tPaper2.value ? p.mix : 0;
     u.uPaperBlend.value = p.blend;
     u.uPaperBleed.value = p.bleed;
     u.uPaperDisplace.value = p.displace;
     u.uPaperTooth.value = p.tooth;
-    /* The "boil": re-roll the sheet a few times a second rather than every frame, so it reads as
-       hand-drawn rather than as video noise. Quantised in JS so the shader stays arithmetic-free. */
     if (p.boilHz > 0) {
       const step = Math.floor(performance.now() * 0.001 * p.boilHz);
       const frac = (x) => x - Math.floor(x);

@@ -1,40 +1,21 @@
-// Ported 2026-08-25 from redesign-lab/extracted/components/top-bar/top-bar.css.
-// Never drop the next line. Layer order decides who wins, and unlayered CSS beats every layer
-// even at specificity 0 (D36, docs/TRAPS.md).
 @layer reset, tokens, prose, components, overrides;
 
 @layer components {
-/* top-bar - the norikura shell, restructured by Rod 2026-06-14 into three zones:
-   [mark + name] | [nav centred] | [toggles]. The nav pill is invisible at rest and lit by
-   dennissnellenberg's rising-circle fill, the same one the buttons use.
-   THESE TOKENS ARE ON :root, NOT ON .top-bar, and that matters. The hero sizes itself as "the
-   viewport minus the bar", so the height cannot be private to the bar. It was hard-coded 96px
-   once and broke the moment the bar stacked to two rows. See top-bar.md. */
 :root {
-  --top-bar-height: 5.875rem; /* 94px, the padding box */
+  --top-bar-height: 5.875rem;
   --top-bar-padding-block: 1rem;
   --top-bar-padding-inline: 2rem;
-  --top-bar-border: 1px; /* the mark has to clear this too, or it stops 1px short of the edge */
+  --top-bar-border: 1px;
 }
 
-/* STICKY BELONGS TO THE BAR, not to the page hosting it. All four lab pages declared their own
-   identical copy, so when this was ported the live bar just scrolled away. Sticky also occupies
-   real layout space, which the pages below it depend on. See top-bar.md. */
 .top-bar {
   position: sticky;
   top: 0;
   z-index: var(--z-chrome, 60);
   display: grid;
-
-  /* 1fr auto 1fr, NOT auto 1fr auto. The old version centred the nav inside its own column, and
-     that column only sits centre-page when the two outer zones match - they do not, so the nav
-     sat 44px left of centre. Equal outer columns centre it by construction. Rod 2026-08-18. */
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 0 clamp(1rem, 4vw, 3rem);
-
-  /* The 1fr columns make the breathing room, so this only has to guarantee a minimum. The old flat
-     100px is what read as lopsided - it was being added to columns that were already unequal. */
   width: 100%;
   min-height: var(--top-bar-height);
   padding: var(--top-bar-padding-block) var(--top-bar-padding-inline);
@@ -43,8 +24,6 @@
   border: var(--top-bar-border) solid var(--color-line-faint);
 }
 
-/* The mark is unbundled from the name (Rod 2026-08-16): it is the way back to the landing pages,
-   so it gets its own place rather than reading as one logo lockup. The gap and the size do it. */
 .top-bar__left {
   display: flex;
   align-items: center;
@@ -52,10 +31,6 @@
   gap: 2.4rem;
 }
 
-/* FULL BLEED, and the negative margins are how. The mark fills the bar's whole height and hugs
-   its left edge by escaping the bar's own padding - it does NOT make the bar taller. An earlier
-   pass capped it at the wordmark's line box to avoid growing the bar, which solved the wrong
-   problem. Rod 2026-08-16. */
 .top-bar__left .favicon {
   width: calc(var(--top-bar-height) + var(--top-bar-border) * 2);
   height: calc(var(--top-bar-height) + var(--top-bar-border) * 2);
@@ -66,39 +41,11 @@
   flex: none;
 }
 
-/* Larger than the favicon component's own 62.5%, so it reads as artwork rather than an icon
-   floating in a field. Rod 2026-08-16. */
 .top-bar__left .favicon__img {
-  width: 4.6rem; /* ~77% of the 96px mark */
+  width: 4.6rem;
   height: 4.6rem;
 }
 
-/* NO font-family HERE, and its absence is the fix rather than an oversight. This element is
-   `class="top-bar__logo lb"` (_includes/top-bar.html:57), so line-boil styles it too, and `.line-boil-text`
-   and `.top-bar__logo` are both one class deep inside `@layer components` - nothing but SOURCE
-   ORDER separated them. `_sass/components/_index.scss` forwards line-boil at :33 and top-bar at
-   :46, so this rule used to win and the name painted in Caveat until the boil script wrote a real
-   face inline onto each glyph. Rod 2026-08-25: "boil text should start off with the boil font it
-   shouldnt change to boil font afterwards". The same bug was logged and fixed once before, P296.
-   DELETING the declaration beats reordering the two forwards, and the lab had already reached the
-   same answer for the identical fault on the landing clock: "font-family REMOVED 2026-08-24. This
-   unlayered rule forced IBM Plex Mono and beat `.line-boil-text` ... the same flash Rod caught on the top bar"
-   (redesign-lab/final-landing.html:174). A deletion cannot come back the next time that index is
-   re-sorted, and the file's stated policy is alphabetical order, so a reorder would have been a
-   trap left armed for the next person.
-   `color` STAYS ON PURPOSE. It also beat `.line-boil-text`, which is why the mark renders gold #f59e0b rather
-   than the boil's own orange #f86a03, and that turned out to be a real design change the port made
-   silently. Put to Rod 2026-08-25 and he chose to keep it: "it should stay the gold it is now".
-   `font-weight: 700` is likewise unchanged and is NOT a new synthetic-bold problem: the glyph cells
-   already inherit it, so the boiled text has always rendered faux-bold over the Regular-only boil
-   faces. This edit changes the FIRST PAINT only. */
-
-/* The wordmark is wrapped in this link so clicking the name goes home (Rod 2026-08-25). It exists
-   to carry the href and NOTHING else: the mark's own colour, size and weight stay on
-   `.top-bar__logo` inside it, so this must not introduce a colour, an underline or a hover of its
-   own. `text-decoration` is the one that would actually reach the text, because it propagates to
-   descendants where `color` does not. The focus ring is deliberately NOT touched - this is a real
-   link now and keyboard users need to see it (base/_focus-ring.scss owns that). */
 .top-bar__home {
   display: inline-flex;
   align-items: center;
@@ -111,8 +58,8 @@
 
 .top-bar__logo {
   font-weight: 700;
-  font-size: 2.2rem; /* Rod: the name was too small at 1.6rem */
-  letter-spacing: 0; /* the boil faces want no tracking either */
+  font-size: 2.2rem;
+  letter-spacing: 0;
   color: var(--color-gold-deep);
   white-space: nowrap;
 }
@@ -120,26 +67,24 @@
 .top-bar__nav {
   display: flex;
   justify-self: center;
-  gap: 10px;          /* baked from the bench tune */
-  margin-bottom: 2px; /* baked from the bench tune */
+  gap: 10px;
+  margin-bottom: 2px;
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 
-  --bloom: 4.25;   /* hover glow size, still tunable from the bench Tune panel */
-  --tspeed: 480ms; /* state transition speed, same */
+  --bloom: 4.25;
+  --tspeed: 480ms;
 }
 
-/* An invisible pill at rest, lit by a rising circle from below on hover. overflow:hidden is what
-   clips that circle into a pill. */
 .top-bar__link {
   position: relative;
   overflow: hidden;
   z-index: 0;
   color: var(--color-muted);
   text-decoration: none;
-  padding: 0.45rem 1rem; /* T3-D: keeps the tap target at 24px or more */
+  padding: 0.45rem 1rem;
   border-radius: 999px;
   border: 1px solid transparent;
   background: transparent;
@@ -149,7 +94,6 @@
     box-shadow var(--tspeed, 0.35s) ease;
 }
 
-/* The fill: an oversized circle parked below that rises on hover. */
 .top-bar__link::before {
   content: '';
   position: absolute;
@@ -183,21 +127,11 @@
   flex-wrap: nowrap;
 }
 
-/* THE SCALING LADDER. Every tier DERIVES --top-bar-height from its rows plus the block padding,
-   so the full-bleed mark still matches the bar edge to edge however the zones stack. Rows are
-   fixed, never auto - an auto row that grows when a zone wraps is the exact bug this fixes.
-     >=781  one row     [mark+name | nav]                 96px
-     <=780  two rows    [mark+name] / [nav]              108px
-     <=720  as above, type and inline padding tightened
-     <=560  three rows  [mark+name] / [toggles] / [nav]  124px, mark goes inset
-   780 IS MEASURED, NOT GUESSED: the bar needs 710px on one row, so 780 leaves about 70px of slack.
-   It was 1200 until 2026-08-22, and that was stacking for the toggle zone D20 had already
-   removed - which is what Rod saw as "weird scaling". See top-bar.md. */
 @media (max-width: 780px) {
   :root {
-    --top-bar-row-1: 3.4rem; /* the name, and the toggles on bench copies that still have them */
-    --top-bar-row-2: 2.2rem; /* the nav */
-    --top-bar-padding-block: 0.5rem; /* two rows carry the height now, so the padding gives way */
+    --top-bar-row-1: 3.4rem;
+    --top-bar-row-2: 2.2rem;
+    --top-bar-padding-block: 0.5rem;
     --top-bar-height: calc(
       var(--top-bar-row-1) + var(--top-bar-row-2) + var(--top-bar-padding-block) * 2
     );
@@ -209,9 +143,6 @@
     column-gap: 1rem;
   }
 
-  /* The name stacks on top of the nav (Rod 2026-08-22). `display: contents` is what makes that
-     possible with no markup change: it promotes the mark and the name out of .top-bar__left so
-     each takes its own grid cell. The mark keeps column 1 across both rows and stays full-bleed. */
   .top-bar__left {
     display: contents;
   }
@@ -241,7 +172,7 @@
   }
 
   .top-bar__logo {
-    font-size: 1.9rem; /* it has to sit inside row 1 */
+    font-size: 1.9rem;
   }
 }
 
@@ -284,9 +215,6 @@
     grid-template-rows: var(--top-bar-row-1) var(--top-bar-row-2) var(--top-bar-row-3);
   }
 
-  /* The smallest tier is a centred stack: mark, name, nav, top to bottom (Rod 2026-08-22).
-     THE NAV DEFINES THE WIDTH - it stretches the full content box and spreads its links, and the
-     other two centre on that same axis. See top-bar.md. */
   .top-bar {
     justify-items: center;
   }
@@ -325,8 +253,4 @@
   }
 }
 
-/* The ghosted-toggle block that stood here is gone, 2026-08-25. It styled the bar's third
-   zone, which D20 emptied when the toggles left the design, and its own comment had said so
-   since the port: "styles a zone the layout no longer uses. It is on the merge cleanup
-   list." The component stylesheet went with it. */
 }

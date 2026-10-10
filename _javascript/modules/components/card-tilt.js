@@ -1,12 +1,6 @@
-/**
- * 3D card tilt effect — cursor-driven on desktop, gyro on mobile.
- * Applies inline transform on mousemove, resets on mouseleave.
- * CSS hover transform acts as fallback when JS hasn't set a style.
- */
-
-const TILT_MAX = 8;          // max degrees of rotation
-const SCALE_HOVER = 1.02;    // slight scale on hover
-const LIFT_PX = 6;           // translateY lift on hover
+const TILT_MAX = 8;
+const SCALE_HOVER = 1.02;
+const LIFT_PX = 6;
 const TRANSITION_IN = 'transform 0.15s ease-out';
 const TRANSITION_OUT = 'transform 0.4s ease-out';
 
@@ -15,8 +9,6 @@ const SELECTORS = [
   '.vertical-bar-container',
 ];
 
-// Global gate: require real mouse movement before enabling tilt.
-// Prevents cards from starting tilted when cursor is already over them at load.
 let tiltEnabled = false;
 
 export function initCardTilt() {
@@ -30,14 +22,13 @@ export function initCardTilt() {
     if (!startPos) { startPos = { x: e.clientX, y: e.clientY }; return; }
     const dx = e.clientX - startPos.x;
     const dy = e.clientY - startPos.y;
-    if (dx * dx + dy * dy > 16) { // 4px movement threshold
+    if (dx * dx + dy * dy > 16) {
       tiltEnabled = true;
       document.removeEventListener('mousemove', onMove);
     }
   };
   document.addEventListener('mousemove', onMove);
 
-  // ONE shared scroll/resize listener invalidates every card's cached rect (was N per-card listeners).
   const invalidators = [];
   cards.forEach(card => invalidators.push(setupMouseTilt(card)));
   const invalidateAll = () => { for (const fn of invalidators) fn(); };
@@ -49,8 +40,6 @@ export function initCardTilt() {
 
 function setupMouseTilt(card) {
   let active = false;
-  // Cache rect on mouseenter to avoid forced layout on every mousemove.
-  // Invalidated on scroll/resize so tilt stays accurate if layout shifts.
   let cachedRect = null;
 
   const invalidateRect = () => { cachedRect = null; };
@@ -64,15 +53,11 @@ function setupMouseTilt(card) {
 
   card.addEventListener('mousemove', (e) => {
     if (!active) return;
-    // Recompute rect only if the cache was invalidated (scroll/resize).
     if (!cachedRect) cachedRect = card.getBoundingClientRect();
     const rect = cachedRect;
-    // Normalise cursor position to -1..1 from card center
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
 
-    // rotateX: negative y moves top toward viewer
-    // rotateY: positive x moves right toward viewer
     const rotateX = -y * TILT_MAX;
     const rotateY = x * TILT_MAX;
 
@@ -87,25 +72,17 @@ function setupMouseTilt(card) {
     card.style.transform = '';
   });
 
-  // Layout can shift between mouseenter and mousemove. The shared scroll/resize listener in
-  // initCardTilt calls this to invalidate the cache so the next mousemove re-reads once.
   return invalidateRect;
 }
 
 function setupGyroTilt(cards) {
   if (!('DeviceOrientationEvent' in window)) return;
 
-  // Only enable gyro tilt on touch devices — desktop browsers expose the API
-  // but fire beta=0/gamma=0 which causes all cards to tilt -8deg on load.
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   if (!isTouch) return;
 
-  // iOS 13+ requires permission
   const requestPermission = typeof DeviceOrientationEvent.requestPermission === 'function';
 
-  // Require real device movement before enabling gyro tilt.
-  // Desktops/touchscreen laptops report constant beta=0, gamma=0 which
-  // would tilt every card -8deg on load.
   let gyroEnabled = false;
   let firstBeta = null;
 
@@ -116,15 +93,12 @@ function setupGyroTilt(cards) {
       gyroEnabled = true;
     }
 
-    // Gyro tilt reduced vs desktop mouse tilt — mobile gyro input is noisier
-    // and a subtler effect feels less twitchy. Also cap at half TILT_MAX.
     const GYRO_MAX = TILT_MAX * 0.5;
     const GYRO_STRENGTH = 0.15;
     const beta = Math.max(-GYRO_MAX, Math.min(GYRO_MAX, (e.beta - 45) * GYRO_STRENGTH));
     const gamma = Math.max(-GYRO_MAX, Math.min(GYRO_MAX, e.gamma * GYRO_STRENGTH));
 
     cards.forEach(card => {
-      // Only apply gyro when not being mouse-controlled
       if (card.matches(':hover')) return;
 
       const rect = card.getBoundingClientRect();
@@ -138,7 +112,6 @@ function setupGyroTilt(cards) {
   }
 
   if (requestPermission) {
-    // Will be triggered by a user gesture (first touch)
     let permissionRequested = false;
     document.addEventListener('touchstart', () => {
       if (permissionRequested) return;

@@ -1,12 +1,3 @@
-{% comment %}
-  The skills row, ported from `redesign-lab/final-landing.html`. Seven hand-drawn stroke icons that
-  draw themselves in on load, staggered by `--draw-delay`.
-
-  Driven by `page.skills`, so a section can name its own. The icon table is here because these are
-  single-path stroke marks - the site's `/assets/img/icons/*.svg` are filled logos and cannot be
-  drawn on. Falls back to the full seven.
-{% endcomment %}
-
 {% assign skills = include.skills | default: "unity,unreal,godot,blender,maya,python,git" | split: "," %}
 
 <ul class="skills-row">

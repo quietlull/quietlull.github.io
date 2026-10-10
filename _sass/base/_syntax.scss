@@ -6,7 +6,7 @@
 .highlighter-rouge {
   color: var(--highlighter-rouge-color);
   margin-top: 0.5rem;
-  margin-bottom: 1.2em; /* Override BS Inline-code style */
+  margin-bottom: 1.2em;
 }
 
 .highlight {
@@ -24,7 +24,7 @@
     margin-bottom: 0;
     font-size: v.$code-font-size;
     line-height: 1.4rem;
-    word-wrap: normal; /* Fixed Safari overflow-x */
+    word-wrap: normal;
   }
 
   table {
@@ -40,8 +40,8 @@
       }
 
       pre {
-        overflow: visible; /* Fixed iOS safari overflow-x */
-        word-break: normal; /* Fixed iOS safari linenos code break */
+        overflow: visible;
+        word-break: normal;
       }
     }
   }
@@ -55,7 +55,7 @@
     -ms-user-select: none;
     user-select: none;
   }
-} /* .highlight */
+}
 
 code {
   -webkit-hyphens: none;
@@ -66,9 +66,6 @@ code {
   &.highlighter-rouge {
     font-size: v.$code-font-size;
     padding: 3px 5px;
-
-    // OURS: upstream has word-break: break-word, a deprecated keyword our stylelint rejects;
-    // same wrapping behaviour (re-apply on Chirpy upgrade)
     overflow-wrap: break-word;
     border-radius: v.$radius-sm;
     background-color: var(--inline-code-bg);
@@ -82,7 +79,7 @@ code {
   }
 
   a > &.highlighter-rouge {
-    padding-bottom: 0; /* show link's underlinke */
+    padding-bottom: 0;
     color: inherit;
   }
 
@@ -98,10 +95,6 @@ code {
 td.rouge-code {
   @extend %code-snippet-padding;
 
-  /*
-    Prevent some browser extends from
-    changing the URL string of code block.
-  */
   a {
     color: inherit !important;
     border-bottom: none !important;
@@ -113,19 +106,10 @@ div[class^='language-'] {
   @extend %rounded;
   @extend %code-snippet-bg;
 
-  // OURS: code-block chrome (re-apply on Chirpy upgrade). Upstream is the 1px ring only.
-  // THE BACKDROP BLUR IS GONE, 2026-09-03. It was glassmorphism, which is the AI tell the shape
-  // pass strips everywhere else, and the source we transcribed this component from says the same
-  // thing unprompted: its own card blur is listed under doesNotTransfer in
-  // analysis/component-sources/source-code-block.md, because it conflicts with paper-morphism.
-  // It was also doing nothing visible - the block is opaque, so there was no backdrop to blur.
   box-shadow: var(--language-border-color) 0 0 0 1px,
     0 4px 20px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(245, 158, 11, 0.08);
 
-  // SQUARED, D20 (Rod 2026-08-18): "i however do need it to be a square instead of a rounded
-  // shape". The bp.sm branch used to restore $radius-lg above 576px, so the block was square on
-  // a phone and rounded on a desktop - the decision was half-applied rather than missing.
   .content > & {
     @include mx.ml-mr(-1rem);
 
@@ -136,12 +120,6 @@ div[class^='language-'] {
     }
   }
 
-  // THE THREE macOS TRAFFIC-LIGHT DOTS ARE DELETED, 2026-09-03. They were upstream Chirpy's:
-  // one `::before` circle plus two box-shadow copies. Rod rejected the window metaphor twice on
-  // the record (D20's "NO traffic lights", and again on the earlier shadcn pick) and finally:
-  // "code blocks are not the agreed shape using this sort of mac window based design. i never
-  // have used a mac so this is not something that represents me".
-  // The `span` rule went with them - it existed only to re-centre the label against the dots.
   .code-header {
     @include bp.sm {
       @include mx.ml-mr(0);
@@ -153,18 +131,11 @@ div[class^='language-'] {
     border-top-right-radius: 0;
   }
 
-  // THE CODE FONT, and it had never been set. Nothing in this repo gave a code BLOCK a font, so
-  // `pre` fell through to the browser's UA default `monospace` while IBM Plex Mono sat loaded and
-  // unasked-for - measured on the live post, computed font-family was the bare generic.
-  // It has to name `pre` DIRECTLY: the UA stylesheet sets `pre { font-family: monospace }`, so
-  // putting the family on this card and letting it inherit does not reach it.
-  // Inline code was never affected - `.prose code:not(pre code)` has always set the family.
   pre {
     font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace);
   }
 }
 
-/* Hide line numbers for default, console, and terminal code snippets */
 div {
   &.nolineno,
   &.language-plaintext,
@@ -181,16 +152,6 @@ div {
   }
 }
 
-// D20 PICK A - Maxime Heckel's header strip, transcribed from the verbatim CSS in
-// redesign-lab/analysis/component-sources/source-code-block.md (read off
-// blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/):
-//   display:flex; justify-content:space-between; align-items:center; padding:12px;
-//   border-bottom: <the card's own border>
-// It is a FULL-WIDTH strip, not a protruding tab - that was the fork against Starlight (B).
-// What changed here: the 0.75rem/0.25rem side margins are gone, because they inset the header
-// from the block's edges and a strip has to reach them; the separator is the border-bottom the
-// source uses rather than the dots it never had. Height stays on $code-header-height so nothing
-// below it moves.
 .code-header {
   @extend %no-cursor;
 
@@ -202,11 +163,9 @@ div {
   padding-right: 0.25rem;
   border-bottom: 1px solid var(--language-border-color);
 
-  /* the label block */
   span {
     line-height: v.$code-header-height;
 
-    /* label icon */
     i {
       font-size: 1rem;
       width: v.$code-icon-width;
@@ -219,10 +178,9 @@ div {
 
     @at-root [file] #{&} > i {
       position: relative;
-      top: 1px; /* center the file icon */
+      top: 1px;
     }
 
-    /* label text */
     &::after {
       content: attr(data-label-text);
       font-size: 0.85rem;
@@ -231,7 +189,6 @@ div {
     }
   }
 
-  /* clipboard */
   button {
     @extend %cursor-pointer;
     @extend %rounded;

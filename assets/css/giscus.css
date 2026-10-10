@@ -4,114 +4,60 @@
 # stable URL and it cannot use any of our tokens - every value below is a literal copy of one.
 ---
 
-/* GISCUS CUSTOM THEME - the comments, wearing the site's palette instead of GitHub's.
-   Rod 2026-09-03: "I did not realize comments were live lets keep the shape update the colors to
-   match the rest of the site."
-
-   WHY A CUSTOM THEME AND NOT A BUILT-IN. giscus was on `dark_dimmed`, which is GitHub's
-   desaturated BLUE-grey. The palette law here is warm, and no built-in giscus theme is
-   (`transparent_dark` gets closest and still leaves GitHub blue on every link and a green button).
-   A custom theme is the only way to actually match, so this is it.
-
-   WHAT IT IS. giscus's app is built on GitHub Primer, so theming it means overriding Primer's
-   custom properties. The variable NAMES below are Primer's, not ours - do not rename them.
-   Values are literal copies of our tokens, because the iframe is a different document and cannot
-   see `_sass/abstracts/_tokens.scss`:
-
-     --color-text          #f5f3ef      --color-gold        #fbbf24
-     --color-panel-solid   #1c1a18      --color-gold-deep   #f59e0b
-     --color-night         #070c23      --color-glow        #ff6a00
-     --color-silver        #a3a19d      --color-muted-warm  #7d7a76
-     --color-line-soft     rgba(255,255,255,.1)
-
-   LINES ARE AMBER. FILLS ARE BLUE. That split is the whole rule here and I got it wrong twice.
-   Rod 2026-09-03: "rather than white lines lets do the yellow we use everywhere else", then
-   "i asked for just the lines to be changed from white to yellow but the boxes changed to yellow
-   too the panels or cards should be the blue color they were before".
-
-   So: a BORDER is amber - rgba(245,158,11,.2) for a real edge, rgba(245,158,11,.1) for a quiet
-   one (--btn-border-color and --glass-border). A FILL is the blue slate panel. Amber never
-   becomes a background here; it is a line colour and an accent, nothing else.
-
-   AND THERE IS ONLY ONE FILL. Rod again, after seeing it drawn: "why are the other blue parts
-   not just the same color as the comment box". Every surface in the widget is #070c23 - our
-   --color-night, which is the value giscus already puts on the textarea via `form-control
-   input-contrast`. The border rgba(245,158,11,.1) is what separates one piece from the next.
-
-   IF A TOKEN CHANGES, THIS FILE DOES NOT FOLLOW IT. That is the cost of the iframe boundary and
-   it is why every value is annotated with the token it came from. */
-
 main {
-  /* --- ground and text ------------------------------------------------------------------- */
-  --color-canvas-default: transparent;              /* let the post's own ground show through */
-  --color-canvas-overlay: #070c23;                  /* --color-night: THE one blue, see below */
-  --color-canvas-inset: #070c23;                    /* --color-night */
-  --color-canvas-subtle: #070c23;                   /* --color-night: the tab strip, same blue */
+  --color-canvas-default: transparent;
+  --color-canvas-overlay: #070c23;
+  --color-canvas-inset: #070c23;
+  --color-canvas-subtle: #070c23;
 
-  --color-fg-default: #f5f3ef;                      /* --color-text */
-  --color-fg-muted: #a3a19d;                        /* --color-silver */
-  --color-fg-subtle: #7d7a76;                       /* --color-muted-warm */
-  --color-fg-on-emphasis: #1c1a18;                  /* text ON the gold button, so it is the dark */
+  --color-fg-default: #f5f3ef;
+  --color-fg-muted: #a3a19d;
+  --color-fg-subtle: #7d7a76;
+  --color-fg-on-emphasis: #1c1a18;
 
-  /* --- borders --------------------------------------------------------------------------- */
-  --color-border-default: rgba(245, 158, 11, 0.2);  /* --btn-border-color: THE line colour */
-  --color-border-muted: rgba(245, 158, 11, 0.1);    /* --glass-border: the quieter one */
+  --color-border-default: rgba(245, 158, 11, 0.2);
+  --color-border-muted: rgba(245, 158, 11, 0.1);
   --color-neutral-muted: rgba(245, 158, 11, 0.1);
   --color-neutral-emphasis: #7d7a76;
 
-  /* --- the accent. Every GitHub blue in the widget resolves through these. ----------------- */
-  --color-accent-fg: #fbbf24;                       /* --color-gold: links, @mentions */
-  --color-accent-emphasis: #f59e0b;                 /* --color-gold-deep */
+  --color-accent-fg: #fbbf24;
+  --color-accent-emphasis: #f59e0b;
   --color-accent-muted: rgba(251, 191, 36, 0.3);
   --color-accent-subtle: rgba(251, 191, 36, 0.08);
 
-  /* --- buttons. The primary is the gold, not GitHub's green. ------------------------------- */
   --color-btn-text: #f5f3ef;
-  --color-btn-bg: #070c23;                          /* --color-night. A FILL, so it stays blue. */
-  --color-btn-border: rgba(245, 158, 11, 0.2);      /* --btn-border-color: this is a LINE */
+  --color-btn-bg: #070c23;
+  --color-btn-border: rgba(245, 158, 11, 0.2);
   --color-btn-hover-bg: rgba(251, 191, 36, 0.1);
   --color-btn-hover-border: rgba(251, 191, 36, 0.3);
   --color-btn-active-bg: rgba(251, 191, 36, 0.15);
   --color-btn-selected-bg: rgba(251, 191, 36, 0.12);
 
   --color-btn-primary-text: #1c1a18;
-  --color-btn-primary-bg: #fbbf24;                  /* --color-gold */
+  --color-btn-primary-bg: #fbbf24;
   --color-btn-primary-border: #f59e0b;
-  --color-btn-primary-hover-bg: #f59e0b;            /* --color-gold-deep */
-  --color-btn-primary-hover-border: #ff6a00;        /* --color-glow, the ignite end */
+  --color-btn-primary-hover-bg: #f59e0b;
+  --color-btn-primary-hover-border: #ff6a00;
   --color-btn-primary-disabled-text: rgba(28, 26, 24, 0.5);
   --color-btn-primary-disabled-bg: rgba(251, 191, 36, 0.4);
   --color-btn-primary-disabled-border: transparent;
 
-  /* --- reactions, mostly the same warm family ---------------------------------------------- */
   --color-social-reaction-bg-hover: rgba(251, 191, 36, 0.1);
   --color-social-reaction-bg-reacted-hover: rgba(251, 191, 36, 0.2);
 
-  /* --- states ------------------------------------------------------------------------------ */
-  --color-success-fg: #6fbf73;                      /* --tape-green */
-  --color-danger-fg: #ff6a00;                       /* --color-glow: this palette has no red */
+  --color-success-fg: #6fbf73;
+  --color-danger-fg: #ff6a00;
   --color-attention-fg: #fbbf24;
 
-  /* --- inputs ------------------------------------------------------------------------------ */
   --color-primer-border-active: #fbbf24;
   --color-primer-shadow-inset: none;
 
-  /* --- typography. The site's own faces, so the widget does not read as a foreign object. --- */
   --primer-text-body-font: 'M PLUS Rounded 1c', sans-serif;
 
   font-family: 'M PLUS Rounded 1c', sans-serif;
   color: #f5f3ef;
 }
 
-/* The comment box and each comment sit on the warm panel rather than a blue-grey card. */
-/* ONE BLUE, NOT THREE. Rod 2026-09-03: "why are the other blue parts not just the same color as
-   the comment box use this same blue in <textarea class='form-control input-contrast'> on the
-   other elements".
-   The textarea sits on --color-canvas-inset (#070c23, our --color-night) because giscus gives it
-   `form-control input-contrast`. The form around it and the tab strip above it were on two OTHER
-   values, so the widget read as three stacked shades of navy. Everything is the textarea's blue
-   now, and the amber hairlines are what separate the pieces - which is the same way the rest of
-   the site distinguishes a card from its ground. */
 .gsc-comment-box,
 .gsc-comment-box-tabs,
 .gsc-comment-box-main,
@@ -119,34 +65,19 @@ main {
 .gsc-comment > .gsc-comment-box,
 .gsc-timeline .gsc-comment > div {
   background: #070c23;
-  border-color: rgba(245, 158, 11, 0.1);            /* --glass-border */
+  border-color: rgba(245, 158, 11, 0.1);
 }
 
-/* Code inside a comment, matched to the site's inline code rather than GitHub's grey chip. */
 .gsc-comment-content code,
 .gsc-comment-content pre {
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  background: rgba(251, 191, 36, 0.05);             /* --inline-code-bg */
+  background: rgba(251, 191, 36, 0.05);
 }
 
-/* The "Sign in with GitHub" prompt is the first thing a reader sees on a post with no comments
-   yet, and it is the widget's one loud object. Its GOLD comes from --color-btn-primary-bg above,
-   not from here - this only matches the weight the rest of the site's buttons use. Verified
-   rendering on the real widget: background rgb(251,191,36), text rgb(28,26,24). */
 .gsc-comment-box-buttons .btn-primary {
   font-weight: 500;
 }
 
-/* SQUARED, matching the shape pass and D20's code block: the widget is the only round-cornered
-   object left in the post otherwise. */
-/* SQUARED, matching the shape pass and D20's code block: the widget is otherwise the only
-   round-cornered object left in the post.
-   THE SELECTOR LIST IS MEASURED, NOT GUESSED. Opened the widget directly at giscus.app and
-   enumerated its real classes, which is how `.gsc-comment-box-textarea` got caught - it carries
-   its OWN `border-radius: 4px 4px 0 0` and was still rounded while everything around it was
-   square. The `.gsc-comment*` selectors that are not in that list only exist once a post HAS
-   comments, so they cannot be confirmed on an empty thread and are kept on giscus's documented
-   names. */
 .gsc-comment-box,
 .gsc-comment-box-tabs,
 .gsc-comment-box-write,

@@ -1,9 +1,3 @@
-/**
- * Set up image popup
- *
- * Dependencies: https://github.com/biati-digital/glightbox
- */
-
 const lightImages = '.popup:not(.dark)';
 const darkImages = '.popup:not(.light)';
 let selector = lightImages;
@@ -37,7 +31,6 @@ export function imgPopup() {
   }
 
   let current = GLightbox({ selector: `${selector}` });
-  // OURS: achievement hook when the lightbox opens (re-apply on Chirpy upgrade)
   current.on('open', () => { document.dispatchEvent(new Event('achievement:imageenlarge')); });
 
   if (hasDualImages && Theme.switchable) {

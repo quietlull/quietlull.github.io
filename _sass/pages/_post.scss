@@ -1,49 +1,8 @@
-// ================================================================================================
-// OWNERSHIP: this file is OURS. The filename is Chirpy's, the contents are almost entirely not.
-// ================================================================================================
-// Measured 2026-09-02 against pristine Chirpy 7.3.1 (`_sass/pages/_post.scss`, 496 lines; ours is
-// also 496, which is coincidence, not shared ancestry). 66 lines match theirs verbatim; strip the
-// bare braces and blanks and 35 carry content, of which 2 are accidental collisions (a
-// `display: block` and a `width: 100%` that happen to sit in our own `.content img` rule). So 33
-// lines, under 7 percent, are genuinely inherited. Everything else is the redesign's post layout.
-// Upstream's version of this file is superseded wholesale: a clean overwrite deletes the post page.
-//
-// THE UPSTREAM FRAGMENTS THAT SURVIVE, and an upgrade only has to re-check these:
-//   1. The four `@use` lines below, byte-identical to theirs.
-//   2. `#toc-solo-trigger` - DELETED 2026-09-03 on Rod's word. It was the closest thing to an
-//      untouched upstream Chirpy block left in this file, which is why it read as foreign.
-//      our margin-top/margin-bottom, and `var(--font-display)` where they read
-//      `v.$font-family-heading`, a variable this repo no longer defines.
-//   3. `#toc-bar` - upstream's rule skeleton (sticky, top 0, z-index 1, the -1rem side pull, the
-//      `@extend %btn-color`, the `bp.xl` hide, `.label`, `&.invisible`) with about half its
-//      declarations replaced: our flex row, `mx.glass` instead of `background: var(--main-bg)`,
-//      no bottom border, and a LOCAL `$toc-bar-height: 3rem` where they read `v.$topbar-height`.
-//      That fork is load-bearing: abstracts/_variables.scss re-pointed $topbar-height to 260px, so
-//      reading theirs would give the bar a 260px height with no error. Do not "restore" it.
-// Everything upstream styled and we deleted - post-tail-wrapper, the share row, .post-tags,
-// #related-posts, the Disqus and utterances hooks, the fade-up keyframes, %top-cover - styled
-// markup that no longer exists. An upgrade re-adding those rules re-adds dead CSS, not features.
-//
-// THIS FILE IS UNLAYERED ON PURPOSE. A page sheet must beat the component sheets, and that is how
-// it does it: unlayered CSS wins over every `@layer`. Do NOT wrap it in a layer. The consequence is
-// written out in the note just below, and it is the reason so few declarations are here.
-// ================================================================================================
-
 @use '../abstracts/variables' as v;
 @use '../abstracts/breakpoints' as bp;
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/placeholders';
 
-// A post, ported 2026-08-25 from the inline <style> of `redesign-lab/final-post.html`.
-// The old page's 990 lines came down to the eight blocks at the foot of this file, which are the
-// only ones whose markup survived the port - the TOC bar and solo trigger, post-nav, and the four
-// things `post-enhance.js` builds at runtime. Everything else styled markup that is now gone.
-// WHAT THE PAGE DELIBERATELY DOES NOT DECLARE. `base/_decisions.scss` owns `.prose`, its measure,
-// and `.prose p` / `.prose li` weight, leading and tracking. The lab page restated all of them and
-// won silently, because a page style is unlayered. Only the font-size and the rhythm are here,
-// because the ladder sets neither. The lab's `.prose h3` block is gone for the same reason plus a
-// second one: it re-implemented the ladder's own numbered-heading device one rung down, and the
-// article it was written for contains no h3 at all, so it never rendered.
 
 #post-page {
   position: relative;
@@ -52,7 +11,6 @@
   margin: 0 auto;
   padding: 56px 0 0;
 
-  // `main h1 { margin-top: 3rem }` in base/_typography.scss is unlayered and beats the ladder.
   .posthead h1 { margin: 0; }
 
   .spine {
@@ -61,7 +19,6 @@
     gap: 0;
   }
 
-  // The header box. `isolation` keeps the ::after panel behind the text but in front of the page.
   .posthead {
     position: relative;
     grid-column: 1 / -1;
@@ -105,12 +62,9 @@
     position: relative;
     grid-column: 1 / 16;
     isolation: isolate;
-
-    // `.content` in base/_base.scss puts 2rem above the first block. The panel starts at the text.
     margin-top: 0;
   }
 
-  // The ladder sets no prose font-size, so it is the page's.
   .prose p,
   .prose li { font-size: 16px; margin: 0; }
 
@@ -119,7 +73,6 @@
     .prose li { font-size: 18px; }
   }
 
-  // Rhythm is margin-TOP only, never bottom, so nothing has to cancel a trailing margin.
   .prose > * + * { margin-top: 24px; }
 
   .prose > h1,
@@ -142,11 +95,6 @@
 
   .lead { color: var(--color-warm-muted); }
 
-  // Markdown-emitted media, which arrives at its intrinsic size - a 1920px video overhung the
-  // 747px column by 1173px, hidden only by the page's own overflow clip. This constrains it and
-  // nothing more: the redesign's mat and caption treatments (.figmat, figure-real) need markup a
-  // Markdown post cannot emit yet, so the LOOK of body media is still owed.
-  // Declared before `.posthero`, which needs its own height and wins on source order.
   .content img,
   .content video {
     display: block;
@@ -167,8 +115,6 @@
     height: 100%;
     object-fit: cover;
   }
-
-  // ---- the rail ------------------------------------------------------------------------------
 
   .raillabel {
     margin: 0 0 12px;
@@ -214,9 +160,6 @@
     fill: currentcolor;
   }
 
-  // tocbot nests a <ul> per level and marks the current link with a class. The component reads
-  // `--depth` off the link and `[aria-current]`, so the two are bridged here rather than in the
-  // component, which knows nothing about tocbot.
   .toc ul ul { --depth: 1; }
 
   .toc ul ul ul { --depth: 2; }
@@ -226,24 +169,7 @@
     color: var(--color-gold);
   }
 
-  /* TOCBOT DRAWS ITS OWN ACTIVE BAR AND IT IS GREEN. Rod 2026-08-25: "when did this weird green
-     bar show up thats strange and not supposed to be there". Measured on the live page: a
-     `::before` on the active link, absolute, 2px wide, 121px tall, `rgb(84, 188, 75)`. That colour
-     appears NOWHERE in this repo - it is tocbot's own default stylesheet, which is served
-     cross-origin and therefore cannot be read from script, which is why no earlier sweep of ours
-     ever saw it. The rule above already paints our gold bar as the link's `border-left`, so the
-     list was carrying TWO left bars in two different colours. This removes theirs and leaves ours. */
-
-  /* WIDENED FROM THE ACTIVE LINK TO EVERY LINK, Rod 2026-09-01: "we already have the yellow
-     and grey lines for TOC we dont need this white one ... the main issue is its inconsistent".
-     tocbot draws its faint rail as a `::before` on EVERY link, and suppressing only the active
-     one (the first version of this fix) is exactly what made the two states disagree: with the
-     first item active its segment vanished from the top of the rail, with any later item
-     active the rail ran unbroken beside our gold bar. One selector, the whole rail gone, and
-     the yellow-active grey-rest system is the only one left drawing. */
   .toc a::before { display: none; }
-
-  // ---- the foot ------------------------------------------------------------------------------
 
   .post-related { margin-top: 28px; }
 
@@ -251,25 +177,12 @@
 
   .post-foot { margin-top: 64px; }
 
-  /* THE COMMENTS. Rod 2026-09-03: "make the spacing match the center so its not like a huge bar at
-     the bottom and feels connected to the post."
-     The width fix is not here - it is that the widget now mounts inside `.post-foot` instead of
-     beside the full-bleed footer, so it inherits the column and needs no width of its own. What is
-     here is the spacing: 48px off prev/next, which is the same step the rail and the related block
-     use, so the foot reads as three stacked pieces of ONE column rather than a page section.
-     `min-height` reserves the frame's own starting height, so the footer does not jump upward and
-     then back down while the lazy iframe loads. */
   .post-comments {
-    position: relative; /* the shield below is absolutely placed against this */
+    position: relative;
     margin-top: 48px;
     min-height: 372px;
   }
 
-  /* THE CURSOR SHIELD. A transparent sheet of OUR document laid over the giscus iframe, and the
-     only way the cursor lantern can see the pointer over the comments at all - measured, the
-     frame delivers zero events to this document, not even at its boundary. cursor-glow.js drops
-     its `pointer-events` the moment the pointer holds still, so a click still reaches the frame.
-     No paint of its own: it exists to be a hit target. */
   .cursor-shield {
     position: absolute;
     inset: 0;
@@ -277,8 +190,6 @@
   }
 
   .post-comments iframe { display: block; width: 100%; }
-
-  // ---- narrow ---------------------------------------------------------------------------------
 
   @media (max-width: 1000px) {
     .spine { display: block; }
@@ -290,22 +201,6 @@
 
   }
 
-  // 1200px is the ONE switch for the narrow-viewport contents list, and this is its CSS half.
-  // `_javascript/modules/components/toc.js:4` runs `matchMedia('(min-width: 1200px)')` to pick
-  // which tocbot instance gets built; below that it fills the popup and never `#toc`, so the
-  // rail would hold an empty Contents box. This hides the whole block, label included.
-  // THE THIRD NUMBER IS GONE, 2026-09-02. components/_toc-real.scss used to hide `.toc--v3` at
-  // 72rem (1152px); it now states no breakpoint at all, by its own header note at its line 11,
-  // so nothing but 1200px is left in play. The earlier version of this comment flagged that
-  // third number as unresolved and is simply out of date.
-  // 1199.98px, NOT 1199px, and the 0.02 is load-bearing. `bp.xl` is `min-width: 1200px`
-  // (abstracts/_breakpoints.scss:10), and `#toc-bar` hides inside it. At
-  // a fractional viewport width like 1199.5px the old `max-width: 1199px` did not match and
-  // `bp.xl` did not either, so the rail and the mobile bar both drew at once. The 0.02px step
-  // is the Bootstrap convention for butting a max-width against a min-width and it covers
-  // every fractional width a browser actually reports. It is NOT a mathematical complement:
-  // a hypothetical 1199.99px still matches neither query. If that sliver ever turns out to be
-  // real, the exact form is `@media not all and (min-width: 1200px)`.
   @media (max-width: 1199.98px) {
     #toc-wrapper { display: none; }
   }
@@ -315,8 +210,6 @@
   }
 }
 
-// The code block and figure treatments the lab wrote for hand-authored markup. A Markdown post
-// cannot emit either yet, so they are kept as the styles the port owes rather than deleted.
 .figmat {
   display: flex;
   flex-direction: column;
@@ -348,13 +241,8 @@
   letter-spacing: 0.06em;
 }
 
-$toc-bar-height: 3rem;   // declared in the old file's body; the blocks below still read it
+$toc-bar-height: 3rem;
 
-// ================================================================================================
-// WHAT SURVIVED FROM THE OLD POST PAGE. Everything below styles markup that is still rendered:
-// the TOC bar and its solo trigger, post-nav, and the four elements `post-enhance.js` builds at
-// runtime - the reading progress bar, the fireflies, and GLightbox's overlay and controls.
-// ================================================================================================
 
 .post-navigation {
   margin-top: 3rem;
@@ -431,7 +319,6 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
   }
 }
 
-// --- Reading progress bar ---
 .reading-progress-bar {
   position: fixed;
   top: 0;
@@ -445,21 +332,11 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
   );
   box-shadow: 0 0 8px rgb(var(--glow-hue), 0.40);
   z-index: 9999;
-
-  /* NOT A CONTROL. Rod 2026-09-03: "make the progress bar not interactable."
-     It used to carry `pointer-events: auto`, `cursor: pointer` and a hover state that grew it to
-     6px, backed by a click-to-jump handler in post-enhance.js - all three are gone, handler
-     included. It is a readout, and a 3px strip pinned under the top edge of the window is a bad
-     click target anyway: it sits exactly where a reader throws the pointer to reach the tab bar,
-     so every near-miss teleported them somewhere in the article.
-     `pointer-events: none` is the load-bearing line. Without it the strip still swallows a
-     hover along the very top of the viewport even with no handler attached. */
   pointer-events: none;
   transition: width 0.1s linear;
   border-radius: 0 2px 2px 0;
 }
 
-// --- Post ambient fireflies ---
 .post-firefly {
   position: absolute;
   width: 3px;
@@ -472,9 +349,6 @@ $toc-bar-height: 3rem;   // declared in the old file's body; the blocks below st
   animation: firefly-drift var(--fly-dur, 12s) ease-in-out var(--fly-delay, 0s) infinite;
 }
 
-// ============================================================================
-// R4: GLightbox glass overlay — amber themed image zoom
-// ============================================================================
 .goverlay {
   background: rgb(8 15 27 / 0.85) !important;
   backdrop-filter: blur(12px);

@@ -79,7 +79,6 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
 
-        // See: <https://developers.google.com/web/fundamentals/primers/service-workers#cache_and_return_requests>
         let responseToCache = response.clone();
 
         caches.open(swconf.cacheName).then((cache) => {

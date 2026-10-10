@@ -16,14 +16,12 @@ $-breakpoints: (
   @return map.get($-breakpoints, $breakpoint);
 }
 
-/* Less than the given width */
 @mixin lt($width) {
   @media all and (max-width: calc(#{$width} - 1px)) {
     @content;
   }
 }
 
-/* Less than or equal to the given width */
 @mixin lte($width) {
   @media all and (max-width: $width) {
     @content;

@@ -1,9 +1,6 @@
 @use 'sass:list';
 @use 'variables' as v;
 
-// ============================================================================
-// TEXT UTILITIES
-// ============================================================================
 
 @mixin text-ellipsis {
   overflow: hidden;
@@ -18,9 +15,6 @@
   -webkit-box-orient: vertical;
 }
 
-// ============================================================================
-// SPACING UTILITIES
-// ============================================================================
 
 @mixin mt-mb($value) {
   margin-top: $value;
@@ -47,11 +41,7 @@
   }
 }
 
-// ============================================================================
-// GLASS MORPHISM - Core lantern aesthetic
-// ============================================================================
 
-// Standard glass effect - theme aware
 @mixin glass {
   background: var(--bg-glass);
   backdrop-filter: blur(12px);
@@ -62,7 +52,6 @@
   contain: layout style paint;
 }
 
-// Stronger glass with more blur
 @mixin glass-strong {
   background: var(--bg-glass-strong);
   backdrop-filter: blur(16px);
@@ -73,7 +62,6 @@
   contain: layout style paint;
 }
 
-// Dark mode specific lantern glass (for use in dark theme only)
 @mixin glass-lantern {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -87,11 +75,7 @@
   contain: layout style paint;
 }
 
-// ============================================================================
-// LANTERN EFFECTS - Signature glow elements
-// ============================================================================
 
-// Glowing dot/orb - creates the lantern "light" effect
 @mixin glow-dot($size: 0.5rem, $ring-size: 2rem) {
   position: relative;
   width: $ring-size;
@@ -110,12 +94,10 @@
     box-shadow: var(--glow-ring);
   }
   
-  // Optional ring border
   border: 1px solid var(--amber-a30);
   border-radius: 50%;
 }
 
-// Small glowing indicator dot
 @mixin glow-dot-small {
   width: 0.5rem;
   height: 0.5rem;
@@ -124,8 +106,6 @@
   box-shadow: var(--glow-ring-small);
 }
 
-// Radial glow overlay — weak at rest, full on hover. No translate, only opacity.
-// Matches reference: "opacity-0 group-hover:opacity-100" with pulse-slow underneath.
 @mixin radial-hover-glow {
   position: relative;
   overflow: hidden;
@@ -152,7 +132,6 @@
   }
 }
 
-// Icon with glow background
 @mixin icon-with-glow($size: 4rem, $icon-size: 1rem) {
   position: relative;
   width: $size;
@@ -186,11 +165,7 @@
   }
 }
 
-// ============================================================================
-// ANIMATED EFFECTS
-// ============================================================================
 
-// Shimmer effect for buttons (matches React component)
 @mixin shimmer-effect {
   position: relative;
   overflow: hidden;
@@ -209,7 +184,6 @@
   }
 }
 
-// Animated underline for links — grows from center outward with amber glow
 @mixin animated-underline($color: var(--link-color)) {
   position: relative;
 
@@ -232,7 +206,6 @@
 }
 
 
-// Pulse animation for indicators
 @mixin pulse-glow($duration: 2s) {
   animation: pulse-glow $duration ease-in-out infinite;
   
@@ -249,9 +222,6 @@
   }
 }
 
-// ============================================================================
-// TRANSITIONS
-// ============================================================================
 
 @mixin transition($props...) {
   $list: ();
@@ -275,9 +245,6 @@
   }
 }
 
-// ============================================================================
-// LAYOUT
-// ============================================================================
 
 @mixin flex-center {
   display: flex;
@@ -295,9 +262,6 @@
   max-width: 100%;
 }
 
-// ============================================================================
-// FORMS
-// ============================================================================
 
 @mixin placeholder {
   color: var(--text-muted-color) !important;
@@ -313,9 +277,6 @@
   box-shadow: var(--input-focus-glow);
 }
 
-// ============================================================================
-// TYPOGRAPHY
-// ============================================================================
 
 @mixin label($size: 1rem, $weight: 600, $color: var(--label-color)) {
   color: $color;
@@ -328,9 +289,6 @@
   text-shadow: 0 0 20px var(--gold-10);
 }
 
-// ============================================================================
-// PROMPTS/ALERTS
-// ============================================================================
 
 @mixin prompt($type, $fa_content, $fa_style: 'solid', $rotate: 0) {
   &.prompt-#{$type} {
@@ -348,9 +306,6 @@
   }
 }
 
-// ============================================================================
-// IMAGES
-// ============================================================================
 
 @mixin img-caption {
   + em {
@@ -371,9 +326,6 @@
   }
 }
 
-// ============================================================================
-// CARDS & PANELS
-// ============================================================================
 
 @mixin card-base {
   @include glass;
@@ -394,9 +346,6 @@
   }
 }
 
-// ============================================================================
-// BUTTONS
-// ============================================================================
 
 @mixin button-base {
   padding: 0.75rem 1.5rem;
@@ -425,9 +374,6 @@
   @include shimmer-effect;
 }
 
-// ============================================================================
-// FLOATING ELEMENTS
-// ============================================================================
 
 @mixin floating-orb($size: 8rem, $blur: 48px, $color: var(--amber-400)) {
   position: fixed;
@@ -440,9 +386,6 @@
   animation: float 10s ease-in-out infinite;
 }
 
-// ============================================================================
-// SCROLLBAR STYLING
-// ============================================================================
 
 @mixin custom-scrollbar {
   &::-webkit-scrollbar {

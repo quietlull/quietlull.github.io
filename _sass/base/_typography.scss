@@ -3,10 +3,6 @@
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/placeholders';
 
-// The type ladder moved to base/_decisions.scss, so the old sizes, weights, colours and margins
-// are gone from here and the ladder now reaches bare headings.
-// What stays is Chirpy's heading ANCHOR, whose markup refactor-content.html still emits, and the
-// scroll offset that keeps a jumped-to heading clear of the sticky bar.
 @for $i from 1 through 5 {
   h#{$i} {
     scroll-margin-top: 3.5rem;
@@ -17,8 +13,6 @@
   }
 }
 
-// Layered, because unlayered beats every layer and this was quietly repainting components. The
-// active nav link came out gold on its own gold pill - same colour as its background, invisible.
 @layer reset {
   a {
     color: var(--link-color);
@@ -26,10 +20,6 @@
   }
 }
 
-// LAYERED 2026-08-26, and it is the only layered rule in this file. `height: auto` is a RESET -
-// it stops a shrunk image distorting against its own `height` attribute - but unlayered it also
-// beat every ported component that sizes an image, and collapsed the ramblings thumbnail from
-// 170px to 0. In `reset` it still does its job and components can now win.
 
 @layer reset, tokens, prose, components, overrides;
 
@@ -104,7 +94,6 @@ hr {
   opacity: 1;
 }
 
-/* fontawesome icons */
 i {
   &.far,
   &.fas {
@@ -117,15 +106,6 @@ sup {
 }
 
 main {
-  /* NO line-height HERE. Rod 2026-08-25: "The lab wins the whole point of the
-     migration is to kill old issues like this."
-     THREE VALUES WERE FIGHTING OVER ONE PROPERTY: the body said 1.65 (layered reset), the lab
-     said 1.7 and the port dropped it, and this rule said 1.75. This one was winning, because
-     this file is UNLAYERED and unlayered CSS beats every layer - so the leading everything
-     inside <main> actually rendered at was the one nobody chose. The port had already caught
-     this once, in _sass/pages/_projects.scss, where a comment records it "reached in and made
-     every pill 2.5px taller than the bench's", and patched that ONE case rather than the cause.
-     Deleting it is the fix: body now carries the lab's 1.7 and nothing overrides it. */
 
   h1 {
     margin-top: 2rem;
@@ -202,9 +182,6 @@ main {
   }
 }
 
-/* --- Begin of Markdown table style --- */
-
-/* it will be created by Liquid */
 .table-wrapper {
   overflow-x: auto;
   margin-bottom: 1.5rem;
@@ -238,6 +215,6 @@ main {
           @extend %table-cell;
         }
       }
-    } /* tbody */
-  } /* table */
+    }
+  }
 }

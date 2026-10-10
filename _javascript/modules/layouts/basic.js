@@ -7,7 +7,6 @@ import {
 export function basic() {
   fireworksToggle();
   back2top();
-  // loadTooptip() removed - Bootstrap tooltips are gone site-wide, see components.js.
   initPageTransition();
   initAchievements();
   initCardTilt();

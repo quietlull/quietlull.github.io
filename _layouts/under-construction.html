@@ -2,24 +2,6 @@
 layout: default
 ---
 
-{% comment %}
-  Under construction, ported to the redesign 2026-08-31. It is a stub with three parts and each
-  one is now a component that already shipped:
-    - the title and the line under it   -> page-title-desc  (`.ptd`, `.d-h1` off the type ladder)
-    - the way back                      -> button-kit       (`.kit-button--pill`, the landing's)
-    - the three suggestions             -> related-card-real (`.rc-grid` of `.rc--v1` text cards)
-
-  The lantern and its float are kept as they were. They are the page's one piece of character and
-  the animation is already in `_sass/abstracts/_animations.scss`.
-
-  DROPPED WITH THE OLD PAGE: `.btn.btn-outline-primary.mt-3` and the `me-1` on its icon, all four
-  of them Bootstrap classes, which D48 is deleting; and the hand-built `.recommendation-card`,
-  whose glass panel, hover lift and `.rec-label` / `.rec-title` pair the `.rc` card replaces.
-
-  THE SCRIPT IS UNCHANGED except for the markup it writes. It still reads `?title=` and `?tags=`,
-  still derives the section from the URL, and still falls back to the section's recent posts.
-{% endcomment %}
-
 <div class="under-construction">
   <div class="construction-icon">&#x1F3EE;</div>
 
@@ -40,11 +22,9 @@ layout: default
   </div>
 </div>
 
-{% comment %}Build lean JSON of non-WIP posts for recommendations{% endcomment %}
 <script>
   (function() {
     var params = new URLSearchParams(window.location.search);
-    /* Derive section from URL path: /tech-art/under-construction/ -> tech-art */
     var pathParts = window.location.pathname.split('/').filter(Boolean);
     var section = pathParts.length > 1 ? pathParts[0] : null;
     var title = params.get('title');
@@ -59,9 +39,6 @@ layout: default
       document.getElementById('construction-title').textContent = title;
     }
 
-    /* One card, so the two branches below cannot drift apart in markup the way they used to.
-       `.rc--v1` is the text-only version of the related card: it hides the cover slot, which is
-       what this page needs, because the JSON below carries no image. */
     function addCard(container, rec, related) {
       var a = document.createElement('a');
       a.href = rec.url;
@@ -109,7 +86,6 @@ layout: default
       scored.sort(function(a, b) { return b.score - a.score; });
       var top = scored.slice(0, 3);
 
-      /* Fallback: if no tag matches, show most recent posts from same section */
       if (top.length === 0) {
         var sectionPosts = allPosts.filter(function(p) { return p.section === section; });
         top = sectionPosts.slice(0, 3).map(function(p) { return { title: p.title, url: p.url, score: 0 }; });
@@ -118,7 +94,6 @@ layout: default
       show(top, top.length > 0 && top[0].score > 0);
     }
 
-    /* Fallback: no tags param at all - show recent posts from section */
     if (!tags && section) {
       var recentPosts = [
         {% for post in site.posts %}{% unless post.wip %}

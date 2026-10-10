@@ -1,7 +1,3 @@
-/**
- * Reference: https://bootsnipp.com/snippets/featured/link-to-top-page
- */
-
 export function back2top() {
   const btn = document.getElementById('back-to-top');
   const root = document.documentElement;
@@ -9,7 +5,6 @@ export function back2top() {
 
   let ticking = false;
   window.addEventListener('scroll', () => {
-    // Toggle .is-scrolling on <html> to reduce backdrop-filter cost
     if (!root.classList.contains('is-scrolling')) {
       root.classList.add('is-scrolling');
     }
@@ -26,7 +21,6 @@ export function back2top() {
   }, { passive: true });
 
   btn.addEventListener('click', () => {
-    /* I4: Ember burst at button position */
     if (typeof window.sparklerBurst === 'function') {
       const rect = btn.getBoundingClientRect();
       window.sparklerBurst(rect.left + rect.width / 2, rect.top);

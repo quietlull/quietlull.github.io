@@ -13,8 +13,6 @@
     {% seo title=false %}
   {%- endcapture -%}
 
-  <!-- Setup Open Graph image -->
-
   {% if page.image %}
     {% assign src = page.image.path | default: page.image %}
 
@@ -59,7 +57,6 @@
 
   {% include_cached favicons.html %}
 
-  <!-- Resource Hints -->
   {% unless site.assets.self_host.enabled %}
     {% for hint in site.data.origin.cors.resource_hints %}
       {% for link in hint.links %}
@@ -68,56 +65,18 @@
     {% endfor %}
   {% endunless %}
 
-  <!-- Bootstrap -->
-  {% comment %}
-    Imported into the `vendor` cascade layer rather than linked, because a <link> cannot name a
-    layer and unlayered CSS beats every layer. Left unlayered, Bootstrap outranked the whole
-    ported redesign on anything they both set - the body colour and the entire type ladder.
-    `vendor` is the first layer the page sees, which makes it the lowest-priority one.
-    Production gets the same wrapper from purgecss.js instead, around the purged copy.
-    An @import blocks on its own request where a <link> would not; that cost is dev-only.
-  {% endcomment %}
-  {% comment %}
-    BOOTSTRAP IS GONE ENTIRELY (D48, Rod 2026-09-01: "lets get rid of bootstrap completely
-    everything should be custom components anyways"). A dev-only CDN @import of the full
-    framework stood here, which is ALSO why "the dev build has no Bootstrap" was wrong twice
-    this session: the compiled sheet had none, and this tag quietly supplied it anyway.
-  {% endcomment %}
 
-  <!-- Theme style -->
   <link rel="stylesheet" href="{{ '/assets/css/:THEME.css' | replace: ':THEME', site.theme | relative_url }}">
 
-  {% comment %}
-    The scene backdrop - #hana-bg, #scrim and the bloom's baked canvases. A plain stylesheet
-    rather than a `_sass/` partial only because a second agent owns that tree tonight; it is
-    layered, so folding it in later changes nothing. Loaded AFTER the theme so a bare `body`
-    background in the theme cannot outrank it on specificity alone.
-  {% endcomment %}
   <link rel="stylesheet" href="{{ '/assets/css/chrome-scene.css' | relative_url }}">
 
 
-  {% comment %}
-    THE WEB FONTS. Lifted verbatim from the `final-*` pages, which all load this one line.
-    This is the only font request now. The old Outfit / Plus Jakarta Sans / JetBrains Mono link
-    used to sit above it, and both shipped on every page; every reader of the old stack has been
-    repointed at --font-body / --font-display / --font-mono, so it went.
-
-    The six LINE BOIL faces are NOT here - they are local TTFs, declared with @font-face by
-    `line-boil.css` and served from /assets/fonts/. See docs/MERGE-NIGHT.md.
-
-    `font-display: swap` is Google's default here and is right for these three: a fallback flash
-    costs a reflow. The line boil deliberately uses `block` instead, because a flash there would
-    show the WRONG letterforms, not just the wrong metrics.
-  {% endcomment %}
   <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800&display=swap"
   >
 
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{{ site.data.origin[type].fontawesome.css | relative_url }}">
-
-  <!-- 3rd-party Dependencies -->
 
   {% if site.toc and page.toc %}
     <link rel="stylesheet" href="{{ site.data.origin[type].toc.css | relative_url }}">
@@ -128,25 +87,14 @@
   {% endif %}
 
   {% if page.layout == 'page' or page.layout == 'post' %}
-    <!-- Image Popup -->
     <link rel="stylesheet" href="{{ site.data.origin[type].glightbox.css | relative_url }}">
   {% endif %}
 
-  <!-- Scripts -->
-
-  {% comment %}
-    NO defer, and upstream is right about this one. A perf pass (f272da2) deferred every
-    render-blocking script, but the stock giscus include runs an INLINE script that reads the
-    `Theme` global at parse time - a deferred global arrives after parse, so every post threw
-    "Theme is not defined" and the comments loaded with the wrong theme mapper. The bundle is
-    ~2 KB, so the blocking cost is noise next to a broken script on all 19 posts.
-  {% endcomment %}
   <script src="{{ '/assets/js/dist/theme.min.js' | relative_url }}"></script>
 
   {% include js-selector.html lang=lang %}
 
   {% if jekyll.environment == 'production' %}
-    <!-- PWA -->
     {% if site.pwa.enabled %}
       <script
         defer
@@ -154,7 +102,6 @@
       ></script>
     {% endif %}
 
-    <!-- Web Analytics -->
     {% for analytics in site.analytics %}
       {% capture str %}{{ analytics }}{% endcapture %}
       {% assign platform = str | split: '{' | first %}

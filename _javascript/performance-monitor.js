@@ -1,4 +1,3 @@
-// Performance monitoring class
 export class PerformanceMonitor {
   constructor() {
     this.frames = 0;
@@ -6,9 +5,8 @@ export class PerformanceMonitor {
     this.fps = 0;
     this.avgFrameTime = 0;
     this.frameTimes = [];
-    this.lanternCount = 0; // Initialize
+    this.lanternCount = 0;
     
-    // Create UI
     this.container = document.createElement('div');
     this.container.style.position = 'fixed';
     this.container.style.top = '10px';
@@ -22,7 +20,6 @@ export class PerformanceMonitor {
     this.container.style.borderRadius = '4px';
     document.body.appendChild(this.container);
     
-    // Initial render
     this.render();
   }
   
@@ -31,14 +28,12 @@ export class PerformanceMonitor {
     const delta = time - this.prevTime;
     this.frameTimes.push(delta);
     
-    // Keep last 60 frame times for averaging
     if (this.frameTimes.length > 60) {
       this.frameTimes.shift();
     }
     
     this.frames++;
     
-    // Update display once per second
     if (time >= this.prevTime + 1000) {
       this.fps = Math.round((this.frames * 1000) / (time - this.prevTime));
       this.avgFrameTime = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
@@ -62,7 +57,7 @@ export class PerformanceMonitor {
   
   setLanternCount(count) {
     this.lanternCount = count;
-    this.render(); // Update display immediately
+    this.render();
   }
   
   remove() {

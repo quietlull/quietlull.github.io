@@ -1,7 +1,3 @@
-{% comment %}
-  Determine TOC state and return it through variable "enable_toc"
-{% endcomment %}
-
 {% assign enable_toc = false %}
 {% if site.toc and page.toc %}
   {% if page.content contains '<h2' or page.content contains '<h3' %}

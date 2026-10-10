@@ -1,43 +1,24 @@
-/**
- * @module LanternShader
- * Custom shader for lanterns with FLAT emissive and flickering animation
- */
-
-/**
- * Lantern shader that simulates flame-based lighting with:
- * - Flat emissive across the mesh, so the bloom wraps a hard silhouette (Rod 2026-08-13)
- * - Animated color flicker for flame effect
- * - Emission for bloom post-processing
- *
- * @constant
- * @type {ShaderMaterial~Shader}
- */
 const LanternShader = {
 
   name: 'LanternShader',
 
   uniforms: {
-    // Base lantern color (warm orange)
-    baseColor: { value: null }, // THREE.Color
+    baseColor: { value: null },
 
-    // Brightness. Only gradientStart is read now (the emissive is flat); the other three are
-    // kept because every call site and the material manager still pass them.
-    gradientStart: { value: 1.0 }, // the single flat emissive level
-    gradientEnd: { value: 0.35 },  // UNUSED since 2026-08-13 (flat emissive)
-    gradientCenter: { value: 0.0 }, // UNUSED since 2026-08-13
-    gradientRange: { value: 100.0 }, // UNUSED since 2026-08-13
+    gradientStart: { value: 1.0 },
+    gradientEnd: { value: 0.35 },
+    gradientCenter: { value: 0.0 },
+    gradientRange: { value: 100.0 },
 
-    // Flicker animation
     time: { value: 0.0 },
     flickerSpeed: { value: 3.0 },
     flickerAmount: { value: 0.15 },
     flickerColorShift: { value: 0.05 },
 
-    // Overall intensity
     emissiveIntensity: { value: 2.0 }
   },
 
-  vertexShader: /* glsl */`
+  vertexShader: `
 		varying vec3 vPosition;
 		varying vec3 vNormal;
 		varying vec2 vUv;
@@ -51,7 +32,7 @@ const LanternShader = {
 		}
 	`,
 
-  fragmentShader: /* glsl */`
+  fragmentShader: `
 		uniform vec3 baseColor;
 		uniform float gradientStart;
 		uniform float gradientEnd;

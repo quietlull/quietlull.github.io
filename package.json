@@ -20,7 +20,8 @@
     "lint:js": "eslint",
     "lint:scss": "stylelint _sass/**/*.scss",
     "lint:fix:scss": "npm run lint:scss -- --fix",
-    "test": "npm run lint:js && npm run lint:scss && npm run lint:css-order",
+    "lint:comments": "node tools/strip-comments.mjs --check --skip _layouts/compress.html --skip assets/css/chrome-scene.css --skip assets/js/effects/hana-bloom.js",
+    "test": "npm run lint:js && npm run lint:scss && npm run lint:css-order && npm run lint:comments",
     "prepare": "husky",
     "lint:css-order": "node tools/css-order-check.mjs"
   },

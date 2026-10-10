@@ -1,7 +1,3 @@
-// Shared scene configuration — single source of truth for all pages.
-// Bloom, lanterns, fireworks, and avoidance are identical everywhere.
-// Only water, dock, and scroll camera vary by page preset.
-
 export const CONFIG = {
   debugEnabled: false,
 
@@ -15,32 +11,17 @@ export const CONFIG = {
 
   lanterns: {
     bloom: {
-      // Retuned 2026-08-21 (Rod) for the Dual Kawase pass. No threshold knob any more: the bright
-      // pass is gone, so the whole frame blurs and is added back (D23).
-      // At these numbers the composite adds 0.7 * (0.88 + 0.74) = 1.13x the frame back as glow,
-      // against 0.45 * 1.8 = 0.81x before, so roughly 1.4x more light than the old settings.
-      // Radius is NOT a blur width - it rebalances the tight band against the wide one.
       strength: 0.7,
       radius: 0.15,
-      // Fraction of the frame the blur chain runs at. Owned by the pass, applied in setSize.
-      // 0.5 -> 0.25 (Rod, 2026-08-22). Only viable because of the paper filter below: Rod judged
-      // that it "completely masks" the artefacts this resolution would otherwise show.
       scale: 0.25,
     },
 
-    /* PAPER FILTER (Rod, approved 2026-08-22). Two baked sheets at different tilings, composited
-       inside the bloom pass so it costs no extra pass - see shader/kawaseBloom.js.
-       This is what pays for the low bloom/reflection resolutions and the 0.5 pixel ratio: Rod,
-       "the artifacts ... get completely masked and makes it look intentional with the paper grain." */
     paper: {
-      // BAKED 2026-08-22 (Rod). Washi at screen scale carries the big fibre structure; cold press
-      // at 4x sits inside it as tooth. SUBTRACT, not crossfade - the sheets cancel where they
-      // agree, which keeps the combined field from just reading as more noise.
       sheet: 'paper-washi',
       tile: 1,
       sheet2: 'paper-coldpress',
       tile2: 4,
-      blend: 2,          // 2 = subtract; see blendSheets() in shader/kawaseBloom.js
+      blend: 2,
       mix: 0.5,
       amount: 1,
       bleed: 0.5,
@@ -57,10 +38,6 @@ export const CONFIG = {
       intensity: 2,
     },
     avoidance: {
-      // Lantern/firefly avoidance — reworked 2026-06-15 (Sarah): layered direct-displacement field.
-      // Layer A = whole-screen parting (proximityRadius/avoidanceStrength), Layer B = extra local
-      // push (localRadius/localStrength), knock = impulse (knockRadius/knockStrength). Values tuned
-      // in redesign-lab/lantern-lab.html on lab-scale props -> radii likely need a re-tune per scene.
       proximityRadius: 1000,
       avoidanceStrength: 2,
       knockRadius: 45,
@@ -86,24 +63,14 @@ export const CONFIG = {
   fireworks: {
     maxFireworks: 50,
 
-    // Depth band, retuned 2026-08-16 once `??` stopped the old `||` from eating `minZ: 0`.
-    // Measured on the About scene: real scene content ends at z -1130 and the water plane reaches
-    // z -4500, so this band sits behind everything and still over the water. Kept NARROW on
-    // purpose - the old effective range was -10000..-200, and that 9800-unit spread is what made
-    // shells inconsistent, reading 110% of screen height at the near end and 7% at the far end.
-    // At this depth a burst spans roughly 15-44% of screen height (fov 55, camera z 500).
     minZ: -3000,
     maxZ: -4500,
 
-    // The permanent top-of-page GREETING (Rod 2026-08-16): calm, a few shells in the air at once.
-    // It has no off switch by design, and since the earned reward stream was scrapped (D28) it is
-    // the only automatic stream left. Note maxLive is a CEILING, not a target: a shell lives about
-    // 1.7s, so the delay is what actually decides how many are up at once.
     greeting: {
-      delay: 0.85,            // Seconds between shells (3x the first pass, Rod judged it by eye)
-      delayVariation: 0.35,   // Random +/- variation in seconds
-      amount: 1,              // Shells per burst
-      maxLive: 4,             // Greeting shells allowed on screen at once
+      delay: 0.85,
+      delayVariation: 0.35,
+      amount: 1,
+      maxLive: 4,
     },
   },
 
@@ -121,15 +88,13 @@ export const CONFIG = {
   },
 };
 
-// Page presets — only water, dock, and scroll camera vary.
-// Bloom, lanterns, fireworks, and mouse avoidance are always active.
 export const PRESETS = {
-  full: {     // About page: full scene with water, dock, scroll camera
+  full: {
     water: true,
     dock: true,
     scrollCamera: true,
   },
-  standard: { // All other pages: no water/dock, static camera
+  standard: {
     water: false,
     dock: false,
     scrollCamera: false,

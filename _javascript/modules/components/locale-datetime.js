@@ -1,10 +1,3 @@
-/**
- * Update month/day to locale datetime
- *
- * Requirement: <https://github.com/iamkun/dayjs>
- */
-
-/* A tool for locale datetime */
 class LocaleHelper {
   static get attrTimestamp() {
     return 'data-ts';
@@ -19,7 +12,7 @@ class LocaleHelper {
   }
 
   static getTimestamp(elem) {
-    return Number(elem.getAttribute(this.attrTimestamp)); // unix timestamp
+    return Number(elem.getAttribute(this.attrTimestamp));
   }
 
   static getDateFormat(elem) {
@@ -39,8 +32,5 @@ export function initLocaleDatetime() {
       elem.textContent = text;
       elem.removeAttribute(LocaleHelper.attrTimestamp);
       elem.removeAttribute(LocaleHelper.attrDateFormat);
-      // Tooltip branch removed here (used to set data-bs-title for Bootstrap's tooltip).
-      // Bootstrap is gone (D48); its only caller (datetime.html) never actually passed
-      // tooltip=true, so this never rendered anything on the live site either.
     });
 }
