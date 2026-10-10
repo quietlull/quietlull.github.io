@@ -26,25 +26,6 @@
   color: var(--color-silver, #a3a19d);
 }
 
-.page-heading--para .page-heading__desc {
-  font-size: 16px;
-  font-weight: 300;
-  line-height: 1.7;
-  letter-spacing: 0.05em;
-  color: var(--color-silver, #a3a19d);
-}
-
-.page-heading--ruled .page-heading__title { border-bottom: solid 1px; }
-
-.page-heading--ruled .page-heading__desc {
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.8;
-  letter-spacing: -0.02em;
-  max-width: 640px;
-  color: var(--color-text, #f5f3ef);
-}
-
 .page-heading--projects {
   --ptd-gap: 18px;
 }
@@ -53,11 +34,5 @@
   --ptd-gap: 12px;
   --ptd-title-w: 380px;
   --ptd-desc-w: 520px;
-}
-
-.page-heading--ramblings-hairline {
-  --ptd-gap: 12px;
-  --ptd-title-w: 220px;
-  --ptd-desc-w: 560px;
 }
 }
