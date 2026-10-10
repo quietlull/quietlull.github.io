@@ -86,14 +86,6 @@
     background: color-mix(in srgb, var(--color-gold, #fbbf24) 14%, var(--color-panel-solid, #1c1a18));
   }
 
-  .aw--trigger .aw__tile[aria-pressed="true"]::before,
-  .aw--trigger .aw__tile[aria-pressed="true"]::after { opacity: 1; }
-
-  .aw--uniform .aw__tile[aria-pressed="true"] {
-    --mx: 50%; --my: 50%;
-    --aw-glow-r: 78px; --aw-glow-r-soft: 62px;
-  }
-
   .aw__on {
     position: absolute; top: 3px; right: 3px;
     min-width: var(--aw-star, 1.7rem); height: var(--aw-star, 1.7rem);
@@ -195,16 +187,6 @@
 
   .aw__crit { display: block; margin: 6px 0 0; font-size: 13.12px; line-height: 1.6; color: var(--color-muted-warm, #9c8f7d); }
 
-  .aw--scale .aw__tile:not([disabled]):hover { scale: 1.3; z-index: 2; }
-
-  .aw--trigger .aw__tile::before,
-  .aw--trigger .aw__tile::after { opacity: 0; transition: opacity .5s ease; }
-
-  .aw--trigger .aw__tile:hover::before,
-  .aw--trigger .aw__tile:hover::after,
-  .aw--trigger .aw__tile:focus-visible::before,
-  .aw--trigger .aw__tile:focus-visible::after { opacity: 1; }
-
   .aw__detail {
     width: var(--aw-dw, 333px); flex: none;
     min-height: var(--aw-dh, 360px);
@@ -213,8 +195,6 @@
     background: color-mix(in srgb, var(--color-panel-solid) 78%, var(--color-black));
     border: 1px solid var(--color-line-panel);
   }
-
-  .aw--short .aw__detail { min-height: 250px; }
 
   .aw__dttl {
     font-family: var(--font-display, inherit);
