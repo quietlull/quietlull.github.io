@@ -27,20 +27,18 @@ function init(field) {
   const state = windows.map((el) => {
     const baseW = parseFloat(el.dataset.w);
     const baseH = parseFloat(el.dataset.h);
+    const home0 = {
+      x: clamp(parseFloat(el.dataset.x) / (REF_W - baseW), 0, 1),
+      y: clamp(parseFloat(el.dataset.y) / (REF_H - baseH), 0, 1),
+    };
     return {
       el,
       baseW,
       baseH,
       w: baseW,
       h: baseH,
-      frac: {
-        x: clamp(parseFloat(el.dataset.x) / (REF_W - baseW), 0, 1),
-        y: clamp(parseFloat(el.dataset.y) / (REF_H - baseH), 0, 1),
-      },
-      home0: {
-        x: clamp(parseFloat(el.dataset.x) / (REF_W - baseW), 0, 1),
-        y: clamp(parseFloat(el.dataset.y) / (REF_H - baseH), 0, 1),
-      },
+      frac: { ...home0 },
+      home0,
       closed: false,
       pos: { x: 0, y: 0 },
       vel: { x: 0, y: 0 },
