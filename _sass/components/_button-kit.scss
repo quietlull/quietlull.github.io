@@ -10,6 +10,13 @@
    Real outside sources: the hover ripple is phojanecki (codepen.io/phojanecki/pen/vwyZpY) and the
    rising fill is dennissnellenberg .btn-fill. See button-kit.md. */
 .kit-button {
+  /* INLINE-BLOCK, AND THE REASON IS THE CLIP. `overflow: hidden` below does nothing to an inline
+     box, and an <a> is inline by default, so the fill was only ever clipped because every page
+     happened to put the button in a flex or grid parent - four unrelated rules doing this
+     component's job (P529). The workbench shows the button bare, and that is where it spilled.
+     The lab bench never showed it because it used <button>, which browsers draw inline-block.
+     Measured on all live instances before this went in: no visible change. */
+  display: inline-block;
   font-family: var(--font-body);
   font-size: 0.82rem;
   font-weight: 500;
