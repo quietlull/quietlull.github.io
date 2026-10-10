@@ -53,7 +53,6 @@ function init(field) {
   });
 
   const stillness = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let scale = 1;
   const pointer = { x: -9999, y: -9999, inside: false };
 
   field.addEventListener('pointermove', (e) => {
@@ -69,7 +68,7 @@ function init(field) {
     const fw = field.clientWidth;
     const fh = field.clientHeight;
     if (fw < 1 || fh < 1) return;
-    scale = clamp(Math.min(fw / REF_W, fh / REF_H), MIN_SCALE, MAX_SCALE);
+    const scale = clamp(Math.min(fw / REF_W, fh / REF_H), MIN_SCALE, MAX_SCALE);
     const barH = Math.round(clamp(27 * scale, 24, 44));
     field.style.setProperty('--bar-h', `${barH}px`);
     field.style.setProperty('--pscale', scale.toFixed(3));
@@ -308,32 +307,6 @@ function init(field) {
   window.addEventListener('pagehide', () => {
     if (raf !== null) cancelAnimationFrame(raf);
   }, { once: true });
-
-  window.__portalWindows = {
-    count: windows.length,
-    relayout: () => { layout(); wake(); },
-    scale: () => scale,
-    field: () => [field.clientWidth, field.clientHeight],
-    sizes: () => state.map((w) => [w.w, w.h]),
-    positions: () => state.map((w) => [Math.round(w.pos.x), Math.round(w.pos.y)]),
-    velocities: () => state.map((w) => [+w.vel.x.toFixed(2), +w.vel.y.toFixed(2)]),
-    closed: () => state.filter((w) => w.closed).map((w) => w.el.dataset.slot),
-    restoreAll: () => restoreAll(),
-    leans: () => state.map((w) => Math.round(Math.hypot(w.lean.x, w.lean.y) * 10) / 10),
-    leanTuning: { strength: STRENGTH, radius: RADIUS, maxLean: MAX_LEAN },
-    step: () => {
-      if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
-      frame();
-    },
-    fractions: () => state.map((w) => [+w.frac.x.toFixed(3), +w.frac.y.toFixed(3)]),
-    edgeGaps: () => {
-      const fw = field.clientWidth;
-      const fh = field.clientHeight;
-      return state.map((w) => Math.round(Math.min(
-        w.pos.x, w.pos.y, fw - (w.pos.x + w.w), fh - (w.pos.y + w.el.offsetHeight)
-      )));
-    },
-  };
 }
 
 init(document.querySelector('.field'));
