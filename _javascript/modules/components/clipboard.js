@@ -35,7 +35,7 @@ function resumeIcon(btn) {
   icon.setAttribute('class', ICON_DEFAULT);
 }
 
-function setCodeClipboard() {
+export function initClipboard() {
   const clipboardList = document.querySelectorAll(clipboardSelector);
 
   if (clipboardList.length === 0) {
@@ -72,33 +72,4 @@ function setCodeClipboard() {
       unlock(trigger);
     }, TIMEOUT);
   });
-}
-
-function setLinkClipboard() {
-  const btnCopyLink = document.getElementById('copy-link');
-
-  if (btnCopyLink === null) {
-    return;
-  }
-
-  btnCopyLink.addEventListener('click', (e) => {
-    const target = e.target;
-
-    if (isLocked(target)) {
-      return;
-    }
-
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      lock(target);
-
-      setTimeout(() => {
-        unlock(target);
-      }, TIMEOUT);
-    });
-  });
-}
-
-export function initClipboard() {
-  setCodeClipboard();
-  setLinkClipboard();
 }
