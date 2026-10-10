@@ -5,19 +5,12 @@
 {% assign domain = 'https://cdn.jsdelivr.net/' %}
 
 {% for url in urls %}
-  {% if url contains domain %}
-    {% assign url_snippet = url | slice: domain.size, url.size %}
+  {% assign url_snippet = url | slice: domain.size, url.size %}
 
-    {% if combined_urls %}
-      {% assign combined_urls = combined_urls | append: ',' | append: url_snippet %}
-    {% else %}
-      {% assign combined_urls = domain | append: 'combine/' | append: url_snippet %}
-    {% endif %}
-
-  {% elsif url contains '//' %}
-    <script defer src="{{ url }}"></script>
+  {% if combined_urls %}
+    {% assign combined_urls = combined_urls | append: ',' | append: url_snippet %}
   {% else %}
-    <script defer src="{{ url | relative_url }}"></script>
+    {% assign combined_urls = domain | append: 'combine/' | append: url_snippet %}
   {% endif %}
 {% endfor %}
 
