@@ -215,13 +215,4 @@ export function init(root = document) {
     setupCard(card, ring);
   });
   setupGyroTilt(root.querySelectorAll('.card-tilt'));
-
-  const glassToggle = root.querySelector('.js-glass-toggle');
-  const grid = root.querySelector('.merged-cards');
-  if (glassToggle && grid) {
-    glassToggle.addEventListener('click', () => {
-      const off = grid.classList.toggle('no-glass');
-      glassToggle.textContent = off ? 'Glass · Off' : 'Glass · On';
-    });
-  }
 }
