@@ -6,19 +6,12 @@ const TILT_OUT = 'transform 0.4s ease-out';
 const DWELL_MS = 900;
 const DWELL_RESET_PX = 48;
 
+let tiltEnabled = false;
+
 function setupCard(card, ring) {
-  if (card.__cardWired) {
-    return;
-  }
-  card.__cardWired = true;
   const tilt = card.querySelector('.card-tilt');
   const flipper = card.querySelector('.card-flipper');
-  const hasBack = !!card.querySelector('.card-back');
-  if (!tilt || !flipper) {
-    return;
-  }
   let active = false;
-  let rect = null;
   let frame = null;
   let pointerX = 0;
   let pointerY = 0;
@@ -30,7 +23,7 @@ function setupCard(card, ring) {
     if (!active) {
       return;
     }
-    rect = tilt.getBoundingClientRect();
+    const rect = tilt.getBoundingClientRect();
     const x = ((pointerX - rect.left) / rect.width - 0.5) * 2;
     const y = ((pointerY - rect.top) / rect.height - 0.5) * 2;
     tilt.style.transform = `rotateX(${-y * TILT_MAX}deg) rotateY(${x * TILT_MAX}deg) translateY(-${LIFT_PX}px) scale(${SCALE_HOVER})`;
@@ -63,15 +56,12 @@ function setupCard(card, ring) {
   };
 
   card.addEventListener('mouseenter', (event) => {
-    if (card.__tiltEnabled()) {
+    if (tiltEnabled) {
       active = true;
-      rect = tilt.getBoundingClientRect();
       tilt.style.transition = TILT_IN;
       tilt.style.willChange = 'transform';
     }
-    if (hasBack) {
-      startDwell(event.clientX, event.clientY);
-    }
+    startDwell(event.clientX, event.clientY);
   });
 
   card.addEventListener('mousemove', (event) => {
@@ -82,7 +72,7 @@ function setupCard(card, ring) {
         frame = requestAnimationFrame(applyTilt);
       }
     }
-    if (hasBack && dwellAnchor) {
+    if (dwellAnchor) {
       ring.style.left = `${event.clientX}px`;
       ring.style.top = `${event.clientY}px`;
       const dx = event.clientX - dwellAnchor.x;
@@ -95,7 +85,6 @@ function setupCard(card, ring) {
 
   card.addEventListener('mouseleave', () => {
     active = false;
-    rect = null;
     if (frame !== null) {
       cancelAnimationFrame(frame);
       frame = null;
@@ -187,7 +176,6 @@ export function init(root = document) {
     return;
   }
 
-  let tiltEnabled = false;
   let startPos = null;
   const onFirstMove = (event) => {
     if (!startPos) {
@@ -203,16 +191,10 @@ export function init(root = document) {
   };
   document.addEventListener('mousemove', onFirstMove);
 
-  let ring = document.querySelector('.dwell-ring');
-  if (!ring) {
-    ring = document.createElement('div');
-    ring.className = 'dwell-ring';
-    document.body.appendChild(ring);
-  }
+  const ring = document.createElement('div');
+  ring.className = 'dwell-ring';
+  document.body.appendChild(ring);
 
-  cards.forEach((card) => {
-    card.__tiltEnabled = () => tiltEnabled;
-    setupCard(card, ring);
-  });
+  cards.forEach((card) => setupCard(card, ring));
   setupGyroTilt(root.querySelectorAll('.card-tilt'));
 }
