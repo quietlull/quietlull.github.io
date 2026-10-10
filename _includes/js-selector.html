@@ -13,25 +13,6 @@
   {% endunless %}
 {% endif %}
 
-{% if page.layout == 'section-about'
-  or page.layout == 'section-landing'
-  or page.layout == 'post'
-  or page.layout == 'archives'
-  or page.layout == 'tag'
-%}
-  {% assign locale = include.lang | split: '-' | first %}
-
-  {% assign urls = urls
-    | append: ','
-    | append: site.data.origin.cors.dayjs.js.common
-    | append: ','
-    | append: site.data.origin.cors.dayjs.js.locale
-    | replace: ':LOCALE', locale
-    | append: ','
-    | append: site.data.origin.cors.dayjs.js.localizedFormat
-  %}
-{% endif %}
-
 {% if page.content contains '<h2' or page.content contains '<h3' and site.toc and page.toc %}
   {% assign urls = urls | append: ',' | append: site.data.origin.cors.toc.js %}
 {% endif %}
