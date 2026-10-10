@@ -123,14 +123,6 @@ main {
     }
   }
 
-  .categories,
-  #tags,
-  #archives {
-    a:not(:hover) {
-      @extend %no-bottom-border;
-    }
-  }
-
   @include bp.lte(bp.get(sm)) {
     .content {
       > blockquote[class^='prompt-'] {
