@@ -119,14 +119,6 @@
   box-shadow: 0 0 calc(14px * var(--bloom, 1)) color-mix(in srgb, var(--color-glow) 35%, transparent);
 }
 
-.top-bar__toggles {
-  display: flex;
-  justify-self: end;
-  gap: 0.7rem;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
 @media (max-width: 780px) {
   :root {
     --top-bar-row-1: 3.4rem;
@@ -156,12 +148,6 @@
     grid-column: 2;
     grid-row: 1;
     place-self: center start;
-  }
-
-  .top-bar__toggles {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
   }
 
   .top-bar__nav {
@@ -237,12 +223,6 @@
     grid-row: 2;
     font-size: 1.4rem;
     justify-self: center;
-  }
-
-  .top-bar__toggles {
-    grid-column: 1;
-    grid-row: 2;
-    justify-self: end;
   }
 
   .top-bar__nav {
