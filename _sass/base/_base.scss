@@ -51,16 +51,6 @@ body {
 }
 
 
-h1.dynamic-title {
-  @include bp.lt(bp.get(lg)) {
-    display: none;
-
-    ~ .content {
-      margin-top: 2.5rem;
-    }
-  }
-}
-
 .preview-img {
   aspect-ratio: 40 / 21;
   width: 100%;
@@ -86,57 +76,9 @@ h1.dynamic-title {
   }
 }
 
-.post-preview {
-  @extend %rounded;
-
-  border: 0;
-  background: var(--card-bg);
-  box-shadow: var(--card-shadow);
-
-  &::before {
-    @extend %rounded;
-
-    content: '';
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    background-color: var(--card-hover-bg);
-    opacity: 0;
-    transition: opacity var(--transition-normal) ease-in-out;
-  }
-
-  &:hover {
-    &::before {
-      opacity: 0.3;
-    }
-  }
-}
-
-.post-meta {
-  @extend %text-sm;
-
-  a {
-    &:not([class]):hover {
-      @extend %link-hover;
-    }
-  }
-
-  em {
-    @extend %normal-font-style;
-  }
-}
-
 .content {
   margin-top: 2rem;
   overflow-wrap: break-word;
-
-  &:not(.prose) {
-    font-size: 1.08rem;
-
-    @include bp.xl {
-      font-size: 1.03rem;
-    }
-  }
 
   a {
     &.popup {
