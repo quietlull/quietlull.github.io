@@ -3,6 +3,10 @@
 //   node tools/page-fingerprint.mjs capture before.json            (reads ./_site)
 //   node tools/page-fingerprint.mjs capture after.json --site path/to/_site
 //   node tools/page-fingerprint.mjs compare before.json after.json
+//   node tools/page-fingerprint.mjs compare before.json after.json --ignore-classes
+//
+// --ignore-classes matches elements by tag and position only. Use it when a change removed class
+// names from the markup on purpose: every element should still be where it was.
 //
 // A capture loads ten sample pages at two widths in a real browser and writes down, for every
 // element: its tag, its classes, and its position and size in whole pixels. `compare` exits 1 if
@@ -79,6 +83,8 @@ async function capture(out, siteDir) {
   console.log(`\n${Object.keys(result).length} page views, ${steady} steady elements recorded -> ${out}`);
 }
 
+const tagsOnly = process.argv.includes('--ignore-classes');
+
 function compare(a, b) {
   const before = JSON.parse(readFileSync(a, 'utf8'));
   const after = JSON.parse(readFileSync(b, 'utf8'));
@@ -88,8 +94,9 @@ function compare(a, b) {
     if (!right) { console.log(`${view}: missing from the second capture`); differences += 1; continue; }
     const notes = [];
     const want = new Map(), have = new Map();
-    for (const row of left.steady) want.set(row.join(), (want.get(row.join()) || 0) + 1);
-    for (const row of right.steady) have.set(row.join(), (have.get(row.join()) || 0) + 1);
+    const key = (row) => (tagsOnly ? [row[0].split('.')[0], ...row.slice(1)] : row).join();
+    for (const row of left.steady) want.set(key(row), (want.get(key(row)) || 0) + 1);
+    for (const row of right.steady) have.set(key(row), (have.get(key(row)) || 0) + 1);
     const gone = [...want].filter(([key, n]) => (have.get(key) || 0) < n).map(([key]) => key);
     const added = [...have].filter(([key, n]) => (want.get(key) || 0) < n).map(([key]) => key);
     if (gone.length || added.length) {

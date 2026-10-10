@@ -13,25 +13,31 @@
 //   await page.close();
 //
 // Set CHROME_PATH to use another Chromium browser (Edge works).
+//
+// Each launch gets a throwaway profile and lets the browser pick a free debugging port, which it
+// writes into that profile. So any number of checks can run at once without colliding; the first
+// argument of launch() used to be a port number and is ignored.
 import { spawn } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
-export async function launch(port = 9555, width = 1440, height = 900) {
-  const profile = mkdtempSync(path.join(os.tmpdir(), 'real-browser-'));   // a throwaway profile
+export async function launch(_unused, width = 1440, height = 900) {
+  const profile = mkdtempSync(path.join(os.tmpdir(), 'real-browser-'));
   const proc = spawn(CHROME, [
-    '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
+    '--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`,
     `--window-size=${width},${height}`, '--no-first-run', '--no-default-browser-check',
     '--autoplay-policy=no-user-gesture-required', 'about:blank',
   ], { stdio: 'ignore' });
 
   let targets;
-  for (let i = 0; i < 60; i++) {
-    try { targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json(); break; }
-    catch { await sleep(250); }
+  for (let i = 0; i < 80 && !targets; i++) {
+    try {
+      const port = Number(readFileSync(path.join(profile, 'DevToolsActivePort'), 'utf8').split('\n')[0]);
+      targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json();
+    } catch { await sleep(250); }
   }
   if (!targets) throw new Error('Chrome did not open its debugging port');
   const ws = new WebSocket(targets.find((t) => t.type === 'page').webSocketDebuggerUrl);
