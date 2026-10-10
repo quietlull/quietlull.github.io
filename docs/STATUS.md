@@ -3,7 +3,30 @@
 **THE WHOLE SITE IS PORTED, THE STRIP PASS HAS RUN, AND BOOTSTRAP IS FULLY EVICTED.** Compiled
 2026-09-02 evening. Everything below is measured, not recalled.
 
-## The one-screen update (2026-09-03 evening)
+## The one-screen update (2026-10-09)
+
+- **The phase is the CSS/JS split plus component cleanup** (REFACTOR-PLAN, accepted). Rod's
+  vocabulary and the composition rule are the frame for all of it: element, wrapper, component,
+  behaviour; variants are modifiers, never child components.
+- **The workbench exists and is trustworthy now.** `http://localhost:4000/redesign-lab/workbench.html`,
+  generated from the built site after every local build. Each specimen is a real element inside
+  its real ancestors with its page's scripts; "Bare" removes the ancestors. 47 tabs, 51 specimens,
+  0 script errors, behaviours verified with real pointer input. The first version (2026-09-04) put
+  every specimen in one shared page and was wrong in a dozen ways; `docs/WORKBENCH-CHECK.md` is the
+  record.
+- **Two component fixes are applied and UNCOMMITTED, waiting for Rod's review:** P529
+  (`display: inline-block` on `.kit-button`) and P534 (cap the related-card video). Both measured
+  with no visible change on the live site.
+- **Six visitor-visible issues are waiting on Rod**, section 1 of `docs/WORKBENCH-CHECK.md`. The
+  two that matter most: the featured cards break below 760px, and the post link underline leaks
+  onto related cards, the Back button and heading anchors.
+- **Still open from before:** P535 (Back button takes the tag's border break as its own behaviour
+  class, waiting on "glow or not"), the FontAwesome swap (waiting on Lucide or Feather), the Edge
+  reel ghost (parked), post video weight, the dead-code list.
+- **Five commits are unpushed** (`8a8369e` to `320fe3e`), plus this session's work in the tree.
+- `npm test` green.
+
+## The previous one-screen update (2026-09-03 evening)
 
 - **The post page's furniture is finished for now.** Code blocks render D20's wrapper with Rod's
   syntax mapping; the comments sit in the post column wearing the site's palette; the scrollbar is

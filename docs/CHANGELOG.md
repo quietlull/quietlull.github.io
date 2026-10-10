@@ -1,3 +1,40 @@
+# 2026-10-09 - THE WORKBENCH IS REBUILT, BECAUSE THE FIRST ONE COULD NOT BE TRUSTED
+
+**Asked for by ROD** on 2026-09-04 (*"EVERY element on the site should have its own corresponding
+tab in the work bench"*) and checked at his request on 2026-09-29 (*"double check that all workbench
+components are working one by one"*).
+
+**THE FIRST VERSION FAILED ITS OWN CHECK.** It extracted loose fragments into one shared page.
+Six agents went through all 36 tabs and the same fault kept surfacing in different clothes: a
+component pulled out of its page stops working, because something outside it was doing part of its
+job. Cards had no tilt (their script is started by the page). Icons were blank (the sprite lives in
+the page). The portal window sat in the corner (a page script places it). Half the tabs showed the
+wrong thing entirely, because the generator could only see class names and credited a class to any
+file that mentioned it, comments included.
+
+**THE REBUILD TREATS A SPECIMEN AS THE PAGE WITH EVERYTHING ELSE REMOVED.** The element, its
+ancestors as empty wrappers, and that page's own stylesheets, fonts, sprite and module scripts, in
+its own document. One switch removes the ancestors. That turns the fault into the feature: the
+"View projects" button only clipped its fill because every page happened to wrap it in a flex
+parent, and bare, it spilled. That was a real bug in the component (P529), found by the bench.
+
+**IT REGENERATES ITSELF.** `_plugins/workbench-hook.rb` runs the generator after every local build
+and writes into `_site/` only. The first version was generated once and was three weeks stale when
+it was checked.
+
+**VERIFIED IN A REAL BROWSER WITH REAL INPUT**, because the in-app pane was hidden and a hidden tab
+runs no animation frames: 51 specimens, 0 script errors, sizes matching the live measurements, and
+tilt, glow, flip, drift, magnet, line boil and the achievement wall all working.
+
+**WHAT THE CHECK FOUND ON THE LIVE SITE is waiting on Rod** and is listed in
+`docs/WORKBENCH-CHECK.md`: the featured cards break below 760px, the post link underline leaks onto
+related cards and buttons, `/ramblings/` lists nothing, and three smaller ones.
+
+**Also since the last entry (2026-09-04, commits `8a8369e` to `320fe3e`):** eight abbreviated class
+names renamed under Rod's no-abbreviations rule, 101 superseded lab files deleted,
+`docs/ELEMENT-INVENTORY.md` written, and the reel taught to stop decoding video off screen. Two
+one-line component fixes (P529, P534) are applied and uncommitted.
+
 # 2026-09-03, evening - THE COMMENTS AREA STOPS LOOKING BROKEN, AND I LEARN TO DRIVE THE REAL INPUT
 
 **Decided by ROD**, across a session where he corrected me more than once and was right each time.
