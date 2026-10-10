@@ -22,10 +22,6 @@ function motionOn() {
   return !document.body.classList.contains('motion-off');
 }
 
-function onScreenVisible(entry) {
-  return document.body.classList.contains('cull-off') ? true : entry.onScreen;
-}
-
 function readDrift(element) {
   const hasDrift =
     element.hasAttribute('data-drift') ||
@@ -88,7 +84,7 @@ function tick(now) {
       entries.splice(i, 1);
       continue;
     }
-    const vis = onScreenVisible(e);
+    const vis = e.onScreen;
     const parked =
       e.driftLevel < SETTLE_EPSILON &&
       e.blend < SETTLE_EPSILON &&
@@ -197,21 +193,6 @@ function bindClickFlash(element) {
   });
 }
 
-export function retune(element) {
-  const entry = elementToEntry.get(element);
-  if (!entry) {
-    return;
-  }
-  entry.strength = Number(element.dataset.strength) || DEFAULT_STRENGTH;
-  entry.strengthText = Number(element.dataset.strengthText) || DEFAULT_STRENGTH_TEXT;
-  const drift = readDrift(element);
-  entry.ampX = drift.ampX;
-  entry.ampY = drift.ampY;
-  entry.speedX = drift.speedX;
-  entry.speedY = drift.speedY;
-  wake();
-}
-
 export function init(root = document) {
   if (!startTime) {
     startTime = performance.now();
@@ -221,10 +202,6 @@ export function init(root = document) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.body.classList.add('motion-off');
     }
-    new MutationObserver(() => wake()).observe(document.body, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
     cullObserver = new IntersectionObserver(
       (records) => {
         let changed = false;
@@ -252,9 +229,7 @@ export function init(root = document) {
     const entry = createEntry(el);
     entries.push(entry);
     elementToEntry.set(el, entry);
-    if (cullObserver) {
-      cullObserver.observe(el);
-    }
+    cullObserver.observe(el);
     if (entry.isMagnetic) {
       bindMagnet(entry);
     }
@@ -263,13 +238,4 @@ export function init(root = document) {
     }
   });
   wake();
-
-  const motionBtn = root.querySelector('[data-motion-toggle]');
-  if (motionBtn && !motionBtn.dataset.bound) {
-    motionBtn.dataset.bound = '1';
-    motionBtn.addEventListener('click', () => {
-      const off = document.body.classList.toggle('motion-off');
-      motionBtn.textContent = off ? 'turn motion on' : 'turn motion off';
-    });
-  }
 }
