@@ -1,6 +1,23 @@
-import { TocDesktop as desktop } from './toc/toc-desktop';
+const options = {
+  tocSelector: '#toc',
+  contentSelector: '.content',
+  ignoreSelector: '[data-toc-skip]',
+  headingSelector: 'h2, h3, h4',
+  orderedList: false,
+  scrollSmooth: false,
+  headingsOffset: 16 * 2
+};
 
 const desktopMode = matchMedia('(min-width: 1200px)');
+
+function show() {
+  tocbot.init(options);
+
+  const $tocWrapper = document.getElementById('toc-wrapper');
+  if ($tocWrapper) {
+    $tocWrapper.classList.remove('invisible');
+  }
+}
 
 function init() {
   if (document.querySelector('main>article[data-toc="true"]') === null) {
@@ -11,20 +28,11 @@ function init() {
     return;
   }
 
-  desktop.init();
-
-  const $tocWrapper = document.getElementById('toc-wrapper');
-  if ($tocWrapper) {
-    $tocWrapper.classList.remove('invisible');
-  }
+  show();
 
   desktopMode.onchange = (event) => {
     if (event.matches) {
-      desktop.init();
-      const $wrapper = document.getElementById('toc-wrapper');
-      if ($wrapper) {
-        $wrapper.classList.remove('invisible');
-      }
+      show();
     }
   };
 }
