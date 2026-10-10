@@ -1,16 +1,8 @@
 export function back2top() {
   const btn = document.getElementById('back-to-top');
-  const root = document.documentElement;
-  let scrollTimer = null;
 
   let ticking = false;
   window.addEventListener('scroll', () => {
-    if (!root.classList.contains('is-scrolling')) {
-      root.classList.add('is-scrolling');
-    }
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => root.classList.remove('is-scrolling'), 150);
-
     if (!ticking) {
       requestAnimationFrame(() => {
         btn.classList.toggle('show', window.scrollY > 50);
