@@ -59,11 +59,8 @@ export function init(root = document) {
       });
     });
 
-    if (empty) {
-      empty.hidden = shown !== 0;
-      const said = empty.querySelector('.es__q');
-      if (said) said.textContent = '“' + raw.trim() + '”';
-    }
+    empty.hidden = shown !== 0;
+    empty.querySelector('.es__q').textContent = '“' + raw.trim() + '”';
 
     const url = new URL(window.location.href);
     if (q) url.searchParams.set(PARAM, raw.trim());
