@@ -1,5 +1,15 @@
 # Architecture handoff
 
+> **STALENESS NOTICE, 2026-10-10. The simplification pass (P543) deleted 16 more of the files this
+> note inventories, and shortened most of the rest, so every line count below is out of date.**
+> Off disk now: `_layouts/page.html`, `_includes/datetime.html`, `_includes/metadata-hook.html`,
+> `_includes/origin-type.html`; `_javascript/performance-monitor.js` and, under
+> `_javascript/modules/components/`, `card-tilt.js`, `tool-taglines.js`, `locale-datetime.js`,
+> `toc/toc-desktop.js`; `assets/js/components/slap-toggle.js`; `_sass/components/_bio-block.scss`,
+> `_figure-real.scss`, `_popups.scss`, `_reference-links.scss`; `_sass/pages/_categories.scss`,
+> `_category-tag.scss`. What went and why is in `docs/simplify/`, one report per area. For what a
+> file does today, use its review page (`redesign-lab/todo.html`) or `docs/CODE-AUDIT.md`.
+
 > **UPDATED 2026-08-26, after the markup port.** All six pages are ported. Component reachability
 > went **8 of 26 to 19 of 26**. The seven still unreachable need markup that does not exist yet:
 > `bio-block`, `callout-family`, `figure-real`, `reference-links`, `slap-toggle`, `washi-tape`,

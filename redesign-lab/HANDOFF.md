@@ -2,7 +2,7 @@
 >
 > Every component the site ships, each as a real element from a real built page. It is GENERATED,
 > into `_site/redesign-lab/` only, by `tools/build_workbench.py`. Under `jekyll serve` the hook in
-> `_plugins/workbench-hook.rb` regenerates it after every build, so there is nothing to run by hand
+> `_plugins/lab-pages-hook.rb` regenerates it after every build, so there is nothing to run by hand
 > and nothing generated in the source tree. Only `workbench.css` (the shell's own styles) is source.
 >
 > - **A specimen is the page with everything else removed:** the element, its ancestors as empty

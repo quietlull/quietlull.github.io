@@ -3,6 +3,12 @@
 Generated 2026-09-04 from the BUILT pages in `_site/`, one representative page per type, with
 `<script>`, `<style>` and **HTML comments** stripped before counting.
 
+**Read it as a snapshot of that day.** The simplification pass of 2026-10-10 removed a few class
+names from the markup (`readtime`, `post-nav-prev`, `bio-h--lesser`) and deleted six stylesheets it
+groups by, `_bio-block.scss` among them. The workbench
+(`http://localhost:4000/redesign-lab/workbench.html`) is rebuilt from the built pages on every
+local build and is the current picture.
+
 **Every block appears ONCE, with a count and where it is used.** Rod: *"discard repeated
 elements shared between pages and just add a counter and where its used"*.
 

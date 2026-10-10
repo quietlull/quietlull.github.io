@@ -1,3 +1,55 @@
+# 2026-10-10 - THE CODE BASE GETS SMALLER: NO COMMENTS, THEN A FIVE-AGENT SIMPLIFICATION PASS
+
+**Asked for by ROD** on 2026-10-09, after he asked whether the refactor had made the code base
+smaller and the measured answer was "not really" (P541): *"for comments please strip them all out
+and place them in the review area or place them in MD ... Code should be self explanatory or
+documenting but please do a multi agent simplification pass as well."*
+
+**THE COMMENTS WENT FIRST (P542).** 2,565 of them, 27% of the code base, most of them history I had
+written. They are archived per file in `docs/code-comments/` and each file's review page shows its
+own. The compiled stylesheet and all ten bundles were byte-identical before and after. `npm test`
+now fails if a comment appears.
+
+**THEN FIVE AGENTS, ONE AREA EACH (P543):** templates, bundled scripts, scripts served as written,
+component and page styles, foundation styles. The contract was `docs/simplify/README.md`: delete
+what is measured dead, shorten what remains, change nothing a visitor can see or feel, rename
+nothing. Result: lines of code 12,972 to about 10,250, 16 source files deleted, the stylesheet a
+visitor downloads 121 KB to 96 KB.
+
+**THE PLAN WAS FIVE AT ONCE IN FIVE WORKTREES, AND THE DISK SAID NO.** A copy of this repo is
+1.4 GB and the drive had 1 GB free, so all five failed to start. They ran one at a time in the main
+checkout instead, with strict rules about never touching another session's files. Twelve leftover
+browser profiles from the check tool were holding 969 MB; the tool deletes its profile now.
+
+**EVERY AGENT'S WORK WAS RE-CHECKED BY SOMEONE WHO DID NOT WRITE IT.** After each one, lint, the
+compiled stylesheet rule by rule, the position, size and computed style of 4,541 elements, and a
+behaviour run with a real mouse and keyboard were compared against captures taken before that agent
+started. All identical. One agent's own check caught its own mistake: guards it removed from
+`portal-windows.js` were dead on the real portal and needed by the workbench, and
+`check-workbench` went from 0 problems to 4 until it put them back.
+
+**THREE TOOLS CAME OUT OF IT.** `tools/behaviour-check.mjs` was written by an agent in the scratch
+folder and promoted so it would not be lost. `tools/page-fingerprint.mjs` gained `--styles`,
+because the two style agents needed a check that sees colour, and a fixed clock, because a tile on
+the achievement wall unlocks after midnight and a baseline from the evening disagreed with a
+capture taken at 00:20 on a page nobody had touched. The no-comments check now reads stylesheet
+text as well as the parser's comment list: postcss-scss cannot see a comment inside a Sass map,
+which is how three survived the strip.
+
+**WHAT IT FOUND AND DID NOT FIX, because the fix would be visible:** the glass shadow has never
+rendered (two `//` notes inside the `--glass-shadow` value ship to the browser and make it invalid),
+the page transition never runs, image zoom is off, and twelve achievements cannot be earned. Those
+and 18 smaller decisions are listed for Rod in `docs/simplify/README.md`.
+
+**LESSONS.**
+- A check that has never failed has not been tested. Each new check was shown a deliberate change
+  (a one-step colour change on one link; a comment put back in a map) before it was trusted.
+- An agent cut off by the usage limit resumes from its own transcript with one message. Two were,
+  and neither redid work. The first thing to do on resume is run the lint suite: one agent had
+  been stopped between a commit and its proof, and the tree was failing.
+- Dead on every real page is not the same as dead: the workbench shows components outside their
+  page and can be the only thing that needs a guard. That is a decision, not a deletion.
+
 # 2026-10-09 - THE WORKBENCH IS REBUILT, BECAUSE THE FIRST ONE COULD NOT BE TRUSTED
 
 **Asked for by ROD** on 2026-09-04 (*"EVERY element on the site should have its own corresponding

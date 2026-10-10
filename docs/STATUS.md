@@ -3,7 +3,34 @@
 **THE WHOLE SITE IS PORTED, THE STRIP PASS HAS RUN, AND BOOTSTRAP IS FULLY EVICTED.** Compiled
 2026-09-02 evening. Everything below is measured, not recalled.
 
-## The one-screen update (2026-10-09)
+## The one-screen update (2026-10-10)
+
+- **The source carries no comments** (P542). 2,565 were removed and archived in
+  `docs/code-comments/`; `npm test` fails if one comes back. What a file needs explaining goes in
+  `docs/CODE-AUDIT.md`.
+- **The simplification pass is finished** (P543). Lines of code 12,972 to about 10,250, 16 source
+  files deleted, the compiled stylesheet 121 KB to 96 KB. Nothing a visitor can see or feel
+  changed; how that was checked, and what the checks do not cover, is at the top of
+  `docs/simplify/README.md`.
+- **22 decisions from the pass are waiting on Rod**, same file, "Waiting on Rod". Four are things
+  that are broken today and whose fix is visible: the glass shadow has never rendered, the page
+  transition never runs, image zoom is off, twelve achievements cannot be earned.
+- **Rod's human audit is the phase now.** The review list is
+  `http://localhost:4000/redesign-lab/todo.html`, one generated page per source file. Six files
+  have hand-written notes in `docs/CODE-AUDIT.md`, brought up to date after the pass; the rest get
+  written in the order he reviews.
+- **Three checks exist for "did this change anything a visitor can see":**
+  `tools/page-fingerprint.mjs` (position and size; `--styles` adds every computed style),
+  `tools/behaviour-check.mjs` (tilt, flip, drift, magnets, line boil, search, achievement wall,
+  portal, with a real mouse and keyboard), `tools/check-workbench.mjs`.
+- **Still open from before:** the six visitor-visible issues in `docs/WORKBENCH-CHECK.md` section
+  1, P535 (waiting on "glow or not"), the FontAwesome swap (waiting on the icon set), the behaviour
+  split (P516/P518), the Edge reel ghost (parked), post video weight.
+- **About 130 commits are unpushed.** `npm test` green.
+- **The C: drive is nearly full** (0.5 to 4 GB free during the pass). Two old folders in the user
+  Temp directory, `znp2zfq2` (3.7 GB) and `yphocal4` (0.9 GB), are not from this work.
+
+## The earlier one-screen update (2026-10-09)
 
 - **The phase is the CSS/JS split plus component cleanup** (REFACTOR-PLAN, accepted). Rod's
   vocabulary and the composition rule are the frame for all of it: element, wrapper, component,

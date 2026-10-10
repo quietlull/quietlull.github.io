@@ -63,7 +63,7 @@ from were deleted on 2026-09-04; `git show 047213e:redesign-lab/final-landing.ht
   tuning anything, ask which file renders the URL Rod is looking at.
 - **The workbench is generated, never hand-edited.** `http://localhost:4000/redesign-lab/workbench.html`
   shows every component as a real element from a real built page. `tools/build_workbench.py` writes
-  it into `_site/` and `_plugins/workbench-hook.rb` reruns that after every `jekyll serve` build.
+  it into `_site/` and `_plugins/lab-pages-hook.rb` reruns that after every `jekyll serve` build.
   Each specimen keeps its page's ancestors, stylesheets and scripts; "Bare" removes the ancestors
   to show what depends on its page. See `redesign-lab/HANDOFF.md` and
   [docs/WORKBENCH-CHECK.md](docs/WORKBENCH-CHECK.md).
@@ -77,3 +77,14 @@ lab water is now five changes behind live - see [docs/TRAPS.md](docs/TRAPS.md).
 - `bundle exec jekyll s` - local serve
 - `npm test` - eslint + stylelint + the CSS load-order check + no comments in the source
 - `python tools/build_workbench.py` - rebuild the lab workbench by hand (the serve hook normally does it)
+
+## Proving a change moved nothing
+
+Capture before, change, rebuild, capture after, compare. Each tool's header has the commands.
+
+- `node tools/page-fingerprint.mjs capture <file> [--styles]` - where every element sits on ten
+  pages at two widths; `--styles` adds every computed style, so colour changes are caught too
+- `node tools/behaviour-check.mjs <file> [reduced]` - tilt, flip, drift, magnets, line boil,
+  search, achievement wall, portal, driven with a real mouse and keyboard
+- `node tools/check-workbench.mjs` - every workbench specimen loads with no script errors
+- `node tools/css-rule-diff.mjs <before.css> <after.css>` - which compiled rules changed

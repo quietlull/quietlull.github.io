@@ -38,17 +38,23 @@ when the browser has parsed the page (module scripts are deferred).
 markup in `_includes/top-bar.html`. If either is missing the matching call does nothing; nothing
 throws.
 
+**This is the only place drift and magnet elements are registered.** Since the simplification pass
+(2026-10-10) nothing else calls the engine's `init`. `project-cards-expensive.js` and
+`portal-windows.js` used to call it again for elements this call already covers; those calls are
+gone, and so is the engine's "already registered" check that made a repeat call harmless.
+
 **Elements added after load are not picked up.** `initMagnetic` only sees what is in the document
-when it runs. Code that builds markup later has to call it again, and it is safe to: the engine
-keeps a set of what it has registered. `assets/js/components/project-cards-expensive.js` does
-exactly that for the cards.
+when it runs. Code that builds markup later has to call it again **on a root that holds only the
+new elements**: a second call over an element it already has would bind that element's mouse
+listeners twice.
 
 **Things a maintainer should know.**
 
 - "chrome" here means the frame around the content (top bar, cursor, shared motion), not the
   browser. It is jargon and a rename candidate.
-- It is 6 statements. A removed comment claimed these calls would "fold into `commons.js`". That
-  is wrong: `commons.min.js` ships on 9 pages and this file ships on all of them.
+- It is three imports and three calls. A removed comment claimed these calls would "fold into
+  `commons.js`". That is wrong: `commons.min.js` ships on 10 of the 56 pages and this file ships on
+  all of them.
 - Page-specific setup lives elsewhere, in the inline modules of the `*-scripts.html` includes.
 
 ## assets/js/components/cursor-coords.js
@@ -65,16 +71,16 @@ listener to `window`. Each event stores `clientX`/`clientY` and, if no frame is 
 `flush` with `requestAnimationFrame`. `flush` calls every handler with `(x, y)`. So handlers run at
 most once per frame, and only while the pointer is moving: an idle page does no work here.
 
-It returns an unsubscribe function that removes `fn`. Nobody calls it, and the window listener is
-never removed.
+It returns nothing. A handler cannot be removed once added, and the window listener is never
+removed. (It used to return an unsubscribe function that no caller kept; that went in the
+simplification pass.)
 
-**Who subscribes.**
+**Who subscribes.** All three import it normally.
 
 - `assets/js/components/cursor-glow.js`: writes `--cx`, `--cy` on the glow.
 - `assets/js/components/project-cards-expensive.js`: writes `--mx`, `--my` on each card for the
   glow band.
-- `assets/js/components/achievement-wall.js`: loads this file with a dynamic `import()` and
-  uses it for the tile rim glow.
+- `assets/js/components/achievement-wall.js`: the tile rim glow.
 
 **What it cannot see.** A cross-origin iframe delivers no pointer events to the parent page. Over
 the giscus comments the position simply stops updating, which is why `cursor-glow.js` adds a
@@ -87,15 +93,16 @@ with a radial gradient, styled in `_sass/components/_cursor-glow.scss`. This scr
 CSS custom properties on it, `--cx` and `--cy`, in client pixels; the stylesheet turns them into a
 transform. Nothing is animated in JavaScript.
 
-**State.** Two module-level variables: `glowElement` and `bound`.
+**State.** None at module level. The glow element is a local of `init`.
 
-**`init(root = document)`.**
+**`init(root = document)`.** Called once, by `assets/js/chrome.js`.
 
 - Looks up the first `.cursorglow` under `root` and returns if there is none.
 - Calls `setupCommentsShield()`.
-- Subscribes one handler to `onCursor` from `assets/js/components/cursor-coords.js`, once. A
-  second call to `init` only refreshes which element is driven. Because it takes the first match,
-  a second `.cursorglow` on the same page is never driven.
+- Subscribes one handler to `onCursor` from `assets/js/components/cursor-coords.js`. Because it
+  takes the first match, a second `.cursorglow` on the same page is never driven.
+- It is written to run once. A second call would add a second shield and a second subscriber; the
+  guards against that were removed in the simplification pass because nothing calls it twice.
 
 **`setupCommentsShield()`.** Only does anything on a page with `.post-comments`,
 which `_includes/comments/giscus.html` emits. It appends a `div.cursor-shield` to that element.
@@ -122,7 +129,7 @@ three.js scene, which caused one misunderstanding already (P531).
 - **Click flash**: an outline ripple on click. Opt in with `data-click-flash`.
 
 **The record per element (`createEntry`).** One object per registered element, kept in the
-`entries` array and the `elementToEntry` map:
+`elementToEntry` map (the loop walks the map in the order elements were added):
 
 - Tuning read from the markup: `strength` (`data-strength`, default 40), `strengthText`
   (`data-strength-text`, default 20), `clamp` (`data-magnet-clamp`), drift amplitude `ampX`/`ampY`
@@ -147,7 +154,9 @@ three.js scene, which caused one misunderstanding already (P531).
 - `will-change: translate` is set only while an element is moving and cleared when it settles.
 - An element that is off screen and at rest is skipped. When nothing is moving and no visible
   element drifts, the loop stops (`rafId = null`) until `wake()` restarts it.
-- Elements removed from the document are dropped from the list.
+- A record is never dropped. If a registered element were removed from the page its record would
+  stay in the map. No page does that today: a watch over all 56 built pages saw no registered
+  element removed.
 
 **Magnet input (`bindMagnet`).** A `mousemove` listener per magnetic element. The target
 offset is the pointer's position inside the element, as a fraction from -0.5 to 0.5, times
@@ -159,22 +168,20 @@ touch does not trigger it. There is no attraction from outside the element.
 second click restarts it, and removes it on `animationend` for the animation named `dm-border-fly`.
 The keyframes are in `_sass/components/_drift-magnet.scss`.
 
-**`init(root)`.**
+**When the module loads** (before any `init` call): if the OS asks for reduced motion it adds
+`motion-off` to `body`, and it creates one IntersectionObserver with a 200px margin that keeps each
+record's `onScreen` current.
 
-- First call only: if the OS asks for reduced motion it adds `motion-off` to `body`. It starts a
-  MutationObserver on `body`'s class list, and an IntersectionObserver with a 200px margin that
-  keeps each record's `onScreen` current.
-- Every call: registers matching elements under `root` that are not registered yet, then wakes the
-  loop.
+**`init(root)`.** Registers every matching element under `root`, binds its magnet and click-flash
+listeners, and wakes the loop. Its only caller is `assets/js/chrome.js`. It does not check whether
+an element is already registered, so a second call over the same element binds its listeners twice.
 
-**`retune(element)`** re-reads an element's data attributes. Nothing in the live tree
-imports it. It was for the lab's tuning sliders.
+**`body.motion-off`** is read here and set only here. No stylesheet uses it.
 
-**Dead or lab-only paths.**
-
-- The `[data-motion-toggle]` button handler. No built page has that element.
-- `body.cull-off`. Nothing in the live tree sets it.
-- `body.motion-off` is read here and set only here. No stylesheet uses it.
+**Removed in the simplification pass (2026-10-10)**, all measured unused on the 56 built pages:
+`retune(element)` (the lab's tuning sliders used their own copy), the `[data-motion-toggle]` button
+handler, `body.cull-off`, the MutationObserver on `body`'s class list, and the clean-up for elements
+removed from the page. `git show b0443cd:assets/js/components/drift-magnet.js` has all of them.
 
 **For the split (P516).** Drift and magnet share the record, the loop and the single `translate`
 write. Two independent modules would both want to write `translate` on the same element, so a
@@ -182,7 +189,7 @@ split needs either one shared writer that sums contributions, or drift and magne
 properties. The override rule above has to live in whichever piece owns the write.
 
 **Names to look at.** `e`, `r`, `tx`, `ty`, `rec`, `vis`, `mag`, `amp` and the `dm-` prefix are all
-abbreviations. `init.gated` stores a flag as a property on the function itself.
+abbreviations.
 
 ## assets/js/components/line-boil.js
 
@@ -190,16 +197,19 @@ abbreviations. `init.gated` stores a flag as a property on the function itself.
 times a second. The fonts are `Lineboil1`, `Lineboil2` and `Lineboil3`, declared with `@font-face`
 in `_sass/components/_line-boil.scss`.
 
-**`initLineBoil(host, { rate = 6 })`.** Returns immediately if `host` is null.
+**`initLineBoil(host)`.** Returns immediately if `host` is null. The speed is the constant
+`LINE_BOIL_RATE`, 6 changes a second; it is no longer an option, because no caller ever passed one.
 
 - Adds class `line-boil-text` to the host.
 - Waits for all three fonts: `document.fonts.load` for each, then `document.fonts.ready`. This is
   required, not a nicety: measuring before the fonts arrive would fix the fallback font's widths
   in place permanently, with no error.
-- Then `pinGlyphAdvance(host, text)` and a `setInterval` calling `boilTick` every 1000/rate ms.
+- Then `pinGlyphAdvance(host, text)` and a `setInterval` calling `boilTick` every
+  1000 / `LINE_BOIL_RATE` ms.
 - Adds a `resize` listener on `window` that re-measures after 150ms. It re-reads the host's text,
   so a host whose text changes (the landing clock) keeps its new content.
-- Returns a teardown function. No caller keeps it, so the interval runs for the life of the page.
+- Returns nothing. The interval and the resize listener run for the life of the page and nothing
+  can stop them. (It used to return a teardown function that no caller kept.)
 
 **`pinGlyphAdvance`.** Replaces the host's text with one `span.line-boil-text__g` per
 visible character, each with a fixed `inline-size`.
@@ -252,8 +262,13 @@ every 100ms, up to 100 times, it calls `apply(tier)` and stops once the result i
   the mesh's own `visible` flag every frame.
 - For `none` and `embers` it does not poll at all.
 
-**What it leaves behind.** A debug object, `window.__sceneTier`, with the tier, a `set()` that
-reloads with the query, and `counts()`.
+**What it leaves behind.** Nothing. `counts()` is a private function that the polling uses to tell
+when the scene has arrived and the tier is in place. To try a tier by hand, add `?scene=minimal`
+(or `full`, `none`) to the address.
+
+A console helper, `window.__sceneTier` (the tier, a `set()` that reloaded with the query, and
+`counts()`), was removed in the simplification pass because nothing on the site read it.
+`git show b0443cd:assets/js/effects/scene-mode.js` has it.
 
 **The cost this file represents.** A `minimal` page downloads the full 823KB scene bundle,
 including the dock and water, and then this hides them. 29 built pages are `minimal`. Not sending

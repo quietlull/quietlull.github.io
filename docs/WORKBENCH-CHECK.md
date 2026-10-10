@@ -20,22 +20,23 @@ Nothing in this file has been applied except where a line says so.
 
 | # | what | where | evidence |
 |---|---|---|---|
-| 1 | **Featured cards break below 760px (phones).** Ragged, overlapping. | `_sass/components/_merged-card.scss:36` sets 6 columns below 760px, `:50-52` still gives the wide card `grid-column: span 12`, the 12-column rule `:40-44` only applies from 760px up | At 390px: first card 72px wide, others 167px, the full-width card 254px inside a 239px grid. Also mis-sized at 600 and 759 |
+| 1 | **Featured cards break below 760px (phones).** Ragged, overlapping. | `_sass/components/_merged-card.scss`: `.merged-cards` is `repeat(6, 1fr)` below 760px, the wide card still gets `grid-column: span 12`, and the 12-column rule sits inside `@media (min-width: 760px)` | At 390px: first card 72px wide, others 167px, the full-width card 254px inside a 239px grid. Also mis-sized at 600 and 759 |
 | 2 | **Flipped card backs overflow the card in narrow windows.** | same file, same mobile decision | 800px wide: 3 of 8 backs overflow by 1 to 20px. 759px: 25 to 30px. 390px: up to 159px |
-| 3 | **The post link underline leaks onto things that are not text links.** Every related card grows a 243px gold bar 4px below it on hover. | `_sass/base/_base.scss:165-181` (`.content a:not(.img-link)`, unlayered) beats `.rc::after { content: none }` at `_related-card-real.scss:82`, which is layered (the D36 trap) | On a live post the rule matches 5 heading anchors, the Back button, 2 prev/next cards, 3 related cards, and 1 real text link. It is also what kills the Back button's shimmer (P535) |
-| 4 | **`/ramblings/` lists no posts.** | `_layouts/ramblings.html:28` lists posts tagged `ramblings`; no tracked post has that tag, they use `blog` | "Nothing here yet" on the built page |
-| 5 | **`No projects matching “”`** with empty quotes | `assets/js/components/search-field.js:121` always wraps the text in quotes | Projects page: pick pills only (unity, shader, rigging) with the search box empty |
-| 6 | **Table of contents links are white, not silver, and hover changes nothing.** | tocbot's own CDN stylesheet (`a.toc-link { color: currentColor }`, unlayered) beats `_toc-real.scss:38` | Rest colour `rgb(245,243,239)`; the component comment at `_toc-real.scss:45-48` describes a silver to gold step |
-| 7 | About hero panel overflows its hero box by 45px | `_sass/pages/_about.scss:31-37` (`height: 50vh; min-height: 590px`), content is about 615px | `.hero` spans y 96 to 686, the panel 116 to 731. Rod's own tune (P447) |
-| 8 | "yours, not mine" tagline is `#9aa3bd`, the blue D31 bans | `_about.scss:144` | palette call |
-| 9 | Calls to Rod's own functions (`SampleLevel(`) are variable blue, not function pink | `_plugins/syntax-retag.rb:109` only re-tags scalar types and SCREAMING macros | 7 of 7 call-shaped tokens. Low confidence, may be intended |
-| 10 | The card cover sinks 2px on hover | `_merged-card.scss:109-111`, `--z: var(--z-hover, var(--z, 0))` refers to itself | effectively invisible |
-| 11 | The Back button has no side padding, the tint hugs the text | Bootstrap leftover, `_a11y.scss:74-82` sets vertical padding only | inference |
-| 12 | The kit-button's text magnet has never worked (P536) | `drift-magnet.js:176` translates an inline label | forced 20px translate moved it 0px |
+| 3 | **The post link underline leaks onto things that are not text links.** Every related card grows a 243px gold bar 4px below it on hover. | `_sass/base/_base.scss`, the `&:not(.img-link)` block under `.content a` (unlayered) beats `.rc::after { content: none }` in `_related-card-real.scss`, which is layered (the D36 trap) | On a live post the rule matches 5 heading anchors, the Back button, 2 prev/next cards, 3 related cards, and 1 real text link. It is also what kills the Back button's shimmer (P535) |
+| 4 | **`/ramblings/` lists no posts.** | `_layouts/ramblings.html` (the `all_posts` assign) lists posts tagged `ramblings`; no tracked post has that tag, they use `blog` | "Nothing here yet" on the built page |
+| 5 | **`No projects matching “”`** with empty quotes | `assets/js/components/search-field.js`, the line that fills `.es__q`, always wraps the text in quotes | Projects page: pick pills only (unity, shader, rigging) with the search box empty |
+| 6 | **Table of contents links are white, not silver, and hover changes nothing.** | tocbot's own CDN stylesheet (`a.toc-link { color: currentColor }`, unlayered) beats `.toc a` in `_toc-real.scss` | Rest colour `rgb(245,243,239)`; the design is a silver to gold step (the removed comment is in `docs/code-comments/_sass/components/_toc-real.scss.md`) |
+| 7 | About hero panel overflows its hero box by 45px | `_sass/pages/_about.scss` (`height: 50vh; min-height: 590px`), content is about 615px | `.hero` spans y 96 to 686, the panel 116 to 731. Rod's own tune (P447) |
+| 8 | "yours, not mine" tagline is `#9aa3bd`, the blue D31 bans | `_about.scss`, the rule with `color: var(--color-muted)` | palette call |
+| 9 | Calls to Rod's own functions (`SampleLevel(`) are variable blue, not function pink | `_plugins/syntax-retag.rb` only re-tags scalar types (`SCALARS`) and SCREAMING macros | 7 of 7 call-shaped tokens. Low confidence, may be intended |
+| 10 | The card cover sinks 2px on hover | `_merged-card.scss`, `--z: var(--z-hover, var(--z, 0))` refers to itself | effectively invisible |
+| 11 | The Back button has no side padding, the tint hugs the text | Bootstrap leftover, `a.btn.btn-outline-primary.btn-sm` in `_a11y.scss` sets vertical padding only | inference |
+| 12 | The kit-button's text magnet has never worked (P536) | `drift-magnet.js` (`tick`) sets `translate` on an inline label, which ignores it | forced 20px translate moved it 0px |
 
 **Accessibility notes (inference that they matter):** the active nav link is marked only by a class,
-no `aria-current="page"` (`_includes/top-bar.html:72,83,85`). tocbot marks the active TOC link with
-`is-active-link` and never sets `aria-current`, so `_toc-real.scss:53` and `:92` never match.
+no `aria-current="page"` (the `is-active` class on `.top-bar__link` in `_includes/top-bar.html`). tocbot marks the
+active TOC link with `is-active-link` and never sets `aria-current`; the two `a[aria-current="true"]` rules in
+`_toc-real.scss` could therefore never match and were removed on 2026-10-10.
 
 **Local only, not the site:**
 - Card and post videos failing or freezing on hover is Jekyll's dev server (WEBrick answers a range
@@ -45,20 +46,22 @@ no `aria-current="page"` (`_includes/top-bar.html:72,83,85`). tocbot marks the a
 
 ## 2. Dead code that still ships
 
-- `_sass/components/_bio-block.scss`, about 120 lines. No built page uses `.bio*`; About uses
-  `.bio-h`, `.biorow`, `.biocol` from `_about.scss:72-121`.
-- `.epx*`, `.is-staggered`, `.is-regular` (`_project-cards-expensive.scss:14-120`) and `bindControls`
-  (`project-cards-expensive.js:62-98`).
-- `.merged-cards-glass-toggle`, `.no-glass` (`_merged-card.scss:196-199, 387-399`).
-- `.takeaway-quote`, `.kit-button--primary` (`_button-kit.scss:30-46`), `.inline-link`
-  (`_button-kit.scss:138-165`).
-- `.dm-favicon`, `.dm-motion-btn` (`_drift-magnet.scss:74-117`) and the `[data-motion-toggle]` branch
-  (`drift-magnet.js:324-331`).
-- `.rc--v3`, `.rc-grid--v3`. The plain and bracket portrait frames (`pf--plain`, `pf--brackets`).
-- `_section-head.scss:41-52`: a comment and hover rules say the label links to its section. Every
-  page emits a `<span>`.
-- Stale comments: `_portrait-frame.scss:8-9, 24` say 191px wide, the page renders 199.
-  `project-cards-expensive.js:29-31` says frame 0 of the cover videos is black; decoded, none is.
+**All of it is gone as of 2026-10-10** (the simplification pass, P543), each item re-measured
+before it was cut. Kept here as the record of what the 36-tab check found:
+
+- `_sass/components/_bio-block.scss`: file deleted.
+- `.epx*`, `.is-staggered`, `.is-regular` and `bindControls` in `project-cards-expensive.js`: deleted.
+- `.merged-cards-glass-toggle`, `.no-glass` and the glass toggle in `merged-card.js`: deleted.
+- `.takeaway-quote`, `.kit-button--primary`, `.inline-link`: deleted.
+- `.dm-favicon`, `.dm-motion-btn` and the `[data-motion-toggle]` branch in `drift-magnet.js`: deleted.
+- `.rc--v3`, `.rc-grid--v3`, `pf--plain`, `pf--brackets`: deleted.
+- The stale comments went with every other comment (P542).
+
+**One item was wrong and stays:** the hover rule in `_section-head.scss`. The label is a `<span>`,
+but a span can still be hovered and the rule changes its colour, so it is live. Only its
+`:focus-visible` half can never happen.
+
+What the pass found beyond this list is in `docs/simplify/`, one report per area.
 
 ## 3. Components that only work because of their page
 

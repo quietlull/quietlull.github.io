@@ -18,7 +18,11 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
   half of the review pages in the lab to-do page. The source carries no comments; this is where
   explanation lives.
 - `code-comments/` - the 2,565 comments removed from the source on 2026-10-10, one file per source
-  file, each with the line it sat on.
+  file, each with the line it sat on. Archives for files that were later deleted are gone with them.
+- [simplify/README.md](simplify/README.md) - **the simplification pass of 2026-10-10: the result,
+  how it was checked, and the 22 decisions waiting on Rod.** Below that, the contract the five
+  agents worked to. One report per area beside it (`templates`, `js-bundled`, `js-raw`,
+  `scss-components-pages`, `scss-foundation`): every deletion with its evidence.
 - **Line numbers in notes written before 2026-10-10 are for the tree at commit `e1b1351`.** Removing
   the comments moved every line. Use `git show e1b1351:<path>` to follow an old `file:line` citation.
 - [MERGE-WORKLIST.md](MERGE-WORKLIST.md) - **the ROADMAP** (3 stages: finish the lab -> port -> Jekyll refactor, with where we are) + every port gate in order. Stage 2 is done: the port shipped.

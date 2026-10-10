@@ -68,10 +68,14 @@ relying on them. If this disagrees with the code, this is stale - fix it.
   other subsystems, debug panel Ctrl+Shift+A (`window.__achievements`), trophy case on About pages.
 - **Post enhancements** - `post-enhance.js`: reading progress bar (clickable), section sparks, end
   confetti, ambient fireflies.
-- **Interaction polish** - `card-tilt.js` (cursor + gyro tilt), `page-transition.js` (fade +
-  sparkler burst on internal nav), `tool-taglines.js` (typewriter quips), `back-to-top.js`.
-- **Search & discovery** - `post-filter.js` + filter pills (client-side title/tag search),
-  `related-posts.html` (scores by shared tags 1pt, section 2pt, category 0.5pt).
+- **Interaction polish** - card tilt, flip and dwell ring are `assets/js/components/merged-card.js`
+  (cursor + gyro tilt); drift and magnet are `assets/js/components/drift-magnet.js`;
+  `back-to-top.js`. `page-transition.js` is meant to fade and throw a sparkler burst on internal
+  navigation but **does nothing today**: it needs `#main-wrapper`, which no page has, and its
+  styles were removed as dead on 2026-10-10. The old `card-tilt.js` and `tool-taglines.js` were
+  deleted in the same pass (see `docs/simplify/js-bundled.md`).
+- **Search & discovery** - `assets/js/components/search-field.js` + filter pills (client-side
+  title/tag search), `related-posts.html` (scores by shared tags 1pt, section 2pt, category 0.5pt).
 - **PWA** - service worker via Chirpy's `pwa/` convention; keeps the session alive across
   navigations (listener-teardown discipline matters - see [TRAPS.md](TRAPS.md)).
 - **Shared modules** - `config/storage-keys.js` (single source for localStorage keys),

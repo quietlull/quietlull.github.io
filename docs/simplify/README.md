@@ -14,6 +14,121 @@ copy of this repo is 1.4 GB and the drive had 1 GB free, so all five failed to s
 
 Each agent writes its report next to this file: `docs/simplify/<area>.md`.
 
+## Result (finished 2026-10-10)
+
+All five areas ran, plus a five-commit sweep of one-line leftovers that fell between areas: 108
+simplification commits on `main`, with 8 report commits and 5 tool commits beside them. None pushed.
+
+| Area | Report | File lines before | after | fewer |
+|---|---|---|---|---|
+| Templates (`_layouts`, `_includes`) | [templates.md](templates.md) | 2,233 | 2,071 | 162 |
+| Bundled scripts (`_javascript`) | [js-bundled.md](js-bundled.md) | 4,161 | 3,542 | 619 |
+| Scripts served as written (`assets/js`) | [js-raw.md](js-raw.md) | 1,639 | 1,355 | 284 |
+| Component and page styles | [scss-components-pages.md](scss-components-pages.md) | 4,203 | 3,314 | 889 |
+| Foundation styles | [scss-foundation.md](scss-foundation.md) | 3,009 | 1,884 | 1,125 |
+
+- **Lines of code** (blank lines not counted, same counter as the P541 answer): 12,972 before the
+  pass, **10,250** after. 2,722 fewer, 21%. For scale, the old site the day before the redesign
+  merged was 13,207.
+- **Source files deleted:** sixteen. Four templates, six scripts, six stylesheets.
+- **The stylesheet a visitor downloads:** 121,474 bytes to 95,555 (21% smaller), 993 rules to 772.
+- **Scripts:** `commons`, `home`, `misc` and `page` bundles are now the same 18,547 bytes; `post` is
+  23,374.
+
+**How "nothing a visitor can see or feel changed" was checked.** Each agent proved its own work
+(its report says how). Then the coordinator re-ran the checks independently after every agent,
+against captures taken before that agent started:
+
+- `npm test` passes.
+- `tools/page-fingerprint.mjs --styles`: on ten pages at two widths, all 4,541 elements have the
+  same position, size and computed style (their `::before` and `::after` included) as before the
+  two style agents ran.
+- `tools/behaviour-check.mjs`: tilt, flip, drift, magnets, line boil, search, the achievement
+  wall and the portal windows, driven with a real mouse and keyboard, give a byte-identical
+  result to the run from before the script agents, in normal and in reduced motion.
+- `tools/check-workbench.mjs`: 51 specimens, 0 problems, throughout.
+- Compiled stylesheet, rule by rule: 244 rules removed, 0 added that are new (one selector list
+  lost two dead parts), 3 changed, and those three differ only by custom properties nothing reads.
+
+**What those checks do not cover:** hover and focus colours (reasoned per deleted rule in the two
+style reports, not measured), the 46 pages outside the ten sampled (the style agents counted
+matching elements on all 56, but the computed-style comparison is the ten), touch input, and
+anything that only runs in production (analytics, the service worker).
+
+**Three tools came out of it**, all in `tools/`: `behaviour-check.mjs` (written by the js-raw agent,
+kept), `page-fingerprint.mjs --styles`, and a no-comments check that also reads stylesheet text
+(the parser it used could not see a comment inside a Sass map, which is how three survived P542).
+
+## Waiting on Rod
+
+Nothing below was applied. Each is a decision, and several would change what a visitor sees.
+
+**Broken today, found by the pass. Fixing any of them is visible.**
+
+1. **The glass shadow does not render.** `--glass-shadow` in `_sass/themes/_dark.scss` has two
+   `//` notes inside its value ("Deep shadow", "Ambient glow"). Sass ships them, the value is
+   invalid, and every `box-shadow: var(--glass-shadow)` computes to `none`. Measured on the post's
+   previous/next cards. Deleting the two notes makes the shadow appear. This predates the pass.
+2. **The page transition never runs.** `page-transition.js` needs `#main-wrapper`, which no page
+   has. No fade, no sparkler burst on navigation. Its styles were dead and are now gone, so the
+   script is the only piece left. Fix (a visible change on every page) or delete.
+3. **Image zoom is off.** `img-popup.js` needs a `.popup` wrapper that is no longer built. Kept for
+   your call: the script, six GLightbox rules in `_post.scss`, `.popup` and `.img-link` in
+   `_sass/base`. Without it the "Zoom Enhance" achievement cannot unlock.
+4. **Twelve achievements cannot be earned:** Toolsmith, Fan Club, Zoom Enhance, Deep Diver,
+   Scholar, Bookworm, Well-Rounded, Connoisseur, Completionist and three that depend on them. Their
+   triggers look for markup that is gone (`.tool-icon`, `#avatar`, `.post-content-container`).
+5. **The post sparks and fireflies** still do not run (`@keyframes firefly-drift` does not exist).
+6. **The cursor sparkler picks its colour from old class names.** `mouse-trail.js` lists `.card`,
+   `.tool-icon`, `.post-tag` and others that no longer exist; only links and buttons match.
+7. The twelve visitor-visible issues already in `docs/WORKBENCH-CHECK.md` section 1.
+8. Inference, not measured: the portal's `pagehide` handler may leave the windows frozen after
+   the browser's back button restores the page.
+
+**Deleted, say if you want any back** (each is one `git revert` or `git show` away):
+
+9. Three console helpers: `window.__sceneTier`, `window.__portalWindows`, `window.__fireworkReach`.
+   Nothing on the site read them. If you used them by hand in the browser console, they matter.
+10. Styles for hand-written post HTML that no post uses: `.fig*`, `.figmat`, `.figcap`,
+    `.reference-links`, and the old `.bio*` block.
+11. Fifteen rules in `_decisions.scss` for `.d-*` classes and `body.spacious` that only lab pages
+    used.
+
+**Still in the code, yours to cut or keep:**
+
+12. **Merge the four identical bundles** (`commons`, `home`, `misc`, `page`) into one. A template
+    change in `_includes/js-selector.html` plus three Rollup entries.
+13. Switches that are off or have one value: mermaid, the lqip image option, the lantern debug view
+    (the D key), `social_preview_image`, `site.cdn`, `theme_mode`, `pwa.enabled`, `toc`,
+    `comments.provider`, `pageviews.provider`, `skills=page.skills`, and the Chirpy image options in
+    `refactor-content.html` (about 36 lines).
+14. Scene leftovers: unused methods on the lantern, firework and water classes; groups A, B and D
+    of `redesign-lab/perf-diffs/05-dead-code-batch.md`; `CONFIG.water.waves.waveSpeed`, which
+    nothing reads because the scene passes a literal `1.5`.
+15. Achievement data nothing reads: `hasProgress` and `reward` on all 29.
+16. Styles kept on purpose: washi tape (17 rules), 8 `.tok-*` rules, embed styles (about 45
+    lines), and 118 rules for content no post uses yet (nested lists, `h4`, footnotes, `kbd`,
+    callout prompts, math). The last group should stay unless you never want that content.
+17. Dead parts inside live selector lists, 43 rules across the two style reports. One-line edits
+    each, left because editing a list rewrites a surviving rule.
+18. The `@layer reset, tokens, prose, components, overrides;` line repeated at the top of about 25
+    stylesheets. Only the first one in the output sets the order.
+19. Short-name tokens in `_foundations.scss` that nothing reads: `--glow`, `--glow-soft`, `--gold`,
+    `--gold-deep`, `--panel`, `--pink`, `--muted`, `--head-scale`, `--space-scale`, `--measure`. Also
+    `--color-white` and `--color-black` defined twice with the same value, and `--z-overlay`
+    defined as 200 and 500 (200 is the one in effect).
+20. Guards in `portal-windows.js` that only the lab workbench needs.
+21. About 42 comment lines inside the shader code in `_javascript/shader/` and
+    `firework-controller.js`. They are text inside a script string, so the no-comments check
+    cannot see them, and they ship in the scene bundle.
+22. Config and data nothing reads: the `assets:` block and the `tabs` default `layout: page` in
+    `_config.yml` (that layout no longer exists), `_data/origin/basic.yml`, entries in
+    `_data/origin/cors.yml` and `_data/locales/en.yml`. Listed in `templates.md` and `js-bundled.md`.
+
+---
+
+Everything below is the contract the agents worked to, kept as the record.
+
 ## What counts as simplifying
 
 - **Delete code that is measured dead.** A file nothing loads, an export nothing imports, a rule
