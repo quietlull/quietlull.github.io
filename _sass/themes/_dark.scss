@@ -24,26 +24,12 @@
   --gold-35: rgba(251, 191, 36, 0.35);
   --gold-40: rgba(251, 191, 36, 0.4);
   --gold-50: rgba(251, 191, 36, 0.50);
-  --gold-60: rgba(251, 191, 36, 0.6);
   --gold-80: rgba(251, 191, 36, 0.8);
-  --orange-a10: rgba(249, 115, 22, 0.10);
-  --orange-a15: rgba(249, 115, 22, 0.15);
-  --orange-a20: rgba(249, 115, 22, 0.2);
-  --orange-a35: rgba(249, 115, 22, 0.35);
-  --orange-a60: rgba(249, 115, 22, 0.6);
-  --orange-a80: rgba(249, 115, 22, 0.8);
   --orange-a90: rgba(249, 115, 22, 0.9);
-  --yellow-a15: rgba(250, 204, 21, 0.15);
-  --yellow-a20: rgba(250, 204, 21, 0.2);
-  --yellow-a35: rgba(250, 204, 21, 0.35);
-  --yellow-a60: rgba(250, 204, 21, 0.6);
-  --yellow-a80: rgba(250, 204, 21, 0.8);
-  --red-a10: rgba(239, 68, 68, 0.1);
   --white-a08: rgba(255, 255, 255, 0.08);
   --shadow-a15: rgba(0, 0, 0, 0.15);
   --shadow-a40: rgba(0, 0, 0, 0.4);
   --slate-a95: rgba(15, 23, 42, 0.95);
-  --transition-fast: 300ms;
   --transition-normal: 500ms;
   --z-overlay: 500;
   --link-color: var(--amber-400);
@@ -56,13 +42,9 @@
   --btn-hover-glow: 0 0 20px rgba(251, 191, 36, 0.2);
   --btn-backtotop-color: var(--text-color);
   --btn-backtotop-border-color: var(--glass-border);
-  --input-focus-border-color: rgba(251, 191, 36, 0.3);
-  --card-bg: rgba(15, 23, 42, 0.6);
-  --card-hover-bg: rgba(245, 158, 11, 0.08);
   --card-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.6), 
     0 0 60px rgba(251, 191, 36, 0.02);
-  --tag-hover: rgba(245, 158, 11, 0.15);
   --blockquote-border-color: rgba(251, 191, 36, 0.3);
   --blockquote-text-color: rgba(254, 243, 199, 0.7);
   --prompt-text-color: rgba(254, 243, 199, 0.75);
@@ -98,12 +80,6 @@
     transparent 0%, 
     rgba(251, 191, 36, 0.1) 50%, 
     transparent 100%
-  );
-  --separator-gradient: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(245, 158, 11, 0.3),
-    transparent
   );
   --color-white: #ffffff;
   --color-black: #000000;
