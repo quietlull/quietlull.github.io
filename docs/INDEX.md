@@ -14,6 +14,13 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
 - [REQUESTS.md](REQUESTS.md) - Rod's request queue with statuses. Read the OPEN table; done rows are phantoms.
 - [ELEMENT-INVENTORY.md](ELEMENT-INVENTORY.md) - what markup actually ships: every class on the built pages, counted, grouped by stylesheet. 2026-09-04.
 - [WORKBENCH-CHECK.md](WORKBENCH-CHECK.md) - the 36-tab check of the first workbench: visitor-visible issues waiting on Rod, dead code, and which components only work because of their page.
+- [CODE-AUDIT.md](CODE-AUDIT.md) - how each source file works, one section per file. The hand-written
+  half of the review pages in the lab to-do page. The source carries no comments; this is where
+  explanation lives.
+- `code-comments/` - the 2,565 comments removed from the source on 2026-10-10, one file per source
+  file, each with the line it sat on.
+- **Line numbers in notes written before 2026-10-10 are for the tree at commit `e1b1351`.** Removing
+  the comments moved every line. Use `git show e1b1351:<path>` to follow an old `file:line` citation.
 - [MERGE-WORKLIST.md](MERGE-WORKLIST.md) - **the ROADMAP** (3 stages: finish the lab -> port -> Jekyll refactor, with where we are) + every port gate in order. Stage 2 is done: the port shipped.
 - [REFACTOR-PLAN.md](REFACTOR-PLAN.md) - the flaws found 2026-08-11 + the phased plan. Phases 0 and 1 are DONE; Phase 2 is next and nothing gates it; Phase 3 is "vendored but clean" (Rod, 2026-09-02).
 - [POST-FRAMES-PLAN.md](POST-FRAMES-PLAN.md) - **why post pages drop frames (P515), PLANNED not run.** The parent perf investigation; scoped to FRAMES only, not bytes or memory.

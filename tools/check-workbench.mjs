@@ -1,5 +1,6 @@
 // Check the workbench: load every specimen twice (inside its page, and bare) in a real browser
-// and report script errors and the element's size. Needs `jekyll serve` running on port 4000.
+// and report script errors and the element's size. It serves `_site` itself, so it needs a
+// built site with the workbench in it (`python tools/build_workbench.py`), not the dev server.
 //
 //   node tools/check-workbench.mjs
 //
@@ -10,9 +11,11 @@ import { readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { launch } from './real-browser.mjs';
+import { serve } from './static-server.mjs';
 
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '_site', 'redesign-lab', 'workbench');
-const BASE = 'http://localhost:4000/redesign-lab/workbench/';
+const site = await serve(path.join(DIR, '..', '..'));
+const BASE = site.url + '/redesign-lab/workbench/';
 const files = readdirSync(DIR).filter((f) => f.endsWith('.html')).sort();
 
 const MEASURE = `(() => {
@@ -37,6 +40,7 @@ for (const file of files) {
   rows.push({ file, inside, bare, problems: [...new Set([...insideProblems, ...page.problems()])] });
 }
 await page.close();
+site.close();
 
 let errors = 0;
 console.log('specimen'.padEnd(46), 'in page'.padEnd(13), 'bare'.padEnd(13), 'same?  notes');

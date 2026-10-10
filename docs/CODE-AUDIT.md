@@ -11,13 +11,19 @@ measured from the source by `tools/build_audit.py` every time the site builds, a
 The review list is in the lab to-do page: `http://localhost:4000/redesign-lab/todo.html`.
 
 **Writing a section.** Describe the mechanism: state, lifecycle, the markup and CSS it depends on,
-what it costs at runtime, and anything that would surprise a maintainer. Cite `file:line`. Put
-Rod's decisions under a `### Rod's calls` heading in the section as they are made.
+what it costs at runtime, and anything that would surprise a maintainer. Name files and functions,
+not line numbers: a line number is wrong the moment the file changes, and these files are about to
+change a lot. Put Rod's decisions under a `### Rod's calls` heading in the section as they are made.
+
+**The source files carry no comments.** Rod, 2026-10-09: "strip them all out and place them in the
+review area or place them in MD ... Code should be self explanatory". What a file needs explaining
+goes here. The comments that were removed are kept in `docs/code-comments/`, one file per source
+file, and each review page shows its own.
 
 ## assets/js/chrome.js
 
 **Role.** The entry point for behaviour that every page has. It is loaded as a native module by
-`_includes/chrome-scripts.html:49`, which `_layouts/default.html:189` includes at the end of
+`_includes/chrome-scripts.html`, which `_layouts/default.html` includes at the end of
 `<body>`. It is not bundled, exports nothing and has no init function: the module body runs once
 when the browser has parsed the page (module scripts are deferred).
 
@@ -28,7 +34,7 @@ when the browser has parsed the page (module scripts are deferred).
 - `initLineBoil(mark)` from `assets/js/components/line-boil.js`, once for each `.top-bar__logo`.
 - `initCursorGlow(document)` from `assets/js/components/cursor-glow.js`.
 
-**What it depends on.** The `.cursorglow` element in `_layouts/default.html:95`, and the top bar
+**What it depends on.** The `.cursorglow` element in `_layouts/default.html`, and the top bar
 markup in `_includes/top-bar.html`. If either is missing the matching call does nothing; nothing
 throws.
 
@@ -41,9 +47,8 @@ exactly that for the cards.
 
 - "chrome" here means the frame around the content (top bar, cursor, shared motion), not the
   browser. It is jargon and a rename candidate.
-- The file is 6 statements and about 30 lines of comment. The comment's closing claim, that these
-  calls will "fold into `commons.js`", is wrong: `commons.min.js` ships on 9 pages and this file
-  ships on all of them.
+- It is 6 statements. A removed comment claimed these calls would "fold into `commons.js`". That
+  is wrong: `commons.min.js` ships on 9 pages and this file ships on all of them.
 - Page-specific setup lives elsewhere, in the inline modules of the `*-scripts.html` includes.
 
 ## assets/js/components/cursor-coords.js
@@ -68,7 +73,7 @@ never removed.
 - `assets/js/components/cursor-glow.js`: writes `--cx`, `--cy` on the glow.
 - `assets/js/components/project-cards-expensive.js`: writes `--mx`, `--my` on each card for the
   glow band.
-- `assets/js/components/achievement-wall.js:395`: loads this file with a dynamic `import()` and
+- `assets/js/components/achievement-wall.js`: loads this file with a dynamic `import()` and
   uses it for the tile rim glow.
 
 **What it cannot see.** A cross-origin iframe delivers no pointer events to the parent page. Over
@@ -92,9 +97,9 @@ transform. Nothing is animated in JavaScript.
   second call to `init` only refreshes which element is driven. Because it takes the first match,
   a second `.cursorglow` on the same page is never driven.
 
-**`setupCommentsShield()` (lines 42 to 71).** Only does anything on a page with `.post-comments`,
-which `_includes/comments/giscus.html:14` emits. It appends a `div.cursor-shield` to that element.
-`_sass/pages/_post.scss:273` stretches it, transparent, over the comments iframe.
+**`setupCommentsShield()`.** Only does anything on a page with `.post-comments`,
+which `_includes/comments/giscus.html` emits. It appends a `div.cursor-shield` to that element.
+`_sass/pages/_post.scss` stretches it, transparent, over the comments iframe.
 
 - Why: the giscus iframe is cross-origin, so pointer events over it never reach this page and the
   glow would freeze at the iframe's edge. The shield is an element of this page lying on top, so
@@ -116,7 +121,7 @@ three.js scene, which caused one misunderstanding already (P531).
 - **Magnet**: the element leans toward the pointer while hovered. Opt in with class `js-magnetic`.
 - **Click flash**: an outline ripple on click. Opt in with `data-click-flash`.
 
-**The record per element (`createEntry`, line 75).** One object per registered element, kept in the
+**The record per element (`createEntry`).** One object per registered element, kept in the
 `entries` array and the `elementToEntry` map:
 
 - Tuning read from the markup: `strength` (`data-strength`, default 40), `strengthText`
@@ -130,10 +135,10 @@ three.js scene, which caused one misunderstanding already (P531).
 - Live state: `magnetActive`, the magnet's current and target offset, `blend` (0 is all drift, 1 is
   all magnet), `driftLevel` (a 0 to 1 ramp so drift fades in and out), `onScreen`, `promoted`.
 
-**The loop (`tick`, line 108).** One `requestAnimationFrame` loop for every element.
+**The loop (`tick`).** One `requestAnimationFrame` loop for every element.
 
 - Each frame eases `driftLevel`, `blend` and the magnet offset toward their targets, then computes
-  `drift * (1 - blend) + magnet * blend` (lines 149 to 150). **That one expression is the rule that
+  `drift * (1 - blend) + magnet * blend`. **That one expression is the rule that
   the magnet overrides drift.** It is the thing a split into two modules has to keep.
 - It writes the result to `element.style.translate`. That is the standalone `translate` property,
   not `transform`, chosen so it adds to any CSS transform instead of replacing it. It only works
@@ -144,17 +149,17 @@ three.js scene, which caused one misunderstanding already (P531).
   element drifts, the loop stops (`rafId = null`) until `wake()` restarts it.
 - Elements removed from the document are dropped from the list.
 
-**Magnet input (`bindMagnet`, line 206).** A `mousemove` listener per magnetic element. The target
+**Magnet input (`bindMagnet`).** A `mousemove` listener per magnetic element. The target
 offset is the pointer's position inside the element, as a fraction from -0.5 to 0.5, times
 `strength`. `mouseleave` sets it back to zero. Two guards: nothing happens below 541px viewport
 width or when `body` has class `motion-off`. It listens for mouse events, not pointer events, so
 touch does not trigger it. There is no attraction from outside the element.
 
-**Click flash (`bindClickFlash`, line 234).** Adds class `dm-flash`, forcing a reflow first so a
+**Click flash (`bindClickFlash`).** Adds class `dm-flash`, forcing a reflow first so a
 second click restarts it, and removes it on `animationend` for the animation named `dm-border-fly`.
 The keyframes are in `_sass/components/_drift-magnet.scss`.
 
-**`init(root)` (line 264).**
+**`init(root)`.**
 
 - First call only: if the OS asks for reduced motion it adds `motion-off` to `body`. It starts a
   MutationObserver on `body`'s class list, and an IntersectionObserver with a 200px margin that
@@ -162,12 +167,12 @@ The keyframes are in `_sass/components/_drift-magnet.scss`.
 - Every call: registers matching elements under `root` that are not registered yet, then wakes the
   loop.
 
-**`retune(element)` (line 249)** re-reads an element's data attributes. Nothing in the live tree
+**`retune(element)`** re-reads an element's data attributes. Nothing in the live tree
 imports it. It was for the lab's tuning sliders.
 
 **Dead or lab-only paths.**
 
-- The `[data-motion-toggle]` button handler (lines 323 to 331). No built page has that element.
+- The `[data-motion-toggle]` button handler. No built page has that element.
 - `body.cull-off`. Nothing in the live tree sets it.
 - `body.motion-off` is read here and set only here. No stylesheet uses it.
 
@@ -185,7 +190,7 @@ abbreviations. `init.gated` stores a flag as a property on the function itself.
 times a second. The fonts are `Lineboil1`, `Lineboil2` and `Lineboil3`, declared with `@font-face`
 in `_sass/components/_line-boil.scss`.
 
-**`initLineBoil(host, { rate = 6 })` (line 132).** Returns immediately if `host` is null.
+**`initLineBoil(host, { rate = 6 })`.** Returns immediately if `host` is null.
 
 - Adds class `line-boil-text` to the host.
 - Waits for all three fonts: `document.fonts.load` for each, then `document.fonts.ready`. This is
@@ -196,7 +201,7 @@ in `_sass/components/_line-boil.scss`.
   so a host whose text changes (the landing clock) keeps its new content.
 - Returns a teardown function. No caller keeps it, so the interval runs for the life of the page.
 
-**`pinGlyphAdvance` (line 36).** Replaces the host's text with one `span.line-boil-text__g` per
+**`pinGlyphAdvance`.** Replaces the host's text with one `span.line-boil-text__g` per
 visible character, each with a fixed `inline-size`.
 
 - The width is the widest of the three fonts' drawings of that character. Without this the line
@@ -207,7 +212,7 @@ visible character, each with a fixed `inline-size`.
 - Each cell starts on a random font, stored in `data-face`. Without the random start every letter
   would change in step and it would read as the whole line swapping.
 
-**`boilTick` (line 124).** Moves every cell to the next font by setting `font-family` inline.
+**`boilTick`.** Moves every cell to the next font by setting `font-family` inline.
 
 **Who calls it.**
 
@@ -233,17 +238,17 @@ the width a character takes up.
 **Role.** Applies the page's scene tier to the three.js scene after it loads, by hiding parts of
 it. It is how a `minimal` page shows lanterns and fireflies without the dock and the water.
 
-**Where the tier comes from.** `_layouts/default.html:71` writes `data-scene-tier` on `<body>`
+**Where the tier comes from.** `_layouts/default.html` writes `data-scene-tier` on `<body>`
 (`full`, `minimal`, `none`, or `embers` for the 404). A `?scene=full|minimal|none` query overrides
 it for testing.
 
 **What it does.** The scene bundle is deferred and its model loads later still, so this polls:
 every 100ms, up to 100 times, it calls `apply(tier)` and stops once the result is in place.
 
-- `apply` walks `window.scene`, the global that `_javascript/three-background-scene.js:130` sets,
+- `apply` walks `window.scene`, the global that `_javascript/three-background-scene.js` sets,
   and matches nodes by name: `^DockGroup`, `^WaterFace`, `^(Rounded)?Lantern`.
 - Dock and water are visible only on `full`. Lanterns are always visible.
-- Water needs its material hidden as well (`setWater`, line 44), because three's Reflector resets
+- Water needs its material hidden as well (`setWater`), because three's Reflector resets
   the mesh's own `visible` flag every frame.
 - For `none` and `embers` it does not poll at all.
 
@@ -254,4 +259,4 @@ reloads with the query, and `counts()`.
 including the dock and water, and then this hides them. 29 built pages are `minimal`. Not sending
 them would need a separate bundle built without them.
 
-**Loaded on every page**, by `_includes/chrome-scripts.html:62`, including pages with no scene.
+**Loaded on every page**, by `_includes/chrome-scripts.html`, including pages with no scene.

@@ -147,3 +147,17 @@ thead th,
 .lines .s { color: #ce9178; }
 
 .lines .k { color: #c586c0; }
+
+/* ---- comments that were taken out of the file ---------------------------------------------- */
+
+.removed { max-width: 100ch; margin-top: 14px; }
+
+.removed ol { margin: 10px 0 0; padding-left: 22px; }
+
+.removed li { margin-bottom: 14px; }
+
+.removed .where {
+  margin: 0;
+  color: #9aa3bd;
+  font: 12px Consolas, ui-monospace, monospace;
+}

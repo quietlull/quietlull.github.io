@@ -446,6 +446,24 @@ def main():
                 for label, values in facts.get(name, {}).items() if values]
         return '<table class="facts">%s</table>' % ''.join(rows) if rows else ''
 
+    def removed_comments(name, text):
+        """The comments that used to be in this file. They were taken out of the source on Rod's
+        instruction (P542) and live in docs/code-comments/, one file per source file."""
+        saved = os.path.join(REPO, 'docs', 'code-comments', *(name + '.md').split('/'))
+        if not os.path.exists(saved):
+            return ''
+        lines = text.split('\n')
+        entries = []
+        for was, place, body in re.findall(r'(?m)^### Line (\d+), (.*?)\n\n(?:```|~~~~)text\n(.*?)\n(?:```|~~~~)$', read(saved), flags=re.S):
+            anchor = re.search(r'`(.*)`', place)
+            now = next((i + 1 for i, line in enumerate(lines) if anchor and line.strip().startswith(anchor.group(1)[:60])), None)
+            entries.append('<li><p class="where">%s%s</p><pre class="quote">%s</pre></li>' % (
+                esc(place.replace('`', '')), ' <span class="hint">now line %d</span>' % now if now else '', esc(body)))
+        if not entries:
+            return ''
+        return ('<details class="removed"><summary>%d comment%s removed from this file (kept in <code>docs/code-comments/%s.md</code>)'
+                '</summary><ol>%s</ol></details>' % (len(entries), '' if len(entries) == 1 else 's', esc(name), ''.join(entries)))
+
     todo_rows = collections.OrderedDict((group, []) for group, _, _ in GROUPS)
     for name, item in items.items():
         kind, body = item['kind'], []
@@ -532,8 +550,7 @@ def main():
         else:
             how = ('<h2>How it works</h2><p class="hint">Technical notes for this file are not written yet. '
                    'Everything under the other headings is measured from the code.</p>')
-            if item['header']:
-                how += '<details><summary>The file\'s own header comment</summary><pre class="quote">%s</pre></details>' % esc(item['header'])
+        how += removed_comments(name, item['text'])
 
         total_lines = item['text'].count('\n') + 1
         page = PAGE % {
@@ -550,9 +567,10 @@ def main():
         line = re.sub(r'\*\*|`', '', re.sub(r'\s+', ' ', line))
         todo_rows[item['group']].append((-page_count[name] if kind == 'js' else 0, name, (
             '<div class="row"><input type="checkbox" data-key="audit::%s"><div>'
-            '<p class="id">%d lines of code &middot; %d of comment (%d%%)%s%s</p>'
+            '<p class="id">%d lines of code%s%s%s</p>'
             '<p class="said"><a href="audit/%s.html">%s</a></p><p class="did">%s</p></div></div>' % (
-                esc(name), item['code'], item['comment'], share,
+                esc(name), item['code'],
+                ' &middot; %d of comment (%d%%)' % (item['comment'], share) if item['comment'] else '',
                 ' &middot; ' + esc(where) if where else '',
                 '' if name in notes else ' &middot; notes not written yet',
                 slug(name), esc(name), esc(line[:230] + ('...' if len(line) > 230 else ''))))))
@@ -591,7 +609,7 @@ PAGE = '''<!doctype html>
 <header>
   <p class="crumb"><a href="../todo.html">&larr; the review list</a></p>
   <h1>%(path)s</h1>
-  <p class="meta">%(kind)s &middot; %(code)d lines of code &middot; %(comment)d lines of comment (%(share)d%%)
+  <p class="meta">%(kind)s &middot; %(code)d lines of code, %(comment)d of comment
     &middot; <a href="%(editor)s">open in VS Code</a></p>
 </header>
 <main>
