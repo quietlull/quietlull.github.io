@@ -1,3 +1,19 @@
+> ## THE WORKBENCH (2026-10-09): `http://localhost:4000/redesign-lab/workbench.html`
+>
+> Every component the site ships, each as a real element from a real built page. It is GENERATED,
+> into `_site/redesign-lab/` only, by `tools/build_workbench.py`. Under `jekyll serve` the hook in
+> `_plugins/workbench-hook.rb` regenerates it after every build, so there is nothing to run by hand
+> and nothing generated in the source tree. Only `workbench.css` (the shell's own styles) is source.
+>
+> - **A specimen is the page with everything else removed:** the element, its ancestors as empty
+>   wrappers, and that page's own stylesheets, fonts, sprite and module scripts.
+> - **"Bare" removes the ancestors.** If the element changes, something outside it was doing part of
+>   its job. That is how the button's missing `display` was found (P529).
+> - **Pages tabs show the real page**, running everything.
+> - **Do not hand-edit anything under `_site/redesign-lab/workbench*`.** Change the generator.
+>
+> What it found on its first full check is in `docs/WORKBENCH-CHECK.md`.
+
 > ## THE LAB CLEANUP, 2026-09-04 (ROD) - 101 files, all recoverable at `047213e`
 >
 > *"i think we can remove alot of stuff now that most of it has been committed once to git. i want

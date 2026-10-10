@@ -44,24 +44,29 @@ theme boundary) is done; Phases 2 and 3 are the open work, see
   a PurgeCSS output to protect: D48 deleted Bootstrap, so `_sass/vendors/_bootstrap.scss` and
   `purgecss.js` are both gone from the repo.
 
-## The lab (reference, not a workbench)
+## The lab (reference, plus the generated workbench)
 
-`redesign-lab/` is version-controlled now (D49) and it is a REFERENCE, not the place work happens:
-component bench in `extracted/`, reference gallery, palette explorer, session logs, the six
-`final-*` pages the port was made from. Two things follow from that:
+`redesign-lab/` is version-controlled (D49). It holds the reference gallery, the palette explorer,
+session logs and the old component bench in `extracted/`. The six `final-*` pages the port was made
+from were deleted on 2026-09-04; `git show 047213e:redesign-lab/final-landing.html` reads one.
 
 - **It never ships.** `.github/workflows/pages-deploy.yml:68` deletes it out of `_site` before
   upload. It is still browsable on localhost, which is the point.
 - **Editing a lab page changes nothing a visitor sees.** D22 is lifted, the live tree ships. Before
   tuning anything, ask which file renders the URL Rod is looking at.
+- **The workbench is generated, never hand-edited.** `http://localhost:4000/redesign-lab/workbench.html`
+  shows every component as a real element from a real built page. `tools/build_workbench.py` writes
+  it into `_site/` and `_plugins/workbench-hook.rb` reruns that after every `jekyll serve` build.
+  Each specimen keeps its page's ancestors, stylesheets and scripts; "Bare" removes the ancestors
+  to show what depends on its page. See `redesign-lab/HANDOFF.md` and
+  [docs/WORKBENCH-CHECK.md](docs/WORKBENCH-CHECK.md).
 
 Its copies of the live Three.js modules are still separate and still a wrong-copy hazard, and the
 lab water is now five changes behind live - see [docs/TRAPS.md](docs/TRAPS.md).
-`redesign-lab/HANDOFF.md` is still the orientation doc for the sourcing pass that is finishing the
-lab's own citation trail.
 
 ## Build
 
 - `npm run build` - JS bundles (Rollup). This is the only build step Jekyll needs.
 - `bundle exec jekyll s` - local serve
-- `npm test` - eslint + stylelint
+- `npm test` - eslint + stylelint + the CSS load-order check
+- `python tools/build_workbench.py` - rebuild the lab workbench by hand (the serve hook normally does it)

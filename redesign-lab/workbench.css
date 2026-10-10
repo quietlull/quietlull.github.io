@@ -1,64 +1,124 @@
-/* Workbench chrome. 2026-09-04.
+/* Workbench shell. 2026-10-09.
 
-   EVERY RULE IN HERE IS PREFIXED `wb-`, AND THAT IS NOT TIDINESS. This page loads the LIVE
-   stylesheet so a tab is genuinely the shipped component; the instant this file styles anything
-   that is not its own furniture, the workbench stops telling the truth and starts being another
-   lab copy that drifts. Rod's rule, and the lab has broken it before: lab chrome must never move
-   the design.
+   THIS STYLES THE SHELL AND NOTHING ELSE. Every specimen is its own document in a frame, built
+   from the real page with the real stylesheets, so nothing here can reach a component and no
+   site rule can reach this page. The first workbench loaded the live stylesheet into one shared
+   page and needed a rule against styling anything inside the stage; a frame makes that rule
+   unbreakable instead of merely stated.
 
-   So: no element selectors, no descendant rules reaching into `.wb-stage`, no resets. If a
-   component looks wrong on this page it is wrong on the site. */
+   The colours are the site's night and gold as plain values, on purpose: the shell must not
+   depend on the stylesheet it exists to inspect. */
 
-.wb-body {
+.wb {
+  --wb-night: #070c23;
+  --wb-panel: #0c1330;
+  --wb-line: rgba(255, 255, 255, 0.1);
+  --wb-text: #f5f3ef;
+  --wb-quiet: #9aa3bd;
+  --wb-gold: #fbbf24;
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   margin: 0;
-  min-height: 100vh;
+  background: var(--wb-night);
+  color: var(--wb-text);
+  font: 14px/1.5 system-ui, 'Segoe UI', sans-serif;
 }
+
+.wb code {
+  font: 12px/1.4 ui-monospace, Consolas, monospace;
+}
+
+.wb a { color: var(--wb-gold); }
 
 /* ---- masthead ------------------------------------------------------------------------------ */
 
 .wb-masthead {
-  padding: 2rem 2rem 1.25rem;
-  border-bottom: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--wb-line);
 }
 
 .wb-masthead h1 {
-  margin: 0 0 0.4rem;
-  font-size: 1.6rem;
-  letter-spacing: 0.02em;
+  margin: 0 0 2px;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .wb-masthead p {
-  margin: 0 0 0.3rem;
-  max-width: 68ch;
-  font-size: 0.9rem;
-  color: var(--color-muted, #9aa3bd);
+  max-width: 92ch;
+  margin: 0;
+  color: var(--wb-quiet);
+  font-size: 13px;
 }
 
-.wb-warn {
-  font-size: 0.8rem !important;
-  opacity: 0.72;
+.wb-masthead .wb-small { font-size: 12px; opacity: 0.8; }
+
+.wb-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.wb-widths { display: flex; }
+
+.wb-widths button {
+  padding: 4px 10px;
+  border: 1px solid var(--wb-line);
+  background: none;
+  color: var(--wb-quiet);
+  font: inherit;
+  cursor: pointer;
+}
+
+.wb-widths button + button { border-left: 0; }
+
+.wb-widths button[aria-pressed='true'] {
+  background: var(--wb-panel);
+  color: var(--wb-gold);
+}
+
+.wb-bare {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
 }
 
 /* ---- layout -------------------------------------------------------------------------------- */
 
 .wb-layout {
   display: grid;
-  grid-template-columns: minmax(200px, 260px) 1fr;
-  gap: 0;
-  align-items: start;
+  flex: 1;
+  grid-template-columns: 230px minmax(0, 1fr);
+  min-height: 0;
 }
 
-@media (max-width: 860px) {
-  .wb-layout { grid-template-columns: 1fr; }
+.wb-nav,
+.wb-main {
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .wb-nav {
-  position: sticky;
-  top: 0;
-  max-height: 100vh;
-  overflow-y: auto;
-  padding: 1rem 0.75rem 3rem;
-  border-right: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+  padding: 8px 8px 40px;
+  border-right: 1px solid var(--wb-line);
+}
+
+.wb-nav h2 {
+  margin: 14px 8px 4px;
+  color: var(--wb-quiet);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .wb-nav ul {
@@ -69,105 +129,132 @@
 
 .wb-tab {
   display: flex;
+  gap: 8px;
   justify-content: space-between;
-  gap: 0.5rem;
   width: 100%;
-  padding: 0.42rem 0.6rem;
+  padding: 5px 8px;
   border: 0;
   border-radius: 4px;
   background: none;
   color: inherit;
   font: inherit;
-  font-size: 0.83rem;
+  font-size: 13px;
   text-align: left;
   cursor: pointer;
 }
 
 .wb-tab span {
-  opacity: 0.5;
+  color: var(--wb-quiet);
   font-variant-numeric: tabular-nums;
 }
 
-.wb-tab:hover { background: var(--color-surface-faint, rgba(255, 255, 255, 0.03)); }
+.wb-tab:hover { background: var(--wb-panel); }
 
 .wb-tab[aria-current='true'] {
-  background: var(--color-surface, rgba(255, 255, 255, 0.05));
-  color: var(--color-gold, #fbbf24);
+  background: var(--wb-panel);
+  color: var(--wb-gold);
 }
 
-/* ---- panel --------------------------------------------------------------------------------- */
+.wb-main { padding: 18px 22px 80px; }
 
-.wb-main { padding: 1.5rem 2rem 6rem; min-width: 0; }
+/* ---- a tab --------------------------------------------------------------------------------- */
 
-.wb-panel[hidden] { display: none; }
-
-.wb-head h2 { margin: 0 0 0.2rem; font-size: 1.25rem; }
+.wb-head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
 
 .wb-src {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-mono, monospace);
-  font-size: 0.76rem;
-  opacity: 0.6;
+  margin: 2px 0 16px;
+  color: var(--wb-quiet);
+  font: 12px ui-monospace, Consolas, monospace;
 }
 
-.wb-facts {
+.wb-panel h3 {
+  margin: 28px 0 8px;
+  color: var(--wb-quiet);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wb-note {
+  max-width: 80ch;
+  margin: 0 0 10px;
+  color: var(--wb-quiet);
+  font-size: 13px;
+}
+
+/* ---- a specimen ---------------------------------------------------------------------------- */
+
+.wb-specimen { margin: 0 0 22px; }
+
+.wb-specimen figcaption {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1.1rem;
-  margin: 0 0 1.25rem;
-  padding: 0;
-  list-style: none;
-  font-size: 0.8rem;
-  color: var(--color-muted, #9aa3bd);
+  gap: 4px 14px;
+  align-items: baseline;
+  margin-bottom: 6px;
+  color: var(--wb-quiet);
+  font-size: 12px;
 }
 
-.wb-stage-label {
-  margin-bottom: 0.4rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.5;
+.wb-specimen figcaption code { color: var(--wb-text); }
+
+.wb-specimen figcaption span::before { content: '\00b7\00a0'; }
+
+.wb-specimen.is-unseen figcaption::after {
+  content: 'Nothing to see in this state: the page fills or reveals it later, with a script or on scroll.';
+  flex-basis: 100%;
+  color: var(--wb-gold);
 }
 
-/* The stage is a FRAME, never a style. Padding and a border so you can see the component's own
-   edges; nothing that could change how it lays out. `contain` is deliberately absent - it would
-   create a containing block and change position:fixed and sticky children. */
-.wb-stage {
-  padding: 1.25rem;
-  border: 1px dashed var(--color-line-faint, rgba(255, 255, 255, 0.12));
-  border-radius: 6px;
+.wb-frame {
   overflow-x: auto;
+  border: 1px dashed var(--wb-line);
+  border-radius: 4px;
 }
 
-.wb-none {
-  margin: 0;
-  font-size: 0.85rem;
-  opacity: 0.6;
+.wb-frame iframe {
+  display: block;
+  width: var(--wb-width, 100%);
+  height: 320px;
+  border: 0;
+  resize: vertical;
 }
 
-/* ---- facts table --------------------------------------------------------------------------- */
+.wb-frame iframe[data-page] { height: 78vh; }
+
+/* ---- tables -------------------------------------------------------------------------------- */
 
 .wb-table {
   width: 100%;
-  margin-top: 1.5rem;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: 12px;
 }
 
 .wb-table th,
 .wb-table td {
-  padding: 0.35rem 0.6rem;
-  border-bottom: 1px solid var(--color-line-faint, rgba(255, 255, 255, 0.06));
+  padding: 5px 10px 5px 0;
+  border-bottom: 1px solid var(--wb-line);
   text-align: left;
   vertical-align: top;
 }
 
 .wb-table th {
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-size: 0.68rem;
-  opacity: 0.6;
+  color: var(--wb-quiet);
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.wb-table code { font-size: 0.76rem; }
+.wb-table td:nth-child(5),
+.wb-table td:nth-child(6) { color: var(--wb-quiet); }
+
+.wb-dead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+}
