@@ -1,7 +1,7 @@
 # Simplification pass: bundled scripts
 
 Area: everything under `_javascript/` (39 files, 4161 lines), built by Rollup into
-`assets/js/dist/*.min.js`. Baseline commit `897a537`. 20 commits on `main`, none pushed. One
+`assets/js/dist/*.min.js`. Baseline commit `897a537`. 18 commits on `main` (17 code, 1 report), none pushed. One
 template file outside the area was edited, as the brief allowed: `_includes/js-selector.html`
 (the dayjs block, 80 to 61 lines).
 
