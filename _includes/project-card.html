@@ -40,7 +40,7 @@
             <div class="pv2-descbox"><p class="pv2-desc">{{ post.description }}</p></div>
             <div class="pv2-metabox parallax-z-layer">
               <p class="pv2-date">{{ post.date | date: '%b %d, %Y' }} &middot; {{ minutes }} min</p>
-              {% include tag-badges.html tags=post.tags variant='kit' %}
+              {% include tag-badges.html tags=post.tags %}
             </div>
           {% endif %}
         </div>
