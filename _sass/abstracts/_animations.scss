@@ -83,8 +83,7 @@ $motion-selectors:
   '#back-to-top.show',
   '.post-firefly',
   '.btn.btn-outline-primary';
-$reduced-motion-extras:
-  '#section-landing::before';
+$reduced-motion-extras: '#section-landing::before';
 
 @media (prefers-reduced-motion: reduce) {
   html {
