@@ -43,7 +43,6 @@ export const CONFIG = {
       knockRadius: 45,
       knockStrength: 40,
       returnSpeed: 0.05,
-      boundaryForce: 0.5,
       rotationStrength: 0.06,
       knockCooldown: 0.1,
       localRadius: 90,
