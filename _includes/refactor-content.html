@@ -107,7 +107,6 @@
       {% endunless %}
     {% endif %}
 
-    {% assign _final_src = null %}
     {% assign _lazyload = true %}{%- capture _img_url -%}
       {%- if _class contains 'preview-img' -%}
         {%- include media-url.html src=_src -%}
@@ -119,14 +118,12 @@
     {% assign _path_prefix = _img_url | remove: _src %}
 
     {% unless _src contains '//' %}
-      {% assign _final_src = _path_prefix | append: _src %}
       {% assign _src_alt = 'src="' | append: _path_prefix %}
       {% assign _left = _left | replace: 'src="', _src_alt %}
     {% endunless %}
 
     {% if _lqip %}
       {% assign _lazyload = false %}
-      {% assign _wrapper_class = _wrapper_class | append: ' blur' %}
 
       {% unless _lqip contains 'data:' %}
         {% assign _lqip_alt = 'lqip="' | append: _path_prefix %}
@@ -134,9 +131,6 @@
       {% endunless %}
 
       {% assign _left = _left | replace: 'src=', 'data-src=' | replace: ' lqip=', ' data-lqip="true" src=' %}
-
-    {% else %}
-      {% assign _wrapper_class = _wrapper_class | append: ' shimmer' %}
     {% endif %}
 
     {% if _lazyload %}
