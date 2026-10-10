@@ -62,32 +62,4 @@
 .es--stack .es__body {
   margin-block-start: 0.25rem;
 }
-
-.es--row .es__content {
-  max-width: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  justify-content: center;
-  align-items: baseline;
-}
-
-.es--split {
-  text-align: left;
-  padding-block: 12px;
-}
-
-.es--split .es__content {
-  flex: 1;
-  max-width: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-}
-
-.es--split .es__action {
-  flex-shrink: 0;
-  margin-left: 1em;
-}
 }
