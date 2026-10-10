@@ -1,37 +1,11 @@
 @use 'variables' as v;
 
-%text-sm {
-  font-size: 0.85rem;
-}
-
-%normal-font-style {
-  font-style: normal;
-}
-
-%link-color {
-  color: var(--link-color);
-}
-
-%link-hover {
-  color: var(--link-hover-color);
-  border-bottom: 1px solid var(--link-hover-color);
-  text-decoration: none;
-}
-
 %cursor-pointer {
   cursor: pointer;
 }
 
 %no-cursor {
   user-select: none;
-}
-
-%tag-hover {
-  @extend %link-color;
-
-  background: var(--tag-hover);
-  border-color: var(--tag-hover);
-  transition: background 0.35s ease-in-out;
 }
 
 %table-cell {
@@ -42,10 +16,6 @@
 
 %rounded {
   border-radius: v.$radius-lg;
-}
-
-%no-bottom-border {
-  border-bottom: none;
 }
 
 %code-snippet-bg {
