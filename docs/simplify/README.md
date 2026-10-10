@@ -136,7 +136,12 @@ cmp "$SCRATCH/behaviour-before.json" "$SCRATCH/behaviour-after.json"
   adds on hover, press, drag or scroll (`is-flipped`, `is-on`, `dm-flash`, `is-dragging`,
   `is-closed`, `can-reset`, `motion-off`, anything a script writes) matches no element in the
   built HTML. Search the scripts for the name before calling its rule dead.
-- The fingerprint checks layout, not colour. If you touch a colour, compare computed styles too.
+- **If you change a stylesheet, capture with `--styles`**, before and after:
+  `node tools/page-fingerprint.mjs capture "$SCRATCH/before-styles.json" --styles`. Without it the
+  fingerprint checks position and size only, and a rule that only changed a colour would pass. With
+  it, every element's full computed style (and its `::before` and `::after`) is part of the
+  comparison. It reads elements at rest: it does not hover, focus or press anything, so a rule for
+  `:hover`, `:focus`, `:active` or a class a script adds is yours to reason about.
 
 ## Evidence for "dead"
 
