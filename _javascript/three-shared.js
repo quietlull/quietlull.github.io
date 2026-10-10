@@ -73,7 +73,7 @@ export function updateCameraFOV(camera) {
   camera.updateProjectionMatrix();
 }
 
-export function getResponsiveLanternScale() {
+function getResponsiveLanternScale() {
   const aspect = window.innerWidth / window.innerHeight;
   const referenceAspect = 16 / 9;
   const scaleFactor = Math.sqrt(Math.min(aspect / referenceAspect, 1.0));
@@ -185,7 +185,7 @@ export function setupResizeHandler(
 }
 
 
-export function screenToWorldMapper(camera) {
+function screenToWorldMapper(camera) {
   const vFov = camera.fov * Math.PI / 180;
   const z = camera.position.z;
   const visibleH = 2 * z * Math.tan(vFov / 2);
