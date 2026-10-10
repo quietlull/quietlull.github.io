@@ -13,7 +13,6 @@ export class LanternController {
     if (this.avoidanceEnabled) {
       this.raycaster = new THREE.Raycaster();
       this.mouse = new THREE.Vector2();
-      this.mouseWorldPos = new THREE.Vector3();
       this.isMouseOverCanvas = false;
 
       this._plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
