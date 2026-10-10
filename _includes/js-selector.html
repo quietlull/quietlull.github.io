@@ -1,14 +1,14 @@
 {% assign urls = '' %}
 
 {% if page.layout == 'post' or page.layout == 'section-about' %}
-  {% assign urls = urls | append: ',' | append: site.data.origin[type]['lazy-polyfill'].js %}
+  {% assign urls = urls | append: ',' | append: site.data.origin.cors['lazy-polyfill'].js %}
 
   {% unless page.layout == 'section-about' %}
     {% assign urls = urls
       | append: ','
-      | append: site.data.origin[type].glightbox.js
+      | append: site.data.origin.cors.glightbox.js
       | append: ','
-      | append: site.data.origin[type].clipboard.js
+      | append: site.data.origin.cors.clipboard.js
     %}
   {% endunless %}
 {% endif %}
@@ -23,23 +23,23 @@
 
   {% assign urls = urls
     | append: ','
-    | append: site.data.origin[type].dayjs.js.common
+    | append: site.data.origin.cors.dayjs.js.common
     | append: ','
-    | append: site.data.origin[type].dayjs.js.locale
+    | append: site.data.origin.cors.dayjs.js.locale
     | replace: ':LOCALE', locale
     | append: ','
-    | append: site.data.origin[type].dayjs.js.relativeTime
+    | append: site.data.origin.cors.dayjs.js.relativeTime
     | append: ','
-    | append: site.data.origin[type].dayjs.js.localizedFormat
+    | append: site.data.origin.cors.dayjs.js.localizedFormat
   %}
 {% endif %}
 
 {% if page.content contains '<h2' or page.content contains '<h3' and site.toc and page.toc %}
-  {% assign urls = urls | append: ',' | append: site.data.origin[type].toc.js %}
+  {% assign urls = urls | append: ',' | append: site.data.origin.cors.toc.js %}
 {% endif %}
 
 {% if page.mermaid %}
-  {% assign urls = urls | append: ',' | append: site.data.origin[type].mermaid.js %}
+  {% assign urls = urls | append: ',' | append: site.data.origin.cors.mermaid.js %}
 {% endif %}
 
 {% assign urls = urls | remove_first: ',' %}
@@ -65,7 +65,7 @@
 {% if page.math %}
   <script src="{{ '/assets/js/data/mathjax.js' | relative_url }}"></script>
   <script async src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="{{ site.data.origin[type].mathjax.js | relative_url }}"></script>
+  <script id="MathJax-script" async src="{{ site.data.origin.cors.mathjax.js | relative_url }}"></script>
 {% endif %}
 
 {% if page.layout == 'post' %}

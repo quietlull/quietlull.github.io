@@ -55,13 +55,11 @@
 
   {% include_cached favicons.html %}
 
-  {% unless site.assets.self_host.enabled %}
-    {% for hint in site.data.origin.cors.resource_hints %}
-      {% for link in hint.links %}
-        <link rel="{{ link.rel }}" href="{{ hint.url }}" {{ link.opts | join: ' ' }}>
-      {% endfor %}
+  {% for hint in site.data.origin.cors.resource_hints %}
+    {% for link in hint.links %}
+      <link rel="{{ link.rel }}" href="{{ hint.url }}" {{ link.opts | join: ' ' }}>
     {% endfor %}
-  {% endunless %}
+  {% endfor %}
 
 
   <link rel="stylesheet" href="{{ '/assets/css/:THEME.css' | replace: ':THEME', site.theme | relative_url }}">
@@ -74,15 +72,15 @@
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800&display=swap"
   >
 
-  <link rel="stylesheet" href="{{ site.data.origin[type].fontawesome.css | relative_url }}">
+  <link rel="stylesheet" href="{{ site.data.origin.cors.fontawesome.css | relative_url }}">
 
   {% if site.toc and page.toc %}
-    <link rel="stylesheet" href="{{ site.data.origin[type].toc.css | relative_url }}">
+    <link rel="stylesheet" href="{{ site.data.origin.cors.toc.css | relative_url }}">
   {% endif %}
 
   {% if page.layout == 'post' %}
-    <link rel="stylesheet" href="{{ site.data.origin[type]['lazy-polyfill'].css | relative_url }}">
-    <link rel="stylesheet" href="{{ site.data.origin[type].glightbox.css | relative_url }}">
+    <link rel="stylesheet" href="{{ site.data.origin.cors['lazy-polyfill'].css | relative_url }}">
+    <link rel="stylesheet" href="{{ site.data.origin.cors.glightbox.css | relative_url }}">
   {% endif %}
 
   <script src="{{ '/assets/js/dist/theme.min.js' | relative_url }}"></script>
