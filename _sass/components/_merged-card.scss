@@ -175,11 +175,6 @@
   transition-delay: 0.05s;
 }
 
-body.no-glass .glass-plane,
-.merged-cards.no-glass .glass-plane {
-  display: none;
-}
-
 .merged-cards .card-body {
   position: relative;
   align-self: flex-end;
@@ -281,15 +276,6 @@ body.no-glass .glass-plane,
   border: 1px solid var(--gold-35);
 }
 
-.merged-cards .card-back .takeaway-quote {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.35rem;
-  line-height: 1.15;
-  color: var(--color-gold-deep);
-  margin: 0;
-}
-
 .merged-cards .card-back .takeaway-text {
   font-family: var(--font-body);
   font-size: 0.8rem;
@@ -348,20 +334,6 @@ body.no-glass .glass-plane,
   --dp: 1;
 
   transition: opacity 0.15s, --dp 0.9s linear;
-}
-
-.merged-cards-glass-toggle {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-gold);
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--color-glow) 45%, transparent);
-  border-radius: 999px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  margin-bottom: var(--space-3);
 }
 
 @media (prefers-reduced-motion: reduce) {
