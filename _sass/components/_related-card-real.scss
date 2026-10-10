@@ -54,8 +54,6 @@
 
 .rc::after { content: none; }
 
-.rc--v1 .rc__cover { display: none; }
-
 .rc--v2 .rc__cover {
   position: relative;
   aspect-ratio: 16 / 9;
@@ -75,21 +73,5 @@
     var(--color-cover-mid-warm) 55%, var(--color-panel-solid, #1c1a18) 100%);
   pointer-events: none;
 }
-
-.rc-grid--v3 { display: block; }
-
-.rc--v3 {
-  border: 0;
-  border-bottom: 1px solid var(--color-line-soft, rgba(255, 255, 255, 0.1));
-  background: none;
-}
-
-.rc--v3 .rc__cover { display: none; }
-
-.rc--v3 .rc__body { padding: 0.9rem 0; }
-
-.rc--v3 .rc__title { font-size: 1.05rem; color: var(--color-text, #f5f3ef); }
-
-.rc--v3:hover, .rc--v3:focus-visible { border-color: var(--color-gold, #fbbf24); }
 
 }
