@@ -20,25 +20,6 @@
   }
 }
 
-
-
-
-#topbar .topbar-bottom > a.mx-1 {
-  min-width: 44px;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-footer p a {
-  display: inline-block;
-  padding: 0.5rem 0.25rem;
-  min-height: 44px;
-  line-height: 1.2;
-  vertical-align: middle;
-}
-
 .projects-preview-header .btn.btn-sm,
 .landing-projects .btn.btn-sm,
 a.btn.btn-outline-primary.btn-sm {
@@ -47,40 +28,4 @@ a.btn.btn-outline-primary.btn-sm {
   padding-bottom: 0.5rem;
   display: inline-flex;
   align-items: center;
-}
-
-#topbar {
-  contain: layout style !important;
-}
-
-#topbar .topbar-bottom {
-  .sparkler-switch,
-  .fireworks-switch {
-    position: relative;
-
-    &[title]::after {
-      content: attr(title);
-      position: absolute;
-      top: calc(100% + 0.5rem);
-      left: 50%;
-      transform: translateX(-50%) translateY(-4px);
-      white-space: nowrap;
-      font-size: 0.7rem;
-      color: var(--text-muted-color);
-      background: rgba(11, 17, 32, 0.85);
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 180ms ease, transform 180ms ease;
-      z-index: 30;
-    }
-
-    &:hover[title]::after,
-    &:focus-within[title]::after {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  }
 }
