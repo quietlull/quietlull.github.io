@@ -12,11 +12,6 @@ const desktopMode = matchMedia('(min-width: 1200px)');
 
 function show() {
   tocbot.init(options);
-
-  const $tocWrapper = document.getElementById('toc-wrapper');
-  if ($tocWrapper) {
-    $tocWrapper.classList.remove('invisible');
-  }
 }
 
 function init() {
