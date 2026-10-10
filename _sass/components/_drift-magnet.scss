@@ -57,50 +57,6 @@
   color: var(--color-night);
 }
 
-.dm-favicon {
-  position: relative;
-  width: 2.6rem;
-  height: 2.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-line);
-  border-radius: 8px;
-  background: var(--color-panel);
-  cursor: pointer;
-}
-
-.dm-favicon__icon {
-  width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, var(--color-glow), var(--color-gold-deep));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 50%, transparent);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.dm-favicon:hover .dm-favicon__icon {
-  transform: rotate(360deg);
-}
-
-.dm-motion-btn {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-gold);
-  background: transparent;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
-  padding: var(--space-2) var(--space-4);
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-}
-
-.dm-motion-btn:hover {
-  border-color: var(--color-glow);
-}
-
 .dm-flash {
   animation: dm-border-fly 0.5s ease-out;
 }
