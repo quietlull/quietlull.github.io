@@ -21,7 +21,7 @@ function motionOn() {
   return !document.body.classList.contains('motion-off');
 }
 
-function readDrift(element) {
+function createEntry(element) {
   const hasDrift =
     element.hasAttribute('data-drift') ||
     element.hasAttribute('data-drift-x') ||
@@ -29,16 +29,8 @@ function readDrift(element) {
   const base = hasDrift ? Number(element.dataset.drift) || DEFAULT_DRIFT_AMP : 0;
   const speedScale = Number(element.dataset.driftSpeed) || 1;
   const axis = (v) => (v === undefined || v === '' ? base : Number(v));
-  return {
-    ampX: axis(element.dataset.driftX),
-    ampY: axis(element.dataset.driftY),
-    speedX: 0.45 * speedScale,
-    speedY: 0.57 * speedScale,
-  };
-}
-
-function createEntry(element) {
-  const drift = readDrift(element);
+  const ampX = axis(element.dataset.driftX);
+  const ampY = axis(element.dataset.driftY);
 
   return {
     element,
@@ -47,10 +39,10 @@ function createEntry(element) {
     clamp: Number(element.dataset.magnetClamp) || 0,
     strength: Number(element.dataset.strength) || DEFAULT_STRENGTH,
     strengthText: Number(element.dataset.strengthText) || DEFAULT_STRENGTH_TEXT,
-    ampX: drift.ampX,
-    ampY: drift.ampY,
-    speedX: drift.speedX,
-    speedY: drift.speedY,
+    ampX,
+    ampY,
+    speedX: 0.45 * speedScale,
+    speedY: 0.57 * speedScale,
     phaseX: Math.random() * TWO_PI,
     phaseY: Math.random() * TWO_PI,
     jitterX: 0.85 + Math.random() * 0.3,
@@ -61,7 +53,7 @@ function createEntry(element) {
     targetX: 0,
     targetY: 0,
     blend: 0,
-    driftLevel: drift.ampX > 0 || drift.ampY > 0 ? 1 : 0,
+    driftLevel: ampX > 0 || ampY > 0 ? 1 : 0,
     onScreen: true,
     promoted: false,
   };
