@@ -3,8 +3,6 @@ layout: default
 refactor: true
 ---
 
-{% include lang.html %}
-
 {% assign years = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
 
 <div id="archives-page">

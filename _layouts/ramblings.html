@@ -5,8 +5,6 @@ script_includes:
   - ramblings-scripts
 ---
 
-{% include lang.html %}
-
 {% assign all_posts = site.posts | where_exp: 'item', 'item.hidden != true' | where: 'tags', 'ramblings' %}
 {% assign all_pinned = all_posts | where_exp: 'item', 'item.pin == true' %}
 {% assign all_normal = all_posts | where_exp: 'item', 'item.pin != true' %}

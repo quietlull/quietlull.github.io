@@ -5,8 +5,6 @@ script_includes:
   - projects-scripts
 ---
 
-{% include lang.html %}
-
 {% assign section = page.section %}
 {% assign all_projects = site.posts | where: 'section', section | where: 'tags', 'project' %}
 {% assign pinned = all_projects | where_exp: 'item', 'item.pin == true' | sort: 'priority' | reverse %}
