@@ -1,20 +1,4 @@
 @use 'sass:list';
-@use 'variables' as v;
-
-
-@mixin text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@mixin text-clip($lines: 2) {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: $lines;
-  -webkit-box-orient: vertical;
-}
-
 
 @mixin mt-mb($value) {
   margin-top: $value;
@@ -24,11 +8,6 @@
 @mixin ml-mr($value) {
   margin-left: $value;
   margin-right: $value;
-}
-
-@mixin pt-pb($val) {
-  padding-top: $val;
-  padding-bottom: $val;
 }
 
 @mixin pl-pr($val, $important: false) {
@@ -41,7 +20,6 @@
   }
 }
 
-
 @mixin glass {
   background: var(--bg-glass);
   backdrop-filter: blur(12px);
@@ -51,120 +29,6 @@
   will-change: transform, box-shadow;
   contain: layout style paint;
 }
-
-@mixin glass-strong {
-  background: var(--bg-glass-strong);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border-strong);
-  box-shadow: var(--glass-shadow-strong);
-  will-change: transform, box-shadow;
-  contain: layout style paint;
-}
-
-@mixin glass-lantern {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: var(--slate-a40);
-  border: 1px solid var(--amber-a10);
-  box-shadow:
-    0 8px 32px var(--shadow-a60),
-    0 0 60px var(--gold-03),
-    inset 0 1px 0 var(--gold-05);
-  will-change: transform, box-shadow;
-  contain: layout style paint;
-}
-
-
-@mixin glow-dot($size: 0.5rem, $ring-size: 2rem) {
-  position: relative;
-  width: $ring-size;
-  height: $ring-size;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: $size;
-    height: $size;
-    background: var(--amber-400);
-    border-radius: 50%;
-    box-shadow: var(--glow-ring);
-  }
-  
-  border: 1px solid var(--amber-a30);
-  border-radius: 50%;
-}
-
-@mixin glow-dot-small {
-  width: 0.5rem;
-  height: 0.5rem;
-  background: var(--amber-400);
-  border-radius: 50%;
-  box-shadow: var(--glow-ring-small);
-}
-
-@mixin radial-hover-glow {
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: -30%;
-    background: radial-gradient(
-      ellipse at var(--orb-x, 50%) var(--orb-y, 55%),
-      var(--glow-color, rgba(var(--glow-hue), 0.20)) 0%,
-      transparent 60%
-    );
-    pointer-events: none;
-    opacity: 0.55;
-    transition: opacity 400ms ease;
-    animation: pulse-slow var(--orb-speed, 5s) ease-in-out infinite;
-    animation-delay: var(--orb-delay, 0s);
-  }
-
-  &:hover::before {
-    animation: none;
-    opacity: 0.75;
-  }
-}
-
-@mixin icon-with-glow($size: 4rem, $icon-size: 1rem) {
-  position: relative;
-  width: $size;
-  height: $size;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--glow-medium);
-    border-radius: 1rem;
-    filter: blur(12px);
-    transition: all 0.3s ease;
-  }
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--glow-subtle);
-  border: 1px solid var(--glass-border);
-  border-radius: 1rem;
-  font-size: $icon-size;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    &::before {
-      background: var(--glow-strong);
-    }
-
-    background: var(--glow-medium);
-  }
-}
-
 
 @mixin shimmer-effect {
   position: relative;
@@ -205,24 +69,6 @@
   }
 }
 
-
-@mixin pulse-glow($duration: 2s) {
-  animation: pulse-glow $duration ease-in-out infinite;
-  
-  @keyframes pulse-glow {
-    0%, 100% {
-      opacity: 1;
-      box-shadow: var(--glow-ring);
-    }
-
-    50% {
-      opacity: 0.7;
-      box-shadow: var(--glow-ring-small);
-    }
-  }
-}
-
-
 @mixin transition($props...) {
   $list: ();
 
@@ -233,35 +79,11 @@
   transition: $list;
 }
 
-@mixin smooth-transition {
-  transition: all 0.3s ease-in-out;
-}
-
-@mixin slide($append: null) {
-  @if $append {
-    transition: transform 0.4s ease, $append;
-  } @else {
-    transition: transform 0.4s ease;
-  }
-}
-
-
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 @mixin align-center {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
 }
-
-@mixin max-w-100 {
-  max-width: 100%;
-}
-
 
 @mixin placeholder {
   color: var(--text-muted-color) !important;
@@ -270,25 +92,6 @@
 @mixin placeholder-focus {
   opacity: 0.6;
 }
-
-@mixin input-focus-glow {
-  outline: none;
-  border-color: var(--input-focus-border-color);
-  box-shadow: var(--input-focus-glow);
-}
-
-
-@mixin label($size: 1rem, $weight: 600, $color: var(--label-color)) {
-  color: $color;
-  font-size: $size;
-  font-weight: $weight;
-}
-
-@mixin heading-glow {
-  color: var(--heading-color);
-  text-shadow: 0 0 20px var(--gold-10);
-}
-
 
 @mixin prompt($type, $fa_content, $fa_style: 'solid', $rotate: 0) {
   &.prompt-#{$type} {
@@ -302,106 +105,6 @@
       @if $rotate != 0 {
         transform: rotate(#{$rotate}deg);
       }
-    }
-  }
-}
-
-
-@mixin img-caption {
-  + em {
-    display: block;
-    text-align: center;
-    font-style: normal;
-    font-size: 80%;
-    color: var(--text-muted-color);
-  }
-}
-
-@mixin img-with-glow {
-  box-shadow: 0 0 40px var(--gold-10);
-  transition: box-shadow 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 0 60px var(--gold-15);
-  }
-}
-
-
-@mixin card-base {
-  @include glass;
-
-  border-radius: v.$radius-lg;
-  padding: 1.5rem;
-}
-
-@mixin card-hover {
-  @include radial-hover-glow;
-
-  transition: border-color 500ms ease, transform 400ms ease, box-shadow 400ms ease;
-
-  &:hover {
-    border-color: rgba(var(--glow-border-hue), 0.45) !important;
-    transform: scale(1.015);
-    box-shadow: 0 0 24px rgba(var(--glow-hue), 0.40) !important;
-  }
-}
-
-
-@mixin button-base {
-  padding: 0.75rem 1.5rem;
-  border-radius: v.$radius-lg;
-  background: var(--button-bg);
-  border: 1px solid var(--btn-border-color);
-  color: var(--text-color);
-  font-weight: 300;
-  cursor: pointer;
-
-  @include transition(all);
-  
-  &:hover {
-    background: var(--button-hover-bg);
-    box-shadow: var(--btn-hover-glow);
-  }
-  
-  &:active {
-    background: var(--button-active-bg);
-    transform: scale(0.98);
-  }
-}
-
-@mixin button-with-shimmer {
-  @include button-base;
-  @include shimmer-effect;
-}
-
-
-@mixin floating-orb($size: 8rem, $blur: 48px, $color: var(--amber-400)) {
-  position: fixed;
-  width: $size;
-  height: $size;
-  border-radius: 50%;
-  background: rgba($color, 0.1);
-  filter: blur($blur);
-  pointer-events: none;
-  animation: float 10s ease-in-out infinite;
-}
-
-
-@mixin custom-scrollbar {
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--glow-medium);
-    border-radius: 4px;
-    
-    &:hover {
-      background: var(--glow-strong);
     }
   }
 }
