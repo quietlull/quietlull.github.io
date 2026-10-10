@@ -4,19 +4,12 @@ $-breakpoints: (
   sm: 576px,
   md: 768px,
   lg: 850px,
-  xl: 1200px,
   xxl: 1400px,
   xxxl: 1650px
 );
 
 @function get($breakpoint) {
   @return map.get($-breakpoints, $breakpoint);
-}
-
-@mixin lt($width) {
-  @media all and (max-width: calc(#{$width} - 1px)) {
-    @content;
-  }
 }
 
 @mixin lte($width) {
@@ -33,12 +26,6 @@ $-breakpoints: (
 
 @mixin lg {
   @media all and (min-width: get(lg)) {
-    @content;
-  }
-}
-
-@mixin xl {
-  @media all and (min-width: get(xl)) {
     @content;
   }
 }
