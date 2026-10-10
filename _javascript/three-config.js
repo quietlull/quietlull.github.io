@@ -87,16 +87,3 @@ export const CONFIG = {
     },
   },
 };
-
-export const PRESETS = {
-  full: {
-    water: true,
-    dock: true,
-    scrollCamera: true,
-  },
-  standard: {
-    water: false,
-    dock: false,
-    scrollCamera: false,
-  },
-};

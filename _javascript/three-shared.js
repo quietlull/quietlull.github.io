@@ -162,12 +162,6 @@ export function setupScrollCamera(camera) {
   };
 }
 
-export function setupStaticCamera(camera) {
-  camera.rotation.x = CONFIG.camera.startRotationX;
-  camera.position.y = CONFIG.camera.startPositionY;
-}
-
-
 export function setupResizeHandler(
   camera, renderer, composer, lanternController, options = {}
 ) {
@@ -188,44 +182,6 @@ export function setupResizeHandler(
       }
     }, 100);
   });
-}
-
-
-export function spawnProceduralLanterns(
-  scene, lanternController, lanternMaterialManager, count = 25
-) {
-  const geometry = new THREE.BoxGeometry(25, 35, 25);
-  geometry.computeBoundingBox();
-
-  for (let i = 0; i < count; i++) {
-    const mesh = new THREE.Mesh(geometry);
-
-    mesh.material = lanternMaterialManager.createMaterialForMesh(mesh, {
-      gradientStart: CONFIG.lanterns.shader.gradientStart,
-      gradientEnd: CONFIG.lanterns.shader.gradientEnd,
-      flickerSpeed: CONFIG.lanterns.shader.flickerSpeed,
-      flickerAmount: CONFIG.lanterns.shader.flickerAmount,
-      flickerColorShift: CONFIG.lanterns.shader.flickerColorShift,
-    });
-
-    let x, y, z;
-    if (Math.random() > 0.2) {
-      const side = Math.random() > 0.5 ? 1 : -1;
-      x = side * (400 + Math.random() * 350);
-      y = (Math.random() - 0.5) * 700;
-      z = -100 - Math.random() * 400;
-    } else {
-      x = (Math.random() - 0.5) * 500;
-      y = (Math.random() - 0.5) * 700;
-      z = -500 - Math.random() * 300;
-    }
-
-    mesh.position.set(x, y, z);
-    mesh.rotation.y = Math.random() * Math.PI * 2;
-
-    lanternController.addLantern(mesh);
-    scene.add(mesh);
-  }
 }
 
 
@@ -258,13 +214,6 @@ export function setupScrollLockedCamera(camera) {
 
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-
-  return {
-    updateMapper() {
-      const newMapper = screenToWorldMapper(camera);
-      mapper.worldPerPixelY = newMapper.worldPerPixelY;
-    },
-  };
 }
 
 
