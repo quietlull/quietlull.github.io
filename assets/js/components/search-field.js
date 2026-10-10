@@ -22,8 +22,7 @@ const corpus = (el, sel) =>
 
 export function init(root = document) {
   const input = root.querySelector('.sf__input');
-  if (!input || input.dataset.sfBound) return;
-  input.dataset.sfBound = '1';
+  if (!input) return;
 
   const host = HOSTS.find(h => root.querySelector(h.item));
   if (!host) return;
