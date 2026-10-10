@@ -13,6 +13,12 @@
 // comment and would delete code. Templates are the exception: Liquid and HTML comments have
 // unambiguous delimiters, and inline scripts inside them are still parsed.
 //
+// Stylesheets get a second reading of the text itself, because postcss-scss only reports a comment
+// that sits between statements and misses one inside a Sass map, a list, a selector list or a
+// multi-line value. One case is reported as a NOTE and never removed: text after `//` inside a
+// custom property's value. Sass does not treat that as a comment, the browser receives it, and
+// taking it out changes the stylesheet.
+//
 // Kept: comments that are instructions to a tool (eslint and stylelint directives, Ruby magic
 // comments, licence banners). Everything else goes to docs/code-comments/<path>.md with the line
 // it sat on, and the review page for that file shows them.
@@ -47,9 +53,29 @@ function scriptComments(code, offset, isModule) {
   return null;
 }
 
+function commentsByText(text, from) {
+  const list = [];
+  for (let i = from; i < text.length; i += 1) {
+    const two = text.slice(i, i + 2);
+    if (text[i] === '"' || text[i] === '\'') {
+      const quote = text[i];
+      for (i += 1; i < text.length && text[i] !== quote && text[i] !== '\n'; i += 1) if (text[i] === '\\') i += 1;
+    } else if (/^url\(\s*[^'"\s]/.test(text.slice(i, i + 12))) {
+      i = text.indexOf(')', i) === -1 ? text.length : text.indexOf(')', i);
+    } else if (two === '//' || two === '/*') {
+      const stop = two === '//' ? text.indexOf('\n', i) : text.indexOf('*/', i);
+      const end = stop === -1 ? text.length : stop + (two === '//' ? 0 : 2);
+      list.push({ start: i, end: text[end - 1] === '\r' ? end - 1 : end, body: text.slice(i + 2, two === '//' ? end : end - 2) });
+      i = end - 1;
+    }
+  }
+  return list;
+}
+
 function commentsIn(file, text) {
   const found = [];
   const unparsed = [];
+  const shipped = [];
   if (file.endsWith('.js')) {
     const front = /^---\r?\n(?:[\s\S]*?\r?\n)?---\r?\n/.exec(text);
     const start = front ? front[0].length : 0;
@@ -58,11 +84,25 @@ function commentsIn(file, text) {
   } else if (file.endsWith('.scss') || file.endsWith('.css')) {
     const front = /^---\r?\n(?:[\s\S]*?\r?\n)?---\r?\n/.exec(text);
     const start = front ? front[0].length : 0;
-    postcssScss.parse(text.slice(start)).walkComments((node) => {
+    const tree = postcssScss.parse(text.slice(start));
+    tree.walkComments((node) => {
       const from = start + node.source.start.offset;
       const to = node.raws.inline ? (text.indexOf('\n', from) === -1 ? text.length : text.indexOf('\n', from)) : text.indexOf('*/', from) + 2;
       found.push({ start: from, end: text[to - 1] === '\r' ? to - 1 : to, body: node.text });
     });
+    // The parser only reports a comment that sits between statements. One inside a Sass map, a
+    // multi-line list, a selector list or a multi-line value is invisible to it, which is how three
+    // survived the first strip. Read the text as well, skipping strings and url().
+    const customValues = [];
+    tree.walkDecls(/^--/, (node) => customValues.push([start + node.source.start.offset, start + node.source.end.offset]));
+    for (const comment of commentsByText(text, start)) {
+      if (found.some((known) => comment.start >= known.start && comment.start < known.end)) continue;
+      // Sass copies a custom property's value out untouched, so this one is not a comment to the
+      // compiler: the browser receives it as part of the value. Removing it changes the stylesheet.
+      if (customValues.some(([a, b]) => comment.start >= a && comment.start <= b)) {
+        shipped.push(`line ${text.slice(0, comment.start).split('\n').length}: "${text.slice(comment.start, comment.end).trim()}" is inside a custom property's value, so the browser receives it as part of the value; fix it by hand`);
+      } else found.push(comment);
+    }
   } else if (file.endsWith('.rb')) {
     const probe = 'require "ripper"; require "json"; src = File.read(ARGV[0], encoding: "utf-8"); ' +
       'puts Ripper.lex(src).select { |t| t[1] == :on_comment }.map { |t| [t[0][0], t[0][1], t[2]] }.to_json';
@@ -108,7 +148,7 @@ function commentsIn(file, text) {
     }
   }
   const kept = found.filter((c) => TOOL_DIRECTIVE.test(c.body));
-  return { remove: found.filter((c) => !TOOL_DIRECTIVE.test(c.body)).sort((a, b) => a.start - b.start), kept: kept.length, unparsed };
+  return { remove: found.filter((c) => !TOOL_DIRECTIVE.test(c.body)).sort((a, b) => a.start - b.start), kept: kept.length, unparsed, shipped };
 }
 
 function strip(text, comments) {
@@ -176,6 +216,7 @@ for (const file of files) {
   let result;
   try { result = commentsIn(file, text); } catch (error) { trouble.push(`${file}: ${error.message.split('\n')[0]}`); continue; }
   result.unparsed.forEach((what) => trouble.push(`${file}: could not parse ${what}; its comments were left in place`));
+  result.shipped.forEach((what) => trouble.push(`${file} ${what}`));
   keptTotal += result.kept;
   if (!result.remove.length) continue;
   withComments += 1;
