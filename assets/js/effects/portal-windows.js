@@ -81,11 +81,12 @@ function init(field) {
     for (const w of state) {
       const bar = w.el.querySelector('.pwin__bar');
       const title = w.el.querySelector('.pwin__title');
+      if (!bar || !title) continue;
       const close = w.el.querySelector('.pwin__close');
       const bs = getComputedStyle(bar);
       const need = Math.ceil(
         title.scrollWidth
-        + close.offsetWidth
+        + (close ? close.offsetWidth : 0)
         + parseFloat(bs.paddingLeft) + parseFloat(bs.paddingRight)
         + (parseFloat(bs.columnGap) || 0)
         + 4
@@ -132,7 +133,7 @@ function init(field) {
 
     w.el.addEventListener('pointerdown', (e) => {
       if (e.button !== 0) return;
-      if (e.pointerType === 'touch' && !bar.contains(e.target)) return;
+      if (e.pointerType === 'touch' && !(bar && bar.contains(e.target))) return;
       if (e.target.closest('.pwin__close')) return;
       const r = field.getBoundingClientRect();
       w.pending = true;
@@ -180,24 +181,27 @@ function init(field) {
     w.el.addEventListener('pointercancel', release);
 
     const closeButton = w.el.querySelector('.pwin__close');
-    closeButton.addEventListener('pointerdown', (e) => e.stopPropagation());
-    closeButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      w.closed = true;
-      w.el.classList.add('is-closed');
-      w.vel.x = 0;
-      w.vel.y = 0;
-      w.lean.x = 0;
-      w.lean.y = 0;
-      syncReset();
-    });
+    if (closeButton) {
+      closeButton.addEventListener('pointerdown', (e) => e.stopPropagation());
+      closeButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        w.closed = true;
+        w.el.classList.add('is-closed');
+        w.vel.x = 0;
+        w.vel.y = 0;
+        w.lean.x = 0;
+        w.lean.y = 0;
+        syncReset();
+      });
+    }
   });
 
   const centre = field.querySelector('.centre');
 
   function syncReset() {
-    centre.classList.toggle('can-reset', state.some((w) => w.closed));
+    const anyClosed = state.some((w) => w.closed);
+    if (centre) centre.classList.toggle('can-reset', anyClosed);
   }
 
   function restoreAll() {
@@ -217,13 +221,15 @@ function init(field) {
     wake();
   }
 
-  centre.addEventListener('click', restoreAll);
-  centre.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      restoreAll();
-    }
-  });
+  if (centre) {
+    centre.addEventListener('click', restoreAll);
+    centre.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        restoreAll();
+      }
+    });
+  }
 
   function frame() {
     const fw = field.clientWidth;
