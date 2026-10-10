@@ -161,47 +161,6 @@ function checkAchievements(state) {
       }
     }
   }
-  renderTrophyCase(state);
-}
-
-function renderTrophyCase(state) {
-  const grid = document.getElementById('trophy-grid');
-  if (!grid) return;
-
-  const total = ACHIEVEMENTS.length;
-  const count = state.unlocked.length;
-  const pct = total > 0 ? (count / total * 100).toFixed(0) : 0;
-
-  let html = '<div class="trophy-summary">' +
-    '<span class="trophy-count">' + count + ' / ' + total + '</span>' +
-    '<div class="trophy-bar"><div class="trophy-bar-fill" style="width:' + pct + '%"></div></div>' +
-  '</div>';
-
-  for (const a of ACHIEVEMENTS) {
-    const unlocked = state.unlocked.includes(a.id);
-    const isSecret = a.cat === 'secret';
-    const progress = a.progress ? a.progress(state) : null;
-
-    let cls = 'trophy-badge';
-    if (unlocked) cls += ' unlocked';
-    else if (isSecret) cls += ' secret';
-    else cls += ' locked';
-
-    const icon = unlocked || !isSecret ? a.icon : '\u2753';
-    const name = unlocked || !isSecret ? a.title : '???';
-    const desc = unlocked || !isSecret ? a.desc : '???';
-    const progText = progress && !unlocked
-      ? ' (' + progress[0] + '/' + progress[1] + ')'
-      : '';
-
-    html += '<div class="' + cls + '">' +
-      '<span class="badge-icon">' + icon + '</span>' +
-      '<span class="badge-name">' + name + '</span>' +
-      '<span class="badge-desc">' + desc + progText + '</span>' +
-    '</div>';
-  }
-
-  grid.innerHTML = html;
 }
 
 function bump(state, mutator) {
@@ -422,7 +381,6 @@ export function initAchievements() {
 
   setupTrackers(state);
   checkAchievements(state);
-  renderTrophyCase(state);
 
   document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.shiftKey && e.key === 'A') {
