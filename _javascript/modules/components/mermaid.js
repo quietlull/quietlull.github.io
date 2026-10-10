@@ -1,23 +1,6 @@
 const MERMAID = 'mermaid';
 const themeMapper = Theme.getThemeMapper('default', 'dark');
 
-function refreshTheme(event) {
-  if (event.source === window && event.data && event.data.id === Theme.ID) {
-    const mermaidList = document.getElementsByClassName(MERMAID);
-
-    [...mermaidList].forEach((elem) => {
-      const svgCode = elem.previousSibling.children.item(0).textContent;
-      elem.textContent = svgCode;
-      elem.removeAttribute('data-processed');
-    });
-
-    const newTheme = themeMapper[Theme.visualState];
-
-    mermaid.initialize({ theme: newTheme });
-    mermaid.init(null, `.${MERMAID}`);
-  }
-}
-
 function setNode(elem) {
   const svgCode = elem.textContent;
   const backup = elem.parentElement;
@@ -47,8 +30,4 @@ export function loadMermaid() {
   [...basicList].forEach(setNode);
 
   mermaid.initialize(mermaidConf);
-
-  if (Theme.switchable) {
-    window.addEventListener('message', refreshTheme);
-  }
 }
