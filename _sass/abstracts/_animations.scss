@@ -78,40 +78,19 @@
 
 
 $motion-selectors:
-  '#topbar', '#avatar', '.nav-item .nav-link', '.topbar-bottom a',
-  '.text-container', '#landing-box::before', '#landing-box::after',
-  '.portal-door', '.portal-side-link',
-  '.posts-grid .card', '.post-card .card', '.post-nav-card',
-  '#related-posts a.post-preview', 'article > header',
-  '.post-content-container', '.post-section', '.post-tldr', '.post-takeaway',
-  '.section-icon-box', '.section-icon-box .icon-dot',
-  '.card-icon-box', '.card-icon-box .card-icon-dot',
-  '.tool-icon', '.demo-reel-embed', '.demo-reel-placeholder', '.demo-reel-placeholder i',
+  '.post-nav-card',
+  '.post-content-container', '.post-section',
   '#back-to-top.show',
-  '.sparkler-switch input:checked ~ .sparkler-switch-track',
-  '.fireworks-switch input:checked ~ .fireworks-switch-track',
-  '.meta-chip', '.post-firefly',
-  '.scroll-indicator i', '.nav-ribbon', '.landing-title',
-  '.btn.btn-outline-primary', '.access > section',
-  '.year::after', '.steam-line';
+  '.post-firefly',
+  '.btn.btn-outline-primary';
 $reduced-motion-extras:
-  '.ambient-orb', '#section-landing::before',
-  '#main-wrapper', '#main-wrapper.page-exit';
+  '#section-landing::before';
 
 @media (prefers-reduced-motion: reduce) {
   html {
     @each $sel in list.join($motion-selectors, $reduced-motion-extras) {
       #{$sel} { animation: none !important; }
     }
-  }
-}
-
-#main-wrapper {
-  animation: fade-in 0.35s ease-out;
-
-  &.page-exit {
-    animation: page-fade-out 0.3s ease-in forwards;
-    pointer-events: none;
   }
 }
 
