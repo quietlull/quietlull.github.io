@@ -40,7 +40,6 @@ export default defineConfig([
         ClipboardJS: 'readonly',
         GLightbox: 'readonly',
         Theme: 'readonly',
-        dayjs: 'readonly',
         mermaid: 'readonly',
         tocbot: 'readonly',
         importScripts: 'readonly',
