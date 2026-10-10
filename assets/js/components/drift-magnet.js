@@ -8,7 +8,6 @@ const DEFAULT_STRENGTH_TEXT = 20;
 const DEFAULT_DRIFT_AMP = 6;
 const TWO_PI = Math.PI * 2;
 
-const entries = [];
 let rafId = null;
 let startTime = 0;
 let cullObserver = null;
@@ -74,16 +73,7 @@ function tick(now) {
   let anyBusy = false;
   let anyVisibleDrift = false;
 
-  for (let i = entries.length - 1; i >= 0; i -= 1) {
-    const e = entries[i];
-    if (!e.element.isConnected) {
-      if (cullObserver) {
-        cullObserver.unobserve(e.element);
-      }
-      elementToEntry.delete(e.element);
-      entries.splice(i, 1);
-      continue;
-    }
+  for (const e of elementToEntry.values()) {
     const vis = e.onScreen;
     const parked =
       e.driftLevel < SETTLE_EPSILON &&
@@ -204,30 +194,21 @@ export function init(root = document) {
     }
     cullObserver = new IntersectionObserver(
       (records) => {
-        let changed = false;
         records.forEach((rec) => {
-          const entry = elementToEntry.get(rec.target);
-          if (entry) {
-            entry.onScreen = rec.isIntersecting;
-            changed = true;
-          }
+          elementToEntry.get(rec.target).onScreen = rec.isIntersecting;
         });
-        if (changed) {
-          wake();
-        }
+        wake();
       },
       { rootMargin: '200px' }
     );
   }
 
-  const seen = new Set(entries.map((e) => e.element));
   root.querySelectorAll(
     '.js-magnetic, [data-drift], [data-drift-x], [data-drift-y]').forEach((el) => {
-    if (seen.has(el)) {
+    if (elementToEntry.has(el)) {
       return;
     }
     const entry = createEntry(el);
-    entries.push(entry);
     elementToEntry.set(el, entry);
     cullObserver.observe(el);
     if (entry.isMagnetic) {
