@@ -3,7 +3,6 @@ import { basic } from './modules/layouts';
 import {
   loadImg,
   imgPopup,
-  initLocaleDatetime,
   initClipboard,
   initToc,
   loadMermaid,
@@ -13,7 +12,6 @@ import {
 loadImg();
 initToc();
 imgPopup();
-initLocaleDatetime();
 initClipboard();
 loadMermaid();
 initPostEnhance();
