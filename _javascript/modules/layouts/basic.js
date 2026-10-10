@@ -1,6 +1,6 @@
 import {
   back2top, fireworksToggle,
-  initAchievements, initCardTilt, initMouseTrail, initPageTransition,
+  initAchievements, initMouseTrail, initPageTransition,
   initToolTaglines
 } from '../components';
 
@@ -9,7 +9,6 @@ export function basic() {
   back2top();
   initPageTransition();
   initAchievements();
-  initCardTilt();
   initToolTaglines();
   initMouseTrail();
 }
