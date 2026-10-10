@@ -71,8 +71,9 @@ You are working in the real checkout, on `main`, and you are not the only one wh
 - **Stage by explicit path.** Never `git add -A`, `git add .`, `git commit -a`, `git stash`,
   `git checkout -- .`, `git restore .` or `git reset --hard`. To undo your own edit to one file,
   `git checkout -- path/to/that/file`.
-- **The drive is nearly full** (about 2 GB free). Do not copy the repo or `_site`. Keep your scratch
-  folder to a few megabytes.
+- **The drive is nearly full** (between 0.5 and 3 GB free, and it moves). Do not copy the repo or
+  `_site`. Keep your scratch folder to a few megabytes. Run one browser check at a time. If a
+  command fails with "No space left on device", stop and report it; do not retry in a loop.
 - **No servers.** Do not run `jekyll serve` or anything else that listens on a port or watches
   files. The checks serve `_site` themselves, and a second process rebuilding `_site` under you
   would corrupt your comparisons.
@@ -93,7 +94,14 @@ cp _site/assets/css/jekyll-theme-chirpy.css "$SCRATCH/before.css"
 node tools/page-fingerprint.mjs capture "$SCRATCH/before.json"
 node tools/check-workbench.mjs > "$SCRATCH/workbench-before.txt"
 ls -la assets/js/dist/*.min.js > "$SCRATCH/bundles-before.txt"
+node tools/behaviour-check.mjs "$SCRATCH/behaviour-before.json"
+node tools/behaviour-check.mjs "$SCRATCH/behaviour-before-2.json"
+node tools/behaviour-check.mjs "$SCRATCH/behaviour-reduced-before.json" reduced
+cmp "$SCRATCH/behaviour-before.json" "$SCRATCH/behaviour-before-2.json"
 ```
+
+The two behaviour files must be equal before you change anything. If they are not, the difference
+is noise in the check: report it and do not use that value as evidence.
 
 ## Proving a change is safe
 
@@ -107,6 +115,8 @@ node tools/css-rule-diff.mjs "$SCRATCH/before.css" _site/assets/css/jekyll-theme
 node tools/page-fingerprint.mjs capture "$SCRATCH/after.json"
 node tools/page-fingerprint.mjs compare "$SCRATCH/before.json" "$SCRATCH/after.json"
 node tools/check-workbench.mjs > "$SCRATCH/workbench-after.txt"
+node tools/behaviour-check.mjs "$SCRATCH/behaviour-after.json"
+cmp "$SCRATCH/behaviour-before.json" "$SCRATCH/behaviour-after.json"
 ```
 
 - `npm test` must pass.
@@ -116,10 +126,16 @@ node tools/check-workbench.mjs > "$SCRATCH/workbench-after.txt"
   `--ignore-classes`. Any other difference means you changed the layout: undo it.
 - The workbench output must match the starting one: same sizes, 0 problems.
 - **For anything that moves or reacts** (tilt, magnets, drift, line boil, flips, filters, the
-  achievement wall, portal windows): the fingerprint does not see behaviour. Drive it with real
-  input using `tools/real-browser.mjs` (see `tools/check-workbench.mjs` for the pattern) and report
-  the measurement before and after. Never use an in-page `dispatchEvent`: it proves a handler is
-  attached and nothing else.
+  achievement wall, portal windows): the fingerprint does not see behaviour.
+  `tools/behaviour-check.mjs` does. It drives all of those with a real mouse and keyboard and its
+  output must be byte for byte the same before and after (`cmp` prints nothing). Its header lists
+  what it covers. For anything it does not cover, drive it yourself with `tools/real-browser.mjs`
+  and report the measurement before and after. Never use an in-page `dispatchEvent`: it proves a
+  handler is attached and nothing else.
+- **A style rule can be dead on every page at rest and alive for one second.** A class a script
+  adds on hover, press, drag or scroll (`is-flipped`, `is-on`, `dm-flash`, `is-dragging`,
+  `is-closed`, `can-reset`, `motion-off`, anything a script writes) matches no element in the
+  built HTML. Search the scripts for the name before calling its rule dead.
 - The fingerprint checks layout, not colour. If you touch a colour, compare computed styles too.
 
 ## Evidence for "dead"

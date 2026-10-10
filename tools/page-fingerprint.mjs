@@ -20,6 +20,10 @@
 // - Script errors on a page are part of the fingerprint. A page that silently stopped running a
 //   script still "looks the same" for a second; the error does not.
 //
+// - Every page believes it was opened at noon on 15 January 2026. The achievement wall unlocks a
+//   tile for a visit between midnight and 4am, which moves one star by a pixel, so a capture taken
+//   in the evening and one taken after midnight used to disagree about a page nobody had touched.
+//
 // It checks layout, not colour. A rule that only changed a colour would pass.
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -31,6 +35,20 @@ const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PAGES = ['/', '/tech-art/', '/tech-art/projects/', '/tech-art/posts/ComputeGrass/', '/tech-art/about/',
   '/ramblings/', '/archives/', '/tags/blog/', '/tech-art/under-construction/', '/404.html'];
 const WIDTHS = [1440, 390];
+
+const OPENED_AT_NOON = `(() => {
+  const Real = Date;
+  const shift = new Real(2026, 0, 15, 12).getTime() - Real.now();
+  function Shifted(...args) {
+    if (!new.target) return new Real(Real.now() + shift).toString();
+    return args.length ? new Real(...args) : new Real(Real.now() + shift);
+  }
+  Shifted.prototype = Real.prototype;
+  Shifted.now = () => Real.now() + shift;
+  Shifted.parse = Real.parse;
+  Shifted.UTC = Real.UTC;
+  window.Date = Shifted;
+})()`;
 
 const READ = `(async () => {
   await document.fonts.ready;
@@ -53,6 +71,7 @@ async function capture(out, siteDir) {
   const result = {};
   try {
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await page.send('Page.addScriptToEvaluateOnNewDocument', { source: OPENED_AT_NOON });
     for (const width of WIDTHS) {
       await page.resize(width, 900);
       for (const url of PAGES) {
