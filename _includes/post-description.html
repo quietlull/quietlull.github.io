@@ -13,11 +13,6 @@
   {%- endif -%}
 {%- endcapture -%}
 
-{%- if include.json -%}
-  {%- assign description = description | jsonify -%}
-{%- else -%}
-  {%- assign max_length = include.max_length | default: 200 -%}
-  {%- assign description = description | strip | truncate: max_length -%}
-{%- endif -%}
+{%- assign max_length = include.max_length | default: 200 -%}
 
-{{- description -}}
+{{- description | strip | truncate: max_length -}}
