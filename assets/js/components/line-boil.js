@@ -69,13 +69,12 @@ function boilTick(host) {
   }
 }
 
-export function initLineBoil(host, { rate = LINE_BOIL_RATE } = {}) {
-  if (!host) return null;
+export function initLineBoil(host) {
+  if (!host) return;
   const text = host.textContent.trim();
 
   host.classList.add('line-boil-text');
 
-  let timer = null;
   let repin = null;
 
   const onResize = () => {
@@ -85,18 +84,11 @@ export function initLineBoil(host, { rate = LINE_BOIL_RATE } = {}) {
 
   const start = () => {
     pinGlyphAdvance(host, text);
-    timer = setInterval(() => boilTick(host), 1000 / rate);
+    setInterval(() => boilTick(host), 1000 / LINE_BOIL_RATE);
     window.addEventListener('resize', onResize);
   };
 
   Promise.all(LINE_BOIL_FACES.map((face) => document.fonts.load('1em ' + face, text)))
     .then(() => document.fonts.ready)
     .then(start);
-
-  return () => {
-    if (timer) clearInterval(timer);
-    timer = null;
-    clearTimeout(repin);
-    window.removeEventListener('resize', onResize);
-  };
 }
