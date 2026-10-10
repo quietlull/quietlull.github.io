@@ -1,14 +1,14 @@
 <nav class="post-navigation" aria-label="Post Navigation">
   <div class="post-nav-grid">
     {% if page.previous.url %}
-      <a href="{{ site.baseurl }}{{ page.previous.url }}" class="post-nav-card post-nav-prev">
+      <a href="{{ site.baseurl }}{{ page.previous.url }}" class="post-nav-card">
         <span class="post-nav-label">
           <i class="fas fa-arrow-left"></i> Previous
         </span>
         <span class="post-nav-title">{{ page.previous.title }}</span>
       </a>
     {% else %}
-      <div class="post-nav-card post-nav-prev disabled">
+      <div class="post-nav-card disabled">
         <span class="post-nav-label">
           <i class="fas fa-arrow-left"></i> Previous
         </span>
