@@ -18,7 +18,7 @@
 // writes into that profile. So any number of checks can run at once without colliding; the first
 // argument of launch() used to be a port number and is ignored.
 import { spawn } from 'node:child_process';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -111,8 +111,17 @@ export async function launch(_unused, width = 1440, height = 900) {
     async close() {
       try { await send('Browser.close'); } catch { /* already gone */ }
       proc.kill();
+      await discard(profile);
     },
   };
 }
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// A profile is about 80 MB. Twelve of them, never deleted, once took the last gigabyte of a full
+// disk. The browser can hold its files for a moment after it is killed, hence the retries.
+async function discard(profile) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try { rmSync(profile, { recursive: true, force: true }); return; } catch { await sleep(250); }
+  }
+}

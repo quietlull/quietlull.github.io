@@ -3,9 +3,14 @@
 Rod, 2026-10-09: *"please do a multi agent simplification pass as well."* Asked for straight after
 he learned the refactor had not made the code base smaller: code lines were flat at about 13,000.
 
-Several agents each take one area of the source, in their own git worktree, and make it smaller
-and simpler **without changing what the site does**. Rod will then read every remaining line by
-hand. The best outcome for him is less to read, and nothing he has to re-test.
+Several agents each take one area of the source and make it smaller and simpler **without
+changing what the site does**. Rod will then read every remaining line by hand. The best outcome
+for him is less to read, and nothing he has to re-test.
+
+**They run one at a time, in the main checkout**, in this order: templates, bundled scripts,
+scripts served as written, component and page styles, foundation styles. Outside in, so each can
+remove what the one before left unused. The first plan was a worktree each, running together; a
+copy of this repo is 1.4 GB and the drive had 1 GB free, so all five failed to start.
 
 Each agent writes its report next to this file: `docs/simplify/<area>.md`.
 
@@ -30,7 +35,7 @@ Each agent writes its report next to this file: `docs/simplify/<area>.md`.
 - **Never touch:** `assets/css/chrome-scene.css`, `assets/js/effects/hana-bloom.js` (another session
   has them open), `_layouts/compress.html` (vendored), anything under `redesign-lab/`, `docs/` other
   than your own report, `tools/`.
-- **Do not push.** Commit on your worktree's branch only.
+- **Do not push.** Commit on `main`, your own files only.
 
 The lab (`redesign-lab/`) never ships. If only the lab uses something, it is dead for the site and
 may be cut; say so in the report so Rod knows a lab page lost it.
@@ -56,20 +61,30 @@ it fixed instead. Report what you see and move on.
 - **The twelve visitor-visible issues** in `docs/WORKBENCH-CHECK.md` section 1. Do not fix them
   here; a fix changes what visitors see.
 
-## Setting up your worktree
+## Before you start
 
-Run from the worktree root, in the Bash tool:
+You are working in the real checkout, on `main`, and you are not the only one who uses it.
+
+- **Other people's work is in this tree.** `git status` shows files you did not touch: posts under
+  `_posts/`, `assets/css/chrome-scene.css`, `assets/js/effects/hana-bloom.js`, `.obsidian/`,
+  `docs/POST-FRAMES-FINDINGS.md`. Never edit, stage, revert or stash them.
+- **Stage by explicit path.** Never `git add -A`, `git add .`, `git commit -a`, `git stash`,
+  `git checkout -- .`, `git restore .` or `git reset --hard`. To undo your own edit to one file,
+  `git checkout -- path/to/that/file`.
+- **The drive is nearly full** (about 2 GB free). Do not copy the repo or `_site`. Keep your scratch
+  folder to a few megabytes.
+- **No servers.** Do not run `jekyll serve` or anything else that listens on a port or watches
+  files. The checks serve `_site` themselves, and a second process rebuilding `_site` under you
+  would corrupt your comparisons.
+
+Bring everything up to date first, from the repo root, in the Bash tool:
 
 ```bash
-cmd //c "mklink /J node_modules C:\Users\Rod\Documents\ProjectFiles\Website\node_modules"
 npm run build
 bundle exec jekyll build
 python tools/build_workbench.py --quiet
 python tools/build_audit.py --quiet
 ```
-
-`node_modules` and `assets/js/dist` are not in git, which is why the first two lines are needed.
-Never run `jekyll serve` or any other server: the checks serve `_site` themselves.
 
 Then record the starting point, in a scratch folder of your own (not in the repo):
 
