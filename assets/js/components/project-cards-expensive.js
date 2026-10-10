@@ -1,15 +1,11 @@
 import { init as initMergedCard } from './merged-card.js';
 import { onCursor } from './cursor-coords.js';
 
-let revealTilts = [];
-let revealBound = false;
-
 function bindReveal(root) {
-  revealTilts = [...root.querySelectorAll('.ct-glow-card .card-tilt')];
-  if (revealBound || !revealTilts.length) {
+  const revealTilts = [...root.querySelectorAll('.ct-glow-card .card-tilt')];
+  if (!revealTilts.length) {
     return;
   }
-  revealBound = true;
   onCursor((cx, cy) => {
     for (const tilt of revealTilts) {
       const r = tilt.getBoundingClientRect();
@@ -33,9 +29,6 @@ function bindHoverVideo(root) {
     video.pause();
     showPosterFrame(video);
     const card = video.closest('.post-card');
-    if (!card) {
-      return;
-    }
     card.addEventListener('mouseenter', () => video.play().catch(() => {}));
     card.addEventListener('mouseleave', () => video.pause());
   });
