@@ -35,6 +35,27 @@ Each agent writes its report next to this file: `docs/simplify/<area>.md`.
 The lab (`redesign-lab/`) never ships. If only the lab uses something, it is dead for the site and
 may be cut; say so in the report so Rod knows a lab page lost it.
 
+## Leave these alone: each is waiting on a decision from Rod
+
+Some of this code is broken or looks dead. It is still not yours to delete, because Rod may want
+it fixed instead. Report what you see and move on.
+
+- **The post page's section sparks and fireflies** (`_javascript/modules/components/post-enhance.js`
+  and their styles in `_sass/pages/_post.scss`). They never run: the script looks for
+  `.post-content-container`, which no page has, and `@keyframes firefly-drift` does not exist. Rod
+  asked for the sparks on 2026-09-03.
+- **The post "Back to all projects" button** and its shimmer: `.btn.btn-outline-primary` in
+  `_sass/base/_base.scss`, the shimmer mixin, the markup in `_includes/post-nav.html` (P535).
+- **Font Awesome**: every `fa-*` class and its `<i>` markup (P524).
+- **The washi tape** (`_sass/components/_washi-tape.scss`): unfinished on purpose.
+- **The kit button's text magnet** (P536) and **the portal's `.pwin` rule** in
+  `_sass/pages/_portal.scss` (P530).
+- **Still social icons on posts** (`.dm-row` in `_layouts/post.html`): Rod's own call (P329).
+- **Anything inside `{% if jekyll.environment == 'production' %}`**, the service worker
+  (`_javascript/pwa/`) and analytics: a local build cannot show whether they still work.
+- **The twelve visitor-visible issues** in `docs/WORKBENCH-CHECK.md` section 1. Do not fix them
+  here; a fix changes what visitors see.
+
 ## Setting up your worktree
 
 Run from the worktree root, in the Bash tool:
