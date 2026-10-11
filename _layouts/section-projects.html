@@ -30,7 +30,7 @@ script_includes:
     {% if pinned.size > 0 %}
       <section class="pv2-pinned">
         <h2>Pinned Posts</h2>
-        <div class="merged-cards merged-cards--square wrapper-project-card-grid pv2-grid">
+        <div class="wrapper-project-card-grid wrapper-project-card-grid--square pv2-grid">
           {% for post in pinned %}
             {% assign parity = forloop.index0 | modulo: 2 %}
             {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
@@ -43,7 +43,7 @@ script_includes:
     {% endif %}
 
     <section>
-      <div class="merged-cards merged-cards--square wrapper-project-card-grid pv2-grid">
+      <div class="wrapper-project-card-grid wrapper-project-card-grid--square pv2-grid">
         {% for post in normal %}
           {% assign parity = forloop.index0 | plus: pinned.size | modulo: 2 %}
           {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}

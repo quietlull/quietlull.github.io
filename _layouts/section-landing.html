@@ -54,7 +54,7 @@ script_includes:
     </div>
 
     <div class="wrapper-content-column wrapper-section-band">
-      <div class="merged-cards merged-cards--square wrapper-project-card-grid">
+      <div class="wrapper-project-card-grid wrapper-project-card-grid--square">
         {% for post in featured limit: 8 %}
           {% assign parity = forloop.index0 | modulo: 2 %}
           {% assign hue = 'a' %}{% if parity == 1 %}{% assign hue = 'b' %}{% endif %}
