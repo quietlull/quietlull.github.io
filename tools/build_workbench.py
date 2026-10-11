@@ -135,7 +135,7 @@ def rules(text):
 def compounds(selector):
     """Yield (first_class, other_classes, is_leftmost, is_subject) for each compound with a class.
 
-    The subject is the element a rule actually styles: its last compound. `.merged-cards
+    The subject is the element a rule actually styles: its last compound. `.wrapper-project-card-grid
     .card-title` styles the title, so the title is the subject. `.bio .prose p` styles a paragraph,
     so it has no class subject and `.prose` is only being used as a landmark."""
     for part in selector.split(','):

@@ -1,3 +1,42 @@
+# 2026-10-11 - EFFECTS BECOME BEHAVIOURS: ONE FILE, ONE CLASS, AND THE COMPONENT DECIDES
+
+**Asked for by ROD**, first on 2026-09-04 (P516, P518) and again while auditing `drift-magnet.js`:
+*"the point of splitting everything is to keep easy to use and especially reuse elements across
+many web elements and pages"*, and *"the object containing the multiple behaviors should be in
+charge of how they interact with each other."*
+
+**WHAT IT WAS.** One script moved things three ways at once. Two more scripts ran the project card
+between them, tilt, flip, ring, glow and video in two functions. The gold hover fill was written
+twice and the border break lived inside the tag. Tuning numbers were written on every element, 84
+times.
+
+**WHAT IT IS.** Six script behaviours (`drift`, `magnet`, `tilt`, `dwell`, `border-glow`,
+`hover-play-video`) and two stylesheet ones (`orb-fill`, `border-break`). Each knows nothing about
+the others. An element's markup lists the ones it wants. The component's stylesheet sets their
+numbers and writes the rule that combines them: "magnet overrides drift" is one line, and the
+card's flip is a stylesheet reaction to the dwell. The project card has no script left.
+`chrome.js` is `site-wide.js`, and the click ring nobody could see is deleted.
+
+**HOW ROD STEERED IT.** He read the proposed code in chat before anything was built and cut it
+down: *"what and why does readdrift need to return so many things?"* took a nine-field record to
+six. He named `orb-fill`, `border-glow`, `hover-play-video` and `site-wide`, and spotted that the
+"click flash" was a misreading of the tags' hover effect.
+
+**WHAT I GOT WRONG.**
+- **I used pictures as proof, against a rule he has stated many times.** I built a tool that
+  compared before and after pictures and reported "pixel-identical". Its hovered pictures were
+  not even hovered. He stopped it: *"pictures dont work and you should ask for manual review."*
+  The tool is deleted. Looks get a checklist for him.
+- **I used my own tool nicknames with him** ("fingerprint", "workbench check"). He did not know
+  what they meant.
+- **The first notes I wrote for his audit were long and full of web terms.** They are now four
+  short parts: what it does, why it is not simpler, what could still go, the functions.
+- **Two commits went in wrong and were redone** before anything depended on them: a deletion rode
+  along in an unrelated commit, and a `git add` that named one missing file staged nothing.
+
+**NOT VERIFIED:** how any of it looks (Rod's checklist is outstanding), the phone tilt (needs a
+device), Edge, and mouse behaviour at narrow widths.
+
 # 2026-10-10, later - THE COMMENTS STOP EATING THE CURSOR, ON THE FOURTH ATTEMPT
 
 **Asked for by ROD:** *"i notice discuss comment section still eats and breaks the cursor effects."*

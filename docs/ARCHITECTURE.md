@@ -68,7 +68,10 @@ relying on them. If this disagrees with the code, this is stale - fix it.
   other subsystems, debug panel Ctrl+Shift+A (`window.__achievements`), trophy case on About pages.
 - **Post enhancements** - `post-enhance.js`: reading progress bar (clickable), section sparks, end
   confetti, ambient fireflies.
-- **Interaction polish** - card tilt, flip and dwell ring are `assets/js/components/merged-card.js`
+- **Interaction polish** - every effect is a behaviour, one file and one class each, in
+  `assets/js/behaviours/` and `_sass/components/_behaviours.scss` (see `docs/behaviours/README.md`).
+  The project card has no script of its own. Before 2026-10-11 card tilt, flip and dwell ring were
+  `assets/js/components/merged-card.js`
   (cursor + gyro tilt); drift, magnet and click flash are one file each in `assets/js/behaviours/`,
   mixed by one rule in `_sass/components/_behaviours.scss`;
   `back-to-top.js`. `page-transition.js` is meant to fade and throw a sparkler burst on internal

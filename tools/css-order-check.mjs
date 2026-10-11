@@ -724,16 +724,6 @@ const PINNED = [
       'declaration from _top-bar.scss rather than by reordering.'
   },
   {
-    classes: 'card-cover parallax-z-layer',
-    props: ['border-color', 'box-shadow'],
-    partials: ['_sass/components/_merged-card.scss', '_sass/components/_project-cards-expensive.scss'],
-    winner: '_sass/components/_project-cards-expensive.scss',
-    why: 'Deliberate suppressor, _sass/components/_project-cards-expensive.scss:205: it holds ' +
-      'merged-card\'s hover down so the cursor reveal is the one that reads. The grid is ' +
-      'class="merged-cards merged-cards--square wrapper-project-card-grid" and the card is ' +
-      'class="post-card ct-glow-card", so both partials hit the same cover.'
-  },
-  {
     classes: 'kit-button kit-button--outline orb-fill pwin__enter',
     props: ['border-radius', 'color', 'font-size', 'z-index'],
     partials: ['_sass/components/_button-kit.scss', '_sass/components/_portal-window.scss'],

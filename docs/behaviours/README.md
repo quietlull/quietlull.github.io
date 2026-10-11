@@ -24,13 +24,20 @@ behaviors should be in charge of how they interact with each other."*
 |---|---|---|---|
 | `drift` | script | `--drift-x`, `--drift-y`, class `is-drifting` | `--drift-distance-x`, `--drift-distance-y` (6px), `--drift-speed` (1) |
 | `magnet` | script | `--magnet-x`, `--magnet-y`, `--magnet-amount`, class `is-pulled`. Moves a `magnet-inner` child. | `--magnet-pull` (40), `--magnet-inner-pull` (20), `--magnet-limit` (0 = none) |
+| `tilt` | script | `--tilt-rotate-x`, `--tilt-rotate-y`, class `is-tilting`. Leans toward the mouse, or with a phone. | `--tilt-max` (8) |
+| `dwell` | script | class `is-dwelled` once the mouse has rested; draws the filling ring | `--dwell-time` (0.9s) |
+| `border-glow` | script | `--border-glow-x`, `--border-glow-y`: the mouse position relative to the element | none |
+| `hover-play-video` | script | plays the video inside while hovered, rests on a still frame | none |
 | `orb-fill` | stylesheet | a circle that rises to fill the element on hover | `--orb-fill-color`, `--orb-fill-time`, `--orb-fill-rest`, `--orb-fill-hover` |
 | `border-break` | stylesheet | the edge moves out and fades, a glow comes up | `--border-break-edge`, `--border-break-rest` |
 
-**Still to build** (names are Rod's): `tilt`, `dwell`, `border-glow`, `hover-play-video`. They
-come out of `merged-card.js` and `project-cards-expensive.js`, which then go. The card becomes one
-component, `project-card`. After that the achievement wall uses the shared `tilt` and
-`border-glow`, and the tags use `border-break`.
+**The project card has no script of its own.** Its markup lists `drift magnet tilt dwell
+hover-play-video` and its stylesheet, `_sass/components/_project-card.scss`, decides the lift, the
+grow and the flip. How it was split and proved: [project-card.md](project-card.md).
+
+**Still to do:** the achievement wall has its own copy of the tilt and the glow, and the tags have
+their own copy of the border break. Moving the wall changes three things a visitor can notice, so
+it waits on Rod (see the hand-off at the end of [project-card.md](project-card.md)).
 
 ## How a script behaviour is written
 
@@ -68,9 +75,10 @@ Nothing a visitor can see or feel may change unless Rod asked for it. Prove it, 
    the old code. Commit that alone. Then change the code.
 2. `node tools/behaviour-check.mjs out.json`, normal and `reduced`. Capture twice before you start.
    Byte-identical before and after, or every difference explained.
-3. `node tools/picture-check.mjs` for anything a stylesheet draws, at rest and with `--hover`.
-   Capture twice before. To get the "before" of a hovered state after the fact, check the old
-   files out (`git checkout <commit> -- <files>`), build, capture, and check them back in.
+3. **How it looks is Rod's to check, never a picture's.** No screenshots and no pixel
+   comparisons, as proof or at all. Write him a short list: the page, what to do, what he should
+   see. Rod, 2026-10-11: "We have established many times that pictures dont work and you should
+   ask for manual review when needed."
 4. `node tools/page-fingerprint.mjs capture ... --styles`, compared with `--ignore-classes` when
    class names changed.
 5. `node tools/check-workbench.mjs`: 0 problems.
@@ -82,8 +90,9 @@ Nothing a visitor can see or feel may change unless Rod asked for it. Prove it, 
 
 ## What went wrong so far, so it is not repeated
 
-- A hovered picture taken with a clipped screenshot shows nothing hovered. `picture-check.mjs` now
-  refuses to save one that equals the resting picture.
+- A tool that compared pictures before and after was built, used as proof and cited to Rod. Its
+  "hovered" pictures were not hovered, and he does not accept pictures as proof in any case. The
+  tool is deleted. Looks are checked by Rod.
 - `git add` with one missing path stages nothing and says so only on the error stream. Never hide
   it. Check `git show --stat HEAD` after each commit.
 - A file removed with `git rm` is already staged. The next commit takes it, whatever that commit

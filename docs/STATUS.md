@@ -3,7 +3,29 @@
 **THE WHOLE SITE IS PORTED, THE STRIP PASS HAS RUN, AND BOOTSTRAP IS FULLY EVICTED.** Compiled
 2026-09-02 evening. Everything below is measured, not recalled.
 
-## The one-screen update (2026-10-10)
+## The one-screen update (2026-10-11)
+
+- **Every effect is a behaviour now: one file, one class.** `docs/behaviours/README.md` has the
+  rules and the table. Scripts: `drift`, `magnet`, `tilt`, `dwell`, `border-glow`,
+  `hover-play-video`, in `assets/js/behaviours/`. Stylesheet only: `orb-fill`, `border-break`, in
+  `_sass/components/_behaviours.scss`. `site-wide.js` (was `chrome.js`) starts them on every page.
+- **The component decides.** Its stylesheet sets the numbers and how behaviours combine. Markup
+  lists behaviours and carries no tuning numbers.
+- **The project card has no script of its own.** One component, `project-card`, one stylesheet.
+  `merged-card.js`, `project-cards-expensive.js`, `drift-magnet.js` and the click ring are gone.
+- **NONE OF IT HAS HAD ROD'S EYE YET.** Checked by measurement only: mouse-driven behaviour,
+  element positions and styles, script errors, lint. He was given a manual checklist on 2026-10-11.
+- **Known small difference:** the card's lean is measured against the card's resting outline, not
+  the leaning layer. Same mouse position, the angle differs by at most a third of a degree.
+- **Not done:** the achievement wall still has its own tilt and glow, and the tags their own
+  border break. Moving the wall changes three things a visitor can notice and has a conflict with
+  the pressed tile's orbit, so it waits on Rod. Details: end of `docs/behaviours/project-card.md`.
+- **Rod's audit runs in chat** (P547), one script file per message. File 1 was `drift-magnet.js`,
+  which turned into this whole change.
+- **Pictures are not proof** (Rod, restated 2026-10-11). The picture tool built that day is deleted.
+- About 180 commits are unpushed. `npm test` green.
+
+## The earlier one-screen update (2026-10-10)
 
 - **The source carries no comments** (P542). 2,565 were removed and archived in
   `docs/code-comments/`; `npm test` fails if one comes back. What a file needs explaining goes in

@@ -39,14 +39,14 @@ removed comments are in `docs/code-comments/`, and each review page shows its ow
 
 ## assets/js/site-wide.js
 
-**What it does.** Starts what every page has: drift and magnet, the logo's hand-drawn wobble, and
-the mouse glow.
+**What it does.** Starts what every page has: the six behaviours (drift, magnet, tilt, dwell,
+border glow, hover-play video), the logo's hand-drawn wobble, and the mouse glow.
 
-**Why it is not simpler.** It is four imports and four calls. Shrinking it means each one starts
-itself, and then no one file lists what runs everywhere.
+**Why it is not simpler.** It is a list of imports and one call each. A behaviour does nothing on
+a page where no element carries its class, so one list can serve every page. Shrinking it means
+each one starts itself, and then no one file lists what runs everywhere.
 
-**Functions.** None of its own. It calls `initDrift` and `initMagnet` from `behaviours/`,
-`initLineBoil` once per logo, and `init` from `components/cursor-glow.js`.
+**Functions.** None of its own.
 
 **Worth knowing.**
 
@@ -172,6 +172,119 @@ ignores. That is why the kit button's label never moved (P536).
 
 - 2026-10-11: the check that switched the magnet off below 541px is removed. It came with the
   borrowed code as a guard against touch screens.
+
+## assets/js/behaviours/tilt.js
+
+**What it does.** Leans an element toward the mouse and, on a phone, with the phone's motion. It
+writes `--tilt-rotate-x` and `--tilt-rotate-y` (angles up to `--tilt-max`) and the class
+`is-tilting`. The stylesheet turns those into a transform.
+
+**Why it is not simpler.**
+
+- It only starts after the mouse has really moved 4px on the page. Without that, the lean could
+  start from a mouse parked under a freshly loaded page, or from the single mouse event a touch
+  screen sends on a tap. This is an inference from the old code, which had no note.
+- Work is done once per screen redraw (`frame`), because a mouse reports more often than that.
+- `active` is fixed when the mouse enters. A card entered before the 4px rule is met stays flat
+  until the mouse leaves and comes back, as before.
+- The class is added in the same redraw that writes the angles, so the first frame never shows a
+  stale angle from the last visit.
+
+**What could still go.**
+
+- The 4px rule, `waitForRealMouse` and `mouseHasMoved`, 14 lines. Lost: the protection above.
+- The phone half, `leanWithPhone`, 70 lines. Lost: the lean on phones. It cannot be tried here.
+- `active`, 3 lines. Lost: only the "entered too early" case above.
+
+**Functions.**
+
+- `waitForRealMouse()`: watches the page's mouse until it has moved 4px, then stops watching.
+- `leanWithMouse(element)`: leans one element while the mouse is on it. Reads `--tilt-max` once.
+- `leanWithPhone(elements)`: on touch devices, leans the elements on screen with the phone. Same
+  code as before, new names. Its limit is 4 degrees, a number of its own.
+- `initTilt(root)`: does nothing under reduced motion; otherwise starts the three above.
+
+**Worth knowing.**
+
+- The angle is measured against the element's own outline. The element is the article, which does
+  not lean. The old code measured the leaning layer, which grows and rises as it leans. Same mouse
+  position, the new angle is at most 0.17 degrees away on the first approach and 0.33 degrees after
+  repeated moves (the old angle crept as the layer moved). Lift and scale are identical.
+- For the achievement wall: put `tilt` on the tile itself and the numbers match the wall's current
+  code exactly, because the tile measures its own outline there.
+
+## assets/js/behaviours/dwell.js
+
+**What it does.** When the mouse rests on an element for `--dwell-time` (0.9s on the card) within
+48px, it adds the class `is-dwelled`. A gold ring under the mouse fills while it waits. Leaving
+removes the class and the ring.
+
+**Why it is not simpler.**
+
+- Moving more than 48px restarts the wait. Without it the card would flip 0.9s after entering
+  whatever the mouse did.
+- The ring is one element shared by every dwelling element, appended to the page body. A ring
+  inside each card would lean and flip with the card.
+- `void ring.offsetWidth` forces the browser to notice the fill was emptied, so a restart refills
+  from zero. Without it the fill continues from where it was.
+- The wait is read from the stylesheet once and copied onto the ring, so the fill and the wait are
+  one number.
+
+**What could still go.**
+
+- The 48px restart, 6 lines. Lost: the restart.
+- The ring's reduced-motion rule in `_behaviours.scss`, 5 lines. `initDwell` already does nothing
+  under reduced motion, so the ring never shows.
+
+**Functions.**
+
+- `moveRing(x, y)`: puts the ring under the mouse.
+- `fillRing(x, y, time)`: empties the ring, places it, and starts the fill.
+- `hideRing()`: hides the ring.
+- `attach(element)`: reads the wait, then watches the mouse on one element.
+- `initDwell(root)`: does nothing under reduced motion or when no element asks; otherwise adds the
+  ring and attaches the elements.
+
+**Worth knowing.** One guard was dropped: skipping a dwell on an already flipped card. It could
+never run, because leaving always clears the flip before the next entry.
+
+## assets/js/behaviours/border-glow.js
+
+**What it does.** Writes where the mouse is relative to an element, as `--border-glow-x` and
+`--border-glow-y` in pixels. The stylesheet draws a glow along the border from them.
+
+**Why it is not simpler.** The page's mouse position arrives through `cursor-coords.js`, once per
+screen redraw. Each element needs its own offset, so each is measured every redraw.
+
+**What could still go.** It updates every glowing element on every redraw, including cards that
+are off screen. Skipping those needs an observer, which is more code, so it was left as it was.
+
+**Functions.**
+
+- `initBorderGlow(root)`: collects the elements and updates all of them on every mouse redraw.
+
+**Worth knowing.** It imports `../components/cursor-coords.js`. The mouse tracker is shared
+plumbing that lives in `components/`.
+
+## assets/js/behaviours/hover-play-video.js
+
+**What it does.** Plays the video inside an element while the mouse is on it, and pauses it when
+the mouse leaves. At rest the video shows its 0.1 second frame.
+
+**Why it is not simpler.** The 0.1 second frame is set when the video's details have loaded, or at
+once if they already have. `play()` can be refused by the browser, so its failure is caught.
+
+**What could still go.** Nothing honestly. One line went: the `pause()` before the first hover. The
+videos have no `autoplay` and nothing else plays them, so it did nothing (checked: all six videos
+on the landing page and all eight on the projects page are paused at 0.1s after load).
+
+**Functions.**
+
+- `showPosterFrame(video)`: moves a video to its 0.1 second frame.
+- `initHoverPlayVideo(root)`: for each element that holds a video, shows the frame and plays and
+  pauses with the mouse.
+
+**Worth knowing.** Leaving pauses the video where it is. It does not rewind. That is as it was.
 
 ## assets/js/components/line-boil.js
 
