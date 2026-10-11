@@ -1,7 +1,4 @@
 <script type="module">
-  import { init as initCards } from '{{ '/assets/js/components/project-cards-expensive.js' | relative_url }}';
-  initCards(document);
-
   import { initLineBoil } from '{{ '/assets/js/components/line-boil.js' | relative_url }}';
   document.querySelectorAll('.hero__vert .hero__col').forEach((column) => initLineBoil(column));
   const clock = document.querySelector('.hero__clock');

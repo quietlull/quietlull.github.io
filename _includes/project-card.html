@@ -15,8 +15,8 @@
 {% else %}
 <div class="pv2-cell posts-grid-hue-{{ include.hue | default: 'a' }}" data-tags="{{ card_tags | join: ',' | downcase }}">
 {% endif %}
-  <article class="post-card ct-glow-card drift magnet tilt dwell">
-    <a href="{{ card_url | relative_url }}" class="card-link"><div class="card-tilt"><div class="card-flipper">
+  <article class="post-card ct-glow-card drift magnet tilt dwell hover-play-video">
+    <a href="{{ card_url | relative_url }}" class="card-link"><div class="card-tilt border-glow"><div class="card-flipper">
       <div class="card-front">
         <div class="card-cover parallax-z-layer">
           {%- if cover -%}

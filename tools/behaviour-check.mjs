@@ -265,8 +265,8 @@ async function cards() {
       ring: ring ? ring.className : null,
       ringCount: document.querySelectorAll('.dwell-ring').length,
       videoPlaying: v ? !v.paused : null,
-      mx: style.getPropertyValue('--mx'),
-      my: style.getPropertyValue('--my'),
+      mx: style.getPropertyValue('--border-glow-x'),
+      my: style.getPropertyValue('--border-glow-y'),
     };
   })()`);
   const s1 = await state();
