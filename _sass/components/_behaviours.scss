@@ -19,6 +19,7 @@
 @include value(--magnet-x, '<length>', 0);
 @include value(--magnet-y, '<length>', 0);
 @include value(--magnet-amount, '<number>', 0);
+@include value(--tilt-max, '<number>', 8);
 
 @layer components {
 .is-drifting,
