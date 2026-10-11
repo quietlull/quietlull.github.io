@@ -120,10 +120,16 @@ them all.
 - **Magnet** (class `js-magnetic`): leans toward the mouse while hovered.
 - **Flash** (`data-click-flash`): an outline ripple on click.
 
+**It is not the architecture Rod asked for.** He asked for one file per behaviour, combined on
+the element (P516). Here the switches are separate but the code is not: one file, one loop and
+one record hold drift and magnet together. Flash shares nothing with them and only lives here.
+The split is still to do.
+
 **Why it is not simpler.**
 
 - Drift and magnet move the same element, which has one position. `tick` mixes them: magnet fades
-  in while hovered, drift fades back after. Two files would fight over the position.
+  in while hovered, drift fades back after. This does not prevent a split. It means separate files
+  need one agreed way to add their movements together.
 - One loop, not a timer per element. A page can have a dozen or more.
 - The loop skips off-screen elements and stops when nothing visible moves. Without that it would
   run forever for cards nobody sees.
