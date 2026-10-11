@@ -1,299 +1,224 @@
 # Code audit: how each file works
 
 Rod's human audit, started 2026-10-09. He reads every script and template, asks questions, and has
-things renamed until the site is something he can maintain by hand.
+things renamed until he can maintain the site by hand.
 
-**This file holds only the hand-written half.** Each `## path` section below is the "How it works"
-text shown on that file's review page. Everything else on a review page (what loads the file, what
-it imports, which classes and CSS variables it touches, which other files share those names) is
-measured from the source by `tools/build_audit.py` every time the site builds, and is not kept here.
+**This file is the hand-written half of each review page.** Each `## path` section is that file's
+"How it works" text. The rest of a review page (what loads the file, what it imports, which names
+it shares with other files) is measured by `tools/build_audit.py` on every build.
 
-The review list is in the lab to-do page: `http://localhost:4000/redesign-lab/todo.html`.
+The review list: `http://localhost:4000/redesign-lab/todo.html`.
 
-**Writing a section.** Describe the mechanism: state, lifecycle, the markup and CSS it depends on,
-what it costs at runtime, and anything that would surprise a maintainer. Name files and functions,
-not line numbers: a line number is wrong the moment the file changes, and these files are about to
-change a lot. Put Rod's decisions under a `### Rod's calls` heading in the section as they are made.
+## How to write a section
 
-**The source files carry no comments.** Rod, 2026-10-09: "strip them all out and place them in the
-review area or place them in MD ... Code should be self explanatory". What a file needs explaining
-goes here. The comments that were removed are kept in `docs/code-comments/`, one file per source
-file, and each review page shows its own.
+Rod, 2026-10-10, on the first six: *"your overview is verbose and filled with jargon try to tell me
+what the code does in a high level and why it cannot be simplified as well as the function or
+functions within the code."* And: *"evaluate if what your saying is the simplest way to say
+something only say things in a clear and concise way keeping information thats contextually close
+bundled in tight short sentences."*
+
+Every section has these parts and no others:
+
+1. **What it does.** What a visitor would lose if the file were deleted.
+2. **Why it is not simpler.** For each piece that looks removable, what breaks without it.
+3. **What could still go.** Only if something honestly could. Say what is lost and how many lines.
+4. **Functions.** One line each, in file order.
+5. **Worth knowing**, if there is a trap. **Rod's calls**, as he makes them.
+
+Rules:
+
+- Before keeping a sentence, ask if there is a simpler way to say it.
+- Short sentences. Keep related facts next to each other.
+- Plain words. Explain a web term the first time, or do not use it.
+- No measurements, history or connections to other files. The page lists the connections.
+  History is in `docs/CHANGELOG.md`.
+- Name functions, not line numbers.
+
+The source files carry no comments (Rod, 2026-10-09). What a file needs explaining goes here. The
+removed comments are in `docs/code-comments/`, and each review page shows its own.
 
 ## assets/js/chrome.js
 
-**Role.** The entry point for behaviour that every page has. It is loaded as a native module by
-`_includes/chrome-scripts.html`, which `_layouts/default.html` includes at the end of
-`<body>`. It is not bundled, exports nothing and has no init function: the module body runs once
-when the browser has parsed the page (module scripts are deferred).
+**What it does.** Starts the three effects every page has: drift and magnet, the logo's hand-drawn
+wobble, and the mouse glow.
 
-**What runs, in order.**
+**Why it is not simpler.** It is three imports and three calls. Shrinking it means each effect
+starts itself, and then no one file lists what runs everywhere.
 
-- `initMagnetic(document)` from `assets/js/components/drift-magnet.js`. Registers every element
-  in the document that matches `.js-magnetic`, `[data-drift]`, `[data-drift-x]` or `[data-drift-y]`.
-- `initLineBoil(mark)` from `assets/js/components/line-boil.js`, once for each `.top-bar__logo`.
-- `initCursorGlow(document)` from `assets/js/components/cursor-glow.js`.
+**Functions.** None of its own. It calls:
 
-**What it depends on.** The `.cursorglow` element in `_layouts/default.html`, and the top bar
-markup in `_includes/top-bar.html`. If either is missing the matching call does nothing; nothing
-throws.
+- `init` from `components/drift-magnet.js`, once.
+- `initLineBoil` from `components/line-boil.js`, once per logo.
+- `init` from `components/cursor-glow.js`, once.
 
-**This is the only place drift and magnet elements are registered.** Since the simplification pass
-(2026-10-10) nothing else calls the engine's `init`. `project-cards-expensive.js` and
-`portal-windows.js` used to call it again for elements this call already covers; those calls are
-gone, and so is the engine's "already registered" check that made a repeat call harmless.
+**Worth knowing.**
 
-**Elements added after load are not picked up.** `initMagnetic` only sees what is in the document
-when it runs. Code that builds markup later has to call it again **on a root that holds only the
-new elements**: a second call over an element it already has would bind that element's mouse
-listeners twice.
-
-**Things a maintainer should know.**
-
-- "chrome" here means the frame around the content (top bar, cursor, shared motion), not the
-  browser. It is jargon and a rename candidate.
-- It is three imports and three calls. A removed comment claimed these calls would "fold into
-  `commons.js`". That is wrong: `commons.min.js` ships on 10 of the 56 pages and this file ships on
-  all of them.
-- Page-specific setup lives elsewhere, in the inline modules of the `*-scripts.html` includes.
+- "chrome" means the frame around the content, not the browser. Rename candidate.
+- Elements added after the page loads get no drift or magnet.
 
 ## assets/js/components/cursor-coords.js
 
-**Role.** A shared pointer-position broadcaster, so that several cursor effects cost one event
-listener and one animation frame between them. It is plumbing, not an effect: it draws nothing.
+**What it does.** Tracks the mouse position and passes it on once per screen redraw. Three effects
+use it: the cursor glow, the card glow band, and the achievement tile rim.
 
-**State.** Module-level, so there is exactly one per page: `handlers` (a Set of callbacks), the last
-position `x`, `y` (starting at -9999, off screen), `pending` (a frame is already scheduled) and
-`bound` (the window listener exists).
+**Why it is not simpler.** A mouse reports far more often than the screen redraws. Without this,
+each effect would redo its work on every report. This keeps only the latest position.
 
-**`onCursor(fn)`** adds `fn` to the set. The first call also attaches one passive `pointermove`
-listener to `window`. Each event stores `clientX`/`clientY` and, if no frame is pending, schedules
-`flush` with `requestAnimationFrame`. `flush` calls every handler with `(x, y)`. So handlers run at
-most once per frame, and only while the pointer is moving: an idle page does no work here.
+**What could still go.**
 
-It returns nothing. A handler cannot be removed once added, and the window listener is never
-removed. (It used to return an unsubscribe function that no caller kept; that went in the
-simplification pass.)
+- The `bound` check, about four lines. It delays listening until someone asks. Every page has the
+  glow, so someone always does.
+- The -9999 starting position. Nothing is passed on before the first movement, so it is never used.
 
-**Who subscribes.** All three import it normally.
+**Functions.**
 
-- `assets/js/components/cursor-glow.js`: writes `--cx`, `--cy` on the glow.
-- `assets/js/components/project-cards-expensive.js`: writes `--mx`, `--my` on each card for the
-  glow band.
-- `assets/js/components/achievement-wall.js`: the tile rim glow.
+- `flush()`: once per redraw, passes the latest position to everyone who asked.
+- `onCursor(fn)`: adds `fn` to the list. The first call starts listening to the mouse.
 
-**What it cannot see.** A cross-origin iframe delivers no pointer events to the parent page. Over
-the giscus comments the position simply stops updating, which is why `cursor-glow.js` adds a
-shield element there.
+**Worth knowing.** Nothing can be taken off the list.
 
 ## assets/js/components/cursor-glow.js
 
-**Role.** Moves the `.cursorglow` element to the pointer. The element is a fixed, page-sized layer
-with a radial gradient, styled in `_sass/components/_cursor-glow.scss`. This script only writes two
-CSS custom properties on it, `--cx` and `--cy`, in client pixels; the stylesheet turns them into a
-transform. Nothing is animated in JavaScript.
+**What it does.** Copies the mouse position into `--cx` and `--cy` on the glow layer. The
+stylesheet moves the glow. It also keeps the glow working over a post's comments.
 
-**State.** None at module level. The glow element is a local of `init`.
+**Why it is not simpler.** Following the mouse is five lines. The rest is for the comments box.
+That box is a page from giscus.app shown inside ours, and a browser will not tell our page where
+the mouse is over another site's page. So an invisible sheet covers the box to catch the mouse,
+with a hole under the pointer to let clicks through.
 
-**`init(root = document)`.** Called once, by `assets/js/chrome.js`.
+- No sheet: the glow stops at the edge of the comments.
+- No hole: the sheet takes every click.
+- Hole follows movement only: a click after scrolling is lost. The page moved, the mouse did not.
+- No touch lines: a phone or touchscreen cannot tap the comments.
 
-- Looks up the first `.cursorglow` under `root` and returns if there is none.
-- Calls `setupCommentsShield()`.
-- Subscribes one handler to `onCursor` from `assets/js/components/cursor-coords.js`. Because it
-  takes the first match, a second `.cursorglow` on the same page is never driven.
-- It is written to run once. A second call would add a second shield and a second subscriber; the
-  guards against that were removed in the simplification pass because nothing calls it twice.
+**Functions.**
 
-**`setupCommentsShield()`.** Only does anything on a page with `.post-comments`,
-which `_includes/comments/giscus.html` emits. It appends a `div.cursor-shield` to that element.
-`_sass/pages/_post.scss` stretches it, transparent, over the comments iframe.
+- `setupCommentsShield()`: lays the sheet over the comments, only where the main input is a mouse.
+- `moveHoleUnderPointer(event)`: moves the hole to the mouse. A finger touch removes the sheet.
+- `init(root)`: finds the glow layer, sets up the sheet, then copies the mouse position on every
+  redraw.
 
-- Why: the giscus iframe is cross-origin, so pointer events over it never reach this page and the
-  glow would freeze at the iframe's edge. The shield is an element of this page lying on top, so
-  `pointermove` reaches `window` again.
-- The cost is that a shield also catches clicks. So it has a hole: `clip-path` on `.cursor-shield`
-  cuts a square out of it, 12px across (`--hole-half` is half of that), centred on `--hole-x` and
-  `--hole-y`. A browser does not deliver pointer events to the clipped-out part of an element, so
-  inside the hole the pointer belongs to the iframe.
-- `moveHoleUnderPointer` writes those two properties from `event.offsetX` and `offsetY`. It runs on
-  `pointermove` and on `pointerover`. The second matters: when the page scrolls under a resting
-  pointer no move event fires, but `pointerover` does.
-- The result: the pointer is always inside the hole when it presses, so a click always reaches
-  the comments, with no waiting. The page still sees the pointer each time it leaves the hole,
-  which is every 6px of travel, so at very slow speeds the glow is at most 5px behind.
-- No shield at all where the main input cannot hover (`(hover: hover)` is false: phones and
-  tablets). On a desktop that also has a touchscreen, the first touch on the shield removes it.
+**Worth knowing.**
 
-**Measured 2026-10-10, real mouse, headless Chrome** (the old all-or-nothing shield in brackets):
-page received 40 of 40 moves after a 500ms pause over the comments (0 of 40); glow 0px from the
-pointer (369px); a click 0, 8, 16, 33, 60, 150 and 400ms after moving reached the comments every
-time (eaten when the shield was up); a click with no movement after scrolling reached the
-comments; three taps on a phone reached the comments (all three eaten). `tools/behaviour-check.mjs`
-keeps checking the first three. **Not verified in Edge:** headless Edge on this machine draws no
-frames, so it cannot be driven; it is the same engine as Chrome.
+- The hole is drawn in `_sass/pages/_post.scss` under `.cursor-shield`. `--hole-half` is half its
+  width, 6px. Bigger: the glow trails a slow mouse more. Smaller: less room for a shaky click.
+- One thing, three names: file `cursor-glow`, class `cursorglow`, and "cursor lantern" in older
+  notes.
 
 ### Rod's calls
 
-- 2026-10-10: "discuss comment section still eats and breaks the cursor effects" (P545). The
-  earlier shield stepped aside after 140ms of stillness and never came back until the pointer
-  left the comments. Replaced with the hole.
-
-**Names.** One thing has three names: the file is `cursor-glow`, the class is `cursorglow` with no
-hyphen, and the comments call it the cursor lantern. "Lantern" also means the paper lanterns in the
-three.js scene, which caused one misunderstanding already (P531).
+- 2026-10-10 (P545): the sheet used to cover the whole box and step aside when the mouse rested.
+  Replaced with the hole. Confirmed fixed.
 
 ## assets/js/components/drift-magnet.js
 
-**Role.** One engine that gives elements three separate behaviours:
+**What it does.** Moves elements in three ways, each switched on in the markup. One loop moves
+them all.
 
-- **Drift**: a slow wander at rest. Opt in with `data-drift`, `data-drift-x` or `data-drift-y`.
-- **Magnet**: the element leans toward the pointer while hovered. Opt in with class `js-magnetic`.
-- **Click flash**: an outline ripple on click. Opt in with `data-click-flash`.
+- **Drift** (`data-drift`): a slow wander at rest.
+- **Magnet** (class `js-magnetic`): leans toward the mouse while hovered.
+- **Flash** (`data-click-flash`): an outline ripple on click.
 
-**The record per element (`createEntry`).** One object per registered element, kept in the
-`elementToEntry` map (the loop walks the map in the order elements were added):
+**Why it is not simpler.**
 
-- Tuning read from the markup: `strength` (`data-strength`, default 40), `strengthText`
-  (`data-strength-text`, default 20), `clamp` (`data-magnet-clamp`), drift amplitude `ampX`/`ampY`
-  (`data-drift`, or per axis; 6px when the attribute has no number), and `data-drift-speed`.
-- `inner`: the element's `.js-magnetic-inner` child, if it has one. It follows at
-  `strengthText / strength` of the outer movement.
-- Per-element randomness so neighbours do not move in step: a random phase per axis and a size
-  jitter of plus or minus 15%. The two axes run at different speeds (0.45 and 0.57), which makes
-  the path a slow figure rather than a line.
-- Live state: `magnetActive`, the magnet's current and target offset, `blend` (0 is all drift, 1 is
-  all magnet), `driftLevel` (a 0 to 1 ramp so drift fades in and out), `onScreen`, `promoted`.
+- Drift and magnet move the same element, which has one position. `tick` mixes them: magnet fades
+  in while hovered, drift fades back after. Two files would fight over the position.
+- One loop, not a timer per element. A page can have a dozen or more.
+- The loop skips off-screen elements and stops when nothing visible moves. Without that it would
+  run forever for cards nobody sees.
+- Each element gets a random start and wander size. Otherwise neighbours move in step.
+- Every setting it reads is used on the live site.
 
-**The loop (`tick`).** One `requestAnimationFrame` loop for every element.
+**What could still go.**
 
-- Each frame eases `driftLevel`, `blend` and the magnet offset toward their targets, then computes
-  `drift * (1 - blend) + magnet * blend`. **That one expression is the rule that
-  the magnet overrides drift.** It is the thing a split into two modules has to keep.
-- It writes the result to `element.style.translate`. That is the standalone `translate` property,
-  not `transform`, chosen so it adds to any CSS transform instead of replacing it. It only works
-  on elements that are not `display: inline`, which is why the kit button's label never moved
-  (P536).
-- `will-change: translate` is set only while an element is moving and cleared when it settles.
-- An element that is off screen and at rest is skipped. When nothing is moving and no visible
-  element drifts, the loop stops (`rafId = null`) until `wake()` restarts it.
-- A record is never dropped. If a registered element were removed from the page its record would
-  stay in the map. No page does that today: a watch over all 56 built pages saw no registered
-  element removed.
+- `promoted` and the two `will-change` lines, about eight lines. They warn the browser that an
+  element is about to move. The saving is unmeasured.
+- The 541px check in `bindMagnet`. It turns the magnet off in narrow windows. Removing it is a
+  visible change.
 
-**Magnet input (`bindMagnet`).** A `mousemove` listener per magnetic element. The target
-offset is the pointer's position inside the element, as a fraction from -0.5 to 0.5, times
-`strength`. `mouseleave` sets it back to zero. Two guards: nothing happens below 541px viewport
-width or when `body` has class `motion-off`. It listens for mouse events, not pointer events, so
-touch does not trigger it. There is no attraction from outside the element.
+**Functions.**
 
-**Click flash (`bindClickFlash`).** Adds class `dm-flash`, forcing a reflow first so a
-second click restarts it, and removes it on `animationend` for the animation named `dm-border-fly`.
-The keyframes are in `_sass/components/_drift-magnet.scss`.
+- `lerp(a, b, t)`: moves a value part way to a target. This is the easing.
+- `motionOn()`: false when the visitor's system asks for reduced motion.
+- `createEntry(element)`: reads the element's settings and makes its record.
+- `tick(now)`: the loop. Eases each element, mixes drift and magnet, writes the position.
+- `wake()`: restarts the loop.
+- `bindMagnet(entry)`: aims the magnet at the mouse while hovered. Lets go on leave.
+- `bindClickFlash(element)`: adds `dm-flash` on click, removes it when the ripple ends.
+- `init(root)`: sets up every drift or magnet element under `root`. Called once, by `chrome.js`.
+- Outside any function: turns motion off for reduced motion, and creates the off-screen watcher.
 
-**When the module loads** (before any `init` call): if the OS asks for reduced motion it adds
-`motion-off` to `body`, and it creates one IntersectionObserver with a 200px margin that keeps each
-record's `onScreen` current.
+**Settings in the markup.**
 
-**`init(root)`.** Registers every matching element under `root`, binds its magnet and click-flash
-listeners, and wakes the loop. Its only caller is `assets/js/chrome.js`. It does not check whether
-an element is already registered, so a second call over the same element binds its listeners twice.
+- `data-drift="6"`: wander distance in pixels. `data-drift-x`, `data-drift-y`: one direction only.
+  `data-drift-speed`: faster or slower.
+- `data-strength="40"`: magnet pull. `data-magnet-clamp`: its limit.
+- `data-strength-text`: how far a `js-magnetic-inner` child follows.
 
-**`body.motion-off`** is read here and set only here. No stylesheet uses it.
+**Worth knowing.**
 
-**Removed in the simplification pass (2026-10-10)**, all measured unused on the 56 built pages:
-`retune(element)` (the lab's tuning sliders used their own copy), the `[data-motion-toggle]` button
-handler, `body.cull-off`, the MutationObserver on `body`'s class list, and the clean-up for elements
-removed from the page. `git show b0443cd:assets/js/components/drift-magnet.js` has all of them.
-
-**For the split (P516).** Drift and magnet share the record, the loop and the single `translate`
-write. Two independent modules would both want to write `translate` on the same element, so a
-split needs either one shared writer that sums contributions, or drift and magnet on different
-properties. The override rule above has to live in whichever piece owns the write.
-
-**Names to look at.** `e`, `r`, `tx`, `ty`, `rec`, `vis`, `mag`, `amp` and the `dm-` prefix are all
-abbreviations.
+- It moves things with the CSS property `translate`, which inline text ignores. That is why the
+  kit button's label never moved (P536).
+- Calling `init` twice on one element sets it up twice.
+- Abbreviations to rename: `e`, `r`, `tx`, `ty`, `rec`, `vis`, `mag`, `amp`, `dm-`.
 
 ## assets/js/components/line-boil.js
 
-**Role.** Makes text look hand-drawn and alive by redrawing each letter in one of three fonts, six
-times a second. The fonts are `Lineboil1`, `Lineboil2` and `Lineboil3`, declared with `@font-face`
-in `_sass/components/_line-boil.scss`.
+**What it does.** Redraws every letter in one of three hand-drawn fonts, six times a second, so
+text looks alive.
 
-**`initLineBoil(host)`.** Returns immediately if `host` is null. The speed is the constant
-`LINE_BOIL_RATE`, 6 changes a second; it is no longer an option, because no caller ever passed one.
+**Why it is not simpler.** Swapping fonts is three lines (`boilTick`). The rest stops the text
+jumping:
 
-- Adds class `line-boil-text` to the host.
-- Waits for all three fonts: `document.fonts.load` for each, then `document.fonts.ready`. This is
-  required, not a nicety: measuring before the fonts arrive would fix the fallback font's widths
-  in place permanently, with no error.
-- Then `pinGlyphAdvance(host, text)` and a `setInterval` calling `boilTick` every
-  1000 / `LINE_BOIL_RATE` ms.
-- Adds a `resize` listener on `window` that re-measures after 150ms. It re-reads the host's text,
-  so a host whose text changes (the landing clock) keeps its new content.
-- Returns nothing. The interval and the resize listener run for the life of the page and nothing
-  can stop them. (It used to return a teardown function that no caller kept.)
+- The fonts have different letter widths. Each letter gets a box as wide as the widest, or the
+  line would change length six times a second. That is `pinGlyphAdvance`, most of the file.
+- Digits share one width, so the landing clock stays put.
+- Vertical text (the landing hero) needs every box the same size.
+- It waits for the fonts before measuring. Measuring early locks in the wrong widths, with no
+  error.
+- It measures again on resize.
 
-**`pinGlyphAdvance`.** Replaces the host's text with one `span.line-boil-text__g` per
-visible character, each with a fixed `inline-size`.
+**Functions.**
 
-- The width is the widest of the three fonts' drawings of that character. Without this the line
-  would change length every tick and everything after it would jitter.
-- All digits share one width, so a clock does not shift as its numbers change.
-- In a vertical writing mode every cell gets the same size.
-- Spaces stay as plain text nodes, not cells.
-- Each cell starts on a random font, stored in `data-face`. Without the random start every letter
-  would change in step and it would read as the whole line swapping.
+- `pinGlyphAdvance(host, text)`: rebuilds the text as one fixed-width box per letter.
+- `boilTick(host)`: moves every letter to its next font.
+- `initLineBoil(host)`: the one other files call. Waits for the fonts, measures, starts the timer.
 
-**`boilTick`.** Moves every cell to the next font by setting `font-family` inline.
+**Worth knowing.**
 
-**Who calls it.**
-
-- `assets/js/chrome.js`: every `.top-bar__logo`.
-- `_includes/landing-scripts.html`: the hero columns `.hero__vert .hero__col` and `.hero__clock`.
-- `_includes/about-scripts.html`: `.bio-h .boil-word`.
-- `_includes/portal-scripts.html`: the centre mark.
-
-**A second file knows its markup.** The landing clock's inline script in
-`_includes/landing-scripts.html` writes the time into the `.line-boil-text__g` cells directly, so
-the cell class is a contract between the two files.
-
-**Cost.** One timer per host at 6Hz, whether or not the host is on screen. Each tick changes
-`font-family` on every cell, which makes the browser restyle them. It must be measured while
-visible: inside a hidden container every width measures 0 and the text collapses (this broke the
-first workbench).
-
-**Names to look at.** `__g` (glyph) is an abbreviation. "Advance" is the typographer's word for
-the width a character takes up.
+- The landing clock writes straight into the letter boxes (`.line-boil-text__g`), so two files
+  share that class name.
+- The timer never stops, on screen or off.
+- `__g` is short for glyph. "Advance" is the typesetter's word for a letter's width.
 
 ## assets/js/effects/scene-mode.js
 
-**Role.** Applies the page's scene tier to the three.js scene after it loads, by hiding parts of
-it. It is how a `minimal` page shows lanterns and fireflies without the dock and the water.
+**What it does.** Hides the dock and water in the 3D background on pages marked "minimal".
+Lanterns and fireflies stay. The mark is `data-scene-tier` on `<body>`: 30 pages are minimal, 4
+full, 21 have no scene, and the 404 has its own.
 
-**Where the tier comes from.** `_layouts/default.html` writes `data-scene-tier` on `<body>`
-(`full`, `minimal`, `none`, or `embers` for the 404). A `?scene=full|minimal|none` query overrides
-it for testing.
+**Why it is not simpler.**
 
-**What it does.** The scene bundle is deferred and its model loads later still, so this polls:
-every 100ms, up to 100 times, it calls `apply(tier)` and stops once the result is in place.
+- The scene loads late and in pieces, so hiding once is not enough. It retries every tenth of a
+  second until the dock and water are hidden, for up to ten seconds. That is the timer and
+  `counts`.
+- The water is hidden twice, object and surface. The reflection code switches the object back on
+  every frame. That is `setWater`.
 
-- `apply` walks `window.scene`, the global that `_javascript/three-background-scene.js` sets,
-  and matches nodes by name: `^DockGroup`, `^WaterFace`, `^(Rounded)?Lantern`.
-- Dock and water are visible only on `full`. Lanterns are always visible.
-- Water needs its material hidden as well (`setWater`), because three's Reflector resets
-  the mesh's own `visible` flag every frame.
-- For `none` and `embers` it does not poll at all.
+**What could still go.**
 
-**What it leaves behind.** Nothing. `counts()` is a private function that the polling uses to tell
-when the scene has arrived and the tier is in place. To try a tier by hand, add `?scene=minimal`
-(or `full`, `none`) to the address.
+- The lantern line in `apply`, one line. Nothing hides a lantern, so showing them looks pointless.
+  Not proven.
+- The `?scene=` override, one line. A testing aid.
+- The whole file, with a bigger job. Minimal pages download the full 843 KB scene, then hide part
+  of it. A scene built without the dock and water would not need this file.
 
-A console helper, `window.__sceneTier` (the tier, a `set()` that reloaded with the query, and
-`counts()`), was removed in the simplification pass because nothing on the site read it.
-`git show b0443cd:assets/js/effects/scene-mode.js` has it.
+**Functions.**
 
-**The cost this file represents.** A `minimal` page downloads the full 823KB scene bundle,
-including the dock and water, and then this hides them. 29 built pages are `minimal`. Not sending
-them would need a separate bundle built without them.
+- `setWater(mesh, wanted)`: shows or hides the water, object and surface.
+- `apply(tier)`: shows or hides the dock and water for this page.
+- `counts()`: counts the pieces and how many are hidden, so the timer knows when to stop.
+- Outside any function: reads the mark and starts the timer, unless the page has no scene.
 
-**Loaded on every page**, by `_includes/chrome-scripts.html`, including pages with no scene.
+**Worth knowing.** It loads on all 56 pages and does nothing on the 21 with no scene.

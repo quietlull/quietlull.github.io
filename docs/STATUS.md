@@ -16,9 +16,10 @@
   that are broken today and whose fix is visible: the page transition never runs, image zoom is
   off, twelve achievements cannot be earned. (The glass shadow is decided: removed, P544.)
 - **The comments no longer eat the cursor effects or the clicks** (P545). The shield over the
-  giscus frame has a 12px hole that follows the pointer. Measured with a real mouse in Chrome;
-  **Rod's eye is still owed, and Edge is unverified.** Before this, a phone could not tap the
-  comments at all.
+  giscus frame has a 12px hole that follows the pointer. Measured with a real mouse in Chrome
+  and **confirmed fixed by Rod.** Before this, a phone could not tap the comments at all.
+- **Review notes have a fixed short shape now** (P546): what it does, why it is not simpler, what
+  could still go, the functions. The rule is at the top of `docs/CODE-AUDIT.md`.
 - **Rod's human audit is the phase now.** The review list is
   `http://localhost:4000/redesign-lab/todo.html`, one generated page per source file. Six files
   have hand-written notes in `docs/CODE-AUDIT.md`, brought up to date after the pass; the rest get
