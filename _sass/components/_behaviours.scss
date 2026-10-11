@@ -1,0 +1,41 @@
+@layer reset, tokens, prose, components, overrides;
+
+@property --drift-x {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --drift-y {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --magnet-x {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --magnet-y {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --magnet-amount {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@layer components {
+.is-drifting,
+.is-pulled {
+  translate:
+    calc(var(--drift-x) * (1 - var(--magnet-amount)) + var(--magnet-x) * var(--magnet-amount))
+    calc(var(--drift-y) * (1 - var(--magnet-amount)) + var(--magnet-y) * var(--magnet-amount));
+  will-change: translate;
+}
+}
