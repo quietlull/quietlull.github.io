@@ -26,6 +26,11 @@
 //                          whether it did)
 //   /404.html              the embers scene tier
 //
+// The project card's tilt, flip, easing and will-change are read from what the browser computes
+// (the tilt layer's transform as a matrix, turned back into angles; the flipper's matrix, waited
+// on until its transitions end), never from an inline style or a state class. The reading then
+// survives a change in which script or stylesheet produces it.
+//
 // Every value is a yes/no or a rounded number, so two runs of unchanged code give the same file
 // byte for byte. Capture twice before you start; if those two differ, the difference is noise in
 // the check and not your change. Script errors on each page are part of the output.
@@ -86,6 +91,26 @@ const open = async (p, settle = 2600) => {
 };
 const noNav = () => ev('document.addEventListener(\'click\', (e) => { if (e.target.closest && e.target.closest(\'a[href]\')) e.preventDefault(); }, true)');
 const r2 = (v) => Math.round(v / 2) * 2;
+
+const matrixOf = (transform) => {
+  const values = transform.slice(transform.indexOf('(') + 1, -1).split(',').map(Number);
+  if (values.length === 16) return values;
+  const [a, b, c, d, e, f] = values;
+  return [a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, e, f, 0, 1];
+};
+const degrees = (radians) => (radians * 180) / Math.PI;
+const leanOf = (transform) => {
+  if (transform === 'none') return transform;
+  const m = matrixOf(transform);
+  const scale = Math.hypot(m[5], m[6]);
+  return {
+    rotX: r2(degrees(Math.atan2(m[6], m[5]))),
+    rotY: r2(degrees(Math.atan2(m[8], m[0]))),
+    lift: Math.round(((m[13] * m[5] + m[14] * m[6]) / scale) * 100) / 100,
+    scale: Math.round(scale * 1000) / 1000,
+  };
+};
+const facesAway = (transform) => transform !== 'none' && matrixOf(transform)[0] < 0;
 
 const translateOf = (sel, i = 0) => ev(`(() => {
   const e = document.querySelectorAll(${J(sel)})[${i}];
@@ -223,57 +248,60 @@ async function cards() {
   const py = c.y + c.h * 0.25;
   await to(px, py, 10);
   await sleep(250);
-  const state = () => ev(`(() => {
+  const state = () => ev(`(async () => {
     const card = document.querySelectorAll('.post-card')[${i}];
-    const tilt = card.querySelector('.card-tilt');
+    const layer = card.querySelector('.card-tilt');
+    const flipper = card.querySelector('.card-flipper');
+    const running = [...layer.getAnimations(), ...flipper.getAnimations()].map((a) => a.finished.catch(() => {}));
+    await Promise.race([Promise.all(running), new Promise((resolve) => setTimeout(resolve, 2000))]);
+    const style = getComputedStyle(layer);
     const ring = document.querySelector('.dwell-ring');
     const v = card.querySelector('video');
     return {
-      tilt: tilt.style.transform,
-      transition: tilt.style.transition,
-      willChange: tilt.style.willChange,
-      flipped: card.querySelector('.card-flipper').classList.contains('is-flipped'),
+      tilt: style.transform,
+      transition: [style.transitionProperty, style.transitionDuration, style.transitionTimingFunction].join(' '),
+      willChange: style.willChange,
+      flip: getComputedStyle(flipper).transform,
       ring: ring ? ring.className : null,
       ringCount: document.querySelectorAll('.dwell-ring').length,
       videoPlaying: v ? !v.paused : null,
-      mx: tilt.style.getPropertyValue('--mx'),
-      my: tilt.style.getPropertyValue('--my'),
+      mx: style.getPropertyValue('--mx'),
+      my: style.getPropertyValue('--my'),
     };
   })()`);
   const s1 = await state();
-  const m = /rotateX\((-?[\d.]+)deg\) rotateY\((-?[\d.]+)deg\) translateY\((-?[\d.]+)px\) scale\(([\d.]+)\)/.exec(s1.tilt);
   const tr = await rect('.post-card .card-tilt', i);
   o.hover = {
-    tiltTransform: m ? { rotX: r2(+m[1]), rotY: r2(+m[2]), lift: +m[3], scale: +m[4] } : s1.tilt,
+    tiltTransform: leanOf(s1.tilt),
     transition: s1.transition,
     willChange: s1.willChange,
     glowMx: Math.abs(parseFloat(s1.mx) - (px - tr.x)) < 16,
     glowMy: Math.abs(parseFloat(s1.my) - (py - tr.y)) < 16,
     ring: s1.ring,
     ringCount: s1.ringCount,
-    flippedEarly: s1.flipped,
+    flippedEarly: facesAway(s1.flip),
     videoPlaying: s1.videoPlaying,
   };
   await sleep(1100);
   const s2 = await state();
-  o.dwell = { flippedAfter1s: s2.flipped, ringAfterFlip: s2.ring, videoStillPlaying: s2.videoPlaying };
+  o.dwell = { flippedAfter1s: facesAway(s2.flip), ringAfterFlip: s2.ring, videoStillPlaying: s2.videoPlaying };
   await to(c.x + c.w * 0.1, c.y + c.h * 0.9, 6);
   await sleep(250);
   const s2b = await state();
-  o.afterMoveInsideFlipped = s2b.flipped;
+  o.afterMoveInsideFlipped = facesAway(s2b.flip);
   await to(1330, 60, 10);
   await sleep(700);
   const s3 = await state();
-  o.leave = { tilt: s3.tilt, flipped: s3.flipped, ring: s3.ring, videoPlaying: s3.videoPlaying, transition: s3.transition, willChange: s3.willChange };
+  o.leave = { tilt: leanOf(s3.tilt), flipped: facesAway(s3.flip), ring: s3.ring, videoPlaying: s3.videoPlaying, transition: s3.transition, willChange: s3.willChange };
 
   await to(px, py, 10);
   await sleep(500);
   await to(px - 90, py + 30, 5);
   await sleep(600);
   const s4 = await state();
-  o.dwellReset = { notFlippedAfterBigMove: !s4.flipped, ringOn: !!(s4.ring && s4.ring.includes('is-on')) };
+  o.dwellReset = { notFlippedAfterBigMove: !facesAway(s4.flip), ringOn: !!(s4.ring && s4.ring.includes('is-on')) };
   await sleep(700);
-  o.dwellReset.flippedLater = (await state()).flipped;
+  o.dwellReset.flippedLater = facesAway((await state()).flip);
   await to(1330, 60, 10);
   await sleep(500);
   return o;
