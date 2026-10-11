@@ -25,6 +25,13 @@
   background: var(--color-panel);
 }
 
+.dm-social.border-break {
+  --border-break-edge: var(--color-line);
+  --border-break-rest: -1px;
+
+  border-color: transparent;
+}
+
 .dm-social__fill {
   position: absolute;
   top: -50%;

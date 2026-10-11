@@ -13,7 +13,7 @@
 //
 // WHAT IT DRIVES, page by page:
 //   /tech-art/             line boil (logo, hero, clock), drift at rest, magnet pull and release,
-//                          cursor glow, card tilt, glow, dwell ring, flip, hover
+//                          border break on hover, cursor glow, card tilt, glow, dwell ring, flip, hover
 //                          video, firework reach, the scene's dock and water
 //   /tech-art/projects/    search box, filter pills, clear button, ?search= in the address, card
 //                          drift and magnet, the ?scene= overrides
@@ -182,8 +182,11 @@ async function landing() {
     innerFollows: !!inner && inner[0] > 1 && inner[1] > 1 && inner[0] < pulled[0],
     willChange: await ev('getComputedStyle(document.querySelector(\'.hero__social .dm-social\')).willChange'),
   };
+  const edge = () => ev('(() => { const s = getComputedStyle(document.querySelector(\'.hero__social .dm-social\')); return { offset: s.outlineOffset, faded: s.outlineColor === \'rgba(0, 0, 0, 0)\', glow: s.boxShadow !== \'none\' }; })()');
+  o.borderBreak = { hovered: await edge() };
   await to(900, 700, 6);
   await sleep(900);
+  o.borderBreak.afterLeaving = await edge();
   const back = await translateOf('.hero__social .dm-social');
   o.magnetSocial.releasedToDrift = !!back && Math.abs(back[0]) <= 7 && Math.abs(back[1]) <= 7;
 
