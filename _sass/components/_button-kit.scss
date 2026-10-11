@@ -43,24 +43,6 @@
   color: var(--color-night);
 }
 
-.kit-button__fill {
-  position: absolute;
-  top: -50%;
-  left: -25%;
-  width: 150%;
-  height: 200%;
-  border-radius: 50%;
-  background: var(--color-gold-deep);
-  transform: translate3d(0, 76%, 0);
-  transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
-  z-index: 0;
-}
-
-.kit-button--outline:hover .kit-button__fill,
-.kit-button--pill:hover .kit-button__fill {
-  transform: translate3d(0, 0, 0);
-}
-
 .kit-tag {
   --magnet-pull: 25;
 

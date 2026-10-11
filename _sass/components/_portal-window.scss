@@ -238,6 +238,10 @@
 }
 
 .pwin__enter {
+  --orb-fill-color: var(--color-glow, #ff6a00);
+  --orb-fill-rest: 0%;
+  --orb-fill-hover: 76%;
+
   position: relative;
   z-index: 2;
   border-radius: 0;
@@ -247,20 +251,13 @@
   margin-bottom: 0.55em;
 }
 
-.pwin__enter .kit-button__fill {
-  border-radius: 50%;
-  background: var(--color-glow, #ff6a00);
-  transform: translate3d(0, 0, 0);
+.pwin:hover .pwin__enter {
+  --orb-fill-rest: 76%;
 }
 
 .pwin__enter .kit-button__label {
   color: var(--color-ink, #1a1a1a);
   font-size: inherit;
-}
-
-.pwin:hover .pwin__enter .kit-button__fill,
-.pwin__enter.kit-button--outline:hover .kit-button__fill {
-  transform: translate3d(0, 76%, 0);
 }
 
 .pwin--door a {

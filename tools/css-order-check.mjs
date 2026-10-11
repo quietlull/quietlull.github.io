@@ -734,7 +734,7 @@ const PINNED = [
       'class="post-card ct-glow-card", so both partials hit the same cover.'
   },
   {
-    classes: 'kit-button kit-button--outline pwin__enter',
+    classes: 'kit-button kit-button--outline orb-fill pwin__enter',
     props: ['border-radius', 'color', 'font-size', 'z-index'],
     partials: ['_sass/components/_button-kit.scss', '_sass/components/_portal-window.scss'],
     winner: '_sass/components/_portal-window.scss',
