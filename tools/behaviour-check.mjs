@@ -234,22 +234,22 @@ async function landing() {
 
 async function cards() {
   const o = {};
-  const idx = await ev('[...document.querySelectorAll(\'.post-card\')].findIndex((c) => c.querySelector(\'video\'))');
-  o.cardCount = await ev('document.querySelectorAll(\'.post-card\').length');
+  const idx = await ev('[...document.querySelectorAll(\'.project-card\')].findIndex((c) => c.querySelector(\'video\'))');
+  o.cardCount = await ev('document.querySelectorAll(\'.project-card\').length');
   o.videoCardFound = idx >= 0;
   const i = Math.max(idx, 0);
   await ev(`window.__cardIndex = ${i}`);
-  await center('.post-card', i);
+  await center('.project-card', i);
   await sleep(500);
   await to(80, 300, 4);
   await to(120, 330, 4);
-  const c = await rect('.post-card .card-tilt', i);
+  const c = await rect('.project-card .card-tilt', i);
   const px = c.x + c.w * 0.75;
   const py = c.y + c.h * 0.25;
   await to(px, py, 10);
   await sleep(250);
   const state = () => ev(`(async () => {
-    const card = document.querySelectorAll('.post-card')[${i}];
+    const card = document.querySelectorAll('.project-card')[${i}];
     const layer = card.querySelector('.card-tilt');
     const flipper = card.querySelector('.card-flipper');
     const running = [...layer.getAnimations(), ...flipper.getAnimations()].map((a) => a.finished.catch(() => {}));
@@ -270,7 +270,7 @@ async function cards() {
     };
   })()`);
   const s1 = await state();
-  const tr = await rect('.post-card .card-tilt', i);
+  const tr = await rect('.project-card .card-tilt', i);
   o.hover = {
     tiltTransform: leanOf(s1.tilt),
     transition: s1.transition,
@@ -399,17 +399,17 @@ async function projects() {
     visible: [...document.querySelectorAll('.pv2-grid .pv2-cell')].filter((e) => getComputedStyle(e).display !== 'none').length,
     clearHidden: document.querySelector('.pv2-filters [data-clear]').hidden })`);
 
-  const ci = await ev('[...document.querySelectorAll(\'.post-card\')].findIndex((c) => getComputedStyle(c.closest(\'.pv2-cell\')).display !== \'none\')');
-  await center('.post-card', ci);
+  const ci = await ev('[...document.querySelectorAll(\'.project-card\')].findIndex((c) => getComputedStyle(c.closest(\'.pv2-cell\')).display !== \'none\')');
+  await center('.project-card', ci);
   await sleep(400);
-  const cd0 = await translateOf('.post-card', ci);
+  const cd0 = await translateOf('.project-card', ci);
   await sleep(700);
-  const cd1 = await translateOf('.post-card', ci);
+  const cd1 = await translateOf('.project-card', ci);
   o.cardDrift = { set: !!cd0, moved: !!cd0 && !!cd1 && (cd0[0] !== cd1[0] || cd0[1] !== cd1[1]), within5: !!cd1 && Math.abs(cd1[0]) <= 5 && Math.abs(cd1[1]) <= 5 };
-  const cr = await rect('.post-card', ci);
+  const cr = await rect('.project-card', ci);
   await to(cr.x + cr.w * 0.85, cr.y + cr.h * 0.8, 8);
   await sleep(700);
-  const cm = await translateOf('.post-card', ci);
+  const cm = await translateOf('.project-card', ci);
   o.cardMagnet = { pulledPositive: !!cm && cm[0] > 1 && cm[1] > 1, within12: !!cm && Math.abs(cm[0]) < 12 && Math.abs(cm[1]) < 12 };
   await to(1300, 120, 8);
   await sleep(600);

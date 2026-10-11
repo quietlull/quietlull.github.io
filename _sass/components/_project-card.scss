@@ -41,7 +41,7 @@
   grid-row: span 2;
 }
 
-.wrapper-project-card-grid .post-card {
+.wrapper-project-card-grid .project-card {
   --magnet-pull: 20;
   --drift-distance-x: 4px;
   --drift-distance-y: 4px;
@@ -58,12 +58,12 @@
   min-height: 14rem;
 }
 
-.wrapper-project-card-grid [data-row-span='2'] .post-card {
+.wrapper-project-card-grid [data-row-span='2'] .project-card {
   min-height: calc(28rem + 0.9rem);
 }
 
 @media (hover: none) {
-  .wrapper-project-card-grid .post-card {
+  .wrapper-project-card-grid .project-card {
     --depth: 0;
   }
 }
@@ -83,13 +83,13 @@
   transition: transform 0.4s ease-out;
 }
 
-.wrapper-project-card-grid .post-card.is-tilting .card-tilt {
+.wrapper-project-card-grid .project-card.is-tilting .card-tilt {
   transform: rotateX(var(--tilt-rotate-x)) rotateY(var(--tilt-rotate-y));
   transition: transform 0.15s ease-out;
   will-change: transform;
 }
 
-.wrapper-project-card-grid .post-card.is-tilting:hover .card-tilt {
+.wrapper-project-card-grid .project-card.is-tilting:hover .card-tilt {
   transform:
     rotateX(var(--tilt-rotate-x))
     rotateY(var(--tilt-rotate-y))
@@ -104,7 +104,7 @@
   transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.wrapper-project-card-grid .post-card.is-dwelled .card-flipper {
+.wrapper-project-card-grid .project-card.is-dwelled .card-flipper {
   transform: rotateY(180deg);
 }
 
@@ -114,7 +114,7 @@
   backface-visibility: hidden;
 }
 
-.wrapper-project-card-grid .post-card:hover .parallax-z-layer {
+.wrapper-project-card-grid .project-card:hover .parallax-z-layer {
   --z: var(--z-hover, var(--z, 0));
 }
 
@@ -147,8 +147,8 @@
   transition: transform 0.3s ease;
 }
 
-.wrapper-project-card-grid .post-card:hover .card-cover img,
-.wrapper-project-card-grid .post-card:hover .card-cover video {
+.wrapper-project-card-grid .project-card:hover .card-cover img,
+.wrapper-project-card-grid .project-card:hover .card-cover video {
   transform: scale(1.05);
 }
 
@@ -171,7 +171,7 @@
   --glow-border-hue: 234, 88, 12;
 }
 
-.wrapper-project-card-grid .post-card:hover .card-cover {
+.wrapper-project-card-grid .project-card:hover .card-cover {
   border-color: rgba(var(--glow-border-hue, 245, 158, 11), 0.45);
   box-shadow:
     0 14px 30px -10px var(--color-shadow-lift),
@@ -221,7 +221,7 @@
   transition-delay: 0.06s;
 }
 
-.wrapper-project-card-grid .post-card:hover .card-title {
+.wrapper-project-card-grid .project-card:hover .card-title {
   color: var(--color-gold);
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -328,7 +328,7 @@
   border-radius: 5px;
 }
 
-.wrapper-project-card-grid .post-card .glass-plane {
+.wrapper-project-card-grid .project-card .glass-plane {
   border-left-color: transparent;
   border-bottom-color: transparent;
   overflow: visible;
@@ -338,8 +338,8 @@
     var(--glass-sheen);
 }
 
-.wrapper-project-card-grid .post-card .glass-plane::before,
-.wrapper-project-card-grid .post-card .glass-plane::after {
+.wrapper-project-card-grid .project-card .glass-plane::before,
+.wrapper-project-card-grid .project-card .glass-plane::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -353,15 +353,15 @@
   mix-blend-mode: plus-lighter;
 }
 
-.wrapper-project-card-grid .post-card .glass-plane::before {
+.wrapper-project-card-grid .project-card .glass-plane::before {
   background: radial-gradient(var(--glow-r, 220px) var(--glow-r, 220px) at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px), var(--color-glow), transparent 100%);
 }
 
-.wrapper-project-card-grid .post-card .glass-plane::after {
+.wrapper-project-card-grid .project-card .glass-plane::after {
   background: radial-gradient(140px 140px at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px), var(--color-glow-soft, #ffd9a8), transparent 100%);
 }
 
-.wrapper-project-card-grid .post-card .card-back::before {
+.wrapper-project-card-grid .project-card .card-back::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -379,11 +379,11 @@
   mix-blend-mode: plus-lighter;
 }
 
-.wrapper-project-card-grid .post-card .card-back {
+.wrapper-project-card-grid .project-card .card-back {
   border-color: var(--color-line-card);
 }
 
-.wrapper-project-card-grid .post-card .card-back::after {
+.wrapper-project-card-grid .project-card .card-back::after {
   content: '';
   position: absolute;
   inset: 8px;
@@ -394,7 +394,7 @@
     color-mix(in srgb, var(--color-glow) 14%, transparent), transparent 70%);
 }
 
-.wrapper-project-card-grid .post-card:hover .card-cover {
+.wrapper-project-card-grid .project-card:hover .card-cover {
   border-color: var(--color-line-card);
   box-shadow: 0 14px 30px -10px var(--color-shadow-lift);
 }
