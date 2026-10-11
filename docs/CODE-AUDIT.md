@@ -39,18 +39,18 @@ removed comments are in `docs/code-comments/`, and each review page shows its ow
 
 ## assets/js/chrome.js
 
-**What it does.** Starts what every page has: drift, magnet and click flash, the logo's
-hand-drawn wobble, and the mouse glow.
+**What it does.** Starts what every page has: drift and magnet, the logo's hand-drawn wobble, and
+the mouse glow.
 
-**Why it is not simpler.** It is five imports and five calls. Shrinking it means each one starts
+**Why it is not simpler.** It is four imports and four calls. Shrinking it means each one starts
 itself, and then no one file lists what runs everywhere.
 
-**Functions.** None of its own. It calls `initDrift`, `initMagnet` and `initClickFlash` from
-`behaviours/`, `initLineBoil` once per logo, and `init` from `components/cursor-glow.js`.
+**Functions.** None of its own. It calls `initDrift` and `initMagnet` from `behaviours/`,
+`initLineBoil` once per logo, and `init` from `components/cursor-glow.js`.
 
 **Worth knowing.**
 
-- "chrome" means the frame around the content, not the browser. Rename candidate.
+- Rod, 2026-10-11: the name "chrome" means nothing to him. To be renamed.
 - Elements added after the page loads get no behaviours.
 
 ## assets/js/components/cursor-coords.js
@@ -169,19 +169,6 @@ ignores. That is why the kit button's label never moved (P536).
 
 - 2026-10-11: the check that switched the magnet off below 541px is removed. It came with the
   borrowed code as a guard against touch screens.
-
-## assets/js/behaviours/click-flash.js
-
-**What it does.** A ring leaves the element's edge and fades when it is clicked. Used on the four
-social icons of a landing page.
-
-**Why it is not simpler.** It adds the class `dm-flash` on click and removes it when the animation
-ends. The forced re-read of the element's width makes a second click restart the ring.
-
-**Functions.** `initClickFlash(root)`: wires every element with `data-click-flash`.
-
-**Worth knowing.** The ring itself is the `dm-border-fly` animation in
-`_sass/components/_drift-magnet.scss`.
 
 ## assets/js/components/line-boil.js
 
