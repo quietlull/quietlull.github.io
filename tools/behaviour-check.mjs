@@ -20,7 +20,10 @@
 //   /game-design/blogs/    search on the list layout
 //   /tech-art/about/       achievement wall: hover panel, tilt, press, orbit, rim glow, reload
 //   /                      portal windows: placement, drift, drag, close, restore, lean, resize
-//   a post                 cursor glow, the shield over the comments
+//   a post                 cursor glow; over the comments frame: the glow follows while moving and
+//                          after a pause, and a click straight after moving reaches the comments
+//                          (needs the network: giscus loads from giscus.app, and the output says
+//                          whether it did)
 //   /404.html              the embers scene tier
 //
 // Every value is a yes/no or a rounded number, so two runs of unchanged code give the same file
@@ -586,20 +589,32 @@ async function post() {
   o.cursorGlow = await ev('(() => { const g = document.querySelector(\'.cursorglow\'); return [g.style.getPropertyValue(\'--cx\'), g.style.getPropertyValue(\'--cy\')]; })()');
   o.shieldExists = await ev('document.querySelectorAll(\'.post-comments .cursor-shield\').length');
   await center('.post-comments', 0);
+  let frameLoaded = false;
+  for (let i = 0; i < 30 && !frameLoaded; i++) {
+    await sleep(500);
+    frameLoaded = await ev('(() => { const f = document.querySelector(\'.post-comments iframe\'); return !!f && f.getBoundingClientRect().height > 100; })()');
+  }
   await sleep(1500);
+  await center('.post-comments', 0);
+  await sleep(300);
   const sh = await rect('.post-comments .cursor-shield');
-  o.shield = { area: sh.w > 10 && sh.h > 10 };
+  o.shield = { commentsFrameLoaded: frameLoaded, area: sh.w > 10 && sh.h > 10 };
   if (o.shield.area) {
-    await to(sh.cx, Math.min(sh.cy, 800), 8);
-    await sleep(60);
-    o.shield.before = await ev('document.querySelector(\'.cursor-shield\').style.pointerEvents');
-    await sleep(300);
-    o.shield.settled = await ev('document.querySelector(\'.cursor-shield\').style.pointerEvents');
-    const reg = await rect('.post-comments');
-    const above = Math.max(8, reg.y - 40);
-    await to(cur.x, above > 0 && above < reg.y ? above : 8, 6);
-    await sleep(100);
-    o.shield.rearmed = await ev('document.querySelector(\'.cursor-shield\').style.pointerEvents');
+    const glowIsAtThePointer = async () => {
+      await sleep(120);
+      const [x, y] = await ev('(() => { const g = document.querySelector(\'.cursorglow\'); return [parseFloat(g.style.getPropertyValue(\'--cx\')), parseFloat(g.style.getPropertyValue(\'--cy\'))]; })()');
+      return Math.hypot(x - cur.x, y - cur.y) < 8;
+    };
+    const y = Math.min(Math.max(sh.y, 80) + 60, 800);
+    await to(sh.x + 80, y, 8);
+    await to(sh.x + 260, y + 30, 10);
+    o.shield.glowFollowsWhileMoving = await glowIsAtThePointer();
+    await sleep(400);
+    await to(sh.x + 120, y + 10, 10);
+    o.shield.glowFollowsAfterAPause = await glowIsAtThePointer();
+    await click(cur.x + 30, cur.y);
+    await sleep(150);
+    o.shield.aClickStraightAfterMovingReachesTheComments = await ev('document.activeElement.tagName === \'IFRAME\'');
   }
   o.magnets = await ev('document.querySelectorAll(\'.js-magnetic, [data-drift]\').length');
   o.problems = probs();

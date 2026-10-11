@@ -183,9 +183,26 @@
   }
 
   .cursor-shield {
+    --hole-x: -99px;
+    --hole-y: -99px;
+    --hole-half: 6px;
+
     position: absolute;
     inset: 0;
     z-index: 1;
+    clip-path: polygon(
+      evenodd,
+      0 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 0,
+      calc(var(--hole-x) - var(--hole-half)) calc(var(--hole-y) - var(--hole-half)),
+      calc(var(--hole-x) + var(--hole-half)) calc(var(--hole-y) - var(--hole-half)),
+      calc(var(--hole-x) + var(--hole-half)) calc(var(--hole-y) + var(--hole-half)),
+      calc(var(--hole-x) - var(--hole-half)) calc(var(--hole-y) + var(--hole-half)),
+      calc(var(--hole-x) - var(--hole-half)) calc(var(--hole-y) - var(--hole-half))
+    );
   }
 
   .post-comments iframe { display: block; width: 100%; }

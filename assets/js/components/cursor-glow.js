@@ -1,10 +1,8 @@
 import { onCursor } from './cursor-coords.js';
 
-const SETTLE_BEFORE_CLICK_MS = 140;
-
 function setupCommentsShield() {
   const region = document.querySelector('.post-comments');
-  if (!region) {
+  if (!region || !window.matchMedia('(hover: hover)').matches) {
     return;
   }
 
@@ -12,25 +10,17 @@ function setupCommentsShield() {
   shield.className = 'cursor-shield';
   region.appendChild(shield);
 
-  let stillTimer = null;
+  const moveHoleUnderPointer = (event) => {
+    if (event.pointerType === 'touch') {
+      shield.remove();
+      return;
+    }
+    shield.style.setProperty('--hole-x', `${event.offsetX}px`);
+    shield.style.setProperty('--hole-y', `${event.offsetY}px`);
+  };
 
-  shield.addEventListener('pointermove', () => {
-    clearTimeout(stillTimer);
-    stillTimer = setTimeout(() => {
-      shield.style.pointerEvents = 'none';
-    }, SETTLE_BEFORE_CLICK_MS);
-  });
-
-  document.addEventListener(
-    'pointermove',
-    (event) => {
-      if (!region.contains(event.target)) {
-        clearTimeout(stillTimer);
-        shield.style.pointerEvents = '';
-      }
-    },
-    { passive: true }
-  );
+  shield.addEventListener('pointermove', moveHoleUnderPointer, { passive: true });
+  shield.addEventListener('pointerover', moveHoleUnderPointer, { passive: true });
 }
 
 export function init(root = document) {
