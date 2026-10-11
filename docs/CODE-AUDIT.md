@@ -37,7 +37,7 @@ Rules:
 The source files carry no comments (Rod, 2026-10-09). What a file needs explaining goes here. The
 removed comments are in `docs/code-comments/`, and each review page shows its own.
 
-## assets/js/chrome.js
+## assets/js/site-wide.js
 
 **What it does.** Starts what every page has: drift and magnet, the logo's hand-drawn wobble, and
 the mouse glow.
@@ -50,7 +50,7 @@ itself, and then no one file lists what runs everywhere.
 
 **Worth knowing.**
 
-- Rod, 2026-10-11: the name "chrome" means nothing to him. To be renamed.
+- It was `chrome.js` until 2026-10-11. Rod: the name meant nothing to him.
 - Elements added after the page loads get no behaviours.
 
 ## assets/js/components/cursor-coords.js
@@ -110,7 +110,7 @@ with a hole under the pointer to let clicks through.
 
 ## assets/js/behaviours/drift.js
 
-**What it does.** A slow wander at rest, for any element with `data-drift`. It only produces an
+**What it does.** A slow wander at rest, for any element with the class `drift`. It only produces an
 offset: it writes `--drift-x` and `--drift-y` and adds the class `is-drifting`. The stylesheet
 moves the element.
 
@@ -122,15 +122,17 @@ moves the element.
 
 **Functions.**
 
-- `readDrift(element)`: reads the settings from the markup and picks the random starting points.
+- `readDrift(element)`: reads the settings from the stylesheet and picks the random starting
+  points.
 - `tick(now)`: the loop. Writes each on-screen element's offset.
 - `wake()`: restarts the loop.
 - `initDrift(root)`: registers every drifting element under `root`. Does nothing if the visitor's
   system asks for reduced motion.
 - Outside any function: the off-screen watcher.
 
-**Settings in the markup.** `data-drift="6"`: distance in pixels. `data-drift-x`, `data-drift-y`:
-one direction only. `data-drift-speed`: faster or slower.
+**Settings.** A component sets them in its own stylesheet. `--drift-distance-x` and
+`--drift-distance-y`: how far it wanders each way, 6px unless set. `--drift-speed`: 1 unless set.
+The defaults are at the top of `_sass/components/_behaviours.scss`.
 
 **Worth knowing.** An element coming back on screen starts at its wander position. It does not
 ease in. That happens up to 200px outside the view.
@@ -141,8 +143,8 @@ ease in. That happens up to 200px outside the view.
 
 ## assets/js/behaviours/magnet.js
 
-**What it does.** An element with the class `js-magnetic` leans toward the mouse while the mouse
-is over it. It only produces a pull: it writes `--magnet-x`, `--magnet-y` and `--magnet-amount`
+**What it does.** An element with the class `magnet` leans toward the mouse while the mouse is
+over it. It only produces a pull: it writes `--magnet-x`, `--magnet-y` and `--magnet-amount`
 (0 at rest, 1 when fully pulled) and adds the class `is-pulled`.
 
 **Why it is not simpler.**
@@ -150,7 +152,7 @@ is over it. It only produces a pull: it writes `--magnet-x`, `--magnet-y` and `-
 - The pull eases in and out with a lerp, so it needs the current and the target offset.
 - `--magnet-amount` is what lets the stylesheet fade drift out while the magnet pulls.
 - The loop only runs while something is easing, then stops.
-- A child with `js-magnetic-inner` follows at a smaller share. That is the label inside a button.
+- A child with `magnet-inner` follows at a smaller share. That is the label inside a button.
 
 **Functions.**
 
@@ -159,8 +161,9 @@ is over it. It only produces a pull: it writes `--magnet-x`, `--magnet-y` and `-
 - `initMagnet(root)`: attaches every magnetic element under `root`. Does nothing for reduced
   motion.
 
-**Settings in the markup.** `data-strength="40"`: pull. `data-magnet-clamp`: its limit.
-`data-strength-text`: how far the inner child follows.
+**Settings.** A component sets them in its own stylesheet. `--magnet-pull`: 40 unless set.
+`--magnet-inner-pull`: how far the inner child follows, 20 unless set. `--magnet-limit`: the most
+it may move, 0 for no limit.
 
 **Worth knowing.** The inner child is moved with the CSS property `translate`, which inline text
 ignores. That is why the kit button's label never moved (P536).
