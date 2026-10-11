@@ -39,22 +39,19 @@ removed comments are in `docs/code-comments/`, and each review page shows its ow
 
 ## assets/js/chrome.js
 
-**What it does.** Starts the three effects every page has: drift and magnet, the logo's hand-drawn
-wobble, and the mouse glow.
+**What it does.** Starts what every page has: drift, magnet and click flash, the logo's
+hand-drawn wobble, and the mouse glow.
 
-**Why it is not simpler.** It is three imports and three calls. Shrinking it means each effect
-starts itself, and then no one file lists what runs everywhere.
+**Why it is not simpler.** It is five imports and five calls. Shrinking it means each one starts
+itself, and then no one file lists what runs everywhere.
 
-**Functions.** None of its own. It calls:
-
-- `init` from `components/drift-magnet.js`, once.
-- `initLineBoil` from `components/line-boil.js`, once per logo.
-- `init` from `components/cursor-glow.js`, once.
+**Functions.** None of its own. It calls `initDrift`, `initMagnet` and `initClickFlash` from
+`behaviours/`, `initLineBoil` once per logo, and `init` from `components/cursor-glow.js`.
 
 **Worth knowing.**
 
 - "chrome" means the frame around the content, not the browser. Rename candidate.
-- Elements added after the page loads get no drift or magnet.
+- Elements added after the page loads get no behaviours.
 
 ## assets/js/components/cursor-coords.js
 
@@ -111,63 +108,80 @@ with a hole under the pointer to let clicks through.
 - 2026-10-10 (P545): the sheet used to cover the whole box and step aside when the mouse rested.
   Replaced with the hole. Confirmed fixed.
 
-## assets/js/components/drift-magnet.js
+## assets/js/behaviours/drift.js
 
-**What it does.** Moves elements in three ways, each switched on in the markup. One loop moves
-them all.
-
-- **Drift** (`data-drift`): a slow wander at rest.
-- **Magnet** (class `js-magnetic`): leans toward the mouse while hovered.
-- **Flash** (`data-click-flash`): an outline ripple on click.
-
-**It is not the architecture Rod asked for.** He asked for one file per behaviour, combined on
-the element (P516). Here the switches are separate but the code is not: one file, one loop and
-one record hold drift and magnet together. Flash shares nothing with them and only lives here.
-The split is still to do.
+**What it does.** A slow wander at rest, for any element with `data-drift`. It only produces an
+offset: it writes `--drift-x` and `--drift-y` and adds the class `is-drifting`. The stylesheet
+moves the element.
 
 **Why it is not simpler.**
 
-- Drift and magnet move the same element, which has one position. `tick` mixes them: magnet fades
-  in while hovered, drift fades back after. This does not prevent a split. It means separate files
-  need one agreed way to add their movements together.
-- One loop, not a timer per element. A page can have a dozen or more.
-- The loop skips off-screen elements and stops when nothing visible moves. Without that it would
-  run forever for cards nobody sees.
-- Each element gets a random start and wander size. Otherwise neighbours move in step.
-- Every setting it reads is used on the live site.
-
-**What could still go.**
-
-- `promoted` and the two `will-change` lines, about eight lines. They warn the browser that an
-  element is about to move. The saving is unmeasured.
-- The 541px check in `bindMagnet`. It turns the magnet off in narrow windows. Removing it is a
-  visible change.
+- Each element remembers six things. Two distances, because the portal windows wander sideways
+  only. Two random starting points, or neighbours move in step. Its speed. Whether it is on screen.
+- The watcher skips off-screen elements, and the loop stops when none is on screen.
 
 **Functions.**
 
-- `lerp(a, b, t)`: moves a value part way to a target. This is the easing.
-- `motionOn()`: false when the visitor's system asks for reduced motion.
-- `createEntry(element)`: reads the element's settings and makes its record.
-- `tick(now)`: the loop. Eases each element, mixes drift and magnet, writes the position.
+- `readDrift(element)`: reads the settings from the markup and picks the random starting points.
+- `tick(now)`: the loop. Writes each on-screen element's offset.
 - `wake()`: restarts the loop.
-- `bindMagnet(entry)`: aims the magnet at the mouse while hovered. Lets go on leave.
-- `bindClickFlash(element)`: adds `dm-flash` on click, removes it when the ripple ends.
-- `init(root)`: sets up every drift or magnet element under `root`. Called once, by `chrome.js`.
-- Outside any function: turns motion off for reduced motion, and creates the off-screen watcher.
+- `initDrift(root)`: registers every drifting element under `root`. Does nothing if the visitor's
+  system asks for reduced motion.
+- Outside any function: the off-screen watcher.
 
-**Settings in the markup.**
+**Settings in the markup.** `data-drift="6"`: distance in pixels. `data-drift-x`, `data-drift-y`:
+one direction only. `data-drift-speed`: faster or slower.
 
-- `data-drift="6"`: wander distance in pixels. `data-drift-x`, `data-drift-y`: one direction only.
-  `data-drift-speed`: faster or slower.
-- `data-strength="40"`: magnet pull. `data-magnet-clamp`: its limit.
-- `data-strength-text`: how far a `js-magnetic-inner` child follows.
+**Worth knowing.** An element coming back on screen starts at its wander position. It does not
+ease in. That happens up to 200px outside the view.
 
-**Worth knowing.**
+### Rod's calls
 
-- It moves things with the CSS property `translate`, which inline text ignores. That is why the
-  kit button's label never moved (P536).
-- Calling `init` twice on one element sets it up twice.
-- Abbreviations to rename: `e`, `r`, `tx`, `ty`, `rec`, `vis`, `mag`, `amp`, `dm-`.
+- 2026-10-11: one file per behaviour (P516). The trimmed record: no fade level.
+
+## assets/js/behaviours/magnet.js
+
+**What it does.** An element with the class `js-magnetic` leans toward the mouse while the mouse
+is over it. It only produces a pull: it writes `--magnet-x`, `--magnet-y` and `--magnet-amount`
+(0 at rest, 1 when fully pulled) and adds the class `is-pulled`.
+
+**Why it is not simpler.**
+
+- The pull eases in and out with a lerp, so it needs the current and the target offset.
+- `--magnet-amount` is what lets the stylesheet fade drift out while the magnet pulls.
+- The loop only runs while something is easing, then stops.
+- A child with `js-magnetic-inner` follows at a smaller share. That is the label inside a button.
+
+**Functions.**
+
+- `tick()`: the loop. Eases every active magnet and writes its values. Drops it once at rest.
+- `attach(element)`: reads the settings and listens for the mouse over the element.
+- `initMagnet(root)`: attaches every magnetic element under `root`. Does nothing for reduced
+  motion.
+
+**Settings in the markup.** `data-strength="40"`: pull. `data-magnet-clamp`: its limit.
+`data-strength-text`: how far the inner child follows.
+
+**Worth knowing.** The inner child is moved with the CSS property `translate`, which inline text
+ignores. That is why the kit button's label never moved (P536).
+
+### Rod's calls
+
+- 2026-10-11: the check that switched the magnet off below 541px is removed. It came with the
+  borrowed code as a guard against touch screens.
+
+## assets/js/behaviours/click-flash.js
+
+**What it does.** A ring leaves the element's edge and fades when it is clicked. Used on the four
+social icons of a landing page.
+
+**Why it is not simpler.** It adds the class `dm-flash` on click and removes it when the animation
+ends. The forced re-read of the element's width makes a second click restart the ring.
+
+**Functions.** `initClickFlash(root)`: wires every element with `data-click-flash`.
+
+**Worth knowing.** The ring itself is the `dm-border-fly` animation in
+`_sass/components/_drift-magnet.scss`.
 
 ## assets/js/components/line-boil.js
 

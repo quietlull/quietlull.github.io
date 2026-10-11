@@ -69,7 +69,8 @@ relying on them. If this disagrees with the code, this is stale - fix it.
 - **Post enhancements** - `post-enhance.js`: reading progress bar (clickable), section sparks, end
   confetti, ambient fireflies.
 - **Interaction polish** - card tilt, flip and dwell ring are `assets/js/components/merged-card.js`
-  (cursor + gyro tilt); drift and magnet are `assets/js/components/drift-magnet.js`;
+  (cursor + gyro tilt); drift, magnet and click flash are one file each in `assets/js/behaviours/`,
+  mixed by one rule in `_sass/components/_behaviours.scss`;
   `back-to-top.js`. `page-transition.js` is meant to fade and throw a sparkler burst on internal
   navigation but **does nothing today**: it needs `#main-wrapper`, which no page has, and its
   styles were removed as dead on 2026-10-10. The old `card-tilt.js` and `tool-taglines.js` were
