@@ -111,10 +111,32 @@ which `_includes/comments/giscus.html` emits. It appends a `div.cursor-shield` t
 - Why: the giscus iframe is cross-origin, so pointer events over it never reach this page and the
   glow would freeze at the iframe's edge. The shield is an element of this page lying on top, so
   `pointermove` reaches `window` again.
-- The cost is that the shield would also catch clicks. So each `pointermove` on it restarts a
-  140ms timer (`SETTLE_BEFORE_CLICK_MS`); when the pointer holds still that long, the shield gets
-  `pointer-events: none` and a click goes through to the iframe.
-- It re-arms when a `pointermove` arrives whose target is outside `.post-comments`.
+- The cost is that a shield also catches clicks. So it has a hole: `clip-path` on `.cursor-shield`
+  cuts a square out of it, 12px across (`--hole-half` is half of that), centred on `--hole-x` and
+  `--hole-y`. A browser does not deliver pointer events to the clipped-out part of an element, so
+  inside the hole the pointer belongs to the iframe.
+- `moveHoleUnderPointer` writes those two properties from `event.offsetX` and `offsetY`. It runs on
+  `pointermove` and on `pointerover`. The second matters: when the page scrolls under a resting
+  pointer no move event fires, but `pointerover` does.
+- The result: the pointer is always inside the hole when it presses, so a click always reaches
+  the comments, with no waiting. The page still sees the pointer each time it leaves the hole,
+  which is every 6px of travel, so at very slow speeds the glow is at most 5px behind.
+- No shield at all where the main input cannot hover (`(hover: hover)` is false: phones and
+  tablets). On a desktop that also has a touchscreen, the first touch on the shield removes it.
+
+**Measured 2026-10-10, real mouse, headless Chrome** (the old all-or-nothing shield in brackets):
+page received 40 of 40 moves after a 500ms pause over the comments (0 of 40); glow 0px from the
+pointer (369px); a click 0, 8, 16, 33, 60, 150 and 400ms after moving reached the comments every
+time (eaten when the shield was up); a click with no movement after scrolling reached the
+comments; three taps on a phone reached the comments (all three eaten). `tools/behaviour-check.mjs`
+keeps checking the first three. **Not verified in Edge:** headless Edge on this machine draws no
+frames, so it cannot be driven; it is the same engine as Chrome.
+
+### Rod's calls
+
+- 2026-10-10: "discuss comment section still eats and breaks the cursor effects" (P545). The
+  earlier shield stepped aside after 140ms of stillness and never came back until the pointer
+  left the comments. Replaced with the hole.
 
 **Names.** One thing has three names: the file is `cursor-glow`, the class is `cursorglow` with no
 hyphen, and the comments call it the cursor lantern. "Lantern" also means the paper lanterns in the

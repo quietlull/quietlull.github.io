@@ -35,8 +35,21 @@ is never told. This is also why the wrapper trick fails: entering a child iframe
 `pointerenter` on its parent the way entering an ordinary child does.
 **The only thing that can see the cursor over a frame is an element of YOURS on top of it.**
 `assets/js/components/cursor-glow.js` does that - a transparent shield inside `.post-comments`
-which steps aside after 140ms of stillness so clicks still land, and re-arms on a pointermove
-whose target is outside the region (a signal that exists precisely BECAUSE the frame is opaque).
+with a 12px hole cut in it that follows the pointer, so a press always lands in the frame.
+
+**An all-or-nothing shield over a frame trades the effect for the click, whatever the timing ->**
+the first version of that shield covered the whole frame and stepped aside after 140ms of
+stillness. MEASURED 2026-10-10 with a real mouse, after Rod reported it still broken: once it had
+stepped aside the page received 0 of 40 moves, the glow sat 369px from the pointer and the sparkler
+was dead until the pointer left the comments; and a click made straight after moving was eaten.
+On a phone it was worse: every tap was swallowed, so the comments could not be used at all.
+At any one point the pointer goes to your page or to the frame, never both, so **the answer is
+spatial, not temporal: give the frame only the few pixels under the pointer.**
+- The hole also has to follow on `pointerover`, not only `pointermove`. Scrolling moves the shield
+  under a resting pointer without any move event; the browser does fire `pointerover`, and without
+  it a click after scrolling was eaten.
+- Do not gate the shield on `(any-pointer: coarse)`. Rod's own desktop reports a touch device
+  beside its mouse; that guard would have switched the fix off on his machine.
 
 **"I verified it with a synthetic event" ->** you verified that a handler is attached, nothing
 more. `element.dispatchEvent(new PointerEvent('pointerenter'))` succeeds whether or not the

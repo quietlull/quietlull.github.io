@@ -65,10 +65,9 @@ Nothing below was applied. Each is a decision, and several would change what a v
 
 **Broken today, found by the pass. Fixing any of them is visible.**
 
-1. **The glass shadow does not render.** `--glass-shadow` in `_sass/themes/_dark.scss` has two
-   `//` notes inside its value ("Deep shadow", "Ambient glow"). Sass ships them, the value is
-   invalid, and every `box-shadow: var(--glass-shadow)` computes to `none`. Measured on the post's
-   previous/next cards. Deleting the two notes makes the shadow appear. This predates the pass.
+1. ~~The glass shadow does not render.~~ **Decided 2026-10-10: "we dont need the glass shadows
+   just remove it" (P544).** The token and the declaration that read it are gone; nothing looks
+   different, because it never rendered.
 2. **The page transition never runs.** `page-transition.js` needs `#main-wrapper`, which no page
    has. No fade, no sparkler burst on navigation. Its styles were dead and are now gone, so the
    script is the only piece left. Fix (a visible change on every page) or delete.

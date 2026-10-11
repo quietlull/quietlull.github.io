@@ -1,3 +1,33 @@
+# 2026-10-10, later - THE COMMENTS STOP EATING THE CURSOR, ON THE FOURTH ATTEMPT
+
+**Asked for by ROD:** *"i notice discuss comment section still eats and breaks the cursor effects."*
+P508 had been marked fixed on 2026-09-03.
+
+**HE WAS RIGHT, AND THE EARLIER FIX COULD NOT HAVE WORKED.** It put one transparent shield over the
+whole giscus frame and took it away after 140ms of stillness so a click could land. Measured with
+a real mouse before anything was changed: once the shield had stepped aside the page received 0 of
+40 moves, the glow sat 369px from the pointer and the sparkler was dead until the pointer left the
+comments. A click straight after moving was swallowed. On a phone every tap was swallowed, so the
+comments could not be used at all, and nobody had looked.
+
+**THE MISTAKE WAS TREATING IT AS A QUESTION OF TIMING.** At any one point the pointer belongs to
+the page or to the frame, never both, so a shield over the whole frame can only swap one failure
+for the other. The fix is spatial: the shield now has a 12px hole that follows the pointer. A
+press always lands in the frame; the page sees the pointer again the moment it leaves the hole.
+The script lost its timer and its document-wide listener and is shorter than before.
+
+**MEASURED AFTER, SAME REAL MOUSE:** 40 of 40 moves after a pause, glow 0px from the pointer, a
+click 0 to 400ms after moving reaches the comments 7 times of 7, three phone taps reach them.
+Two cases were found only by testing them: scrolling the comments under a resting pointer fires
+no move event, so the hole also follows on `pointerover`; and Rod's desktop reports a touch device
+beside its mouse, so the obvious guard ("no shield on touch devices") would have switched the fix
+off on his own machine.
+
+**NOT VERIFIED:** Edge. Headless Edge on this machine draws no frames and cannot be driven. Same
+engine as Chrome, but that is a reason to expect it works, not a measurement. Rod's eye is owed.
+
+**Also today:** the glass shadow is removed at Rod's word (P544). It had never rendered.
+
 # 2026-10-10 - THE CODE BASE GETS SMALLER: NO COMMENTS, THEN A FIVE-AGENT SIMPLIFICATION PASS
 
 **Asked for by ROD** on 2026-10-09, after he asked whether the refactor had made the code base

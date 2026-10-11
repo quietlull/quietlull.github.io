@@ -12,9 +12,13 @@
   files deleted, the compiled stylesheet 121 KB to 96 KB. Nothing a visitor can see or feel
   changed; how that was checked, and what the checks do not cover, is at the top of
   `docs/simplify/README.md`.
-- **22 decisions from the pass are waiting on Rod**, same file, "Waiting on Rod". Four are things
-  that are broken today and whose fix is visible: the glass shadow has never rendered, the page
-  transition never runs, image zoom is off, twelve achievements cannot be earned.
+- **21 decisions from the pass are waiting on Rod**, same file, "Waiting on Rod". Three are things
+  that are broken today and whose fix is visible: the page transition never runs, image zoom is
+  off, twelve achievements cannot be earned. (The glass shadow is decided: removed, P544.)
+- **The comments no longer eat the cursor effects or the clicks** (P545). The shield over the
+  giscus frame has a 12px hole that follows the pointer. Measured with a real mouse in Chrome;
+  **Rod's eye is still owed, and Edge is unverified.** Before this, a phone could not tap the
+  comments at all.
 - **Rod's human audit is the phase now.** The review list is
   `http://localhost:4000/redesign-lab/todo.html`, one generated page per source file. Six files
   have hand-written notes in `docs/CODE-AUDIT.md`, brought up to date after the pass; the rest get
@@ -62,7 +66,8 @@
   **zero** events to the parent, boundary events included. Two fixes were built on the opposite
   assumption and shipped before measurement caught them. **A synthetic `dispatchEvent` proves a
   handler is attached and nothing else.** Both entries are in TRAPS.
-- **The cursor lantern works over the comments** via a transparent shield in `.post-comments` that
+- **(Superseded 2026-10-10, P545: this shield broke after any pause. See the top of this file.)**
+  The cursor lantern works over the comments via a transparent shield in `.post-comments` that
   steps aside after 140ms of stillness so clicks still land. Measured: tracks to cy 717px inside
   the frame where it used to stop at 510.
 - **giscus is on our own theme** (`assets/css/giscus.css`) after one revert. **Known failure mode:
