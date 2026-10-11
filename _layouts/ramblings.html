@@ -43,7 +43,7 @@ script_includes:
               <div class="er-strip">
                 <span class="er-date">{{ post.date | date: '%Y.%m.%d' }}</span>
                 {% for tag in chips %}
-                  <a class="kit-tag js-magnetic" data-strength="25" href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/">{{ tag }}</a>
+                  <a class="kit-tag magnet" href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/">{{ tag }}</a>
                 {% endfor %}
               </div>
               <h2 class="er-ttl"><a class="er-link" href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>

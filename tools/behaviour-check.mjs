@@ -175,7 +175,7 @@ async function landing() {
   await to(s.x + s.w * 0.7, s.y + s.h * 0.7, 10);
   await sleep(700);
   const pulled = await translateOf('.hero__social .dm-social');
-  const inner = await translateOf('.hero__social .dm-social .js-magnetic-inner');
+  const inner = await translateOf('.hero__social .dm-social .magnet-inner');
   o.magnetSocial = {
     pulledPositive: !!pulled && pulled[0] > 4 && pulled[1] > 4,
     pulledWithin: !!pulled && Math.abs(pulled[0]) < 30 && Math.abs(pulled[1]) < 30,
@@ -192,14 +192,14 @@ async function landing() {
 
   await ev('scrollTo({ top: 0, behavior: \'instant\' })');
   await sleep(300);
-  const link = await rect('.top-bar__link.js-magnetic', 0);
+  const link = await rect('.top-bar__link.magnet', 0);
   await to(link.x + link.w * 0.9, link.y + link.h * 0.5, 8);
   await sleep(600);
-  const lt = await translateOf('.top-bar__link.js-magnetic', 0);
+  const lt = await translateOf('.top-bar__link.magnet', 0);
   o.magnetTopBar = { pulledRight: !!lt && lt[0] > 1 };
   await to(900, 500, 8);
   await sleep(900);
-  o.magnetTopBar.releasedToNone = await ev('getComputedStyle(document.querySelectorAll(\'.top-bar__link.js-magnetic\')[0]).translate');
+  o.magnetTopBar.releasedToNone = await ev('getComputedStyle(document.querySelectorAll(\'.top-bar__link.magnet\')[0]).translate');
 
   o.cards = await cards();
   o.reach = await reach();
@@ -614,7 +614,7 @@ async function post() {
     await sleep(150);
     o.shield.aClickStraightAfterMovingReachesTheComments = await ev('document.activeElement.tagName === \'IFRAME\'');
   }
-  o.magnets = await ev('document.querySelectorAll(\'.js-magnetic, [data-drift]\').length');
+  o.magnets = await ev('document.querySelectorAll(\'.magnet, .drift\').length');
   o.problems = probs();
   return o;
 }

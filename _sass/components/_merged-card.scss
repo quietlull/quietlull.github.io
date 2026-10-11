@@ -42,6 +42,10 @@
 }
 
 .merged-cards .post-card {
+  --magnet-pull: 20;
+  --drift-distance-x: 4px;
+  --drift-distance-y: 4px;
+
   perspective: 1000px;
 
   --depth: 1;

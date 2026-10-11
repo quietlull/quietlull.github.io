@@ -11,7 +11,7 @@
 <header class="top-bar">
   <div class="top-bar__left">
     <a class="favicon favicon--square" href="{{ home_url | relative_url }}" aria-label="Home">
-      <span class="favicon__magnet js-magnetic" data-strength="50" data-magnet-clamp="6">
+      <span class="favicon__magnet magnet">
         <img class="favicon__img" src="{{ '/assets/img/favicons/favicon.svg' | relative_url }}" alt="" width="24" height="24">
       </span>
     </a>
@@ -21,18 +21,14 @@
   </div>
 
   <nav class="top-bar__nav" aria-label="Primary">
-    <a class="top-bar__link js-magnetic{% if page.url == home_url %} is-active{% endif %}"
-       data-strength="40" href="{{ home_url | relative_url }}">Home</a>
+    <a class="top-bar__link magnet{% if page.url == home_url %} is-active{% endif %}" href="{{ home_url | relative_url }}">Home</a>
 
     {% if nav_section != '' %}
-      <a class="top-bar__link js-magnetic{% if page.url == projects_url or page.url contains '/posts/' %} is-active{% endif %}"
-         data-strength="40" href="{{ projects_url | relative_url }}">Projects</a>
-      <a class="top-bar__link js-magnetic{% if page.url == about_url %} is-active{% endif %}"
-         data-strength="40" href="{{ about_url | relative_url }}">About</a>
+      <a class="top-bar__link magnet{% if page.url == projects_url or page.url contains '/posts/' %} is-active{% endif %}" href="{{ projects_url | relative_url }}">Projects</a>
+      <a class="top-bar__link magnet{% if page.url == about_url %} is-active{% endif %}" href="{{ about_url | relative_url }}">About</a>
 
       {% if nav_section == 'game-design' %}
-        <a class="top-bar__link js-magnetic{% if page.url == '/game-design/blogs/' %} is-active{% endif %}"
-           data-strength="40" href="{{ '/game-design/blogs/' | relative_url }}">Blogs</a>
+        <a class="top-bar__link magnet{% if page.url == '/game-design/blogs/' %} is-active{% endif %}" href="{{ '/game-design/blogs/' | relative_url }}">Blogs</a>
       {% endif %}
     {% endif %}</nav>
 </header>

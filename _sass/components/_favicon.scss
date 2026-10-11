@@ -18,6 +18,9 @@
 }
 
 .favicon__magnet {
+  --magnet-pull: 50;
+  --magnet-limit: 6;
+
   display: flex;
   align-items: center;
   justify-content: center;

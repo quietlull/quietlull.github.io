@@ -11,6 +11,9 @@
 }
 
 .dm-social {
+  --magnet-pull: 45;
+  --magnet-inner-pull: 22;
+
   position: relative;
   overflow: hidden;
   width: min(3.4rem, 18.4032%);

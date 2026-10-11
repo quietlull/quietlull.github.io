@@ -24,6 +24,11 @@
 }
 
 .kit-button--pill {
+  --magnet-pull: 55;
+  --magnet-inner-pull: 27;
+  --drift-distance-x: 4px;
+  --drift-distance-y: 4px;
+
   border-radius: 999px;
 }
 
@@ -57,6 +62,8 @@
 }
 
 .kit-tag {
+  --magnet-pull: 25;
+
   border: 0;
   font-family: var(--font-body);
   font-size: 0.66rem;

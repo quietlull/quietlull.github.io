@@ -1,15 +1,13 @@
-const DEFAULT_DISTANCE = 6;
-
 const drifting = new Map();
 let frame = null;
 
 function readDrift(element) {
-  const distance = Number(element.dataset.drift) || DEFAULT_DISTANCE;
-  const along = (value) => (value === undefined || value === '' ? distance : Number(value));
+  const style = getComputedStyle(element);
+  const setting = (name) => parseFloat(style.getPropertyValue(name));
   return {
-    distanceX: along(element.dataset.driftX) * (0.85 + Math.random() * 0.3),
-    distanceY: along(element.dataset.driftY) * (0.85 + Math.random() * 0.3),
-    speed: Number(element.dataset.driftSpeed) || 1,
+    distanceX: setting('--drift-distance-x') * (0.85 + Math.random() * 0.3),
+    distanceY: setting('--drift-distance-y') * (0.85 + Math.random() * 0.3),
+    speed: setting('--drift-speed'),
     startX: Math.random() * Math.PI * 2,
     startY: Math.random() * Math.PI * 2,
     onScreen: true,
@@ -53,7 +51,7 @@ export function initDrift(root = document) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }
-  for (const element of root.querySelectorAll('[data-drift], [data-drift-x], [data-drift-y]')) {
+  for (const element of root.querySelectorAll('.drift')) {
     drifting.set(element, readDrift(element));
     watcher.observe(element);
   }

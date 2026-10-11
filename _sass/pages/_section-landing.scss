@@ -101,6 +101,9 @@
   }
 
   .skills-row__item {
+    --drift-distance-x: 3px;
+    --drift-distance-y: 3px;
+
     display: flex;
     flex-direction: column;
     align-items: center;

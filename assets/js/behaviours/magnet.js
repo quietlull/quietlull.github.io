@@ -1,5 +1,3 @@
-const DEFAULT_PULL = 40;
-const DEFAULT_INNER_PULL = 20;
 const EASE = 0.12;
 const RESTING = 0.01;
 
@@ -35,13 +33,15 @@ function tick() {
 }
 
 function attach(element) {
-  const pull = Number(element.dataset.strength) || DEFAULT_PULL;
-  const limit = Number(element.dataset.magnetClamp) || Infinity;
+  const style = getComputedStyle(element);
+  const setting = (name) => parseFloat(style.getPropertyValue(name));
+  const pull = setting('--magnet-pull');
+  const limit = setting('--magnet-limit') || Infinity;
   const within = (value) => Math.max(-limit, Math.min(limit, value));
   const magnet = {
     element,
-    inner: element.querySelector('.js-magnetic-inner'),
-    innerShare: (Number(element.dataset.strengthText) || DEFAULT_INNER_PULL) / pull,
+    inner: element.querySelector('.magnet-inner'),
+    innerShare: setting('--magnet-inner-pull') / pull,
     hovered: false,
     amount: 0,
     x: 0,
@@ -72,5 +72,5 @@ export function initMagnet(root = document) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }
-  root.querySelectorAll('.js-magnetic').forEach(attach);
+  root.querySelectorAll('.magnet').forEach(attach);
 }

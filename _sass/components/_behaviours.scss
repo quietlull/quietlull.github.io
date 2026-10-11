@@ -1,34 +1,24 @@
 @layer reset, tokens, prose, components, overrides;
 
-@property --drift-x {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0;
+@mixin value($name, $syntax, $default) {
+  @property #{$name} {
+    syntax: $syntax;
+    inherits: false;
+    initial-value: $default;
+  }
 }
 
-@property --drift-y {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0;
-}
-
-@property --magnet-x {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0;
-}
-
-@property --magnet-y {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0;
-}
-
-@property --magnet-amount {
-  syntax: '<number>';
-  inherits: false;
-  initial-value: 0;
-}
+@include value(--drift-distance-x, '<length>', 6px);
+@include value(--drift-distance-y, '<length>', 6px);
+@include value(--drift-speed, '<number>', 1);
+@include value(--drift-x, '<length>', 0);
+@include value(--drift-y, '<length>', 0);
+@include value(--magnet-pull, '<number>', 40);
+@include value(--magnet-inner-pull, '<number>', 20);
+@include value(--magnet-limit, '<number>', 0);
+@include value(--magnet-x, '<length>', 0);
+@include value(--magnet-y, '<length>', 0);
+@include value(--magnet-amount, '<number>', 0);
 
 @layer components {
 .is-drifting,
