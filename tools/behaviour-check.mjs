@@ -13,7 +13,7 @@
 //
 // WHAT IT DRIVES, page by page:
 //   /tech-art/             line boil (logo, hero, clock), drift at rest, magnet pull and release,
-//                          click flash, cursor glow, card tilt, glow, dwell ring, flip, hover
+//                          cursor glow, card tilt, glow, dwell ring, flip, hover
 //                          video, firework reach, the scene's dock and water
 //   /tech-art/projects/    search box, filter pills, clear button, ?search= in the address, card
 //                          drift and magnet, the ?scene= overrides
@@ -182,11 +182,6 @@ async function landing() {
     innerFollows: !!inner && inner[0] > 1 && inner[1] > 1 && inner[0] < pulled[0],
     willChange: await ev('getComputedStyle(document.querySelector(\'.hero__social .dm-social\')).willChange'),
   };
-  await click(s.x + s.w * 0.7, s.y + s.h * 0.7);
-  await sleep(40);
-  o.flash = { onClick: await ev('document.querySelector(\'.hero__social .dm-social\').classList.contains(\'dm-flash\')') };
-  await sleep(1500);
-  o.flash.afterAnimation = await ev('document.querySelector(\'.hero__social .dm-social\').classList.contains(\'dm-flash\')');
   await to(900, 700, 6);
   await sleep(900);
   const back = await translateOf('.hero__social .dm-social');

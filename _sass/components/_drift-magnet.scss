@@ -56,22 +56,4 @@
 .dm-social:hover .dm-social__glyph {
   color: var(--color-night);
 }
-
-.dm-flash {
-  animation: dm-border-fly 0.5s ease-out;
-}
-
-@keyframes dm-border-fly {
-  0% {
-    outline: 1px solid var(--color-glow);
-    outline-offset: 0;
-    box-shadow: 0 0 10px color-mix(in srgb, var(--color-glow) 45%, transparent);
-  }
-
-  100% {
-    outline: 1px solid transparent;
-    outline-offset: 14px;
-    box-shadow: 0 0 22px color-mix(in srgb, var(--color-glow) 0%, transparent);
-  }
-}
 }
