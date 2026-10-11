@@ -105,7 +105,7 @@ const leanOf = (transform) => {
   const scale = Math.hypot(m[5], m[6]);
   return {
     rotX: r2(degrees(Math.atan2(m[6], m[5]))),
-    rotY: r2(degrees(Math.atan2(m[8], m[0]))),
+    rotY: r2(degrees(Math.asin(m[8]))),
     lift: Math.round(((m[13] * m[5] + m[14] * m[6]) / scale) * 100) / 100,
     scale: Math.round(scale * 1000) / 1000,
   };
