@@ -89,7 +89,7 @@ const r2 = (v) => Math.round(v / 2) * 2;
 
 const translateOf = (sel, i = 0) => ev(`(() => {
   const e = document.querySelectorAll(${J(sel)})[${i}];
-  const m = /^(-?[\\d.]+)px(?: (-?[\\d.]+)px)?/.exec(e.style.translate);
+  const m = /^(-?[\\d.]+)px(?: (-?[\\d.]+)px)?/.exec(getComputedStyle(e).translate);
   return m ? [+m[1], +(m[2] || 0)] : null;
 })()`);
 
@@ -159,7 +159,7 @@ async function landing() {
     set: !!drift0,
     moved: !!drift0 && !!drift1 && (drift0[0] !== drift1[0] || drift0[1] !== drift1[1]),
     within7px: !!drift1 && Math.abs(drift1[0]) <= 7 && Math.abs(drift1[1]) <= 7,
-    willChange: await ev('document.querySelector(\'.hero__social .dm-social\').style.willChange'),
+    willChange: await ev('getComputedStyle(document.querySelector(\'.hero__social .dm-social\')).willChange'),
   };
 
   await to(500, 400);
@@ -180,7 +180,7 @@ async function landing() {
     pulledPositive: !!pulled && pulled[0] > 4 && pulled[1] > 4,
     pulledWithin: !!pulled && Math.abs(pulled[0]) < 30 && Math.abs(pulled[1]) < 30,
     innerFollows: !!inner && inner[0] > 1 && inner[1] > 1 && inner[0] < pulled[0],
-    willChange: await ev('document.querySelector(\'.hero__social .dm-social\').style.willChange'),
+    willChange: await ev('getComputedStyle(document.querySelector(\'.hero__social .dm-social\')).willChange'),
   };
   await click(s.x + s.w * 0.7, s.y + s.h * 0.7);
   await sleep(40);
@@ -201,7 +201,7 @@ async function landing() {
   o.magnetTopBar = { pulledRight: !!lt && lt[0] > 1 };
   await to(900, 500, 8);
   await sleep(900);
-  o.magnetTopBar.releasedToNone = await ev('document.querySelectorAll(\'.top-bar__link.js-magnetic\')[0].style.translate');
+  o.magnetTopBar.releasedToNone = await ev('getComputedStyle(document.querySelectorAll(\'.top-bar__link.js-magnetic\')[0]).translate');
 
   o.cards = await cards();
   o.reach = await reach();
