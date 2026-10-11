@@ -1,4 +1,3 @@
-import { init as initMergedCard } from './merged-card.js';
 import { onCursor } from './cursor-coords.js';
 
 function bindReveal(root) {
@@ -35,7 +34,6 @@ function bindHoverVideo(root) {
 }
 
 export function init(root = document) {
-  initMergedCard(root);
   bindReveal(root);
   bindHoverVideo(root);
 }

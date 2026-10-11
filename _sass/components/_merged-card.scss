@@ -46,6 +46,7 @@
   --drift-distance-x: 4px;
   --drift-distance-y: 4px;
   --tilt-max: 8;
+  --dwell-time: 0.9s;
   --card-lift: 6px;
   --card-grow: 1.02;
 
@@ -103,7 +104,7 @@
   transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.merged-cards .card-flipper.is-flipped {
+.merged-cards .post-card.is-dwelled .card-flipper {
   transform: rotateY(180deg);
 }
 
@@ -311,54 +312,6 @@
   text-transform: uppercase;
   color: var(--color-gold);
   font-family: var(--font-body);
-}
-
-@property --dp {
-  syntax: '<number>';
-  inherits: false;
-  initial-value: 0;
-}
-
-.dwell-ring {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: var(--z-overlay);
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 0.15s;
-
-  --dp: 0;
-
-  background: conic-gradient(var(--color-gold) calc(var(--dp) * 1turn), var(--color-ring-track) 0);
-}
-
-.dwell-ring::after {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  border-radius: 50%;
-  background: var(--color-ring-hole);
-}
-
-.dwell-ring.is-on {
-  opacity: 1;
-}
-
-.dwell-ring.is-filling {
-  --dp: 1;
-
-  transition: opacity 0.15s, --dp 0.9s linear;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dwell-ring.is-filling {
-    transition: opacity 0.15s;
-  }
 }
 
 .merged-cards--square .card-cover,
