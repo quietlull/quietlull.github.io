@@ -25,7 +25,6 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
   will-change: transform, box-shadow;
   contain: layout style paint;
 }
