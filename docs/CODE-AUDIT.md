@@ -369,7 +369,7 @@ JSON, so it is blind for an honest friend, not a determined one.
 
 **Functions.** `init` wires the page. `renderTrial` resets for the next pair. `renderButtons`
 marks which clip is playing and switches the prefer buttons on. `showResults` builds the ranked
-cards and the two consistency lines. `readHash` reads results back out of a shared link.
+cards. `readHash` reads results back out of a shared link.
 
 **Worth knowing.** `hidden` does nothing on a `.kit-button`: its `display` rule wins. Hide its
 parent instead.
@@ -411,4 +411,5 @@ both orders, shuffles them, records which side won, and scores.
 
 **Functions.** `shuffle` mixes a list in place. `current` is the pair being asked. `done` says
 whether all pairs are answered. `choose` records a side. `summary` returns the ranking, the most
-wins possible, how many pairs got the same winner in both orders, and how often A was picked.
+wins possible, how many pairs got the same winner in both orders, and how often A was picked. The page shows
+only the ranking; the other two are in the results link for whoever decodes it.

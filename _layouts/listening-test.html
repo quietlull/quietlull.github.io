@@ -5,12 +5,10 @@ layout: default
 <div id="listening-test" class="listening-test">
   <div class="page-heading page-heading--sub">
     <h1 class="page-heading__title heading-1-display">{{ page.title }}</h1>
-    <p class="page-heading__desc">{{ page.description }}</p>
   </div>
 
   <section data-step="intro">
-    {{ content }}
-    <button type="button" class="kit-button kit-button--pill orb-fill" data-action="start">
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="start">
       <span class="kit-button__label">Start</span>
     </button>
     <p class="listening-test__status" data-status aria-live="polite"></p>
@@ -19,19 +17,18 @@ layout: default
   <section data-step="trial" hidden>
     <p class="listening-test__status" data-progress aria-live="polite"></p>
     <div class="listening-test__row">
-      <button type="button" class="kit-button kit-button--pill orb-fill listening-test__play" data-play="a" aria-pressed="false">
+      <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button listening-test__play" data-play="a" aria-pressed="false">
         <span class="kit-button__label">Play A</span>
       </button>
-      <button type="button" class="kit-button kit-button--pill orb-fill listening-test__play" data-play="b" aria-pressed="false">
+      <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button listening-test__play" data-play="b" aria-pressed="false">
         <span class="kit-button__label">Play B</span>
       </button>
     </div>
-    <p class="listening-test__status">Switch between them as often as you like. Pick once you have heard both.</p>
     <div class="listening-test__row">
-      <button type="button" class="kit-button kit-button--pill orb-fill" data-choose="a" disabled>
+      <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-choose="a" disabled>
         <span class="kit-button__label">I prefer A</span>
       </button>
-      <button type="button" class="kit-button kit-button--pill orb-fill" data-choose="b" disabled>
+      <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-choose="b" disabled>
         <span class="kit-button__label">I prefer B</span>
       </button>
     </div>
@@ -39,8 +36,7 @@ layout: default
 
   <section data-step="results" hidden>
     <ol class="rc-grid listening-test__results" data-results></ol>
-    <p class="listening-test__status" data-stats></p>
-    <button type="button" class="kit-button kit-button--pill orb-fill" data-action="copy">
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="copy">
       <span class="kit-button__label">Copy results link</span>
     </button>
   </section>

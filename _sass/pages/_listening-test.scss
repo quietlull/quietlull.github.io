@@ -20,6 +20,14 @@
   margin: 1rem 0;
 }
 
+.listening-test__button {
+  display: inline-grid;
+  place-items: center;
+  width: 10rem;
+  aspect-ratio: 1;
+  font-size: 1.1rem;
+}
+
 .listening-test__play[aria-pressed='true'] { --orb-fill-rest: 0%; }
 
 .listening-test__play[aria-pressed='true'] .kit-button__label { color: var(--color-night); }

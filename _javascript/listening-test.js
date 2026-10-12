@@ -118,12 +118,6 @@ function init(root) {
       list.appendChild(card);
     });
 
-    const [agree, pairs] = summary.consistent;
-    const [pickedA, trials] = summary.pickedA;
-    q('[data-stats]').textContent =
-      `Picked the same winner both times for ${agree} of ${pairs} pairs. ` +
-      `Chose A in ${pickedA} of ${trials} pairs (around half means no side bias).`;
-
     const copy = q('[data-action="copy"]');
     copy.addEventListener('click', () => {
       navigator.clipboard.writeText(location.href).then(() => {
