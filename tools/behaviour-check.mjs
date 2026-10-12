@@ -267,8 +267,8 @@ async function cards() {
       ring: ring ? ring.className : null,
       ringCount: document.querySelectorAll('.dwell-ring').length,
       videoPlaying: v ? !v.paused : null,
-      mx: style.getPropertyValue('--border-glow-x'),
-      my: style.getPropertyValue('--border-glow-y'),
+      mx: style.getPropertyValue('--mouse-x') || style.getPropertyValue('--border-glow-x'),
+      my: style.getPropertyValue('--mouse-y') || style.getPropertyValue('--border-glow-y'),
     };
   })()`);
   const s1 = await state();
@@ -469,6 +469,10 @@ async function about() {
 
   const tile = (id) => ev(`(() => { const t = document.querySelector('.aw__tile[data-id=${J(id)}]'); t.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = t.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, x: r.left, y: r.top, w: r.width, h: r.height }; })()`);
   const detail = () => ev('document.querySelector(\'.aw__detail\').innerText.replace(/\\s+/g, \' \').trim()');
+  const tileVar = (id, current, previous) => ev(`(() => {
+    const style = document.querySelector('.aw__tile[data-id=${J(id)}]').style;
+    return style.getPropertyValue(${J(current)}) || style.getPropertyValue(${J(previous)});
+  })()`);
   const tileState = (id) => ev(`(async () => {
     const tile = document.querySelector('.aw__tile[data-id=${J(id)}]');
     await Promise.all(tile.getAnimations().filter((a) => a instanceof CSSTransition).map((a) => a.finished.catch(() => {})));
@@ -507,7 +511,7 @@ async function about() {
   await sleep(200);
   const orbitSamples = [];
   for (let i = 0; i < 6; i++) {
-    orbitSamples.push(await ev('document.querySelector(\'.aw__tile[data-id="first-light"]\').style.getPropertyValue(\'--mx\') + \' \' + document.querySelector(\'.aw__tile[data-id="first-light"]\').style.getPropertyValue(\'--my\')'));
+    orbitSamples.push((await tileVar('first-light', '--border-glow-x', '--mx')) + ' ' + (await tileVar('first-light', '--border-glow-y', '--my')));
     await sleep(150);
   }
   o.activate = {
@@ -526,7 +530,8 @@ async function about() {
     for (const id of ['curator', 'explorer', 'cartographer']) {
       const el = document.querySelector('.aw__tile[data-id="' + id + '"]');
       const r = el.getBoundingClientRect();
-      out.push([id, parseFloat(el.style.getPropertyValue('--mx')), parseFloat(el.style.getPropertyValue('--my')), r.left, r.top]);
+      const read = (current, previous) => parseFloat(el.style.getPropertyValue(current) || el.style.getPropertyValue(previous));
+      out.push([id, read('--mouse-x', '--mx'), read('--mouse-y', '--my'), r.left, r.top]);
     }
     return out;
   })()`);
@@ -539,7 +544,7 @@ async function about() {
     stored: localStorage.getItem('rod-achievements-active-v1'),
   })`);
   await sleep(800);
-  o.orbitAfterReload = await ev('document.querySelector(\'.aw__tile[data-id="first-light"]\').style.getPropertyValue(\'--my\').endsWith(\'%\')');
+  o.orbitAfterReload = (await tileVar('first-light', '--border-glow-y', '--my')).endsWith('%');
   o.problems = probs();
   return o;
 }
