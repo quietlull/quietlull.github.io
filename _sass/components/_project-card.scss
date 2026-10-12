@@ -333,7 +333,7 @@
   border-bottom-color: transparent;
   overflow: visible;
   background:
-    radial-gradient(180px 180px at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px),
+    radial-gradient(180px 180px at var(--mouse-x, -9999px) var(--mouse-y, -9999px),
       color-mix(in srgb, var(--color-glow) 14%, transparent), transparent 70%),
     var(--glass-sheen);
 }
@@ -354,11 +354,11 @@
 }
 
 .wrapper-project-card-grid .project-card .glass-plane::before {
-  background: radial-gradient(var(--glow-r, 220px) var(--glow-r, 220px) at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px), var(--color-glow), transparent 100%);
+  background: radial-gradient(var(--glow-r, 220px) var(--glow-r, 220px) at var(--mouse-x, -9999px) var(--mouse-y, -9999px), var(--color-glow), transparent 100%);
 }
 
 .wrapper-project-card-grid .project-card .glass-plane::after {
-  background: radial-gradient(140px 140px at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px), var(--color-glow-soft, #ffd9a8), transparent 100%);
+  background: radial-gradient(140px 140px at var(--mouse-x, -9999px) var(--mouse-y, -9999px), var(--color-glow-soft, #ffd9a8), transparent 100%);
 }
 
 .wrapper-project-card-grid .project-card .card-back::before {
@@ -373,8 +373,8 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   background:
-    radial-gradient(140px 140px at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px), var(--color-glow-soft, #ffd9a8), transparent 100%),
-    radial-gradient(var(--glow-r, 220px) var(--glow-r, 220px) at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px), var(--color-glow), transparent 100%);
+    radial-gradient(140px 140px at var(--mouse-x, -9999px) var(--mouse-y, -9999px), var(--color-glow-soft, #ffd9a8), transparent 100%),
+    radial-gradient(var(--glow-r, 220px) var(--glow-r, 220px) at var(--mouse-x, -9999px) var(--mouse-y, -9999px), var(--color-glow), transparent 100%);
   filter: blur(2.5px);
   mix-blend-mode: plus-lighter;
 }
@@ -390,7 +390,7 @@
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  background: radial-gradient(180px 180px at var(--border-glow-x, -9999px) var(--border-glow-y, -9999px),
+  background: radial-gradient(180px 180px at var(--mouse-x, -9999px) var(--mouse-y, -9999px),
     color-mix(in srgb, var(--color-glow) 14%, transparent), transparent 70%);
 }
 
