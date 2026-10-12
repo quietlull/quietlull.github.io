@@ -56,6 +56,10 @@
   transform: translate3d(0, var(--orb-fill-hover, 0%), 0);
 }
 
+.border {
+  border: var(--border-width, 1px) solid var(--border-color, var(--color-line));
+}
+
 .border-break {
   outline: 1px solid var(--border-break-edge, color-mix(in srgb, var(--color-glow) 40%, transparent));
   outline-offset: var(--border-break-rest, 0);

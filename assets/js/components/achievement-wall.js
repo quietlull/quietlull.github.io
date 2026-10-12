@@ -1,5 +1,3 @@
-import { onCursor } from './cursor-coords.js';
-
 const ACHIEVEMENTS = [
   { id: 'first-light', cat: 'explorer', title: 'First Light', icon: '\u{2600}', desc: 'Welcome to the portfolio!', hasProgress: false, reward: null },
   { id: 'explorer', cat: 'explorer', title: 'Explorer', icon: '\u{1F9ED}', desc: 'Visited both worlds', hasProgress: false, reward: null },
@@ -147,7 +145,7 @@ export function init(root = document) {
         const label = a.title + (unlocked ? '' : ' (locked)');
         const pr = progressFrom(earnedState, a.id);
         const tier = pr ? tierFor(pr[0], pr[1]) : (unlocked ? 'gold' : 'bronze');
-        return '<button type="button" class="aw__tile tilt" data-id="' + a.id + '" data-tier="' + tier + '"'
+        return '<button type="button" class="aw__tile border border-glow track-mouse tilt" data-id="' + a.id + '" data-tier="' + tier + '"'
           + ' aria-pressed="' + (active.has(a.id) ? 'true' : 'false') + '"'
           + (unlocked ? '' : ' aria-disabled="true"')
           + '><span aria-hidden="true">' + a.icon + '</span>'
@@ -184,7 +182,7 @@ export function init(root = document) {
     if (on) active.add(t.dataset.id); else active.delete(t.dataset.id);
     saveActive(active);
     startOrbit();
-    if (!on) { t.style.removeProperty('--mx'); t.style.removeProperty('--my'); }
+    if (!on) { t.style.removeProperty('--border-glow-x'); t.style.removeProperty('--border-glow-y'); }
     read(t);
   });
 
@@ -196,24 +194,14 @@ export function init(root = document) {
     const leg = Math.floor(phase), f = phase - leg;
     const pts = [[0, 0], [100, 0], [100, 100], [0, 100], [0, 0]];
     const [x0, y0] = pts[leg], [x1, y1] = pts[leg + 1];
-    const mx = (x0 + (x1 - x0) * f) + '%';
-    const my = (y0 + (y1 - y0) * f) + '%';
+    const orbitX = (x0 + (x1 - x0) * f) + '%';
+    const orbitY = (y0 + (y1 - y0) * f) + '%';
     cat.querySelectorAll('.aw__tile[aria-pressed="true"]').forEach((tile) => {
-      tile.style.setProperty('--mx', mx);
-      tile.style.setProperty('--my', my);
+      tile.style.setProperty('--border-glow-x', orbitX);
+      tile.style.setProperty('--border-glow-y', orbitY);
     });
     raf = requestAnimationFrame(orbit);
   };
   const startOrbit = () => { if (!raf && active.size) raf = requestAnimationFrame(orbit); };
   startOrbit();
-
-  const tiles = [...cat.querySelectorAll('.aw__tile')];
-  onCursor((cx, cy) => {
-    for (const tile of tiles) {
-      if (tile.getAttribute('aria-pressed') === 'true') continue;
-      const r = tile.getBoundingClientRect();
-      tile.style.setProperty('--mx', (cx - r.left) + 'px');
-      tile.style.setProperty('--my', (cy - r.top) + 'px');
-    }
-  });
 }

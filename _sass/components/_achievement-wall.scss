@@ -45,6 +45,9 @@
     --tile-perspective: 170px;
     --tile-lift: 1px;
     --tile-grow: 1.02;
+    --border-color: var(--color-line-faint, #2c2c2c);
+    --border-glow-size: var(--aw-glow-r, 90px);
+    --border-glow-soft-size: 58px;
 
     position: relative;
     flex: none;
@@ -55,7 +58,6 @@
     font-size: var(--aw-icon, 25.6px);
     line-height: 1;
     background: var(--color-panel-solid, #1c1a18);
-    border: 1px solid var(--color-line-faint, #2c2c2c);
     border-radius: 0;
     cursor: pointer;
     -webkit-appearance: none; appearance: none;
@@ -75,31 +77,6 @@
       rotateY(var(--tilt-rotate-y))
       translateY(calc(var(--tile-lift) * -1))
       scale(var(--tile-grow));
-  }
-
-  .aw__tile::before,
-  .aw__tile::after {
-    content: ''; position: absolute; inset: 0;
-    border-radius: inherit;
-    padding: 1.5px;
-    pointer-events: none;
-    -webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    filter: blur(2.5px);
-    mix-blend-mode: plus-lighter;
-  }
-
-  .aw__tile::before {
-    background: radial-gradient(var(--aw-glow-r, 90px) var(--aw-glow-r, 90px)
-                at var(--mx, -9999px) var(--my, -9999px),
-                var(--aw-tier-glow, var(--color-glow, #ff6a00)), transparent 100%);
-  }
-
-  .aw__tile::after {
-    background: radial-gradient(var(--aw-glow-r-soft, 58px) var(--aw-glow-r-soft, 58px)
-                at var(--mx, -9999px) var(--my, -9999px),
-                var(--aw-tier-glow-soft, var(--color-glow-soft, #ffd9a8)), transparent 100%);
   }
 
   .aw__tile[aria-pressed="true"] {
@@ -125,7 +102,6 @@
 
   .aw__tile[data-tier] {
     border-width: 2px;
-    border-color: var(--color-line-faint, #2c2c2c);
     background-origin: border-box;
     background-clip: padding-box, border-box;
     background-size: auto, 300% 100%;
@@ -133,21 +109,22 @@
   }
 
   .aw__tile[data-tier="bronze"]    { --aw-tier-grad: linear-gradient(90deg, var(--tier-bronze-dark), var(--tier-bronze), var(--tier-bronze-light), var(--tier-bronze), var(--tier-bronze-dark));
-                                     --aw-tier-glow: var(--tier-bronze); --aw-tier-glow-soft: var(--tier-bronze-light); }
+                                     --border-glow-color: var(--tier-bronze); --border-glow-soft-color: var(--tier-bronze-light); }
 
   .aw__tile[data-tier="silver"]    { --aw-tier-grad: linear-gradient(90deg, var(--tier-silver-dark), var(--tier-silver), var(--tier-silver-light), var(--tier-silver), var(--tier-silver-dark));
-                                     --aw-tier-glow: var(--tier-silver); --aw-tier-glow-soft: var(--tier-silver-light); }
+                                     --border-glow-color: var(--tier-silver); --border-glow-soft-color: var(--tier-silver-light); }
 
   .aw__tile[data-tier="gold"]      { --aw-tier-grad: linear-gradient(90deg, var(--tier-gold-dark), var(--color-gold), var(--tier-gold-light), var(--color-gold), var(--tier-gold-dark));
-                                     --aw-tier-glow: var(--color-gold); --aw-tier-glow-soft: var(--tier-gold-light); }
+                                     --border-glow-color: var(--color-gold); --border-glow-soft-color: var(--tier-gold-light); }
 
   .aw__tile[data-tier="prismatic"] { --aw-tier-grad: linear-gradient(90deg, var(--color-gold), var(--color-glow), var(--tier-prismatic-pink), var(--tier-prismatic-sky), var(--tier-prismatic-green), var(--color-gold));
-                                     --aw-tier-glow: var(--tier-prismatic-rim); --aw-tier-glow-soft: var(--color-white); }
+                                     --border-glow-color: var(--tier-prismatic-rim); --border-glow-soft-color: var(--color-white); }
 
   .aw__tile[data-tier]:hover,
   .aw__tile[data-tier]:focus-visible,
   .aw__tile[data-tier][aria-pressed="true"] {
-    border-color: transparent;
+    --border-color: transparent;
+
     background-image: linear-gradient(var(--color-panel-solid, #1c1a18) 0 0), var(--aw-tier-grad);
     animation: aw-prism 3.4s linear infinite;
   }
@@ -164,11 +141,11 @@
     background-color: var(--color-panel-solid, #1c1a18);
     animation: none;
 
-    --aw-tier-glow: var(--color-muted-warm, #9c8f7d);
-    --aw-tier-glow-soft: var(--color-muted-warm, #9c8f7d);
+    --border-glow-color: var(--color-muted-warm, #9c8f7d);
+    --border-glow-soft-color: var(--color-muted-warm, #9c8f7d);
   }
 
-  .aw__tile[aria-disabled="true"] { cursor: default; border-color: var(--color-black); }
+  .aw__tile[aria-disabled="true"] { cursor: default; --border-color: var(--color-black); }
 
   .aw__tile[aria-disabled="true"] > span[aria-hidden] { filter: grayscale(1) brightness(.6); opacity: .8; }
 
