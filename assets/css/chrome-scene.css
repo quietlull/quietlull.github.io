@@ -53,7 +53,8 @@ body[data-scene-tier="minimal"] #hana-bg {
 
 /* The two baked canvases hana-bloom.js appends. It bakes a 32x18 luminance grid (hana's real
    topology) up to 1024px and cross-fades the pair - canvas + CSS, no WebGL, drawn once rather
-   than per frame. The blur is what turns 32x18 into a lava lamp; without these rules the script
+   than per frame. The smoothed doubling up to 1024px is what turns 32x18 into a lava lamp; without
+   these rules the script
    appends two unstyled canvases and they render as nothing, which is exactly what happened on
    all six lab pages before this block was written. */
 .bgcanvas {
@@ -62,7 +63,16 @@ body[data-scene-tier="minimal"] #hana-bg {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(20px) brightness(0.6) saturate(1.03);
+
+  /* NO `filter` ON THESE, ON PURPOSE (P527, 2026-09-28). There used to be
+     `blur(20px) brightness(0.6) saturate(1.03)`. Because .bg-2 animates its opacity forever, a
+     filtered layer can never be cached, so the browser re-ran the filter over the whole viewport
+     on every frame: up to 27ms a frame with software rendering, which was the entire post
+     frame drop (docs/POST-FRAMES-FINDINGS.md). The blur itself did almost nothing - after the
+     upscale no two neighbouring pixels differ by more than 3/255 - and dropping it moves the
+     look by about 0.6/255. The brightness and saturation are baked into the colours in
+     hana-bloom.js instead. Do not add a filter back here: ANY filter on an animating layer
+     costs, a colour-only one measured about 11ms. */
 }
 
 .bg-1 { opacity: 1; }
