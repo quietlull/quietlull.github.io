@@ -26,18 +26,30 @@ behaviors should be in charge of how they interact with each other."*
 | `magnet` | script | `--magnet-x`, `--magnet-y`, `--magnet-amount`, class `is-pulled`. Moves a `magnet-inner` child. | `--magnet-pull` (40), `--magnet-inner-pull` (20), `--magnet-limit` (0 = none) |
 | `tilt` | script | `--tilt-rotate-x`, `--tilt-rotate-y`, class `is-tilting`. Leans toward the mouse, or with a phone. | `--tilt-max` (8) |
 | `dwell` | script | class `is-dwelled` once the mouse has rested; draws the filling ring | `--dwell-time` (0.9s) |
-| `border-glow` | script | `--border-glow-x`, `--border-glow-y`: the mouse position relative to the element | none |
+| `track-mouse` | script | `--mouse-x`, `--mouse-y`: the mouse position relative to the element. Draws nothing. | none |
 | `hover-play-video` | script | plays the video inside while hovered, rests on a still frame | none |
 | `orb-fill` | stylesheet | a circle that rises to fill the element on hover | `--orb-fill-color`, `--orb-fill-time`, `--orb-fill-rest`, `--orb-fill-hover` |
-| `border-break` | stylesheet | the edge moves out and fades, a glow comes up | `--border-break-edge`, `--border-break-rest` |
+| `border` | stylesheet | the edge of an element | `--border-color`, `--border-width` (1px) |
+| `border-glow` | stylesheet | two blurred rings of light on the border, near a point. Follows the mouse when the element or a parent has `track-mouse`. | `--border-glow-color`, `--border-glow-soft-color`, `--border-glow-size` (220px), `--border-glow-soft-size` (140px), `--border-glow-x`, `--border-glow-y` |
+| `border-break` | stylesheet | the border moves out and fades, a glow comes up | `--border-color`, `--border-break-rest` |
 
 **The project card has no script of its own.** Its markup lists `drift magnet tilt dwell
 hover-play-video` and its stylesheet, `_sass/components/_project-card.scss`, decides the lift, the
 grow and the flip. How it was split and proved: [project-card.md](project-card.md).
 
-**Still to do:** the achievement wall has its own copy of the tilt and the glow, and the tags have
-their own copy of the border break. Moving the wall changes three things a visitor can notice, so
-it waits on Rod (see the hand-off at the end of [project-card.md](project-card.md)).
+**The achievement tiles** are `aw__tile border border-glow track-mouse tilt`. How the tilt moved:
+[achievement-wall.md](achievement-wall.md). How the border, its glow and the mouse tracker were
+split: [border.md](border.md).
+
+**What a border promises** (Rod: the glow must "work with any sort of border object"): its width,
+`--border-width`; its colour, `--border-color`; and its corner shape, which is the element's own
+`border-radius`. `border-glow` reads only those. A variant is a class beside the base
+(`border border--dashed`) that changes those settings and nothing else. None exists yet; build one
+when something needs it. The limits (uneven edges, shapes that are not rounded rectangles, no
+sharing an element with `orb-fill`, a host that clips) are listed in [border.md](border.md).
+
+**Still to do:** the tags have their own copy of the border break, and about sixteen components
+still draw their own plain 1px edge. Each moves onto `border` when Rod reaches its file.
 
 ## How a script behaviour is written
 

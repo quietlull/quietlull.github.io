@@ -6,9 +6,9 @@
 ## The one-screen update (2026-10-11)
 
 - **Every effect is a behaviour now: one file, one class.** `docs/behaviours/README.md` has the
-  rules and the table. Scripts: `drift`, `magnet`, `tilt`, `dwell`, `border-glow`,
-  `hover-play-video`, in `assets/js/behaviours/`. Stylesheet only: `orb-fill`, `border-break`, in
-  `_sass/components/_behaviours.scss`. `site-wide.js` (was `chrome.js`) starts them on every page.
+  rules and the table. Scripts: `drift`, `magnet`, `tilt`, `dwell`, `track-mouse`,
+  `hover-play-video`, in `assets/js/behaviours/`. Stylesheet only: `border`, `border-glow`,
+  `border-break`, `orb-fill`, in `_sass/components/_behaviours.scss`. `site-wide.js` (was `chrome.js`) starts them on every page.
 - **The component decides.** Its stylesheet sets the numbers and how behaviours combine. Markup
   lists behaviours and carries no tuning numbers.
 - **The project card has no script of its own.** One component, `project-card`, one stylesheet.
@@ -17,9 +17,16 @@
   element positions and styles, script errors, lint. He was given a manual checklist on 2026-10-11.
 - **Known small difference:** the card's lean is measured against the card's resting outline, not
   the leaning layer. Same mouse position, the angle differs by at most a third of a degree.
-- **Not done:** the achievement wall still has its own tilt and glow, and the tags their own
-  border break. Moving the wall changes three things a visitor can notice and has a conflict with
-  the pressed tile's orbit, so it waits on Rod. Details: end of `docs/behaviours/project-card.md`.
+- **The achievement tiles use the shared behaviours too** (`border border-glow track-mouse
+  tilt`). The glowing border is one class used by the card and the tiles; the pressed tile's orbit
+  no longer shares values with the mouse script. Reports: `docs/behaviours/achievement-wall.md`,
+  `docs/behaviours/border.md`.
+- **Differences on the tiles Rod has been told about:** no lean under reduced motion, the lean
+  waits for 4px of mouse movement, tiles lean with a phone (all three accepted by him); keyboard
+  focus on a never-hovered tile no longer fades its border in; a finger drag no longer leans a
+  tile; un-pressing a tile with the mouse still shows the glow at the mouse at once.
+- **Not done:** the tags still have their own border break, and about sixteen components draw
+  their own plain edge where they could use `border`.
 - **Rod's audit runs in chat** (P547), one script file per message. File 1 was `drift-magnet.js`,
   which turned into this whole change.
 - **Pictures are not proof** (Rod, restated 2026-10-11). The picture tool built that day is deleted.

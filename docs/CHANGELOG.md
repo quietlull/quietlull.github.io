@@ -37,6 +37,21 @@ six. He named `orb-fill`, `border-glow`, `hover-play-video` and `site-wide`, and
 **NOT VERIFIED:** how any of it looks (Rod's checklist is outstanding), the phone tilt (needs a
 device), Edge, and mouse behaviour at narrow widths.
 
+**LATER THE SAME DAY: THE BORDER BECOMES AN OBJECT.** Rod, looking at the achievement tiles: *"is
+the border its own element that can change colors? In theory we should have a single class that
+handles the borders"*, and the script then called `border-glow` was badly named, *"its just
+checking the mouse relative to the element."* So: `track-mouse` writes the mouse position and
+draws nothing; `border` draws an edge from the colour and width its element passes in;
+`border-glow` is the ring of light, lifted out of the card and the tile where it was written
+twice, reading only what any border promises (its width and the element's corners) so it works
+on any border variant. The achievement tiles moved onto the shared `tilt` in the same sitting.
+One side effect was a fix: a pressed tile's orbit and the mouse script used to write the same two
+values, and now each has its own.
+
+**WHAT CHANGED ON THE TILES THAT NOBODY ASKED FOR,** all reported to Rod: tabbing onto a tile he
+has not hovered no longer fades its border in; a finger drag no longer leans a tile; un-pressing
+a tile with the mouse held still shows the glow at once where it used to wait for a movement.
+
 # 2026-10-10, later - THE COMMENTS STOP EATING THE CURSOR, ON THE FOURTH ATTEMPT
 
 **Asked for by ROD:** *"i notice discuss comment section still eats and breaks the cursor effects."*

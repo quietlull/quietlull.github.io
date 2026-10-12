@@ -39,8 +39,8 @@ removed comments are in `docs/code-comments/`, and each review page shows its ow
 
 ## assets/js/site-wide.js
 
-**What it does.** Starts what every page has: the six behaviours (drift, magnet, tilt, dwell,
-border glow, hover-play video), the logo's hand-drawn wobble, and the mouse glow.
+**What it does.** Starts what every page has: the six script behaviours (drift, magnet, tilt,
+dwell, track-mouse, hover-play video), the logo's hand-drawn wobble, and the mouse glow.
 
 **Why it is not simpler.** It is a list of imports and one call each. A behaviour does nothing on
 a page where no element carries its class, so one list can serve every page. Shrinking it means
@@ -248,23 +248,32 @@ removes the class and the ring.
 **Worth knowing.** One guard was dropped: skipping a dwell on an already flipped card. It could
 never run, because leaving always clears the flip before the next entry.
 
-## assets/js/behaviours/border-glow.js
+## assets/js/behaviours/track-mouse.js
 
-**What it does.** Writes where the mouse is relative to an element, as `--border-glow-x` and
-`--border-glow-y` in pixels. The stylesheet draws a glow along the border from them.
+**What it does.** Writes where the mouse is relative to an element, as `--mouse-x` and `--mouse-y`
+in pixels, on every element with the class `track-mouse`. It is the old `border-glow.js`, line for
+line, with new names. It draws nothing. Whatever wants the mouse position reads the two variables.
 
-**Why it is not simpler.** The page's mouse position arrives through `cursor-coords.js`, once per
-screen redraw. Each element needs its own offset, so each is measured every redraw.
+**Why it is not simpler.** The page's mouse position comes from `cursor-coords.js`, once per screen
+redraw. Each element needs its own offset, so each is measured on every redraw.
 
-**What could still go.** It updates every glowing element on every redraw, including cards that
-are off screen. Skipping those needs an observer, which is more code, so it was left as it was.
+**What could still go.** It updates every tracked element on every redraw, including cards that are
+off screen. Skipping those needs an observer, which is more code, so it was left as it was.
 
 **Functions.**
 
-- `initBorderGlow(root)`: collects the elements and updates all of them on every mouse redraw.
+- `initTrackMouse(root)`: collects the elements and updates all of them on every mouse redraw.
 
-**Worth knowing.** It imports `../components/cursor-coords.js`. The mouse tracker is shared
-plumbing that lives in `components/`.
+**Worth knowing.**
+
+- The offset is measured from the element's outer box, as `getBoundingClientRect()` gives it. For
+  a leaning element that is the leaned box, which is what the card and the tiles always used.
+- `--mouse-x` and `--mouse-y` are not registered with the `value` mixin, on purpose: a child of a
+  tracked element can read its parent's position.
+- It is started by `site-wide.js`, so the elements must be in the page when that runs. The tiles
+  are, for the reason in `achievement-wall.md`. Measured here: one `.track-mouse` query on the about
+  page, 29 tiles found, all 29 written on the first mouse move; on the landing page 8 cards found, 8
+  written.
 
 ## assets/js/behaviours/hover-play-video.js
 

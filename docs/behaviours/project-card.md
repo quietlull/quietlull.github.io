@@ -407,6 +407,10 @@ one example in the docstring of `tools/build_workbench.py` (line 138), `STYLE.md
 
 ## Hand-off: the achievement wall
 
+**Done on 2026-10-11.** The tilt: [achievement-wall.md](achievement-wall.md). The glow, which became
+`track-mouse`, `border` and `border-glow`: [border.md](border.md). What follows is the hand-off as it
+was written, with the old names.
+
 The wall (`assets/js/components/achievement-wall.js`, `_sass/components/_achievement-wall.scss`)
 has its own copies of both effects. To switch to the shared ones it needs:
 
