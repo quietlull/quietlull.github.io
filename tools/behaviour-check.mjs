@@ -28,8 +28,10 @@
 //
 // The project card's tilt, flip, easing and will-change are read from what the browser computes
 // (the tilt layer's transform as a matrix, turned back into angles; the flipper's matrix, waited
-// on until its transitions end), never from an inline style or a state class. The reading then
-// survives a change in which script or stylesheet produces it.
+// on until its transitions end), never from an inline style or a state class. The achievement
+// wall's tile is read the same way; its perspective(170px) only changes the matrix's last row,
+// which the angle, lift and scale reading never touches. The reading then survives a change in
+// which script or stylesheet produces it.
 //
 // Every value is a yes/no or a rounded number, so two runs of unchanged code give the same file
 // byte for byte. Capture twice before you start; if those two differ, the difference is noise in
@@ -467,16 +469,33 @@ async function about() {
 
   const tile = (id) => ev(`(() => { const t = document.querySelector('.aw__tile[data-id=${J(id)}]'); t.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = t.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, x: r.left, y: r.top, w: r.width, h: r.height }; })()`);
   const detail = () => ev('document.querySelector(\'.aw__detail\').innerText.replace(/\\s+/g, \' \').trim()');
+  const tileState = (id) => ev(`(async () => {
+    const tile = document.querySelector('.aw__tile[data-id=${J(id)}]');
+    await Promise.all(tile.getAnimations().filter((a) => a instanceof CSSTransition).map((a) => a.finished.catch(() => {})));
+    const style = getComputedStyle(tile);
+    return { transform: style.transform, transition: [style.transitionProperty, style.transitionDuration, style.transitionTimingFunction].join(' '), willChange: style.willChange };
+  })()`);
 
   let t = await tile('pyrotechnician');
   await sleep(300);
+  const resting = await tileState('pyrotechnician');
+  o.restingTile = { transition: resting.transition, willChange: resting.willChange };
   await to(t.cx, t.cy, 8);
   await sleep(350);
-  o.hoverPyro = { panel: await detail(), tilt: (await ev('document.querySelector(\'.aw__tile[data-id="pyrotechnician"]\').style.transform')).replace(/[\d.-]+/g, '#') };
+  const centred = await tileState('pyrotechnician');
+  o.hoverPyro = { panel: await detail(), tilt: leanOf(centred.transform) };
+  await to(t.x + t.w * 0.75, t.y + t.h * 0.25, 4);
+  await sleep(350);
+  const offCentre = await tileState('pyrotechnician');
+  o.hoverPyro.tiltOffCentre = leanOf(offCentre.transform);
+  o.hoverPyro.transition = offCentre.transition;
+  o.hoverPyro.willChange = offCentre.willChange;
   t = await tile('toolsmith');
   await to(t.cx, t.cy, 6);
   await sleep(350);
   o.hoverLocked = await detail();
+  const left = await tileState('pyrotechnician');
+  o.hoverPyro.afterLeaving = { tilt: leanOf(left.transform), transition: left.transition, willChange: left.willChange };
   await click(t.cx, t.cy);
   await sleep(150);
   o.lockedClick = { pressed: await ev('document.querySelector(\'.aw__tile[data-id="toolsmith"]\').getAttribute(\'aria-pressed\')'), stored: await ev('localStorage.getItem(\'rod-achievements-active-v1\')') };
