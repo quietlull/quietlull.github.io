@@ -359,7 +359,7 @@ full, 21 have no scene, and the 404 has its own.
 
 **What it does.** Runs the hidden switch-sound test at `/norobots/switch-test-7a7f888b/`. Start
 loads every clip, each pair shows Play A, Play B and two "I prefer" buttons, and the end shows the
-ranking as related cards. The finished results go into the URL after `#r=`, so the link the friend
+ranking as bars with a percentage. The finished results go into the URL after `#r=`, so the link the friend
 copies opens straight to the results. A hash is never sent to a server.
 
 **Why it is not simpler.** The prefer buttons stay off until both clips have been played, or a
@@ -368,8 +368,8 @@ switch, so the network panel does not give the answer away. The names are still 
 JSON, so it is blind for an honest friend, not a determined one.
 
 **Functions.** `init` wires the page. `renderTrial` resets for the next pair. `renderButtons`
-marks which clip is playing and switches the prefer buttons on. `showResults` builds the ranked
-cards. `readHash` reads results back out of a shared link.
+marks which clip is playing and switches the prefer buttons on. `showResults` fills one bar row per
+switch from the `<template>` in the layout. The % is the share of its pairs a switch won. `readHash` reads results back out of a shared link.
 
 **Worth knowing.** `hidden` does nothing on a `.kit-button`: its `display` rule wins. Hide its
 parent instead.

@@ -35,7 +35,16 @@ layout: default
   </section>
 
   <section data-step="results" hidden>
-    <ol class="rc-grid listening-test__results" data-results></ol>
+    <ol class="listening-test__results" data-results></ol>
+    <template data-result-template>
+      <li class="listening-test__result">
+        <span class="listening-test__rank" data-field="rank"></span>
+        <span class="listening-test__thumb" data-field="image"></span>
+        <span class="listening-test__name" data-field="name"></span>
+        <span class="listening-test__track"><span class="listening-test__fill"></span></span>
+        <span class="listening-test__percent" data-field="percent"></span>
+      </li>
+    </template>
     <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="copy">
       <span class="kit-button__label">Copy results link</span>
     </button>

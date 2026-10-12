@@ -10,9 +10,6 @@ switches:
   - id: k1
     name: Gazzew U4T
     image:
-  - id: k2
-    name: Real ALPS Blue
-    image:
   - id: k3
     name: Real ALPS White
     image:

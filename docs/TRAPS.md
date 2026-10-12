@@ -4,6 +4,13 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**A page built on `layout: default` ends partway through, the footer and back-to-top button
+are gone, and a site script throws "Cannot read properties of null" ->** the layout content holds
+an `<img>` with no `src`. `default.html` runs every non-full-bleed page through
+`_includes/refactor-content.html`, which rewrites images and cuts the rest of the page off at a
+src-less `<img>`. Hit on 2026-10-12 by a `<template>` row in `_layouts/listening-test.html`. Give
+the image a real `src`, or use an element with a `background-image` as that layout now does.
+
 **You patch the water shader and the lab water page performs (or looks) exactly the same ->**
 you patched the live file and the lab pages import their own copy. `water-scene.html`,
 `character-scene.html` and `anime-glow-scene.html` all load
