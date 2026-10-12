@@ -147,7 +147,7 @@ export function init(root = document) {
         const label = a.title + (unlocked ? '' : ' (locked)');
         const pr = progressFrom(earnedState, a.id);
         const tier = pr ? tierFor(pr[0], pr[1]) : (unlocked ? 'gold' : 'bronze');
-        return '<button type="button" class="aw__tile" data-id="' + a.id + '" data-tier="' + tier + '"'
+        return '<button type="button" class="aw__tile tilt" data-id="' + a.id + '" data-tier="' + tier + '"'
           + ' aria-pressed="' + (active.has(a.id) ? 'true' : 'false') + '"'
           + (unlocked ? '' : ' aria-disabled="true"')
           + '><span aria-hidden="true">' + a.icon + '</span>'
@@ -186,42 +186,6 @@ export function init(root = document) {
     startOrbit();
     if (!on) { t.style.removeProperty('--mx'); t.style.removeProperty('--my'); }
     read(t);
-  });
-
-  const TILT_DEG = 8, TILT_LIFT = 1, TILT_SCALE = 1.02, TILT_PERSPECTIVE = 170;
-  let tiltEl = null, tiltFrame = null, tiltX = 0, tiltY = 0;
-
-  const applyTilt = () => {
-    tiltFrame = null;
-    if (!tiltEl) return;
-    const r = tiltEl.getBoundingClientRect();
-    const x = ((tiltX - r.left) / r.width - 0.5) * 2;
-    const y = ((tiltY - r.top) / r.height - 0.5) * 2;
-    tiltEl.style.transform = 'perspective(' + TILT_PERSPECTIVE + 'px)'
-      + ' rotateX(' + (-y * TILT_DEG) + 'deg) rotateY(' + (x * TILT_DEG) + 'deg)'
-      + ' translateY(' + -TILT_LIFT + 'px) scale(' + TILT_SCALE + ')';
-  };
-
-  cat.addEventListener('pointerover', (e) => {
-    const t = e.target.closest('.aw__tile');
-    if (!t) return;
-    tiltEl = t;
-    t.style.transition = 'transform .15s ease-out';
-    t.style.willChange = 'transform';
-  });
-  cat.addEventListener('pointermove', (e) => {
-    if (!tiltEl) return;
-    tiltX = e.clientX; tiltY = e.clientY;
-    if (tiltFrame === null) tiltFrame = requestAnimationFrame(applyTilt);
-  });
-  cat.addEventListener('pointerout', (e) => {
-    const t = e.target.closest('.aw__tile');
-    if (!t || t !== tiltEl) return;
-    tiltEl = null;
-    if (tiltFrame !== null) { cancelAnimationFrame(tiltFrame); tiltFrame = null; }
-    t.style.transition = 'transform .4s ease-out';
-    t.style.transform = '';
-    t.style.willChange = '';
   });
 
   const ORBIT_MS = (parseFloat(getComputedStyle(host).getPropertyValue('--aw-orbit')) || 2.8) * 1000;

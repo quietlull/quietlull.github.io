@@ -41,6 +41,11 @@
   }
 
   .aw__tile {
+    --tilt-max: 8;
+    --tile-perspective: 170px;
+    --tile-lift: 1px;
+    --tile-grow: 1.02;
+
     position: relative;
     flex: none;
     width: var(--aw-tile, 64px); height: var(--aw-tile, 64px); margin: var(--aw-tilegap, 4px);
@@ -54,7 +59,22 @@
     border-radius: 0;
     cursor: pointer;
     -webkit-appearance: none; appearance: none;
-    transition: border-color .18s ease, transform .18s cubic-bezier(.22,1,.36,1);
+    transition: transform .4s ease-out;
+  }
+
+  .aw__tile.is-tilting {
+    transform: perspective(var(--tile-perspective)) rotateX(var(--tilt-rotate-x)) rotateY(var(--tilt-rotate-y));
+    transition: transform .15s ease-out;
+    will-change: transform;
+  }
+
+  .aw__tile.is-tilting:hover {
+    transform:
+      perspective(var(--tile-perspective))
+      rotateX(var(--tilt-rotate-x))
+      rotateY(var(--tilt-rotate-y))
+      translateY(calc(var(--tile-lift) * -1))
+      scale(var(--tile-grow));
   }
 
   .aw__tile::before,
