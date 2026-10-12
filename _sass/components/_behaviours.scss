@@ -61,7 +61,8 @@
 }
 
 .border-break {
-  outline: 1px solid var(--border-break-edge, color-mix(in srgb, var(--color-glow) 40%, transparent));
+  border-color: transparent;
+  outline: 1px solid var(--border-color, color-mix(in srgb, var(--color-glow) 40%, transparent));
   outline-offset: var(--border-break-rest, 0);
   transition: outline-offset 0.35s, outline-color 0.35s, box-shadow 0.35s;
 }
