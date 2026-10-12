@@ -29,7 +29,7 @@
         </div>
         {% if post.pin %}<span class="card-pin card-pin--star parallax-z-layer" role="img" aria-label="Pinned">&#9733;</span>{% endif %}
         {% if post.wip %}<span class="card-pin card-pin--wip parallax-z-layer">WIP</span>{% endif %}
-        <div class="glass-plane parallax-z-layer"></div>
+        <div class="glass-plane parallax-z-layer border-glow"></div>
         <div class="card-body parallax-z-layer">
           <h3 class="card-title parallax-z-layer">{{ post.title }}</h3>
           {% if include.variant == 'landing' %}

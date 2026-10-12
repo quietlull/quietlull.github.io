@@ -70,6 +70,39 @@
     0 0 12px color-mix(in srgb, var(--color-glow) 30%, transparent);
 }
 
+.border-glow::before,
+.border-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: calc(var(--border-width, 1px) + 0.5px);
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: blur(2.5px);
+  mix-blend-mode: plus-lighter;
+}
+
+.border-glow::before {
+  background: radial-gradient(
+    var(--border-glow-size, 220px) var(--border-glow-size, 220px)
+      at var(--border-glow-x, var(--mouse-x, -9999px)) var(--border-glow-y, var(--mouse-y, -9999px)),
+    var(--border-glow-color, var(--color-glow)),
+    transparent 100%
+  );
+}
+
+.border-glow::after {
+  background: radial-gradient(
+    var(--border-glow-soft-size, 140px) var(--border-glow-soft-size, 140px)
+      at var(--border-glow-x, var(--mouse-x, -9999px)) var(--border-glow-y, var(--mouse-y, -9999px)),
+    var(--border-glow-soft-color, var(--color-glow-soft)),
+    transparent 100%
+  );
+}
+
 .dwell-ring {
   position: fixed;
   left: var(--dwell-x);
