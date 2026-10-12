@@ -80,6 +80,7 @@ export default [
   build('post'),
   build('misc'),
   build('theme', { outputName: 'Theme' }),
+  build('listening-test'),
   build('app', { src: SRC_PWA, jekyll: true }),
   build('sw', { src: SRC_PWA, jekyll: true }),
   build('three-background-scene'),

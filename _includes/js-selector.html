@@ -33,6 +33,8 @@
     {% assign js = 'page' %}
   {% when 'archives', 'tag' %}
     {% assign js = 'misc' %}
+  {% when 'listening-test' %}
+    {% assign js = 'listening-test' %}
   {% else %}
     {% assign js = 'commons' %}
 {% endcase %}

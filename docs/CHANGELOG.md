@@ -1,3 +1,31 @@
+# 2026-10-12 - A HIDDEN BLIND TEST FOR KEYBOARD SWITCH SOUNDS
+
+**Asked for by ROD:** a page that blind-tests switch sounds on a friend, reachable only by link,
+built from existing site code, with reusable audio classes and the friend's top picks at the end.
+
+**WHAT IT IS.** `/norobots/switch-test-7a7f888b/` (layout `listening-test`, bundle
+`listening-test`). Six switches, three 8 second excerpts each, 30 pairs (every pair in both orders)
+plus 3 hidden pairs of a switch against itself. The results are related cards ranked by wins, and
+a copyable link that reopens them. `robots.txt` already blocks `/norobots/`, the page sets
+`sitemap: false`, and nothing links to it.
+
+**THE AUDIO WAS PEAK MATCHED, NOT LOUDNESS MATCHED.** Every recording peaked at about -13 dBFS, but
+their loudness spread 6.7 dB (-35.4 to -42.1 LUFS), enough to decide a preference test by
+itself. Each excerpt is now -31.5 LUFS, within 0.1 dB, measured with ffmpeg's ebur128 (BS.1770).
+-31.5 is as loud as they go with every peak still under -1 dBFS.
+
+**Rod's calls:** Rollup, not raw modules; the same 8 second excerpt length for every clip; results
+on screen plus a link; vendor product photos are fine. His addition: several excerpts per switch,
+so repeats sound different, which is what makes the hidden same-switch pairs possible.
+
+**NOT DONE.** No product images: this environment's network blocks every vendor site tried, so
+each card shows `placeholder-wip.svg` until an `image:` path is filled in the page's front matter.
+The page gets the full 3D scene like every other non-post layout. Rod has not seen it yet.
+
+**Sources:** ITU-R BS.1534-3 (MUSHRA); Interspeech 2012 on pair order in listening tests;
+Alcala-Quintana and Garcia-Perez 2011 on time-order error; Bradley and Terry 1952; the EPFL
+keystroke sound perception paper (Acoustics08).
+
 # 2026-10-11 - EFFECTS BECOME BEHAVIOURS: ONE FILE, ONE CLASS, AND THE COMPONENT DECIDES
 
 **Asked for by ROD**, first on 2026-09-04 (P516, P518) and again while auditing `drift-magnet.js`:

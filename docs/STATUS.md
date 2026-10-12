@@ -3,6 +3,13 @@
 **THE WHOLE SITE IS PORTED, THE STRIP PASS HAS RUN, AND BOOTSTRAP IS FULLY EVICTED.** Compiled
 2026-09-02 evening. Everything below is measured, not recalled.
 
+## The one-screen update (2026-10-12)
+
+- **A hidden switch-sound blind test is built**, `/norobots/switch-test-7a7f888b/`. Reusable
+  `AudioClip`, `AudioPlayer` and `PairwiseTest` live in `_javascript/modules/`. Run end to end in
+  headless Chromium: 33 pairs, no script errors. **Not seen by Rod.** Product images are still
+  placeholders. CHANGELOG has the rest.
+
 ## The one-screen update (2026-10-11)
 
 - **Every effect is a behaviour now: one file, one class.** `docs/behaviours/README.md` has the

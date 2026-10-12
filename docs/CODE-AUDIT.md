@@ -354,3 +354,61 @@ full, 21 have no scene, and the 404 has its own.
 - Outside any function: reads the mark and starts the timer, unless the page has no scene.
 
 **Worth knowing.** It loads on all 56 pages and does nothing on the 21 with no scene.
+
+## _javascript/listening-test.js
+
+**What it does.** Runs the hidden switch-sound test at `/norobots/switch-test-7a7f888b/`. Start
+loads every clip, each pair shows Play A, Play B and two "I prefer" buttons, and the end shows the
+ranking as related cards. The finished results go into the URL after `#r=`, so the link the friend
+copies opens straight to the results. A hash is never sent to a server.
+
+**Why it is not simpler.** The prefer buttons stay off until both clips have been played, or a
+listener could pick without listening. The clip files are named `k1-0.mp3` and so on, never by
+switch, so the network panel does not give the answer away. The names are still in the page's
+JSON, so it is blind for an honest friend, not a determined one.
+
+**Functions.** `init` wires the page. `renderTrial` resets for the next pair. `renderButtons`
+marks which clip is playing and switches the prefer buttons on. `showResults` builds the ranked
+cards and the two consistency lines. `readHash` reads results back out of a shared link.
+
+**Worth knowing.** `hidden` does nothing on a `.kit-button`: its `display` rule wins. Hide its
+parent instead.
+
+## _javascript/modules/audio/audio-clip.js
+
+**What it does.** One sound file, fetched and decoded once however many times it is asked for.
+
+**Why it is not simpler.** `gainDb` lets a page level-match clips in the browser. Any listening
+comparison must be loudness matched, because people prefer the louder of two clips. The switch test
+matches its clips before they ship, so it passes no gain.
+
+**Functions.** `load` fetches and decodes, once. `duration` is the decoded length.
+
+## _javascript/modules/audio/audio-player.js
+
+**What it does.** Plays one clip at a time, looping. Playing another clip while one is going starts
+it at the same moment in its own loop, so a listener can flip between A and B mid-passage. That is
+how the standard listening-test tools present a comparison.
+
+**Why it is not simpler.** Every start and stop fades over 10ms, or each switch clicks. The page
+must call `play` from a click, because browsers keep sound off until the visitor does something.
+
+**Functions.** `load` decodes a list of clips. `playing` and `position` say what is playing and
+where. `play` starts a clip, carrying the playhead over. `stop` fades out.
+
+## _javascript/modules/utils/pairwise-test.js
+
+**What it does.** The blind test itself, with no page and no sound. It lists every pair of items in
+both orders, shuffles them, records which side won, and scores.
+
+**Why it is not simpler.**
+- Both orders, because the order you hear two sounds in biases which one you pick.
+- `variants` is how many recordings each item has. A normal pair plays the same excerpt number on
+  both sides. A control pairs an item with itself on two different excerpts, so it sounds like any
+  other pair. Controls are left out of the ranking.
+- The score is a plain win count. Every item meets every other item equally often, and then a
+  Bradley-Terry fit, the usual statistics for this, ranks them in the same order.
+
+**Functions.** `shuffle` mixes a list in place. `current` is the pair being asked. `done` says
+whether all pairs are answered. `choose` records a side. `summary` returns the ranking, the most
+wins possible, how many pairs got the same winner in both orders, and how often A was picked.
