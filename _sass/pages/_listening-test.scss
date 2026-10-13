@@ -88,6 +88,16 @@
   border-radius: 0 2px 2px 0;
 }
 
+.listening-test__progress {
+  --percent: 0%;
+
+  display: block;
+  max-width: 22rem;
+  margin: 0 auto;
+}
+
+.listening-test__progress .listening-test__fill { transition: width 0.3s ease-out; }
+
 @media (max-width: 560px) {
   .listening-test__result {
     grid-template-columns: 1.5rem 3rem minmax(0, 1fr) 3rem;

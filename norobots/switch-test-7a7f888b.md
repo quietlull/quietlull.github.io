@@ -1,6 +1,6 @@
 ---
 layout: listening-test
-title: Which switch sounds best?
+title: which one sounds better?
 permalink: /norobots/switch-test-7a7f888b/
 sitemap: false
 media: /assets/media/switch-test

@@ -64,6 +64,7 @@ function init(root) {
   chooseButtons.forEach((btn) => btn.addEventListener('click', () => {
     player.stop();
     test.choose(btn.dataset.choose);
+    showProgress();
     if (test.done) {
       const summary = test.summary();
       history.replaceState(null, '', `#r=${btoa(JSON.stringify(summary))}`);
@@ -72,6 +73,16 @@ function init(root) {
       renderTrial();
     }
   }));
+
+  function showProgress() {
+    const bar = q('[data-progress-bar]');
+    const fraction = test.picks.length / test.trials.length;
+    bar.style.setProperty('--percent', `${fraction * 100}%`);
+    if (typeof window.sparklerBurst === 'function') {
+      const rect = bar.getBoundingClientRect();
+      window.sparklerBurst(rect.left + rect.width * fraction, rect.top + rect.height / 2);
+    }
+  }
 
   function renderTrial() {
     heard.a = heard.b = false;

@@ -367,7 +367,9 @@ listener could pick without listening. The clip files are named `k1-0.mp3` and s
 switch, so the network panel does not give the answer away. The names are still in the page's
 JSON, so it is blind for an honest friend, not a determined one.
 
-**Functions.** `init` wires the page. `renderTrial` resets for the next pair. `renderButtons`
+**Functions.** `init` wires the page. `showProgress` grows the progress bar one step and fires
+the site's sparkler burst at its tip, the same move the post page makes at each section.
+`renderTrial` resets for the next pair. `renderButtons`
 marks which clip is playing and switches the prefer buttons on. `showResults` fills one bar row per
 switch from the `<template>` in the layout. The % is the share of its pairs a switch won. `readHash` reads results back out of a shared link.
 
