@@ -3,6 +3,8 @@
 One note per topic. Load only what the task touches. The bar for a note: expensive to rediscover
 AND not inferable from reading the code. If a doc disagrees with the code, the doc is stale - fix it.
 
+- [CLOUD-SESSIONS.md](CLOUD-SESSIONS.md) - **start here in a cloud session:** what it lacks, what to read, setup on Linux, how to run the checks, what differs from the desktop (a push to `main` publishes; Rod cannot see your localhost).
+- `memory/` - the desktop's memory notes, copied 2026-10-13. Start at `memory/MEMORY.md`. How Rod wants to be worked with, and the project's design knowledge.
 - [STATUS.md](STATUS.md) - what is true right now + what is in flight. Read every session.
 - [CONVENTIONS.md](CONVENTIONS.md) - house rules: philosophy layer + concrete web rules.
 - [PAGE-PROCESS.md](PAGE-PROCESS.md) - how a surface goes from nothing to a locked layout. Read BEFORE building any blockout.

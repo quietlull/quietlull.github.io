@@ -8,6 +8,10 @@ theme boundary) is done; Phases 2 and 3 are the open work, see
 
 ## Read first, load only what the task touches
 
+- **In a cloud session, or any session with no memory of this project:** read
+  [docs/CLOUD-SESSIONS.md](docs/CLOUD-SESSIONS.md) first. It says what you are missing, how to set up,
+  and where the copied memory notes are (`docs/memory/MEMORY.md`).
+
 - [docs/INDEX.md](docs/INDEX.md) - map of every note, one line each
 - [docs/STATUS.md](docs/STATUS.md) - what is true right now and what is in flight
 - [docs/CONVENTIONS.md](docs/CONVENTIONS.md) - house rules, non-negotiable

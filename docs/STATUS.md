@@ -23,6 +23,8 @@
 - **Another session is active on the switch test** (next entry). Its files are
   `_javascript/listening-test.js`, `_javascript/modules/audio/`, `modules/utils/pairwise-test.js`,
   `_layouts/listening-test.html`, `_sass/pages/_listening-test.scss`. Leave them to it.
+- **Cloud sessions can start from the repo now.** `docs/CLOUD-SESSIONS.md` is the way in, and
+  `docs/memory/` holds a copy of the desktop's memory notes, taken 2026-10-13.
 - `npm test` green. The working tree is clean.
 
 ## The one-screen update (2026-10-12)
