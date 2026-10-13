@@ -9,17 +9,17 @@ controls: 3
 switches:
   - id: k1
     name: Gazzew U4T
-    image:
+    image: /assets/img/switch-test/gazzew-u4t.webp
   - id: k3
     name: Real ALPS White
-    image:
+    image: /assets/img/switch-test/real-alps-white.webp
   - id: k4
     name: Box Jade
-    image:
+    image: /assets/img/switch-test/box-jade.webp
   - id: k5
     name: Outemu Matias White
-    image:
+    image: /assets/img/switch-test/outemu-matias-white.webp
   - id: k6
     name: Gateron Melodic
-    image:
+    image: /assets/img/switch-test/gateron-melodic.webp
 ---
