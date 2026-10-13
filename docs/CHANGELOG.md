@@ -1,3 +1,23 @@
+# 2026-10-13 - THE OVERNIGHT JOB THAT DID NOT RUN, AND THE WORK IS LIVE
+
+**Asked for by ROD** on the night of 2026-10-11: *"continue going though files that need clear
+rewrites when its unclear mark it as so and i will check it when i wake up."*
+
+**NOTHING HAPPENED OVERNIGHT.** The agent was launched and hit the weekly usage limit at its first
+step. No file was read, no code changed. The morning list, `docs/REVIEW-WHEN-AWAKE.md`, is empty and
+now says so at the top. The lesson is small and cheap: an overnight job needs the usage window
+checked before it starts, not after.
+
+**WHAT WAS SET UP AND STILL STANDS.** A definition of a "clear" rewrite (delete what is measured
+dead, drop what can never matter, move an effect onto an existing behaviour, rename a local
+abbreviation; nothing visible, no public names, no design choices), the three marks for the list
+(REWRITTEN, NOTE ONLY, UNCLEAR), and the brief each agent gets, kept in
+`docs/behaviours/audit-agent-brief.md` so the job can be restarted without this conversation.
+
+**THE BEHAVIOUR WORK IS ON THE LIVE SITE.** `main` was pushed on 2026-10-12. That included every
+commit of the 2026-10-11 change. Whether Rod went through the manual checklist first is not
+recorded.
+
 # 2026-10-12 - A HIDDEN BLIND TEST FOR KEYBOARD SWITCH SOUNDS
 
 **Asked for by ROD:** a page that blind-tests switch sounds on a friend, reachable only by link,
