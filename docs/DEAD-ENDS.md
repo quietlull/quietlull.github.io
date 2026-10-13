@@ -5,6 +5,7 @@ version of this table killed hours of repeated re-suggestion - keep it honest an
 
 | Attempt | Why it died |
 | --- | --- |
+| Switch test: a progress bar in the reading-progress style with a sparkler burst at its tip per pick (2026-10-13) | Rod: "the bar and the sparks are really bad actually remove them for now". The pick feedback is still wanted; it needs a different idea, not a retune of this one. |
 | `-warm` keyframe variants for breathing colors | Every color needed its own copy of every keyframe; replaced by `--breathe-hue` / `--breathe-border-hue` CSS variable overrides. Any surviving `-warm` keyframe is a leftover ([BREATHING.md](BREATHING.md)). |
 | `GLASS_SELECTOR` list in `mouse-trail.js` | A second manually synced selector list just for the sparkler; replaced by `animationName` auto-detection (itself slated for `data-breathing` in Phase 2). |
 | Autonomous mass design generation (4 full site designs, 2026-08-09) | Produced AI slop: no see-and-adjust loop (agent is screenshot-blind) and fan-out diluted coherence. Design work is one small piece at a time, Rod as the eyes ([DECISIONS.md](DECISIONS.md) D7). |
