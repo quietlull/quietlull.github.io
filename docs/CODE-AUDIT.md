@@ -492,6 +492,22 @@ The switch count is returned so the page can show how much evidence each tag has
 `TIERS` is the row order the board and the results share. `AFFINITY_RANGE` (S minus F) scales
 the bars so the largest possible lead fills half the track.
 
+## _javascript/pwa/sw.js
+
+**What it does.** The service worker: it keeps a copy of what the site loads so it opens offline.
+Pages, scripts, stylesheets and the manifest come from the network first (asking the server even
+when the browser's cache says the file is fresh), and the saved copy is the fallback. Images,
+audio and everything else come from the saved copy first. Each build names a new copy, and the
+old one is deleted when the new worker takes over.
+
+**Why it is not simpler.** Saved-copy-first for everything showed the old site on the first visit
+after every deploy. Network-first for everything would download every image and clip on every
+visit. The split keeps the site current and the heavy files fast.
+
+**Functions.** `store` saves a response if the address may be saved. `networkFirst` and
+`cacheFirst` are the two orders. `changesWithEachDeploy` picks between them. `verifyUrl` skips
+addresses the config says never to save.
+
 ## _javascript/modules/utils/answer-factors.js
 
 **What it does.** Turns the tier list's six answers into "What you need". Each answer option in

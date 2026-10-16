@@ -1,3 +1,22 @@
+# 2026-10-16 (later) - EVERY VISIT AFTER A DEPLOY GETS THE NEW SITE, AND THE SKIP LINK STOPS PEEKING
+
+**The service worker served old copies.** Rod kept seeing old versions after deploys and asked if
+the cache busting was lost in the refactor. It was not: the service worker is Chirpy's, made silent
+by Rod's `2909ec5` (April), and only had its comments stripped since. Its flaw was being
+cache-first for everything: the first visit after a deploy always came from the old copy, and a
+new copy could be filled from the browser's own 10-minute cache. `_javascript/pwa/sw.js` is now
+network-first for pages, scripts, stylesheets and the manifest (`cache: 'no-cache'`, so the server
+is always asked), falls back to the saved copy offline, and keeps images and audio cache-first.
+The install step fetches with `cache: 'reload'`. **Proved with a real service worker on a
+production build:** after a simulated deploy, one normal reload showed the new page and the new
+script; offline, the page still loads. The same test on the old service worker showed the old page
+and the old script.
+
+**The skip link.** "Skip to main content" (`_layouts/default.html:28`, all 58 pages, first seen in
+`da2a175`) sat 50px above the page with `translateY(-110%)`, and the iPhone's pull-down bounce
+shows what is above the page. It is now `opacity: 0` until keyboard focus (Rod picked keeping it
+over removing it). Checked: opacity 0 at rest, 1 after one Tab.
+
 # 2026-10-16 (later) - NO CURSOR SPARKLE OR GLOW ON PHONES
 
 **Follow-up, same day:** Rod still saw a small circle glow when tapping near the sides. A tap is a

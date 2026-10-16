@@ -615,3 +615,17 @@ finding, and especially before telling someone else to go fix it.**
 `grid-column: span 12` in a 6-column grid does not clamp: the browser adds 6 implicit columns,
 and every other item shrinks to fit the new tracks. That is how the phone project cards got 72px
 wide (2026-10-16). Use `1 / -1` for "the whole row".
+
+## The iPhone shows what is parked above the page
+
+Pulling down past the top bounces the page and paints whatever sits above it. Anything hidden by
+moving it up (`translateY(-110%)`, a negative `top`) shows in the bounce. Hide with `opacity` or
+`clip-path`, not position. Found on the skip link, 2026-10-16.
+
+## Old versions after a deploy: browser cache and service worker
+
+GitHub Pages lets a browser reuse any file for 10 minutes, and file names never change between
+deploys. Until 2026-10-16 the service worker answered everything from its saved copy first. Since
+then pages, scripts and styles go to the network first; images and audio are still saved-copy
+first, so a replaced image keeps the same name at your peril until the next deploy clears the copy.
+If Rod reports an old page, ask him to reload once more before debugging.

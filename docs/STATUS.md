@@ -5,6 +5,12 @@
 
 ## The one-screen update (2026-10-16)
 
+- **Cloud session 2026-10-16, all on `main`.** Phone layout of the section home pages (cards one
+  per row, 16px gutters, hero columns and icons scale, reel full width; desktop proved unchanged);
+  no cursor trail or glow from touch (`cursor-coords.js` ignores touch); skills centred at every
+  width; the background orb (`body::before`) deleted site-wide; the service worker is now
+  network-first for pages, scripts and styles; the skip link hidden with opacity. The two hidden
+  switch tests are finished (`norobots/`). Details: CHANGELOG, same date.
 - **Note for later, Rod 2026-10-16: the page ground should not be on every page.** `body` in
   `_sass/base/_foundations.scss:14-21` paints a warm wash at the bottom edge and a dark blue one at
   the top right on all 58 pages. It is separate from the hana bloom (`assets/js/effects/hana-bloom.js`,

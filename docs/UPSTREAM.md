@@ -19,6 +19,9 @@ fix. This is the memory a theme update or swap needs.
   (`projectfilterandsearch.html`) and layouts (`projects.html`) deleted as cruft.
 - `_sass/` restructured from Chirpy's `addon/`/`colors/` layout into our 7-bucket architecture -
   this makes a straight upstream merge impossible; updates must be cherry-picked by hand.
+- `_javascript/pwa/app.js` updates silently instead of Chirpy's "new version" toast (Rod,
+  `2909ec5`), and `_javascript/pwa/sw.js` is network-first for pages, scripts and styles instead
+  of Chirpy's cache-first (2026-10-16). Do not take upstream's versions back.
 - `topbar.html`, `head.html`, `default.html`, `post.html` carry spliced-in custom logic
   (Phase 1 extracts it; see [THEME-BOUNDARY.md](THEME-BOUNDARY.md)).
 
