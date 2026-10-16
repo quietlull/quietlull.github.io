@@ -22,11 +22,6 @@ body{
   font-size:calc(1.02rem * var(--type-scale));line-height:1.7;
 }
 
-body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;opacity:.8;
-  background:
-    radial-gradient(34% 26% at 22% 26%, var(--color-glow-drift-left), transparent 62%),
-    radial-gradient(30% 24% at 80% 56%, var(--color-glow-drift-right), transparent 64%),
-    radial-gradient(42% 32% at 52% 98%, var(--color-glow-drift-bottom), transparent 60%)}
 
 }
 

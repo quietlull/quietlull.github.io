@@ -42,6 +42,9 @@ Two things make this smaller than it sounds, and both are worth saying:
   survived it. So this is not an open design question, it is one file the sweep did not reach.
 - **It is one selector.** Deleting `body::before` and its reduced-motion twin clears the whole
   finding. Cheapest fix on the list.
+- **DELETED 2026-10-16.** Rod: "remove that orb its not part of the bloom background and it should
+  not exist remove that from every page". The rule and its three `--color-glow-drift-*` tokens
+  are gone; the breathing animation had already been removed.
 
 **Everything else that ships is either sourced, Rod's own, or unreachable.** The 26 component
 stylesheets all compile into the served stylesheet, but 21 of them have no markup anywhere on the

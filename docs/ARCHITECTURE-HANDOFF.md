@@ -531,7 +531,7 @@ site has one text face, one hand face and one mono, and nothing reaches for a se
 | Dwell ring (2) | `--color-ring-track` `rgba(255,255,255,.16)`, `--color-ring-hole` `rgba(8,12,30,.9)` |
 | Marks and quiet text (4) | `--color-tag-text`, `--color-highlight` `#412c11`, `--color-line-grey` `#383838`, `--color-text-quiet` |
 | Tape hues (2) | `--tape-pink` `#f078f0`, `--tape-green` `#6fbf73`. The other two tape colours are `--color-glow` and `--color-accent-cool`. |
-| The page ground (7) | `--color-ground-warm`, `--color-ground-warm-0`, `--color-ground-sky` `#16224a`, `--color-ground-sky-0`, `--color-glow-drift-left`, `--color-glow-drift-right`, `--color-glow-drift-bottom` |
+| The page ground (7) | `--color-ground-warm`, `--color-ground-warm-0`, `--color-ground-sky` `#16224a`, `--color-ground-sky-0` (the three `--color-glow-drift-*` were deleted with the orb, 2026-10-16) |
 | Line-tag alpha and misc (3) | remainder of the promoted block |
 
 The `-0` tokens exist because a gradient to plain `transparent` fades through grey in some engines.
