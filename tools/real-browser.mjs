@@ -12,7 +12,9 @@
 //   console.log(await page.evaluate('document.title'), page.problems());
 //   await page.close();
 //
-// Set CHROME_PATH to use another Chromium browser (Edge works).
+// Set CHROME_PATH to use another Chromium browser (Edge works). Off Windows it looks for `chromium`
+// on the PATH unless CHROME_PATH says otherwise. CHROME_FLAGS adds launch flags, space separated:
+// a cloud or container session running as root needs CHROME_FLAGS=--no-sandbox.
 //
 // Each launch gets a throwaway profile and lets the browser pick a free debugging port, which it
 // writes into that profile. So any number of checks can run at once without colliding; the first
@@ -22,14 +24,16 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME_PATH ||
+  (process.platform === 'win32' ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : 'chromium');
+const EXTRA_FLAGS = (process.env.CHROME_FLAGS || '').split(' ').filter(Boolean);
 
 export async function launch(_unused, width = 1440, height = 900) {
   const profile = mkdtempSync(path.join(os.tmpdir(), 'real-browser-'));
   const proc = spawn(CHROME, [
     '--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`,
     `--window-size=${width},${height}`, '--no-first-run', '--no-default-browser-check',
-    '--autoplay-policy=no-user-gesture-required', 'about:blank',
+    '--autoplay-policy=no-user-gesture-required', ...EXTRA_FLAGS, 'about:blank',
   ], { stdio: 'ignore' });
 
   let targets;

@@ -1,0 +1,52 @@
+---
+name: project-palette-exploration
+description: "The live palette-exploration phase: the palette-explorer.html tool, the exact-color sampling method, and Rod's locked palette direction (blue sky + one distinct secondary, no cool UI accent). Read to resume palette work."
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: 76ad9361-5fac-44c0-8963-cd4321815abd
+  modified: 2026-08-11T16:15:19.998Z
+---
+
+# Palette exploration (2026-08-11, live)
+
+Rod wants the site's colors "more unique and distinct." Phase = testing full palettes live in a bench, Rod is the eyes.
+
+**THE TOOL:** `redesign-lab/palette-explorer.html` (http://localhost:4000/redesign-lab/palette-explorer.html). Flip buttons = swap a whole palette live on a realistic slice (top bar + hero + project card + prose). Applies ~9 core tokens on :root; surfaces/lines/covers DERIVE via `color-mix` (text-based so they adapt to day OR night skies). Background = the ORIGINAL hana glow (HANA1/HANA2 crossfade, embedded), tinted per palette. Theory panel top-left shows each palette's real sampled swatches.
+
+**LOCKED palette direction (Rod):**
+- **Warm + blue is the DNA.** Blue = isolation/loneliness; warm = playful/imaginative pop. He loves the CONTRAST of the two.
+- **Blue lives ONLY in the SKY/ground** (which = the background, can be DAY or NIGHT — under test). NO cool UI accent — he dislikes cool tones as accents; nothing needs one, since warm-on-blue-sky already gives the contrast. Killed `--color-accent-cool`; all foreground accents are the secondary color.
+- **Secondary = the odd-one-out:** the one color most different in HUE from the sky, used on everything you touch (buttons/active/links/pins/headers/bloom tint). For harumaki that's PINK.
+- **NO red** (leans too harsh/danger/fire). Orange/amber/yellow = playful.
+- Prefers VIBRANT, not washed-out/pastel (rejected "Dusk Petal" for exactly this).
+
+**METHOD (updated 2026-08-11) — ROD PICKS the two anchors, image gives tertiary:** auto-detecting primary/secondary by AREA failed (a big bright element read as "background"; it can't tell bg from focal point). NEW model: **Rod supplies PRIMARY (background) + SECONDARY (text/glow) per palette**; the TERTIARY colors are SAMPLED from the cover image (excluding anything within RGB-72 of either anchor) and used only in supporting spots (chip text `--color-warm-muted`, card-cover `--color-cover-hi`, surface `--color-night-2`). Token mapping: night=primary; text=gold=gold-deep=glow=SECONDARY (bold two-tone: secondary is ALL text + accents + bloom tint); muted/glow-soft derived via color-mix. Script = `scratchpad/extract-exact-palettes.ps1` (System.Drawing quantize → diverse picks → tertiary = non-anchor sampled colors); writes `redesign-lab/references/site-palettes.js` (`window.SITE_PALETTES`, each with real `raw[]` swatches). NOTE: apostrophes in names must be escaped (`\'`) or the JS file fails to parse. Reference shots in `references/shots/`.
+
+**Rod's anchor picks (2026-08-11):** Harumaki main = `#2351bb`/`#f783fe`(pink); Harumaki FTR = `#2852cf`/`#9c69ec`(purple); It's Raining After All (TUYU album, cover downloaded to `references/shots/itsrainingafterall.jpg` via Spotify og:image) = `#222657`/`#ecde56`(yellow); Sleep Sheep Sunroom = `#1e303c`/`#ffff9f`(pale yellow). OPEN: (a) secondary=ALL text may be too much color on body copy — offer light-neutral body + secondary only on headers/glow; (b) tuyu tertiary came muted (vivid pink scarf too small to sample) — could grab most-saturated small color instead.
+
+**Current palette set in the explorer (2026-08-11):**
+- KEEP (Rod: "kinda cool/nice"): **Harumaki main** (cornflower `#4d82e6` sky + pink `#fe94bc`), **Harumaki ftr** (deep navy `#113579` + violet `#d17bfc`), **TUYU** (indigo `#231b50` + magenta `#e390e0`, kept as reference).
+- EXPERIMENT (Rod asked): **Harumaki Orange** (`#4d82e6` sky + orange `#ff9d47`) and **Harumaki Yellow** (same sky + yellow `#ffc93d`) = harumaki's same blue, pink swapped for a comparable warm. Hand-picked hues (not sampled) so tunable.
+- NEW REF: **Sleep Sheep Sunroom** (harumaki 2017 album cover, downloaded to `references/shots/sleepsheepsunroom.jpg` from vocadb.net/Al/23852) = warm CREAM day-sky `#efe59e` + dark-teal `#192f3b` secondary + brown text. A warmer, different mood.
+- LEANS (synthesized, kept): **Lantern** (complementary), **Sodium & Sky** (bold cobalt+sodium-orange).
+
+**REJECTED this phase:** the glow-shape-from-references experiment (KEEP the original hana glow we made); Kingfisher + Dusk Petal (ugly/washed); Ember & Ink; Neo Dream Traveler (ndt) + Zutomayo (removed); Yorushika (low relevance, disliked). The synthesized/hue-clamped harumaki palettes (replaced by exact samples).
+
+**FRONTRUNNER (2026-08-11): SODIUM & SKY** — Rod: "I really like sodium and sky, I think it's the best one." Refined per his structural notes: ground `#071033` (keep dark base), surface/cards darkened `#0e1c52`->`#0c1740` (cards were too bright), deep well `#04091f`, cream neutral text `#f7f3ec`, orange ramp `#ffd28a`/`#ffb020`/`#ff7a00`, **glow+links = `#ff6a00`** (was `#ff5400`, too dark-red), **pink SPOT `#ff7ec8`** on the pinned badge (his rare playful non-orange mark; wants to see it in practice), ink = near-black (`#071033`). No visited-link state wanted.
+
+**STRUCTURE MODEL (agreed with Rod, 2026-08-11):** a palette = ground STACK (sky/surface/well, cool desaturated, varied by VALUE) + accent RAMP (soft/accent/deep/glow, one warm hue varied by value+sat) + calm warm-NEUTRAL for text (NOT the vivid secondary) + ink (on-accent dark) + one rare SPOT hue (<5%, from imagery). Only ~4 real decisions (ground hue, accent hue, neutral warmth, spot); rest derive. KEY realization (from Rod's color-wheel question): harumaki/tuyu/etc do NOT follow wheel harmonies (hue gaps 38-179deg) - what's constant is VALUE (dark ground/light focal) + SATURATION (dull ground/vivid focal) + TEMPERATURE (cool ground/warm focal). So pick structure first, hue by MOOD. Explorer now has a code block (deep well) + a full 12-role resolved-color panel + the pink spot.
+
+**Mix experiments added:** FTR x Sodium (`#113579` navy + Sodium oranges), Rain x Sodium (`#222657` deep indigo + Sodium oranges) - Rod leans darker blues. Dropped Lantern (~=Current). Current = exact settings.css baseline button.
+
+**COLOR LOCKED (2026-08-11): SODIUM & SKY (refined).** Rod: "color's been locked a long time, let's move on." Values: ground `#071033` / surface `#0c1740` / well+**project-cards** `#04091f` (cards use the deep-well dark, FLAT cover placeholder - real thumbnails will replace it, no gradient) / cream text `#f7f3ec` / orange ramp `#ffd28a`·`#ffb020`·`#ff7a00` / glow+links `#ff6a00` / pink SPOT `#ff7ec8` / ink `#071033`. NOT yet baked into `settings.css` (do when Rod says).
+
+**NEXT PHASE = SHAPES · TYPE · LAYOUT (2026-08-11).** Rod's insight: Sodium feels "cold/corporate" and it's NOT the color - it's EXECUTION. Wonder (harumaki) levers, priority: (1) **TYPE** - mono-UPPERCASE-letterspaced labels + geometric sans = the SaaS tell; needs expressive/hand-drawn display used WIDELY + humanist body (his scribbly-hand pillar barely used yet). (2) **FLATNESS + geometric perfection** - needs TEXTURE (paper/grain/watercolor), irregularity, hand-placed asymmetry, organic edges. (3) warm behaves as flat UI ACCENT not as LIGHT - make it GLOW (bloom/halo/spill) like a lantern. (4) no whimsy/density - decorative personality marks. **CORRECTION (Rod): motion is NOT a harumaki lever** - harumaki has little/no motion beyond hand-drawn LOADING animations; I wrongly claimed it "drifts and breathes" (unsupported - don't over-claim motion again).
+
+**TOOL: desaturate buttons** added to `palette-explorer.html` (.ctl bar) AND `reference-gallery.html` (filter head, toggles "recolor") - grayscale toggle to judge VALUE/SHAPE/LAYOUT without color, for this next phase.
+
+**SHAPE LANGUAGE (2026-08-11, Rod's own observations + pulled principles) - the active layout work.** Rod likes aggregate's CONTENT FLOW; it's the SHAPE that reads corporate. Principles: (1) **SQUARE by default, round by EXCEPTION** - the rounded-rect/pill is a loud shape; corporate rounds everything (uniform radius = top slop tell), indie creators default to hard corners & spend radius rarely, often ONLY on buttons, sometimes off-placed. (2) **Shape as wayfinding - every zone its OWN shape** (Rod: bar/hero/toolbox currently share shapes = they blur together). (3) **Lines not boxes** - hairline rules / full-bleed dividers instead of filled panels. (4) **Break the single column** - full-bleed + VARIED widths, not all centered at 1000px. (5) **Negative space is a material** - generous ASYMMETRIC air (Rod: our negative space is currently weak). (6) **Asymmetry & off-grid** - anchor left/right, not center-everything. (7) **Type on the ground** - headlines with no card behind them. BUILT: `redesign-lab/layout-blockouts.html` = aggregate's flow reshaped, MONOCHROME, per-section shape treatment (strip/open-hero/icons-on-rule/lone-rounded-buttons/full-bleed-band/square-bento/underlined-filters/offset-editorial-post/irregular-about-frame/hairline-footer). Verified: ONLY the buttons have border-radius. Layout-specific gallery refs Rod cited: pomodorosa (bento), thatskygame (zone partitions), hoshimachi/tuyu/harumaki (open>cluttered), 109ichiki (use of space), potg (floating art in works), minionsart (cards+tags), jaimekim (layout+name). Order = TYPE last (Rod).
+
+**WORKFLOW SHIFT (2026-08-11): Rod owns visual/layout EXECUTION in FIGMA himself** (I'm screenshot-blind; healthy split = Rod=eyes/composition, me=grounded idea menus + reference extraction + principle sanity-checks). Do NOT build finished layouts unprompted. Deliverable he wanted: split site into sections (topbar/nav · hero · demo reel · featured · projects page · post page · about · footer) and give 3 SPECIFICALLY NON-CORPORATE layout directions, section-by-section → `redesign-lab/analysis/2026-08-11-layout-directions.md` (D1 Editorial/Zine · D2 Zoned Environment/Night Scene · D3 Indie Desk/Dense Collage; mixable per-section). Blockout HTML `redesign-lab/layout-blockouts.html` exists (shape study) but Rod is moving to Figma. My role now = deepen any section on request, extract exact structure/measurements from a named ref, sanity-check his Figma frames vs the shape/space principles.
+
+Nothing touches live site yet. See [[project-design-pillars]] (esp. hand-made + wonder axes), [[project-site-sections-and-plan]].

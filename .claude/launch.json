@@ -6,12 +6,6 @@
       "runtimeExecutable": "bundle",
       "runtimeArgs": ["exec", "jekyll", "serve", "--port", "4000"],
       "port": 4000
-    },
-    {
-      "name": "prod-bootstrap",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8801", "-d", "C:/Users/Rod/AppData/Local/Temp/claude/C--Users-Rod-Documents-ProjectFiles-Website/e4c00238-6a61-4c02-a045-09ef5ba31608/scratchpad/prod-with"],
-      "port": 8801
     }
   ]
 }

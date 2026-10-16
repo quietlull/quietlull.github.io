@@ -9,6 +9,30 @@
   every switch dragged from the tray, tiles that play on tap. Running on stand-in clips until Rod records the seven-family
   palette. The switch blind test is live on `main` with photos. CHANGELOG has the rest.
 
+## The one-screen update (2026-10-13)
+
+- **Everything is pushed.** `main` went to GitHub on 2026-10-12 at 16:21 with Rod's commit
+  `f2bf7c0`, which carried the whole behaviour change with it. The live site has it.
+- **The behaviour work has no recorded review by Rod.** He was given a manual checklist on
+  2026-10-11 (cards, achievement tiles, social icons, orb-fill buttons, the portal's Enter
+  buttons). What he saw is not written down anywhere. Ask before assuming it is accepted.
+- **The overnight job did not run** (P553). The agent hit the weekly usage limit at its first
+  step and changed nothing. `docs/REVIEW-WHEN-AWAKE.md` is an empty list. The brief to restart it
+  is `docs/behaviours/audit-agent-brief.md`.
+- **Open, in order:** (1) Rod's eye on the behaviour work; (2) his answer on the tier tiles' 2px
+  edge (pass it to `border`, which thickens their glow, or not); (3) the file-by-file audit,
+  restarting at `assets/js/site-wide.js`; (4) the tags onto `border-break`; (5) about sixteen
+  plain edges onto `border`.
+- **Unblocked:** `assets/css/chrome-scene.css` and `assets/js/effects/hana-bloom.js` are committed
+  now, so their comments can be stripped and their two `--skip` flags dropped from
+  `lint:comments` in `package.json` (left over from P542).
+- **Another session is active on the switch test** (next entry). Its files are
+  `_javascript/listening-test.js`, `_javascript/modules/audio/`, `modules/utils/pairwise-test.js`,
+  `_layouts/listening-test.html`, `_sass/pages/_listening-test.scss`. Leave them to it.
+- **Cloud sessions can start from the repo now.** `docs/CLOUD-SESSIONS.md` is the way in, and
+  `docs/memory/` holds a copy of the desktop's memory notes, taken 2026-10-13.
+- `npm test` green. The working tree is clean.
+
 ## The one-screen update (2026-10-12)
 
 - **A hidden switch-sound blind test is built**, `/norobots/switch-test-7a7f888b/`. Reusable
@@ -26,8 +50,8 @@
   lists behaviours and carries no tuning numbers.
 - **The project card has no script of its own.** One component, `project-card`, one stylesheet.
   `merged-card.js`, `project-cards-expensive.js`, `drift-magnet.js` and the click ring are gone.
-- **NONE OF IT HAS HAD ROD'S EYE YET.** Checked by measurement only: mouse-driven behaviour,
-  element positions and styles, script errors, lint. He was given a manual checklist on 2026-10-11.
+- **Checked by measurement only:** mouse-driven behaviour, element positions and styles, script
+  errors, lint. Rod was given a manual checklist on 2026-10-11; see the 2026-10-13 entry above.
 - **Known small difference:** the card's lean is measured against the card's resting outline, not
   the leaning layer. Same mouse position, the angle differs by at most a third of a degree.
 - **The achievement tiles use the shared behaviours too** (`border border-glow track-mouse
@@ -43,7 +67,7 @@
 - **Rod's audit runs in chat** (P547), one script file per message. File 1 was `drift-magnet.js`,
   which turned into this whole change.
 - **Pictures are not proof** (Rod, restated 2026-10-11). The picture tool built that day is deleted.
-- About 180 commits are unpushed. `npm test` green.
+- Pushed on 2026-10-12. `npm test` green.
 
 ## The earlier one-screen update (2026-10-10)
 

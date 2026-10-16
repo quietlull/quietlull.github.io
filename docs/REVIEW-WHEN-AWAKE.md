@@ -5,6 +5,10 @@ its unclear mark it as so and i will check it when i wake up."*
 
 This is the list. Every file the night's work reached is here, in the order it was reached.
 
+**THE LIST IS EMPTY. NOTHING WAS DONE THAT NIGHT.** The agent hit the weekly usage limit at its
+first step, before it read a file. No code changed and no note was written. The job is still to
+do; the brief to restart it is `docs/behaviours/audit-agent-brief.md`.
+
 **How to read a row.**
 
 - **REWRITTEN**: the change was clear, so it was made. Nothing a visitor can see or feel changed,

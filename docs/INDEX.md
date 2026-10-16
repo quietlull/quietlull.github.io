@@ -3,6 +3,8 @@
 One note per topic. Load only what the task touches. The bar for a note: expensive to rediscover
 AND not inferable from reading the code. If a doc disagrees with the code, the doc is stale - fix it.
 
+- [CLOUD-SESSIONS.md](CLOUD-SESSIONS.md) - **start here in a cloud session:** what it lacks, what to read, setup on Linux, how to run the checks, what differs from the desktop (a push to `main` publishes; Rod cannot see your localhost).
+- `memory/` - the desktop's memory notes, copied 2026-10-13. Start at `memory/MEMORY.md`. How Rod wants to be worked with, and the project's design knowledge.
 - [STATUS.md](STATUS.md) - what is true right now + what is in flight. Read every session.
 - [CONVENTIONS.md](CONVENTIONS.md) - house rules: philosophy layer + concrete web rules.
 - [PAGE-PROCESS.md](PAGE-PROCESS.md) - how a surface goes from nothing to a locked layout. Read BEFORE building any blockout.
@@ -20,6 +22,7 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
 - `code-comments/` - the 2,565 comments removed from the source on 2026-10-10, one file per source
   file, each with the line it sat on. Archives for files that were later deleted are gone with them.
 - [REVIEW-WHEN-AWAKE.md](REVIEW-WHEN-AWAKE.md) - **the overnight list of 2026-10-12:** every file the night's work reached, marked REWRITTEN, NOTE ONLY or UNCLEAR, with the question where it is unclear. Rod reads this first.
+- [behaviours/audit-agent-brief.md](behaviours/audit-agent-brief.md) - the brief an agent gets for the file-by-file audit (P553): what to read, what counts as a clear rewrite, how to mark the unclear, how to prove a change. Paste it to restart the job.
 - [behaviours/README.md](behaviours/README.md) - **how the site's effects are built since 2026-10-11:** one behaviour, one file, one class; the component decides the numbers and the mix. The table of what exists, the pattern, and how a change is proved. Reports from the agents that built the card behaviours sit beside it.
 - [simplify/README.md](simplify/README.md) - **the simplification pass of 2026-10-10: the result,
   how it was checked, and the 21 decisions waiting on Rod.** Below that, the contract the five

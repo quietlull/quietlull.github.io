@@ -8,6 +8,10 @@ theme boundary) is done; Phases 2 and 3 are the open work, see
 
 ## Read first, load only what the task touches
 
+- **In a cloud session, or any session with no memory of this project:** read
+  [docs/CLOUD-SESSIONS.md](docs/CLOUD-SESSIONS.md) first. It says what you are missing, how to set up,
+  and where the copied memory notes are (`docs/memory/MEMORY.md`).
+
 - [docs/INDEX.md](docs/INDEX.md) - map of every note, one line each
 - [docs/STATUS.md](docs/STATUS.md) - what is true right now and what is in flight
 - [docs/CONVENTIONS.md](docs/CONVENTIONS.md) - house rules, non-negotiable
@@ -22,7 +26,11 @@ theme boundary) is done; Phases 2 and 3 are the open work, see
   No source? ASK Rod first. Idea origin is tracked (Rod / theirs / Claude) and Claude-originated
   ideas stay under ~25% of the design. Ledger: `redesign-lab/element-tracker.md`.
 - **Preview-first.** Show every non-trivial change in chat and get a go BEFORE touching files.
-  Rod is the eyes: never verify visuals by screenshot, make the change and ask what he sees.
+  Rod is the eyes: never verify visuals by screenshot or by comparing pictures, make the change
+  and give him a short list of what to look at and where.
+- **Effects are behaviours.** One effect, one file, one class; the component's stylesheet sets
+  the numbers and decides how behaviours combine. Read
+  [docs/behaviours/README.md](docs/behaviours/README.md) before touching any effect.
 - **Code wins.** If a doc disagrees with the code, the doc is stale - fix the doc.
 - **No comments in the source.** Rod, 2026-10-09: "strip them all out ... Code should be self
   explanatory or documenting." Scripts, stylesheets, templates and plugins carry no comments;
