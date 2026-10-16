@@ -198,3 +198,44 @@
 }
 
 .tier-test:has([data-step='questions']:not([hidden])) .page-heading { display: none; }
+
+.tier-test .pv2-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tier-test .pv2-cell { grid-template-rows: auto; }
+
+.tier-test .project-card { min-height: 0; }
+
+.tier-test .pv2-grid .card-cover { height: 142px; }
+
+.tier-test .pv2-grid .glass-plane { height: 138px; }
+
+.tier-test .pv2-grid .card-body {
+  margin-top: 142px;
+  padding: 8px 10px 10px;
+}
+
+.tier-test .pv2-grid .card-title {
+  margin-top: 0;
+  font-size: 0.85rem;
+}
+
+.tier-test .pv2-grid .pv2-metabox {
+  height: auto;
+  margin-top: 6px;
+}
+
+.tier-test .pv2-grid .kit-tag {
+  padding: 0.1rem 0.4rem;
+  font-size: 0.6rem;
+}
+
+@media (max-width: 991px) {
+  .tier-test .pv2-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767px) {
+  .tier-test .pv2-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

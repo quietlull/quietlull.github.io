@@ -3,7 +3,9 @@
 Each tile shows its clip number (1 to 25, in the shuffled order), and the result cards say
 "Clip 7 · S tier" so the number leads back to a name. Rod picked numbers over letters, which would
 clash with the tier letters. Done unlocks after one tile is placed; tiles left in the tray score 0
-and F now scores -20. The whole board ignores text selection, which was catching drags. Checked by
+and F now scores -20. The whole board ignores text selection, which was catching drags.
+The result cards are about half size, six to a row (four under 992px, three on a phone): page
+rules in `_tier-test.scss` shrink the cover to 142px and drop the project page's spacing. Checked by
 hand against the page: one S and one F placed, Creamy +27 and Thocky -6, as computed.
 
 # 2026-10-16 (later) - THE BACKGROUND ORB IS GONE, AND THE QUESTIONS LOOK LIKE A FORM
