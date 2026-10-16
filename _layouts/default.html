@@ -12,7 +12,8 @@ layout: compress
 
 {% case page.layout %}
   {% when 'section-landing', 'section-about' %}{% assign scene_tier = 'full' %}
-  {% when 'post', 'listening-test', 'tier-test' %}{% assign scene_tier = 'none' %}
+  {% when 'post', 'listening-test' %}{% assign scene_tier = 'none' %}
+  {% when 'tier-test' %}{% assign scene_tier = 'plain' %}
   {% else %}{% assign scene_tier = 'minimal' %}
 {% endcase %}
 {% if page.permalink == '/404.html' %}{% assign scene_tier = 'embers' %}{% endif %}

@@ -2,13 +2,13 @@
   <script src="{{ '/assets/js/effects/hana-bloom.js' | relative_url }}"></script>
 {% elsif include.tier == 'embers' %}
   <script defer src="{{ '/assets/js/dist/three-background-minimal.min.js' | relative_url }}"></script>
-{% else %}
+{% elsif include.tier != 'plain' %}
   <script defer src="{{ '/assets/js/dist/three-background-scene.min.js' | relative_url }}"></script>
 {% endif %}
 
 <script type="module" src="{{ '/assets/js/site-wide.js' | relative_url }}"></script>
 
-{% if include.tier != 'none' %}
+{% if include.tier != 'none' and include.tier != 'plain' %}
   <script type="module" src="{{ '/assets/js/effects/fireworks-reach.js' | relative_url }}"></script>
 {% endif %}
 

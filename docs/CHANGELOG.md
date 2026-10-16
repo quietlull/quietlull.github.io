@@ -1,3 +1,9 @@
+# 2026-10-16 (later) - THE TIER LIST LOSES ITS BACKGROUND BLOBS
+
+Rod: "just remove the background blobs for now actually". A new scene tier, `plain`, loads neither
+the hana bloom nor any 3D scene; the tier test uses it. Every other layout is unchanged (measured on
+the built switch test and the projects page).
+
 # 2026-10-16 (later) - THE TIER LIST IS ONE ROUND, AND THE PLAYING TILE IS TINTED
 
 Rod: "it should just have them all at the bottom and let them drag them all" (confirmed: one round,
