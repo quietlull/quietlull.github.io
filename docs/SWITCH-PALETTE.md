@@ -43,11 +43,12 @@ reading rather than his word, the row says so.
 
 25 switches. Every family is carried by at least three switches once bridges are counted.
 
-## Photos Rod already has
+## Clips and photos Rod already has
 
-Box Jade, Gateron Melodic, Alps SKCM White and Matias Click, in `assets/img/switch-test/`. The
-audio for all four still comes from Click and Thock, so every clip in the tier list is recorded the
-same way; Rod's own recordings of them stay with the original switch test.
+Box Jade, Gateron Melodic, Alps SKCM White and Matias Click: photos in `assets/img/switch-test/`,
+and audio too. Rod's first six recordings were taken from Click and Thock (Rod, 2026-10-16), so
+those four clips are already the same recording setup as the rest and already cut and loudness
+matched (`assets/media/switch-test/`, ids k4, k6, k3, k5). That leaves 21 clips and 21 photos.
 
 ## What was left out, and why
 

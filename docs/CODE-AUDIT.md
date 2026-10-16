@@ -457,12 +457,16 @@ Enter plays, the letters S A B C D F place the focused tile.
 
 **Why it is not simpler.** It uses pointer events, not the browser's built-in drag and drop,
 because built-in drag and drop does not work with a finger. A press only counts as a drag after
-6px of movement, so a slightly shaky tap still plays.
+6px of movement, so a slightly shaky tap still plays. Holding a dragged tile within 70px of the top or bottom of
+the screen scrolls the page at 700px a second, so on a phone a tile can be carried from the tray
+below the board up to the S row in one drag. The scroll is `instant` because the site's smooth
+scrolling would otherwise swallow it.
 
 **Functions.** `load` puts fresh tiles in the pool. `complete` says whether every tile is placed.
 `placement` lists the ids in each row, left to right. `setPlaying` marks the playing tile.
 `createTile` builds one tile. `startPointer` tells a tap from a drag. `drop` finds the row and
-the spot under the pointer. `handleKey` places a tile by letter.
+the spot under the pointer. Inside `startPointer`, `follow` keeps the tile under the finger while
+the page scrolls and `scrollAtEdge` does the scrolling. `handleKey` places a tile by letter.
 
 **Worth knowing.** `hidden` does nothing on a `.kit-button`, and the tiles are kit buttons.
 

@@ -4,6 +4,10 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**A script scrolls the page a few pixels per frame and it barely moves (2px where 12 were asked) ->**
+the site sets `scroll-behavior: smooth`, so every `scrollBy` starts an animation and the next frame's
+call cancels it. Pass `{ behavior: 'instant' }`. Hit 2026-10-16 by the tier board's edge scroll.
+
 **Sound works on a laptop and on Android but not on someone's iPhone ->** the phone's silent switch is on.
 iOS mutes Web Audio in silent mode, though video still plays. `AudioPlayer` sets
 `navigator.audioSession.type = 'playback'` (Safari 16.4+), which plays through it. Older iOS has no fix

@@ -1,3 +1,10 @@
+# 2026-10-16 (later) - TIER LIST DRAGGING WORKS ON PHONES
+
+The tray sits below the board on a phone, and the page did not scroll during a drag, so a tile could
+not reach the top rows. Holding a dragged tile near the top or bottom edge now scrolls the page (700
+px/s). First attempt crawled at 2px a frame: the site's `scroll-behavior: smooth` swallowed each
+nudge (TRAPS). Proved with a simulated finger drag on an iPhone 13 screen: tray to S in one drag.
+
 # 2026-10-16 (later) - QUESTIONS BEFORE THE TIER LIST
 
 Rod wrote six questions (devices, wrists, button feel, when a key registers, loudness, and a

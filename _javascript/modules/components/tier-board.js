@@ -1,6 +1,8 @@
 import { TIERS } from '../utils/tier-scores';
 
 const DRAG_THRESHOLD = 6;
+const EDGE_SIZE = 70;
+const EDGE_SCROLL_PER_SECOND = 700;
 
 export class TierBoard {
   constructor(root, { onToggle, onDragStart, onChange }) {
@@ -49,23 +51,42 @@ export class TierBoard {
 
   startPointer(event, tile) {
     if (event.button !== 0) return;
-    const start = { x: event.clientX, y: event.clientY };
+    const start = { x: event.clientX, y: event.clientY + window.scrollY };
+    const pointer = { x: event.clientX, y: event.clientY };
     let dragging = false;
+    let frame = null;
     tile.setPointerCapture(event.pointerId);
 
+    const follow = () => {
+      tile.style.translate = `${pointer.x - start.x}px ${pointer.y + window.scrollY - start.y}px`;
+    };
+
+    let lastFrame = performance.now();
+    const scrollAtEdge = (now) => {
+      const step = (EDGE_SCROLL_PER_SECOND * (now - lastFrame)) / 1000;
+      lastFrame = now;
+      if (pointer.y < EDGE_SIZE) window.scrollBy({ top: -step, behavior: 'instant' });
+      else if (pointer.y > window.innerHeight - EDGE_SIZE) window.scrollBy({ top: step, behavior: 'instant' });
+      follow();
+      frame = requestAnimationFrame(scrollAtEdge);
+    };
+
     const move = (moveEvent) => {
-      const dx = moveEvent.clientX - start.x;
-      const dy = moveEvent.clientY - start.y;
-      if (!dragging && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+      pointer.x = moveEvent.clientX;
+      pointer.y = moveEvent.clientY;
+      if (!dragging && Math.hypot(pointer.x - start.x, pointer.y + window.scrollY - start.y) < DRAG_THRESHOLD) return;
       if (!dragging) {
         dragging = true;
         tile.classList.add('is-dragging');
         this.callbacks.onDragStart();
+        lastFrame = performance.now();
+        frame = requestAnimationFrame(scrollAtEdge);
       }
-      tile.style.translate = `${dx}px ${dy}px`;
+      follow();
     };
 
     const end = (endEvent) => {
+      cancelAnimationFrame(frame);
       tile.removeEventListener('pointermove', move);
       tile.removeEventListener('pointerup', end);
       tile.removeEventListener('pointercancel', end);
