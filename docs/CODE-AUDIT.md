@@ -390,7 +390,9 @@ matches its clips before they ship, so it passes no gain.
 it at the same moment in its own loop, so a listener can flip between A and B mid-passage. That is
 how the standard listening-test tools present a comparison.
 
-**Why it is not simpler.** Every start and stop fades over 10ms, or each switch clicks. The page
+**Why it is not simpler.** Every start and stop fades over 10ms, or each switch clicks. The audio session is set to
+`playback` because an iPhone with its silent switch on otherwise mutes web audio entirely, while video still
+plays, so the page looks broken. Browsers without `navigator.audioSession` skip that line. The page
 must call `play` from a click, because browsers keep sound off until the visitor does something.
 
 **Functions.** `load` decodes a list of clips. `playing` and `position` say what is playing and

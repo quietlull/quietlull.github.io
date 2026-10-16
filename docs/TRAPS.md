@@ -4,6 +4,11 @@ Symptom-first: the symptom is what you search for when it bites. Each entry: how
 the real cause -> what to do. Add entries when something costs real time and is not inferable from
 the code.
 
+**Sound works on a laptop and on Android but not on someone's iPhone ->** the phone's silent switch is on.
+iOS mutes Web Audio in silent mode, though video still plays. `AudioPlayer` sets
+`navigator.audioSession.type = 'playback'` (Safari 16.4+), which plays through it. Older iOS has no fix
+short of an `<audio>` element.
+
 **A page built on `layout: default` ends partway through, the footer and back-to-top button
 are gone, and a site script throws "Cannot read properties of null" ->** the layout content holds
 an `<img>` with no `src`. `default.html` runs every non-full-bleed page through

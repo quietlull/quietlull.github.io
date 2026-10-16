@@ -2,6 +2,7 @@ const FADE_SECONDS = 0.01;
 
 export class AudioPlayer {
   constructor() {
+    if (navigator.audioSession) navigator.audioSession.type = 'playback';
     this.ctx = new AudioContext();
     this.clip = null;
     this.source = null;
