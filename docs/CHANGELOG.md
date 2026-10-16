@@ -1,5 +1,12 @@
 # 2026-10-16 (later) - NO CURSOR SPARKLE OR GLOW ON PHONES
 
+**Follow-up, same day:** Rod still saw a small circle glow when tapping near the sides. A tap is a
+`pointermove` too, and `cursor-coords.js` fed it to every pointer follower, so the project cards'
+`track-mouse` lit their border glow at the tap. `cursor-coords.js` now ignores touch pointers,
+which covers the cursor glow and every card in one place (the separate hover check in
+`cursor-glow.js` came back out). Checked on an iPhone 13 emulation: a tap at the edge leaves the
+cards and the glow unset; desktop unchanged.
+
 Rod: a phone has no cursor to follow. When `(hover: hover)` does not match, `mouse-trail.js`
 ignores mouse moves and scroll (a tap fires a fake mousemove, which drew a trail and then sprayed
 sparks at the old tap spot on every scroll), and `cursor-glow.js` never starts. The tap burst and

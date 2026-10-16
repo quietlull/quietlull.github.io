@@ -25,7 +25,7 @@ function setupCommentsShield() {
 
 export function init(root = document) {
   const glowElement = root.querySelector('.cursorglow');
-  if (!glowElement || !window.matchMedia('(hover: hover)').matches) {
+  if (!glowElement) {
     return;
   }
 

@@ -16,6 +16,9 @@ export function onCursor(fn) {
     window.addEventListener(
       'pointermove',
       (event) => {
+        if (event.pointerType === 'touch') {
+          return;
+        }
         x = event.clientX;
         y = event.clientY;
         if (!pending) {
