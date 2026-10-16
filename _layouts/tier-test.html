@@ -31,7 +31,16 @@ layout: default
   </section>
 
   <section data-step="results" hidden>
-    <p class="listening-test__status" data-families></p>
+    <h2>Your sounds</h2>
+    <ol class="listening-test__results" data-tag-chart></ol>
+    <template data-tag-template>
+      <li class="listening-test__result listening-test__result--no-image">
+        <span class="listening-test__rank" data-field="rank"></span>
+        <span class="listening-test__name" data-field="name"></span>
+        <span class="listening-test__track"><span class="listening-test__fill"></span></span>
+        <span class="listening-test__percent" data-field="percent"></span>
+      </li>
+    </template>
     <div class="tier-board" data-results></div>
     <template data-result-template>
       <div class="tier-board__row">
@@ -47,7 +56,7 @@ layout: default
 
 <script type="application/json" id="tier-test-data">
   {
-    "families": {{ page.families | jsonify }},
+    "switches": {{ page.switches | jsonify }},
     "media": {{ page.media | relative_url | jsonify }},
     "placeholder": {{ '/assets/img/placeholder-wip.svg' | relative_url | jsonify }}
   }

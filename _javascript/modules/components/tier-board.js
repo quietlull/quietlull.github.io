@@ -1,4 +1,4 @@
-import { TIERS } from '../utils/tier-advance';
+import { TIERS } from '../utils/tier-scores';
 
 const DRAG_THRESHOLD = 6;
 

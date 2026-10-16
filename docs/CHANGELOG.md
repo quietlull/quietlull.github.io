@@ -1,3 +1,10 @@
+# 2026-10-16 (later) - SWITCHES CARRY SOUND TAGS, AND THE RESULTS CHART THEM
+
+Rod: "tag the switches and then at the end give them like a chart of which switch type they liked
+the most". Each switch lists `tags` in the page front matter (one or more). "Your sounds" is a bar
+per tag, tier points averaged over its switches (S 100 to F 0), drawn with the switch test's own
+result bars. `tier-advance.js` is deleted with the family round; `tier-scores.js` replaces it.
+
 # 2026-10-16 (later) - THE TIER LIST LOSES ITS BACKGROUND BLOBS
 
 Rod: "just remove the background blobs for now actually". A new scene tier, `plain`, loads neither

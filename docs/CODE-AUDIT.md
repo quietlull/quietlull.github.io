@@ -418,8 +418,9 @@ only the ranking; the other two are in the results link for whoever decodes it.
 
 **What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Every
 switch starts in the tray under the board; the listener drags each into S, A, B, C, D or F. Done
-shows the board with names and photos, "your sound" (the families of the best-placed switches),
-and a link that reopens the results.
+shows "Your sounds", a bar per sound tag scored from where its switches landed, then the board
+with names and photos, and a link that reopens the results. Each switch's tags are in the page's
+front matter.
 
 **Why it is not simpler.** Every clip loads before the board appears, so a tap plays at once.
 Tiles carry no label, because any label hints at the answer.
@@ -446,13 +447,14 @@ the spot under the pointer. `handleKey` places a tile by letter.
 
 **Worth knowing.** `hidden` does nothing on a `.kit-button`, and the tiles are kit buttons.
 
-## _javascript/modules/utils/tier-advance.js
+## _javascript/modules/utils/tier-scores.js
 
-**What it does.** Picks the best-placed ids from a tier board. The tier test uses it for "your sound". Everything in S goes through. If that is
-fewer than two, A goes through too. If still fewer than two, the best-placed two go. Never more
-than three, taken in board order, so further left wins a tie.
+**What it does.** Turns a finished tier board into "your sounds". Each tier is worth points (S 100,
+A 80, B 60, C 40, D 20, F 0). A sound tag scores the average points of the switches carrying it, so
+a switch tagged twice counts toward both.
 
-**Functions.** `rankedIds` lists every id best first. `advancingIds` applies the rule above.
+**Functions.** `tagScores` returns each tag with its percent, best first. `TIERS` is the row order
+the board and the results share.
 
 ## _javascript/modules/utils/shuffle.js
 

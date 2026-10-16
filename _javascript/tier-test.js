@@ -2,7 +2,7 @@ import { basic } from './modules/layouts';
 import { AudioClip } from './modules/audio/audio-clip';
 import { AudioPlayer } from './modules/audio/audio-player';
 import { TierBoard } from './modules/components/tier-board';
-import { TIERS, advancingIds } from './modules/utils/tier-advance';
+import { TIERS, tagScores } from './modules/utils/tier-scores';
 import { shuffle } from './modules/utils/shuffle';
 
 basic();
@@ -17,8 +17,7 @@ function init(root) {
     el.hidden = el.dataset.step !== name;
   });
 
-  const switches = Object.fromEntries(data.families.flatMap((family) =>
-    family.switches.map((item) => [item.id, { ...item, family }])));
+  const switches = Object.fromEntries(data.switches.map((item) => [item.id, item]));
 
   const shared = readHash();
   if (shared) {
@@ -93,8 +92,19 @@ function init(root) {
       list.appendChild(row);
     });
 
-    const favourites = new Set(advancingIds(result).map((id) => switches[id].family.name));
-    q('[data-families]').textContent = `Your sound: ${[...favourites].join(', ')}`;
+    const chart = q('[data-tag-chart]');
+    const barTemplate = q('[data-tag-template]');
+    const tagsById = Object.fromEntries(data.switches.map((item) => [item.id, item.tags]));
+    let rank = 0;
+    tagScores(result, tagsById).forEach(({ tag, percent }, i, scores) => {
+      if (i === 0 || percent < scores[i - 1].percent) rank = i + 1;
+      const bar = barTemplate.content.firstElementChild.cloneNode(true);
+      bar.style.setProperty('--percent', `${percent}%`);
+      bar.querySelector('[data-field="rank"]').textContent = rank;
+      bar.querySelector('[data-field="name"]').textContent = tag;
+      bar.querySelector('[data-field="percent"]').textContent = `${percent}%`;
+      chart.appendChild(bar);
+    });
 
     const copy = q('[data-action="copy"]');
     copy.addEventListener('click', () => {
