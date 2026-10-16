@@ -34,7 +34,8 @@ export class TierBoard {
   createTile(id) {
     const tile = document.createElement('button');
     tile.type = 'button';
-    tile.className = 'kit-button kit-button--outline orb-fill tier-tile';
+    tile.className = 'kit-button kit-button--outline tier-tile';
+    tile.innerHTML = '<i class="fas fa-play-circle tier-tile__icon" aria-hidden="true"></i>';
     tile.dataset.id = id;
     tile.setAttribute('aria-pressed', 'false');
     tile.setAttribute('aria-label', 'Sound clip');

@@ -430,7 +430,9 @@ Tiles carry no label, because any label hints at the answer.
 ## _javascript/modules/components/tier-board.js
 
 **What it does.** The S to F board. Tap a tile to play or stop it. Drag it to a row, and it lands
-where you let go, left of whichever tile you dropped before. Dragging stops the sound. Keyboard:
+where you let go, left of whichever tile you dropped before. Dragging stops the sound. The playing tile is tinted gold
+and shows a play icon; the tiles have no hover fill, so on a phone a tapped tile cannot look like it
+is still playing. Keyboard:
 Enter plays, the letters S A B C D F place the focused tile.
 
 **Why it is not simpler.** It uses pointer events, not the browser's built-in drag and drop,

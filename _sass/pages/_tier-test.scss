@@ -68,11 +68,17 @@
   cursor: grab;
 }
 
-.tier-tile[aria-pressed='true'] {
-  --orb-fill-rest: 0%;
+.tier-tile__icon {
+  font-size: 1.8rem;
+  opacity: 0;
+}
 
+.tier-tile[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--color-gold) 25%, transparent);
   animation: tier-tile-pulse 1.6s ease-in-out infinite;
 }
+
+.tier-tile[aria-pressed='true'] .tier-tile__icon { opacity: 1; }
 
 .tier-tile.is-dragging {
   z-index: 10;
