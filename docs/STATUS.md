@@ -5,6 +5,11 @@
 
 ## The one-screen update (2026-10-16)
 
+- **Note for later, Rod 2026-10-16: the page ground should not be on every page.** `body` in
+  `_sass/base/_foundations.scss:14-21` paints a warm wash at the bottom edge and a dark blue one at
+  the top right on all 58 pages. It is separate from the hana bloom (`assets/js/effects/hana-bloom.js`,
+  a drawn effect that only some pages load). Keep it, but scope it to the pages that want it. Not
+  started.
 - **A hidden sound tier list is built**, `/norobots/sound-tiers-3c91d2e4/`: one board, S to F,
   every switch dragged from the tray, tiles that play on tap. All 25 palette switches are in with
   Rod's recordings and photos, every file named after its switch. On the branch, not on `main`. The switch blind test is live on `main` with photos. CHANGELOG has the rest.
