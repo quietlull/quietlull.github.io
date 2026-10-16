@@ -77,7 +77,8 @@ each effect would redo its work on every report. This keeps only the latest posi
 ## assets/js/components/cursor-glow.js
 
 **What it does.** Copies the mouse position into `--cx` and `--cy` on the glow layer. The
-stylesheet moves the glow. It also keeps the glow working over a post's comments.
+stylesheet moves the glow. It also keeps the glow working over a post's comments. On a device with
+no cursor (`(hover: hover)` does not match, so phones and tablets) it does nothing.
 
 **Why it is not simpler.** Following the mouse is five lines. The rest is for the comments box.
 That box is a page from giscus.app shown inside ours, and a browser will not tell our page where
