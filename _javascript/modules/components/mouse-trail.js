@@ -53,6 +53,7 @@ export function initMouseTrail() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const enabled = localStorage.getItem(STORAGE_KEY) !== 'true';
+  const hasCursor = window.matchMedia('(hover: hover)').matches;
 
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'position:fixed;inset:0;z-index:500;pointer-events:none;';
@@ -239,6 +240,7 @@ export function initMouseTrail() {
   }
 
   document.addEventListener('mousemove', (e) => {
+    if (!hasCursor) return;
     mouseOnPage = true;
     mouseMoving = true;
     clearTimeout(idleTimeout);
@@ -275,7 +277,7 @@ export function initMouseTrail() {
 
   let lastScrollY = window.scrollY;
   window.addEventListener('scroll', () => {
-    if (!enabled || !mouseOnPage) return;
+    if (!enabled || !hasCursor || !mouseOnPage) return;
     const dy = Math.abs(window.scrollY - lastScrollY);
     lastScrollY = window.scrollY;
     if (dy > 2) {

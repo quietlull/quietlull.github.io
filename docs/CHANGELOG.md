@@ -1,3 +1,11 @@
+# 2026-10-16 (later) - NO CURSOR SPARKLE OR GLOW ON PHONES
+
+Rod: a phone has no cursor to follow. When `(hover: hover)` does not match, `mouse-trail.js`
+ignores mouse moves and scroll (a tap fires a fake mousemove, which drew a trail and then sprayed
+sparks at the old tap spot on every scroll), and `cursor-glow.js` never starts. The tap burst and
+`sparklerBurst` click sparks stay. Checked in Chromium: iPhone 13, trail 0 pixels after a move, tap
+burst 348 pixels, glow never placed; desktop trail, burst and glow all still draw.
+
 # 2026-10-16 (later) - THE SECTION HOME PAGES ON A PHONE
 
 Rod, on an iPhone: squished project cards, the vertical name columns in the wrong place, social
