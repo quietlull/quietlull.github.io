@@ -32,8 +32,8 @@ reading rather than his word, the row says so.
 | Clicky | Kailh BOX White V2 | pure | "Perfect!" / older test: "Light and Crisp" | [2a5kL-XRa4s](https://www.youtube.com/watch?v=2a5kL-XRa4s) |
 | Clicky | Kailh BOX Jade | pure | "One of the Loudest Switch EVER" | [VMKZcNaBGFs](https://www.youtube.com/watch?v=VMKZcNaBGFs) |
 | Clicky + Typewriter | Gateron Melodic | bridge | "Clicky Switch with Click Leaf" / site: click recalls vintage Alps SKCM | [0UWGa_HDzz0](https://www.youtube.com/watch?v=0UWGa_HDzz0) |
-| Typewriter | Alps SKCM White | pure | tested on ADK64, Zenith Z150 and Tofu60; use the Tofu60 part | [HL8HsBeE7mM](https://www.youtube.com/watch?v=HL8HsBeE7mM) |
-| Typewriter | Matias Click | pure | "Alps Clicky" | [Y_y9D6cTews](https://www.youtube.com/watch?v=Y_y9D6cTews) |
+| Typewriter | Alps SKCM White (Rod owns: "Real ALPS White") | pure | tested on ADK64, Zenith Z150 and Tofu60; use the Tofu60 part | [HL8HsBeE7mM](https://www.youtube.com/watch?v=HL8HsBeE7mM) |
+| Typewriter | Matias Click (Rod owns: "Outemu Matias White", same switch) | pure | "Alps Clicky" | [Y_y9D6cTews](https://www.youtube.com/watch?v=Y_y9D6cTews) |
 | Typewriter + Clicky | Kailh BOX Navy | bridge | "Heavy spring with Thick Click" / site: vintage sound | [hrF6grCBLIQ](https://www.youtube.com/watch?v=hrF6grCBLIQ) |
 | Silent | Akko Fairy Silent | pure | "Amazingly silent" | [W6gD2IlDBjA](https://www.youtube.com/watch?v=W6gD2IlDBjA) |
 | Silent | Durock Silent Dolphin | pure | "Classic Silent" | [WuYaTy957_s](https://www.youtube.com/watch?v=WuYaTy957_s) |
@@ -42,6 +42,12 @@ reading rather than his word, the row says so.
 | Muted + Thocky | Akko Bittersweet | bridge | site: "muted, thocky" | [nj9W8xXELII](https://www.youtube.com/watch?v=nj9W8xXELII) |
 
 25 switches. Every family is carried by at least three switches once bridges are counted.
+
+## Photos Rod already has
+
+Box Jade, Gateron Melodic, Alps SKCM White and Matias Click, in `assets/img/switch-test/`. The
+audio for all four still comes from Click and Thock, so every clip in the tier list is recorded the
+same way; Rod's own recordings of them stay with the original switch test.
 
 ## What was left out, and why
 
