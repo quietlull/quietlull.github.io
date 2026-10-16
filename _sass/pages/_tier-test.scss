@@ -1,0 +1,101 @@
+@keyframes tier-tile-pulse {
+  0%, 100% { box-shadow: none; }
+
+  50% {
+    box-shadow:
+      inset 0 0 12px color-mix(in srgb, var(--color-glow) 15%, transparent),
+      0 0 12px color-mix(in srgb, var(--color-glow) 30%, transparent);
+  }
+}
+
+.tier-board {
+  display: grid;
+  gap: 4px;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.tier-board__row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  border: 1px solid var(--color-line);
+}
+
+.tier-board__row[data-tier='S'] { --tier-color: #ff7f7f; }
+
+.tier-board__row[data-tier='A'] { --tier-color: #ffbf7f; }
+
+.tier-board__row[data-tier='B'] { --tier-color: #ffdf7f; }
+
+.tier-board__row[data-tier='C'] { --tier-color: #ffff7f; }
+
+.tier-board__row[data-tier='D'] { --tier-color: #bfff7f; }
+
+.tier-board__row[data-tier='F'] { --tier-color: #7f7f7f; }
+
+.tier-board__label {
+  display: grid;
+  place-items: center;
+  background: var(--tier-color);
+  color: var(--color-night);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.tier-board__tiles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 5.5rem;
+  padding: 0.5rem;
+  margin: 0;
+  list-style: none;
+}
+
+.tier-board__pool {
+  justify-content: center;
+  margin-top: 1rem;
+  border: 1px dashed var(--color-line);
+}
+
+.tier-tile {
+  width: 4.5rem;
+  aspect-ratio: 1;
+  padding: 0;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.tier-tile[aria-pressed='true'] {
+  --orb-fill-rest: 0%;
+
+  animation: tier-tile-pulse 1.6s ease-in-out infinite;
+}
+
+.tier-tile.is-dragging {
+  z-index: 10;
+  pointer-events: none;
+  cursor: grabbing;
+}
+
+.tier-result__item {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  width: 6rem;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.tier-result__image {
+  width: 4.5rem;
+  aspect-ratio: 1;
+  background: center / cover no-repeat;
+  border: 1px solid var(--color-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tier-tile[aria-pressed='true'] { animation: none; }
+}

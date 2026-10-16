@@ -413,3 +413,46 @@ both orders, shuffles them, records which side won, and scores.
 whether all pairs are answered. `choose` records a side. `summary` returns the ranking, the most
 wins possible, how many pairs got the same winner in both orders, and how often A was picked. The page shows
 only the ranking; the other two are in the results link for whoever decodes it.
+
+## _javascript/tier-test.js
+
+**What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Round 1 is
+one clip per sound family; the listener drags each into S, A, B, C, D or F. The families that
+advance put all their switches into round 2. The end shows the round 2 board with names and
+photos, the favourite families, and a link that reopens the results.
+
+**Why it is not simpler.** Every clip loads before the board appears, so a tap plays at once.
+Tiles carry no label, because any label hints at the answer.
+
+**Functions.** `init` wires the page and the two rounds. `showResults` draws the final board.
+`readHash` reads results back out of a shared link.
+
+## _javascript/modules/components/tier-board.js
+
+**What it does.** The S to F board. Tap a tile to play or stop it. Drag it to a row, and it lands
+where you let go, left of whichever tile you dropped before. Dragging stops the sound. Keyboard:
+Enter plays, the letters S A B C D F place the focused tile.
+
+**Why it is not simpler.** It uses pointer events, not the browser's built-in drag and drop,
+because built-in drag and drop does not work with a finger. A press only counts as a drag after
+6px of movement, so a slightly shaky tap still plays.
+
+**Functions.** `load` puts fresh tiles in the pool. `complete` says whether every tile is placed.
+`placement` lists the ids in each row, left to right. `setPlaying` marks the playing tile.
+`createTile` builds one tile. `startPointer` tells a tap from a drag. `drop` finds the row and
+the spot under the pointer. `handleKey` places a tile by letter.
+
+**Worth knowing.** `hidden` does nothing on a `.kit-button`, and the tiles are kit buttons.
+
+## _javascript/modules/utils/tier-advance.js
+
+**What it does.** Decides who advances from a tier board. Everything in S goes through. If that is
+fewer than two, A goes through too. If still fewer than two, the best-placed two go. Never more
+than three, taken in board order, so further left wins a tie.
+
+**Functions.** `rankedIds` lists every id best first. `advancingIds` applies the rule above.
+
+## _javascript/modules/utils/shuffle.js
+
+**What it does.** Shuffles a list in place, every order equally likely. Shared by the pairwise test
+and the tier test.

@@ -3,6 +3,12 @@
 **THE WHOLE SITE IS PORTED, THE STRIP PASS HAS RUN, AND BOOTSTRAP IS FULLY EVICTED.** Compiled
 2026-09-02 evening. Everything below is measured, not recalled.
 
+## The one-screen update (2026-10-16)
+
+- **A hidden sound tier list is built**, `/norobots/sound-tiers-3c91d2e4/`: two rounds, S to F,
+  drag tiles that play on tap. Running on stand-in clips until Rod records the seven-family
+  palette. The switch blind test is live on `main` with photos. CHANGELOG has the rest.
+
 ## The one-screen update (2026-10-12)
 
 - **A hidden switch-sound blind test is built**, `/norobots/switch-test-7a7f888b/`. Reusable

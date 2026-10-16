@@ -1,0 +1,55 @@
+---
+layout: default
+---
+
+<div id="tier-test" class="listening-test tier-test">
+  <div class="page-heading page-heading--sub">
+    <h1 class="page-heading__title heading-1-display">{{ page.title }}</h1>
+  </div>
+
+  <section data-step="intro">
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="start">
+      <span class="kit-button__label">Start</span>
+    </button>
+    <p class="listening-test__status" data-status aria-live="polite"></p>
+  </section>
+
+  <section data-step="board" hidden>
+    <p class="listening-test__status" data-round aria-live="polite"></p>
+    <div class="tier-board" data-tier-board>
+      {% assign tiers = 'S,A,B,C,D,F' | split: ',' %}
+      {% for tier in tiers %}
+        <div class="tier-board__row" data-tier="{{ tier }}">
+          <span class="tier-board__label">{{ tier }}</span>
+          <div class="tier-board__tiles" data-tier-row="{{ tier }}"></div>
+        </div>
+      {% endfor %}
+      <div class="tier-board__tiles tier-board__pool" data-tier-pool></div>
+    </div>
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="next" disabled>
+      <span class="kit-button__label">Next</span>
+    </button>
+  </section>
+
+  <section data-step="results" hidden>
+    <p class="listening-test__status" data-families></p>
+    <div class="tier-board" data-results></div>
+    <template data-result-template>
+      <div class="tier-board__row">
+        <span class="tier-board__label" data-field="tier"></span>
+        <ol class="tier-board__tiles tier-result" data-field="items"></ol>
+      </div>
+    </template>
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="copy">
+      <span class="kit-button__label">Copy results link</span>
+    </button>
+  </section>
+</div>
+
+<script type="application/json" id="tier-test-data">
+  {
+    "families": {{ page.families | jsonify }},
+    "media": {{ page.media | relative_url | jsonify }},
+    "placeholder": {{ '/assets/img/placeholder-wip.svg' | relative_url | jsonify }}
+  }
+</script>

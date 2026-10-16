@@ -1,3 +1,25 @@
+# 2026-10-16 - A HIDDEN SOUND TIER LIST, FOR FRIENDS WHO DO NOT KNOW SWITCH WORDS
+
+**Asked for by ROD:** a quiz for people less into keyboards, where the sounds are the thing they
+judge. They tier-list one clip per sound family, then the switches of their favourite families.
+
+**WHAT IT IS.** `/norobots/sound-tiers-3c91d2e4/` (layout and bundle `tier-test`). Rows S, A, B, C,
+D, F (no E, Rod) in the classic tier colours, taken from VerseDB's documented six-tier palette
+(#FF7F7F to #7F7F7F; TierMaker itself could not be reached to confirm). Unlabelled square tiles:
+tap to play on a loop, drag to place, and dragging stops the sound. A playing tile fills gold and
+pulses the selected-tag glow from `_button-kit.scss`. Left in a row is better (Rod). S advances;
+fewer than two in S brings A in; at most three families.
+
+**Rod's design calls:** tier list over ratings, S to F, square drag tiles, tap to play, drag
+stops play, a clear playing state with a pulse, left is better, classic tier colours.
+
+**STAND-INS.** The page runs on the five recorded switches in three made-up families until Rod
+records the real palette: seven families, three switches each, on the same board.
+
+**Proved in Chromium:** mouse drag, finger drag, keyboard placement, drag stops play, drop
+position inside a row, Next locked until the pool is empty, advancement, results, shared link, no
+script errors. Not seen by Rod.
+
 # 2026-10-12 - A HIDDEN BLIND TEST FOR KEYBOARD SWITCH SOUNDS
 
 **Asked for by ROD:** a page that blind-tests switch sounds on a friend, reachable only by link,

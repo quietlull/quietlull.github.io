@@ -1,10 +1,4 @@
-function shuffle(list, random) {
-  for (let i = list.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [list[i], list[j]] = [list[j], list[i]];
-  }
-  return list;
-}
+import { shuffle } from './shuffle';
 
 export class PairwiseTest {
   constructor(items, { variants = 1, controls = 0, random = Math.random } = {}) {
@@ -41,7 +35,7 @@ export class PairwiseTest {
     this.picks.push(side);
   }
 
-    summary() {
+  summary() {
     const wins = Object.fromEntries(this.items.map((id) => [id, 0]));
     const firstWinner = new Map();
     let agree = 0;
