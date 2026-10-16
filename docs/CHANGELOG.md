@@ -1,3 +1,10 @@
+# 2026-10-16 (later) - "WHAT DOES IT ACTUALLY MEAN" ON THE TIER LIST RESULTS
+
+Rod's own reading of the sound words, from his analysis of the audio bands, is a new results
+section below "Your sounds". His wording is kept as written, typos included; it lives in the page
+body of `norobots/sound-tiers-3c91d2e4.md` and the layout prints it with `{{ content }}`. The Copy
+results link button moved to the top of the results.
+
 # 2026-10-16 (later) - NUMBERED TILES, AND THE TIER LIST CAN BE LEFT UNFINISHED
 
 Each tile shows its clip number (1 to 25, in the shuffled order), and the result cards say

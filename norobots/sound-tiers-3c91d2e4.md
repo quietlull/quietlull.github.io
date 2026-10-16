@@ -170,3 +170,14 @@ switches:
     image: /assets/img/switches/akko-bittersweet.webp
     tags: [Muted, Thocky]
 ---
+
+People in the keyboard community really like having these meaningless terms to define a "vibe" they get from their keyboard. since i had these files i did a analysis of the audio bands and this is pretty much what i think the non self explanatory ones like silent and typewriter mean.
+
+- "Thocky" = lower pitched deeper and less high sounds usually 3khz and below only
+- "Clicky" = higher pitched sounds and more high sounds from 8-16 khz
+- "Typewriter" Both "Clicky" and "Thocky" just loud hollow sounding
+- "Silent" this is self explanatory its silent
+- "Creamy" Mid pitched sounds this is pretty much the opposite of "typewriter" closer to "Thocky" though
+- "Marbly" "Clacky" and "Poppy" I could not find any meaningful correlation at all so they are made up feel words this might describe more of a feeling like poppy having strong springs that make the key pop up fast after typing but pretty much you cant feel that from listening.
+
+Anyways this is just for fun and will help me get an idea of what you might like

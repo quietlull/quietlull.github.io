@@ -56,6 +56,9 @@ layout: default
   </section>
 
   <section data-step="results" hidden>
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="copy">
+      <span class="kit-button__label">Copy results link</span>
+    </button>
     <h2>Your sounds</h2>
     <p class="listening-test__status">Compared with your average switch</p>
     <ol class="listening-test__results" data-tag-chart></ol>
@@ -67,6 +70,8 @@ layout: default
         <span class="listening-test__percent" data-field="percent"></span>
       </li>
     </template>
+    <h2>What does it actually mean</h2>
+    <div class="tier-meaning">{{ content }}</div>
     <h2>Your answers</h2>
     <dl class="tier-answers" data-answers></dl>
     <div class="wrapper-project-card-grid wrapper-project-card-grid--square pv2-grid" data-result-cards>
@@ -92,9 +97,6 @@ layout: default
         </div>
       {% endfor %}
     </div>
-    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="copy">
-      <span class="kit-button__label">Copy results link</span>
-    </button>
   </section>
 </div>
 
