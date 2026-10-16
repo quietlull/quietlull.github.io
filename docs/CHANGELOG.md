@@ -1,3 +1,12 @@
+# 2026-10-16 (later) - THE TIER RESULTS ARE PROJECT CARDS, AND THE CARD GRID IS SHARED
+
+Rod: "reuse my project cards layout for the end cards with the tags and the tilt movement", no
+flip. Each switch is a `project-card tilt` in a `pv2-grid`, front only: photo, name, its tier, its
+sound tags. To reuse the grid, the `.pv2-grid` to `.pv2-tags` rules moved out of `#projects-page`
+in `_pages/_projects.scss` to the top level. Proved with `page-fingerprint --styles`: identical
+across all 20 page views. The fingerprint tool runs here with `CHROME_PATH` pointed at a wrapper
+that adds `--no-sandbox` (the container runs as root).
+
 # 2026-10-16 (later) - SWITCHES CARRY SOUND TAGS, AND THE RESULTS CHART THEM
 
 Rod: "tag the switches and then at the end give them like a chart of which switch type they liked

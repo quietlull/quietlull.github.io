@@ -55,109 +55,6 @@
 
   }
 
-  .pv2-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-
-  @media (max-width: 991px) {
-    .pv2-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  @media (max-width: 767px) {
-    .pv2-grid { grid-template-columns: 1fr; }
-  }
-
-  .pv2-cell {
-    display: grid;
-    grid-template-rows: 421px;
-  }
-
-  .pv2-descbox {
-    height: 73.5px;
-    overflow: hidden;
-  }
-
-  .pv2-desc,
-  .pv2-date {
-    margin: 0;
-    color: var(--color-warm-muted);
-    font-size: 14px;
-    line-height: 1.75;
-  }
-
-  .pv2-desc {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-  }
-
-  .pv2-grid .card-front .card-meta {
-    border-bottom: 1px solid var(--color-line);
-    padding-bottom: 8px;
-  }
-
-  .pv2-grid .card-cover {
-    bottom: auto;
-    height: 285px;
-  }
-
-  .pv2-grid .glass-plane {
-    bottom: auto;
-    height: 277px;
-  }
-
-  .pv2-grid .card-front { background: var(--cover-lo); }
-
-  .pv2-metabox {
-    --z: 36;
-    --z-hover: 52;
-
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    height: 28px;
-    margin-top: 16px;
-  }
-
-  .pv2-tags {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.4rem;
-
-    .kit-tag {
-      display: inline-flex;
-      align-items: center;
-      border: 0;
-      border-radius: 0;
-      background: none;
-      opacity: 0.65;
-      outline: 0;
-      padding: 0;
-      font-size: 0.85rem;
-      line-height: 1;
-      transition: opacity 0.35s;
-    }
-
-    .badge-icon {
-      display: block;
-      width: 1rem;
-      height: 1rem;
-    }
-  }
-
-  .pv2-grid .project-card:hover .pv2-tags .kit-tag { opacity: 1; }
-
-  .pv2-grid .takeaway-text--none {
-    opacity: 0.55;
-    font-style: normal;
-  }
-
   .pv2-rule {
     border: 0;
     border-top: 1px solid var(--color-line-faint);
@@ -183,4 +80,107 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+}
+
+.pv2-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 991px) {
+  .pv2-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .pv2-grid { grid-template-columns: 1fr; }
+}
+
+.pv2-cell {
+  display: grid;
+  grid-template-rows: 421px;
+}
+
+.pv2-descbox {
+  height: 73.5px;
+  overflow: hidden;
+}
+
+.pv2-desc,
+.pv2-date {
+  margin: 0;
+  color: var(--color-warm-muted);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.pv2-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.pv2-grid .card-front .card-meta {
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: 8px;
+}
+
+.pv2-grid .card-cover {
+  bottom: auto;
+  height: 285px;
+}
+
+.pv2-grid .glass-plane {
+  bottom: auto;
+  height: 277px;
+}
+
+.pv2-grid .card-front { background: var(--cover-lo); }
+
+.pv2-metabox {
+  --z: 36;
+  --z-hover: 52;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 28px;
+  margin-top: 16px;
+}
+
+.pv2-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+
+  .kit-tag {
+    display: inline-flex;
+    align-items: center;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    opacity: 0.65;
+    outline: 0;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1;
+    transition: opacity 0.35s;
+  }
+
+  .badge-icon {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.pv2-grid .project-card:hover .pv2-tags .kit-tag { opacity: 1; }
+
+.pv2-grid .takeaway-text--none {
+  opacity: 0.55;
+  font-style: normal;
 }

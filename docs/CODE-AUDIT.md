@@ -418,14 +418,16 @@ only the ranking; the other two are in the results link for whoever decodes it.
 
 **What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Every
 switch starts in the tray under the board; the listener drags each into S, A, B, C, D or F. Done
-shows "Your sounds", a bar per sound tag scored from where its switches landed, then the board
-with names and photos, and a link that reopens the results. Each switch's tags are in the page's
-front matter.
+shows "Your sounds", a bar per sound tag scored from where its switches landed, then one project
+card per switch in rank order, with its tier and tags, and a link that reopens the results. Each
+switch's tags are in the page's front matter.
 
 **Why it is not simpler.** Every clip loads before the board appears, so a tap plays at once.
-Tiles carry no label, because any label hints at the answer.
+Tiles carry no label, because any label hints at the answer. The result cards are in the page from
+the start, hidden, and only reordered at the end: `site-wide.js` starts tilt once, at load, so a
+card built later would never lean.
 
-**Functions.** `init` wires the page. `showResults` draws the final board.
+**Functions.** `init` wires the page. `showResults` fills the chart and puts the cards in rank order.
 `readHash` reads results back out of a shared link.
 
 ## _javascript/modules/components/tier-board.js

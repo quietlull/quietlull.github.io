@@ -41,13 +41,29 @@ layout: default
         <span class="listening-test__percent" data-field="percent"></span>
       </li>
     </template>
-    <div class="tier-board" data-results></div>
-    <template data-result-template>
-      <div class="tier-board__row">
-        <span class="tier-board__label" data-field="tier"></span>
-        <ol class="tier-board__tiles tier-result" data-field="items"></ol>
-      </div>
-    </template>
+    <div class="wrapper-project-card-grid wrapper-project-card-grid--square pv2-grid" data-result-cards>
+      {% for item in page.switches %}
+        <div class="pv2-cell" data-card="{{ item.id }}">
+          <article class="project-card tilt">
+            <div class="card-link"><div class="card-tilt track-mouse"><div class="card-flipper">
+              <div class="card-front">
+                <div class="card-cover parallax-z-layer">
+                  <img src="{{ item.image | default: '/assets/img/placeholder-wip.svg' | relative_url }}" alt="">
+                </div>
+                <div class="glass-plane parallax-z-layer border-glow"></div>
+                <div class="card-body parallax-z-layer">
+                  <h3 class="card-title parallax-z-layer">{{ item.name }}</h3>
+                  <p class="card-meta" data-field="tier"></p>
+                  <div class="pv2-metabox parallax-z-layer">
+                    <span class="pv2-tags">{% for tag in item.tags %}<span class="kit-tag">{{ tag }}</span>{% endfor %}</span>
+                  </div>
+                </div>
+              </div>
+            </div></div></div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
     <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="copy">
       <span class="kit-button__label">Copy results link</span>
     </button>
@@ -57,7 +73,6 @@ layout: default
 <script type="application/json" id="tier-test-data">
   {
     "switches": {{ page.switches | jsonify }},
-    "media": {{ page.media | relative_url | jsonify }},
-    "placeholder": {{ '/assets/img/placeholder-wip.svg' | relative_url | jsonify }}
+    "media": {{ page.media | relative_url | jsonify }}
   }
 </script>

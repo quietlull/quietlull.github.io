@@ -71,25 +71,12 @@ function init(root) {
   });
 
   function showResults(result) {
-    const list = q('[data-results]');
-    const template = q('[data-result-template]');
-    TIERS.forEach((tier) => {
-      const row = template.content.firstElementChild.cloneNode(true);
-      row.dataset.tier = tier;
-      row.querySelector('[data-field="tier"]').textContent = tier;
-      const items = row.querySelector('[data-field="items"]');
-      result[tier].forEach((id) => {
-        const item = document.createElement('li');
-        item.className = 'tier-result__item';
-        const image = document.createElement('span');
-        image.className = 'tier-result__image';
-        image.style.backgroundImage = `url("${switches[id].image || data.placeholder}")`;
-        const name = document.createElement('span');
-        name.textContent = switches[id].name;
-        item.append(image, name);
-        items.appendChild(item);
-      });
-      list.appendChild(row);
+    const grid = q('[data-result-cards]');
+    TIERS.flatMap((tier) => result[tier].map((id) => [id, tier])).forEach(([id, tier], i) => {
+      const card = grid.querySelector(`[data-card="${id}"]`);
+      card.querySelector('[data-field="tier"]').textContent = `${tier} tier`;
+      card.classList.add(i % 2 ? 'posts-grid-hue-b' : 'posts-grid-hue-a');
+      grid.appendChild(card);
     });
 
     const chart = q('[data-tag-chart]');

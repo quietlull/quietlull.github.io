@@ -86,22 +86,6 @@
   cursor: grabbing;
 }
 
-.tier-result__item {
-  display: grid;
-  justify-items: center;
-  gap: 0.25rem;
-  width: 6rem;
-  font-size: 0.8rem;
-  text-align: center;
-}
-
-.tier-result__image {
-  width: 4.5rem;
-  aspect-ratio: 1;
-  background: center / cover no-repeat;
-  border: 1px solid var(--color-line);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .tier-tile[aria-pressed='true'] { animation: none; }
 }
