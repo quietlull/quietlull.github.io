@@ -93,6 +93,7 @@
   .skills-row {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     align-items: flex-start;
     gap: 2rem;
     margin: 0;
@@ -176,8 +177,6 @@
     }
 
     .section-head__name { font-size: 8.5vw; }
-
-    .skills-row { justify-content: center; }
 
     .reel__bar {
       width: calc(100% + 32px);

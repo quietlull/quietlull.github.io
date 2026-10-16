@@ -19,7 +19,7 @@ Measured at 390px first.
   18.5% (content 246 -> 358px); the three vertical columns scale to fit the screen
   (`(100vw - 46px) / 13.3`: each column is 4.15em wide plus two 0.428em gaps, 30px right padding
   and a 16px left edge), they hung 87px off the left before; social icons 9vw (35px); section
-  headings 8.5vw so "Featured Projects" fits one line; skills centred; the reel runs edge to edge.
+  headings 8.5vw so "Featured Projects" fits one line; skills centred (on desktop too, Rod's call); the reel runs edge to edge.
 - **Desktop proved unchanged:** page fingerprint at 1440 identical in position for all ten pages
   (the one card's computed `grid-column` value differs, same box), and every hero, card, heading,
   skill and reel box identical at 760, 1024, 1280 and 1920 on both section homes and projects.
