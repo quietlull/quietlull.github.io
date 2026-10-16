@@ -436,10 +436,10 @@ card built later would never lean.
 ## _javascript/modules/components/question-flow.js
 
 **What it does.** The questions before the tier list, one per screen. Each question is a
-`fieldset` the layout renders from the page's front matter, drawn as a Google Forms card (measured
-from a live public form on 2026-10-16: 1px border, 8px corners, 24px padding, 10px coloured top
-stripe, 20px round or square inputs, underlined "Other" field). The answers are real radio buttons
-and checkboxes, laid out in as many columns as the width allows. The page title hides while the
+`fieldset` the layout renders from the page's front matter, on a faint panel with no border (spacing
+and 20px inputs measured from a live Google Form on 2026-10-16; Rod dropped its stripe and border).
+The answers are real radio buttons and checkboxes, one full-width bar each; the two pick-any
+questions lay them out in as many columns as the width allows. The page title hides while the
 questions are up (`:has()` in `_tier-test.scss`), so the question is the top of the page. "Pick one" questions keep Next locked until something is chosen; "pick any" questions can
 be skipped. The answers come back as the index of each chosen option plus any "Other" text.
 

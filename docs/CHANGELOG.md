@@ -1,3 +1,9 @@
+# 2026-10-16 (later) - QUESTION CARDS: NO STRIPE, NO BORDER, ANSWERS AS BARS
+
+Rod: no stripe or border, keep the gold question text and the faint white panel. Answers are
+full-width bars (each row on its own faint panel); only the two pick-any questions (devices and the
+typing checklist) keep the columns, one column on a phone.
+
 # 2026-10-16 (later) - "YOUR PREFERENCES", AND A LINE OF SPACE IN THE EXPLANATION
 
 "What you need" is renamed "Your preferences". The explanation gets one line (`1lh`) between its
