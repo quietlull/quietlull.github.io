@@ -15,7 +15,6 @@ layout: default
   </section>
 
   <section data-step="board" hidden>
-    <p class="listening-test__status" data-round aria-live="polite"></p>
     <div class="tier-board" data-tier-board>
       {% assign tiers = 'S,A,B,C,D,F' | split: ',' %}
       {% for tier in tiers %}
@@ -26,8 +25,8 @@ layout: default
       {% endfor %}
       <div class="tier-board__tiles tier-board__pool" data-tier-pool></div>
     </div>
-    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="next" disabled>
-      <span class="kit-button__label">Next</span>
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="done" disabled>
+      <span class="kit-button__label">Done</span>
     </button>
   </section>
 

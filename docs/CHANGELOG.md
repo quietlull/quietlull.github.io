@@ -1,3 +1,12 @@
+# 2026-10-16 (later) - THE TIER LIST IS ONE ROUND, AND THE PLAYING TILE IS TINTED
+
+Rod: "it should just have them all at the bottom and let them drag them all" (confirmed: one round,
+every switch), and "make them tinted with a play when their in play also make sure that two cant be
+in play at the same time". The family round is gone. The playing tile is a gold tint with the
+site's fa-play-circle. The "two playing" was the orb-fill hover: a tapped tile on a phone stays
+hovered and filled gold. The tiles no longer carry orb-fill. Measured: one live audio source and
+one marked tile after rapid taps.
+
 # 2026-10-16 - A HIDDEN SOUND TIER LIST, FOR FRIENDS WHO DO NOT KNOW SWITCH WORDS
 
 **Asked for by ROD:** a quiz for people less into keyboards, where the sounds are the thing they

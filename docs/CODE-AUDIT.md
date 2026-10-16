@@ -416,15 +416,15 @@ only the ranking; the other two are in the results link for whoever decodes it.
 
 ## _javascript/tier-test.js
 
-**What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Round 1 is
-one clip per sound family; the listener drags each into S, A, B, C, D or F. The families that
-advance put all their switches into round 2. The end shows the round 2 board with names and
-photos, the favourite families, and a link that reopens the results.
+**What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Every
+switch starts in the tray under the board; the listener drags each into S, A, B, C, D or F. Done
+shows the board with names and photos, "your sound" (the families of the best-placed switches),
+and a link that reopens the results.
 
 **Why it is not simpler.** Every clip loads before the board appears, so a tap plays at once.
 Tiles carry no label, because any label hints at the answer.
 
-**Functions.** `init` wires the page and the two rounds. `showResults` draws the final board.
+**Functions.** `init` wires the page. `showResults` draws the final board.
 `readHash` reads results back out of a shared link.
 
 ## _javascript/modules/components/tier-board.js
@@ -448,7 +448,7 @@ the spot under the pointer. `handleKey` places a tile by letter.
 
 ## _javascript/modules/utils/tier-advance.js
 
-**What it does.** Decides who advances from a tier board. Everything in S goes through. If that is
+**What it does.** Picks the best-placed ids from a tier board. The tier test uses it for "your sound". Everything in S goes through. If that is
 fewer than two, A goes through too. If still fewer than two, the best-placed two go. Never more
 than three, taken in board order, so further left wins a tie.
 

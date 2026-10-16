@@ -29,9 +29,7 @@ function init(root) {
   const player = new AudioPlayer();
   const clips = Object.fromEntries(Object.keys(switches).map((id) =>
     [id, new AudioClip(`${data.media}/${id}-0.mp3`)]));
-  const next = q('[data-action="next"]');
-  let round = 1;
-  let familyRound = null;
+  const done = q('[data-action="done"]');
 
   const board = new TierBoard(q('[data-tier-board]'), {
     onToggle(id) {
@@ -48,7 +46,7 @@ function init(root) {
       board.setPlaying(null);
     },
     onChange() {
-      next.disabled = !board.complete;
+      done.disabled = !board.complete;
     }
   });
 
@@ -62,22 +60,13 @@ function init(root) {
       return;
     }
     show('board');
-    q('[data-round]').textContent = 'Round 1';
-    board.load(shuffle(data.families.map((family) => family.switches[0].id)));
+    board.load(shuffle(Object.keys(switches)));
   });
 
-  next.addEventListener('click', () => {
+  done.addEventListener('click', () => {
     player.stop();
     board.setPlaying(null);
-    if (round === 1) {
-      familyRound = board.placement();
-      const families = advancingIds(familyRound).map((id) => switches[id].family);
-      round = 2;
-      q('[data-round]').textContent = 'Round 2';
-      board.load(shuffle(families.flatMap((family) => family.switches.map((item) => item.id))));
-      return;
-    }
-    const result = { families: familyRound, switches: board.placement() };
+    const result = board.placement();
     history.replaceState(null, '', `#r=${btoa(JSON.stringify(result))}`);
     showResults(result);
   });
@@ -90,7 +79,7 @@ function init(root) {
       row.dataset.tier = tier;
       row.querySelector('[data-field="tier"]').textContent = tier;
       const items = row.querySelector('[data-field="items"]');
-      result.switches[tier].forEach((id) => {
+      result[tier].forEach((id) => {
         const item = document.createElement('li');
         item.className = 'tier-result__item';
         const image = document.createElement('span');
@@ -104,8 +93,8 @@ function init(root) {
       list.appendChild(row);
     });
 
-    const favourites = advancingIds(result.families).map((id) => switches[id].family.name);
-    q('[data-families]').textContent = `Your sound: ${favourites.join(', ')}`;
+    const favourites = new Set(advancingIds(result).map((id) => switches[id].family.name));
+    q('[data-families]').textContent = `Your sound: ${[...favourites].join(', ')}`;
 
     const copy = q('[data-action="copy"]');
     copy.addEventListener('click', () => {
