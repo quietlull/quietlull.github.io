@@ -185,6 +185,8 @@
   text-align: left;
 }
 
+.tier-meaning > * + * { margin-top: 1lh; }
+
 .tier-affinity__track {
   position: relative;
   background:

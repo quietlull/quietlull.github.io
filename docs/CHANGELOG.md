@@ -1,3 +1,10 @@
+# 2026-10-16 (later) - "YOUR PREFERENCES", AND A LINE OF SPACE IN THE EXPLANATION
+
+"What you need" is renamed "Your preferences". The explanation gets one line (`1lh`) between its
+paragraphs and the list. Rod saw the section blank on the live page right after a deploy while it
+rendered fully in a fresh browser: inference, his browser kept the old `tier-test.min.js` (GitHub
+Pages lets it be reused for 10 minutes and the file name never changes) with the new page.
+
 # 2026-10-16 (later) - "WHAT YOU NEED" BARS AND FLAGS, ANSWERS MOVED TO THE BOTTOM (NOT ON MAIN)
 
 Six bars (feel, spring, pre-travel, loudness, board height, keycap shape), a layout line and ten
