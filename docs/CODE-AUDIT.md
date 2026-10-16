@@ -465,8 +465,9 @@ the screen scrolls the page at 700px a second, so on a phone a tile can be carri
 below the board up to the S row in one drag. The scroll is `instant` because the site's smooth
 scrolling would otherwise swallow it.
 
-**Functions.** `load` puts fresh tiles in the pool. `complete` says whether every tile is placed.
-`placement` lists the ids in each row, left to right. `setPlaying` marks the playing tile.
+**Functions.** `load` puts fresh tiles in the pool, numbered 1 up in the order given, so the listener
+can tell clips apart without seeing names. `anyRated` says whether at least one tile is in a row
+(Done needs one). `placement` lists the ids in each row, left to right, plus `unrated` for the pool. `setPlaying` marks the playing tile.
 `createTile` builds one tile. `startPointer` tells a tap from a drag. `drop` finds the row and
 the spot under the pointer. Inside `startPointer`, `follow` keeps the tile under the finger while
 the page scrolls and `scrollAtEdge` does the scrolling. `handleKey` places a tile by letter.
@@ -476,7 +477,8 @@ the page scrolls and `scrollAtEdge` does the scrolling. `handleKey` places a til
 ## _javascript/modules/utils/tier-scores.js
 
 **What it does.** Turns a finished tier board into "your sounds": an affinity for each sound tag.
-Each tier is worth points (S 100, A 80, B 60, C 40, D 20, F 0). A tag's affinity is the average
+Each tier is worth points (S 100, A 80, B 60, C 40, D 20, F -20), and a switch left in the tray
+is worth 0 (Rod, 2026-10-16), so the board can be finished without rating everything. A tag's affinity is the average
 points of the switches carrying it, minus the listener's average over every switch. +30 means they
 rank that sound 30 points above their typical switch; 0 means no preference.
 
@@ -486,7 +488,8 @@ bridge switch (two tags) counts half toward each, so it never weighs more than o
 The switch count is returned so the page can show how much evidence each tag has.
 
 **Functions.** `tagAffinity` returns each tag with its affinity and switch count, best first.
-`TIERS` is the row order the board and the results share.
+`TIERS` is the row order the board and the results share. `AFFINITY_RANGE` (S minus F) scales
+the bars so the largest possible lead fills half the track.
 
 ## _javascript/modules/utils/shuffle.js
 

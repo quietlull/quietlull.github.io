@@ -1,3 +1,11 @@
+# 2026-10-16 (later) - NUMBERED TILES, AND THE TIER LIST CAN BE LEFT UNFINISHED
+
+Each tile shows its clip number (1 to 25, in the shuffled order), and the result cards say
+"Clip 7 · S tier" so the number leads back to a name. Rod picked numbers over letters, which would
+clash with the tier letters. Done unlocks after one tile is placed; tiles left in the tray score 0
+and F now scores -20. The whole board ignores text selection, which was catching drags. Checked by
+hand against the page: one S and one F placed, Creamy +27 and Thocky -6, as computed.
+
 # 2026-10-16 (later) - THE BACKGROUND ORB IS GONE, AND THE QUESTIONS LOOK LIKE A FORM
 
 **The orb.** `body::before` painted three still orange glows on every page. PROVENANCE-AUDIT had it

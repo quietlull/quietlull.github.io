@@ -13,6 +13,7 @@
   gap: 4px;
   margin: 1.5rem 0;
   text-align: left;
+  user-select: none;
 }
 
 .tier-board__row {
@@ -60,12 +61,20 @@
 }
 
 .tier-tile {
+  position: relative;
   width: 4.5rem;
   aspect-ratio: 1;
   padding: 0;
   touch-action: none;
-  user-select: none;
   cursor: grab;
+}
+
+.tier-tile__number {
+  position: absolute;
+  top: 0.2rem;
+  left: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .tier-tile__icon {

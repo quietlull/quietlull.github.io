@@ -3,7 +3,7 @@ import { AudioClip } from './modules/audio/audio-clip';
 import { AudioPlayer } from './modules/audio/audio-player';
 import { TierBoard } from './modules/components/tier-board';
 import { QuestionFlow } from './modules/components/question-flow';
-import { TIERS, tagAffinity } from './modules/utils/tier-scores';
+import { TIERS, AFFINITY_RANGE, tagAffinity } from './modules/utils/tier-scores';
 import { shuffle } from './modules/utils/shuffle';
 
 basic();
@@ -46,12 +46,13 @@ function init(root) {
       board.setPlaying(null);
     },
     onChange() {
-      done.disabled = !board.complete;
+      done.disabled = !board.anyRated;
     }
   });
 
   let loading = null;
   let answers = null;
+  let order = null;
 
   const questions = new QuestionFlow(q('[data-step="questions"]'), {
     async onDone(given) {
@@ -64,7 +65,8 @@ function init(root) {
         return;
       }
       show('board');
-      board.load(shuffle(Object.keys(switches)));
+      order = shuffle(Object.keys(switches));
+      board.load(order);
     }
   });
 
@@ -77,16 +79,17 @@ function init(root) {
   done.addEventListener('click', () => {
     player.stop();
     board.setPlaying(null);
-    const result = { placement: board.placement(), answers };
+    const result = { placement: board.placement(), answers, order };
     history.replaceState(null, '', `#r=${btoa(JSON.stringify(result))}`);
     showResults(result);
   });
 
   function showResults(result) {
     const grid = q('[data-result-cards]');
-    TIERS.flatMap((tier) => result.placement[tier].map((id) => [id, tier])).forEach(([id, tier], i) => {
+    [...TIERS, 'unrated'].flatMap((tier) => result.placement[tier].map((id) => [id, tier])).forEach(([id, tier], i) => {
       const card = grid.querySelector(`[data-card="${id}"]`);
-      card.querySelector('[data-field="tier"]').textContent = `${tier} tier`;
+      const rating = tier === 'unrated' ? 'Not rated' : `${tier} tier`;
+      card.querySelector('[data-field="tier"]').textContent = `Clip ${result.order.indexOf(id) + 1} \u00b7 ${rating}`;
       card.classList.add(i % 2 ? 'posts-grid-hue-b' : 'posts-grid-hue-a');
       grid.appendChild(card);
     });
@@ -98,7 +101,7 @@ function init(root) {
     tagAffinity(result.placement, tagsById).forEach(({ tag, affinity, switches }, i, scores) => {
       if (i === 0 || affinity < scores[i - 1].affinity) rank = i + 1;
       const bar = barTemplate.content.firstElementChild.cloneNode(true);
-      const edge = 50 + affinity / 2;
+      const edge = 50 + (50 * affinity) / AFFINITY_RANGE;
       bar.style.setProperty('--fill-from', `${Math.min(50, edge)}%`);
       bar.style.setProperty('--fill-to', `${Math.max(50, edge)}%`);
       bar.querySelector('[data-field="rank"]').textContent = rank;

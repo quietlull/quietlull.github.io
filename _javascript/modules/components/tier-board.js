@@ -14,17 +14,17 @@ export class TierBoard {
 
   load(ids) {
     Object.values(this.rows).forEach((row) => row.replaceChildren());
-    this.pool.replaceChildren(...ids.map((id) => this.createTile(id)));
+    this.pool.replaceChildren(...ids.map((id, i) => this.createTile(id, i + 1)));
     this.callbacks.onChange();
   }
 
-  get complete() {
-    return this.pool.children.length === 0;
+  get anyRated() {
+    return TIERS.some((tier) => this.rows[tier].children.length > 0);
   }
 
   placement() {
     const idsIn = (container) => [...container.children].map((tile) => tile.dataset.id);
-    return Object.fromEntries(TIERS.map((tier) => [tier, idsIn(this.rows[tier])]));
+    return { ...Object.fromEntries(TIERS.map((tier) => [tier, idsIn(this.rows[tier])])), unrated: idsIn(this.pool) };
   }
 
   setPlaying(id) {
@@ -33,14 +33,14 @@ export class TierBoard {
     });
   }
 
-  createTile(id) {
+  createTile(id, number) {
     const tile = document.createElement('button');
     tile.type = 'button';
     tile.className = 'kit-button kit-button--outline tier-tile';
-    tile.innerHTML = '<i class="fas fa-play-circle tier-tile__icon" aria-hidden="true"></i>';
+    tile.innerHTML = `<span class="tier-tile__number">${number}</span><i class="fas fa-play-circle tier-tile__icon" aria-hidden="true"></i>`;
     tile.dataset.id = id;
     tile.setAttribute('aria-pressed', 'false');
-    tile.setAttribute('aria-label', 'Sound clip');
+    tile.setAttribute('aria-label', `Sound clip ${number}`);
     tile.addEventListener('pointerdown', (event) => this.startPointer(event, tile));
     tile.addEventListener('keydown', (event) => this.handleKey(event, tile));
     tile.addEventListener('click', (event) => {
