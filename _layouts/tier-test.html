@@ -11,7 +11,26 @@ layout: default
     <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="start">
       <span class="kit-button__label">Start</span>
     </button>
-    <p class="listening-test__status" data-status aria-live="polite"></p>
+  </section>
+
+  <section data-step="questions" hidden>
+    {% for question in page.questions %}
+      <fieldset class="tier-question" data-question="{{ question.id }}" data-pick="{{ question.pick }}" hidden>
+        <legend class="tier-question__text">{{ question.text }}</legend>
+        <div class="tier-question__options">
+          {% for option in question.options %}
+            <button type="button" class="kit-tag tier-question__option" data-option="{{ forloop.index0 }}" aria-pressed="false">{{ option.label }}</button>
+          {% endfor %}
+          {% if question.other %}
+            <input type="text" class="tier-question__other" data-other placeholder="Other:" aria-label="Other">
+          {% endif %}
+        </div>
+      </fieldset>
+    {% endfor %}
+    <p class="listening-test__status" data-question-progress aria-live="polite"></p>
+    <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="next-question" disabled>
+      <span class="kit-button__label">Next</span>
+    </button>
   </section>
 
   <section data-step="board" hidden>
@@ -42,6 +61,8 @@ layout: default
         <span class="listening-test__percent" data-field="percent"></span>
       </li>
     </template>
+    <h2>Your answers</h2>
+    <dl class="tier-answers" data-answers></dl>
     <div class="wrapper-project-card-grid wrapper-project-card-grid--square pv2-grid" data-result-cards>
       {% for item in page.switches %}
         <div class="pv2-cell" data-card="{{ item.id }}">
@@ -74,6 +95,7 @@ layout: default
 <script type="application/json" id="tier-test-data">
   {
     "switches": {{ page.switches | jsonify }},
+    "questions": {{ page.questions | jsonify }},
     "media": {{ page.media | relative_url | jsonify }}
   }
 </script>

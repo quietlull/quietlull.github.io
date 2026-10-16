@@ -418,7 +418,8 @@ only the ranking; the other two are in the results link for whoever decodes it.
 
 ## _javascript/tier-test.js
 
-**What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Every
+**What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Six questions
+come first (one per screen, the wording is Rod's own, typos kept on purpose), then every
 switch starts in the tray under the board; the listener drags each into S, A, B, C, D or F. Done
 shows "Your sounds", a bar per sound tag growing left or right from the listener's average, then one project
 card per switch in rank order, with its tier and tags, and a link that reopens the results. Each
@@ -431,6 +432,20 @@ card built later would never lean.
 
 **Functions.** `init` wires the page. `showResults` fills the chart and puts the cards in rank order.
 `readHash` reads results back out of a shared link.
+
+## _javascript/modules/components/question-flow.js
+
+**What it does.** The questions before the tier list, one per screen. Each question is a
+`fieldset` the layout renders from the page's front matter, with the site's filter tags as answer
+buttons. "Pick one" questions keep Next locked until something is chosen; "pick any" questions can
+be skipped. The answers come back as the index of each chosen option plus any "Other" text.
+
+**Why it is not simpler.** Answers are stored as option indexes, not words, so the results link
+stays short and the wording can be edited without breaking the meaning.
+
+**Functions.** `start` opens the first question. `show` switches screen and scrolls it into view.
+`pick` toggles an answer, clearing the others on a pick-one question. `update` locks or unlocks
+Next. `advance` moves on or finishes. `answers` collects what was chosen.
 
 ## _javascript/modules/components/tier-board.js
 

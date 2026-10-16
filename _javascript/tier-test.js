@@ -2,6 +2,7 @@ import { basic } from './modules/layouts';
 import { AudioClip } from './modules/audio/audio-clip';
 import { AudioPlayer } from './modules/audio/audio-player';
 import { TierBoard } from './modules/components/tier-board';
+import { QuestionFlow } from './modules/components/question-flow';
 import { TIERS, tagAffinity } from './modules/utils/tier-scores';
 import { shuffle } from './modules/utils/shuffle';
 
@@ -49,30 +50,41 @@ function init(root) {
     }
   });
 
-  q('[data-action="start"]').addEventListener('click', async (event) => {
-    event.currentTarget.disabled = true;
-    q('[data-status]').textContent = 'Loading sounds...';
-    try {
-      await player.load(Object.values(clips));
-    } catch (err) {
-      q('[data-status]').textContent = `Could not load the sounds (${err.message}). Try reloading.`;
-      return;
+  let loading = null;
+  let answers = null;
+
+  const questions = new QuestionFlow(q('[data-step="questions"]'), {
+    async onDone(given) {
+      answers = given;
+      q('[data-question-progress]').textContent = 'Loading sounds...';
+      try {
+        await loading;
+      } catch (err) {
+        q('[data-question-progress]').textContent = `Could not load the sounds (${err.message}). Try reloading.`;
+        return;
+      }
+      show('board');
+      board.load(shuffle(Object.keys(switches)));
     }
-    show('board');
-    board.load(shuffle(Object.keys(switches)));
+  });
+
+  q('[data-action="start"]').addEventListener('click', () => {
+    loading = player.load(Object.values(clips));
+    show('questions');
+    questions.start();
   });
 
   done.addEventListener('click', () => {
     player.stop();
     board.setPlaying(null);
-    const result = board.placement();
+    const result = { placement: board.placement(), answers };
     history.replaceState(null, '', `#r=${btoa(JSON.stringify(result))}`);
     showResults(result);
   });
 
   function showResults(result) {
     const grid = q('[data-result-cards]');
-    TIERS.flatMap((tier) => result[tier].map((id) => [id, tier])).forEach(([id, tier], i) => {
+    TIERS.flatMap((tier) => result.placement[tier].map((id) => [id, tier])).forEach(([id, tier], i) => {
       const card = grid.querySelector(`[data-card="${id}"]`);
       card.querySelector('[data-field="tier"]').textContent = `${tier} tier`;
       card.classList.add(i % 2 ? 'posts-grid-hue-b' : 'posts-grid-hue-a');
@@ -83,7 +95,7 @@ function init(root) {
     const barTemplate = q('[data-tag-template]');
     const tagsById = Object.fromEntries(data.switches.map((item) => [item.id, item.tags]));
     let rank = 0;
-    tagAffinity(result, tagsById).forEach(({ tag, affinity, switches }, i, scores) => {
+    tagAffinity(result.placement, tagsById).forEach(({ tag, affinity, switches }, i, scores) => {
       if (i === 0 || affinity < scores[i - 1].affinity) rank = i + 1;
       const bar = barTemplate.content.firstElementChild.cloneNode(true);
       const edge = 50 + affinity / 2;
@@ -94,6 +106,26 @@ function init(root) {
       bar.querySelector('[data-field="count"]').textContent = `${switches} ${switches === 1 ? 'switch' : 'switches'}`;
       bar.querySelector('[data-field="percent"]').textContent = affinity > 0 ? `+${affinity}` : `${affinity}`;
       chart.appendChild(bar);
+    });
+
+    const list = q('[data-answers]');
+    data.questions.forEach((question) => {
+      const given = result.answers[question.id];
+      const chosen = given.picked.map((index) => question.options[index]);
+      if (!chosen.length && !given.other) return;
+      const term = document.createElement('dt');
+      term.textContent = question.text;
+      list.appendChild(term);
+      chosen.forEach((option) => {
+        const detail = document.createElement('dd');
+        detail.textContent = `${option.label} \u2192 ${option.means}`;
+        list.appendChild(detail);
+      });
+      if (given.other) {
+        const detail = document.createElement('dd');
+        detail.textContent = `Other: ${given.other}`;
+        list.appendChild(detail);
+      }
     });
 
     const copy = q('[data-action="copy"]');

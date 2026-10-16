@@ -1,3 +1,12 @@
+# 2026-10-16 (later) - QUESTIONS BEFORE THE TIER LIST
+
+Rod wrote six questions (devices, wrists, button feel, when a key registers, loudness, and a
+typing-experience checklist that also covers layout keys) to gauge profile, spring, pre-travel,
+keycaps and layout, things the tier list cannot measure. Wording is his and kept verbatim, typos
+included ("makes it feel more organic"). One per screen; answers ride in the results link and the
+results page lists each answer with what it means (both his call). The meanings live in the page
+front matter next to each option.
+
 # 2026-10-16 (later) - "YOUR SOUNDS" IS AN AFFINITY, NOT AN AVERAGE
 
 Rod wants a per-tag affinity rating to decide what switches to order. The old bars were the plain
