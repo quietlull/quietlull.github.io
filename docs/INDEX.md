@@ -31,6 +31,7 @@ AND not inferable from reading the code. If a doc disagrees with the code, the d
 - [REFACTOR-PLAN.md](REFACTOR-PLAN.md) - the flaws found 2026-08-11 + the phased plan. Phases 0 and 1 are DONE; Phase 2 is next and nothing gates it; Phase 3 is "vendored but clean" (Rod, 2026-09-02).
 - [POST-FRAMES-PLAN.md](POST-FRAMES-PLAN.md) - **why post pages drop frames (P515), PLANNED not run.** The parent perf investigation; scoped to FRAMES only, not bytes or memory.
 - [SPARKLER-PERF-PLAN.md](SPARKLER-PERF-PLAN.md) - the cursor sparkler profiling pass, PLANNED not run. One candidate inside POST-FRAMES-PLAN; read that first.
+- [SWITCH-PALETTE.md](SWITCH-PALETTE.md) - the 25 switches for the hidden sound tier list, by family, with the Click and Thock video each clip comes from.
 - [TRAPS.md](TRAPS.md) - symptom-first list of things that bite. Search here FIRST when debugging.
 - [DECISIONS.md](DECISIONS.md) - decisions with the rejected options and why. Losers get re-suggested.
 - [DEAD-ENDS.md](DEAD-ENDS.md) - attempts that died and why. Do not re-litigate.
