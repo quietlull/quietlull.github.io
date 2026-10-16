@@ -363,9 +363,9 @@ ranking as bars with a percentage. The finished results go into the URL after `#
 copies opens straight to the results. A hash is never sent to a server.
 
 **Why it is not simpler.** The prefer buttons stay off until both clips have been played, or a
-listener could pick without listening. The clip files are named `k1-0.mp3` and so on, never by
-switch, so the network panel does not give the answer away. The names are still in the page's
-JSON, so it is blind for an honest friend, not a determined one.
+listener could pick without listening. The clip files carry the switch's name
+(`kailh-box-jade-take-2.mp3`), Rod's call on 2026-10-16 so a file is never confused for another.
+The names were already in the page's JSON, so it is blind for an honest friend, not a determined one.
 
 **Functions.** `init` wires the page. `renderTrial` resets for the next pair. `renderButtons`
 marks which clip is playing and switches the prefer buttons on. `showResults` fills one bar row per

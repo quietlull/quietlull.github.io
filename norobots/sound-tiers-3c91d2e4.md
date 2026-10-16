@@ -3,7 +3,7 @@ layout: tier-test
 title: which sounds do you like?
 permalink: /norobots/sound-tiers-3c91d2e4/
 sitemap: false
-media: /assets/media/switch-test
+media: /assets/media/sound-tiers
 questions:
   - id: devices
     text: Which devices do you use or want to use a keyboard on?
@@ -69,24 +69,104 @@ questions:
       - { label: "I like having the home, end, print screen, etc buttons all the time", means: "TKL (tenkeyless) or larger" }
       - { label: "I like having a volume knob or media keys", means: "a knob or media keys" }
 switches:
-  - id: k1
-    name: Gazzew U4T
-    image: /assets/img/switch-test/gazzew-u4t.webp
+  - id: durock-mamba
+    name: Durock Mamba
+    image: /assets/img/switches/durock-mamba.webp
     tags: [Thocky]
-  - id: k4
-    name: Box Jade
-    image: /assets/img/switch-test/box-jade.webp
+  - id: novelkeys-cream
+    name: NovelKeys Cream
+    image: /assets/img/switches/novelkeys-cream.webp
+    tags: [Thocky]
+  - id: gateron-smoothie-silver
+    name: Gateron Smoothie Silver
+    image: /assets/img/switches/gateron-smoothie-silver.webp
+    tags: [Thocky, Creamy]
+  - id: gateron-sea-salt-smoothie
+    name: Gateron Sea Salt Smoothie
+    image: /assets/img/switches/gateron-sea-salt-smoothie.webp
+    tags: [Creamy]
+  - id: akko-piano-u1
+    name: Akko Piano U1
+    image: /assets/img/switches/akko-piano-u1.webp
+    tags: [Creamy]
+  - id: jerrzi-rain-bow
+    name: Jerrzi Rain Bow
+    image: /assets/img/switches/jerrzi-rain-bow.webp
+    tags: [Creamy, Marbly]
+  - id: kailh-rainy-whisper
+    name: Kailh Rainy Whisper
+    image: /assets/img/switches/kailh-rainy-whisper.webp
+    tags: [Marbly]
+  - id: durock-pom-piano
+    name: Durock POM Piano
+    image: /assets/img/switches/durock-pom-piano.webp
+    tags: [Marbly]
+  - id: akko-cs-vintage-white
+    name: Akko CS Vintage White
+    image: /assets/img/switches/akko-cs-vintage-white.webp
+    tags: [Clacky]
+  - id: dareu-blue-sky-v3
+    name: Dareu Blue Sky V3
+    image: /assets/img/switches/dareu-blue-sky-v3.webp
+    tags: [Clacky]
+  - id: gateron-oil-king
+    name: Gateron Oil King
+    image: /assets/img/switches/gateron-oil-king.webp
+    tags: [Clacky, Thocky]
+  - id: chosfox-poison-gas
+    name: Chosfox Poison Gas
+    image: /assets/img/switches/chosfox-poison-gas.webp
+    tags: [Poppy]
+  - id: gateron-baby-kangaroo
+    name: Gateron Baby Kangaroo
+    image: /assets/img/switches/gateron-baby-kangaroo.webp
+    tags: [Poppy]
+  - id: akko-stellar-rose
+    name: Akko Stellar Rose
+    image: /assets/img/switches/akko-stellar-rose.webp
+    tags: [Poppy, Clacky]
+  - id: kailh-box-white-v2
+    name: Kailh BOX White V2
+    image: /assets/img/switches/kailh-box-white-v2.webp
     tags: [Clicky]
-  - id: k6
+  - id: kailh-box-jade
+    name: Kailh BOX Jade
+    image: /assets/img/switches/kailh-box-jade.webp
+    tags: [Clicky]
+  - id: gateron-melodic
     name: Gateron Melodic
-    image: /assets/img/switch-test/gateron-melodic.webp
-    tags: [Clicky]
-  - id: k3
+    image: /assets/img/switches/gateron-melodic.webp
+    tags: [Clicky, Typewriter]
+  - id: real-alps-white
     name: Real ALPS White
-    image: /assets/img/switch-test/real-alps-white.webp
-    tags: [Clicky, Typewriter]
-  - id: k5
+    image: /assets/img/switches/real-alps-white.webp
+    tags: [Typewriter]
+  - id: outemu-matias-white
     name: Outemu Matias White
-    image: /assets/img/switch-test/outemu-matias-white.webp
-    tags: [Clicky, Typewriter]
+    image: /assets/img/switches/outemu-matias-white.webp
+    tags: [Typewriter]
+  - id: kailh-box-navy
+    name: Kailh BOX Navy
+    image: /assets/img/switches/kailh-box-navy.webp
+    tags: [Typewriter, Clicky]
+  - id: akko-fairy-silent
+    name: Akko Fairy Silent
+    image: /assets/img/switches/akko-fairy-silent.webp
+    tags: [Silent]
+  - id: durock-silent-dolphin
+    name: Durock Silent Dolphin
+    image: /assets/img/switches/durock-silent-dolphin.webp
+    tags: [Silent]
+  - id: kailh-box-silent-pink
+    name: Kailh BOX Silent Pink
+    image: /assets/img/switches/kailh-box-silent-pink.webp
+    tags: [Silent, Muted]
+  - id: gazzew-u4tx
+    name: Gazzew U4Tx
+    image: /assets/img/switches/gazzew-u4t.webp
+    tags: [Muted]
+  - id: akko-bittersweet
+    name: Akko Bittersweet
+    image: /assets/img/switches/akko-bittersweet.webp
+    tags: [Muted, Thocky]
 ---

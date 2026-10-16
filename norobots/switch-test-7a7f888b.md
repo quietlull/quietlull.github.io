@@ -7,19 +7,19 @@ media: /assets/media/switch-test
 takes: 3
 controls: 3
 switches:
-  - id: k1
+  - id: gazzew-u4t
     name: Gazzew U4T
-    image: /assets/img/switch-test/gazzew-u4t.webp
-  - id: k3
+    image: /assets/img/switches/gazzew-u4t.webp
+  - id: real-alps-white
     name: Real ALPS White
-    image: /assets/img/switch-test/real-alps-white.webp
-  - id: k4
-    name: Box Jade
-    image: /assets/img/switch-test/box-jade.webp
-  - id: k5
+    image: /assets/img/switches/real-alps-white.webp
+  - id: kailh-box-jade
+    name: Kailh BOX Jade
+    image: /assets/img/switches/kailh-box-jade.webp
+  - id: outemu-matias-white
     name: Outemu Matias White
-    image: /assets/img/switch-test/outemu-matias-white.webp
-  - id: k6
+    image: /assets/img/switches/outemu-matias-white.webp
+  - id: gateron-melodic
     name: Gateron Melodic
-    image: /assets/img/switch-test/gateron-melodic.webp
+    image: /assets/img/switches/gateron-melodic.webp
 ---

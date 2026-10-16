@@ -43,12 +43,25 @@ reading rather than his word, the row says so.
 
 25 switches. Every family is carried by at least three switches once bridges are counted.
 
-## Clips and photos Rod already has
+## Where the clips and photos are
 
-Box Jade, Gateron Melodic, Alps SKCM White and Matias Click: photos in `assets/img/switch-test/`,
-and audio too. Rod's first six recordings were taken from Click and Thock (Rod, 2026-10-16), so
-those four clips are already the same recording setup as the rest and already cut and loudness
-matched (`assets/media/switch-test/`, ids k4, k6, k3, k5). That leaves 21 clips and 21 photos.
+All 25 are in. Every file is named after its switch, lower case with hyphens, and the same name is
+the switch's id in both tests' front matter. Rod, 2026-10-16: "make sure the audio and images are
+always marked as what they are so there is never confusion as to what they are".
+
+- **Photos:** `assets/img/switches/<name>.webp`, 384px square, shared by both tests.
+- **Tier list clips:** `assets/media/sound-tiers/<name>.mp3`. One 8 second cut per switch, from
+  the window of Rod's recording with the most headroom, all loudness matched to -34 LUFS with every
+  peak at or below -1.9 dBFS. -34, not the blind test's -31, because Jerrzi Rain Bow cannot go
+  louder without clipping. Each mp3's title tag is the switch name.
+- **Blind test clips:** `assets/media/switch-test/<name>-take-<1 to 3>.mp3`, -31 LUFS.
+- **Rod's raw recordings and photos** (pushed in `8b1c53b`) were removed from the tree after
+  conversion because everything under `assets/` ships. `git show 8b1c53b --stat` lists them.
+- **Loudness matching hides real loudness.** Rod's raw levels do not track real loudness (Box Jade,
+  "one of the loudest", came in 15 dB under Akko Piano U1), so they could not be kept. A silent
+  switch plays as loud as a clicky one. The volume question is what asks about loudness.
+- **Gazzew U4Tx uses the Gazzew U4T photo.** The photo pushed as "Gazzew boba U4T" shows a clear
+  housing with a yellow stem, which no Boba is, so it was not used.
 
 ## What was left out, and why
 

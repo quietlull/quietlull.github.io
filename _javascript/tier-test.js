@@ -28,7 +28,7 @@ function init(root) {
 
   const player = new AudioPlayer();
   const clips = Object.fromEntries(Object.keys(switches).map((id) =>
-    [id, new AudioClip(`${data.media}/${id}-0.mp3`)]));
+    [id, new AudioClip(`${data.media}/${id}.mp3`)]));
   const done = q('[data-action="done"]');
 
   const board = new TierBoard(q('[data-tier-board]'), {

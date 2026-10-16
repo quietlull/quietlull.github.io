@@ -24,7 +24,7 @@ function init(root) {
   const player = new AudioPlayer();
   const clips = Object.fromEntries(data.switches.map((s) => [
     s.id,
-    Array.from({ length: data.takes }, (_, n) => new AudioClip(`${data.media}/${s.id}-${n}.mp3`))
+    Array.from({ length: data.takes }, (_, n) => new AudioClip(`${data.media}/${s.id}-take-${n + 1}.mp3`))
   ]));
   const test = new PairwiseTest(data.switches.map((s) => s.id), {
     variants: data.takes,

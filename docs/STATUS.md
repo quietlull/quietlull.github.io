@@ -6,8 +6,8 @@
 ## The one-screen update (2026-10-16)
 
 - **A hidden sound tier list is built**, `/norobots/sound-tiers-3c91d2e4/`: one board, S to F,
-  every switch dragged from the tray, tiles that play on tap. Running on stand-in clips until Rod records the seven-family
-  palette. The switch blind test is live on `main` with photos. CHANGELOG has the rest.
+  every switch dragged from the tray, tiles that play on tap. All 25 palette switches are in with
+  Rod's recordings and photos, every file named after its switch. On the branch, not on `main`. The switch blind test is live on `main` with photos. CHANGELOG has the rest.
 
 ## The one-screen update (2026-10-13)
 

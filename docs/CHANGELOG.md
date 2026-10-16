@@ -1,3 +1,14 @@
+# 2026-10-16 (later) - ALL 25 SWITCHES IN THE TIER LIST, EVERY FILE NAMED AFTER ITS SWITCH
+
+Rod pushed 21 recordings and 21 photos. All converted: photos to 384px WebP in
+`assets/img/switches/`, clips cut to 8 seconds and loudness matched to -34 LUFS in
+`assets/media/sound-tiers/`. The four switches Rod already had come from his original recordings,
+re-cut the same way. The blind test's `k1`..`k6` files are renamed after their switches too
+(`gateron-melodic-take-1.mp3`), and ids in both front matters are the same names. Raw files removed
+from the tree so they do not ship. Details and open questions: SWITCH-PALETTE "Where the clips and
+photos are". **Proved in Chromium, desktop and phone:** questions, all 25 tiles, every clip and
+photo loads, 25 result cards, 9 tag bars, no script errors.
+
 # 2026-10-16 (later) - TIER LIST DRAGGING WORKS ON PHONES
 
 The tray sits below the board on a phone, and the page did not scroll during a drag, so a tile could
