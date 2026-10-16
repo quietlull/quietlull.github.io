@@ -436,15 +436,18 @@ card built later would never lean.
 ## _javascript/modules/components/question-flow.js
 
 **What it does.** The questions before the tier list, one per screen. Each question is a
-`fieldset` the layout renders from the page's front matter, with the site's filter tags as answer
-buttons. "Pick one" questions keep Next locked until something is chosen; "pick any" questions can
+`fieldset` the layout renders from the page's front matter, drawn as a Google Forms card (measured
+from a live public form on 2026-10-16: 1px border, 8px corners, 24px padding, 10px coloured top
+stripe, 20px round or square inputs, underlined "Other" field). The answers are real radio buttons
+and checkboxes, laid out in as many columns as the width allows. The page title hides while the
+questions are up (`:has()` in `_tier-test.scss`), so the question is the top of the page. "Pick one" questions keep Next locked until something is chosen; "pick any" questions can
 be skipped. The answers come back as the index of each chosen option plus any "Other" text.
 
 **Why it is not simpler.** Answers are stored as option indexes, not words, so the results link
 stays short and the wording can be edited without breaking the meaning.
 
-**Functions.** `start` opens the first question. `show` switches screen and scrolls it into view.
-`pick` toggles an answer, clearing the others on a pick-one question. `update` locks or unlocks
+**Functions.** The constructor writes "Question n of 6" into each card. `start` opens the first
+question. `show` switches screen and scrolls it into view. `update` locks or unlocks
 Next. `advance` moves on or finishes. `answers` collects what was chosen.
 
 ## _javascript/modules/components/tier-board.js

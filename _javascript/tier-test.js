@@ -56,11 +56,11 @@ function init(root) {
   const questions = new QuestionFlow(q('[data-step="questions"]'), {
     async onDone(given) {
       answers = given;
-      q('[data-question-progress]').textContent = 'Loading sounds...';
+      q('[data-loading]').textContent = 'Loading sounds...';
       try {
         await loading;
       } catch (err) {
-        q('[data-question-progress]').textContent = `Could not load the sounds (${err.message}). Try reloading.`;
+        q('[data-loading]').textContent = `Could not load the sounds (${err.message}). Try reloading.`;
         return;
       }
       show('board');

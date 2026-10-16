@@ -16,18 +16,24 @@ layout: default
   <section data-step="questions" hidden>
     {% for question in page.questions %}
       <fieldset class="tier-question" data-question="{{ question.id }}" data-pick="{{ question.pick }}" hidden>
-        <legend class="tier-question__text">{{ question.text }}</legend>
+        <legend class="tier-question__text">
+          <span class="tier-question__count" data-question-progress></span>
+          {{ question.text }}
+        </legend>
         <div class="tier-question__options">
           {% for option in question.options %}
-            <button type="button" class="kit-tag tier-question__option" data-option="{{ forloop.index0 }}" aria-pressed="false">{{ option.label }}</button>
+            <label class="tier-question__option">
+              <input type="{% if question.pick == 'one' %}radio{% else %}checkbox{% endif %}" name="{{ question.id }}" value="{{ forloop.index0 }}">
+              <span>{{ option.label }}</span>
+            </label>
           {% endfor %}
-          {% if question.other %}
-            <input type="text" class="tier-question__other" data-other placeholder="Other:" aria-label="Other">
-          {% endif %}
         </div>
+        {% if question.other %}
+          <input type="text" class="tier-question__other" data-other placeholder="Other:" aria-label="Other">
+        {% endif %}
       </fieldset>
     {% endfor %}
-    <p class="listening-test__status" data-question-progress aria-live="polite"></p>
+    <p class="listening-test__status" data-loading aria-live="polite"></p>
     <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="next-question" disabled>
       <span class="kit-button__label">Next</span>
     </button>

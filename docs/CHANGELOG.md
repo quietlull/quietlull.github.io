@@ -1,3 +1,17 @@
+# 2026-10-16 (later) - THE BACKGROUND ORB IS GONE, AND THE QUESTIONS LOOK LIKE A FORM
+
+**The orb.** `body::before` painted three still orange glows on every page. PROVENANCE-AUDIT had it
+as Slop with no source. Rod: "it should not exist remove that from every page". Deleted with its
+three tokens. A scan of all 58 built pages for any other radial glow or blur found four left, all
+with a known job: the page ground on `body` (a warm wash at the bottom edge, a blue one at the top
+right), the cursor glow, the Three.js scene's dark vignette (`three-shared.js:55-65`), and the
+stamp callout's dotted edge. The card and border glows only paint under the pointer.
+
+**The questions.** One per screen still, each now a Google Forms card measured from a real public
+form. Real radio buttons and checkboxes in as many columns as fit. "Question n of 6" sits in the
+card. The page title hides while the questions are up. Proved in Chromium: full run on desktop and
+phone, no script errors; heading visible on intro, hidden on questions, back on the board.
+
 # 2026-10-16 (later) - ALL 25 SWITCHES IN THE TIER LIST, EVERY FILE NAMED AFTER ITS SWITCH
 
 Rod pushed 21 recordings and 21 photos. All converted: photos to 384px WebP in
