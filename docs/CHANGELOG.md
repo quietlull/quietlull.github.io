@@ -1,3 +1,11 @@
+# 2026-10-16 (later) - "YOUR SOUNDS" IS AN AFFINITY, NOT AN AVERAGE
+
+Rod wants a per-tag affinity rating to decide what switches to order. The old bars were the plain
+average tier per tag, so a generous tierer scored every tag high and a one-switch tag in S tied a
+four-switch one. Now each tag is its average minus the listener's own average (shown as +28 / -44),
+bridges count half toward each of their two tags, and each bar says how many switches fed it. The
+bars grow from a centre line. Checked by hand against a sample board: Creamy (90 - 62.5) = +28.
+
 # 2026-10-16 (later) - THE TIER RESULTS ARE PROJECT CARDS, AND THE CARD GRID IS SHARED
 
 Rod: "reuse my project cards layout for the end cards with the tags and the tilt movement", no

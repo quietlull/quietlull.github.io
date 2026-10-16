@@ -2,7 +2,7 @@ import { basic } from './modules/layouts';
 import { AudioClip } from './modules/audio/audio-clip';
 import { AudioPlayer } from './modules/audio/audio-player';
 import { TierBoard } from './modules/components/tier-board';
-import { TIERS, tagScores } from './modules/utils/tier-scores';
+import { TIERS, tagAffinity } from './modules/utils/tier-scores';
 import { shuffle } from './modules/utils/shuffle';
 
 basic();
@@ -83,13 +83,16 @@ function init(root) {
     const barTemplate = q('[data-tag-template]');
     const tagsById = Object.fromEntries(data.switches.map((item) => [item.id, item.tags]));
     let rank = 0;
-    tagScores(result, tagsById).forEach(({ tag, percent }, i, scores) => {
-      if (i === 0 || percent < scores[i - 1].percent) rank = i + 1;
+    tagAffinity(result, tagsById).forEach(({ tag, affinity, switches }, i, scores) => {
+      if (i === 0 || affinity < scores[i - 1].affinity) rank = i + 1;
       const bar = barTemplate.content.firstElementChild.cloneNode(true);
-      bar.style.setProperty('--percent', `${percent}%`);
+      const edge = 50 + affinity / 2;
+      bar.style.setProperty('--fill-from', `${Math.min(50, edge)}%`);
+      bar.style.setProperty('--fill-to', `${Math.max(50, edge)}%`);
       bar.querySelector('[data-field="rank"]').textContent = rank;
       bar.querySelector('[data-field="name"]').textContent = tag;
-      bar.querySelector('[data-field="percent"]').textContent = `${percent}%`;
+      bar.querySelector('[data-field="count"]').textContent = `${switches} ${switches === 1 ? 'switch' : 'switches'}`;
+      bar.querySelector('[data-field="percent"]').textContent = affinity > 0 ? `+${affinity}` : `${affinity}`;
       chart.appendChild(bar);
     });
 

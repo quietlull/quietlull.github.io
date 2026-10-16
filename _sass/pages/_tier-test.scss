@@ -86,6 +86,20 @@
   cursor: grabbing;
 }
 
+.tier-affinity__track {
+  position: relative;
+  background:
+    linear-gradient(var(--color-line), var(--color-line)) center / 1px 100% no-repeat,
+    var(--color-line-soft);
+}
+
+.tier-affinity__fill {
+  margin-left: var(--fill-from);
+  width: calc(var(--fill-to) - var(--fill-from));
+}
+
+.tier-affinity__count { color: var(--color-silver); }
+
 @media (prefers-reduced-motion: reduce) {
   .tier-tile[aria-pressed='true'] { animation: none; }
 }

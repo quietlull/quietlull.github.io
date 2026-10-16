@@ -32,12 +32,13 @@ layout: default
 
   <section data-step="results" hidden>
     <h2>Your sounds</h2>
+    <p class="listening-test__status">Compared with your average switch</p>
     <ol class="listening-test__results" data-tag-chart></ol>
     <template data-tag-template>
       <li class="listening-test__result listening-test__result--no-image">
         <span class="listening-test__rank" data-field="rank"></span>
-        <span class="listening-test__name" data-field="name"></span>
-        <span class="listening-test__track"><span class="listening-test__fill"></span></span>
+        <span class="listening-test__name"><span data-field="name"></span> <small class="tier-affinity__count" data-field="count"></small></span>
+        <span class="listening-test__track tier-affinity__track"><span class="listening-test__fill tier-affinity__fill"></span></span>
         <span class="listening-test__percent" data-field="percent"></span>
       </li>
     </template>

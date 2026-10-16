@@ -420,7 +420,7 @@ only the ranking; the other two are in the results link for whoever decodes it.
 
 **What it does.** Runs the hidden sound tier list at `/norobots/sound-tiers-3c91d2e4/`. Every
 switch starts in the tray under the board; the listener drags each into S, A, B, C, D or F. Done
-shows "Your sounds", a bar per sound tag scored from where its switches landed, then one project
+shows "Your sounds", a bar per sound tag growing left or right from the listener's average, then one project
 card per switch in rank order, with its tier and tags, and a link that reopens the results. Each
 switch's tags are in the page's front matter.
 
@@ -453,12 +453,18 @@ the spot under the pointer. `handleKey` places a tile by letter.
 
 ## _javascript/modules/utils/tier-scores.js
 
-**What it does.** Turns a finished tier board into "your sounds". Each tier is worth points (S 100,
-A 80, B 60, C 40, D 20, F 0). A sound tag scores the average points of the switches carrying it, so
-a switch tagged twice counts toward both.
+**What it does.** Turns a finished tier board into "your sounds": an affinity for each sound tag.
+Each tier is worth points (S 100, A 80, B 60, C 40, D 20, F 0). A tag's affinity is the average
+points of the switches carrying it, minus the listener's average over every switch. +30 means they
+rank that sound 30 points above their typical switch; 0 means no preference.
 
-**Functions.** `tagScores` returns each tag with its percent, best first. `TIERS` is the row order
-the board and the results share.
+**Why it is not simpler.** Measuring against the listener's own average is what makes it a
+preference: someone who puts everything in S or A would otherwise score every tag 80 to 100. A
+bridge switch (two tags) counts half toward each, so it never weighs more than one switch in total.
+The switch count is returned so the page can show how much evidence each tag has.
+
+**Functions.** `tagAffinity` returns each tag with its affinity and switch count, best first.
+`TIERS` is the row order the board and the results share.
 
 ## _javascript/modules/utils/shuffle.js
 

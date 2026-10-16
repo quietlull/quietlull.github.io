@@ -2,14 +2,20 @@ export const TIERS = ['S', 'A', 'B', 'C', 'D', 'F'];
 
 const TIER_POINTS = { S: 100, A: 80, B: 60, C: 40, D: 20, F: 0 };
 
-export function tagScores(placement, tagsById) {
-  const points = {};
-  TIERS.forEach((tier) => placement[tier].forEach((id) => {
-    tagsById[id].forEach((tag) => {
-      (points[tag] ??= []).push(TIER_POINTS[tier]);
+export function tagAffinity(placement, tagsById) {
+  const scored = TIERS.flatMap((tier) => placement[tier].map((id) => ({ points: TIER_POINTS[tier], tags: tagsById[id] })));
+  const average = scored.reduce((sum, item) => sum + item.points, 0) / scored.length;
+  const tags = {};
+  scored.forEach(({ points, tags: itemTags }) => {
+    const weight = 1 / itemTags.length;
+    itemTags.forEach((tag) => {
+      const entry = (tags[tag] ??= { total: 0, weight: 0, switches: 0 });
+      entry.total += points * weight;
+      entry.weight += weight;
+      entry.switches += 1;
     });
-  }));
-  return Object.entries(points)
-    .map(([tag, list]) => ({ tag, percent: Math.round(list.reduce((a, b) => a + b, 0) / list.length) }))
-    .sort((x, y) => y.percent - x.percent);
+  });
+  return Object.entries(tags)
+    .map(([tag, { total, weight, switches }]) => ({ tag, affinity: Math.round(total / weight - average), switches }))
+    .sort((x, y) => y.affinity - x.affinity);
 }
