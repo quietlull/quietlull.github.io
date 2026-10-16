@@ -32,7 +32,7 @@ self.addEventListener('install', (event) => {
 
   event.waitUntil(
     caches.open(swconf.cacheName).then((cache) => {
-      return cache.addAll(swconf.resources);
+      return cache.addAll(swconf.resources.map((url) => new Request(url, { cache: 'reload' })));
     })
   );
 });
@@ -61,31 +61,37 @@ self.addEventListener('message', (event) => {
   }
 });
 
+function store(request, response) {
+  if (purge || request.method !== 'GET' || !verifyUrl(request.url)) {
+    return;
+  }
+  caches.open(swconf.cacheName).then((cache) => cache.put(request, response));
+}
+
+function networkFirst(request) {
+  return fetch(request, { cache: 'no-cache' })
+    .then((response) => {
+      store(request, response.clone());
+      return response;
+    })
+    .catch(() => caches.match(request));
+}
+
+function cacheFirst(request) {
+  return caches.match(request).then((cached) => cached || fetch(request).then((response) => {
+    store(request, response.clone());
+    return response;
+  }));
+}
+
+function changesWithEachDeploy(request) {
+  return request.mode === 'navigate' || ['script', 'style', 'manifest'].includes(request.destination);
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.headers.has('range')) {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response;
-      }
-
-      return fetch(event.request).then((response) => {
-        const url = event.request.url;
-
-        if (purge || event.request.method !== 'GET' || !verifyUrl(url)) {
-          return response;
-        }
-
-        let responseToCache = response.clone();
-
-        caches.open(swconf.cacheName).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-        return response;
-      });
-    })
-  );
+  event.respondWith(changesWithEachDeploy(event.request) ? networkFirst(event.request) : cacheFirst(event.request));
 });
