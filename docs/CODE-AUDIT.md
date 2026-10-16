@@ -491,6 +491,19 @@ The switch count is returned so the page can show how much evidence each tag has
 `TIERS` is the row order the board and the results share. `AFFINITY_RANGE` (S minus F) scales
 the bars so the largest possible lead fills half the track.
 
+## _javascript/modules/utils/answer-factors.js
+
+**What it does.** Turns the tier list's six answers into "What you need". Each answer option in
+the page's front matter can carry `leans` (a nudge from -1 to 1 on a factor such as spring or
+pre-travel), a `flag` (a yes/no such as Numpad or Mac) and a `size` (the layout it needs). A
+factor's value is the average of the nudges it got. The layout is the `means` text of the largest
+`size` ticked.
+
+**Why it is not simpler.** The mapping lives beside Rod's wording in the front matter, so changing
+what an answer means never touches code.
+
+**Functions.** `answerFactors` returns `leans`, every flag with whether it was ticked, and `layout`.
+
 ## _javascript/modules/utils/shuffle.js
 
 **What it does.** Shuffles a list in place, every order equally likely. Shared by the pairwise test

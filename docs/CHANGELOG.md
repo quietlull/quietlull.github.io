@@ -1,3 +1,11 @@
+# 2026-10-16 (later) - "WHAT YOU NEED" BARS AND FLAGS, ANSWERS MOVED TO THE BOTTOM (NOT ON MAIN)
+
+Six bars (feel, spring, pre-travel, loudness, board height, keycap shape), a layout line and ten
+yes/no flags, all derived from `leans`, `flag` and `size` on each answer in the front matter.
+"Your answers" now sits at the very bottom and lists only what was picked. Waiting on Rod's
+approval; open question: a centred value (tactile) shows an empty bar, so a dot marker may replace
+the fill.
+
 # 2026-10-16 (later) - "WHAT DOES IT ACTUALLY MEAN" ON THE TIER LIST RESULTS
 
 Rod's own reading of the sound words, from his analysis of the audio bands, is a new results

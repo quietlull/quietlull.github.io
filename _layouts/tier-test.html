@@ -72,8 +72,18 @@ layout: default
     </template>
     <h2>What does it actually mean</h2>
     <div class="tier-meaning">{{ content }}</div>
-    <h2>Your answers</h2>
-    <dl class="tier-answers" data-answers></dl>
+    <h2>What you need</h2>
+    <ul class="tier-factors" data-factor-chart></ul>
+    <template data-factor-template>
+      <li class="tier-factor">
+        <span class="tier-factor__name" data-field="name"></span>
+        <span class="tier-factor__end tier-factor__end--low" data-field="low"></span>
+        <span class="listening-test__track tier-affinity__track"><span class="listening-test__fill tier-affinity__fill"></span></span>
+        <span class="tier-factor__end tier-factor__end--high" data-field="high"></span>
+      </li>
+    </template>
+    <p class="tier-layout" data-layout></p>
+    <ul class="tier-flags" data-flags></ul>
     <div class="wrapper-project-card-grid wrapper-project-card-grid--square pv2-grid" data-result-cards>
       {% for item in page.switches %}
         <div class="pv2-cell" data-card="{{ item.id }}">
@@ -97,6 +107,8 @@ layout: default
         </div>
       {% endfor %}
     </div>
+    <h2>Your answers</h2>
+    <dl class="tier-answers" data-answers></dl>
   </section>
 </div>
 
@@ -104,6 +116,7 @@ layout: default
   {
     "switches": {{ page.switches | jsonify }},
     "questions": {{ page.questions | jsonify }},
+    "factors": {{ page.factors | jsonify }},
     "media": {{ page.media | relative_url | jsonify }}
   }
 </script>

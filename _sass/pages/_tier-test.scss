@@ -199,6 +199,67 @@
 
 .tier-affinity__count { color: var(--color-silver); }
 
+.tier-factors {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 48rem;
+  margin: 0 auto 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tier-factor {
+  display: grid;
+  grid-template-columns: 7rem 4.5rem 1fr 4.5rem;
+  grid-template-areas: 'name low track high';
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tier-factor__name {
+  grid-area: name;
+  text-align: left;
+  color: var(--color-gold);
+}
+
+.tier-factor__end {
+  font-size: 0.85rem;
+  color: var(--color-silver);
+}
+
+.tier-factor__end--low {
+  grid-area: low;
+  text-align: right;
+}
+
+.tier-factor__end--high {
+  grid-area: high;
+  text-align: left;
+}
+
+.tier-flags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  max-width: 48rem;
+  margin: 0 auto 2rem;
+  padding: 0;
+  list-style: none;
+  color: var(--color-silver);
+}
+
+.tier-flag.is-on { color: var(--color-gold); }
+
+@media (max-width: 560px) {
+  .tier-factor {
+    grid-template-columns: 4rem 1fr 4rem;
+    grid-template-areas:
+      'name name name'
+      'low track high';
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tier-tile[aria-pressed='true'] { animation: none; }
 }

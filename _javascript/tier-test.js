@@ -5,6 +5,7 @@ import { TierBoard } from './modules/components/tier-board';
 import { QuestionFlow } from './modules/components/question-flow';
 import { TIERS, AFFINITY_RANGE, tagAffinity } from './modules/utils/tier-scores';
 import { shuffle } from './modules/utils/shuffle';
+import { answerFactors } from './modules/utils/answer-factors';
 
 basic();
 
@@ -111,6 +112,26 @@ function init(root) {
       chart.appendChild(bar);
     });
 
+    const needs = answerFactors(data.questions, result.answers);
+    const factorTemplate = q('[data-factor-template]');
+    data.factors.forEach((factor) => {
+      const bar = factorTemplate.content.firstElementChild.cloneNode(true);
+      const edge = 50 + 50 * (needs.leans[factor.id] ?? 0);
+      bar.style.setProperty('--fill-from', `${Math.min(50, edge)}%`);
+      bar.style.setProperty('--fill-to', `${Math.max(50, edge)}%`);
+      ['name', 'low', 'high'].forEach((field) => {
+        bar.querySelector(`[data-field="${field}"]`).textContent = factor[field];
+      });
+      q('[data-factor-chart]').appendChild(bar);
+    });
+    q('[data-layout]').textContent = `Layout: ${needs.layout ?? '60% is enough'}`;
+    needs.flags.forEach(({ flag, on }) => {
+      const item = document.createElement('li');
+      item.className = on ? 'tier-flag is-on' : 'tier-flag';
+      item.textContent = `${on ? '\u2713' : '\u2717'} ${flag}`;
+      q('[data-flags]').appendChild(item);
+    });
+
     const list = q('[data-answers]');
     data.questions.forEach((question) => {
       const given = result.answers[question.id];
@@ -121,7 +142,7 @@ function init(root) {
       list.appendChild(term);
       chosen.forEach((option) => {
         const detail = document.createElement('dd');
-        detail.textContent = `${option.label} \u2192 ${option.means}`;
+        detail.textContent = option.label;
         list.appendChild(detail);
       });
       if (given.other) {
