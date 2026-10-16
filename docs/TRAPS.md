@@ -609,3 +609,9 @@ question instead of the question.
 
 **The rule: a single measurement is a hypothesis. Confirm it a second way before reporting it as a
 finding, and especially before telling someone else to go fix it.**
+
+## A grid item that spans more columns than the grid has adds columns
+
+`grid-column: span 12` in a 6-column grid does not clamp: the browser adds 6 implicit columns,
+and every other item shrinks to fit the new tracks. That is how the phone project cards got 72px
+wide (2026-10-16). Use `1 / -1` for "the whole row".

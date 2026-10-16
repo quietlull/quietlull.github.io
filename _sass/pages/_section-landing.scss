@@ -159,6 +159,31 @@
   }
 
   .scene-space { height: 85vh; }
+
+  @media (max-width: 759px) {
+    .wrapper-content-column { padding-inline: 16px; }
+
+    .hero__vert-cols { font-size: calc((100vw - 46px) / 13.3); }
+
+    .hero__social .dm-social {
+      width: 9vw;
+      height: 9vw;
+    }
+
+    .hero__social .dm-social__mark {
+      width: 4.7vw;
+      height: 4.7vw;
+    }
+
+    .section-head__name { font-size: 8.5vw; }
+
+    .skills-row { justify-content: center; }
+
+    .reel__bar {
+      width: calc(100% + 32px);
+      margin-inline: -16px;
+    }
+  }
 }
 
 @keyframes skills-row-draw {

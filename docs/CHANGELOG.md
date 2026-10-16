@@ -1,3 +1,21 @@
+# 2026-10-16 (later) - THE SECTION HOME PAGES ON A PHONE
+
+Rod, on an iPhone: squished project cards, the vertical name columns in the wrong place, social
+icons and headings that do not shrink, skills off centre, too much empty side space, a small reel.
+Measured at 390px first.
+
+- **The squish was a grid bug.** Under 760px the card grid has 6 columns, but the one card set to
+  span 12 made the browser add 6 more near-zero columns, halving every other card (some 72px
+  wide). That card now spans `1 / -1`, which is the full row at every width.
+- **Phone-only block** in `_section-landing.scss` (under 760px): 16px side padding instead of
+  18.5% (content 246 -> 358px); the three vertical columns scale to fit the screen
+  (`(100vw - 46px) / 13.3`: each column is 4.15em wide plus two 0.428em gaps, 30px right padding
+  and a 16px left edge), they hung 87px off the left before; social icons 9vw (35px); section
+  headings 8.5vw so "Featured Projects" fits one line; skills centred; the reel runs edge to edge.
+- **Desktop proved unchanged:** page fingerprint at 1440 identical in position for all ten pages
+  (the one card's computed `grid-column` value differs, same box), and every hero, card, heading,
+  skill and reel box identical at 760, 1024, 1280 and 1920 on both section homes and projects.
+
 # 2026-10-16 (later) - QUESTION CARDS: NO STRIPE, NO BORDER, ANSWERS AS BARS
 
 Rod: no stripe or border, keep the gold question text and the faint white panel. Answers are

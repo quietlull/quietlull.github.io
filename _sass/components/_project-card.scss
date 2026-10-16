@@ -34,7 +34,7 @@
 }
 
 .wrapper-project-card-grid [data-column-span='12'] {
-  grid-column: span 12;
+  grid-column: 1 / -1;
 }
 
 .wrapper-project-card-grid [data-row-span='2'] {
