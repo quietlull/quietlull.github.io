@@ -7,7 +7,8 @@ each switch has three overlapping 6 second takes (from 0.25s, 1.5s and 2.75s) in
 separate 8 second ones, loudness matched to -31 LUFS with every peak at or below -2.2 dBFS, in
 `assets/media/sound-test-ang/<switch>-take-<n>.mp3`. **The recordings are not all from the same
 source** (Rod: "we must make do with what we have"), so recording differences can colour the
-result more than in the first test. No photos: the results show the placeholder. Checked in
+result more than in the first test. No photos yet: every switch shows `assets/img/switches/unknown-switch.webp`, Rod's question-mark
+switch image cropped square (900px from 550,112 of his 2000x1125 picture) and scaled to 384px. Checked in
 Chromium on desktop and an iPhone 13 emulation: 15 trials, all 12 clips load, no script errors.
 
 # 2026-10-16 (later) - EVERY VISIT AFTER A DEPLOY GETS THE NEW SITE, AND THE SKIP LINK STOPS PEEKING

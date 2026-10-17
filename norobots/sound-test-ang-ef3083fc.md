@@ -9,10 +9,14 @@ controls: 3
 switches:
   - id: gateron-banana-choco
     name: Gateron Banana Choco
+    image: /assets/img/switches/unknown-switch.webp
   - id: nuphy-panda-nano
     name: NuPhy Panda Nano
+    image: /assets/img/switches/unknown-switch.webp
   - id: nuphy-moss
     name: NuPhy Moss
+    image: /assets/img/switches/unknown-switch.webp
   - id: nuphy-wisteria
     name: NuPhy Wisteria
+    image: /assets/img/switches/unknown-switch.webp
 ---
