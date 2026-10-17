@@ -27,7 +27,7 @@ questions:
     text: Do you rest your wrists on the desk while typing?
     pick: one
     options:
-      - { label: "Yes, my hands rest on the desk/laptop", means: "low profile, or a wrist rest", leans: { height: -1 } }
+      - { label: "Yes, my wrists rest on the desk/laptop", means: "low profile, or a wrist rest", leans: { height: -1 } }
       - { label: "No, my hands float above the keyboard", means: "any profile", leans: { height: 1 } }
   - id: feel
     text: Which sounds like the best experience for a button.
@@ -70,10 +70,10 @@ questions:
       - { label: "When typing my fingers often slip off the key causing typos", means: "different key profile", leans: { keycaps: 1 } }
       - { label: "My wrists hurt when i use the keyboard all day", means: "low profile", leans: { height: -1 } }
       - { label: "My fingers hurt when i use the keyboard all day", means: "lighter spring", leans: { spring: -1 } }
-      - { label: "I like having the number pad all the time", means: "full size, or a separate numpad", flag: Numpad, size: 100 }
-      - { label: "I like having the FKeys all the time (F1-F12)", means: "75% or larger", flag: F keys, size: 75 }
-      - { label: "I like having the arrow keys all the time", means: "65% or larger", flag: Arrows, size: 65 }
-      - { label: "I like having the home, end, print screen, etc buttons all the time", means: "TKL (tenkeyless) or larger", flag: Home and End, size: 80 }
+      - { label: "I like having the number pad", means: "full size, or a separate numpad", flag: Numpad, size: 100 }
+      - { label: "I like having the FKeys (F1-F12)", means: "75% or larger", flag: F keys, size: 75 }
+      - { label: "I like having the arrow keys", means: "65% or larger", flag: Arrows, size: 65 }
+      - { label: "I like having the home, end, print screen, etc buttons", means: "TKL (tenkeyless) or larger", flag: Home and End, size: 80 }
       - { label: "I like having a volume knob or media keys", means: "a knob or media keys", flag: Knob or media keys }
 switches:
   - id: durock-mamba
