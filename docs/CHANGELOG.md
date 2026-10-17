@@ -1,3 +1,9 @@
+# 2026-10-17 (later) - A MISSING SWITCH PHOTO SHOWS THE QUESTION-MARK SWITCH
+
+Rod: "from now on if we are missing a switch image lets use this one". Both quiz layouts now fall
+back to `assets/img/switches/unknown-switch.webp` when a switch has no `image` (it was
+`placeholder-wip.svg`), so Angus's page no longer lists it per switch.
+
 # 2026-10-17 - A BLIND SWITCH TEST FOR ANGUS
 
 `/norobots/sound-test-ang-ef3083fc/` reuses the switch test layout and script with four of Rod's

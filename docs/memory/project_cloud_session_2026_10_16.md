@@ -25,3 +25,5 @@ All of it is on `main` and in `docs/CHANGELOG.md` under 2026-10-16.
 - **Skip link** hidden with `opacity: 0` until focused; the iPhone bounce showed it.
 - **Open:** the page ground on `body` should not paint every page (STATUS note). Tier list
   results from before the numbering change no longer open.
+- **Missing switch photo:** the quizzes fall back to `assets/img/switches/unknown-switch.webp`
+  (Rod, 2026-10-17). Leave `image` out of a switch rather than pointing it anywhere else.
