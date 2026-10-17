@@ -3,6 +3,13 @@
   margin: 0 auto;
   padding: 3rem 0;
   text-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.listening-test input {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .listening-test .page-heading { margin-bottom: 2rem; }
@@ -26,7 +33,6 @@
   width: 10rem;
   aspect-ratio: 1;
   font-size: 1.1rem;
-  user-select: none;
 }
 
 .listening-test__play[aria-pressed='true'] { --orb-fill-rest: 0%; }
