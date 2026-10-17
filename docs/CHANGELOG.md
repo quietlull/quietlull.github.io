@@ -1,3 +1,15 @@
+# 2026-10-17 - A BLIND SWITCH TEST FOR ANGUS
+
+`/norobots/sound-test-ang-ef3083fc/` reuses the switch test layout and script with four of Rod's
+recordings: Gateron Banana Choco, NuPhy Panda Nano, NuPhy Moss, NuPhy Wisteria. 12 pairs in both
+orders plus 3 same-switch controls, 15 in all. Three of the recordings are only about 9 seconds, so
+each switch has three overlapping 6 second takes (from 0.25s, 1.5s and 2.75s) instead of three
+separate 8 second ones, loudness matched to -31 LUFS with every peak at or below -2.2 dBFS, in
+`assets/media/sound-test-ang/<switch>-take-<n>.mp3`. **The recordings are not all from the same
+source** (Rod: "we must make do with what we have"), so recording differences can colour the
+result more than in the first test. No photos: the results show the placeholder. Checked in
+Chromium on desktop and an iPhone 13 emulation: 15 trials, all 12 clips load, no script errors.
+
 # 2026-10-16 (later) - EVERY VISIT AFTER A DEPLOY GETS THE NEW SITE, AND THE SKIP LINK STOPS PEEKING
 
 **The service worker served old copies.** Rod kept seeing old versions after deploys and asked if
