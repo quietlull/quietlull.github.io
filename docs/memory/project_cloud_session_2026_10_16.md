@@ -27,3 +27,5 @@ All of it is on `main` and in `docs/CHANGELOG.md` under 2026-10-16.
   results from before the numbering change no longer open.
 - **Missing switch photo:** the quizzes fall back to `assets/img/switches/unknown-switch.webp`
   (Rod, 2026-10-17). Leave `image` out of a switch rather than pointing it anywhere else.
+- **Forced update (2026-10-18):** a new service worker reloads every page it takes over. Rod turned
+  down an update prompt. Do not add one back without asking.

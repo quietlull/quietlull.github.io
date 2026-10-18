@@ -52,6 +52,8 @@ self.addEventListener('activate', (event) => {
         })
       );
     })
+      .then(() => self.clients.matchAll({ type: 'window' }))
+      .then((pages) => pages.forEach((page) => page.navigate(page.url)))
   );
 });
 

@@ -1,3 +1,14 @@
+# 2026-10-18 - A NEW VERSION RELOADS OPEN PAGES BY ITSELF
+
+Rod chose a forced update over an update prompt ("just update it forcefully no prompt"). When a new
+service worker takes over, its `activate` step now reloads every page it controls
+(`clients.matchAll` then `navigate`). This lives in the worker, not the page, so it also rescues
+visitors whose saved page came from the old cache-first worker. Proved on production builds:
+a visitor with the OLD worker first sees the old page, then the new one about a second later
+(2 loads); a first-time visitor loads once; a visitor with the new worker after a later deploy gets
+the new page at once plus one reload. Cost: if a deploy lands while someone has a page open, the
+reload happens on their next page load, right after it opens.
+
 # 2026-10-17 (later) - A MISSING SWITCH PHOTO SHOWS THE QUESTION-MARK SWITCH
 
 Rod: "from now on if we are missing a switch image lets use this one". Both quiz layouts now fall

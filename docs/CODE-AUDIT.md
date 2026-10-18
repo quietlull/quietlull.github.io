@@ -498,7 +498,8 @@ the bars so the largest possible lead fills half the track.
 Pages, scripts, stylesheets and the manifest come from the network first (asking the server even
 when the browser's cache says the file is fresh), and the saved copy is the fallback. Images,
 audio and everything else come from the saved copy first. Each build names a new copy, and the
-old one is deleted when the new worker takes over.
+old one is deleted when the new worker takes over. Taking over also reloads every open page it now
+controls, so nobody stays on a page served by an older worker (Rod, 2026-10-18: no prompt).
 
 **Why it is not simpler.** Saved-copy-first for everything showed the old site on the first visit
 after every deploy. Network-first for everything would download every image and clip on every

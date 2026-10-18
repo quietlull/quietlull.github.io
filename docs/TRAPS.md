@@ -628,4 +628,5 @@ GitHub Pages lets a browser reuse any file for 10 minutes, and file names never 
 deploys. Until 2026-10-16 the service worker answered everything from its saved copy first. Since
 then pages, scripts and styles go to the network first; images and audio are still saved-copy
 first, so a replaced image keeps the same name at your peril until the next deploy clears the copy.
-If Rod reports an old page, ask him to reload once more before debugging.
+Since 2026-10-18 the new worker also reloads open pages when it takes over, so a stale first view
+corrects itself about a second later. If Rod reports an old page that stays old, that is a real bug.
