@@ -1,3 +1,13 @@
+# 2026-10-19 (later) - SPEC SHEET GAP FILL
+
+The 87 rows still missing a price or a core spec were searched once more (6 agents). Now 263 rows
+(Durock POM Piano added, Rod recorded it; no Click and Thock video), 245 priced (CAD 0.18 to 3.50,
+middle 0.56), 224 with type, force, pre-travel and total travel (was 205 and 202). Ranges,
+approximate values and "adjustable" (magnetic switches) are kept in Notes, never as a made-up
+number. Doubtful values: Taiwan Jet Axis White peak (clicky version), Alps forces (aged samples),
+old group-buy prices for Alps SKCM White and SKCL Green. Raw rows in
+`docs/switch-research/raw/gap-fill/`. Still to do: the price recheck.
+
 # 2026-10-19 (later) - Q'S TIER LIST AND H'S BLIND TEST
 
 Rod pushed 16 new recordings (261019). Each is now an 8 second MP3 named after its switch in

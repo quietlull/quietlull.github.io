@@ -29,6 +29,16 @@ price={}
 for f in sorted(g2.glob('../price/out-*.tsv')):
     with open(f) as fh:
         for pr in csv.DictReader(fh, delimiter='\t'): price[pr['switch'].strip()]=pr
+for f in sorted(g2.glob('../gap/out-*.tsv')):
+    with open(f) as fh:
+        for gp in csv.DictReader(fh, delimiter='\t'):
+            cur=price.setdefault(gp['switch'].strip(),{})
+            if (gp.get('price_cad_per_switch') or '').strip() and not (cur.get('price_cad_per_switch') or '').strip():
+                for k in ('price_original','retailer','price_url'): cur[k]=''
+            for k,v in gp.items():
+                if v and v.strip() and not (cur.get(k) or '').strip(): cur[k]=v
+            if gp['switch'].strip() not in (r['switch'].strip() for r in merged.values()):
+                merged[key(gp['switch'])]=dict(switch=gp['switch'].strip(),maker=gp['switch'].split()[0],type='',profile='MX',operating_force_gf='',bottom_out_gf='',pretravel_mm='',total_travel_mm='',sound_tags='',spec_source_url='',video_id='',video_title='(no Click and Thock video; Rod recorded it)')
 out=[]
 for r in merged.values():
     name=r['switch']; notes=[]
@@ -51,7 +61,12 @@ for r in merged.values():
     pr=price.get(name.strip(),{})
     def fill(cur,key,conv=num):
         v=(pr.get(key) or '').strip()
-        return cur if cur not in (None,'') or not v else (conv(v) if conv else v)
+        if cur not in (None,'') or not v: return cur
+        if 'adjust' in v.lower() or 'free' in v.lower():
+            if not any('adjust' in n for n in notes): notes.append(f'{key.split("_")[0]}: {v}')
+            return cur
+        if re.sub(r'[\d.\s]','',v): notes.append(f'{key.split("_")[0]}: {v}')
+        return conv(v) if conv else v
     if typ in ('','not listed') and pr.get('type'): typ=pr['type'].strip().lower().replace('tactile (silent)','silent tactile'); notes.append('type from price pass')
     before=(op,peak,bo,pre,tot)
     op=fill(op,'operating_force_gf'); peak=fill(peak,'tactile_peak_gf'); bo=fill(bo,'bottom_out_gf'); pre=fill(pre,'pretravel_mm'); tot=fill(tot,'total_travel_mm')
@@ -90,6 +105,7 @@ for line in ['Every single-switch video on the Click and Thock YouTube channel, 
  'Magnetic (Hall effect) switches have adjustable pre-travel, so it is blank with a note.',
  'Keyboard, keycap and multi-switch comparison videos are left out.',
  'Price: CAD per single switch, checked 2026-10-19. Canadian price when found, otherwise the cheapest major retailer in USD converted at 1.40 CAD per USD (mid-market about 1.39 to 1.41 that day). Price as listed keeps the original amount, pack size and any sold-out, discount-code or variant caveat. Rounds 1 and 2 cover every row; a recheck of prices is planned.',
+ 'Gap fill (2026-10-19): the 87 rows still missing a price or a core spec were searched once more. Values that were a range, approximate or text are kept in Notes; magnetic switches say adjustable there. Durock POM Piano was added (Rod recorded it; no Click and Thock video).',
  'Gaps: the web search limit ran out partway, so many rows are partial. Use the filter on any column (Type = tactile, sort by force, search tags).']:
     n.append([line]); n.cell(n.max_row,1).font=f
 n.column_dimensions['A'].width=140
