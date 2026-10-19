@@ -55,26 +55,27 @@ function init(root) {
   let answers = null;
   let order = null;
 
-  const questions = new QuestionFlow(q('[data-step="questions"]'), {
-    async onDone(given) {
-      answers = given;
-      q('[data-loading]').textContent = 'Loading sounds...';
-      try {
-        await loading;
-      } catch (err) {
-        q('[data-loading]').textContent = `Could not load the sounds (${err.message}). Try reloading.`;
-        return;
-      }
-      show('board');
-      order = shuffle(Object.keys(switches));
-      board.load(order);
+  async function openBoard(given) {
+    answers = given;
+    q('[data-loading]').textContent = 'Loading sounds...';
+    try {
+      await loading;
+    } catch (err) {
+      q('[data-loading]').textContent = `Could not load the sounds (${err.message}). Try reloading.`;
+      return;
     }
-  });
+    show('board');
+    order = shuffle(Object.keys(switches));
+    board.load(order);
+  }
+
+  const questions = data.questions && new QuestionFlow(q('[data-step="questions"]'), { onDone: openBoard });
 
   q('[data-action="start"]').addEventListener('click', () => {
     loading = player.load(Object.values(clips));
     show('questions');
-    questions.start();
+    if (questions) questions.start();
+    else openBoard({});
   });
 
   done.addEventListener('click', () => {
@@ -118,6 +119,18 @@ function init(root) {
       });
     });
 
+    if (data.questions) showAnswers(result);
+
+    const copy = q('[data-action="copy"]');
+    copy.addEventListener('click', () => {
+      navigator.clipboard.writeText(location.href).then(() => {
+        copy.querySelector('.kit-button__label').textContent = 'Link copied';
+      });
+    });
+    show('results');
+  }
+
+  function showAnswers(result) {
     const chart = q('[data-tag-chart]');
     const barTemplate = q('[data-tag-template]');
     const tagsById = Object.fromEntries(data.switches.map((item) => [item.id, item.tags]));
@@ -174,14 +187,6 @@ function init(root) {
         list.appendChild(detail);
       }
     });
-
-    const copy = q('[data-action="copy"]');
-    copy.addEventListener('click', () => {
-      navigator.clipboard.writeText(location.href).then(() => {
-        copy.querySelector('.kit-button__label').textContent = 'Link copied';
-      });
-    });
-    show('results');
   }
 }
 

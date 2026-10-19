@@ -1,3 +1,22 @@
+# 2026-10-19 (later) - Q'S TIER LIST AND H'S BLIND TEST
+
+Rod pushed 16 new recordings (261019). Each is now an 8 second MP3 named after its switch in
+`assets/media/sound-tiers/` (best window, -34 LUFS like the rest), and the WAVs are gone.
+
+**Q's tier list**, `/norobots/sound-tiers-q-4b535130/`: Q's 11 tactile picks, no questions. Start
+goes straight to the board; results are the cards only. `tier-test.js` and `_layouts/tier-test.html`
+learned to do that when a page has no `questions` (the big tier list is unchanged). No photos yet,
+so every card shows the question-mark switch.
+
+**H's blind test**, `/norobots/sound-test-h-7f2bccb1/`: Akko Piano U1, Chosfox x HMX Dune Fox, Kailh
+BOX Blueberry Ice Cream Pro, KBDfans Roller V2, Akko Astrolink. 3 takes each from 0.5s, 7.5s and
+14.5s, -32 LUFS, peaks at -1.6 dBFS or under, in `assets/media/sound-test-h/`. The Piano take is
+from the old `switch-test` WAV. Kailh Lunar is encoded but in neither page.
+
+Checked on desktop and an iPhone 13 emulation: Q's 11 tiles, 11 cards, tap-to-play, shared link;
+the big tier list still runs its questions and all four results sections; H's test runs 23 trials
+and loads all 15 clips. No script errors.
+
 # 2026-10-19 (later) - A SEARCHABLE SPEC SHEET OF EVERY CLICK AND THOCK SWITCH
 
 **Price, round 1.** New columns: price in CAD per switch, price as listed, retailer, link, date

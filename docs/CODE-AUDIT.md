@@ -438,8 +438,13 @@ card built later would never lean.
 Each result card is a play button (`playCard`): one switch at a time, fetched on first tap, and it
 works from a shared link, so the player and clips are made before the link is read.
 
-**Functions.** `init` wires the page. `showResults` fills the chart and puts the cards in rank order.
-`readHash` reads results back out of a shared link.
+A page with no `questions` in its front matter (Q's, `/norobots/sound-tiers-q-4b535130/`) skips
+straight from Start to the board, and its results are the cards only: the layout leaves out the
+sounds chart, the meaning text, preferences and answers.
+
+**Functions.** `init` wires the page. `openBoard` waits for the clips and deals the tiles.
+`showResults` puts the cards in rank order. `showAnswers` fills the tag chart, preferences and
+answers, on pages that ask questions. `readHash` reads results back out of a shared link.
 
 ## _javascript/modules/components/question-flow.js
 

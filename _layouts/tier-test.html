@@ -59,6 +59,7 @@ layout: default
     <button type="button" class="kit-button kit-button--outline orb-fill listening-test__button" data-action="copy">
       <span class="kit-button__label">Copy results link</span>
     </button>
+    {% if page.questions %}
     <h2>Your sounds</h2>
     <p class="listening-test__status">Compared with your average switch</p>
     <ol class="listening-test__results" data-tag-chart></ol>
@@ -84,6 +85,7 @@ layout: default
     </template>
     <p class="tier-layout" data-layout></p>
     <ul class="tier-flags" data-flags></ul>
+    {% endif %}
     <div class="wrapper-project-card-grid wrapper-project-card-grid--square pv2-grid" data-result-cards>
       {% for item in page.switches %}
         <div class="pv2-cell" data-card="{{ item.id }}">
@@ -108,8 +110,10 @@ layout: default
         </div>
       {% endfor %}
     </div>
+    {% if page.questions %}
     <h2>Your answers</h2>
     <dl class="tier-answers" data-answers></dl>
+    {% endif %}
   </section>
 </div>
 
