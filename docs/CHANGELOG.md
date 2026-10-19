@@ -1,3 +1,13 @@
+# 2026-10-19 (later) - A SEARCHABLE SPEC SHEET OF EVERY CLICK AND THOCK SWITCH
+
+`docs/switch-research/click-and-thock-switches.xlsx`: 262 switches from the channel's 306
+single-switch videos (keyboards, keycaps and comparisons left out, duplicates merged), with type,
+profile, operating force, tactile peak, bottom-out, pre-travel, total travel, sound tags, video link
+and spec source. 177 rows have type, force, pre-travel and total travel; the rest are partial
+because the shared web search limit ran out. Blank means not found, never guessed. Low-profile Kailh
+and Lofree rows use the official kailhswitch.com and lofree.co lookup. The research rows as
+gathered are in `docs/switch-research/raw/` for filling gaps later. `docs/` does not ship.
+
 # 2026-10-19 (later) - BLIND TEST RESULTS PLAY WHEN YOU TAP A PHOTO
 
 **The tier list too, same day.** Each result card is now a button (`role="button"`,
