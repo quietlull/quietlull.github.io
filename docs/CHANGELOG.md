@@ -1,3 +1,14 @@
+# 2026-10-19 - A BLIND SWITCH TEST FOR JESS, LOW-PROFILE TACTILE AND SILENT
+
+`/norobots/sound-test-jess-2818a56a/`, the switch test layout with five low-profile switches Rod
+recorded for Jess (tier list: loves thocky and poppy, F on every clicky; wants tactile, quiet, rests
+her wrists): Kailh Choc V2 Brown, Kailh Winter Mini, Kailh Deep Sea Silent Mini, Lofree Hades,
+Lofree Phantom. Rod dropped Kailh ALL-POM Black Cloud as near identical to Phantom, which he has in
+stock. 20 pairs plus 3 controls. Three separate 8 second takes each, loudness matched to -36 LUFS
+(the silent switches' sharp peaks would clip at the usual -31), peaks at or below -1.5 dBFS, in
+`assets/media/sound-test-jess/`. No photos, so the question-mark switch shows. Checked on desktop
+and an iPhone 13 emulation: 23 trials, 15 clips, no script errors.
+
 # 2026-10-18 - A NEW VERSION RELOADS OPEN PAGES BY ITSELF
 
 Rod chose a forced update over an update prompt ("just update it forcefully no prompt"). When a new
