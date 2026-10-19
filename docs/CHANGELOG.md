@@ -1,5 +1,11 @@
 # 2026-10-19 (later) - A SEARCHABLE SPEC SHEET OF EVERY CLICK AND THOCK SWITCH
 
+**Price, round 1.** New columns: price in CAD per switch, price as listed, retailer, link, date
+checked. The first 131 rows were searched; 92 are priced (no Canadian shop listed any, so all are
+US prices at 1.40 CAD per USD). Missing specs found on the way were filled, raising complete rows
+from 177 to 188. Rows 132 to 262 are round 2; then prices get rechecked. Raw rows in
+`docs/switch-research/raw/price-round-1/`.
+
 `docs/switch-research/click-and-thock-switches.xlsx`: 262 switches from the channel's 306
 single-switch videos (keyboards, keycaps and comparisons left out, duplicates merged), with type,
 profile, operating force, tactile peak, bottom-out, pre-travel, total travel, sound tags, video link
