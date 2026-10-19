@@ -1,5 +1,11 @@
 # 2026-10-19 (later) - BLIND TEST RESULTS PLAY WHEN YOU TAP A PHOTO
 
+**The tier list too, same day.** Each result card is now a button (`role="button"`,
+`data-play-card`, Enter or Space works): tap to loop that switch, tap again to stop, one at a time.
+The playing card's cover gets the gold tint, a centred play icon and the pulse. A clip is fetched
+only when its card is first tapped. Checked on desktop and an iPhone 13 emulation with a shared
+results link: one at a time, Enter toggles, no script errors.
+
 Rod: click the image on the results page to play it, one at a time, like the tier list. Every
 blind test (the first, Angus's, Jess's) now shows each result photo as a button: tap to play that
 switch's first take on a loop, tap again to stop, tap another to swap. The playing photo gets the

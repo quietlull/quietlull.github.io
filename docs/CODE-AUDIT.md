@@ -435,6 +435,9 @@ Tiles carry no label, because any label hints at the answer. The result cards ar
 the start, hidden, and only reordered at the end: `site-wide.js` starts tilt once, at load, so a
 card built later would never lean.
 
+Each result card is a play button (`playCard`): one switch at a time, fetched on first tap, and it
+works from a shared link, so the player and clips are made before the link is read.
+
 **Functions.** `init` wires the page. `showResults` fills the chart and puts the cards in rank order.
 `readHash` reads results back out of a shared link.
 

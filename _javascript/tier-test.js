@@ -21,15 +21,15 @@ function init(root) {
 
   const switches = Object.fromEntries(data.switches.map((item) => [item.id, item]));
 
+  const player = new AudioPlayer();
+  const clips = Object.fromEntries(Object.keys(switches).map((id) =>
+    [id, new AudioClip(`${data.media}/${id}.mp3`)]));
+
   const shared = readHash();
   if (shared) {
     showResults(shared);
     return;
   }
-
-  const player = new AudioPlayer();
-  const clips = Object.fromEntries(Object.keys(switches).map((id) =>
-    [id, new AudioClip(`${data.media}/${id}.mp3`)]));
   const done = q('[data-action="done"]');
 
   const board = new TierBoard(q('[data-tier-board]'), {
@@ -93,6 +93,29 @@ function init(root) {
       card.querySelector('[data-field="tier"]').textContent = `Clip ${result.order.indexOf(id) + 1} \u00b7 ${rating}`;
       card.classList.add(i % 2 ? 'posts-grid-hue-b' : 'posts-grid-hue-a');
       grid.appendChild(card);
+    });
+
+    const playButtons = [...grid.querySelectorAll('[data-play-card]')];
+    async function playCard(button) {
+      const clip = clips[button.closest('[data-card]').dataset.card];
+      if (player.playing && player.clip === clip) {
+        player.stop();
+      } else {
+        await player.load([clip]);
+        player.play(clip);
+      }
+      playButtons.forEach((other) => {
+        other.setAttribute('aria-pressed', player.playing && player.clip === clip && other === button);
+      });
+    }
+    playButtons.forEach((button) => {
+      button.setAttribute('aria-label', `Play ${switches[button.closest('[data-card]').dataset.card].name}`);
+      button.addEventListener('click', () => playCard(button));
+      button.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        playCard(button);
+      });
     });
 
     const chart = q('[data-tag-chart]');

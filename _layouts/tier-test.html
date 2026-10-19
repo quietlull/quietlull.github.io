@@ -88,10 +88,11 @@ layout: default
       {% for item in page.switches %}
         <div class="pv2-cell" data-card="{{ item.id }}">
           <article class="project-card tilt">
-            <div class="card-link"><div class="card-tilt track-mouse"><div class="card-flipper">
+            <div class="card-link" role="button" tabindex="0" aria-pressed="false" data-play-card><div class="card-tilt track-mouse"><div class="card-flipper">
               <div class="card-front">
                 <div class="card-cover parallax-z-layer">
                   <img src="{{ item.image | default: '/assets/img/switches/unknown-switch.webp' | relative_url }}" alt="">
+                  <i class="fas fa-play-circle tier-card__play" aria-hidden="true"></i>
                 </div>
                 <div class="glass-plane parallax-z-layer border-glow"></div>
                 <div class="card-body parallax-z-layer">
