@@ -39,7 +39,9 @@ layout: default
     <template data-result-template>
       <li class="listening-test__result">
         <span class="listening-test__rank" data-field="rank"></span>
-        <span class="listening-test__thumb" data-field="image"></span>
+        <button type="button" class="listening-test__thumb" data-field="image" aria-pressed="false">
+          <i class="fas fa-play-circle listening-test__thumb-icon" aria-hidden="true"></i>
+        </button>
         <span class="listening-test__name" data-field="name"></span>
         <span class="listening-test__track"><span class="listening-test__fill"></span></span>
         <span class="listening-test__percent" data-field="percent"></span>

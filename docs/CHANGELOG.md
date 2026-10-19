@@ -1,3 +1,11 @@
+# 2026-10-19 (later) - BLIND TEST RESULTS PLAY WHEN YOU TAP A PHOTO
+
+Rod: click the image on the results page to play it, one at a time, like the tier list. Every
+blind test (the first, Angus's, Jess's) now shows each result photo as a button: tap to play that
+switch's first take on a loop, tap again to stop, tap another to swap. The playing photo gets the
+tier tile's gold tint, play icon and pulse. Works from a shared results link. Checked on desktop and
+an iPhone 13 emulation: one plays at a time, a second tap stops it, no script errors.
+
 # 2026-10-19 - A BLIND SWITCH TEST FOR JESS, LOW-PROFILE TACTILE AND SILENT
 
 `/norobots/sound-test-jess-2818a56a/`, the switch test layout with five low-profile switches Rod

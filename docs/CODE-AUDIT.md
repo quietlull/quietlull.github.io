@@ -370,7 +370,11 @@ The names were already in the page's JSON, so it is blind for an honest friend, 
 
 **Functions.** `init` wires the page. `renderTrial` resets for the next pair. `renderButtons`
 marks which clip is playing and switches the prefer buttons on. `showResults` fills one bar row per
-switch from the `<template>` in the layout. The % is the share of its pairs a switch won. `readHash` reads results back out of a shared link.
+switch from the `<template>` in the layout. The % is the share of its pairs a switch won. Each
+result photo is a button: `playResult` plays that switch's first take, or stops it, one at a time,
+and works on a shared results link too, so the player and clips are made before the link is read.
+The playing photo borrows the tier list tile's look, including the `tier-tile-pulse` keyframes
+from `_tier-test.scss` (both page sheets compile into one stylesheet). `readHash` reads results back out of a shared link.
 
 **Worth knowing.** `hidden` does nothing on a `.kit-button`: its `display` rule wins. Hide its
 parent instead.

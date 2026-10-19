@@ -15,17 +15,17 @@ function init(root) {
     el.hidden = el.dataset.step !== name;
   });
 
-  const shared = readHash();
-  if (shared) {
-    showResults(shared);
-    return;
-  }
-
   const player = new AudioPlayer();
   const clips = Object.fromEntries(data.switches.map((s) => [
     s.id,
     Array.from({ length: data.takes }, (_, n) => new AudioClip(`${data.media}/${s.id}-take-${n + 1}.mp3`))
   ]));
+
+  const shared = readHash();
+  if (shared) {
+    showResults(shared);
+    return;
+  }
   const test = new PairwiseTest(data.switches.map((s) => s.id), {
     variants: data.takes,
     controls: data.controls
@@ -102,11 +102,26 @@ function init(root) {
       const field = (name) => row.querySelector(`[data-field="${name}"]`);
       row.style.setProperty('--percent', `${percent}%`);
       field('rank').textContent = rank;
-      field('image').style.backgroundImage = `url("${switchData.image || data.placeholder}")`;
+      const thumb = field('image');
+      thumb.style.backgroundImage = `url("${switchData.image || data.placeholder}")`;
+      thumb.setAttribute('aria-label', `Play ${switchData.name}`);
+      thumb.addEventListener('click', () => playResult(clips[entry.id][0], thumb));
       field('name').textContent = switchData.name;
       field('percent').textContent = `${percent}%`;
       list.appendChild(row);
     });
+
+    async function playResult(clip, thumb) {
+      if (player.playing && player.clip === clip) {
+        player.stop();
+      } else {
+        await player.load([clip]);
+        player.play(clip);
+      }
+      list.querySelectorAll('[data-field="image"]').forEach((other) => {
+        other.setAttribute('aria-pressed', player.playing && player.clip === clip && other === thumb);
+      });
+    }
 
     const copy = q('[data-action="copy"]');
     copy.addEventListener('click', () => {

@@ -64,12 +64,38 @@
 .listening-test__rank { grid-area: rank; color: var(--color-silver); }
 
 .listening-test__thumb {
+  position: relative;
+  display: grid;
+  place-items: center;
   grid-area: thumb;
   width: 3rem;
   aspect-ratio: 1;
+  padding: 0;
   background: center / cover no-repeat;
   border: 1px solid var(--color-line);
+  cursor: pointer;
 }
+
+.listening-test__thumb-icon {
+  position: relative;
+  font-size: 1.4rem;
+  color: var(--color-text);
+  opacity: 0;
+}
+
+.listening-test__thumb[aria-pressed='true'] {
+  border-color: var(--color-gold);
+  animation: tier-tile-pulse 1.6s ease-in-out infinite;
+}
+
+.listening-test__thumb[aria-pressed='true']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-gold) 25%, transparent);
+}
+
+.listening-test__thumb[aria-pressed='true'] .listening-test__thumb-icon { opacity: 1; }
 
 .listening-test__name { grid-area: name; color: var(--color-gold); }
 
